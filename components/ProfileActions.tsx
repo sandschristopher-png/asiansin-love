@@ -1,8 +1,8 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
-import { Sparkles, Star } from 'lucide-react'
-import { useRouter } from 'next/navigation'
+import { createClient } from '@/utils/supabase/client'
+import { Sparkles, Heart, Check, Loader2 } from 'lucide-react'
 
 interface ProfileActionsProps {
   targetUserId: string
@@ -17,70 +17,124 @@ export function ProfileActions({
   initialFavorited,
   isAuthenticated,
 }: ProfileActionsProps) {
-  const router = useRouter()
   const [sparked, setSparked] = useState(initialSparked)
   const [favorited, setFavorited] = useState(initialFavorited)
-  const [loading, setLoading] = useState(false)
+  const [sparkLoading, setSparkLoading] = useState(false)
+  const [favLoading, setFavLoading] = useState(false)
 
-  const handleSparkToggle = async () => {
+  const supabase = createClient()
+
+  const handleSpark = async () => {
     if (!isAuthenticated) {
-      router.push('/login')
+      window.location.href = '/login?mode=signin'
       return
     }
 
-    setLoading(true)
+    setSparkLoading(true)
     try {
-      const res = await fetch('/api/spark', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ targetUserId }),
-      })
-      const data = await res.json()
-      if (res.ok) {
-        setSparked(data.sparked)
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+
+      if (sparked) {
+        await supabase
+          .from('sparks')
+          .delete()
+          .eq('sender_id', user.id)
+          .eq('receiver_id', targetUserId)
+        setSparked(false)
+      } else {
+        await supabase
+          .from('sparks')
+          .insert({
+            sender_id: user.id,
+            receiver_id: targetUserId,
+          })
+        setSparked(true)
       }
+    } catch (err) {
+      console.error('Error toggling spark:', err)
     } finally {
-      setLoading(false)
+      setSparkLoading(false)
     }
   }
 
-  const handleFavoriteToggle = async () => {
+  const handleFavorite = async () => {
     if (!isAuthenticated) {
-      router.push('/login')
+      window.location.href = '/login?mode=signin'
       return
     }
 
-    // Local toggle visual feedback
-    setFavorited(!favorited)
+    setFavLoading(true)
+    try {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) return
+
+      if (favorited) {
+        await supabase
+          .from('favorites')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('favorite_id', targetUserId)
+        setFavorited(false)
+      } else {
+        await supabase
+          .from('favorites')
+          .insert({
+            user_id: user.id,
+            favorite_id: targetUserId,
+          })
+        setFavorited(true)
+      }
+    } catch (err) {
+      console.error('Error toggling favorite:', err)
+    } finally {
+      setFavLoading(false)
+    }
   }
 
   return (
-    <div className="grid grid-cols-2 gap-2">
+    <div className="grid grid-cols-2 gap-3">
       <button
-        type="button"
-        disabled={loading}
-        onClick={handleSparkToggle}
-        className={`flex items-center justify-center gap-2 rounded-2xl border p-3 text-xs font-bold uppercase tracking-wider transition ${
+        onClick={handleSpark}
+        disabled={sparkLoading}
+        className={`flex items-center justify-center gap-2 rounded-xl py-3 text-xs font-bold transition shadow-sm ${
           sparked
-            ? 'border-rose-500/50 bg-rose-600/20 text-rose-300 shadow-lg shadow-rose-600/20'
-            : 'border-zinc-800 bg-zinc-900/60 text-zinc-300 hover:border-rose-500 hover:text-white'
+            ? 'bg-purple-50 border border-purple-200 text-[#6d4aff]'
+            : 'bg-[#6d4aff] text-white hover:bg-[#5b3ae6]'
         }`}
       >
-        <Sparkles className={`h-4 w-4 ${sparked ? 'text-rose-400 fill-rose-400 animate-pulse' : 'text-rose-400'}`} />
-        <span>{sparked ? 'Sparked ?' : 'Send Spark'}</span>
+        {sparkLoading ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : sparked ? (
+          <>
+            <Check className="h-4 w-4" />
+            <span>Sparked (✨)</span>
+          </>
+        ) : (
+          <>
+            <Sparkles className="h-4 w-4" />
+            <span>Send Spark</span>
+          </>
+        )}
       </button>
 
       <button
-        type="button"
-        onClick={handleFavoriteToggle}
-        className={`flex items-center justify-center gap-2 rounded-2xl border p-3 text-xs font-semibold transition ${
+        onClick={handleFavorite}
+        disabled={favLoading}
+        className={`flex items-center justify-center gap-2 rounded-xl border py-3 text-xs font-semibold transition shadow-xs ${
           favorited
-            ? 'border-amber-500/40 bg-amber-500/10 text-amber-300'
-            : 'border-zinc-800 bg-zinc-900/60 text-zinc-300 hover:border-amber-500 hover:text-white'
+            ? 'bg-rose-50 border-rose-200 text-rose-600'
+            : 'border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:text-slate-900'
         }`}
       >
-        <Star className={`h-4 w-4 ${favorited ? 'fill-amber-400 text-amber-400' : 'text-amber-400'}`} />
-        <span>{favorited ? 'Favorited' : 'Add Favorite'}</span>
+        {favLoading ? (
+          <Loader2 className="h-4 w-4 animate-spin" />
+        ) : (
+          <>
+            <Heart className={`h-4 w-4 ${favorited ? 'fill-rose-500 text-rose-500' : 'text-slate-400'}`} />
+            <span>{favorited ? 'Saved to Favorites' : 'Add to Favorites'}</span>
+          </>
+        )}
       </button>
     </div>
   )

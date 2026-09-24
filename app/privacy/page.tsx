@@ -1,33 +1,53 @@
-import Link from 'next/link'
-import { ArrowLeft } from 'lucide-react'
+﻿import Link from 'next/link'
 import { Logo } from '@/components/Logo'
+import { ArrowLeft } from 'lucide-react'
+
+export const metadata = {
+  title: "Privacy Policy | asiansin.love",
+  description: "Privacy practices and data handling policies for asiansin.love.",
+}
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-dvh bg-[#fafaf9] font-sans text-stone-900 py-10 px-4">
-      <div className="mx-auto max-w-2xl space-y-6">
-        <div className="flex items-center justify-between border-b border-stone-200 pb-4">
-          <Link href="/browse" className="flex items-center gap-1 text-xs font-semibold text-stone-600 hover:text-stone-900">
-            <ArrowLeft className="h-4 w-4" />
-            <span>Back</span>
-          </Link>
-          <Logo className="h-6 w-6" textSize="text-base" />
+    <div className="min-h-dvh bg-[#fbfbfe] font-sans text-slate-900 pb-20 selection:bg-[#6d4aff] selection:text-white">
+      <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/80 px-4 sm:px-6 py-3.5 backdrop-blur-md flex items-center justify-between">
+        <Link href="/" className="hover:opacity-90 transition">
+          <Logo className="h-6 w-6" textSize="text-base sm:text-lg" />
+        </Link>
+        <Link href="/browse" className="flex items-center gap-1 text-xs font-semibold text-slate-600 hover:text-slate-900 transition">
+          <ArrowLeft className="h-3.5 w-3.5" />
+          <span>Browse</span>
+        </Link>
+      </header>
+
+      <main className="mx-auto max-w-3xl px-4 sm:px-6 pt-12 space-y-8">
+        <div>
+          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Privacy Policy</h1>
+          <p className="text-xs text-slate-500 mt-1">Effective Date: 2026 &bull; asiansin.love</p>
         </div>
 
-        <h1 className="text-2xl font-black">Privacy Policy</h1>
-        <p className="text-xs text-stone-500">Effective Date: September 2026</p>
+        <div className="space-y-6 text-xs sm:text-sm text-slate-700 leading-relaxed rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 shadow-xs">
+          <section className="space-y-2">
+            <h2 className="text-base font-bold text-slate-900">1. Information We Collect</h2>
+            <p>We collect information provided directly by you during signup, including email address, display name, age/birthdate, location, and photos you choose to upload.</p>
+          </section>
 
-        <div className="space-y-4 text-xs text-stone-700 leading-relaxed">
-          <h2 className="text-sm font-bold text-stone-900">1. Data We Collect</h2>
-          <p>We collect personal information necessary to deliver dating services: email addresses, profile bios, photographs, approximate location (city and country), and direct messages between consented users.</p>
+          <section className="space-y-2">
+            <h2 className="text-base font-bold text-slate-900">2. Photo Protection & Public Masking</h2>
+            <p>Your secondary photo albums are masked from anonymous public web visitors and web scrapers. Only authenticated, logged-in members can see full photo galleries.</p>
+          </section>
 
-          <h2 className="text-sm font-bold text-stone-900">2. Verification Photo Privacy</h2>
-          <p>Selfie photos uploaded strictly for pose verification are accessible only by automated review systems and designated moderators. They are never published publicly on member profile feeds.</p>
+          <section className="space-y-2">
+            <h2 className="text-base font-bold text-slate-900">3. Right to Erasure (Self-Serve Deletion)</h2>
+            <p>Every member has the permanent right to wipe their profile data. Our Settings page provides a direct, immediate deletion endpoint that permanently purges your account from all database records.</p>
+          </section>
 
-          <h2 className="text-sm font-bold text-stone-900">3. Deletion Rights</h2>
-          <p>Members have full sovereignty over their account. Executing "Delete My Profile" instantly purges auth records, stored media, and chat histories across our database.</p>
+          <section className="space-y-2">
+            <h2 className="text-base font-bold text-slate-900">4. No Data Brokering</h2>
+            <p>We do not sell, rent, or trade your personal profile data or messages to third-party advertisers or data brokers.</p>
+          </section>
         </div>
-      </div>
+      </main>
     </div>
   )
 }
