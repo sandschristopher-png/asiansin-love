@@ -2,19 +2,9 @@
 
 import { useEffect, useState, useRef, use } from 'react'
 import { createClient } from '@/utils/supabase/client'
-import { Send, ArrowLeft, ShieldAlert, AlertTriangle } from 'lucide-react'
+import { scanMessageForTriggers } from '@/utils/guardian'
+import { Send, ArrowLeft, ShieldAlert } from 'lucide-react'
 import Link from 'next/link'
-
-// Regex rules for phone numbers, WhatsApp, Telegram, crypto, and money requests
-const CONTACT_AND_SCAM_PATTERNS = [
-  /(\+?[0-9]{1,4}[\s-]?)?(\(?\d{3}\)?[\s-]?)?[\d\s-]{7,13}/g, // phone numbers
-  /(whatsapp|wa\.me|viber|telegram|t\.me|line id|wechat|snapchat|cashapp|venmo)/i,
-  /(crypto|bitcoin|usdt|investment|trading|wire transfer|gift card|western union|send money)/i,
-]
-
-function containsSuspiciousContent(text: string): boolean {
-  return CONTACT_AND_SCAM_PATTERNS.some((pattern) => pattern.test(text))
-}
 
 export default function ChatConversation({ params }: { params: Promise<{ userId: string }> }) {
   const { userId: partnerId } = use(params)
@@ -132,7 +122,7 @@ export default function ChatConversation({ params }: { params: Promise<{ userId:
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((m) => {
           const isMe = m.sender_id === currentUserId
-          const isSuspicious = !isMe && containsSuspiciousContent(m.content)
+          const trigger = !isMe ? scanMessageForTriggers(m.content) : null
 
           return (
             <div key={m.id} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
@@ -147,12 +137,13 @@ export default function ChatConversation({ params }: { params: Promise<{ userId:
               </div>
 
               {/* Smart Guardian Scam/External Advisory */}
-              {isSuspicious && (
+              {trigger && (
                 <div className="mt-1.5 flex max-w-[80%] items-start gap-2 rounded-xl border border-amber-900/60 bg-amber-950/40 p-2.5 text-xs text-amber-200">
-                  <AlertTriangle className="h-4 w-4 shrink-0 text-amber-400 mt-0.5" />
-                  <span>
-                    <strong>Safety Advisory:</strong> External contact or finance keyword detected. Scammers often attempt to move off-platform early. Never send money or crypto.
-                  </span>
+                  <ShieldAlert className="h-4 w-4 shrink-0 text-amber-400 mt-0.5" />
+                  <div>
+                    <span className="font-semibold text-amber-300">{trigger.warningTitle}: </span>
+                    <span>{trigger.warningAdvice}</span>
+                  </div>
                 </div>
               )}
             </div>
