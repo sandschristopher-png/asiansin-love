@@ -5,6 +5,7 @@ import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 import { Camera, Loader2, Plane } from 'lucide-react'
 import { SEA_COUNTRIES } from '@/utils/constants'
+import { Logo } from '@/components/Logo'
 
 export default function OnboardingPage() {
   const router = useRouter()
@@ -29,7 +30,7 @@ export default function OnboardingPage() {
   const [bio, setBio] = useState('')
   const [agreed, setAgreed] = useState(false)
 
-  // Expat Travel Radar Fields
+  // Expat Radar Fields
   const [visitingCity, setVisitingCity] = useState('')
   const [visitingDates, setVisitingDates] = useState('')
 
@@ -123,7 +124,7 @@ export default function OnboardingPage() {
         .upsert({
           id: userId,
           display_name: displayName.trim(),
-          gender, // Normalized to 'female' | 'male' | 'transgender'
+          gender,
           looking_for: relationshipGoal,
           birthdate,
           country,
@@ -149,31 +150,32 @@ export default function OnboardingPage() {
 
   if (initialLoading) {
     return (
-      <div className="min-h-dvh bg-zinc-950 flex items-center justify-center text-xs text-zinc-500">
-        <Loader2 className="h-5 w-5 animate-spin text-rose-500 mr-2" />
+      <div className="min-h-dvh bg-[#fafaf9] flex items-center justify-center text-xs text-stone-500">
+        <Loader2 className="h-5 w-5 animate-spin text-rose-600 mr-2" />
         <span>Loading setup...</span>
       </div>
     )
   }
 
   return (
-    <div className="min-h-dvh bg-zinc-950 font-sans text-zinc-100 flex flex-col justify-center items-center py-10 px-4 selection:bg-rose-500 selection:text-white">
+    <div className="min-h-dvh bg-[#fafaf9] font-sans text-stone-900 flex flex-col justify-center items-center py-10 px-4 selection:bg-rose-500 selection:text-white">
       <div className="w-full max-w-lg space-y-6">
-        <div className="text-center space-y-1.5">
-          <h1 className="text-2xl font-bold tracking-tight text-white">Create Your Member Profile</h1>
-          <p className="text-xs text-zinc-400">A community dedicated strictly to genuine relationships &amp; love</p>
+        <div className="text-center space-y-2">
+          <Logo className="h-7 w-7" textSize="text-lg" />
+          <h1 className="text-2xl font-bold tracking-tight text-stone-900">Create Your Profile</h1>
+          <p className="text-xs text-stone-500">A community dedicated strictly to genuine relationships &amp; love</p>
         </div>
 
         {errorMsg && (
-          <div className="rounded-xl border border-rose-500/20 bg-rose-500/10 p-3.5 text-xs text-rose-300 text-center">
+          <div className="rounded-xl border border-rose-200 bg-rose-50 p-3.5 text-xs text-rose-700 text-center">
             {errorMsg}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-6 backdrop-blur-md space-y-5 shadow-2xl">
+        <form onSubmit={handleSubmit} className="rounded-2xl border border-stone-200 bg-white p-6 space-y-5 shadow-sm">
           
           {/* Photo Section */}
-          <div className="flex flex-col items-center justify-center space-y-2 pb-2 border-b border-zinc-800/60">
+          <div className="flex flex-col items-center justify-center space-y-2 pb-2 border-b border-stone-100">
             <input
               type="file"
               ref={fileInputRef}
@@ -184,32 +186,32 @@ export default function OnboardingPage() {
 
             <div 
               onClick={() => fileInputRef.current?.click()}
-              className="relative h-24 w-24 rounded-2xl overflow-hidden border-2 border-dashed border-zinc-700 hover:border-rose-500 cursor-pointer bg-zinc-950 flex flex-col items-center justify-center group transition"
+              className="relative h-24 w-24 rounded-2xl overflow-hidden border-2 border-dashed border-stone-300 hover:border-rose-500 cursor-pointer bg-stone-50 flex flex-col items-center justify-center group transition"
             >
               {avatarPreview ? (
                 <>
                   <img src={avatarPreview} alt="Preview" className="h-full w-full object-cover" />
-                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
                     <Camera className="h-5 w-5 text-white" />
                   </div>
                 </>
               ) : (
-                <div className="flex flex-col items-center text-zinc-400 group-hover:text-rose-400 transition">
+                <div className="flex flex-col items-center text-stone-400 group-hover:text-rose-600 transition">
                   <Camera className="h-6 w-6 mb-1" />
-                  <span className="text-[10px] font-medium">Add Photo</span>
+                  <span className="text-[10px] font-semibold">Add Photo</span>
                 </div>
               )}
             </div>
 
             <div className="text-center">
-              <span className="text-xs font-semibold text-zinc-300 block">Profile Photo *</span>
-              <span className="text-[10px] text-zinc-500">Upload a clear photo of your face</span>
+              <span className="text-xs font-bold text-stone-800 block">Profile Photo *</span>
+              <span className="text-[10px] text-stone-500">Upload a clear photo of your face</span>
             </div>
           </div>
 
           {/* Display Name */}
           <div>
-            <label className="block text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-600 mb-1.5">
               Display Name *
             </label>
             <input
@@ -218,20 +220,20 @@ export default function OnboardingPage() {
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
               placeholder="e.g. Maria, Somchai, David"
-              className="w-full rounded-xl border border-zinc-800 bg-zinc-950/70 px-3.5 py-2.5 text-xs text-white placeholder-zinc-500 focus:border-rose-500 focus:outline-none transition"
+              className="w-full rounded-xl border border-stone-300 bg-[#fafaf9] px-3.5 py-2.5 text-xs text-stone-900 placeholder-stone-400 focus:border-rose-500 focus:bg-white focus:outline-none transition"
             />
           </div>
 
           {/* Gender & Looking For */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-600 mb-1.5">
                 I Am A
               </label>
               <select
                 value={gender}
                 onChange={(e) => setGender(e.target.value)}
-                className="w-full rounded-xl border border-zinc-800 bg-zinc-950/70 px-3 py-2.5 text-xs text-white focus:border-rose-500 focus:outline-none transition"
+                className="w-full rounded-xl border border-stone-300 bg-[#fafaf9] px-3 py-2.5 text-xs text-stone-900 focus:border-rose-500 focus:bg-white focus:outline-none transition"
               >
                 <option value="female">Woman</option>
                 <option value="male">Man</option>
@@ -240,13 +242,13 @@ export default function OnboardingPage() {
             </div>
 
             <div>
-              <label className="block text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-600 mb-1.5">
                 Looking For
               </label>
               <select
                 value={lookingFor}
                 onChange={(e) => setLookingFor(e.target.value)}
-                className="w-full rounded-xl border border-zinc-800 bg-zinc-950/70 px-3 py-2.5 text-xs text-white focus:border-rose-500 focus:outline-none transition"
+                className="w-full rounded-xl border border-stone-300 bg-[#fafaf9] px-3 py-2.5 text-xs text-stone-900 focus:border-rose-500 focus:bg-white focus:outline-none transition"
               >
                 <option value="Men">Men</option>
                 <option value="Women">Women</option>
@@ -255,15 +257,15 @@ export default function OnboardingPage() {
             </div>
           </div>
 
-          {/* Goal */}
+          {/* Relationship Goal */}
           <div>
-            <label className="block text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
+            <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-600 mb-1.5">
               Relationship Goal
             </label>
             <select
               value={relationshipGoal}
               onChange={(e) => setRelationshipGoal(e.target.value)}
-              className="w-full rounded-xl border border-zinc-800 bg-zinc-950/70 px-3 py-2.5 text-xs text-white focus:border-rose-500 focus:outline-none transition"
+              className="w-full rounded-xl border border-stone-300 bg-[#fafaf9] px-3 py-2.5 text-xs text-stone-900 focus:border-rose-500 focus:bg-white focus:outline-none transition"
             >
               <option value="Long-Term Relationship">Long-Term Relationship</option>
               <option value="Dating with Intent">Dating with Intent</option>
@@ -271,33 +273,33 @@ export default function OnboardingPage() {
             </select>
           </div>
 
-          {/* Date of Birth */}
+          {/* Birthdate */}
           <div>
             <div className="flex justify-between items-center mb-1.5">
-              <label className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
+              <label className="text-[11px] font-bold uppercase tracking-wider text-stone-600">
                 Date of Birth *
               </label>
-              <span className="text-[10px] text-rose-400 font-semibold tracking-wide">MUST BE 18+</span>
+              <span className="text-[10px] text-rose-600 font-bold tracking-wide">MUST BE 18+</span>
             </div>
             <input
               type="date"
               required
               value={birthdate}
               onChange={(e) => setBirthdate(e.target.value)}
-              className="w-full rounded-xl border border-zinc-800 bg-zinc-950/70 px-3.5 py-2.5 text-xs text-white focus:border-rose-500 focus:outline-none transition"
+              className="w-full rounded-xl border border-stone-300 bg-[#fafaf9] px-3.5 py-2.5 text-xs text-stone-900 focus:border-rose-500 focus:bg-white focus:outline-none transition"
             />
           </div>
 
           {/* Country & City */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-600 mb-1.5">
                 Country
               </label>
               <select
                 value={country}
                 onChange={(e) => setCountry(e.target.value)}
-                className="w-full rounded-xl border border-zinc-800 bg-zinc-950/70 px-3 py-2.5 text-xs text-white focus:border-rose-500 focus:outline-none transition"
+                className="w-full rounded-xl border border-stone-300 bg-[#fafaf9] px-3 py-2.5 text-xs text-stone-900 focus:border-rose-500 focus:bg-white focus:outline-none transition"
               >
                 <optgroup label="Southeast Asia">
                   <option value="Philippines">Philippines</option>
@@ -322,7 +324,7 @@ export default function OnboardingPage() {
             </div>
 
             <div>
-              <label className="block text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
+              <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-600 mb-1.5">
                 City / Area *
               </label>
               <input
@@ -331,19 +333,19 @@ export default function OnboardingPage() {
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
                 placeholder="e.g. Makati, Cebu, Bangkok"
-                className="w-full rounded-xl border border-zinc-800 bg-zinc-950/70 px-3.5 py-2.5 text-xs text-white placeholder-zinc-500 focus:border-rose-500 focus:outline-none transition"
+                className="w-full rounded-xl border border-stone-300 bg-[#fafaf9] px-3.5 py-2.5 text-xs text-stone-900 placeholder-stone-400 focus:border-rose-500 focus:bg-white focus:outline-none transition"
               />
             </div>
           </div>
 
-          {/* Conditional Expat Travel Radar Section */}
+          {/* Expat Radar */}
           {isExpat && (
-            <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3.5 space-y-3">
-              <div className="flex items-center gap-1.5 text-xs font-semibold text-amber-300">
+            <div className="rounded-xl border border-amber-200 bg-amber-50 p-3.5 space-y-2.5">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-amber-800">
                 <Plane className="h-3.5 w-3.5" />
                 <span>Travel Radar (Optional)</span>
               </div>
-              <p className="text-[11px] text-zinc-400 leading-normal">
+              <p className="text-[11px] text-amber-700 leading-normal">
                 Visiting Southeast Asia soon? Add your destination and dates so locals know when you will be in town.
               </p>
               <div className="grid grid-cols-2 gap-2.5">
@@ -352,14 +354,14 @@ export default function OnboardingPage() {
                   value={visitingCity}
                   onChange={(e) => setVisitingCity(e.target.value)}
                   placeholder="Visiting city (e.g. Manila)"
-                  className="rounded-lg border border-zinc-800 bg-zinc-950/80 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-amber-500 focus:outline-none"
+                  className="rounded-lg border border-amber-300 bg-white px-3 py-2 text-xs text-stone-900 placeholder-stone-400 focus:border-amber-500 focus:outline-none"
                 />
                 <input
                   type="text"
                   value={visitingDates}
                   onChange={(e) => setVisitingDates(e.target.value)}
                   placeholder="Dates (e.g. Nov 10 - 24)"
-                  className="rounded-lg border border-zinc-800 bg-zinc-950/80 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-amber-500 focus:outline-none"
+                  className="rounded-lg border border-amber-300 bg-white px-3 py-2 text-xs text-stone-900 placeholder-stone-400 focus:border-amber-500 focus:outline-none"
                 />
               </div>
             </div>
@@ -368,10 +370,10 @@ export default function OnboardingPage() {
           {/* Bio */}
           <div>
             <div className="flex justify-between items-center mb-1.5">
-              <label className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
+              <label className="text-[11px] font-bold uppercase tracking-wider text-stone-600">
                 About Me *
               </label>
-              <span className={`text-[10px] font-medium ${bio.length >= 50 ? 'text-emerald-400' : 'text-zinc-500'}`}>
+              <span className={`text-[10px] font-bold ${bio.length >= 50 ? 'text-emerald-600' : 'text-stone-400'}`}>
                 {bio.length}/50 min
               </span>
             </div>
@@ -381,32 +383,31 @@ export default function OnboardingPage() {
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               placeholder="Describe your character, interests, and what you are seeking in a life partner..."
-              className="w-full rounded-xl border border-zinc-800 bg-zinc-950/70 p-3 text-xs text-white placeholder-zinc-500 focus:border-rose-500 focus:outline-none transition resize-none"
+              className="w-full rounded-xl border border-stone-300 bg-[#fafaf9] p-3 text-xs text-stone-900 placeholder-stone-400 focus:border-rose-500 focus:bg-white focus:outline-none transition resize-none"
             />
           </div>
 
-          {/* Terms Checkbox */}
+          {/* Agreement Checkbox */}
           <div className="flex items-start gap-2.5 pt-1">
             <input
               type="checkbox"
               id="agree"
               checked={agreed}
               onChange={(e) => setAgreed(e.target.checked)}
-              className="mt-0.5 h-4 w-4 rounded border-zinc-800 bg-zinc-950 text-rose-600 focus:ring-0 cursor-pointer"
+              className="mt-0.5 h-4 w-4 rounded border-stone-300 bg-stone-100 text-rose-600 focus:ring-0 cursor-pointer"
             />
-            <label htmlFor="agree" className="text-[11px] text-zinc-400 leading-snug cursor-pointer select-none">
+            <label htmlFor="agree" className="text-[11px] text-stone-600 leading-snug cursor-pointer select-none">
               I certify that I am at least 18 years of age and agree to the{' '}
-              <a href="/terms" target="_blank" className="text-zinc-200 underline hover:text-white">Terms of Service</a>{' '}
+              <a href="/terms" target="_blank" className="text-stone-900 underline font-semibold">Terms of Service</a>{' '}
               and{' '}
-              <a href="/privacy" target="_blank" className="text-zinc-200 underline hover:text-white">Privacy Policy</a>.
+              <a href="/privacy" target="_blank" className="text-stone-900 underline font-semibold">Privacy Policy</a>.
             </label>
           </div>
 
-          {/* Submit */}
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-xl bg-rose-600 py-3 text-xs font-bold uppercase tracking-wider text-white hover:bg-rose-500 transition shadow-sm flex items-center justify-center gap-2 disabled:opacity-50"
+            className="w-full rounded-xl bg-rose-600 py-3 text-xs font-bold uppercase tracking-wider text-white hover:bg-rose-500 transition shadow-xs flex items-center justify-center gap-2 disabled:opacity-50"
           >
             {loading ? (
               <>

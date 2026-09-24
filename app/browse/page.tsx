@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { Logo } from '@/components/Logo'
-import { Search, MapPin, BadgeCheck } from 'lucide-react'
+import { Search, MapPin, BadgeCheck, Sparkles } from 'lucide-react'
 import { SEA_COUNTRIES } from '@/utils/constants'
 
 interface BrowsePageProps {
@@ -17,6 +17,7 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
   const { country, gender, q } = await searchParams
   const supabase = await createClient()
 
+  // 1. Only route to onboarding if the user is actually authenticated but hasn't set up their profile
   const { data: { user } } = await supabase.auth.getUser()
 
   if (user) {
@@ -31,6 +32,7 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
     }
   }
 
+  // 2. Fetch profiles for public viewing
   let query = supabase
     .from('profiles')
     .select('id, display_name, city, country, avatar_url, gender, birthdate, visiting_city, is_verified, looking_for')
@@ -73,18 +75,37 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
               Settings
             </Link>
           ) : (
-            <Link
-              href="/login?mode=signup"
-              className="rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-rose-500 transition shadow-xs"
-            >
-              Join Free
-            </Link>
+            <div className="flex items-center gap-2">
+              <Link
+                href="/login?mode=signin"
+                className="rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-xs font-semibold text-stone-700 hover:text-stone-900 transition shadow-2xs"
+              >
+                Sign In
+              </Link>
+              <Link
+                href="/login?mode=signup"
+                className="rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-rose-500 transition shadow-xs"
+              >
+                Join Free
+              </Link>
+            </div>
           )}
         </div>
       </header>
 
+      {/* Guest Banner if not signed in */}
+      {!user && (
+        <div className="bg-rose-50 border-b border-rose-200/80 px-4 py-2 text-center text-xs text-rose-800">
+          <span>You are browsing as a guest. </span>
+          <Link href="/login?mode=signup" className="font-bold underline hover:text-rose-950">
+            Create a free profile
+          </Link>
+          <span> to send sparks and message members.</span>
+        </div>
+      )}
+
       <div className="mx-auto max-w-6xl px-4 sm:px-6 pt-6">
-        {/* Filter Toolbar */}
+        {/* Search & Filter Toolbar */}
         <div className="rounded-xl border border-stone-200 bg-white p-3 shadow-2xs mb-6">
           <form method="get" className="flex flex-wrap items-center gap-2.5">
             <select
