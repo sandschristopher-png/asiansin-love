@@ -29,6 +29,20 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
 
   const { data: { user } } = await supabase.auth.getUser()
 
+  if (user) {
+    const { data: myProfile } = await supabase
+      .from('profiles')
+      .select('display_name, birthdate')
+      .eq('id', user.id)
+      .maybeSingle()
+
+    // If logged in but hasn't entered core details yet, redirect straight to onboarding
+    if (!myProfile || !myProfile.display_name || !myProfile.birthdate) {
+      const { redirect } = await import('next/navigation')
+      redirect('/onboarding')
+    }
+  }
+
   let query = supabase
     .from('profiles')
     .select('id, display_name, city, country, birthdate, avatar_url, gender, bio, visiting_city, visiting_dates, looking_for, is_verified, sparks_count, created_at')
@@ -268,3 +282,4 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
     </div>
   )
 }
+
