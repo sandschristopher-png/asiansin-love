@@ -1,7 +1,7 @@
 ﻿import { createClient } from '@/utils/supabase/server'
 import Link from 'next/link'
 import { Logo } from '@/components/Logo'
-import { Search, MapPin, BadgeCheck, Sparkles, Clock, Building2, Trees, Waves } from 'lucide-react'
+import { Search, MapPin, BadgeCheck, Sparkles, Clock } from 'lucide-react'
 import { SEA_COUNTRIES, COUNTRY_FILTER_OPTIONS } from '@/utils/constants'
 import { UserMenu } from '@/components/UserMenu'
 
@@ -100,9 +100,9 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
   ]
 
   return (
-    <div className="min-h-dvh bg-zinc-950 font-sans text-zinc-100 pb-20 selection:bg-rose-500 selection:text-white">
+    <div className="min-h-dvh bg-[#fbfbfe] font-sans text-slate-900 pb-20 selection:bg-[#6d4aff] selection:text-white">
       {/* Header */}
-      <header className="sticky top-0 z-40 border-b border-zinc-900 bg-zinc-950/80 px-4 sm:px-6 py-3 backdrop-blur-md flex items-center justify-between">
+      <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/80 px-4 sm:px-6 py-3.5 backdrop-blur-md flex items-center justify-between">
         <Link href="/" className="hover:opacity-90 transition">
           <Logo className="h-6 w-6" textSize="text-base sm:text-lg" />
         </Link>
@@ -117,7 +117,7 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
           ) : (
             <Link
               href="/login?mode=signup"
-              className="rounded-lg bg-rose-600 px-3.5 py-1.5 text-xs font-bold text-white hover:bg-rose-500 transition shadow-sm"
+              className="rounded-lg bg-[#6d4aff] px-3.5 py-1.5 text-xs font-bold text-white hover:bg-[#5b3ae6] transition shadow-sm"
             >
               Join Free
             </Link>
@@ -135,30 +135,30 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
               {filter && <input type="hidden" name="filter" value={filter} />}
               {lifestyle && lifestyle !== 'All' && <input type="hidden" name="lifestyle" value={lifestyle} />}
               <div className="relative flex-1">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-slate-400" />
                 <input
                   type="text"
                   name="city"
                   defaultValue={city || ''}
                   placeholder="Search city or district..."
-                  className="w-full rounded-lg border border-zinc-800/80 bg-zinc-900/70 pl-9 pr-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-rose-500/80 focus:outline-none transition"
+                  className="w-full rounded-xl border border-slate-200 bg-white pl-9 pr-3 py-2 text-xs text-slate-900 placeholder-slate-400 focus:border-[#6d4aff] focus:outline-none transition shadow-xs"
                 />
               </div>
               <button
                 type="submit"
-                className="rounded-lg border border-zinc-800 bg-zinc-900 px-3.5 py-2 text-xs font-semibold text-zinc-300 hover:text-white hover:border-zinc-700 transition"
+                className="rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-xs font-semibold text-slate-700 hover:border-slate-300 hover:text-slate-900 transition shadow-xs"
               >
                 Search
               </button>
             </form>
 
-            <div className="inline-flex rounded-lg border border-zinc-800/80 bg-zinc-900/60 p-1 self-start sm:self-auto">
+            <div className="inline-flex rounded-xl border border-slate-200 bg-slate-100/70 p-1 self-start sm:self-auto">
               <Link
                 href={buildFilterUrl({ filter: null })}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
                   !isTopSparksActive
-                    ? 'bg-zinc-800 text-white shadow-xs'
-                    : 'text-zinc-400 hover:text-zinc-200'
+                    ? 'bg-white text-slate-900 shadow-xs'
+                    : 'text-slate-500 hover:text-slate-800'
                 }`}
               >
                 <Clock className="h-3 w-3" />
@@ -166,10 +166,10 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
               </Link>
               <Link
                 href={buildFilterUrl({ filter: 'top-sparks' })}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition ${
                   isTopSparksActive
-                    ? 'bg-rose-600 text-white shadow-xs'
-                    : 'text-zinc-400 hover:text-zinc-200'
+                    ? 'bg-[#6d4aff] text-white shadow-xs'
+                    : 'text-slate-500 hover:text-slate-800'
                 }`}
               >
                 <Sparkles className="h-3 w-3" />
@@ -178,19 +178,19 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
             </div>
           </div>
 
-          {/* Lifestyle / Roots Filter Strip */}
+          {/* Lifestyle Strip */}
           <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 scrollbar-none">
-            <span className="text-[11px] font-medium text-zinc-500 mr-1 shrink-0">Roots:</span>
+            <span className="text-[11px] font-medium text-slate-400 mr-1 shrink-0">Roots:</span>
             {lifestyleFilters.map((ls) => {
               const active = (lifestyle === ls.value) || (!lifestyle && ls.value === 'All')
               return (
                 <Link
                   key={ls.value}
                   href={buildFilterUrl({ lifestyle: ls.value === 'All' ? null : ls.value })}
-                  className={`shrink-0 rounded-md px-2.5 py-1 text-xs font-medium transition ${
+                  className={`shrink-0 rounded-lg px-2.5 py-1 text-xs font-medium transition ${
                     active
-                      ? 'bg-zinc-200 text-zinc-950 font-semibold shadow-xs'
-                      : 'border border-zinc-800 bg-zinc-900/40 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
+                      ? 'bg-slate-900 text-white shadow-xs'
+                      : 'border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-900'
                   }`}
                 >
                   {ls.label}
@@ -207,10 +207,10 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
                 <Link
                   key={c.value}
                   href={buildFilterUrl({ country: c.value === 'All' ? null : c.value })}
-                  className={`shrink-0 rounded-md px-3 py-1 text-xs font-medium transition ${
+                  className={`shrink-0 rounded-lg px-3 py-1 text-xs font-medium transition ${
                     active
-                      ? 'bg-rose-600 text-white shadow-xs'
-                      : 'border border-zinc-800/80 bg-zinc-900/40 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
+                      ? 'bg-[#6d4aff] text-white shadow-xs'
+                      : 'border border-slate-200 bg-white text-slate-600 hover:border-slate-300 hover:text-slate-900'
                   }`}
                 >
                   {c.label}
@@ -221,7 +221,7 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
         </div>
 
         {/* Profiles Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3.5">
           {profiles && profiles.length > 0 ? (
             profiles.map((p) => {
               const age = calculateAge(p.birthdate)
@@ -232,29 +232,29 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
                 <Link
                   key={p.id}
                   href={`/profile/${p.id}`}
-                  className="group relative flex flex-col overflow-hidden rounded-xl border border-zinc-800/70 bg-zinc-900/30 transition hover:border-zinc-700 hover:-translate-y-0.5"
+                  className="group relative flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white transition hover:border-[#6d4aff]/60 hover:shadow-md hover:-translate-y-0.5"
                 >
-                  <div className="relative aspect-[3/4] w-full bg-zinc-900 overflow-hidden">
+                  <div className="relative aspect-[3/4] w-full bg-slate-100 overflow-hidden">
                     <img
                       src={p.avatar_url}
                       alt={p.display_name}
                       className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent pointer-events-none" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/15 to-transparent pointer-events-none" />
 
                     <div className="absolute top-2 left-2 flex flex-col gap-1">
                       {isForeignVisitor && (
-                        <div className="rounded border border-amber-500/30 bg-black/60 px-1.5 py-0.5 text-[9px] font-semibold text-amber-300 backdrop-blur-sm">
+                        <div className="rounded border border-amber-400/40 bg-black/60 px-1.5 py-0.5 text-[9px] font-semibold text-amber-300 backdrop-blur-sm">
                           ✈️ Visiting
                         </div>
                       )}
                       {p.lifestyle && (
-                        <div className="rounded border border-zinc-700/60 bg-black/60 px-1.5 py-0.5 text-[9px] font-medium text-zinc-300 backdrop-blur-sm">
+                        <div className="rounded border border-white/20 bg-black/55 px-1.5 py-0.5 text-[9px] font-medium text-white backdrop-blur-sm">
                           {p.lifestyle.includes('Metro') ? '🏙️ Metro' : p.lifestyle.includes('Province') ? '🌾 Province' : '🌴 Coastal'}
                         </div>
                       )}
                       {hasSparks && (
-                        <div className="rounded border border-rose-500/30 bg-black/60 px-1.5 py-0.5 text-[9px] font-semibold text-rose-300 backdrop-blur-sm flex items-center gap-1">
+                        <div className="rounded border border-purple-400/30 bg-black/60 px-1.5 py-0.5 text-[9px] font-semibold text-purple-300 backdrop-blur-sm flex items-center gap-1">
                           <Sparkles className="h-2.5 w-2.5" />
                           <span>Top Spark</span>
                         </div>
@@ -263,20 +263,20 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
 
                     <div className="absolute bottom-2.5 left-2.5 right-2.5 text-white">
                       <div className="flex items-center gap-1">
-                        <p className="text-xs sm:text-sm font-semibold truncate group-hover:text-rose-400 transition">
+                        <p className="text-xs sm:text-sm font-semibold truncate group-hover:text-purple-300 transition">
                           {p.display_name}{age ? `, ${age}` : ''}
                         </p>
                         {p.is_verified && (
                           <BadgeCheck className="h-3.5 w-3.5 text-sky-400 fill-sky-400/20 shrink-0" />
                         )}
                       </div>
-                      <div className="flex items-center gap-1 text-[10px] text-zinc-400 truncate mt-0.5">
-                        <MapPin className="h-3 w-3 text-rose-500 shrink-0" />
+                      <div className="flex items-center gap-1 text-[10px] text-slate-300 truncate mt-0.5">
+                        <MapPin className="h-3 w-3 text-[#6d4aff] shrink-0" />
                         <span>{p.city ? `${p.city}, ` : ''}{p.country}</span>
                       </div>
                       {p.looking_for && (
                         <div className="mt-1.5">
-                          <span className="inline-block rounded border border-zinc-800 bg-black/50 px-1.5 py-0.5 text-[9px] text-zinc-300 font-normal truncate max-w-full">
+                          <span className="inline-block rounded border border-white/20 bg-black/40 px-1.5 py-0.5 text-[9px] text-slate-200 font-normal truncate max-w-full">
                             {p.looking_for}
                           </span>
                         </div>
@@ -287,7 +287,7 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
               )
             })
           ) : (
-            <div className="col-span-full py-20 text-center text-xs text-zinc-500">
+            <div className="col-span-full py-20 text-center text-xs text-slate-400">
               No active profiles found matching this search criteria.
             </div>
           )}

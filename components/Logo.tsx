@@ -1,7 +1,7 @@
 ﻿export function Logo({ className = "h-6 w-6", textSize = "text-lg" }: { className?: string; textSize?: string }) {
   return (
     <div className="flex items-center gap-2.5 group">
-      {/* Geometric AIL Monogram Crest */}
+      {/* Geometric AIL Monogram Crest in Proton Violet */}
       <svg
         viewBox="0 0 32 32"
         fill="none"
@@ -9,34 +9,34 @@
         className={`${className} transition duration-200 group-hover:scale-105 shrink-0`}
       >
         <defs>
-          <linearGradient id="ailGradientV2" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" stopColor="#f43f5e" />
-            <stop offset="50%" stopColor="#e11d48" />
-            <stop offset="100%" stopColor="#be123c" />
+          <linearGradient id="ailPurpleGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#6d4aff" />
+            <stop offset="50%" stopColor="#7c3aed" />
+            <stop offset="100%" stopColor="#9333ea" />
           </linearGradient>
         </defs>
-        {/* Shield Frame */}
+        {/* Crest Shield Contour */}
         <path
           d="M16 2.5L5 7.5V15C5 22.2 9.8 28.8 16 30.5C22.2 28.8 27 22.2 27 15V7.5L16 2.5Z"
-          fill="#1c070c"
-          stroke="url(#ailGradientV2)"
+          fill="#f5f3ff"
+          stroke="url(#ailPurpleGradient)"
           strokeWidth="1.75"
           strokeLinejoin="round"
         />
-        {/* Sharp Interlocking Monogram (A / I / L Fusion) */}
+        {/* Sharp Interlocking Monogram */}
         <path
           d="M16 8L22 19H18.8L16 13.8L13.2 19H10L16 8Z"
-          fill="url(#ailGradientV2)"
+          fill="url(#ailPurpleGradient)"
         />
         <path
           d="M11 20.5H21V22.5H11V20.5Z"
-          fill="url(#ailGradientV2)"
+          fill="url(#ailPurpleGradient)"
         />
-        <circle cx="16" cy="25.5" r="1.25" fill="#f43f5e" />
+        <circle cx="16" cy="25.5" r="1.25" fill="#6d4aff" />
       </svg>
 
-      <span className={`${textSize} font-black tracking-tight text-white select-none`}>
-        asiansin<span className="text-rose-500">.love</span>
+      <span className={`${textSize} font-black tracking-tight text-slate-900 select-none`}>
+        asiansin<span className="text-[#6d4aff]">.love</span>
       </span>
     </div>
   )

@@ -1,25 +1,25 @@
 ﻿<svg viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
   <defs>
-    <linearGradient id="ailFavV2" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stopColor="#f43f5e" />
-      <stop offset="50%" stopColor="#e11d48" />
-      <stop offset="100%" stopColor="#be123c" />
+    <linearGradient id="ailPurpleFav" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stopColor="#6d4aff" />
+      <stop offset="50%" stopColor="#7c3aed" />
+      <stop offset="100%" stopColor="#9333ea" />
     </linearGradient>
   </defs>
-  <rect width="32" height="32" rx="7" fill="#09090b"/>
+  <rect width="32" height="32" rx="7" fill="#ffffff"/>
   <path
     d="M16 3L5 7.5V14.5C5 21.2 9.7 27.4 16 29C22.3 27.4 27 21.2 27 14.5V7.5L16 3Z"
-    fill="#1c070c"
-    stroke="url(#ailFavV2)"
+    fill="#f5f3ff"
+    stroke="url(#ailPurpleFav)"
     strokeWidth="1.5"
     strokeLinejoin="round"
   />
   <path
     d="M16 8.5L21.5 18H18.5L16 13.5L13.5 18H10.5L16 8.5Z"
-    fill="url(#ailFavV2)"
+    fill="url(#ailPurpleFav)"
   />
   <path
     d="M11 19.5H21V21.5H11V19.5Z"
-    fill="url(#ailFavV2)"
+    fill="url(#ailPurpleFav)"
   />
 </svg>

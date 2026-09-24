@@ -116,7 +116,7 @@ export default function OnboardingPage() {
       }
 
       if (!finalAvatarUrl) {
-        throw new Error('Photo upload failed. Please try choosing the photo again.')
+        throw new Error('Photo upload failed. Please choose the photo again.')
       }
 
       const { error: updateError } = await supabase
@@ -151,31 +151,31 @@ export default function OnboardingPage() {
 
   if (initialLoading) {
     return (
-      <div className="min-h-dvh bg-zinc-950 flex items-center justify-center text-xs text-zinc-500">
-        <Loader2 className="h-5 w-5 animate-spin text-rose-500 mr-2" />
+      <div className="min-h-dvh bg-[#fbfbfe] flex items-center justify-center text-xs text-slate-400">
+        <Loader2 className="h-5 w-5 animate-spin text-[#6d4aff] mr-2" />
         <span>Loading setup...</span>
       </div>
     )
   }
 
   return (
-    <div className="min-h-dvh bg-zinc-950 font-sans text-zinc-100 flex flex-col justify-center items-center py-10 px-4 selection:bg-rose-500 selection:text-white">
+    <div className="min-h-dvh bg-[#fbfbfe] font-sans text-slate-900 flex flex-col justify-center items-center py-10 px-4 selection:bg-[#6d4aff] selection:text-white">
       <div className="w-full max-w-lg space-y-6">
         <div className="text-center space-y-1.5">
-          <h1 className="text-2xl font-bold tracking-tight text-white">Create Your Member Profile</h1>
-          <p className="text-xs text-zinc-400">A community dedicated strictly to genuine relationships &amp; love</p>
+          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Create Your Member Profile</h1>
+          <p className="text-xs text-slate-500">A community dedicated strictly to genuine relationships &amp; love</p>
         </div>
 
         {errorMsg && (
-          <div className="rounded-xl border border-rose-500/20 bg-rose-500/10 p-3.5 text-xs text-rose-300 text-center">
+          <div className="rounded-xl border border-rose-200 bg-rose-50 p-3.5 text-xs text-rose-600 text-center">
             {errorMsg}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-6 backdrop-blur-md space-y-5 shadow-2xl">
+        <form onSubmit={handleSubmit} className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-7 shadow-xl space-y-5">
           
           {/* Photo Section */}
-          <div className="flex flex-col items-center justify-center space-y-2 pb-2 border-b border-zinc-800/60">
+          <div className="flex flex-col items-center justify-center space-y-2 pb-3 border-b border-slate-100">
             <input
               type="file"
               ref={fileInputRef}
@@ -186,17 +186,17 @@ export default function OnboardingPage() {
 
             <div 
               onClick={() => fileInputRef.current?.click()}
-              className="relative h-24 w-24 rounded-2xl overflow-hidden border-2 border-dashed border-zinc-700 hover:border-rose-500 cursor-pointer bg-zinc-950 flex flex-col items-center justify-center group transition"
+              className="relative h-24 w-24 rounded-2xl overflow-hidden border-2 border-dashed border-slate-300 hover:border-[#6d4aff] cursor-pointer bg-slate-50 flex flex-col items-center justify-center group transition"
             >
               {avatarPreview ? (
                 <>
                   <img src={avatarPreview} alt="Preview" className="h-full w-full object-cover" />
-                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
                     <Camera className="h-5 w-5 text-white" />
                   </div>
                 </>
               ) : (
-                <div className="flex flex-col items-center text-zinc-400 group-hover:text-rose-400 transition">
+                <div className="flex flex-col items-center text-slate-400 group-hover:text-[#6d4aff] transition">
                   <Camera className="h-6 w-6 mb-1" />
                   <span className="text-[10px] font-medium">Add Photo</span>
                 </div>
@@ -204,14 +204,14 @@ export default function OnboardingPage() {
             </div>
 
             <div className="text-center">
-              <span className="text-xs font-semibold text-zinc-300 block">Profile Photo *</span>
-              <span className="text-[10px] text-zinc-500">Upload a clear photo of your face</span>
+              <span className="text-xs font-semibold text-slate-800 block">Profile Photo *</span>
+              <span className="text-[10px] text-slate-400">Upload a clear photo of your face</span>
             </div>
           </div>
 
           {/* Display Name */}
           <div>
-            <label className="block text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
+            <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
               Display Name *
             </label>
             <input
@@ -220,20 +220,20 @@ export default function OnboardingPage() {
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
               placeholder="e.g. Maria, Somchai, David"
-              className="w-full rounded-xl border border-zinc-800 bg-zinc-950/70 px-3.5 py-2.5 text-xs text-white placeholder-zinc-500 focus:border-rose-500 focus:outline-none transition"
+              className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:border-[#6d4aff] focus:bg-white focus:outline-none transition shadow-xs"
             />
           </div>
 
           {/* Gender & Looking For */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
+              <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
                 I Am A
               </label>
               <select
                 value={gender}
                 onChange={(e) => setGender(e.target.value)}
-                className="w-full rounded-xl border border-zinc-800 bg-zinc-950/70 px-3 py-2.5 text-xs text-white focus:border-rose-500 focus:outline-none transition"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3 py-2.5 text-xs text-slate-900 focus:border-[#6d4aff] focus:bg-white focus:outline-none transition shadow-xs"
               >
                 <option value="female">Woman</option>
                 <option value="male">Man</option>
@@ -242,13 +242,13 @@ export default function OnboardingPage() {
             </div>
 
             <div>
-              <label className="block text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
+              <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
                 Looking For
               </label>
               <select
                 value={lookingFor}
                 onChange={(e) => setLookingFor(e.target.value)}
-                className="w-full rounded-xl border border-zinc-800 bg-zinc-950/70 px-3 py-2.5 text-xs text-white focus:border-rose-500 focus:outline-none transition"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3 py-2.5 text-xs text-slate-900 focus:border-[#6d4aff] focus:bg-white focus:outline-none transition shadow-xs"
               >
                 <option value="Men">Men</option>
                 <option value="Women">Women</option>
@@ -257,65 +257,65 @@ export default function OnboardingPage() {
             </div>
           </div>
 
-          {/* Lifestyle / Roots Pill Selector */}
+          {/* Lifestyle / Roots */}
           <div>
-            <label className="block text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
+            <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
               Lifestyle &amp; Upbringing
             </label>
             <div className="grid grid-cols-3 gap-2">
               <button
                 type="button"
                 onClick={() => setLifestyle('Metro / City')}
-                className={`flex flex-col items-center justify-center p-2 rounded-xl border text-center transition ${
+                className={`flex flex-col items-center justify-center p-2.5 rounded-xl border text-center transition ${
                   lifestyle === 'Metro / City'
-                    ? 'border-rose-500/80 bg-rose-500/10 text-white shadow-xs'
-                    : 'border-zinc-800 bg-zinc-950/60 text-zinc-400 hover:text-zinc-200'
+                    ? 'border-[#6d4aff] bg-purple-50 text-slate-900 shadow-xs'
+                    : 'border-slate-200 bg-slate-50/50 text-slate-600 hover:border-slate-300'
                 }`}
               >
-                <Building2 className="h-4 w-4 mb-1 text-sky-400" />
-                <span className="text-[11px] font-medium leading-none">Metro / City</span>
-                <span className="text-[9px] text-zinc-500 mt-0.5">Urban career</span>
+                <Building2 className="h-4 w-4 mb-1 text-sky-500" />
+                <span className="text-[11px] font-semibold leading-none">Metro</span>
+                <span className="text-[9px] text-slate-500 mt-0.5">Urban pace</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setLifestyle('Province / Rural')}
-                className={`flex flex-col items-center justify-center p-2 rounded-xl border text-center transition ${
+                className={`flex flex-col items-center justify-center p-2.5 rounded-xl border text-center transition ${
                   lifestyle === 'Province / Rural'
-                    ? 'border-rose-500/80 bg-rose-500/10 text-white shadow-xs'
-                    : 'border-zinc-800 bg-zinc-950/60 text-zinc-400 hover:text-zinc-200'
+                    ? 'border-[#6d4aff] bg-purple-50 text-slate-900 shadow-xs'
+                    : 'border-slate-200 bg-slate-50/50 text-slate-600 hover:border-slate-300'
                 }`}
               >
-                <Trees className="h-4 w-4 mb-1 text-emerald-400" />
-                <span className="text-[11px] font-medium leading-none">Province</span>
-                <span className="text-[9px] text-zinc-500 mt-0.5">Simple roots</span>
+                <Trees className="h-4 w-4 mb-1 text-emerald-600" />
+                <span className="text-[11px] font-semibold leading-none">Province</span>
+                <span className="text-[9px] text-slate-500 mt-0.5">Simple roots</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setLifestyle('Coastal / Island')}
-                className={`flex flex-col items-center justify-center p-2 rounded-xl border text-center transition ${
+                className={`flex flex-col items-center justify-center p-2.5 rounded-xl border text-center transition ${
                   lifestyle === 'Coastal / Island'
-                    ? 'border-rose-500/80 bg-rose-500/10 text-white shadow-xs'
-                    : 'border-zinc-800 bg-zinc-950/60 text-zinc-400 hover:text-zinc-200'
+                    ? 'border-[#6d4aff] bg-purple-50 text-slate-900 shadow-xs'
+                    : 'border-slate-200 bg-slate-50/50 text-slate-600 hover:border-slate-300'
                 }`}
               >
-                <Waves className="h-4 w-4 mb-1 text-amber-400" />
-                <span className="text-[11px] font-medium leading-none">Coastal</span>
-                <span className="text-[9px] text-zinc-500 mt-0.5">Island pace</span>
+                <Waves className="h-4 w-4 mb-1 text-amber-500" />
+                <span className="text-[11px] font-semibold leading-none">Coastal</span>
+                <span className="text-[9px] text-slate-500 mt-0.5">Island life</span>
               </button>
             </div>
           </div>
 
           {/* Goal */}
           <div>
-            <label className="block text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
+            <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
               Relationship Goal
             </label>
             <select
               value={relationshipGoal}
               onChange={(e) => setRelationshipGoal(e.target.value)}
-              className="w-full rounded-xl border border-zinc-800 bg-zinc-950/70 px-3 py-2.5 text-xs text-white focus:border-rose-500 focus:outline-none transition"
+              className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3 py-2.5 text-xs text-slate-900 focus:border-[#6d4aff] focus:bg-white focus:outline-none transition shadow-xs"
             >
               <option value="Long-Term Relationship">Long-Term Relationship</option>
               <option value="Dating with Intent">Dating with Intent</option>
@@ -326,30 +326,30 @@ export default function OnboardingPage() {
           {/* Date of Birth */}
           <div>
             <div className="flex justify-between items-center mb-1.5">
-              <label className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
+              <label className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
                 Date of Birth *
               </label>
-              <span className="text-[10px] text-rose-400 font-semibold tracking-wide">MUST BE 18+</span>
+              <span className="text-[10px] text-rose-500 font-semibold tracking-wide">MUST BE 18+</span>
             </div>
             <input
               type="date"
               required
               value={birthdate}
               onChange={(e) => setBirthdate(e.target.value)}
-              className="w-full rounded-xl border border-zinc-800 bg-zinc-950/70 px-3.5 py-2.5 text-xs text-white focus:border-rose-500 focus:outline-none transition"
+              className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 text-xs text-slate-900 focus:border-[#6d4aff] focus:bg-white focus:outline-none transition shadow-xs"
             />
           </div>
 
           {/* Country & City */}
           <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
+              <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
                 Country
               </label>
               <select
                 value={country}
                 onChange={(e) => setCountry(e.target.value)}
-                className="w-full rounded-xl border border-zinc-800 bg-zinc-950/70 px-3 py-2.5 text-xs text-white focus:border-rose-500 focus:outline-none transition"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3 py-2.5 text-xs text-slate-900 focus:border-[#6d4aff] focus:bg-white focus:outline-none transition shadow-xs"
               >
                 <optgroup label="Southeast Asia">
                   <option value="Philippines">Philippines</option>
@@ -374,7 +374,7 @@ export default function OnboardingPage() {
             </div>
 
             <div>
-              <label className="block text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
+              <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
                 City / Area *
               </label>
               <input
@@ -383,19 +383,19 @@ export default function OnboardingPage() {
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
                 placeholder="e.g. Makati, Cebu, Bangkok"
-                className="w-full rounded-xl border border-zinc-800 bg-zinc-950/70 px-3.5 py-2.5 text-xs text-white placeholder-zinc-500 focus:border-rose-500 focus:outline-none transition"
+                className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:border-[#6d4aff] focus:bg-white focus:outline-none transition shadow-xs"
               />
             </div>
           </div>
 
           {/* Conditional Expat Travel Radar */}
           {isExpat && (
-            <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3.5 space-y-3">
-              <div className="flex items-center gap-1.5 text-xs font-semibold text-amber-300">
-                <Plane className="h-3.5 w-3.5" />
+            <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-3.5 space-y-3">
+              <div className="flex items-center gap-1.5 text-xs font-semibold text-amber-900">
+                <Plane className="h-3.5 w-3.5 text-amber-600" />
                 <span>Travel Radar (Optional)</span>
               </div>
-              <p className="text-[11px] text-zinc-400 leading-normal">
+              <p className="text-[11px] text-amber-800/80 leading-normal">
                 Visiting Southeast Asia soon? Add your destination and dates so locals know when you will be in town.
               </p>
               <div className="grid grid-cols-2 gap-2.5">
@@ -404,14 +404,14 @@ export default function OnboardingPage() {
                   value={visitingCity}
                   onChange={(e) => setVisitingCity(e.target.value)}
                   placeholder="Visiting city (e.g. Manila)"
-                  className="rounded-lg border border-zinc-800 bg-zinc-950/80 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-amber-500 focus:outline-none"
+                  className="rounded-lg border border-amber-200 bg-white px-3 py-2 text-xs text-slate-900 placeholder-slate-400 focus:border-amber-400 focus:outline-none"
                 />
                 <input
                   type="text"
                   value={visitingDates}
                   onChange={(e) => setVisitingDates(e.target.value)}
                   placeholder="Dates (e.g. Nov 10 - 24)"
-                  className="rounded-lg border border-zinc-800 bg-zinc-950/80 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-amber-500 focus:outline-none"
+                  className="rounded-lg border border-amber-200 bg-white px-3 py-2 text-xs text-slate-900 placeholder-slate-400 focus:border-amber-400 focus:outline-none"
                 />
               </div>
             </div>
@@ -420,10 +420,10 @@ export default function OnboardingPage() {
           {/* Bio */}
           <div>
             <div className="flex justify-between items-center mb-1.5">
-              <label className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
+              <label className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
                 About Me *
               </label>
-              <span className={`text-[10px] font-medium ${bio.length >= 50 ? 'text-emerald-400' : 'text-zinc-500'}`}>
+              <span className={`text-[10px] font-medium ${bio.length >= 50 ? 'text-emerald-600' : 'text-slate-400'}`}>
                 {bio.length}/50 min
               </span>
             </div>
@@ -433,7 +433,7 @@ export default function OnboardingPage() {
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               placeholder="Describe your character, interests, and what you are seeking in a life partner..."
-              className="w-full rounded-xl border border-zinc-800 bg-zinc-950/70 p-3 text-xs text-white placeholder-zinc-500 focus:border-rose-500 focus:outline-none transition resize-none"
+              className="w-full rounded-xl border border-slate-200 bg-slate-50/50 p-3 text-xs text-slate-900 placeholder-slate-400 focus:border-[#6d4aff] focus:bg-white focus:outline-none transition resize-none shadow-xs"
             />
           </div>
 
@@ -444,13 +444,13 @@ export default function OnboardingPage() {
               id="agree"
               checked={agreed}
               onChange={(e) => setAgreed(e.target.checked)}
-              className="mt-0.5 h-4 w-4 rounded border-zinc-800 bg-zinc-950 text-rose-600 focus:ring-0 cursor-pointer"
+              className="mt-0.5 h-4 w-4 rounded border-slate-300 text-[#6d4aff] focus:ring-0 cursor-pointer"
             />
-            <label htmlFor="agree" className="text-[11px] text-zinc-400 leading-snug cursor-pointer select-none">
+            <label htmlFor="agree" className="text-[11px] text-slate-600 leading-snug cursor-pointer select-none">
               I certify that I am at least 18 years of age and agree to the{' '}
-              <a href="/terms" target="_blank" className="text-zinc-200 underline hover:text-white">Terms of Service</a>{' '}
+              <a href="/terms" target="_blank" className="text-slate-900 font-medium underline">Terms of Service</a>{' '}
               and{' '}
-              <a href="/privacy" target="_blank" className="text-zinc-200 underline hover:text-white">Privacy Policy</a>.
+              <a href="/privacy" target="_blank" className="text-slate-900 font-medium underline">Privacy Policy</a>.
             </label>
           </div>
 
@@ -458,7 +458,7 @@ export default function OnboardingPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full rounded-xl bg-rose-600 py-3 text-xs font-bold uppercase tracking-wider text-white hover:bg-rose-500 transition shadow-sm flex items-center justify-center gap-2 disabled:opacity-50"
+            className="w-full rounded-xl bg-[#6d4aff] py-3 text-xs font-bold uppercase tracking-wider text-white hover:bg-[#5b3ae6] transition shadow-md flex items-center justify-center gap-2 disabled:opacity-50"
           >
             {loading ? (
               <>
