@@ -77,18 +77,18 @@ export default async function HomePage() {
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
-            <span>Now Open &bull; Scam-Protected Cross-Border Dating</span>
+            <span>Now Open &bull; Verified Cross-Border Dating</span>
           </div>
 
           <h1 className="text-3xl sm:text-5xl md:text-6xl font-black text-white tracking-tight leading-[1.12]">
             Southeast Asian Dating, <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-pink-300 to-rose-500">
-              Without The Clutter &amp; Scams
+              Without The Clutter &amp; Fake Profiles
             </span>
           </h1>
 
           <p className="text-sm sm:text-base text-zinc-300 max-w-xl mx-auto leading-relaxed">
-            Connect directly with real singles in the Philippines, Thailand, Vietnam, and Cambodia. 100% free messaging for locals, zero spam ads, and built-in Smart Guardian protection.
+            Connect directly with verified singles in the Philippines, Thailand, Vietnam, and Cambodia. 100% free messaging for locals, zero spam ads, and built-in Smart Guardian protection.
           </p>
 
           {/* Primary Action Buttons */}
@@ -117,7 +117,7 @@ export default async function HomePage() {
             </div>
             <div className="flex items-center gap-1.5">
               <ShieldCheck className="h-3.5 w-3.5 text-emerald-400" />
-              <span>Scam-Protected Platform</span>
+              <span>Smart Guardian Shield</span>
             </div>
             <div className="flex items-center gap-1.5">
               <Sparkles className="h-3.5 w-3.5 text-rose-400" />
@@ -216,7 +216,7 @@ export default async function HomePage() {
                 <div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 w-fit text-emerald-400">
                   <ShieldCheck className="h-6 w-6" />
                 </div>
-                <h3 className="text-base font-bold text-white">Smart Guardian Scam Shield</h3>
+                <h3 className="text-base font-bold text-white">Smart Guardian Anti-Scam Shield</h3>
                 <p className="text-xs text-zinc-400 leading-relaxed">
                   Real-time pattern protection blocks financial solicitation triggers and early off-platform harvesting before bad actors can isolate you.
                 </p>
