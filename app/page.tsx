@@ -1,7 +1,7 @@
-import Link from 'next/link'
+﻿import Link from 'next/link'
 import { createClient } from '@/utils/supabase/server'
 import { Logo } from '@/components/Logo'
-import { ShieldCheck, Sparkles, Plane, ArrowRight, CheckCircle2, Lock, MessageSquare, Compass, Heart } from 'lucide-react'
+import { ShieldCheck, Sparkles, Plane, ArrowRight, CheckCircle2, Compass } from 'lucide-react'
 
 export default async function HomePage() {
   const supabase = await createClient()
@@ -15,12 +15,12 @@ export default async function HomePage() {
     .limit(12)
 
   const quickCities = [
-    { name: 'Manila ????', query: 'Philippines' },
-    { name: 'Cebu ????', query: 'Philippines' },
-    { name: 'Bangkok ????', query: 'Thailand' },
-    { name: 'Phuket ????', query: 'Thailand' },
-    { name: 'Saigon ????', query: 'Vietnam' },
-    { name: 'Phnom Penh ????', query: 'Cambodia' },
+    { name: 'Manila', code: 'PH', query: 'Philippines' },
+    { name: 'Cebu', code: 'PH', query: 'Philippines' },
+    { name: 'Bangkok', code: 'TH', query: 'Thailand' },
+    { name: 'Phuket', code: 'TH', query: 'Thailand' },
+    { name: 'Saigon', code: 'VN', query: 'Vietnam' },
+    { name: 'Phnom Penh', code: 'KH', query: 'Cambodia' },
   ]
 
   return (
@@ -71,24 +71,24 @@ export default async function HomePage() {
         {/* Hero Pitch */}
         <div className="text-center max-w-3xl mx-auto space-y-5">
           
-          {/* Live Activity Counter Badge */}
+          {/* Authentic Launch Badge */}
           <div className="inline-flex items-center gap-2 rounded-full border border-rose-500/20 bg-rose-500/10 px-4 py-1.5 text-xs font-semibold text-rose-300 backdrop-blur-md shadow-sm">
             <span className="relative flex h-2 w-2">
               <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
               <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
             </span>
-            <span>Over 10,000+ Active Singles Online Across Southeast Asia</span>
+            <span>Now Open &bull; Scam-Protected Cross-Border Dating</span>
           </div>
 
           <h1 className="text-3xl sm:text-5xl md:text-6xl font-black text-white tracking-tight leading-[1.12]">
             Southeast Asian Dating, <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-pink-300 to-rose-500">
-              Without The Clutter & Scams
+              Without The Clutter &amp; Scams
             </span>
           </h1>
 
           <p className="text-sm sm:text-base text-zinc-300 max-w-xl mx-auto leading-relaxed">
-            Connect directly with verified singles in the Philippines, Thailand, Vietnam, and Cambodia. 100% free messaging for locals, zero spam ads, and built-in Smart Guardian protection.
+            Connect directly with real singles in the Philippines, Thailand, Vietnam, and Cambodia. 100% free messaging for locals, zero spam ads, and built-in Smart Guardian protection.
           </p>
 
           {/* Primary Action Buttons */}
@@ -133,9 +133,10 @@ export default async function HomePage() {
             <Link
               key={c.name}
               href={`/browse?country=${encodeURIComponent(c.query)}`}
-              className="rounded-full border border-zinc-800/80 bg-zinc-900/50 px-3 py-1 text-xs font-medium text-zinc-400 hover:border-zinc-700 hover:text-zinc-200 transition"
+              className="inline-flex items-center gap-1.5 rounded-full border border-zinc-800/80 bg-zinc-900/60 px-3 py-1 text-xs font-medium text-zinc-300 hover:border-zinc-700 hover:text-white transition"
             >
-              {c.name}
+              <span>{c.name}</span>
+              <span className="text-[10px] font-bold text-zinc-500 uppercase">{c.code}</span>
             </Link>
           ))}
         </div>
@@ -146,9 +147,9 @@ export default async function HomePage() {
             <div>
               <h2 className="text-base font-bold text-white flex items-center gap-2">
                 <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
-                <span>Live Active Members</span>
+                <span>Recently Joined Members</span>
               </h2>
-              <p className="text-xs text-zinc-400">Discover authentic profiles online right now</p>
+              <p className="text-xs text-zinc-400">Discover authentic profiles in the directory</p>
             </div>
             <Link
               href="/browse"
@@ -177,7 +178,7 @@ export default async function HomePage() {
                     
                     {p.visiting_city && (
                       <div className="absolute top-2 left-2 rounded-full bg-amber-500/90 px-2 py-0.5 text-[9px] font-bold text-black backdrop-blur">
-                        ?? Visiting
+                        Visiting
                       </div>
                     )}
 
@@ -194,7 +195,7 @@ export default async function HomePage() {
               ))
             ) : (
               <div className="col-span-full py-16 text-center text-xs text-zinc-500">
-                Loading live directory members...
+                Be among the first to join. Create your profile above to appear here.
               </div>
             )}
           </div>
@@ -233,7 +234,7 @@ export default async function HomePage() {
                 </div>
                 <h3 className="text-base font-bold text-white">Travel Radar System</h3>
                 <p className="text-xs text-zinc-400 leading-relaxed">
-                  Visiting Manila or Bangkok soon? Pin your flight dates directly on your card so local members know you are real and arriving soon.
+                  Visiting Manila or Bangkok soon? Pin your travel dates directly on your card so local members know you are arriving soon.
                 </p>
               </div>
               <div className="mt-6 pt-4 border-t border-zinc-800/60 text-[11px] text-amber-400 font-semibold flex items-center gap-1">
@@ -247,7 +248,7 @@ export default async function HomePage() {
                 <div className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/20 w-fit text-rose-400">
                   <Sparkles className="h-6 w-6" />
                 </div>
-                <h3 className="text-base font-bold text-white">Spark (?) Mutual Matching</h3>
+                <h3 className="text-base font-bold text-white">Spark (✨) Mutual Matching</h3>
                 <p className="text-xs text-zinc-400 leading-relaxed">
                   Skip the cheesy winks and generic swiping. Send a clean Spark to show genuine interest and unlock reciprocal alerts when feelings are mutual.
                 </p>
