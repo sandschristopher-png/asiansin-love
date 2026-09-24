@@ -1,7 +1,7 @@
 ﻿import { createClient } from '@/utils/supabase/server'
 import Link from 'next/link'
 import { Logo } from '@/components/Logo'
-import { Search, MapPin, BadgeCheck, Sparkles, Clock, Compass } from 'lucide-react'
+import { Search, MapPin, BadgeCheck, Sparkles, Clock } from 'lucide-react'
 
 interface BrowseProps {
   searchParams: Promise<{
@@ -69,6 +69,24 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
 
   const isTopSparksActive = filter === 'top-sparks'
 
+  // Helper to preserve active query parameters
+  const buildFilterUrl = (newParams: Record<string, string | null | undefined>) => {
+    const params = new URLSearchParams()
+    if (country && country !== 'All') params.set('country', country)
+    if (city) params.set('city', city)
+    if (filter) params.set('filter', filter)
+
+    for (const [k, v] of Object.entries(newParams)) {
+      if (v === null || v === undefined || v === 'All' || v === '') {
+        params.delete(k)
+      } else {
+        params.set(k, v)
+      }
+    }
+    const q = params.toString()
+    return `/browse${q ? `?${q}` : ''}`
+  }
+
   return (
     <div className="min-h-dvh bg-zinc-950 font-sans text-zinc-100 pb-20">
       <header className="sticky top-0 z-40 border-b border-zinc-800 bg-zinc-950/80 px-4 sm:px-6 py-3.5 backdrop-blur flex items-center justify-between">
@@ -103,7 +121,7 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
           <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
             {/* City / Nearby search input */}
             <form method="GET" action="/browse" className="flex gap-2 flex-1 max-w-md">
-              {country && <input type="hidden" name="country" value={country} />}
+              {country && country !== 'All' && <input type="hidden" name="country" value={country} />}
               {filter && <input type="hidden" name="filter" value={filter} />}
               <div className="relative flex-1">
                 <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
@@ -111,7 +129,7 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
                   type="text"
                   name="city"
                   defaultValue={city || ''}
-                  placeholder="Search nearby city or district (e.g. Malate, Makati, Vientiane)..."
+                  placeholder="Search city or district (e.g. Makati, Phuket, Da Nang)..."
                   className="w-full rounded-2xl border border-zinc-800 bg-zinc-900/90 pl-10 pr-4 py-2.5 text-xs text-white placeholder-zinc-500 focus:border-rose-500 focus:outline-none"
                 />
               </div>
@@ -126,7 +144,7 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
             {/* Mode Toggle: Recent vs Top Sparks */}
             <div className="inline-flex rounded-2xl border border-zinc-800 bg-zinc-900/60 p-1 self-start sm:self-auto">
               <Link
-                href={`/browse?${country ? `country=${country}&` : ''}${city ? `city=${encodeURIComponent(city)}&` : ''}`}
+                href={buildFilterUrl({ filter: null })}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition ${
                   !isTopSparksActive
                     ? 'bg-zinc-800 text-white shadow-sm'
@@ -137,7 +155,7 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
                 <span>Recent</span>
               </Link>
               <Link
-                href={`/browse?filter=top-sparks${country ? `&country=${country}` : ''}${city ? `&city=${encodeURIComponent(city)}` : ''}`}
+                href={buildFilterUrl({ filter: 'top-sparks' })}
                 className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition ${
                   isTopSparksActive
                     ? 'bg-rose-600 text-white shadow-sm'
@@ -157,7 +175,7 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
               return (
                 <Link
                   key={c.value}
-                  href={`/browse?country=${c.value}${filter ? `&filter=${filter}` : ''}${city ? `&city=${encodeURIComponent(city)}` : ''}`}
+                  href={buildFilterUrl({ country: c.value === 'All' ? null : c.value })}
                   className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
                     active
                       ? 'bg-rose-600 text-white shadow-md shadow-rose-600/20'

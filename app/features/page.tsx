@@ -12,8 +12,8 @@ import {
 } from 'lucide-react'
 
 export const metadata = {
-  title: "Platform Features | asiansin.love",
-  description: "Explore the proprietary scam-prevention, travel matching, and privacy features that define asiansin.love.",
+  title: "Why asiansin.love | Platform Features",
+  description: "Learn how asiansin.love protects you from scams, eliminates fake profiles, and connects genuine singles across Southeast Asia.",
 }
 
 export default function FeaturesPage() {
@@ -49,121 +49,121 @@ export default function FeaturesPage() {
         {/* Hero Section */}
         <div className="text-center max-w-2xl mx-auto space-y-4">
           <span className="inline-block rounded-full bg-rose-500/10 border border-rose-500/20 px-3.5 py-1 text-xs font-semibold text-rose-400">
-            Engineered For Authentic Connection
+            A Better Way To Meet
           </span>
           <h1 className="text-3xl sm:text-5xl font-black text-white tracking-tight leading-tight">
-            Built For Serious Love, <br />
+            Built For Real Relationships, <br />
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-rose-400 via-pink-300 to-rose-500">
-              Not Casual Games
+              Not Time Wasters
             </span>
           </h1>
           <p className="text-sm sm:text-base text-zinc-300 leading-relaxed">
-            Legacy dating apps are overrun by financial scams, paywalls, and low-effort bot profiles. Here is how asiansin.love protects your journey.
+            Old dating sites are cluttered with spammers, money requests, and abandoned profiles. Here is how asiansin.love keeps your search simple, safe, and honest.
           </p>
         </div>
 
-        {/* 6 Key Pillars Grid */}
+        {/* 6 Core Features Grid */}
         <div className="mt-16 grid grid-cols-1 md:grid-cols-2 gap-6">
 
-          {/* Pillar 1: Smart Guardian */}
+          {/* Feature 1 */}
           <div className="rounded-3xl border border-zinc-800 bg-zinc-900/40 p-6 sm:p-8 flex flex-col justify-between backdrop-blur">
             <div className="space-y-4">
               <div className="h-12 w-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400">
                 <ShieldCheck className="h-6 w-6" />
               </div>
-              <h2 className="text-xl font-bold text-white">Smart Guardian Anti-Scam Shield</h2>
+              <h2 className="text-xl font-bold text-white">Smart Guardian Scam Shield</h2>
               <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
-                Financial solicitation triggers (crypto investment pitches, urgent wire transfers, gift card codes, emergency hospital bills) are proactively quarantined by algorithmic heuristic scans. Bad actors are flagged and barred before they can isolate you.
+                We automatically detect and block common scam triggers—like requests for crypto investments, sudden emergency hospital bills, and gift cards. Anyone attempting financial fraud is flagged before they can take advantage of you.
               </p>
             </div>
             <div className="mt-6 pt-4 border-t border-zinc-800 text-xs text-emerald-400 font-semibold flex items-center gap-1.5">
               <CheckCircle2 className="h-4 w-4" />
-              <span>Real-Time In-Chat Keyword Defense</span>
+              <span>Protects against financial requests</span>
             </div>
           </div>
 
-          {/* Pillar 2: Travel Radar */}
+          {/* Feature 2 */}
           <div className="rounded-3xl border border-zinc-800 bg-zinc-900/40 p-6 sm:p-8 flex flex-col justify-between backdrop-blur">
             <div className="space-y-4">
               <div className="h-12 w-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
                 <Plane className="h-6 w-6" />
               </div>
-              <h2 className="text-xl font-bold text-white">Travel Radar Integration</h2>
+              <h2 className="text-xl font-bold text-white">Travel Radar</h2>
               <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
-                Traveling to Manila, Bangkok, or Cebu? Pin your upcoming dates and destination city directly to your profile. Local singles looking for long-term love can see when you will be physically present, eliminating eternal pen-pal syndrome.
+                Visiting Manila, Bangkok, or Cebu soon? Post your upcoming travel dates directly to your profile. Singles nearby can see when you will be in town, making it easy to schedule real meetups instead of being endless pen pals.
               </p>
             </div>
             <div className="mt-6 pt-4 border-t border-zinc-800 text-xs text-amber-400 font-semibold flex items-center gap-1.5">
               <CheckCircle2 className="h-4 w-4" />
-              <span>Pinned Destination Badges</span>
+              <span>Clear travel dates &amp; destinations</span>
             </div>
           </div>
 
-          {/* Pillar 3: Spark (✨) & Top Sparks */}
+          {/* Feature 3 */}
           <div className="rounded-3xl border border-zinc-800 bg-zinc-900/40 p-6 sm:p-8 flex flex-col justify-between backdrop-blur">
             <div className="space-y-4">
               <div className="h-12 w-12 rounded-2xl bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400">
                 <Sparkles className="h-6 w-6" />
               </div>
-              <h2 className="text-xl font-bold text-white">Spark (✨) Mutual Chemistry</h2>
+              <h2 className="text-xl font-bold text-white">Spark (✨) Mutual Interest</h2>
               <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
-                Move past cheap winks and mindless right-swipes. Send a Spark to signal genuine romantic intent. When a spark is reciprocated, both users receive priority notifications, and members with high mutual engagement earn the <strong>Top Spark</strong> showcase badge.
+                Skip cheesy winks and mindless swiping. Send a Spark when someone truly catches your eye. When both of you Spark each other, mutual chat unlocks immediately, and members with high mutual interest earn the <strong>Top Spark</strong> badge.
               </p>
             </div>
             <div className="mt-6 pt-4 border-t border-zinc-800 text-xs text-rose-400 font-semibold flex items-center gap-1.5">
               <CheckCircle2 className="h-4 w-4" />
-              <span>Proprietary Chemistry Metric</span>
+              <span>Connect when interest is mutual</span>
             </div>
           </div>
 
-          {/* Pillar 4: Privacy & Photo Masking */}
+          {/* Feature 4 */}
           <div className="rounded-3xl border border-zinc-800 bg-zinc-900/40 p-6 sm:p-8 flex flex-col justify-between backdrop-blur">
             <div className="space-y-4">
               <div className="h-12 w-12 rounded-2xl bg-sky-500/10 border border-sky-500/20 flex items-center justify-center text-sky-400">
                 <EyeOff className="h-6 w-6" />
               </div>
-              <h2 className="text-xl font-bold text-white">Guest Photo Masking</h2>
+              <h2 className="text-xl font-bold text-white">Guest Photo Protection</h2>
               <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
-                Your privacy comes first. While public visitors can view primary profile cards, secondary album photos remain cryptographically masked behind authenticated member sign-in. Your personal photos are protected from non-members and internet crawlers.
+                Your full photo album stays private. Non-members browsing without an account can only view your primary avatar. All secondary photos are blurred until a member signs in, keeping your pictures safe from internet bots and random search engines.
               </p>
             </div>
             <div className="mt-6 pt-4 border-t border-zinc-800 text-xs text-sky-400 font-semibold flex items-center gap-1.5">
               <CheckCircle2 className="h-4 w-4" />
-              <span>Automated Album Blur &amp; RLS Protection</span>
+              <span>Albums visible to registered members only</span>
             </div>
           </div>
 
-          {/* Pillar 5: Verified Member Badges */}
+          {/* Feature 5 */}
           <div className="rounded-3xl border border-zinc-800 bg-zinc-900/40 p-6 sm:p-8 flex flex-col justify-between backdrop-blur">
             <div className="space-y-4">
               <div className="h-12 w-12 rounded-2xl bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400">
                 <BadgeCheck className="h-6 w-6" />
               </div>
-              <h2 className="text-xl font-bold text-white">Pose-Verified Profiles</h2>
+              <h2 className="text-xl font-bold text-white">Verified Member Badges</h2>
               <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
-                Say goodbye to catfish and stolen Instagram models. Members earn a verified badge through real-time gesture selfie matching, proving the person on your screen is the exact person you meet at the airport.
+                Avoid catfishes and stolen internet photos. Members can verify their profile by completing a quick live selfie pose check. Once approved, a verified checkmark appears on their profile so you know they are genuine.
               </p>
             </div>
             <div className="mt-6 pt-4 border-t border-zinc-800 text-xs text-indigo-400 font-semibold flex items-center gap-1.5">
               <CheckCircle2 className="h-4 w-4" />
-              <span>Dynamic Camera Verification</span>
+              <span>Real photo verification</span>
             </div>
           </div>
 
-          {/* Pillar 6: Mandatory 50-Character Bio */}
+          {/* Feature 6 */}
           <div className="rounded-3xl border border-zinc-800 bg-zinc-900/40 p-6 sm:p-8 flex flex-col justify-between backdrop-blur">
             <div className="space-y-4">
               <div className="h-12 w-12 rounded-2xl bg-purple-500/10 border border-purple-500/20 flex items-center justify-center text-purple-400">
                 <FileCheck className="h-6 w-6" />
               </div>
-              <h2 className="text-xl font-bold text-white">Quality-First Registration Gate</h2>
+              <h2 className="text-xl font-bold text-white">Meaningful Introductions</h2>
               <p className="text-xs sm:text-sm text-zinc-400 leading-relaxed">
-                Zero blank profiles allowed. Every member must pass a strict 18+ birthdate verification and draft a minimum 50-character bio detailing their values, character, and relationship goals before entering the browse directory.
+                No blank profiles or single-word bios. Every member must be at least 18 years old and write a short, thoughtful introduction about themselves and what they are looking for before they can contact others.
               </p>
             </div>
             <div className="mt-6 pt-4 border-t border-zinc-800 text-xs text-purple-400 font-semibold flex items-center gap-1.5">
               <CheckCircle2 className="h-4 w-4" />
-              <span>100% Filtered Against Low-Effort Bots</span>
+              <span>Profiles with real personality</span>
             </div>
           </div>
 
@@ -173,24 +173,24 @@ export default function FeaturesPage() {
         <section className="mt-20 rounded-3xl border border-zinc-800 bg-gradient-to-b from-zinc-900/80 to-zinc-950 p-8 sm:p-12 text-center space-y-4 shadow-2xl relative overflow-hidden">
           <div className="pointer-events-none absolute -bottom-20 left-1/2 -translate-x-1/2 h-40 w-96 bg-rose-600/10 blur-3xl" />
           <h2 className="text-2xl sm:text-3xl font-black text-white">
-            100% Free For Local Southeast Asian Members
+            100% Free For Local Members
           </h2>
           <p className="text-xs sm:text-sm text-zinc-400 max-w-xl mx-auto leading-relaxed">
-            We adhere strictly to Philippine R.A. 10906 and international ethical guidelines. Local singles in the Philippines, Thailand, Vietnam, Cambodia, and Laos can message, browse, and Spark completely free of charge.
+            Local singles living across Southeast Asia—including the Philippines, Thailand, Vietnam, Cambodia, and Laos—can browse, send Sparks, and chat completely free of charge.
           </p>
           <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
               href="/login"
               className="w-full sm:w-auto rounded-2xl bg-gradient-to-r from-rose-600 to-rose-500 px-8 py-3.5 text-xs font-bold uppercase tracking-wider text-white hover:from-rose-500 hover:to-rose-400 transition shadow-xl shadow-rose-600/25 flex items-center justify-center gap-2"
             >
-              <span>Join asiansin.love Today</span>
+              <span>Create Free Account</span>
               <ArrowRight className="h-4 w-4" />
             </Link>
             <Link
               href="/browse"
               className="w-full sm:w-auto rounded-2xl border border-zinc-800 bg-zinc-900/80 px-8 py-3.5 text-xs font-semibold text-zinc-300 hover:border-zinc-700 hover:text-white transition"
             >
-              Explore Directory
+              Browse Directory
             </Link>
           </div>
         </section>

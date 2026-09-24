@@ -26,12 +26,23 @@ export default async function ProfileDetailPage({ params }: ProfilePageProps) {
     notFound()
   }
 
-  // Record profile view
+  // Record profile view once per 24 hours per viewer to prevent count spam
   if (user && user.id !== profile.id) {
-    await supabase.from('profile_views').insert({
-      viewer_id: user.id,
-      viewed_id: profile.id,
-    })
+    const today = new Date().toISOString().split('T')[0]
+    const { data: existingView } = await supabase
+      .from('profile_views')
+      .select('id')
+      .eq('viewer_id', user.id)
+      .eq('viewed_id', profile.id)
+      .gte('created_at', `${today}T00:00:00Z`)
+      .maybeSingle()
+
+    if (!existingView) {
+      await supabase.from('profile_views').insert({
+        viewer_id: user.id,
+        viewed_id: profile.id,
+      })
+    }
   }
 
   // Check if currently sparked
@@ -150,18 +161,30 @@ export default async function ProfileDetailPage({ params }: ProfilePageProps) {
             isAuthenticated={isAuthenticated}
           />
 
-          {/* Direct Message Box */}
+          {/* Direct Messaging Status */}
           <div className="rounded-2xl border border-zinc-800 bg-zinc-900/40 p-4">
             <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-2">
-              Send a direct message
+              Direct Conversation
             </label>
-            <Link
-              href={isAuthenticated ? `/chat/${profile.id}` : "/login"}
-              className="flex items-center justify-center gap-2 w-full rounded-xl bg-rose-600 py-3 text-xs font-bold uppercase tracking-wider text-white hover:bg-rose-500 transition shadow"
-            >
-              <MessageSquare className="h-4 w-4" />
-              <span>{isAuthenticated ? 'Start Direct Chat' : 'Sign In to Message'}</span>
-            </Link>
+            {isAuthenticated ? (
+              <div className="rounded-xl border border-zinc-800 bg-zinc-900/80 p-3.5 text-center text-xs text-zinc-300 flex flex-col items-center gap-1">
+                <div className="flex items-center gap-1.5 font-semibold text-rose-400">
+                  <MessageSquare className="h-4 w-4" />
+                  <span>Send a Spark to Connect</span>
+                </div>
+                <p className="text-[11px] text-zinc-500">
+                  When you both Spark each other, full private messaging opens immediately.
+                </p>
+              </div>
+            ) : (
+              <Link
+                href="/login"
+                className="flex items-center justify-center gap-2 w-full rounded-xl bg-rose-600 py-3 text-xs font-bold uppercase tracking-wider text-white hover:bg-rose-500 transition shadow"
+              >
+                <MessageSquare className="h-4 w-4" />
+                <span>Sign In to Connect</span>
+              </Link>
+            )}
           </div>
 
           {/* Gallery Thumbnails with Masking */}
@@ -247,7 +270,7 @@ export default async function ProfileDetailPage({ params }: ProfilePageProps) {
           <div className="flex items-start gap-3 rounded-2xl border border-emerald-500/20 bg-emerald-500/5 p-4 text-xs text-emerald-300">
             <ShieldAlert className="h-4 w-4 shrink-0 mt-0.5 text-emerald-400" />
             <p className="leading-relaxed">
-              <strong>Smart Guardian Active:</strong> For your protection, never send money, wire transfers, or cryptocurrency to anyone you meet online.
+              <strong>Smart Guardian Active:</strong> For your protection, never send money, wire transfers, or gift cards to anyone you meet online.
             </p>
           </div>
 
