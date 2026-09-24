@@ -18,8 +18,8 @@ export default function OnboardingPage() {
   const [country, setCountry] = useState('')
   const [city, setCity] = useState('')
   const [bio, setBio] = useState('')
-  const [file, setFile] = useState<File | null>(null)
-  const [previewUrl, setPreviewUrl] = useState<string | null>(null)
+  const [files, setFiles] = useState<File[]>([])
+  const [previewUrls, setPreviewUrls] = useState<string[]>([])
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
   useEffect(() => {
@@ -35,29 +35,49 @@ export default function OnboardingPage() {
   }, [router, supabase])
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const selected = e.target.files[0]
-      setFile(selected)
-      setPreviewUrl(URL.createObjectURL(selected))
+    if (e.target.files) {
+      const newFiles = Array.from(e.target.files).slice(0, 4 - files.length)
+      const combinedFiles = [...files, ...newFiles].slice(0, 4)
+      setFiles(combinedFiles)
+      setPreviewUrls(combinedFiles.map((file) => URL.createObjectURL(file)))
     }
+  }
+
+  const handleRemovePhoto = (indexToRemove: number) => {
+    const nextFiles = files.filter((_, idx) => idx !== indexToRemove)
+    setFiles(nextFiles)
+    setPreviewUrls(nextFiles.map((file) => URL.createObjectURL(file)))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!userId) return
+
+    // Mandatory About Me character minimum check
+    if (bio.trim().length < 50) {
+      setErrorMsg('About Me must be at least 50 characters. Tell members a little about yourself.')
+      return
+    }
+
+    if (files.length === 0) {
+      setErrorMsg('Please upload at least one photo for your profile.')
+      return
+    }
+
     setLoading(true)
     setErrorMsg(null)
 
-    let avatarUrl = ''
+    const uploadedUrls: string[] = []
 
-    // 1. Upload photo to Supabase Storage if present
-    if (file) {
-      const fileExt = file.name.split('.').pop()
-      const filePath = `${userId}/avatar-${Date.now()}.${fileExt}`
+    // Upload up to 4 photos
+    for (let i = 0; i < files.length; i++) {
+      const currentFile = files[i]
+      const fileExt = currentFile.name.split('.').pop()
+      const filePath = `${userId}/photo-${Date.now()}-${i}.${fileExt}`
 
       const { error: uploadError } = await supabase.storage
         .from('profile-photos')
-        .upload(filePath, file)
+        .upload(filePath, currentFile)
 
       if (uploadError) {
         setErrorMsg(`Photo upload failed: ${uploadError.message}`)
@@ -69,10 +89,12 @@ export default function OnboardingPage() {
         .from('profile-photos')
         .getPublicUrl(filePath)
 
-      avatarUrl = publicUrlData.publicUrl
+      uploadedUrls.push(publicUrlData.publicUrl)
     }
 
-    // 2. Insert profile record into public.profiles
+    const primaryAvatar = uploadedUrls[0] || ''
+
+    // Upsert profile record
     const { error: insertError } = await supabase
       .from('profiles')
       .upsert({
@@ -83,8 +105,9 @@ export default function OnboardingPage() {
         birthdate,
         country,
         city,
-        bio,
-        avatar_url: avatarUrl,
+        bio: bio.trim(),
+        avatar_url: primaryAvatar,
+        photos: uploadedUrls,
         updated_at: new Date().toISOString(),
       })
 
@@ -111,17 +134,48 @@ export default function OnboardingPage() {
         )}
 
         <form onSubmit={handleSubmit} className="mt-6 space-y-4">
-          {/* Avatar Upload */}
-          <div className="flex flex-col items-center justify-center">
-            <label className="relative flex h-24 w-24 cursor-pointer flex-col items-center justify-center overflow-hidden rounded-full border-2 border-dashed border-zinc-700 bg-zinc-800 hover:border-rose-500">
-              {previewUrl ? (
-                <img src={previewUrl} alt="Preview" className="h-full w-full object-cover" />
-              ) : (
-                <Camera className="h-7 w-7 text-zinc-400" />
+          {/* Photo Gallery Upload (Up to 4) */}
+          <div>
+            <div className="flex items-center justify-between mb-2">
+              <label className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                Profile Photos ({previewUrls.length}/4)
+              </label>
+              <span className="text-[11px] text-zinc-500">Min 1, Max 4</span>
+            </div>
+
+            <div className="grid grid-cols-4 gap-2">
+              {previewUrls.map((url, idx) => (
+                <div key={idx} className="relative aspect-square rounded-xl overflow-hidden border border-zinc-700 bg-zinc-800">
+                  <img src={url} alt="" className="h-full w-full object-cover" />
+                  <button
+                    type="button"
+                    onClick={() => handleRemovePhoto(idx)}
+                    className="absolute top-1 right-1 rounded-full bg-black/70 p-1 text-[10px] text-white hover:bg-rose-600"
+                  >
+                    ✕
+                  </button>
+                  {idx === 0 && (
+                    <span className="absolute bottom-1 left-1 rounded bg-rose-600 px-1 text-[9px] font-bold text-white uppercase">
+                      Primary
+                    </span>
+                  )}
+                </div>
+              ))}
+
+              {previewUrls.length < 4 && (
+                <label className="flex aspect-square cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed border-zinc-700 bg-zinc-850 hover:border-rose-500 transition">
+                  <Camera className="h-5 w-5 text-zinc-400" />
+                  <span className="mt-1 text-[10px] text-zinc-400">Add</span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    multiple
+                    onChange={handleImageChange}
+                    className="hidden"
+                  />
+                </label>
               )}
-              <input type="file" accept="image/*" onChange={handleImageChange} className="hidden" />
-            </label>
-            <span className="mt-2 text-xs text-zinc-400">Upload profile photo</span>
+            </div>
           </div>
 
           <div>
@@ -201,13 +255,22 @@ export default function OnboardingPage() {
           </div>
 
           <div>
-            <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400">About Me</label>
+            <div className="flex items-center justify-between">
+              <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                About Me <span className="text-rose-500">*</span>
+              </label>
+              <span className={`text-[11px] ${bio.trim().length >= 50 ? 'text-emerald-400 font-medium' : 'text-zinc-500'}`}>
+                {bio.trim().length}/50 min chars
+              </span>
+            </div>
             <textarea
-              rows={3}
+              rows={4}
+              required
+              minLength={50}
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               className="mt-1 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-white placeholder-zinc-500 focus:border-rose-500 focus:outline-none"
-              placeholder="Tell others what you are looking for..."
+              placeholder="Introduce yourself, what you do, and what you are looking for in a match (min 50 characters)..."
             />
           </div>
 

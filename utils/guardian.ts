@@ -59,3 +59,25 @@ export function scanMessageForTriggers(content: string): TriggerMatch | null {
   }
   return null
 }
+
+export function containsEarlyOffPlatformInfo(rawText: string): boolean {
+  // Normalize leetspeak and strip punctuation/spacing
+  const cleaned = rawText
+    .toLowerCase()
+    .replace(/[@]/g, 'a')
+    .replace(/[0]/g, 'o')
+    .replace(/[1!]/g, 'i')
+    .replace(/[\s\-_.,/|\\]+/g, '')
+
+  // Detect 10-13 digit clusters (mobile numbers, PH formats starting with 09 / +639)
+  const phonePattern = /(\+?63|0)9\d{9}/
+  const digitCluster = rawText.replace(/\D/g, '')
+  if (digitCluster.length >= 10 && digitCluster.length <= 13) return true
+  if (phonePattern.test(cleaned)) return true
+
+  // Detect off-platform app names and link formats even with punctuation tricks
+  const offPlatformPattern = /(whatsapp|whats|whatapp|telegram|viber|lineid|wechat|snapchat|fb\.me|wa\.me|t\.me)/
+  if (offPlatformPattern.test(cleaned)) return true
+
+  return false
+}

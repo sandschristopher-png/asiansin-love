@@ -1,4 +1,5 @@
 import { createClient } from '@/utils/supabase/server'
+import { containsEarlyOffPlatformInfo } from '@/utils/guardian'
 import { NextResponse } from 'next/server'
 
 export async function POST(req: Request) {
@@ -13,6 +14,26 @@ export async function POST(req: Request) {
 
   if (!recipientId || !content?.trim()) {
     return NextResponse.json({ error: 'Missing recipient or content' }, { status: 400 })
+  }
+
+  // Check previous messages between users
+  const { data: previousMessages } = await supabase
+    .from('messages')
+    .select('id, sender_id')
+    .or(`and(sender_id.eq.${user.id},recipient_id.eq.${recipientId}),and(sender_id.eq.${recipientId},recipient_id.eq.${user.id})`)
+
+  const mySentCount = previousMessages?.filter((m) => m.sender_id === user.id).length || 0
+  const partnerSentCount = previousMessages?.filter((m) => m.sender_id === recipientId).length || 0
+
+  const isEarlyChat = mySentCount < 3 || partnerSentCount < 3
+
+  if (isEarlyChat && containsEarlyOffPlatformInfo(content)) {
+    return NextResponse.json(
+      {
+        error: 'To prevent spam and keep members safe, phone numbers and WhatsApp handles can only be shared after both members exchange at least 3 messages.',
+      },
+      { status: 400 }
+    )
   }
 
   // Insert message directly into Supabase
