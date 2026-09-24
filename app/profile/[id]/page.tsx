@@ -4,21 +4,11 @@ import Link from 'next/link'
 import { ArrowLeft, MessageSquare, ShieldAlert, Lock, MapPin, Calendar, Ruler, User, HeartHandshake, BadgeCheck } from 'lucide-react'
 import { Logo } from '@/components/Logo'
 import { ProfileActions } from '@/components/ProfileActions'
+import { SEA_COUNTRIES } from '@/utils/constants'
 
 interface ProfilePageProps {
   params: Promise<{ id: string }>
 }
-
-const SEA_COUNTRIES = [
-  'Philippines',
-  'Thailand',
-  'Vietnam',
-  'Cambodia',
-  'Laos',
-  'Indonesia',
-  'Malaysia',
-  'Singapore',
-]
 
 export default async function ProfileDetailPage({ params }: ProfilePageProps) {
   const { id } = await params
@@ -91,7 +81,7 @@ export default async function ProfileDetailPage({ params }: ProfilePageProps) {
     : (profile.avatar_url ? [profile.avatar_url] : [])
 
   const genderLabel = profile.gender === 'trans' ? 'Trans Woman' : profile.gender === 'female' ? 'Woman' : 'Man'
-  const isForeignVisitor = profile.visiting_city && !SEA_COUNTRIES.includes(profile.country)
+  const isForeignVisitor = profile.visiting_city && !SEA_COUNTRIES.includes(profile.country as any)
 
   return (
     <div className="min-h-dvh bg-zinc-950 font-sans text-zinc-100 pb-20 selection:bg-rose-500 selection:text-white">
@@ -153,7 +143,6 @@ export default async function ProfileDetailPage({ params }: ProfilePageProps) {
                 <span>{profile.city ? `${profile.city}, ` : ''}{profile.country}</span>
               </div>
 
-              {/* Only show visiting banner if from outside SEA */}
               {isForeignVisitor && (
                 <div className="mt-2.5 inline-flex items-center gap-1.5 rounded border border-amber-500/30 bg-amber-500/10 px-2.5 py-1 text-xs font-medium text-amber-300 backdrop-blur-sm">
                   <span>✈️</span>
@@ -171,7 +160,7 @@ export default async function ProfileDetailPage({ params }: ProfilePageProps) {
             isAuthenticated={isAuthenticated}
           />
 
-          {/* Direct Messaging Status Card */}
+          {/* Direct Messaging Card */}
           <div className="rounded-xl border border-zinc-800/80 bg-zinc-900/30 p-4">
             <label className="block text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-2">
               Direct Conversation

@@ -2,6 +2,7 @@
 import Link from 'next/link'
 import { Logo } from '@/components/Logo'
 import { Search, MapPin, BadgeCheck, Sparkles, Clock } from 'lucide-react'
+import { SEA_COUNTRIES, COUNTRY_FILTER_OPTIONS } from '@/utils/constants'
 
 interface BrowseProps {
   searchParams: Promise<{
@@ -11,17 +12,6 @@ interface BrowseProps {
     filter?: string
   }>
 }
-
-const SEA_COUNTRIES = [
-  'Philippines',
-  'Thailand',
-  'Vietnam',
-  'Cambodia',
-  'Laos',
-  'Indonesia',
-  'Malaysia',
-  'Singapore',
-]
 
 export default async function BrowsePage({ searchParams }: BrowseProps) {
   const { country, city, intent, filter } = await searchParams
@@ -36,7 +26,6 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
       .eq('id', user.id)
       .maybeSingle()
 
-    // If logged in but hasn't entered core details yet, redirect straight to onboarding
     if (!myProfile || !myProfile.display_name || !myProfile.birthdate) {
       const { redirect } = await import('next/navigation')
       redirect('/onboarding')
@@ -68,18 +57,6 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
 
   const { data: profiles } = await query
 
-  const countries = [
-    { label: 'All', value: 'All' },
-    { label: 'Philippines 🇵🇭', value: 'Philippines' },
-    { label: 'Thailand 🇹🇭', value: 'Thailand' },
-    { label: 'Vietnam 🇻🇳', value: 'Vietnam' },
-    { label: 'Cambodia 🇰🇭', value: 'Cambodia' },
-    { label: 'Laos 🇱🇦', value: 'Laos' },
-    { label: 'Indonesia 🇮🇩', value: 'Indonesia' },
-    { label: 'Malaysia 🇲🇾', value: 'Malaysia' },
-    { label: 'Singapore 🇸🇬', value: 'Singapore' },
-  ]
-
   const calculateAge = (birthdate: string) => {
     if (!birthdate) return null
     const birth = new Date(birthdate)
@@ -108,7 +85,6 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
 
   return (
     <div className="min-h-dvh bg-zinc-950 font-sans text-zinc-100 pb-20 selection:bg-rose-500 selection:text-white">
-      {/* Sleek Minimal Header */}
       <header className="sticky top-0 z-40 border-b border-zinc-900 bg-zinc-950/80 px-4 sm:px-6 py-3 backdrop-blur-md flex items-center justify-between">
         <Link href="/" className="hover:opacity-90 transition">
           <Logo className="h-6 w-6" textSize="text-base sm:text-lg" />
@@ -134,8 +110,6 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
       </header>
 
       <main className="mx-auto max-w-6xl px-4 sm:px-6 pt-6">
-        
-        {/* Search Bar & Order Segment */}
         <div className="space-y-3.5 mb-6">
           <div className="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center justify-between">
             <form method="GET" action="/browse" className="flex gap-2 flex-1 max-w-md">
@@ -147,8 +121,8 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
                   type="text"
                   name="city"
                   defaultValue={city || ''}
-                  placeholder="Search city (e.g. Makati, Phuket, Da Nang)..."
-                  className="w-full rounded-lg border border-zinc-800/80 bg-zinc-900/70 pl-9 pr-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-rose-500/80 focus:outline-none focus:ring-1 focus:ring-rose-500/30 transition"
+                  placeholder="Search city or district..."
+                  className="w-full rounded-lg border border-zinc-800/80 bg-zinc-900/70 pl-9 pr-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-rose-500/80 focus:outline-none transition"
                 />
               </div>
               <button
@@ -159,7 +133,6 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
               </button>
             </form>
 
-            {/* Mode Toggle */}
             <div className="inline-flex rounded-lg border border-zinc-800/80 bg-zinc-900/60 p-1 self-start sm:self-auto">
               <Link
                 href={buildFilterUrl({ filter: null })}
@@ -186,9 +159,9 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
             </div>
           </div>
 
-          {/* Clean Country Tabs */}
+          {/* Unified Country Pills */}
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1.5 scrollbar-none">
-            {countries.map((c) => {
+            {COUNTRY_FILTER_OPTIONS.map((c) => {
               const active = (country === c.value) || (!country && c.value === 'All')
               return (
                 <Link
@@ -207,15 +180,13 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
           </div>
         </div>
 
-        {/* Member Directory Grid */}
+        {/* Profiles Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
           {profiles && profiles.length > 0 ? (
             profiles.map((p) => {
               const age = calculateAge(p.birthdate)
               const hasSparks = (p.sparks_count ?? 0) > 0
-              
-              // Only foreign visitors from outside SEA qualify for "Visiting" badges
-              const isForeignVisitor = p.visiting_city && !SEA_COUNTRIES.includes(p.country)
+              const isForeignVisitor = p.visiting_city && !SEA_COUNTRIES.includes(p.country as any)
 
               return (
                 <Link
@@ -231,11 +202,10 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent pointer-events-none" />
 
-                    {/* Subtle Top Tags */}
                     <div className="absolute top-2 left-2 flex flex-col gap-1">
                       {isForeignVisitor && (
                         <div className="rounded border border-amber-500/30 bg-black/60 px-1.5 py-0.5 text-[9px] font-semibold text-amber-300 backdrop-blur-sm">
-                          ✈️ Visiting {p.visiting_city}
+                          ✈️ Visiting
                         </div>
                       )}
                       {hasSparks && (
@@ -246,7 +216,6 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
                       )}
                     </div>
 
-                    {/* Bottom Metadata */}
                     <div className="absolute bottom-2.5 left-2.5 right-2.5 text-white">
                       <div className="flex items-center gap-1">
                         <p className="text-xs sm:text-sm font-semibold truncate group-hover:text-rose-400 transition">
@@ -282,4 +251,3 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
     </div>
   )
 }
-
