@@ -17,25 +17,6 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false)
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
 
-  // 1. Google OAuth Sign In
-  const handleGoogleLogin = async () => {
-    setErrorMsg(null)
-    setLoading(true)
-
-    const { error } = await supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: {
-        redirectTo: `${window.location.origin}/auth/callback`,
-      },
-    })
-
-    if (error) {
-      setErrorMsg(error.message)
-      setLoading(false)
-    }
-  }
-
-  // 2. Standard Email/Password
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault()
     setErrorMsg(null)
@@ -97,42 +78,7 @@ export default function LoginPage() {
             </div>
           )}
 
-          {/* Google OAuth Button */}
-          <button
-            type="button"
-            onClick={handleGoogleLogin}
-            disabled={loading}
-            className="flex items-center justify-center gap-3 w-full rounded-xl border border-zinc-700/80 bg-zinc-800/80 py-3 px-4 text-xs font-bold text-white hover:bg-zinc-700/80 transition shadow-sm"
-          >
-            <svg className="h-4 w-4" viewBox="0 0 24 24">
-              <path
-                fill="#EA4335"
-                d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"
-              />
-              <path
-                fill="#4285F4"
-                d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.6h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.9z"
-              />
-              <path
-                fill="#FBBC05"
-                d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12.3 0 15.2c0 2.8.7 5.5 1.9 7.8l3.7-2.9z"
-              />
-              <path
-                fill="#34A853"
-                d="M12 23.5c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2.4-6.4-5.2L1.9 16.5C3.7 20.3 7.5 23.5 12 23.5z"
-              />
-            </svg>
-            <span>Continue with Google</span>
-          </button>
-
-          <div className="flex items-center my-4">
-            <div className="flex-1 border-t border-zinc-800" />
-            <span className="px-3 text-[10px] font-semibold uppercase tracking-wider text-zinc-500">Or with email</span>
-            <div className="flex-1 border-t border-zinc-800" />
-          </div>
-
-          {/* Email Form */}
-          <form onSubmit={handleEmailAuth} className="space-y-3">
+          <form onSubmit={handleEmailAuth} className="space-y-4">
             <div>
               <label className="block text-[11px] font-semibold uppercase tracking-wider text-zinc-400">Email Address</label>
               <div className="relative mt-1">
@@ -143,7 +89,7 @@ export default function LoginPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
-                  className="w-full rounded-xl border border-zinc-700 bg-zinc-800 pl-10 pr-3 py-2 text-base sm:text-sm text-white placeholder-zinc-500 focus:border-rose-500 focus:outline-none"
+                  className="w-full rounded-xl border border-zinc-700 bg-zinc-800 pl-10 pr-3 py-2.5 text-base sm:text-sm text-white placeholder-zinc-500 focus:border-rose-500 focus:outline-none"
                 />
               </div>
             </div>
@@ -158,7 +104,7 @@ export default function LoginPage() {
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
                   placeholder="••••••••"
-                  className="w-full rounded-xl border border-zinc-700 bg-zinc-800 pl-10 pr-3 py-2 text-base sm:text-sm text-white placeholder-zinc-500 focus:border-rose-500 focus:outline-none"
+                  className="w-full rounded-xl border border-zinc-700 bg-zinc-800 pl-10 pr-3 py-2.5 text-base sm:text-sm text-white placeholder-zinc-500 focus:border-rose-500 focus:outline-none"
                 />
               </div>
             </div>
