@@ -5,7 +5,7 @@ import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Logo } from '@/components/Logo'
-import { AlertCircle } from 'lucide-react'
+import { AlertCircle, Heart } from 'lucide-react'
 
 export default function OnboardingPage() {
   const supabase = createClient()
@@ -103,7 +103,7 @@ export default function OnboardingPage() {
           Create Your Member Profile
         </h2>
         <p className="mt-1 text-center text-xs text-zinc-400">
-          Set up your preferences to connect across Southeast Asia
+          A platform dedicated strictly to genuine relationships &amp; love
         </p>
       </div>
 
@@ -163,22 +163,26 @@ export default function OnboardingPage() {
               </div>
             </div>
 
-            {/* Relationship Intent */}
+            {/* Relationship Goal - Strictly Serious */}
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                Relationship Goal
-              </label>
+              <div className="flex items-center gap-1.5 mb-1">
+                <Heart className="h-3.5 w-3.5 text-rose-500" />
+                <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                  Relationship Goal
+                </label>
+              </div>
               <select
                 value={lookingFor}
                 onChange={(e) => setLookingFor(e.target.value)}
-                className="mt-1 w-full rounded-xl border border-zinc-700 bg-zinc-800 px-3 py-2 text-base sm:text-sm text-white focus:border-rose-500 focus:outline-none"
+                className="w-full rounded-xl border border-zinc-700 bg-zinc-800 px-3 py-2 text-base sm:text-sm text-white focus:border-rose-500 focus:outline-none"
               >
                 <option value="Long-Term Relationship">Long-Term Relationship</option>
                 <option value="Marriage-Minded">Marriage-Minded</option>
-                <option value="Dating &amp; Romance">Dating &amp; Romance</option>
-                <option value="Travel Companion &amp; Friends">Travel Companion &amp; Friends</option>
-                <option value="Casual Dating">Casual Dating</option>
+                <option value="Dating with Romantic Intent">Dating with Romantic Intent</option>
               </select>
+              <p className="mt-1 text-[11px] text-zinc-500">
+                asiansin.love is reserved exclusively for meaningful connections and serious romance.
+              </p>
             </div>
 
             {/* Strict 18+ Date of Birth Input */}
@@ -264,7 +268,7 @@ export default function OnboardingPage() {
                 value={bio}
                 onChange={(e) => setBio(e.target.value)}
                 className="mt-1 w-full rounded-xl border border-zinc-700 bg-zinc-800 px-3 py-2 text-base sm:text-sm text-white placeholder-zinc-500 focus:border-rose-500 focus:outline-none"
-                placeholder="Share a brief introduction about who you are and what you are looking for..."
+                placeholder="Describe your character, interests, and what you are seeking in a life partner..."
               />
             </div>
 

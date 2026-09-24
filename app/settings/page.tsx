@@ -1,10 +1,10 @@
-'use client'
+﻿'use client'
 
 import { useEffect, useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, Camera, Trash2, Star, Check, AlertCircle, Bell } from 'lucide-react'
+import { ArrowLeft, Camera, Trash2, Star, Check, AlertCircle, Bell, Heart } from 'lucide-react'
 
 export default function SettingsPage() {
   const supabase = createClient()
@@ -21,6 +21,7 @@ export default function SettingsPage() {
   const [targetGender, setTargetGender] = useState('male')
   const [country, setCountry] = useState('Philippines')
   const [city, setCity] = useState('')
+  const [lookingFor, setLookingFor] = useState('Long-Term Relationship')
   const [bio, setBio] = useState('')
   const [maritalStatus, setMaritalStatus] = useState('Single')
   const [height, setHeight] = useState('')
@@ -60,13 +61,13 @@ export default function SettingsPage() {
         setTargetGender(profile.target_gender || 'male')
         setCountry(profile.country || 'Philippines')
         setCity(profile.city || '')
+        setLookingFor(profile.looking_for || 'Long-Term Relationship')
         setBio(profile.bio || '')
         setMaritalStatus(profile.marital_status || 'Single')
         setHeight(profile.height || '')
         setVisitingCity(profile.visiting_city || '')
         setVisitingDates(profile.visiting_dates || '')
 
-        // Email toggles
         setNotifyMessages(profile.email_notifications_messages ?? true)
         setNotifySparks(profile.email_notifications_sparks ?? true)
         setNotifyViews(profile.email_notifications_views ?? false)
@@ -170,6 +171,7 @@ export default function SettingsPage() {
         target_gender: targetGender,
         country,
         city: city.trim(),
+        looking_for: lookingFor,
         bio: bio.trim(),
         marital_status: maritalStatus,
         height: height.trim(),
@@ -328,6 +330,23 @@ export default function SettingsPage() {
             </div>
           </div>
 
+          {/* Relationship Goal */}
+          <div>
+            <div className="flex items-center gap-1.5 mb-1">
+              <Heart className="h-3.5 w-3.5 text-rose-500" />
+              <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400">Relationship Goal</label>
+            </div>
+            <select
+              value={lookingFor}
+              onChange={(e) => setLookingFor(e.target.value)}
+              className="w-full rounded-xl border border-zinc-700 bg-zinc-800 px-3 py-2 text-base sm:text-sm text-white focus:border-rose-500 focus:outline-none"
+            >
+              <option value="Long-Term Relationship">Long-Term Relationship</option>
+              <option value="Marriage-Minded">Marriage-Minded</option>
+              <option value="Dating with Romantic Intent">Dating with Romantic Intent</option>
+            </select>
+          </div>
+
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400">Country</label>
@@ -336,24 +355,35 @@ export default function SettingsPage() {
                 onChange={(e) => setCountry(e.target.value)}
                 className="mt-1 w-full rounded-xl border border-zinc-700 bg-zinc-800 px-3 py-2 text-base sm:text-sm text-white focus:border-rose-500 focus:outline-none"
               >
-                <option value="Philippines">Philippines</option>
-                <option value="Thailand">Thailand</option>
-                <option value="Vietnam">Vietnam</option>
-                <option value="Cambodia">Cambodia</option>
-                <option value="United States">United States</option>
-                <option value="Canada">Canada</option>
-                <option value="United Kingdom">United Kingdom</option>
-                <option value="Australia">Australia</option>
+                <optgroup label="Southeast Asia">
+                  <option value="Philippines">Philippines</option>
+                  <option value="Thailand">Thailand</option>
+                  <option value="Vietnam">Vietnam</option>
+                  <option value="Cambodia">Cambodia</option>
+                  <option value="Laos">Laos</option>
+                  <option value="Indonesia">Indonesia</option>
+                  <option value="Malaysia">Malaysia</option>
+                  <option value="Singapore">Singapore</option>
+                </optgroup>
+                <optgroup label="International Visitors / Expats">
+                  <option value="United States">United States</option>
+                  <option value="Canada">Canada</option>
+                  <option value="United Kingdom">United Kingdom</option>
+                  <option value="Australia">Australia</option>
+                  <option value="Germany">Germany</option>
+                  <option value="France">France</option>
+                  <option value="Other">Other</option>
+                </optgroup>
               </select>
             </div>
 
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400">City</label>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400">City / District</label>
               <input
                 type="text"
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
-                placeholder="e.g. Cebu, Manila, Bangkok"
+                placeholder="e.g. Malate, Makati, Vientiane"
                 className="mt-1 w-full rounded-xl border border-zinc-700 bg-zinc-800 px-3 py-2 text-base sm:text-sm text-white placeholder-zinc-500 focus:border-rose-500 focus:outline-none"
               />
             </div>
@@ -371,6 +401,7 @@ export default function SettingsPage() {
                 <option value="Never Married">Never Married</option>
                 <option value="Separated">Separated</option>
                 <option value="Divorced">Divorced</option>
+                <option value="Widowed">Widowed</option>
               </select>
             </div>
 
@@ -389,7 +420,7 @@ export default function SettingsPage() {
           {/* Travel Radar Section */}
           <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-4 space-y-3">
             <div className="flex items-center gap-2">
-              <span className="text-base">??</span>
+              <span className="text-base">✈️</span>
               <h3 className="text-xs font-bold text-amber-300 uppercase tracking-wider">
                 Travel Radar (Visiting Soon)
               </h3>
@@ -440,7 +471,7 @@ export default function SettingsPage() {
                 />
               </label>
               <label className="flex items-center justify-between cursor-pointer">
-                <span>Sparks Received (?)</span>
+                <span>Sparks Received (✨)</span>
                 <input
                   type="checkbox"
                   checked={notifySparks}
@@ -476,7 +507,7 @@ export default function SettingsPage() {
               value={bio}
               onChange={(e) => setBio(e.target.value)}
               className="mt-1 w-full rounded-xl border border-zinc-700 bg-zinc-800 px-3 py-2 text-base sm:text-sm text-white placeholder-zinc-500 focus:border-rose-500 focus:outline-none"
-              placeholder="Tell others what you are looking for..."
+              placeholder="Describe your character, interests, and what you are seeking in a life partner..."
             />
           </div>
 
