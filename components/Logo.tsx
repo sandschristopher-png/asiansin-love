@@ -9,30 +9,30 @@
         className={`${className} transition duration-200 group-hover:scale-105 shrink-0`}
       >
         <defs>
-          <linearGradient id="ailGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+          <linearGradient id="ailGradientV2" x1="0%" y1="0%" x2="100%" y2="100%">
             <stop offset="0%" stopColor="#f43f5e" />
             <stop offset="50%" stopColor="#e11d48" />
             <stop offset="100%" stopColor="#be123c" />
           </linearGradient>
         </defs>
-        {/* Crest Shield Contour */}
+        {/* Shield Frame */}
         <path
-          d="M16 2L4 7V15C4 22.5 9.1 29.4 16 31C22.9 29.4 28 22.5 28 15V7L16 2Z"
-          fill="#18181b"
-          stroke="url(#ailGradient)"
+          d="M16 2.5L5 7.5V15C5 22.2 9.8 28.8 16 30.5C22.2 28.8 27 22.2 27 15V7.5L16 2.5Z"
+          fill="#1c070c"
+          stroke="url(#ailGradientV2)"
           strokeWidth="1.75"
           strokeLinejoin="round"
         />
         {/* Sharp Interlocking Monogram (A / I / L Fusion) */}
         <path
-          d="M16 9L21.5 19H18.5L16 14.5L13.5 19H10.5L16 9Z"
-          fill="url(#ailGradient)"
+          d="M16 8L22 19H18.8L16 13.8L13.2 19H10L16 8Z"
+          fill="url(#ailGradientV2)"
         />
         <path
           d="M11 20.5H21V22.5H11V20.5Z"
-          fill="url(#ailGradient)"
+          fill="url(#ailGradientV2)"
         />
-        <circle cx="16" cy="25" r="1.25" fill="#f43f5e" />
+        <circle cx="16" cy="25.5" r="1.25" fill="#f43f5e" />
       </svg>
 
       <span className={`${textSize} font-black tracking-tight text-white select-none`}>
