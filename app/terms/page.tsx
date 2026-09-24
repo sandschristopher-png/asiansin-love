@@ -1,4 +1,4 @@
-import Link from 'next/link'
+ï»¿import Link from 'next/link'
 import { Logo } from '@/components/Logo'
 import { ArrowLeft, ShieldAlert, CheckCircle2, AlertOctagon, Scale, ShieldCheck } from 'lucide-react'
 
@@ -99,7 +99,7 @@ export default function TermsPage() {
               <h2>5. Communications Decency Act & Limitation of Liability</h2>
             </div>
             <p>
-              In accordance with Section 230 of the Communications Decency Act (47 U.S.C. § 230) and international safe harbor provisions:
+              In accordance with Section 230 of the Communications Decency Act (47 U.S.C. 230) and international safe harbor provisions:
             </p>
             <ul className="list-disc pl-5 space-y-1.5 text-zinc-300">
               <li>asiansin.love is an interactive computer service provider and is not the publisher or speaker of any information provided by members.</li>

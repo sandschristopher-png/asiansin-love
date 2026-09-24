@@ -1,4 +1,4 @@
-import Link from 'next/link'
+﻿import Link from 'next/link'
 import { Logo } from '@/components/Logo'
 import { ArrowLeft, Shield, Lock, Eye, Trash2, Database } from 'lucide-react'
 
@@ -104,3 +104,4 @@ export default function PrivacyPage() {
     </div>
   )
 }
+
