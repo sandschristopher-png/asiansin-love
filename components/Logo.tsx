@@ -6,72 +6,76 @@ interface LogoProps {
   showText?: boolean
 }
 
-export function Logo({
-  className = "h-8 w-8",
-  textSize = "text-xl",
-  showText = true,
-}: LogoProps) {
+export function Logo({ className = "h-7 w-7", textSize = "text-base", showText = true }: LogoProps) {
   return (
-    <div className="inline-flex items-center gap-2.5 select-none group">
-      {/* Proprietary AIL Monogram Crest */}
+    <div className="inline-flex items-center gap-2.5 select-none">
+      {/* Scaled & Reshaped Minimal Prism Heart */}
       <div className={`relative shrink-0 flex items-center justify-center ${className}`}>
         <svg
-          viewBox="0 0 44 44"
+          viewBox="0 0 32 32"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className="h-full w-full drop-shadow-[0_2px_12px_rgba(244,63,94,0.4)] transition-transform duration-300 group-hover:scale-105"
+          className="w-full h-full drop-shadow-xs"
         >
+          {/* Subtle Outer Boundary Gradient */}
           <defs>
-            <linearGradient id="ail-linear-glow" x1="6" y1="4" x2="38" y2="40" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stopColor="#FB7185" />
-              <stop offset="45%" stopColor="#E11D48" />
-              <stop offset="100%" stopColor="#BE123C" />
+            <linearGradient id="prism-left-light" x1="16" y1="5" x2="3" y2="22" gradientUnits="userSpaceOnUse">
+              <stop stopColor="#f43f5e" />
+              <stop offset="1" stopColor="#e11d48" />
             </linearGradient>
-            <linearGradient id="ail-spark-glow" x1="20" y1="2" x2="24" y2="10" gradientUnits="userSpaceOnUse">
-              <stop offset="0%" stopColor="#FFFFFF" />
-              <stop offset="100%" stopColor="#FECDD3" />
+            <linearGradient id="prism-right-light" x1="16" y1="5" x2="29" y2="22" gradientUnits="userSpaceOnUse">
+              <stop stopColor="#fb7185" />
+              <stop offset="1" stopColor="#f43f5e" />
+            </linearGradient>
+            <linearGradient id="prism-base-deep" x1="16" y1="14" x2="16" y2="28" gradientUnits="userSpaceOnUse">
+              <stop stopColor="#be123c" />
+              <stop offset="1" stopColor="#9f1239" />
             </linearGradient>
           </defs>
 
-          {/* Outer Monogram Heart Frame (A-ribbon contours) */}
-          <path
-            d="M22 38.5C21.3 38.5 7.5 28.6 5.2 20.2C3.1 12.8 7.2 6.5 14.8 6.5C18.6 6.5 20.9 8.6 22 9.8C23.1 8.6 25.4 6.5 29.2 6.5C36.8 6.5 40.9 12.8 38.8 20.2C36.5 28.6 22.7 38.5 22 38.5Z"
-            stroke="url(#ail-linear-glow)"
-            strokeWidth="3.2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
+          {/* Facet 1: Upper Left Lobe */}
+          <polygon
+            points="16,13 4,9 4,16 16,13"
+            fill="url(#prism-left-light)"
+            opacity="0.9"
+          />
+          <polygon
+            points="16,5 8,2 4,9 16,13"
+            fill="#e11d48"
           />
 
-          {/* Integrated 'I' Center Core with Heart V-Intersection */}
-          <path
-            d="M22 13V26"
-            stroke="url(#ail-linear-glow)"
-            strokeWidth="3"
-            strokeLinecap="round"
+          {/* Facet 2: Upper Right Lobe (Catching highlight) */}
+          <polygon
+            points="16,5 24,2 28,9 16,13"
+            fill="url(#prism-right-light)"
+          />
+          <polygon
+            points="16,13 28,9 28,16 16,13"
+            fill="#fb7185"
+            opacity="0.85"
           />
 
-          {/* Integrated 'A' Crossbar flowing smoothly into the 'L' base cradle */}
-          <path
-            d="M13 23.5H27C29.2 23.5 30.5 25.5 29.5 28L28.2 30.8C27 33.2 24.5 35 22 35"
-            stroke="url(#ail-linear-glow)"
-            strokeWidth="2.8"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeOpacity="0.85"
+          {/* Facet 3: Lower Left Taper */}
+          <polygon
+            points="16,13 4,16 16,28"
+            fill="#e11d48"
           />
 
-          {/* Radiant 4-point Spark Star topping the 'I' */}
-          <path
-            d="M22 2C22 5 24 6.5 26.5 6.5C24 6.5 22 8 22 11C22 8 20 6.5 17.5 6.5C20 6.5 22 5 22 2Z"
-            fill="url(#ail-spark-glow)"
+          {/* Facet 4: Lower Right Taper (Shadow plane creating 3D depth) */}
+          <polygon
+            points="16,13 28,16 16,28"
+            fill="url(#prism-base-deep)"
           />
+
+          {/* Subtle Crisp Edge Lines */}
+          <line x1="16" y1="5" x2="16" y2="28" stroke="rgba(255,255,255,0.22)" strokeWidth="0.75" strokeLinecap="round" />
+          <line x1="4" y1="16" x2="28" y2="16" stroke="rgba(255,255,255,0.15)" strokeWidth="0.75" />
         </svg>
       </div>
 
-      {/* Modern Wordmark */}
       {showText && (
-        <span className={`font-black tracking-tight text-white ${textSize}`}>
-          asiansin<span className="text-rose-500">.love</span>
+        <span className={`font-bold tracking-tight text-stone-900 ${textSize}`}>
+          asiansin<span className="text-rose-600">.love</span>
         </span>
       )}
     </div>
