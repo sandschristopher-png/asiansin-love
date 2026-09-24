@@ -1,8 +1,8 @@
-import { createClient } from '@/utils/supabase/server'
+﻿import { createClient } from '@/utils/supabase/server'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { Logo } from '@/components/Logo'
-import { Search, MapPin, BadgeCheck } from 'lucide-react'
+import { Search, MapPin, BadgeCheck, Sparkles } from 'lucide-react'
 import { SEA_COUNTRIES } from '@/utils/constants'
 
 interface BrowsePageProps {
@@ -33,7 +33,7 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
 
   let query = supabase
     .from('profiles')
-    .select('id, display_name, city, country, avatar_url, gender, birthdate, visiting_city, is_verified, looking_for')
+    .select('id, display_name, username, city, country, avatar_url, gender, birthdate, visiting_city, is_verified, looking_for')
     .not('avatar_url', 'is', null)
     .order('created_at', { ascending: false })
 
@@ -64,7 +64,17 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
         <Link href="/" className="hover:opacity-90 transition">
           <Logo className="h-7 w-7" textSize="text-base sm:text-lg" />
         </Link>
-        <div className="flex items-center gap-3">
+
+        {/* Clean, Non-Intrusive Header Actions */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          <Link
+            href="/upgrade"
+            className="flex items-center gap-1 rounded-full border border-purple-200 bg-purple-50/80 px-3 py-1 text-xs font-bold text-[#6d4aff] hover:bg-purple-100 transition shadow-2xs"
+          >
+            <Sparkles className="h-3 w-3" />
+            <span>VIP</span>
+          </Link>
+
           {user ? (
             <Link
               href="/settings"
@@ -90,16 +100,6 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
           )}
         </div>
       </header>
-
-      {!user && (
-        <div className="bg-purple-50 border-b border-purple-100 px-4 py-2.5 text-center text-xs text-purple-900">
-          <span>You are browsing as a guest. </span>
-          <Link href="/login?mode=signup" className="font-bold underline hover:text-[#6d4aff]">
-            Create a free profile
-          </Link>
-          <span> to send sparks and message members.</span>
-        </div>
-      )}
 
       <div className="mx-auto max-w-6xl px-4 sm:px-6 pt-6">
         {/* Search & Filter Toolbar */}
