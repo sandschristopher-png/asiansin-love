@@ -3,7 +3,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
-import { Camera, Loader2, ShieldCheck, Plane, CheckCircle2 } from 'lucide-react'
+import { Camera, Loader2, Plane } from 'lucide-react'
 import { SEA_COUNTRIES } from '@/utils/constants'
 
 export default function OnboardingPage() {
@@ -45,7 +45,6 @@ export default function OnboardingPage() {
 
       setUserId(user.id)
 
-      // If user already completed their profile, push to browse
       const { data: profile } = await supabase
         .from('profiles')
         .select('display_name, birthdate, avatar_url')
@@ -79,11 +78,11 @@ export default function OnboardingPage() {
     setErrorMsg('')
 
     if (!agreed) {
-      setErrorMsg('You must certify that you are at least 18 years old and agree to the terms.')
+      setErrorMsg('You must certify that you are at least 18 years of age and agree to the terms.')
       return
     }
 
-    if (!avatarPreview && !avatarFile) {
+    if (!avatarFile && !avatarPreview) {
       setErrorMsg('Please upload a clear profile photo to continue.')
       return
     }
@@ -96,11 +95,10 @@ export default function OnboardingPage() {
     setLoading(true)
 
     try {
-      let uploadedAvatarUrl = avatarPreview
+      let finalAvatarUrl = avatarPreview?.startsWith('http') ? avatarPreview : null
 
-      // 1. Upload photo if selected
       if (avatarFile && userId) {
-        const fileExt = avatarFile.name.split('.').pop()
+        const fileExt = avatarFile.name.split('.').pop() || 'jpg'
         const filePath = `${userId}/${Date.now()}.${fileExt}`
 
         const { error: uploadError } = await supabase.storage
@@ -113,16 +111,19 @@ export default function OnboardingPage() {
           .from('avatars')
           .getPublicUrl(filePath)
 
-        uploadedAvatarUrl = publicUrl
+        finalAvatarUrl = publicUrl
       }
 
-      // 2. Save Profile Details
+      if (!finalAvatarUrl) {
+        throw new Error('Photo upload failed. Please try choosing the photo again.')
+      }
+
       const { error: updateError } = await supabase
         .from('profiles')
         .upsert({
           id: userId,
           display_name: displayName.trim(),
-          gender,
+          gender, // Normalized to 'female' | 'male' | 'transgender'
           looking_for: relationshipGoal,
           birthdate,
           country,
@@ -130,7 +131,7 @@ export default function OnboardingPage() {
           is_sea_local: !isExpat,
           city: city.trim(),
           bio: bio.trim(),
-          avatar_url: uploadedAvatarUrl,
+          avatar_url: finalAvatarUrl,
           visiting_city: isExpat ? visitingCity.trim() || null : null,
           visiting_dates: isExpat ? visitingDates.trim() || null : null,
           updated_at: new Date().toISOString(),
@@ -157,10 +158,7 @@ export default function OnboardingPage() {
 
   return (
     <div className="min-h-dvh bg-zinc-950 font-sans text-zinc-100 flex flex-col justify-center items-center py-10 px-4 selection:bg-rose-500 selection:text-white">
-      
       <div className="w-full max-w-lg space-y-6">
-        
-        {/* Header */}
         <div className="text-center space-y-1.5">
           <h1 className="text-2xl font-bold tracking-tight text-white">Create Your Member Profile</h1>
           <p className="text-xs text-zinc-400">A community dedicated strictly to genuine relationships &amp; love</p>
@@ -174,7 +172,7 @@ export default function OnboardingPage() {
 
         <form onSubmit={handleSubmit} className="rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-6 backdrop-blur-md space-y-5 shadow-2xl">
           
-          {/* Photo Upload Section */}
+          {/* Photo Section */}
           <div className="flex flex-col items-center justify-center space-y-2 pb-2 border-b border-zinc-800/60">
             <input
               type="file"
@@ -204,7 +202,7 @@ export default function OnboardingPage() {
             </div>
 
             <div className="text-center">
-              <span className="text-xs font-semibold text-zinc-300 block">Profile Avatar *</span>
+              <span className="text-xs font-semibold text-zinc-300 block">Profile Photo *</span>
               <span className="text-[10px] text-zinc-500">Upload a clear photo of your face</span>
             </div>
           </div>
@@ -237,7 +235,7 @@ export default function OnboardingPage() {
               >
                 <option value="female">Woman</option>
                 <option value="male">Man</option>
-                <option value="trans">Trans Woman</option>
+                <option value="transgender">Trans Woman</option>
               </select>
             </div>
 
@@ -367,7 +365,7 @@ export default function OnboardingPage() {
             </div>
           )}
 
-          {/* About Me Bio */}
+          {/* Bio */}
           <div>
             <div className="flex justify-between items-center mb-1.5">
               <label className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
@@ -404,7 +402,7 @@ export default function OnboardingPage() {
             </label>
           </div>
 
-          {/* Submit Button */}
+          {/* Submit */}
           <button
             type="submit"
             disabled={loading}
@@ -420,7 +418,6 @@ export default function OnboardingPage() {
             )}
           </button>
         </form>
-
       </div>
     </div>
   )
