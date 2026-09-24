@@ -1,0 +1,42 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48">
+  <defs>
+    <linearGradient id="fav-bg" x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#18181B" />
+      <stop offset="100%" stop-color="#09090B" />
+    </linearGradient>
+    <linearGradient id="fav-heart" x1="8" y1="8" x2="40" y2="40" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FB7185" />
+      <stop offset="50%" stop-color="#E11D48" />
+      <stop offset="100%" stop-color="#9F1239" />
+    </linearGradient>
+    <linearGradient id="fav-spark" x1="28" y1="4" x2="44" y2="20" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#FFFFFF" />
+      <stop offset="100%" stop-color="#FDA4AF" />
+    </linearGradient>
+  </defs>
+
+  <!-- Background Base Container -->
+  <rect width="48" height="48" rx="14" fill="url(#fav-bg)" stroke="#27272A" stroke-width="1.5" />
+
+  <!-- Inner Soft Glow -->
+  <circle cx="24" cy="24" r="14" fill="#E11D48" opacity="0.25" filter="blur(6px)" />
+
+  <!-- Modern Geometric Heart Ribbon -->
+  <path
+    d="M24 38.5C23.2 38.5 11 30.2 8.6 22.8C6.5 16.3 10.2 9.5 17.2 9.5C20.8 9.5 23.1 11.4 24 12.5C24.9 11.4 27.2 9.5 30.8 9.5C37.8 9.5 41.5 16.3 39.4 22.8C37 30.2 24.8 38.5 24 38.5Z"
+    fill="url(#fav-heart)"
+  />
+
+  <!-- Heart Inner Depth Cutout -->
+  <path
+    d="M24 34C23.5 34 14.5 27.5 12.6 21.5C11 16.5 13.8 12.8 18 12.8C21 12.8 23 14.5 24 15.5C25 14.5 27 12.8 30 12.8C34.2 12.8 37 16.5 35.4 21.5C33.5 27.5 24.5 34 24 34Z"
+    fill="#09090B"
+    fill-opacity="0.45"
+  />
+
+  <!-- Radiant Spark Star -->
+  <path
+    d="M34 5C34 8.5 36.5 11 40 11C36.5 11 34 13.5 34 17C34 13.5 31.5 11 28 11C31.5 11 34 8.5 34 5Z"
+    fill="url(#fav-spark)"
+  />
+</svg>
