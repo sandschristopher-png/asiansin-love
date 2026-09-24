@@ -1,61 +1,43 @@
-import React from 'react'
-
-interface LogoProps {
-  className?: string
-  textSize?: string
-  showText?: boolean
-}
-
-export function Logo({ className = "h-7 w-7", textSize = "text-base", showText = true }: LogoProps) {
+﻿export function Logo({ className = "h-6 w-6", textSize = "text-lg" }: { className?: string; textSize?: string }) {
   return (
-    <div className="inline-flex items-center gap-2.5 select-none">
-      <div className={`relative shrink-0 flex items-center justify-center ${className}`}>
-        <svg
-          viewBox="0 0 32 32"
-          fill="none"
-          xmlns="http://www.w3.org/2000/svg"
-          className="w-full h-full drop-shadow-xs"
-        >
-          <defs>
-            <linearGradient id="proton-light" x1="16" y1="5" x2="3" y2="22" gradientUnits="userSpaceOnUse">
-              <stop stopColor="#9b72cf" />
-              <stop offset="1" stopColor="#6d4aff" />
-            </linearGradient>
-            <linearGradient id="proton-bright" x1="16" y1="5" x2="29" y2="22" gradientUnits="userSpaceOnUse">
-              <stop stopColor="#c084fc" />
-              <stop offset="1" stopColor="#7c3aed" />
-            </linearGradient>
-            <linearGradient id="proton-deep" x1="16" y1="14" x2="16" y2="28" gradientUnits="userSpaceOnUse">
-              <stop stopColor="#5b21b6" />
-              <stop offset="1" stopColor="#4c1d95" />
-            </linearGradient>
-          </defs>
+    <div className="flex items-center gap-2.5 group">
+      {/* Geometric AIL Monogram Crest */}
+      <svg
+        viewBox="0 0 32 32"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+        className={`${className} transition duration-200 group-hover:scale-105 shrink-0`}
+      >
+        <defs>
+          <linearGradient id="ailGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <stop offset="0%" stopColor="#f43f5e" />
+            <stop offset="50%" stopColor="#e11d48" />
+            <stop offset="100%" stopColor="#be123c" />
+          </linearGradient>
+        </defs>
+        {/* Crest Shield Contour */}
+        <path
+          d="M16 2L4 7V15C4 22.5 9.1 29.4 16 31C22.9 29.4 28 22.5 28 15V7L16 2Z"
+          fill="#18181b"
+          stroke="url(#ailGradient)"
+          strokeWidth="1.75"
+          strokeLinejoin="round"
+        />
+        {/* Sharp Interlocking Monogram (A / I / L Fusion) */}
+        <path
+          d="M16 9L21.5 19H18.5L16 14.5L13.5 19H10.5L16 9Z"
+          fill="url(#ailGradient)"
+        />
+        <path
+          d="M11 20.5H21V22.5H11V20.5Z"
+          fill="url(#ailGradient)"
+        />
+        <circle cx="16" cy="25" r="1.25" fill="#f43f5e" />
+      </svg>
 
-          {/* Facet 1: Upper Left */}
-          <polygon points="16,13 4,9 4,16 16,13" fill="url(#proton-light)" opacity="0.9" />
-          <polygon points="16,5 8,2 4,9 16,13" fill="#6d4aff" />
-
-          {/* Facet 2: Upper Right (Highlight) */}
-          <polygon points="16,5 24,2 28,9 16,13" fill="url(#proton-bright)" />
-          <polygon points="16,13 28,9 28,16 16,13" fill="#c084fc" opacity="0.85" />
-
-          {/* Facet 3: Lower Left */}
-          <polygon points="16,13 4,16 16,28" fill="#6d4aff" />
-
-          {/* Facet 4: Lower Right (Deep Indigo Shadow) */}
-          <polygon points="16,13 28,16 16,28" fill="url(#proton-deep)" />
-
-          {/* Facet Accent Creases */}
-          <line x1="16" y1="5" x2="16" y2="28" stroke="rgba(255,255,255,0.3)" strokeWidth="0.75" strokeLinecap="round" />
-          <line x1="4" y1="16" x2="28" y2="16" stroke="rgba(255,255,255,0.2)" strokeWidth="0.75" />
-        </svg>
-      </div>
-
-      {showText && (
-        <span className={`font-black tracking-tight text-[#1e192b] ${textSize}`}>
-          asiansin<span className="text-[#6d4aff]">.love</span>
-        </span>
-      )}
+      <span className={`${textSize} font-black tracking-tight text-white select-none`}>
+        asiansin<span className="text-rose-500">.love</span>
+      </span>
     </div>
   )
 }
