@@ -1,36 +1,47 @@
 ﻿import { createClient } from '@/utils/supabase/server'
 import Link from 'next/link'
 import { Logo } from '@/components/Logo'
-import { Search, MapPin, BadgeCheck } from 'lucide-react'
+import { Search, MapPin, BadgeCheck, Sparkles, Clock, Compass } from 'lucide-react'
 
 interface BrowseProps {
   searchParams: Promise<{
     country?: string
     city?: string
     intent?: string
+    filter?: string
   }>
 }
 
 export default async function BrowsePage({ searchParams }: BrowseProps) {
-  const { country, city, intent } = await searchParams
+  const { country, city, intent, filter } = await searchParams
   const supabase = await createClient()
 
   const { data: { user } } = await supabase.auth.getUser()
 
+  // Base Query
   let query = supabase
     .from('profiles')
-    .select('id, display_name, city, country, birthdate, avatar_url, gender, bio, visiting_city, looking_for, is_verified, created_at')
+    .select('id, display_name, city, country, birthdate, avatar_url, gender, bio, visiting_city, looking_for, is_verified, sparks_count, created_at')
     .not('avatar_url', 'is', null)
-    .order('created_at', { ascending: false })
 
+  // Filter & Ordering logic
+  if (filter === 'top-sparks') {
+    query = query.order('sparks_count', { ascending: false }).order('created_at', { ascending: false })
+  } else {
+    query = query.order('created_at', { ascending: false })
+  }
+
+  // Country filter
   if (country && country !== 'All') {
     query = query.eq('country', country)
   }
 
+  // City / Nearby search
   if (city && city.trim() !== '') {
     query = query.ilike('city', `%${city.trim()}%`)
   }
 
+  // Intent filter
   if (intent && intent !== 'All') {
     query = query.eq('looking_for', intent)
   }
@@ -55,6 +66,8 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
     const diff = Date.now() - birth.getTime()
     return Math.abs(new Date(diff).getUTCFullYear() - 1970)
   }
+
+  const isTopSparksActive = filter === 'top-sparks'
 
   return (
     <div className="min-h-dvh bg-zinc-950 font-sans text-zinc-100 pb-20">
@@ -83,34 +96,68 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
       </header>
 
       <main className="mx-auto max-w-6xl px-4 sm:px-6 pt-6">
+        
+        {/* Search & Top Sorting Segment */}
         <div className="space-y-4 mb-8">
-          <form method="GET" action="/browse" className="flex gap-2 max-w-md">
-            {country && <input type="hidden" name="country" value={country} />}
-            <div className="relative flex-1">
-              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
-              <input
-                type="text"
-                name="city"
-                defaultValue={city || ''}
-                placeholder="Search nearby city or district (e.g. Malate, Makati, Vientiane)..."
-                className="w-full rounded-2xl border border-zinc-800 bg-zinc-900/90 pl-10 pr-4 py-2.5 text-xs text-white placeholder-zinc-500 focus:border-rose-500 focus:outline-none"
-              />
-            </div>
-            <button
-              type="submit"
-              className="rounded-2xl bg-zinc-800 hover:bg-zinc-700 px-4 py-2.5 text-xs font-semibold text-zinc-200 transition"
-            >
-              Search
-            </button>
-          </form>
+          
+          <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
+            {/* City / Nearby search input */}
+            <form method="GET" action="/browse" className="flex gap-2 flex-1 max-w-md">
+              {country && <input type="hidden" name="country" value={country} />}
+              {filter && <input type="hidden" name="filter" value={filter} />}
+              <div className="relative flex-1">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+                <input
+                  type="text"
+                  name="city"
+                  defaultValue={city || ''}
+                  placeholder="Search nearby city or district (e.g. Malate, Makati, Vientiane)..."
+                  className="w-full rounded-2xl border border-zinc-800 bg-zinc-900/90 pl-10 pr-4 py-2.5 text-xs text-white placeholder-zinc-500 focus:border-rose-500 focus:outline-none"
+                />
+              </div>
+              <button
+                type="submit"
+                className="rounded-2xl bg-zinc-800 hover:bg-zinc-700 px-4 py-2.5 text-xs font-semibold text-zinc-200 transition"
+              >
+                Search
+              </button>
+            </form>
 
+            {/* Mode Toggle: Recent vs Top Sparks */}
+            <div className="inline-flex rounded-2xl border border-zinc-800 bg-zinc-900/60 p-1 self-start sm:self-auto">
+              <Link
+                href={`/browse?${country ? `country=${country}&` : ''}${city ? `city=${encodeURIComponent(city)}&` : ''}`}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition ${
+                  !isTopSparksActive
+                    ? 'bg-zinc-800 text-white shadow-sm'
+                    : 'text-zinc-400 hover:text-zinc-200'
+                }`}
+              >
+                <Clock className="h-3.5 w-3.5" />
+                <span>Recent</span>
+              </Link>
+              <Link
+                href={`/browse?filter=top-sparks${country ? `&country=${country}` : ''}${city ? `&city=${encodeURIComponent(city)}` : ''}`}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition ${
+                  isTopSparksActive
+                    ? 'bg-rose-600 text-white shadow-sm'
+                    : 'text-zinc-400 hover:text-zinc-200'
+                }`}
+              >
+                <Sparkles className="h-3.5 w-3.5" />
+                <span>Top Sparks</span>
+              </Link>
+            </div>
+          </div>
+
+          {/* Country Quick Pills */}
           <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
             {countries.map((c) => {
               const active = (country === c.value) || (!country && c.value === 'All')
               return (
                 <Link
                   key={c.value}
-                  href={`/browse?country=${c.value}${city ? `&city=${encodeURIComponent(city)}` : ''}`}
+                  href={`/browse?country=${c.value}${filter ? `&filter=${filter}` : ''}${city ? `&city=${encodeURIComponent(city)}` : ''}`}
                   className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
                     active
                       ? 'bg-rose-600 text-white shadow-md shadow-rose-600/20'
@@ -124,10 +171,12 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
           </div>
         </div>
 
+        {/* Member Directory Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
           {profiles && profiles.length > 0 ? (
             profiles.map((p) => {
               const age = calculateAge(p.birthdate)
+              const hasSparks = (p.sparks_count ?? 0) > 0
               return (
                 <Link
                   key={p.id}
@@ -142,11 +191,20 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent pointer-events-none" />
 
-                    {p.visiting_city && (
-                      <div className="absolute top-2 left-2 rounded-full bg-amber-500/90 px-2 py-0.5 text-[9px] font-bold text-black backdrop-blur">
-                        ✈️ Visiting
-                      </div>
-                    )}
+                    {/* Top Badges */}
+                    <div className="absolute top-2 left-2 flex flex-col gap-1">
+                      {p.visiting_city && (
+                        <div className="rounded-full bg-amber-500/90 px-2 py-0.5 text-[9px] font-bold text-black backdrop-blur">
+                          ✈️ Visiting
+                        </div>
+                      )}
+                      {hasSparks && (
+                        <div className="rounded-full bg-rose-600/90 px-2 py-0.5 text-[9px] font-bold text-white backdrop-blur flex items-center gap-1 shadow-sm">
+                          <Sparkles className="h-2.5 w-2.5" />
+                          <span>Top Spark</span>
+                        </div>
+                      )}
+                    </div>
 
                     <div className="absolute bottom-2.5 left-2.5 right-2.5 text-white">
                       <div className="flex items-center gap-1">
