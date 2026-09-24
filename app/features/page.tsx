@@ -176,7 +176,7 @@ export default function FeaturesPage() {
             100% Free For Local Members
           </h2>
           <p className="text-xs sm:text-sm text-zinc-400 max-w-xl mx-auto leading-relaxed">
-            Local singles living across Southeast Asia—including the Philippines, Thailand, Vietnam, Cambodia, and Laos—can browse, send Sparks, and chat completely free of charge.
+            Local singles living across Southeast Asia—including the Southeast Asia—can browse, send Sparks, and chat completely free of charge.
           </p>
           <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
             <Link
