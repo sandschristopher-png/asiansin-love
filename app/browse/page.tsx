@@ -1,64 +1,54 @@
-import { createClient } from '@/utils/supabase/server'
-import { redirect } from 'next/navigation'
+﻿import { createClient } from '@/utils/supabase/server'
 import Link from 'next/link'
-import { MessageCircle, User, LogOut, Lock, LogIn, Compass } from 'lucide-react'
 import { Logo } from '@/components/Logo'
+import { Search, MapPin, Sparkles, Filter, Lock } from 'lucide-react'
 
 interface BrowseProps {
-  searchParams: Promise<{ country?: string }>
+  searchParams: Promise<{
+    country?: string
+    city?: string
+    intent?: string
+  }>
 }
 
-const COUNTRIES = [
-  { label: 'All', value: '' },
-  { label: 'Philippines 🇵🇭', value: 'Philippines' },
-  { label: 'Thailand 🇹🇭', value: 'Thailand' },
-  { label: 'Vietnam 🇻🇳', value: 'Vietnam' },
-  { label: 'Cambodia 🇰🇭', value: 'Cambodia' },
-]
-
 export default async function BrowsePage({ searchParams }: BrowseProps) {
+  const { country, city, intent } = await searchParams
   const supabase = await createClient()
-  const resolvedParams = await searchParams
-  const selectedCountry = resolvedParams.country || ''
 
-  // 1. Auth check
   const { data: { user } } = await supabase.auth.getUser()
 
-  let currentProfile: any = null
-  if (user) {
-    const { data: profile } = await supabase
-      .from('profiles')
-      .select('*')
-      .eq('id', user.id)
-      .single()
-
-    if (!profile) {
-      redirect('/onboarding')
-    }
-    currentProfile = profile
-  }
-
-  // 2. Fetch profiles query
+  // Build dynamic database query
   let query = supabase
     .from('profiles')
-    .select('*')
+    .select('id, display_name, city, country, birthdate, avatar_url, gender, bio, visiting_city, looking_for, created_at')
+    .not('avatar_url', 'is', null)
     .order('created_at', { ascending: false })
 
-  if (user) {
-    query = query.neq('id', user.id)
-    if (currentProfile?.target_gender) {
-      query = query.eq('gender', currentProfile.target_gender)
-    }
+  if (country && country !== 'All') {
+    query = query.eq('country', country)
   }
 
-  if (selectedCountry) {
-    query = query.ilike('country', `%${selectedCountry}%`)
+  if (city && city.trim() !== '') {
+    query = query.ilike('city', `%${city.trim()}%`)
   }
 
-  const { data: matches } = await query
+  if (intent && intent !== 'All') {
+    query = query.eq('looking_for', intent)
+  }
 
-  // 3. Separate a pool for the Active Reel (e.g. top 10 profiles with photos)
-  const activeReelMembers = matches?.filter((p) => Boolean(p.avatar_url)).slice(0, 12) || []
+  const { data: profiles } = await query
+
+  const countries = [
+    { label: 'All', value: 'All' },
+    { label: 'Philippines 🇵🇭', value: 'Philippines' },
+    { label: 'Thailand 🇹🇭', value: 'Thailand' },
+    { label: 'Vietnam 🇻🇳', value: 'Vietnam' },
+    { label: 'Cambodia 🇰🇭', value: 'Cambodia' },
+    { label: 'Laos 🇱🇦', value: 'Laos' },
+    { label: 'Indonesia 🇮🇩', value: 'Indonesia' },
+    { label: 'Malaysia 🇲🇾', value: 'Malaysia' },
+    { label: 'Singapore 🇸🇬', value: 'Singapore' },
+  ]
 
   const calculateAge = (birthdate: string) => {
     if (!birthdate) return null
@@ -67,138 +57,68 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
     return Math.abs(new Date(diff).getUTCFullYear() - 1970)
   }
 
-  const handleSignOut = async () => {
-    'use server'
-    const serverSupabase = await createClient()
-    await serverSupabase.auth.signOut()
-    redirect('/login')
-  }
-
   return (
-    <div className="min-h-screen bg-zinc-950 font-sans text-zinc-100 pb-16">
-      {/* Top Navigation */}
-      <header className="sticky top-0 z-50 border-b border-zinc-800/80 bg-zinc-950/80 backdrop-blur-md">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 sm:px-6 py-3">
-          <Link href="/" className="hover:opacity-90 transition">
-            <Logo className="h-7 w-7" textSize="text-lg sm:text-xl" />
-          </Link>
+    <div className="min-h-dvh bg-zinc-950 font-sans text-zinc-100 pb-20">
+      <header className="sticky top-0 z-40 border-b border-zinc-800 bg-zinc-950/80 px-4 sm:px-6 py-3.5 backdrop-blur flex items-center justify-between">
+        <Link href="/" className="hover:opacity-90 transition">
+          <Logo className="h-7 w-7" textSize="text-lg sm:text-xl" />
+        </Link>
 
-          <div className="flex items-center gap-2 sm:gap-3">
-            {user ? (
-              <>
-                <Link
-                  href="/inbox"
-                  className="flex items-center gap-1.5 rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs font-medium text-zinc-300 transition hover:border-zinc-700 hover:text-white"
-                >
-                  <MessageCircle className="h-3.5 w-3.5 text-rose-500" />
-                  <span>Inbox</span>
-                </Link>
-
-                <Link
-                  href="/settings"
-                  className="flex items-center gap-1.5 rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs font-medium text-zinc-300 transition hover:border-zinc-700 hover:text-white"
-                >
-                  <User className="h-3.5 w-3.5" />
-                  <span className="hidden sm:inline">Settings</span>
-                </Link>
-
-                <form action={handleSignOut}>
-                  <button
-                    type="submit"
-                    className="flex items-center gap-1.5 rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs font-medium text-zinc-400 transition hover:border-red-900/60 hover:text-red-400"
-                  >
-                    <LogOut className="h-3.5 w-3.5" />
-                    <span className="hidden sm:inline">Log Out</span>
-                  </button>
-                </form>
-              </>
-            ) : (
-              <div className="flex items-center gap-2">
-                <Link
-                  href="/login"
-                  className="flex items-center gap-1.5 rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs font-medium text-zinc-300 hover:border-zinc-700 hover:text-white transition"
-                >
-                  <LogIn className="h-3.5 w-3.5" />
-                  <span>Sign In</span>
-                </Link>
-                <Link
-                  href="/login"
-                  className="rounded-xl bg-rose-600 px-3 py-1.5 text-xs font-semibold text-white hover:bg-rose-500 transition shadow"
-                >
-                  Join Free
-                </Link>
-              </div>
-            )}
-          </div>
+        <div className="flex items-center gap-3">
+          {user ? (
+            <Link
+              href="/settings"
+              className="rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-zinc-300 hover:text-white transition"
+            >
+              My Profile
+            </Link>
+          ) : (
+            <Link
+              href="/login"
+              className="rounded-xl bg-rose-600 px-3.5 py-1.5 text-xs font-bold text-white hover:bg-rose-500 transition shadow"
+            >
+              Join Free
+            </Link>
+          )}
         </div>
       </header>
 
-      <main className="mx-auto max-w-6xl px-4 sm:px-6 py-6">
-        {/* Active Members Horizontal Reel */}
-        {activeReelMembers.length > 0 && (
-          <section className="mb-6">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-              </span>
-              <h2 className="text-xs font-bold uppercase tracking-wider text-zinc-400">
-                Online Members
-              </h2>
+      <main className="mx-auto max-w-6xl px-4 sm:px-6 pt-6">
+        {/* Filter Controls */}
+        <div className="space-y-4 mb-8">
+          {/* City / Nearby search input */}
+          <form method="GET" action="/browse" className="flex gap-2 max-w-md">
+            {country && <input type="hidden" name="country" value={country} />}
+            <div className="relative flex-1">
+              <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+              <input
+                type="text"
+                name="city"
+                defaultValue={city || ''}
+                placeholder="Search nearby city or district (e.g. Malate, Makati, Vientiane)..."
+                className="w-full rounded-2xl border border-zinc-800 bg-zinc-900/90 pl-10 pr-4 py-2.5 text-xs text-white placeholder-zinc-500 focus:border-rose-500 focus:outline-none"
+              />
             </div>
+            <button
+              type="submit"
+              className="rounded-2xl bg-zinc-800 hover:bg-zinc-700 px-4 py-2.5 text-xs font-semibold text-zinc-200 transition"
+            >
+              Search
+            </button>
+          </form>
 
-            <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none scroll-smooth">
-              {activeReelMembers.map((m) => (
-                <Link
-                  key={m.id}
-                  href={`/profile/${m.id}`}
-                  className="group relative flex flex-col items-center shrink-0 w-16 text-center"
-                >
-                  <div className="relative h-14 w-14 rounded-full p-0.5 ring-2 ring-zinc-800 group-hover:ring-rose-500 transition">
-                    <img
-                      src={m.avatar_url}
-                      alt={m.display_name}
-                      className="h-full w-full rounded-full object-cover"
-                    />
-                    <span className="absolute bottom-0 right-0 h-3.5 w-3.5 rounded-full border-2 border-zinc-950 bg-emerald-500" />
-                  </div>
-                  <span className="mt-1.5 text-[11px] font-medium text-zinc-300 truncate w-full group-hover:text-white">
-                    {m.display_name}
-                  </span>
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* Filters & Header Bar */}
-        <section className="mb-6 space-y-3">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-            <div>
-              <h1 className="text-xl font-bold text-white">Browse Members</h1>
-              <p className="text-xs text-zinc-400">
-                {currentProfile?.target_gender
-                  ? `Showing ${currentProfile.target_gender === 'female' ? 'women' : currentProfile.target_gender === 'trans' ? 'trans women' : 'men'}`
-                  : 'Showing active members across Southeast Asia'}
-              </p>
-            </div>
-            <span className="text-xs text-zinc-500 font-medium">
-              {matches?.length || 0} active {matches?.length === 1 ? 'profile' : 'profiles'}
-            </span>
-          </div>
-
-          {/* Country Quick-Pills */}
-          <div className="flex flex-wrap gap-2 pt-1">
-            {COUNTRIES.map((c) => {
-              const active = selectedCountry.toLowerCase() === c.value.toLowerCase()
+          {/* Country Quick Pills */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+            {countries.map((c) => {
+              const active = (country === c.value) || (!country && c.value === 'All')
               return (
                 <Link
-                  key={c.label}
-                  href={c.value ? `/browse?country=${encodeURIComponent(c.value)}` : '/browse'}
-                  className={`rounded-full px-3 py-1 text-xs font-semibold transition ${
+                  key={c.value}
+                  href={`/browse?country=${c.value}${city ? `&city=${encodeURIComponent(city)}` : ''}`}
+                  className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
                     active
-                      ? 'bg-rose-600 text-white shadow'
-                      : 'border border-zinc-800 bg-zinc-900/80 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
+                      ? 'bg-rose-600 text-white shadow-md shadow-rose-600/20'
+                      : 'border border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
                   }`}
                 >
                   {c.label}
@@ -206,91 +126,54 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
               )
             })}
           </div>
-        </section>
+        </div>
 
-        {/* Member Grid */}
-        <div className="grid grid-cols-2 gap-3 sm:gap-6 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-          {matches?.map((profile) => {
-            const age = calculateAge(profile.birthdate)
-            const genderLabel =
-              profile.gender === 'trans' ? 'Trans Woman' : profile.gender === 'female' ? 'Woman' : 'Man'
-
-            return (
-              <div
-                key={profile.id}
-                className="group flex flex-col overflow-hidden rounded-2xl border border-zinc-800/80 bg-zinc-900/60 shadow-lg backdrop-blur transition hover:border-zinc-700"
-              >
+        {/* Member Directory Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
+          {profiles && profiles.length > 0 ? (
+            profiles.map((p) => {
+              const age = calculateAge(p.birthdate)
+              return (
                 <Link
-                  href={`/profile/${profile.id}`}
-                  className="relative aspect-[3/4] w-full bg-zinc-900 overflow-hidden block"
+                  key={p.id}
+                  href={`/profile/${p.id}`}
+                  className="group relative flex flex-col overflow-hidden rounded-2xl border border-zinc-800/80 bg-zinc-900/40 shadow-lg backdrop-blur transition hover:border-zinc-700 hover:-translate-y-1"
                 >
-                  {profile.avatar_url ? (
+                  <div className="relative aspect-[3/4] w-full bg-zinc-900 overflow-hidden">
                     <img
-                      src={profile.avatar_url}
-                      alt={profile.display_name}
-                      className="h-full w-full object-cover transition duration-300 group-hover:scale-[1.03]"
+                      src={p.avatar_url}
+                      alt={p.display_name}
+                      className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
                     />
-                  ) : (
-                    <div className="flex h-full w-full items-center justify-center text-xs text-zinc-500">
-                      No Photo
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent pointer-events-none" />
+
+                    {p.visiting_city && (
+                      <div className="absolute top-2 left-2 rounded-full bg-amber-500/90 px-2 py-0.5 text-[9px] font-bold text-black backdrop-blur">
+                        ✈️ Visiting
+                      </div>
+                    )}
+
+                    <div className="absolute bottom-2.5 left-2.5 right-2.5 text-white">
+                      <p className="text-xs sm:text-sm font-bold truncate group-hover:text-rose-400 transition">
+                        {p.display_name}{age ? `, ${age}` : ''}
+                      </p>
+                      <div className="flex items-center gap-1 text-[10px] text-zinc-300 truncate mt-0.5">
+                        <MapPin className="h-3 w-3 text-rose-500 shrink-0" />
+                        <span>{p.city ? `${p.city}, ` : ''}{p.country}</span>
+                      </div>
+                      {p.looking_for && (
+                        <span className="mt-1.5 inline-block rounded bg-black/60 px-1.5 py-0.5 text-[9px] text-zinc-300 font-medium truncate max-w-full">
+                          {p.looking_for}
+                        </span>
+                      )}
                     </div>
-                  )}
-
-                  <span className="absolute top-2 left-2 rounded-full bg-black/60 px-2 py-0.5 text-[10px] font-medium text-zinc-300 backdrop-blur-md">
-                    {genderLabel}
-                  </span>
-
-                  <div className="absolute bottom-2 left-2 flex items-center gap-1.5 rounded-full bg-black/60 px-2 py-0.5 backdrop-blur-md text-[10px] text-emerald-400">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                    <span>Active</span>
                   </div>
                 </Link>
-
-                <div className="flex flex-1 flex-col justify-between p-3 sm:p-4">
-                  <Link href={`/profile/${profile.id}`}>
-                    <h3 className="text-sm sm:text-base font-bold text-white group-hover:text-rose-400 transition truncate">
-                      {profile.display_name}
-                      {age ? <span className="font-normal text-zinc-400">, {age}</span> : ''}
-                    </h3>
-                    <p className="text-[11px] sm:text-xs text-zinc-400 truncate mt-0.5">
-                      {profile.city ? `${profile.city}, ` : ''}
-                      {profile.country}
-                    </p>
-                    <p className="mt-2 text-xs text-zinc-300 line-clamp-2 leading-relaxed hidden sm:block">
-                      {profile.bio || 'No bio provided yet.'}
-                    </p>
-                  </Link>
-
-                  <Link
-                    href={user ? `/chat/${profile.id}` : '/login'}
-                    className="mt-3 flex w-full items-center justify-center space-x-1.5 rounded-xl bg-rose-600 py-2 sm:py-2.5 text-xs font-semibold text-white shadow transition hover:bg-rose-500 active:scale-[0.99]"
-                  >
-                    {user ? (
-                      <>
-                        <MessageCircle className="h-3.5 w-3.5" />
-                        <span>Message</span>
-                      </>
-                    ) : (
-                      <>
-                        <Lock className="h-3.5 w-3.5" />
-                        <span>Sign In to Chat</span>
-                      </>
-                    )}
-                  </Link>
-                </div>
-              </div>
-            )
-          })}
-
-          {(!matches || matches.length === 0) && (
-            <div className="col-span-full py-20 text-center">
-              <Compass className="mx-auto h-8 w-8 text-zinc-600 mb-2" />
-              <p className="text-sm text-zinc-400">
-                No members found in {selectedCountry || 'this category'} yet.
-              </p>
-              <p className="mt-1 text-xs text-zinc-500">
-                Try picking another country pill or clearing the filter.
-              </p>
+              )
+            })
+          ) : (
+            <div className="col-span-full py-20 text-center text-xs text-zinc-500">
+              No active profiles found matching this search criteria.
             </div>
           )}
         </div>

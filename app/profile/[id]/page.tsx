@@ -1,7 +1,7 @@
-import { createClient } from '@/utils/supabase/server'
+﻿import { createClient } from '@/utils/supabase/server'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, MessageSquare, ShieldAlert, Lock, MapPin, Calendar, Ruler, User } from 'lucide-react'
+import { ArrowLeft, MessageSquare, ShieldAlert, Lock, MapPin, Calendar, Ruler, User, HeartHandshake } from 'lucide-react'
 import { Logo } from '@/components/Logo'
 import { ProfileActions } from '@/components/ProfileActions'
 
@@ -127,7 +127,7 @@ export default async function ProfileDetailPage({ params }: ProfilePageProps) {
 
               {profile.visiting_city && (
                 <div className="mt-2.5 inline-flex items-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-3 py-1 text-xs font-semibold text-amber-300 backdrop-blur">
-                  <span>??</span>
+                  <span>✈️</span>
                   <span>Visiting {profile.visiting_city} {profile.visiting_dates ? `(${profile.visiting_dates})` : ''}</span>
                 </div>
               )}
@@ -216,6 +216,10 @@ export default async function ProfileDetailPage({ params }: ProfilePageProps) {
               <div className="flex items-center gap-2 text-zinc-300">
                 <User className="h-4 w-4 text-zinc-500" />
                 <span>Gender: <strong className="text-white font-medium">{genderLabel}</strong></span>
+              </div>
+              <div className="flex items-center gap-2 text-zinc-300">
+                <HeartHandshake className="h-4 w-4 text-rose-400" />
+                <span>Goal: <strong className="text-white font-medium">{profile.looking_for || 'Dating'}</strong></span>
               </div>
               <div className="flex items-center gap-2 text-zinc-300">
                 <span>Status: <strong className="text-white font-medium">{profile.marital_status || 'Single'}</strong></span>

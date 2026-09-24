@@ -1,11 +1,11 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { Logo } from '@/components/Logo'
-import { AlertCircle, ShieldAlert } from 'lucide-react'
+import { AlertCircle } from 'lucide-react'
 
 export default function OnboardingPage() {
   const supabase = createClient()
@@ -17,13 +17,13 @@ export default function OnboardingPage() {
   const [birthdate, setBirthdate] = useState('')
   const [country, setCountry] = useState('Philippines')
   const [city, setCity] = useState('')
+  const [lookingFor, setLookingFor] = useState('Long-Term Relationship')
   const [bio, setBio] = useState('')
   const [agreedToTerms, setAgreedToTerms] = useState(false)
 
   const [errorMsg, setErrorMsg] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
 
-  // Calculate the maximum selectable birthdate (exactly 18 years ago today)
   const maxBirthdate = (() => {
     const d = new Date()
     d.setFullYear(d.getFullYear() - 18)
@@ -46,7 +46,6 @@ export default function OnboardingPage() {
     e.preventDefault()
     setErrorMsg(null)
 
-    // Strict 18+ Age Validation
     if (!validateAge(birthdate)) {
       setErrorMsg('You must be at least 18 years of age to register on asiansin.love.')
       return
@@ -80,6 +79,7 @@ export default function OnboardingPage() {
         birthdate,
         country,
         city: city.trim(),
+        looking_for: lookingFor,
         bio: bio.trim(),
         updated_at: new Date().toISOString(),
       })
@@ -103,7 +103,7 @@ export default function OnboardingPage() {
           Create Your Member Profile
         </h2>
         <p className="mt-1 text-center text-xs text-zinc-400">
-          Complete your details to access the member directory
+          Set up your preferences to connect across Southeast Asia
         </p>
       </div>
 
@@ -126,7 +126,7 @@ export default function OnboardingPage() {
                 required
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
-                placeholder="e.g. Maria, Chris"
+                placeholder="e.g. Maria, Somchai, Bounmy"
                 className="mt-1 w-full rounded-xl border border-zinc-700 bg-zinc-800 px-3 py-2 text-base sm:text-sm text-white placeholder-zinc-500 focus:border-rose-500 focus:outline-none"
               />
             </div>
@@ -163,6 +163,24 @@ export default function OnboardingPage() {
               </div>
             </div>
 
+            {/* Relationship Intent */}
+            <div>
+              <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400">
+                Relationship Goal
+              </label>
+              <select
+                value={lookingFor}
+                onChange={(e) => setLookingFor(e.target.value)}
+                className="mt-1 w-full rounded-xl border border-zinc-700 bg-zinc-800 px-3 py-2 text-base sm:text-sm text-white focus:border-rose-500 focus:outline-none"
+              >
+                <option value="Long-Term Relationship">Long-Term Relationship</option>
+                <option value="Marriage-Minded">Marriage-Minded</option>
+                <option value="Dating &amp; Romance">Dating &amp; Romance</option>
+                <option value="Travel Companion &amp; Friends">Travel Companion &amp; Friends</option>
+                <option value="Casual Dating">Casual Dating</option>
+              </select>
+            </div>
+
             {/* Strict 18+ Date of Birth Input */}
             <div>
               <div className="flex items-center justify-between">
@@ -193,27 +211,38 @@ export default function OnboardingPage() {
                   onChange={(e) => setCountry(e.target.value)}
                   className="mt-1 w-full rounded-xl border border-zinc-700 bg-zinc-800 px-3 py-2 text-base sm:text-sm text-white focus:border-rose-500 focus:outline-none"
                 >
-                  <option value="Philippines">Philippines</option>
-                  <option value="Thailand">Thailand</option>
-                  <option value="Vietnam">Vietnam</option>
-                  <option value="Cambodia">Cambodia</option>
-                  <option value="United States">United States</option>
-                  <option value="Canada">Canada</option>
-                  <option value="United Kingdom">United Kingdom</option>
-                  <option value="Australia">Australia</option>
+                  <optgroup label="Southeast Asia">
+                    <option value="Philippines">Philippines</option>
+                    <option value="Thailand">Thailand</option>
+                    <option value="Vietnam">Vietnam</option>
+                    <option value="Cambodia">Cambodia</option>
+                    <option value="Laos">Laos</option>
+                    <option value="Indonesia">Indonesia</option>
+                    <option value="Malaysia">Malaysia</option>
+                    <option value="Singapore">Singapore</option>
+                  </optgroup>
+                  <optgroup label="International Visitors / Expats">
+                    <option value="United States">United States</option>
+                    <option value="Canada">Canada</option>
+                    <option value="United Kingdom">United Kingdom</option>
+                    <option value="Australia">Australia</option>
+                    <option value="Germany">Germany</option>
+                    <option value="France">France</option>
+                    <option value="Other">Other</option>
+                  </optgroup>
                 </select>
               </div>
 
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                  City
+                  City / Area
                 </label>
                 <input
                   type="text"
                   required
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
-                  placeholder="e.g. Cebu, Manila, Bangkok"
+                  placeholder="e.g. Vientiane, Malate Manila, Cebu"
                   className="mt-1 w-full rounded-xl border border-zinc-700 bg-zinc-800 px-3 py-2 text-base sm:text-sm text-white placeholder-zinc-500 focus:border-rose-500 focus:outline-none"
                 />
               </div>
@@ -239,7 +268,6 @@ export default function OnboardingPage() {
               />
             </div>
 
-            {/* Legal Certification Checkbox */}
             <div className="pt-2">
               <label className="flex items-start gap-2.5 cursor-pointer text-xs text-zinc-400 leading-relaxed">
                 <input
