@@ -1,8 +1,8 @@
-﻿import { createClient } from '@/utils/supabase/server'
+import { createClient } from '@/utils/supabase/server'
 import Link from 'next/link'
 import { redirect } from 'next/navigation'
 import { Logo } from '@/components/Logo'
-import { Search, MapPin, BadgeCheck, Sparkles } from 'lucide-react'
+import { Search, MapPin, BadgeCheck } from 'lucide-react'
 import { SEA_COUNTRIES } from '@/utils/constants'
 
 interface BrowsePageProps {
@@ -17,7 +17,6 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
   const { country, gender, q } = await searchParams
   const supabase = await createClient()
 
-  // 1. Only route to onboarding if the user is actually authenticated but hasn't set up their profile
   const { data: { user } } = await supabase.auth.getUser()
 
   if (user) {
@@ -32,7 +31,6 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
     }
   }
 
-  // 2. Fetch profiles for public viewing
   let query = supabase
     .from('profiles')
     .select('id, display_name, city, country, avatar_url, gender, birthdate, visiting_city, is_verified, looking_for')
@@ -61,16 +59,16 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
   }
 
   return (
-    <div className="min-h-dvh bg-[#fafaf9] font-sans text-stone-900 selection:bg-rose-500 selection:text-white pb-20">
-      <header className="sticky top-0 z-40 border-b border-stone-200/80 bg-[#fafaf9]/85 px-4 sm:px-6 py-3 backdrop-blur-md flex items-center justify-between">
+    <div className="min-h-dvh bg-[#fdfdfd] font-sans text-[#1e192b] selection:bg-[#6d4aff] selection:text-white pb-20">
+      <header className="sticky top-0 z-40 border-b border-purple-100 bg-[#fdfdfd]/85 px-4 sm:px-6 py-3.5 backdrop-blur-md flex items-center justify-between">
         <Link href="/" className="hover:opacity-90 transition">
-          <Logo className="h-6 w-6" textSize="text-base sm:text-lg" />
+          <Logo className="h-7 w-7" textSize="text-base sm:text-lg" />
         </Link>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-3">
           {user ? (
             <Link
               href="/settings"
-              className="text-xs font-semibold text-stone-600 hover:text-stone-900 transition px-2 py-1"
+              className="text-xs font-bold text-stone-600 hover:text-[#6d4aff] transition px-2 py-1"
             >
               Settings
             </Link>
@@ -78,13 +76,13 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
             <div className="flex items-center gap-2">
               <Link
                 href="/login?mode=signin"
-                className="rounded-lg border border-stone-300 bg-white px-3 py-1.5 text-xs font-semibold text-stone-700 hover:text-stone-900 transition shadow-2xs"
+                className="rounded-full border border-stone-300 bg-white px-3.5 py-1.5 text-xs font-bold text-stone-700 hover:border-purple-300 hover:text-[#6d4aff] transition shadow-2xs"
               >
                 Sign In
               </Link>
               <Link
                 href="/login?mode=signup"
-                className="rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-rose-500 transition shadow-xs"
+                className="rounded-full bg-[#6d4aff] px-4 py-1.5 text-xs font-bold text-white hover:bg-[#5b3adb] transition shadow-sm"
               >
                 Join Free
               </Link>
@@ -93,11 +91,10 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
         </div>
       </header>
 
-      {/* Guest Banner if not signed in */}
       {!user && (
-        <div className="bg-rose-50 border-b border-rose-200/80 px-4 py-2 text-center text-xs text-rose-800">
+        <div className="bg-purple-50 border-b border-purple-100 px-4 py-2.5 text-center text-xs text-purple-900">
           <span>You are browsing as a guest. </span>
-          <Link href="/login?mode=signup" className="font-bold underline hover:text-rose-950">
+          <Link href="/login?mode=signup" className="font-bold underline hover:text-[#6d4aff]">
             Create a free profile
           </Link>
           <span> to send sparks and message members.</span>
@@ -106,12 +103,12 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
 
       <div className="mx-auto max-w-6xl px-4 sm:px-6 pt-6">
         {/* Search & Filter Toolbar */}
-        <div className="rounded-xl border border-stone-200 bg-white p-3 shadow-2xs mb-6">
+        <div className="rounded-2xl border border-purple-100 bg-white p-3 shadow-2xs mb-6">
           <form method="get" className="flex flex-wrap items-center gap-2.5">
             <select
               name="country"
               defaultValue={country || 'all'}
-              className="rounded-lg border border-stone-300 bg-[#fafaf9] px-2.5 py-1.5 text-xs font-medium text-stone-800 focus:border-rose-500 focus:outline-none"
+              className="rounded-xl border border-stone-300 bg-[#fafaf9] px-3 py-2 text-xs font-medium text-stone-800 focus:border-[#6d4aff] focus:outline-none"
             >
               <option value="all">All Southeast Asia</option>
               {SEA_COUNTRIES.map((c) => (
@@ -122,7 +119,7 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
             <select
               name="gender"
               defaultValue={gender || 'all'}
-              className="rounded-lg border border-stone-300 bg-[#fafaf9] px-2.5 py-1.5 text-xs font-medium text-stone-800 focus:border-rose-500 focus:outline-none"
+              className="rounded-xl border border-stone-300 bg-[#fafaf9] px-3 py-2 text-xs font-medium text-stone-800 focus:border-[#6d4aff] focus:outline-none"
             >
               <option value="all">All Genders</option>
               <option value="female">Women</option>
@@ -131,19 +128,19 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
             </select>
 
             <div className="relative flex-1 min-w-[140px]">
-              <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-stone-400" />
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-stone-400" />
               <input
                 type="text"
                 name="q"
                 defaultValue={q || ''}
                 placeholder="Search city..."
-                className="w-full rounded-lg border border-stone-300 bg-[#fafaf9] pl-8 pr-3 py-1.5 text-xs text-stone-800 placeholder-stone-400 focus:border-rose-500 focus:outline-none"
+                className="w-full rounded-xl border border-stone-300 bg-[#fafaf9] pl-9 pr-3 py-2 text-xs text-stone-800 placeholder-stone-400 focus:border-[#6d4aff] focus:outline-none"
               />
             </div>
 
             <button
               type="submit"
-              className="rounded-lg bg-stone-900 px-3 py-1.5 text-xs font-semibold text-white hover:bg-stone-800 transition"
+              className="rounded-xl bg-[#6d4aff] px-4 py-2 text-xs font-bold text-white hover:bg-[#5b3adb] transition"
             >
               Filter
             </button>
@@ -161,7 +158,7 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
                 <Link
                   key={p.id}
                   href={`/profile/${p.id}`}
-                  className="group relative flex flex-col overflow-hidden rounded-xl border border-stone-200 bg-white transition hover:border-stone-300 hover:shadow-md hover:-translate-y-0.5"
+                  className="group relative flex flex-col overflow-hidden rounded-2xl border border-purple-100 bg-white transition hover:border-purple-300 hover:shadow-md hover:-translate-y-0.5"
                 >
                   <div className="relative aspect-[3/4] w-full bg-stone-100 overflow-hidden">
                     <img
@@ -172,14 +169,14 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent pointer-events-none" />
 
                     {isForeignVisitor && (
-                      <div className="absolute top-2 left-2 rounded border border-amber-300/40 bg-black/60 px-1.5 py-0.5 text-[9px] font-semibold text-amber-200 backdrop-blur-sm">
+                      <div className="absolute top-2 left-2 rounded-md border border-amber-300/40 bg-black/60 px-1.5 py-0.5 text-[9px] font-semibold text-amber-200 backdrop-blur-sm">
                         ✈️ Visiting
                       </div>
                     )}
 
                     <div className="absolute bottom-2 left-2 right-2 text-white">
                       <div className="flex items-center gap-1">
-                        <p className="text-xs font-bold truncate group-hover:text-rose-300 transition">
+                        <p className="text-xs font-bold truncate group-hover:text-purple-300 transition">
                           {p.display_name}{age ? `, ${age}` : ''}
                         </p>
                         {p.is_verified && (
@@ -187,7 +184,7 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
                         )}
                       </div>
                       <div className="flex items-center gap-1 text-[10px] text-stone-200 truncate mt-0.5">
-                        <MapPin className="h-3 w-3 text-rose-400 shrink-0" />
+                        <MapPin className="h-3 w-3 text-purple-400 shrink-0" />
                         <span>{p.city ? `${p.city}, ` : ''}{p.country}</span>
                       </div>
                     </div>
@@ -196,7 +193,7 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
               )
             })
           ) : (
-            <div className="col-span-full py-20 text-center text-xs text-stone-500 bg-white rounded-xl border border-stone-200">
+            <div className="col-span-full py-20 text-center text-xs text-stone-500 bg-white rounded-2xl border border-purple-100">
               No active profiles found matching this search criteria.
             </div>
           )}
