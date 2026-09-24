@@ -1,15 +1,15 @@
 ﻿import Link from 'next/link'
 import { createClient } from '@/utils/supabase/server'
 import { Logo } from '@/components/Logo'
-import { ShieldCheck, Sparkles, Plane, ArrowRight, CheckCircle2, Compass } from 'lucide-react'
+import { ShieldCheck, Sparkles, Plane, ArrowRight, CheckCircle2, Compass, BadgeCheck } from 'lucide-react'
 
 export default async function HomePage() {
   const supabase = await createClient()
 
-  // Fetch real members with photos to show live visual proof
+  // Fetch real members with photos and verified status
   const { data: profiles } = await supabase
     .from('profiles')
-    .select('id, display_name, city, country, avatar_url, gender, visiting_city')
+    .select('id, display_name, city, country, avatar_url, gender, visiting_city, is_verified')
     .not('avatar_url', 'is', null)
     .order('created_at', { ascending: false })
     .limit(12)
@@ -183,9 +183,14 @@ export default async function HomePage() {
                     )}
 
                     <div className="absolute bottom-2 left-2 right-2 text-white">
-                      <p className="text-xs font-bold truncate group-hover:text-rose-400 transition">
-                        {p.display_name}
-                      </p>
+                      <div className="flex items-center gap-1">
+                        <p className="text-xs font-bold truncate group-hover:text-rose-400 transition">
+                          {p.display_name}
+                        </p>
+                        {p.is_verified && (
+                          <BadgeCheck className="h-3.5 w-3.5 text-sky-400 fill-sky-400/20 shrink-0" />
+                        )}
+                      </div>
                       <p className="text-[10px] text-zinc-300 truncate">
                         {p.city ? `${p.city}, ` : ''}{p.country}
                       </p>

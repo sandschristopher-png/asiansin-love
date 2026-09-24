@@ -1,7 +1,7 @@
 ﻿import { createClient } from '@/utils/supabase/server'
 import Link from 'next/link'
 import { Logo } from '@/components/Logo'
-import { Search, MapPin, Sparkles, Filter, Lock } from 'lucide-react'
+import { Search, MapPin, BadgeCheck } from 'lucide-react'
 
 interface BrowseProps {
   searchParams: Promise<{
@@ -17,10 +17,9 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
 
   const { data: { user } } = await supabase.auth.getUser()
 
-  // Build dynamic database query
   let query = supabase
     .from('profiles')
-    .select('id, display_name, city, country, birthdate, avatar_url, gender, bio, visiting_city, looking_for, created_at')
+    .select('id, display_name, city, country, birthdate, avatar_url, gender, bio, visiting_city, looking_for, is_verified, created_at')
     .not('avatar_url', 'is', null)
     .order('created_at', { ascending: false })
 
@@ -84,9 +83,7 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
       </header>
 
       <main className="mx-auto max-w-6xl px-4 sm:px-6 pt-6">
-        {/* Filter Controls */}
         <div className="space-y-4 mb-8">
-          {/* City / Nearby search input */}
           <form method="GET" action="/browse" className="flex gap-2 max-w-md">
             {country && <input type="hidden" name="country" value={country} />}
             <div className="relative flex-1">
@@ -107,7 +104,6 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
             </button>
           </form>
 
-          {/* Country Quick Pills */}
           <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
             {countries.map((c) => {
               const active = (country === c.value) || (!country && c.value === 'All')
@@ -128,7 +124,6 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
           </div>
         </div>
 
-        {/* Member Directory Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
           {profiles && profiles.length > 0 ? (
             profiles.map((p) => {
@@ -154,9 +149,14 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
                     )}
 
                     <div className="absolute bottom-2.5 left-2.5 right-2.5 text-white">
-                      <p className="text-xs sm:text-sm font-bold truncate group-hover:text-rose-400 transition">
-                        {p.display_name}{age ? `, ${age}` : ''}
-                      </p>
+                      <div className="flex items-center gap-1">
+                        <p className="text-xs sm:text-sm font-bold truncate group-hover:text-rose-400 transition">
+                          {p.display_name}{age ? `, ${age}` : ''}
+                        </p>
+                        {p.is_verified && (
+                          <BadgeCheck className="h-3.5 w-3.5 text-sky-400 fill-sky-400/20 shrink-0" />
+                        )}
+                      </div>
                       <div className="flex items-center gap-1 text-[10px] text-zinc-300 truncate mt-0.5">
                         <MapPin className="h-3 w-3 text-rose-500 shrink-0" />
                         <span>{p.city ? `${p.city}, ` : ''}{p.country}</span>

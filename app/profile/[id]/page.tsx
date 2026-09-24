@@ -1,7 +1,7 @@
 ﻿import { createClient } from '@/utils/supabase/server'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
-import { ArrowLeft, MessageSquare, ShieldAlert, Lock, MapPin, Calendar, Ruler, User, HeartHandshake } from 'lucide-react'
+import { ArrowLeft, MessageSquare, ShieldAlert, Lock, MapPin, Calendar, Ruler, User, HeartHandshake, BadgeCheck } from 'lucide-react'
 import { Logo } from '@/components/Logo'
 import { ProfileActions } from '@/components/ProfileActions'
 
@@ -26,7 +26,7 @@ export default async function ProfileDetailPage({ params }: ProfilePageProps) {
     notFound()
   }
 
-  // 1. Record profile view
+  // Record profile view
   if (user && user.id !== profile.id) {
     await supabase.from('profile_views').insert({
       viewer_id: user.id,
@@ -34,7 +34,7 @@ export default async function ProfileDetailPage({ params }: ProfilePageProps) {
     })
   }
 
-  // 2. Check if currently sparked
+  // Check if currently sparked
   let isSparked = false
   if (user) {
     const { data: spk } = await supabase
@@ -46,7 +46,7 @@ export default async function ProfileDetailPage({ params }: ProfilePageProps) {
     isSparked = !!spk
   }
 
-  // 3. Check if currently favorited
+  // Check if currently favorited
   let isFavorited = false
   if (user) {
     const { data: fav } = await supabase
@@ -115,10 +115,18 @@ export default async function ProfileDetailPage({ params }: ProfilePageProps) {
                 </div>
               </div>
 
-              <h1 className="text-2xl font-black tracking-tight">
-                {profile.display_name}
-                {age ? <span className="font-normal text-zinc-300">, {age}</span> : ''}
-              </h1>
+              {/* Name + Verified Badge */}
+              <div className="flex items-center gap-1.5">
+                <h1 className="text-2xl font-black tracking-tight">
+                  {profile.display_name}
+                  {age ? <span className="font-normal text-zinc-300">, {age}</span> : ''}
+                </h1>
+                {profile.is_verified && (
+                  <span title="Verified Member" className="inline-flex items-center">
+                    <BadgeCheck className="h-5 w-5 text-sky-400 fill-sky-400/20" />
+                  </span>
+                )}
+              </div>
 
               <div className="flex items-center gap-1.5 mt-1 text-xs text-zinc-300">
                 <MapPin className="h-3.5 w-3.5 text-rose-500 shrink-0" />
@@ -219,7 +227,7 @@ export default async function ProfileDetailPage({ params }: ProfilePageProps) {
               </div>
               <div className="flex items-center gap-2 text-zinc-300">
                 <HeartHandshake className="h-4 w-4 text-rose-400" />
-                <span>Goal: <strong className="text-white font-medium">{profile.looking_for || 'Dating'}</strong></span>
+                <span>Goal: <strong className="text-white font-medium">{profile.looking_for || 'Dating with Romantic Intent'}</strong></span>
               </div>
               <div className="flex items-center gap-2 text-zinc-300">
                 <span>Status: <strong className="text-white font-medium">{profile.marital_status || 'Single'}</strong></span>
