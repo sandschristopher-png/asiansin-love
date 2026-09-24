@@ -1,7 +1,7 @@
 ﻿import { createClient } from '@/utils/supabase/server'
 import Link from 'next/link'
 import { Logo } from '@/components/Logo'
-import { Search, MapPin, BadgeCheck, Sparkles, Clock } from 'lucide-react'
+import { Search, MapPin, BadgeCheck, Sparkles, Clock, Building2, Trees, Waves } from 'lucide-react'
 import { SEA_COUNTRIES, COUNTRY_FILTER_OPTIONS } from '@/utils/constants'
 import { UserMenu } from '@/components/UserMenu'
 
@@ -11,11 +11,12 @@ interface BrowseProps {
     city?: string
     intent?: string
     filter?: string
+    lifestyle?: string
   }>
 }
 
 export default async function BrowsePage({ searchParams }: BrowseProps) {
-  const { country, city, intent, filter } = await searchParams
+  const { country, city, intent, filter, lifestyle } = await searchParams
   const supabase = await createClient()
 
   const { data: { user } } = await supabase.auth.getUser()
@@ -37,7 +38,7 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
 
   let query = supabase
     .from('profiles')
-    .select('id, display_name, city, country, birthdate, avatar_url, gender, bio, visiting_city, visiting_dates, looking_for, is_verified, sparks_count, created_at')
+    .select('id, display_name, city, country, birthdate, avatar_url, gender, bio, visiting_city, visiting_dates, looking_for, lifestyle, is_verified, sparks_count, created_at')
     .not('avatar_url', 'is', null)
 
   if (filter === 'top-sparks') {
@@ -58,6 +59,10 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
     query = query.eq('looking_for', intent)
   }
 
+  if (lifestyle && lifestyle !== 'All') {
+    query = query.eq('lifestyle', lifestyle)
+  }
+
   const { data: profiles } = await query
 
   const calculateAge = (birthdate: string) => {
@@ -74,6 +79,7 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
     if (country && country !== 'All') params.set('country', country)
     if (city) params.set('city', city)
     if (filter) params.set('filter', filter)
+    if (lifestyle && lifestyle !== 'All') params.set('lifestyle', lifestyle)
 
     for (const [k, v] of Object.entries(newParams)) {
       if (!v || v === 'All') {
@@ -86,9 +92,16 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
     return `/browse${q ? `?${q}` : ''}`
   }
 
+  const lifestyleFilters = [
+    { label: 'All Lifestyles', value: 'All' },
+    { label: '🏙️ Metro', value: 'Metro / City' },
+    { label: '🌾 Province', value: 'Province / Rural' },
+    { label: '🌴 Coastal', value: 'Coastal / Island' },
+  ]
+
   return (
     <div className="min-h-dvh bg-zinc-950 font-sans text-zinc-100 pb-20 selection:bg-rose-500 selection:text-white">
-      {/* Sleek Minimal Header */}
+      {/* Header */}
       <header className="sticky top-0 z-40 border-b border-zinc-900 bg-zinc-950/80 px-4 sm:px-6 py-3 backdrop-blur-md flex items-center justify-between">
         <Link href="/" className="hover:opacity-90 transition">
           <Logo className="h-6 w-6" textSize="text-base sm:text-lg" />
@@ -114,10 +127,13 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
 
       <main className="mx-auto max-w-6xl px-4 sm:px-6 pt-6">
         <div className="space-y-3.5 mb-6">
+          
+          {/* Search Bar + Sparks/Recent Toggle */}
           <div className="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center justify-between">
             <form method="GET" action="/browse" className="flex gap-2 flex-1 max-w-md">
               {country && country !== 'All' && <input type="hidden" name="country" value={country} />}
               {filter && <input type="hidden" name="filter" value={filter} />}
+              {lifestyle && lifestyle !== 'All' && <input type="hidden" name="lifestyle" value={lifestyle} />}
               <div className="relative flex-1">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500" />
                 <input
@@ -162,7 +178,28 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
             </div>
           </div>
 
-          {/* Unified Country Tabs */}
+          {/* Lifestyle / Roots Filter Strip */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-0.5 scrollbar-none">
+            <span className="text-[11px] font-medium text-zinc-500 mr-1 shrink-0">Roots:</span>
+            {lifestyleFilters.map((ls) => {
+              const active = (lifestyle === ls.value) || (!lifestyle && ls.value === 'All')
+              return (
+                <Link
+                  key={ls.value}
+                  href={buildFilterUrl({ lifestyle: ls.value === 'All' ? null : ls.value })}
+                  className={`shrink-0 rounded-md px-2.5 py-1 text-xs font-medium transition ${
+                    active
+                      ? 'bg-zinc-200 text-zinc-950 font-semibold shadow-xs'
+                      : 'border border-zinc-800 bg-zinc-900/40 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
+                  }`}
+                >
+                  {ls.label}
+                </Link>
+              )
+            })}
+          </div>
+
+          {/* Country Tabs */}
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1.5 scrollbar-none">
             {COUNTRY_FILTER_OPTIONS.map((c) => {
               const active = (country === c.value) || (!country && c.value === 'All')
@@ -209,6 +246,11 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
                       {isForeignVisitor && (
                         <div className="rounded border border-amber-500/30 bg-black/60 px-1.5 py-0.5 text-[9px] font-semibold text-amber-300 backdrop-blur-sm">
                           ✈️ Visiting
+                        </div>
+                      )}
+                      {p.lifestyle && (
+                        <div className="rounded border border-zinc-700/60 bg-black/60 px-1.5 py-0.5 text-[9px] font-medium text-zinc-300 backdrop-blur-sm">
+                          {p.lifestyle.includes('Metro') ? '🏙️ Metro' : p.lifestyle.includes('Province') ? '🌾 Province' : '🌴 Coastal'}
                         </div>
                       )}
                       {hasSparks && (
