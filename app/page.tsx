@@ -5,6 +5,17 @@ import { ShieldCheck, Sparkles, ArrowRight, CheckCircle2, Compass, BadgeCheck } 
 import { SEA_COUNTRIES } from '@/utils/constants'
 import { UserMenu } from '@/components/UserMenu'
 
+interface ShowcaseProfile {
+  id: string
+  display_name: string
+  city: string | null
+  country: string
+  avatar_url: string
+  gender: string
+  visiting_city: string | null
+  is_verified: boolean | null
+}
+
 export default async function HomePage() {
   const supabase = await createClient()
 
@@ -20,12 +31,19 @@ export default async function HomePage() {
     currentProfile = myProfile
   }
 
-  const { data: profiles } = await queryProfiles(supabase)
+  const { data: profiles } = await supabase
+    .from('profiles')
+    .select('id, display_name, city, country, avatar_url, gender, visiting_city, is_verified')
+    .not('avatar_url', 'is', null)
+    .order('created_at', { ascending: false })
+    .limit(12)
+
+  const showcaseProfiles = (profiles as ShowcaseProfile[] | null) || []
 
   return (
     <div className="min-h-dvh bg-[#fbfbfe] font-sans text-slate-900 selection:bg-[#6d4aff] selection:text-white relative overflow-hidden">
       
-      {/* Proton-style Soft Lilac/Purple Backdrop Glow */}
+      {/* Soft Lilac Glow */}
       <div className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 h-[480px] w-[800px] bg-gradient-to-b from-[#6d4aff]/15 via-[#9333ea]/5 to-transparent blur-3xl opacity-70" />
 
       {/* Navigation */}
@@ -149,8 +167,8 @@ export default async function HomePage() {
           </div>
 
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-            {profiles && profiles.length > 0 ? (
-              profiles.map((p) => {
+            {showcaseProfiles.length > 0 ? (
+              showcaseProfiles.map((p: ShowcaseProfile) => {
                 const isForeignVisitor = Boolean(p.visiting_city?.trim()) && !SEA_COUNTRIES.includes(p.country as any)
                 return (
                   <Link
@@ -197,7 +215,7 @@ export default async function HomePage() {
           </div>
         </section>
 
-        {/* Editorial Section in Light Theme */}
+        {/* Editorial Section */}
         <section className="mt-16 rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 shadow-xs">
           <div className="max-w-2xl space-y-3">
             <h2 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
@@ -233,13 +251,4 @@ export default async function HomePage() {
 
     </div>
   )
-}
-
-async function queryProfiles(supabase: any) {
-  return await supabase
-    .from('profiles')
-    .select('id, display_name, city, country, avatar_url, gender, visiting_city, is_verified')
-    .not('avatar_url', 'is', null)
-    .order('created_at', { ascending: false })
-    .limit(12)
 }
