@@ -1,69 +1,85 @@
-import Image from "next/image";
+import Link from 'next/link'
+import { Heart, ShieldCheck, MessageCircle, Sparkles } from 'lucide-react'
 
-export default function Home() {
+export default function HomePage() {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
+    <div className="flex min-h-screen flex-col bg-zinc-950 font-sans text-zinc-100">
+      {/* Navbar */}
+      <header className="flex items-center justify-between border-b border-zinc-900 px-6 py-5">
+        <div className="flex items-center gap-2">
+          <Heart className="h-6 w-6 fill-rose-600 text-rose-600" />
+          <span className="text-xl font-bold tracking-tight text-white">asiansin.love</span>
         </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+        <Link
+          href="/login"
+          className="rounded-lg border border-zinc-800 bg-zinc-900 px-4 py-2 text-xs font-semibold text-zinc-200 transition hover:border-zinc-700 hover:text-white"
+        >
+          Log In
+        </Link>
+      </header>
+
+      {/* Hero Section */}
+      <main className="flex flex-1 flex-col items-center justify-center px-6 text-center">
+        <div className="inline-flex items-center gap-2 rounded-full border border-rose-500/20 bg-rose-500/10 px-3.5 py-1.5 text-xs font-medium text-rose-400">
+          <Sparkles className="h-3.5 w-3.5" />
+          <span>Simple, Honest Cross-Border Connections</span>
+        </div>
+
+        <h1 className="mt-6 max-w-3xl text-4xl font-extrabold tracking-tight text-white sm:text-6xl">
+          Meet Verified Asian Singles Without the Clutter
+        </h1>
+
+        <p className="mt-4 max-w-xl text-base text-zinc-400 sm:text-lg">
+          No fake paywalls on basic chats, no inflated matching algorithms. Connect directly with authentic members across Asia with built-in safety protection.
+        </p>
+
+        <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+          <Link
+            href="/login"
+            className="flex items-center justify-center rounded-xl bg-rose-600 px-8 py-3.5 text-sm font-semibold text-white shadow-lg shadow-rose-950/40 transition hover:bg-rose-500"
           >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+            Get Started Free
+          </Link>
+          <Link
+            href="/login"
+            className="flex items-center justify-center rounded-xl border border-zinc-800 bg-zinc-900 px-8 py-3.5 text-sm font-semibold text-zinc-300 transition hover:border-zinc-700 hover:text-white"
           >
-            Documentation
-          </a>
+            Browse Members
+          </Link>
+        </div>
+
+        {/* Value Props */}
+        <div className="mt-16 grid max-w-3xl grid-cols-1 gap-6 border-t border-zinc-900 pt-12 sm:grid-cols-3 text-left">
+          <div className="rounded-xl border border-zinc-900 bg-zinc-900/40 p-4">
+            <ShieldCheck className="h-5 w-5 text-rose-500" />
+            <h3 className="mt-2 text-sm font-semibold text-white">Smart Guardian</h3>
+            <p className="mt-1 text-xs text-zinc-400">
+              Built-in detection flags off-platform solicitations and suspicious finance requests early.
+            </p>
+          </div>
+
+          <div className="rounded-xl border border-zinc-900 bg-zinc-900/40 p-4">
+            <MessageCircle className="h-5 w-5 text-rose-500" />
+            <h3 className="mt-2 text-sm font-semibold text-white">Direct Real-Time Chat</h3>
+            <p className="mt-1 text-xs text-zinc-400">
+              Immediate delivery with no hidden message unblur fees or fake bots.
+            </p>
+          </div>
+
+          <div className="rounded-xl border border-zinc-900 bg-zinc-900/40 p-4">
+            <Heart className="h-5 w-5 text-rose-500" />
+            <h3 className="mt-2 text-sm font-semibold text-white">Targeted Matching</h3>
+            <p className="mt-1 text-xs text-zinc-400">
+              Curated for foreign men seeking women in the Philippines, Thailand, Vietnam, and beyond.
+            </p>
+          </div>
         </div>
       </main>
+
+      {/* Footer */}
+      <footer className="border-t border-zinc-900 px-6 py-6 text-center text-xs text-zinc-500">
+        © 2026 asiansin.love. All rights reserved.
+      </footer>
     </div>
-  );
+  )
 }
