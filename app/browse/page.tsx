@@ -12,36 +12,42 @@ interface BrowseProps {
   }>
 }
 
+const SEA_COUNTRIES = [
+  'Philippines',
+  'Thailand',
+  'Vietnam',
+  'Cambodia',
+  'Laos',
+  'Indonesia',
+  'Malaysia',
+  'Singapore',
+]
+
 export default async function BrowsePage({ searchParams }: BrowseProps) {
   const { country, city, intent, filter } = await searchParams
   const supabase = await createClient()
 
   const { data: { user } } = await supabase.auth.getUser()
 
-  // Base Query
   let query = supabase
     .from('profiles')
-    .select('id, display_name, city, country, birthdate, avatar_url, gender, bio, visiting_city, looking_for, is_verified, sparks_count, created_at')
+    .select('id, display_name, city, country, birthdate, avatar_url, gender, bio, visiting_city, visiting_dates, looking_for, is_verified, sparks_count, created_at')
     .not('avatar_url', 'is', null)
 
-  // Filter & Ordering logic
   if (filter === 'top-sparks') {
     query = query.order('sparks_count', { ascending: false }).order('created_at', { ascending: false })
   } else {
     query = query.order('created_at', { ascending: false })
   }
 
-  // Country filter
   if (country && country !== 'All') {
     query = query.eq('country', country)
   }
 
-  // City / Nearby search
   if (city && city.trim() !== '') {
     query = query.ilike('city', `%${city.trim()}%`)
   }
 
-  // Intent filter
   if (intent && intent !== 'All') {
     query = query.eq('looking_for', intent)
   }
@@ -69,7 +75,6 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
 
   const isTopSparksActive = filter === 'top-sparks'
 
-  // Helper to preserve active query parameters
   const buildFilterUrl = (newParams: Record<string, string | null | undefined>) => {
     const params = new URLSearchParams()
     if (country && country !== 'All') params.set('country', country)
@@ -77,7 +82,7 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
     if (filter) params.set('filter', filter)
 
     for (const [k, v] of Object.entries(newParams)) {
-      if (v === null || v === undefined || v === 'All' || v === '') {
+      if (!v || v === 'All') {
         params.delete(k)
       } else {
         params.set(k, v)
@@ -88,24 +93,25 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
   }
 
   return (
-    <div className="min-h-dvh bg-zinc-950 font-sans text-zinc-100 pb-20">
-      <header className="sticky top-0 z-40 border-b border-zinc-800 bg-zinc-950/80 px-4 sm:px-6 py-3.5 backdrop-blur flex items-center justify-between">
+    <div className="min-h-dvh bg-zinc-950 font-sans text-zinc-100 pb-20 selection:bg-rose-500 selection:text-white">
+      {/* Sleek Minimal Header */}
+      <header className="sticky top-0 z-40 border-b border-zinc-900 bg-zinc-950/80 px-4 sm:px-6 py-3 backdrop-blur-md flex items-center justify-between">
         <Link href="/" className="hover:opacity-90 transition">
-          <Logo className="h-7 w-7" textSize="text-lg sm:text-xl" />
+          <Logo className="h-6 w-6" textSize="text-base sm:text-lg" />
         </Link>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
           {user ? (
             <Link
               href="/settings"
-              className="rounded-xl border border-zinc-800 bg-zinc-900 px-3 py-1.5 text-xs font-semibold text-zinc-300 hover:text-white transition"
+              className="rounded-lg border border-zinc-800 bg-zinc-900/80 px-3 py-1.5 text-xs font-semibold text-zinc-300 hover:border-zinc-700 hover:text-white transition"
             >
               My Profile
             </Link>
           ) : (
             <Link
               href="/login"
-              className="rounded-xl bg-rose-600 px-3.5 py-1.5 text-xs font-bold text-white hover:bg-rose-500 transition shadow"
+              className="rounded-lg bg-rose-600 px-3.5 py-1.5 text-xs font-bold text-white hover:bg-rose-500 transition shadow-sm"
             >
               Join Free
             </Link>
@@ -115,71 +121,69 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
 
       <main className="mx-auto max-w-6xl px-4 sm:px-6 pt-6">
         
-        {/* Search & Top Sorting Segment */}
-        <div className="space-y-4 mb-8">
-          
-          <div className="flex flex-col sm:flex-row gap-3 items-stretch sm:items-center justify-between">
-            {/* City / Nearby search input */}
+        {/* Search Bar & Order Segment */}
+        <div className="space-y-3.5 mb-6">
+          <div className="flex flex-col sm:flex-row gap-2.5 items-stretch sm:items-center justify-between">
             <form method="GET" action="/browse" className="flex gap-2 flex-1 max-w-md">
               {country && country !== 'All' && <input type="hidden" name="country" value={country} />}
               {filter && <input type="hidden" name="filter" value={filter} />}
               <div className="relative flex-1">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 h-4 w-4 text-zinc-500" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-3.5 w-3.5 text-zinc-500" />
                 <input
                   type="text"
                   name="city"
                   defaultValue={city || ''}
-                  placeholder="Search city or district (e.g. Makati, Phuket, Da Nang)..."
-                  className="w-full rounded-2xl border border-zinc-800 bg-zinc-900/90 pl-10 pr-4 py-2.5 text-xs text-white placeholder-zinc-500 focus:border-rose-500 focus:outline-none"
+                  placeholder="Search city (e.g. Makati, Phuket, Da Nang)..."
+                  className="w-full rounded-lg border border-zinc-800/80 bg-zinc-900/70 pl-9 pr-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-rose-500/80 focus:outline-none focus:ring-1 focus:ring-rose-500/30 transition"
                 />
               </div>
               <button
                 type="submit"
-                className="rounded-2xl bg-zinc-800 hover:bg-zinc-700 px-4 py-2.5 text-xs font-semibold text-zinc-200 transition"
+                className="rounded-lg border border-zinc-800 bg-zinc-900 px-3.5 py-2 text-xs font-semibold text-zinc-300 hover:text-white hover:border-zinc-700 transition"
               >
                 Search
               </button>
             </form>
 
-            {/* Mode Toggle: Recent vs Top Sparks */}
-            <div className="inline-flex rounded-2xl border border-zinc-800 bg-zinc-900/60 p-1 self-start sm:self-auto">
+            {/* Mode Toggle */}
+            <div className="inline-flex rounded-lg border border-zinc-800/80 bg-zinc-900/60 p-1 self-start sm:self-auto">
               <Link
                 href={buildFilterUrl({ filter: null })}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition ${
                   !isTopSparksActive
-                    ? 'bg-zinc-800 text-white shadow-sm'
+                    ? 'bg-zinc-800 text-white shadow-xs'
                     : 'text-zinc-400 hover:text-zinc-200'
                 }`}
               >
-                <Clock className="h-3.5 w-3.5" />
+                <Clock className="h-3 w-3" />
                 <span>Recent</span>
               </Link>
               <Link
                 href={buildFilterUrl({ filter: 'top-sparks' })}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-semibold transition ${
                   isTopSparksActive
-                    ? 'bg-rose-600 text-white shadow-sm'
+                    ? 'bg-rose-600 text-white shadow-xs'
                     : 'text-zinc-400 hover:text-zinc-200'
                 }`}
               >
-                <Sparkles className="h-3.5 w-3.5" />
+                <Sparkles className="h-3 w-3" />
                 <span>Top Sparks</span>
               </Link>
             </div>
           </div>
 
-          {/* Country Quick Pills */}
-          <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+          {/* Clean Country Tabs */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1.5 scrollbar-none">
             {countries.map((c) => {
               const active = (country === c.value) || (!country && c.value === 'All')
               return (
                 <Link
                   key={c.value}
                   href={buildFilterUrl({ country: c.value === 'All' ? null : c.value })}
-                  className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold transition ${
+                  className={`shrink-0 rounded-md px-3 py-1 text-xs font-medium transition ${
                     active
-                      ? 'bg-rose-600 text-white shadow-md shadow-rose-600/20'
-                      : 'border border-zinc-800 bg-zinc-900/60 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
+                      ? 'bg-rose-600 text-white shadow-xs'
+                      : 'border border-zinc-800/80 bg-zinc-900/40 text-zinc-400 hover:border-zinc-700 hover:text-zinc-200'
                   }`}
                 >
                   {c.label}
@@ -190,16 +194,20 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
         </div>
 
         {/* Member Directory Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
           {profiles && profiles.length > 0 ? (
             profiles.map((p) => {
               const age = calculateAge(p.birthdate)
               const hasSparks = (p.sparks_count ?? 0) > 0
+              
+              // Only foreign visitors from outside SEA qualify for "Visiting" badges
+              const isForeignVisitor = p.visiting_city && !SEA_COUNTRIES.includes(p.country)
+
               return (
                 <Link
                   key={p.id}
                   href={`/profile/${p.id}`}
-                  className="group relative flex flex-col overflow-hidden rounded-2xl border border-zinc-800/80 bg-zinc-900/40 shadow-lg backdrop-blur transition hover:border-zinc-700 hover:-translate-y-1"
+                  className="group relative flex flex-col overflow-hidden rounded-xl border border-zinc-800/70 bg-zinc-900/30 transition hover:border-zinc-700 hover:-translate-y-0.5"
                 >
                   <div className="relative aspect-[3/4] w-full bg-zinc-900 overflow-hidden">
                     <img
@@ -209,38 +217,41 @@ export default async function BrowsePage({ searchParams }: BrowseProps) {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent pointer-events-none" />
 
-                    {/* Top Badges */}
+                    {/* Subtle Top Tags */}
                     <div className="absolute top-2 left-2 flex flex-col gap-1">
-                      {p.visiting_city && (
-                        <div className="rounded-full bg-amber-500/90 px-2 py-0.5 text-[9px] font-bold text-black backdrop-blur">
-                          ✈️ Visiting
+                      {isForeignVisitor && (
+                        <div className="rounded border border-amber-500/30 bg-black/60 px-1.5 py-0.5 text-[9px] font-semibold text-amber-300 backdrop-blur-sm">
+                          ✈️ Visiting {p.visiting_city}
                         </div>
                       )}
                       {hasSparks && (
-                        <div className="rounded-full bg-rose-600/90 px-2 py-0.5 text-[9px] font-bold text-white backdrop-blur flex items-center gap-1 shadow-sm">
+                        <div className="rounded border border-rose-500/30 bg-black/60 px-1.5 py-0.5 text-[9px] font-semibold text-rose-300 backdrop-blur-sm flex items-center gap-1">
                           <Sparkles className="h-2.5 w-2.5" />
                           <span>Top Spark</span>
                         </div>
                       )}
                     </div>
 
+                    {/* Bottom Metadata */}
                     <div className="absolute bottom-2.5 left-2.5 right-2.5 text-white">
                       <div className="flex items-center gap-1">
-                        <p className="text-xs sm:text-sm font-bold truncate group-hover:text-rose-400 transition">
+                        <p className="text-xs sm:text-sm font-semibold truncate group-hover:text-rose-400 transition">
                           {p.display_name}{age ? `, ${age}` : ''}
                         </p>
                         {p.is_verified && (
                           <BadgeCheck className="h-3.5 w-3.5 text-sky-400 fill-sky-400/20 shrink-0" />
                         )}
                       </div>
-                      <div className="flex items-center gap-1 text-[10px] text-zinc-300 truncate mt-0.5">
+                      <div className="flex items-center gap-1 text-[10px] text-zinc-400 truncate mt-0.5">
                         <MapPin className="h-3 w-3 text-rose-500 shrink-0" />
                         <span>{p.city ? `${p.city}, ` : ''}{p.country}</span>
                       </div>
                       {p.looking_for && (
-                        <span className="mt-1.5 inline-block rounded bg-black/60 px-1.5 py-0.5 text-[9px] text-zinc-300 font-medium truncate max-w-full">
-                          {p.looking_for}
-                        </span>
+                        <div className="mt-1.5">
+                          <span className="inline-block rounded border border-zinc-800 bg-black/50 px-1.5 py-0.5 text-[9px] text-zinc-300 font-normal truncate max-w-full">
+                            {p.looking_for}
+                          </span>
+                        </div>
                       )}
                     </div>
                   </div>
