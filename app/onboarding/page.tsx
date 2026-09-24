@@ -1,308 +1,426 @@
 ﻿'use client'
 
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { createClient } from '@/utils/supabase/client'
 import { useRouter } from 'next/navigation'
-import Link from 'next/link'
-import { Logo } from '@/components/Logo'
-import { AlertCircle, Heart } from 'lucide-react'
+import { Camera, Loader2, ShieldCheck, Plane, CheckCircle2 } from 'lucide-react'
+import { SEA_COUNTRIES } from '@/utils/constants'
 
 export default function OnboardingPage() {
-  const supabase = createClient()
   const router = useRouter()
+  const supabase = createClient()
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
+  const [loading, setLoading] = useState(false)
+  const [initialLoading, setInitialLoading] = useState(true)
+  const [userId, setUserId] = useState<string | null>(null)
+  const [errorMsg, setErrorMsg] = useState('')
+
+  // Form Fields
+  const [avatarFile, setAvatarFile] = useState<File | null>(null)
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
   const [displayName, setDisplayName] = useState('')
   const [gender, setGender] = useState('female')
-  const [targetGender, setTargetGender] = useState('male')
+  const [lookingFor, setLookingFor] = useState('Men')
+  const [relationshipGoal, setRelationshipGoal] = useState('Long-Term Relationship')
   const [birthdate, setBirthdate] = useState('')
   const [country, setCountry] = useState('Philippines')
   const [city, setCity] = useState('')
-  const [lookingFor, setLookingFor] = useState('Long-Term Relationship')
   const [bio, setBio] = useState('')
-  const [agreedToTerms, setAgreedToTerms] = useState(false)
+  const [agreed, setAgreed] = useState(false)
 
-  const [errorMsg, setErrorMsg] = useState<string | null>(null)
-  const [loading, setLoading] = useState(false)
+  // Expat Travel Radar Fields
+  const [visitingCity, setVisitingCity] = useState('')
+  const [visitingDates, setVisitingDates] = useState('')
 
-  const maxBirthdate = (() => {
-    const d = new Date()
-    d.setFullYear(d.getFullYear() - 18)
-    return d.toISOString().split('T')[0]
-  })()
+  const isExpat = !SEA_COUNTRIES.includes(country as any)
 
-  const validateAge = (selectedDate: string): boolean => {
-    if (!selectedDate) return false
-    const birth = new Date(selectedDate)
-    const today = new Date()
-    let age = today.getFullYear() - birth.getFullYear()
-    const monthDiff = today.getMonth() - birth.getMonth()
-    if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-      age--
+  useEffect(() => {
+    async function checkUser() {
+      const { data: { user } } = await supabase.auth.getUser()
+      if (!user) {
+        router.push('/login')
+        return
+      }
+
+      setUserId(user.id)
+
+      // If user already completed their profile, push to browse
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('display_name, birthdate, avatar_url')
+        .eq('id', user.id)
+        .maybeSingle()
+
+      if (profile?.display_name && profile?.birthdate && profile?.avatar_url) {
+        router.push('/browse')
+        return
+      }
+
+      if (profile?.avatar_url) {
+        setAvatarPreview(profile.avatar_url)
+      }
+
+      setInitialLoading(false)
     }
-    return age >= 18
+
+    checkUser()
+  }, [router, supabase])
+
+  const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!e.target.files || e.target.files.length === 0) return
+    const file = e.target.files[0]
+    setAvatarFile(file)
+    setAvatarPreview(URL.createObjectURL(file))
   }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    setErrorMsg(null)
+    setErrorMsg('')
 
-    if (!validateAge(birthdate)) {
-      setErrorMsg('You must be at least 18 years of age to register on asiansin.love.')
+    if (!agreed) {
+      setErrorMsg('You must certify that you are at least 18 years old and agree to the terms.')
       return
     }
 
-    if (!agreedToTerms) {
-      setErrorMsg('You must agree to the Terms of Service and Privacy Policy to continue.')
+    if (!avatarPreview && !avatarFile) {
+      setErrorMsg('Please upload a clear profile photo to continue.')
       return
     }
 
     if (bio.trim().length < 50) {
-      setErrorMsg('About Me bio must be at least 50 characters.')
+      setErrorMsg('Please write at least 50 characters in your bio introduction.')
       return
     }
 
     setLoading(true)
 
-    const { data: { user } } = await supabase.auth.getUser()
-    if (!user) {
-      router.push('/login')
-      return
-    }
+    try {
+      let uploadedAvatarUrl = avatarPreview
 
-    const { error } = await supabase
-      .from('profiles')
-      .upsert({
-        id: user.id,
-        display_name: displayName.trim(),
-        gender,
-        target_gender: targetGender,
-        birthdate,
-        country,
-        city: city.trim(),
-        looking_for: lookingFor,
-        bio: bio.trim(),
-        updated_at: new Date().toISOString(),
-      })
+      // 1. Upload photo if selected
+      if (avatarFile && userId) {
+        const fileExt = avatarFile.name.split('.').pop()
+        const filePath = `${userId}/${Date.now()}.${fileExt}`
 
-    setLoading(false)
+        const { error: uploadError } = await supabase.storage
+          .from('avatars')
+          .upload(filePath, avatarFile, { upsert: true })
 
-    if (error) {
-      setErrorMsg(error.message)
-    } else {
-      router.push('/settings')
+        if (uploadError) throw uploadError
+
+        const { data: { publicUrl } } = supabase.storage
+          .from('avatars')
+          .getPublicUrl(filePath)
+
+        uploadedAvatarUrl = publicUrl
+      }
+
+      // 2. Save Profile Details
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .upsert({
+          id: userId,
+          display_name: displayName.trim(),
+          gender,
+          looking_for: relationshipGoal,
+          birthdate,
+          country,
+          home_country: isExpat ? country : null,
+          is_sea_local: !isExpat,
+          city: city.trim(),
+          bio: bio.trim(),
+          avatar_url: uploadedAvatarUrl,
+          visiting_city: isExpat ? visitingCity.trim() || null : null,
+          visiting_dates: isExpat ? visitingDates.trim() || null : null,
+          updated_at: new Date().toISOString(),
+        })
+
+      if (updateError) throw updateError
+
+      router.push('/browse')
+    } catch (err: any) {
+      setErrorMsg(err.message || 'An error occurred while saving your profile.')
+    } finally {
+      setLoading(false)
     }
   }
 
-  return (
-    <div className="min-h-dvh bg-zinc-950 font-sans text-zinc-100 flex flex-col justify-center py-12 px-4 sm:px-6">
-      <div className="sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="flex justify-center mb-4">
-          <Logo className="h-9 w-9" textSize="text-2xl" />
-        </div>
-        <h2 className="text-center text-xl font-bold tracking-tight text-white">
-          Create Your Member Profile
-        </h2>
-        <p className="mt-1 text-center text-xs text-zinc-400">
-          A platform dedicated strictly to genuine relationships &amp; love
-        </p>
+  if (initialLoading) {
+    return (
+      <div className="min-h-dvh bg-zinc-950 flex items-center justify-center text-xs text-zinc-500">
+        <Loader2 className="h-5 w-5 animate-spin text-rose-500 mr-2" />
+        <span>Loading setup...</span>
       </div>
+    )
+  }
 
-      <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md">
-        <div className="border border-zinc-800 bg-zinc-900/50 p-6 sm:rounded-3xl shadow-xl backdrop-blur">
-          {errorMsg && (
-            <div className="mb-6 flex items-start gap-2 rounded-xl border border-rose-500/20 bg-rose-500/10 p-3 text-xs text-rose-300">
-              <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
-              <span>{errorMsg}</span>
+  return (
+    <div className="min-h-dvh bg-zinc-950 font-sans text-zinc-100 flex flex-col justify-center items-center py-10 px-4 selection:bg-rose-500 selection:text-white">
+      
+      <div className="w-full max-w-lg space-y-6">
+        
+        {/* Header */}
+        <div className="text-center space-y-1.5">
+          <h1 className="text-2xl font-bold tracking-tight text-white">Create Your Member Profile</h1>
+          <p className="text-xs text-zinc-400">A community dedicated strictly to genuine relationships &amp; love</p>
+        </div>
+
+        {errorMsg && (
+          <div className="rounded-xl border border-rose-500/20 bg-rose-500/10 p-3.5 text-xs text-rose-300 text-center">
+            {errorMsg}
+          </div>
+        )}
+
+        <form onSubmit={handleSubmit} className="rounded-2xl border border-zinc-800/80 bg-zinc-900/40 p-6 backdrop-blur-md space-y-5 shadow-2xl">
+          
+          {/* Photo Upload Section */}
+          <div className="flex flex-col items-center justify-center space-y-2 pb-2 border-b border-zinc-800/60">
+            <input
+              type="file"
+              ref={fileInputRef}
+              onChange={handlePhotoSelect}
+              accept="image/*"
+              className="hidden"
+            />
+
+            <div 
+              onClick={() => fileInputRef.current?.click()}
+              className="relative h-24 w-24 rounded-2xl overflow-hidden border-2 border-dashed border-zinc-700 hover:border-rose-500 cursor-pointer bg-zinc-950 flex flex-col items-center justify-center group transition"
+            >
+              {avatarPreview ? (
+                <>
+                  <img src={avatarPreview} alt="Preview" className="h-full w-full object-cover" />
+                  <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
+                    <Camera className="h-5 w-5 text-white" />
+                  </div>
+                </>
+              ) : (
+                <div className="flex flex-col items-center text-zinc-400 group-hover:text-rose-400 transition">
+                  <Camera className="h-6 w-6 mb-1" />
+                  <span className="text-[10px] font-medium">Add Photo</span>
+                </div>
+              )}
             </div>
-          )}
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="text-center">
+              <span className="text-xs font-semibold text-zinc-300 block">Profile Avatar *</span>
+              <span className="text-[10px] text-zinc-500">Upload a clear photo of your face</span>
+            </div>
+          </div>
+
+          {/* Display Name */}
+          <div>
+            <label className="block text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
+              Display Name *
+            </label>
+            <input
+              type="text"
+              required
+              value={displayName}
+              onChange={(e) => setDisplayName(e.target.value)}
+              placeholder="e.g. Maria, Somchai, David"
+              className="w-full rounded-xl border border-zinc-800 bg-zinc-950/70 px-3.5 py-2.5 text-xs text-white placeholder-zinc-500 focus:border-rose-500 focus:outline-none transition"
+            />
+          </div>
+
+          {/* Gender & Looking For */}
+          <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                Display Name
+              <label className="block text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
+                I Am A
+              </label>
+              <select
+                value={gender}
+                onChange={(e) => setGender(e.target.value)}
+                className="w-full rounded-xl border border-zinc-800 bg-zinc-950/70 px-3 py-2.5 text-xs text-white focus:border-rose-500 focus:outline-none transition"
+              >
+                <option value="female">Woman</option>
+                <option value="male">Man</option>
+                <option value="trans">Trans Woman</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
+                Looking For
+              </label>
+              <select
+                value={lookingFor}
+                onChange={(e) => setLookingFor(e.target.value)}
+                className="w-full rounded-xl border border-zinc-800 bg-zinc-950/70 px-3 py-2.5 text-xs text-white focus:border-rose-500 focus:outline-none transition"
+              >
+                <option value="Men">Men</option>
+                <option value="Women">Women</option>
+                <option value="Everyone">Everyone</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Goal */}
+          <div>
+            <label className="block text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
+              Relationship Goal
+            </label>
+            <select
+              value={relationshipGoal}
+              onChange={(e) => setRelationshipGoal(e.target.value)}
+              className="w-full rounded-xl border border-zinc-800 bg-zinc-950/70 px-3 py-2.5 text-xs text-white focus:border-rose-500 focus:outline-none transition"
+            >
+              <option value="Long-Term Relationship">Long-Term Relationship</option>
+              <option value="Dating with Intent">Dating with Intent</option>
+              <option value="Marriage-Minded">Marriage-Minded</option>
+            </select>
+          </div>
+
+          {/* Date of Birth */}
+          <div>
+            <div className="flex justify-between items-center mb-1.5">
+              <label className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
+                Date of Birth *
+              </label>
+              <span className="text-[10px] text-rose-400 font-semibold tracking-wide">MUST BE 18+</span>
+            </div>
+            <input
+              type="date"
+              required
+              value={birthdate}
+              onChange={(e) => setBirthdate(e.target.value)}
+              className="w-full rounded-xl border border-zinc-800 bg-zinc-950/70 px-3.5 py-2.5 text-xs text-white focus:border-rose-500 focus:outline-none transition"
+            />
+          </div>
+
+          {/* Country & City */}
+          <div className="grid grid-cols-2 gap-3">
+            <div>
+              <label className="block text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
+                Country
+              </label>
+              <select
+                value={country}
+                onChange={(e) => setCountry(e.target.value)}
+                className="w-full rounded-xl border border-zinc-800 bg-zinc-950/70 px-3 py-2.5 text-xs text-white focus:border-rose-500 focus:outline-none transition"
+              >
+                <optgroup label="Southeast Asia">
+                  <option value="Philippines">Philippines</option>
+                  <option value="Thailand">Thailand</option>
+                  <option value="Vietnam">Vietnam</option>
+                  <option value="Cambodia">Cambodia</option>
+                  <option value="Laos">Laos</option>
+                  <option value="Indonesia">Indonesia</option>
+                  <option value="Malaysia">Malaysia</option>
+                  <option value="Singapore">Singapore</option>
+                </optgroup>
+                <optgroup label="International / Expats">
+                  <option value="United States">United States</option>
+                  <option value="Canada">Canada</option>
+                  <option value="United Kingdom">United Kingdom</option>
+                  <option value="Australia">Australia</option>
+                  <option value="Germany">Germany</option>
+                  <option value="France">France</option>
+                  <option value="Other">Other</option>
+                </optgroup>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-[11px] font-semibold uppercase tracking-wider text-zinc-400 mb-1.5">
+                City / Area *
               </label>
               <input
                 type="text"
                 required
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                placeholder="e.g. Maria, Somchai, Bounmy"
-                className="mt-1 w-full rounded-xl border border-zinc-700 bg-zinc-800 px-3 py-2 text-base sm:text-sm text-white placeholder-zinc-500 focus:border-rose-500 focus:outline-none"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                placeholder="e.g. Makati, Cebu, Bangkok"
+                className="w-full rounded-xl border border-zinc-800 bg-zinc-950/70 px-3.5 py-2.5 text-xs text-white placeholder-zinc-500 focus:border-rose-500 focus:outline-none transition"
               />
             </div>
+          </div>
 
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                  I Am A
-                </label>
-                <select
-                  value={gender}
-                  onChange={(e) => setGender(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-zinc-700 bg-zinc-800 px-3 py-2 text-base sm:text-sm text-white focus:border-rose-500 focus:outline-none"
-                >
-                  <option value="female">Woman</option>
-                  <option value="trans">Trans Woman</option>
-                  <option value="male">Man</option>
-                </select>
+          {/* Conditional Expat Travel Radar Section */}
+          {isExpat && (
+            <div className="rounded-xl border border-amber-500/20 bg-amber-500/5 p-3.5 space-y-3">
+              <div className="flex items-center gap-1.5 text-xs font-semibold text-amber-300">
+                <Plane className="h-3.5 w-3.5" />
+                <span>Travel Radar (Optional)</span>
               </div>
-
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                  Looking For
-                </label>
-                <select
-                  value={targetGender}
-                  onChange={(e) => setTargetGender(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-zinc-700 bg-zinc-800 px-3 py-2 text-base sm:text-sm text-white focus:border-rose-500 focus:outline-none"
-                >
-                  <option value="male">Men</option>
-                  <option value="female">Women</option>
-                  <option value="trans">Trans Women</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Relationship Goal - Strictly Serious */}
-            <div>
-              <div className="flex items-center gap-1.5 mb-1">
-                <Heart className="h-3.5 w-3.5 text-rose-500" />
-                <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                  Relationship Goal
-                </label>
-              </div>
-              <select
-                value={lookingFor}
-                onChange={(e) => setLookingFor(e.target.value)}
-                className="w-full rounded-xl border border-zinc-700 bg-zinc-800 px-3 py-2 text-base sm:text-sm text-white focus:border-rose-500 focus:outline-none"
-              >
-                <option value="Long-Term Relationship">Long-Term Relationship</option>
-                <option value="Marriage-Minded">Marriage-Minded</option>
-                <option value="Dating with Romantic Intent">Dating with Romantic Intent</option>
-              </select>
-              <p className="mt-1 text-[11px] text-zinc-500">
-                asiansin.love is reserved exclusively for meaningful connections and serious romance.
+              <p className="text-[11px] text-zinc-400 leading-normal">
+                Visiting Southeast Asia soon? Add your destination and dates so locals know when you will be in town.
               </p>
-            </div>
-
-            {/* Strict 18+ Date of Birth Input */}
-            <div>
-              <div className="flex items-center justify-between">
-                <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                  Date of Birth <span className="text-rose-500">*</span>
-                </label>
-                <span className="text-[10px] font-semibold text-rose-400 uppercase tracking-wider">
-                  Must be 18+
-                </span>
-              </div>
-              <input
-                type="date"
-                required
-                max={maxBirthdate}
-                value={birthdate}
-                onChange={(e) => setBirthdate(e.target.value)}
-                className="mt-1 w-full rounded-xl border border-zinc-700 bg-zinc-800 px-3 py-2 text-base sm:text-sm text-white focus:border-rose-500 focus:outline-none"
-              />
-            </div>
-
-            <div className="grid grid-cols-2 gap-3">
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                  Country
-                </label>
-                <select
-                  value={country}
-                  onChange={(e) => setCountry(e.target.value)}
-                  className="mt-1 w-full rounded-xl border border-zinc-700 bg-zinc-800 px-3 py-2 text-base sm:text-sm text-white focus:border-rose-500 focus:outline-none"
-                >
-                  <optgroup label="Southeast Asia">
-                    <option value="Philippines">Philippines</option>
-                    <option value="Thailand">Thailand</option>
-                    <option value="Vietnam">Vietnam</option>
-                    <option value="Cambodia">Cambodia</option>
-                    <option value="Laos">Laos</option>
-                    <option value="Indonesia">Indonesia</option>
-                    <option value="Malaysia">Malaysia</option>
-                    <option value="Singapore">Singapore</option>
-                  </optgroup>
-                  <optgroup label="International Visitors / Expats">
-                    <option value="United States">United States</option>
-                    <option value="Canada">Canada</option>
-                    <option value="United Kingdom">United Kingdom</option>
-                    <option value="Australia">Australia</option>
-                    <option value="Germany">Germany</option>
-                    <option value="France">France</option>
-                    <option value="Other">Other</option>
-                  </optgroup>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                  City / Area
-                </label>
+              <div className="grid grid-cols-2 gap-2.5">
                 <input
                   type="text"
-                  required
-                  value={city}
-                  onChange={(e) => setCity(e.target.value)}
-                  placeholder="e.g. Vientiane, Malate Manila, Cebu"
-                  className="mt-1 w-full rounded-xl border border-zinc-700 bg-zinc-800 px-3 py-2 text-base sm:text-sm text-white placeholder-zinc-500 focus:border-rose-500 focus:outline-none"
+                  value={visitingCity}
+                  onChange={(e) => setVisitingCity(e.target.value)}
+                  placeholder="Visiting city (e.g. Manila)"
+                  className="rounded-lg border border-zinc-800 bg-zinc-950/80 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-amber-500 focus:outline-none"
                 />
-              </div>
-            </div>
-
-            <div>
-              <div className="flex items-center justify-between">
-                <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                  About Me <span className="text-rose-500">*</span>
-                </label>
-                <span className={`text-[11px] ${bio.trim().length >= 50 ? 'text-emerald-400 font-medium' : 'text-zinc-500'}`}>
-                  {bio.trim().length}/50 min
-                </span>
-              </div>
-              <textarea
-                rows={3}
-                required
-                minLength={50}
-                value={bio}
-                onChange={(e) => setBio(e.target.value)}
-                className="mt-1 w-full rounded-xl border border-zinc-700 bg-zinc-800 px-3 py-2 text-base sm:text-sm text-white placeholder-zinc-500 focus:border-rose-500 focus:outline-none"
-                placeholder="Describe your character, interests, and what you are seeking in a life partner..."
-              />
-            </div>
-
-            <div className="pt-2">
-              <label className="flex items-start gap-2.5 cursor-pointer text-xs text-zinc-400 leading-relaxed">
                 <input
-                  type="checkbox"
-                  required
-                  checked={agreedToTerms}
-                  onChange={(e) => setAgreedToTerms(e.target.checked)}
-                  className="mt-0.5 h-4 w-4 rounded border-zinc-700 bg-zinc-800 text-rose-600 focus:ring-0"
+                  type="text"
+                  value={visitingDates}
+                  onChange={(e) => setVisitingDates(e.target.value)}
+                  placeholder="Dates (e.g. Nov 10 - 24)"
+                  className="rounded-lg border border-zinc-800 bg-zinc-950/80 px-3 py-2 text-xs text-white placeholder-zinc-500 focus:border-amber-500 focus:outline-none"
                 />
-                <span>
-                  I certify that I am at least 18 years of age and agree to the{' '}
-                  <Link href="/terms" target="_blank" className="text-zinc-200 underline hover:text-white">
-                    Terms of Service
-                  </Link>{' '}
-                  and{' '}
-                  <Link href="/privacy" target="_blank" className="text-zinc-200 underline hover:text-white">
-                    Privacy Policy
-                  </Link>.
-                </span>
-              </label>
+              </div>
             </div>
+          )}
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full rounded-xl bg-rose-600 py-3 text-xs font-bold uppercase tracking-wider text-white hover:bg-rose-500 disabled:opacity-50 transition shadow"
-            >
-              {loading ? 'Creating Profile...' : 'Complete & Continue'}
-            </button>
-          </form>
-        </div>
+          {/* About Me Bio */}
+          <div>
+            <div className="flex justify-between items-center mb-1.5">
+              <label className="text-[11px] font-semibold uppercase tracking-wider text-zinc-400">
+                About Me *
+              </label>
+              <span className={`text-[10px] font-medium ${bio.length >= 50 ? 'text-emerald-400' : 'text-zinc-500'}`}>
+                {bio.length}/50 min
+              </span>
+            </div>
+            <textarea
+              required
+              rows={3}
+              value={bio}
+              onChange={(e) => setBio(e.target.value)}
+              placeholder="Describe your character, interests, and what you are seeking in a life partner..."
+              className="w-full rounded-xl border border-zinc-800 bg-zinc-950/70 p-3 text-xs text-white placeholder-zinc-500 focus:border-rose-500 focus:outline-none transition resize-none"
+            />
+          </div>
+
+          {/* Terms Checkbox */}
+          <div className="flex items-start gap-2.5 pt-1">
+            <input
+              type="checkbox"
+              id="agree"
+              checked={agreed}
+              onChange={(e) => setAgreed(e.target.checked)}
+              className="mt-0.5 h-4 w-4 rounded border-zinc-800 bg-zinc-950 text-rose-600 focus:ring-0 cursor-pointer"
+            />
+            <label htmlFor="agree" className="text-[11px] text-zinc-400 leading-snug cursor-pointer select-none">
+              I certify that I am at least 18 years of age and agree to the{' '}
+              <a href="/terms" target="_blank" className="text-zinc-200 underline hover:text-white">Terms of Service</a>{' '}
+              and{' '}
+              <a href="/privacy" target="_blank" className="text-zinc-200 underline hover:text-white">Privacy Policy</a>.
+            </label>
+          </div>
+
+          {/* Submit Button */}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full rounded-xl bg-rose-600 py-3 text-xs font-bold uppercase tracking-wider text-white hover:bg-rose-500 transition shadow-sm flex items-center justify-center gap-2 disabled:opacity-50"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" />
+                <span>Creating Profile...</span>
+              </>
+            ) : (
+              <span>Complete &amp; Continue</span>
+            )}
+          </button>
+        </form>
+
       </div>
     </div>
   )
