@@ -12,8 +12,8 @@ export default function OnboardingPage() {
   const [loading, setLoading] = useState(false)
   const [userId, setUserId] = useState<string | null>(null)
   const [displayName, setDisplayName] = useState('')
-  const [gender, setGender] = useState<'male' | 'female'>('male')
-  const [targetGender, setTargetGender] = useState<'male' | 'female'>('female')
+  const [gender, setGender] = useState<'male' | 'female' | 'trans'>('male')
+  const [targetGender, setTargetGender] = useState<'male' | 'female' | 'trans'>('female')
   const [birthdate, setBirthdate] = useState('')
   const [country, setCountry] = useState('')
   const [city, setCity] = useState('')
@@ -141,11 +141,12 @@ export default function OnboardingPage() {
               <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400">I Am</label>
               <select
                 value={gender}
-                onChange={(e) => setGender(e.target.value as 'male' | 'female')}
+                onChange={(e) => setGender(e.target.value as 'male' | 'female' | 'trans')}
                 className="mt-1 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-white focus:border-rose-500 focus:outline-none"
               >
                 <option value="male">Man</option>
                 <option value="female">Woman</option>
+                <option value="trans">Trans Woman</option>
               </select>
             </div>
 
@@ -153,10 +154,11 @@ export default function OnboardingPage() {
               <label className="block text-xs font-semibold uppercase tracking-wider text-zinc-400">Seeking</label>
               <select
                 value={targetGender}
-                onChange={(e) => setTargetGender(e.target.value as 'male' | 'female')}
+                onChange={(e) => setTargetGender(e.target.value as 'male' | 'female' | 'trans')}
                 className="mt-1 w-full rounded-lg border border-zinc-700 bg-zinc-800 px-3 py-2 text-sm text-white focus:border-rose-500 focus:outline-none"
               >
                 <option value="female">Woman</option>
+                <option value="trans">Trans Woman</option>
                 <option value="male">Man</option>
               </select>
             </div>
