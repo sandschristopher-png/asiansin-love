@@ -1,34 +1,29 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import Link from 'next/link';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
 
-export default function ProfileEditPage() {
+export default function EditProfilePage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
-  const [statusMessage, setStatusMessage] = useState<{ text: string; error?: boolean } | null>(null);
+  const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
-  // Form State
-  const [fullName, setFullName] = useState('');
+  const [initialHasUsername, setInitialHasUsername] = useState(false);
   const [username, setUsername] = useState('');
-  const [city, setCity] = useState('');
-  const [country, setCountry] = useState('Philippines');
-  const [jobTitle, setJobTitle] = useState('');
-  const [relationshipIntent, setRelationshipIntent] = useState('Marriage & Long-Term Partner');
-  const [relocationIntent, setRelocationIntent] = useState('willing_to_relocate');
-  
-  // Dependents
-  const [childrenStatus, setChildrenStatus] = useState('none');
-  const [childrenCount, setChildrenCount] = useState(0);
+  const [usernameStatus, setUsernameStatus] = useState<'idle' | 'checking' | 'available' | 'taken'>('idle');
 
-  // Extended Traits
-  const [heightCm, setHeightCm] = useState<number | ''>('');
-  const [bodyType, setBodyType] = useState('average');
-  const [aboutMe, setAboutMe] = useState('');
-  const [lookingFor, setLookingFor] = useState('');
+  const [formData, setFormData] = useState({
+    full_name: '',
+    age: '',
+    city: '',
+    country: '',
+    profession: '',
+    relationship_goal: 'Meaningful Connection',
+    bio: '',
+  });
 
   useEffect(() => {
     async function loadProfile() {
@@ -38,310 +33,272 @@ export default function ProfileEditPage() {
         return;
       }
 
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from('profiles')
         .select('*')
         .eq('id', user.id)
-        .maybeSingle();
+        .single();
 
       if (data) {
-        setFullName(data.full_name || '');
-        setUsername(data.username || '');
-        setCity(data.city || '');
-        setCountry(data.country || 'Philippines');
-        setJobTitle(data.job_title || '');
-        setRelationshipIntent(data.relationship_intent || 'Marriage & Long-Term Partner');
-        setRelocationIntent(data.relocation_intent || 'willing_to_relocate');
-        setChildrenStatus(data.children_status || 'none');
-        setChildrenCount(data.children_count || 0);
-        setHeightCm(data.height_cm || '');
-        setBodyType(data.body_type || 'average');
-        setAboutMe(data.bio || '');
-        setLookingFor(data.looking_for || '');
+        if (data.username) {
+          setInitialHasUsername(true);
+          setUsername(data.username);
+        }
+        setFormData({
+          full_name: data.full_name || '',
+          age: data.age ? String(data.age) : '',
+          city: data.city || '',
+          country: data.country || '',
+          profession: data.profession || '',
+          relationship_goal: data.relationship_goal || 'Meaningful Connection',
+          bio: data.bio || '',
+        });
       }
-
       setLoading(false);
     }
 
     loadProfile();
   }, [router]);
 
-  const handleSave = async (e: React.FormEvent) => {
+  const handleUsernameChange = async (val: string) => {
+    const clean = val.toLowerCase().replace(/[^a-z0-9_]/g, '');
+    setUsername(clean);
+
+    if (clean.length < 3) {
+      setUsernameStatus('idle');
+      return;
+    }
+
+    setUsernameStatus('checking');
+    try {
+      const res = await fetch(`/api/users/check-username?username=${encodeURIComponent(clean)}`);
+      const data = await res.json();
+      setUsernameStatus(data.available ? 'available' : 'taken');
+    } catch {
+      setUsernameStatus('idle');
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSaving(true);
-    setStatusMessage(null);
+    setStatusMsg(null);
 
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    try {
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          full_name: fullName.trim(),
-          city: city.trim(),
-          country: country.trim(),
-          job_title: jobTitle.trim(),
-          relationship_intent: relationshipIntent,
-          relocation_intent: relocationIntent,
-          children_status: childrenStatus,
-          children_count: childrenStatus === 'none' ? 0 : Number(childrenCount),
-          height_cm: heightCm ? Number(heightCm) : null,
-          body_type: bodyType,
-          bio: aboutMe.trim(),
-          looking_for: lookingFor.trim(),
-        })
-        .eq('id', user.id);
-
-      if (error) {
-        setStatusMessage({ text: error.message, error: true });
-      } else {
-        setStatusMessage({ text: 'Profile details updated successfully.' });
-      }
-    } catch {
-      setStatusMessage({ text: 'An unexpected save error occurred.', error: true });
-    } finally {
+    if (!initialHasUsername && username.trim().length >= 3 && usernameStatus === 'taken') {
+      setStatusMsg({ type: 'error', text: 'Please choose an available username before saving.' });
       setSaving(false);
+      return;
     }
+
+    const payload: Record<string, any> = {
+      full_name: formData.full_name.trim(),
+      age: formData.age ? parseInt(formData.age, 10) : null,
+      city: formData.city.trim(),
+      country: formData.country.trim(),
+      profession: formData.profession.trim(),
+      relationship_goal: formData.relationship_goal,
+      bio: formData.bio.trim(),
+      updated_at: new Date().toISOString(),
+    };
+
+    if (!initialHasUsername && username.trim().length >= 3) {
+      payload.username = username.trim();
+      payload.username_changed_at = new Date().toISOString();
+    }
+
+    const { error } = await supabase
+      .from('profiles')
+      .update(payload)
+      .eq('id', user.id);
+
+    if (error) {
+      setStatusMsg({ type: 'error', text: error.message });
+    } else {
+      setStatusMsg({ type: 'success', text: 'Profile updated successfully.' });
+      if (!initialHasUsername && payload.username) {
+        setInitialHasUsername(true);
+      }
+    }
+    setSaving(false);
   };
 
   if (loading) {
     return (
-      <div className="w-full min-h-[50vh] flex items-center justify-center text-sm font-semibold text-[#B6AEC7]">
-        Loading your profile...
+      <div className="min-h-[70vh] flex items-center justify-center">
+        <div className="h-8 w-8 rounded-full border-2 border-[#9A79BA] border-t-transparent animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="w-full max-w-3xl mx-auto px-4 py-6 sm:py-8 space-y-6">
-      
-      {/* Header */}
-      <div className="flex items-center justify-between border-b border-[#7D7E92]/25 pb-4">
+    <div className="max-w-2xl mx-auto px-4 py-8">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <Link
-            href="/profile"
-            className="text-xs font-semibold text-[#B6AEC7] hover:text-white inline-flex items-center gap-1 mb-1"
-          >
-            &larr; Back to Profile
-          </Link>
-          <h1 className="text-2xl font-bold tracking-tight text-white">Edit Your Profile</h1>
+          <h1 className="text-2xl font-bold tracking-tight text-white">Edit Profile</h1>
+          <p className="text-sm text-[#B6AEC7] mt-1">Manage your public information and verification status</p>
         </div>
-
-        <button
-          type="button"
-          onClick={handleSave}
-          disabled={saving}
-          className="px-5 py-2 rounded-xl bg-[#653C87] hover:bg-[#9A79BA] text-white text-xs font-bold transition-all shadow-lg disabled:opacity-50"
+        <Link
+          href="/profile"
+          className="text-xs font-semibold px-3 py-1.5 rounded-xl bg-[#241E2F] border border-[#7D7E92]/30 text-[#ECE8F4] hover:text-white"
         >
-          {saving ? 'Saving...' : 'Save Profile'}
-        </button>
+          View Profile
+        </Link>
       </div>
 
-      {statusMessage && (
-        <div className={`p-3 rounded-xl text-xs font-semibold ${
-          statusMessage.error 
-            ? 'bg-rose-950/80 border border-rose-500/80 text-rose-200' 
-            : 'bg-emerald-950/80 border border-emerald-500/80 text-emerald-200'
-        }`}>
-          {statusMessage.text}
+      {statusMsg && (
+        <div
+          className={`p-3.5 rounded-xl mb-6 text-sm border font-medium ${
+            statusMsg.type === 'success'
+              ? 'bg-emerald-950/60 border-emerald-500/50 text-emerald-200'
+              : 'bg-rose-950/60 border-rose-500/50 text-rose-200'
+          }`}
+        >
+          {statusMsg.text}
         </div>
       )}
 
-      <form onSubmit={handleSave} className="space-y-6">
-        
-        {/* Section 1: Core Identity */}
-        <div className="p-5 rounded-2xl bg-[#241E2F] border border-[#7D7E92]/30 space-y-4">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-[#9A79BA]">
-            Basic Identity
-          </h2>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="text-xs font-semibold text-[#B6AEC7] block mb-1">
-                Full Name
-              </label>
-              <input
-                type="text"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#17131F] border border-[#7D7E92]/30 text-white text-sm focus:border-[#9A79BA] outline-none"
-              />
+      <form onSubmit={handleSubmit} className="space-y-5">
+        {/* Username Section */}
+        <div className="p-4 rounded-2xl bg-[#241E2F]/60 border border-[#7D7E92]/25 space-y-2">
+          <label className="block text-xs font-bold uppercase tracking-wider text-[#B6AEC7]">
+            Username
+          </label>
+          {initialHasUsername ? (
+            <div className="flex items-center justify-between">
+              <span className="font-mono text-white text-base">@{username}</span>
+              <span className="text-xs px-2.5 py-1 rounded-lg bg-[#17131F] border border-[#7D7E92]/30 text-[#B6AEC7]">
+                Handle Locked (Anti-Scam Protection)
+              </span>
             </div>
-
+          ) : (
             <div>
-              <label className="text-xs font-semibold text-[#B6AEC7] block mb-1">
-                Username
-              </label>
-              <input
-                type="text"
-                disabled
-                value={username ? `@${username}` : '@member'}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#17131F]/50 border border-[#7D7E92]/20 text-[#7D7E92] text-sm cursor-not-allowed font-mono"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-            <div>
-              <label className="text-xs font-semibold text-[#B6AEC7] block mb-1">
-                City / Region
-              </label>
-              <input
-                type="text"
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#17131F] border border-[#7D7E92]/30 text-white text-sm focus:border-[#9A79BA] outline-none"
-              />
-            </div>
-
-            <div>
-              <label className="text-xs font-semibold text-[#B6AEC7] block mb-1">
-                Country
-              </label>
-              <input
-                type="text"
-                value={country}
-                onChange={(e) => setCountry(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#17131F] border border-[#7D7E92]/30 text-white text-sm focus:border-[#9A79BA] outline-none"
-              />
-            </div>
-
-            <div>
-              <label className="text-xs font-semibold text-[#B6AEC7] block mb-1">
-                Occupation
-              </label>
-              <input
-                type="text"
-                value={jobTitle}
-                onChange={(e) => setJobTitle(e.target.value)}
-                placeholder="e.g. Software Engineer"
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#17131F] border border-[#7D7E92]/30 text-white text-sm focus:border-[#9A79BA] outline-none"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Section 2: Physical Attributes */}
-        <div className="p-5 rounded-2xl bg-[#241E2F] border border-[#7D7E92]/30 space-y-4">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-[#9A79BA]">
-            Physical Profile
-          </h2>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="text-xs font-semibold text-[#B6AEC7] block mb-1">
-                Height (in cm)
-              </label>
-              <input
-                type="number"
-                min={120}
-                max={230}
-                value={heightCm}
-                onChange={(e) => setHeightCm(e.target.value ? Number(e.target.value) : '')}
-                placeholder="e.g. 175"
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#17131F] border border-[#7D7E92]/30 text-white text-sm focus:border-[#9A79BA] outline-none"
-              />
-            </div>
-
-            <div>
-              <label className="text-xs font-semibold text-[#B6AEC7] block mb-1">
-                Body Type
-              </label>
-              <select
-                value={bodyType}
-                onChange={(e) => setBodyType(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#17131F] border border-[#7D7E92]/30 text-white text-sm focus:border-[#9A79BA] outline-none"
-              >
-                <option value="petite">Petite</option>
-                <option value="slim">Slim</option>
-                <option value="athletic">Athletic</option>
-                <option value="average">Average</option>
-                <option value="curvy">Curvy</option>
-                <option value="muscular">Muscular</option>
-                <option value="full_figured">Full Figured</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        {/* Section 3: Family Transparency */}
-        <div className="p-5 rounded-2xl bg-[#241E2F] border border-[#7D7E92]/30 space-y-4">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-[#9A79BA]">
-            Family & Dependents Transparency
-          </h2>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div>
-              <label className="text-xs font-semibold text-[#B6AEC7] block mb-1">
-                Children Status
-              </label>
-              <select
-                value={childrenStatus}
-                onChange={(e) => setChildrenStatus(e.target.value)}
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#17131F] border border-[#7D7E92]/30 text-white text-sm focus:border-[#9A79BA] outline-none"
-              >
-                <option value="none">No Children</option>
-                <option value="living_with_me">Has Children (Living with me)</option>
-                <option value="not_living_with_me">Has Children (Not living with me)</option>
-              </select>
-            </div>
-
-            {childrenStatus !== 'none' && (
-              <div>
-                <label className="text-xs font-semibold text-[#B6AEC7] block mb-1">
-                  Number of Dependents
-                </label>
+              <div className="relative">
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#7D7E92] font-mono">@</span>
                 <input
-                  type="number"
-                  min={1}
-                  max={10}
-                  value={childrenCount}
-                  onChange={(e) => setChildrenCount(Number(e.target.value))}
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-[#17131F] border border-[#7D7E92]/30 text-white text-sm focus:border-[#9A79BA] outline-none"
+                  type="text"
+                  value={username}
+                  onChange={(e) => handleUsernameChange(e.target.value)}
+                  placeholder="choose_handle"
+                  className="w-full pl-8 pr-4 py-2.5 rounded-xl bg-[#17131F] border border-[#7D7E92]/40 text-white font-mono text-sm focus:outline-none focus:border-[#9A79BA]"
                 />
               </div>
-            )}
+              <p className="text-[11px] text-[#7D7E92] mt-1.5">
+                {usernameStatus === 'checking' && 'Checking availability...'}
+                {usernameStatus === 'available' && <span className="text-emerald-400">Username is available. Once set, changes require cooldown/verification.</span>}
+                {usernameStatus === 'taken' && <span className="text-rose-400">Username is taken.</span>}
+                {usernameStatus === 'idle' && 'Claim your unique handle. Once claimed, frequent handle changes are restricted.'}
+              </p>
+            </div>
+          )}
+        </div>
+
+        {/* Display Name */}
+        <div>
+          <label className="block text-xs font-bold uppercase tracking-wider text-[#B6AEC7] mb-1.5">
+            Display Name
+          </label>
+          <input
+            type="text"
+            required
+            value={formData.full_name}
+            onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
+            className="w-full px-4 py-2.5 rounded-xl bg-[#241E2F] border border-[#7D7E92]/30 text-white text-sm focus:outline-none focus:border-[#9A79BA]"
+          />
+        </div>
+
+        {/* Age & Location */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-wider text-[#B6AEC7] mb-1.5">
+              Age
+            </label>
+            <input
+              type="number"
+              min="18"
+              max="99"
+              value={formData.age}
+              onChange={(e) => setFormData({ ...formData, age: e.target.value })}
+              className="w-full px-4 py-2.5 rounded-xl bg-[#241E2F] border border-[#7D7E92]/30 text-white text-sm focus:outline-none focus:border-[#9A79BA]"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-wider text-[#B6AEC7] mb-1.5">
+              City / Region
+            </label>
+            <input
+              type="text"
+              value={formData.city}
+              onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+              className="w-full px-4 py-2.5 rounded-xl bg-[#241E2F] border border-[#7D7E92]/30 text-white text-sm focus:outline-none focus:border-[#9A79BA]"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-wider text-[#B6AEC7] mb-1.5">
+              Country
+            </label>
+            <input
+              type="text"
+              value={formData.country}
+              onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+              className="w-full px-4 py-2.5 rounded-xl bg-[#241E2F] border border-[#7D7E92]/30 text-white text-sm focus:outline-none focus:border-[#9A79BA]"
+            />
           </div>
         </div>
 
-        {/* Section 4: Written Prompts */}
-        <div className="p-5 rounded-2xl bg-[#241E2F] border border-[#7D7E92]/30 space-y-4">
-          <h2 className="text-xs font-bold uppercase tracking-wider text-[#9A79BA]">
-            About You & What You're Seeking
-          </h2>
-
-          <div className="space-y-4">
-            <div>
-              <label className="text-xs font-semibold text-[#B6AEC7] block mb-1">
-                About Me (Values, lifestyle, daily routine)
-              </label>
-              <textarea
-                rows={3}
-                value={aboutMe}
-                onChange={(e) => setAboutMe(e.target.value)}
-                placeholder="Share a sincere snapshot of your personality and character..."
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#17131F] border border-[#7D7E92]/30 text-white text-sm focus:border-[#9A79BA] outline-none"
-              />
-            </div>
-
-            <div>
-              <label className="text-xs font-semibold text-[#B6AEC7] block mb-1">
-                What I'm Looking For
-              </label>
-              <textarea
-                rows={3}
-                value={lookingFor}
-                onChange={(e) => setLookingFor(e.target.value)}
-                placeholder="What qualities do you cherish in a potential partner?..."
-                className="w-full px-3.5 py-2.5 rounded-xl bg-[#17131F] border border-[#7D7E92]/30 text-white text-sm focus:border-[#9A79BA] outline-none"
-              />
-            </div>
+        {/* Profession & Relationship Goal */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-wider text-[#B6AEC7] mb-1.5">
+              Profession / Occupation
+            </label>
+            <input
+              type="text"
+              value={formData.profession}
+              onChange={(e) => setFormData({ ...formData, profession: e.target.value })}
+              className="w-full px-4 py-2.5 rounded-xl bg-[#241E2F] border border-[#7D7E92]/30 text-white text-sm focus:outline-none focus:border-[#9A79BA]"
+            />
+          </div>
+          <div>
+            <label className="block text-xs font-bold uppercase tracking-wider text-[#B6AEC7] mb-1.5">
+              Relationship Goal
+            </label>
+            <select
+              value={formData.relationship_goal}
+              onChange={(e) => setFormData({ ...formData, relationship_goal: e.target.value })}
+              className="w-full px-4 py-2.5 rounded-xl bg-[#241E2F] border border-[#7D7E92]/30 text-white text-sm focus:outline-none focus:border-[#9A79BA]"
+            >
+              <option value="Meaningful Connection">Meaningful Connection</option>
+              <option value="Marriage & Long-Term Partner">Marriage & Long-Term Partner</option>
+              <option value="Committed Courtship">Committed Courtship</option>
+            </select>
           </div>
         </div>
 
+        {/* Bio */}
+        <div>
+          <label className="block text-xs font-bold uppercase tracking-wider text-[#B6AEC7] mb-1.5">
+            About You
+          </label>
+          <textarea
+            rows={4}
+            value={formData.bio}
+            onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
+            placeholder="Tell sincere community members about your lifestyle and relationship goals..."
+            className="w-full px-4 py-2.5 rounded-xl bg-[#241E2F] border border-[#7D7E92]/30 text-white text-sm focus:outline-none focus:border-[#9A79BA]"
+          />
+        </div>
+
+        <button
+          type="submit"
+          disabled={saving}
+          className="w-full py-3 rounded-xl bg-[#653C87] hover:bg-[#9A79BA] text-white font-bold text-sm shadow-md transition-all disabled:opacity-50"
+        >
+          {saving ? 'Saving Changes...' : 'Save Profile'}
+        </button>
       </form>
-
     </div>
   );
 }
