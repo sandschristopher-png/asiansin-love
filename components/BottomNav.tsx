@@ -17,9 +17,9 @@ export function BottomNav() {
 
   return (
     <>
-      {/* Lifted comfortably above browser navigation bar */}
-      <div className="sm:hidden fixed bottom-6 left-0 right-0 z-50 px-4 pointer-events-none flex justify-center">
-        <nav className="pointer-events-auto bg-[#241E2F]/95 backdrop-blur-xl border border-[#725A7A]/40 rounded-[28px] px-3.5 py-2 shadow-2xl shadow-black/80 w-full max-w-sm transition-transform">
+      {/* Naturally flexed above bottom browser chrome with safe padding */}
+      <div className="sm:hidden flex-shrink-0 w-full z-40 px-4 pt-1 pb-3 pointer-events-none flex justify-center">
+        <nav className="pointer-events-auto bg-[#241E2F]/95 backdrop-blur-xl border border-[#725A7A]/40 rounded-[28px] px-3.5 py-1.5 shadow-2xl shadow-black/80 w-full max-w-sm transition-transform">
           <div className="grid grid-cols-4 items-center">
             
             {/* DISCOVER */}
