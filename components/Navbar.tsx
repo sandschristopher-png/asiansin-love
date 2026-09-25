@@ -22,13 +22,13 @@ export function Navbar() {
           </Link>
         </div>
 
-        {/* Center: Exact ail-logo.png Anchored Mathematically at True Center */}
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-auto">
-          <Link href="/" className="flex items-center justify-center select-none active:scale-95 transition-transform">
+        {/* Center: Prominent ail-logo.png Sized by Width to Fill Center Space */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-auto flex items-center justify-center">
+          <Link href="/" className="flex items-center justify-center select-none active:scale-95 transition-transform py-1">
             <img
               src="/ail-logo.png"
               alt="asiansin.love"
-              className="h-[28px] sm:h-[32px] w-auto max-w-[200px] sm:max-w-[240px] object-contain block"
+              className="w-[170px] sm:w-[215px] h-auto object-contain block drop-shadow-md"
             />
           </Link>
         </div>
@@ -37,7 +37,7 @@ export function Navbar() {
         <div className="flex items-center z-10">
           <Link
             href="/login"
-            className="px-4 py-2 rounded-xl bg-[#241E2F] border border-[#725A7A]/40 hover:bg-[#653C87] text-white text-xs font-black tracking-wide transition-all shadow-md active:scale-95"
+            className="px-4 py-2.5 rounded-2xl bg-[#241E2F] border border-[#725A7A]/40 hover:bg-[#653C87] text-white text-xs font-black tracking-wide transition-all shadow-md active:scale-95"
           >
             Sign In
           </Link>
