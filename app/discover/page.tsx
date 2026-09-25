@@ -25,7 +25,7 @@ export default function DiscoverPage() {
   return (
     <main className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-8 space-y-4">
       
-      {/* Search Bar - pinaLove Style */}
+      {/* Search Bar */}
       <div className="relative w-full">
         <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#725A7A]">
           <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -77,6 +77,7 @@ export default function DiscoverPage() {
               relationshipIntent: profile.relationshipGoal,
               jobTitle: profile.profession,
               isOnline: profile.isOnline,
+              reputationScore: profile.reputationScore,
             }}
           />
         ))}

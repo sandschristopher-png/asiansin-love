@@ -5,25 +5,20 @@
   --foreground: #F3EBF9;
 }
 
-html, body {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  width: 100%;
-  height: 100%;
-  height: 100dvh;
-  overflow: hidden;
-  overscroll-behavior: none;
-  -webkit-overflow-scrolling: touch;
-  -webkit-tap-highlight-color: transparent;
+html {
+  min-height: 100%;
+  touch-action: manipulation;
 }
 
 body {
+  min-height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
   color: var(--foreground);
   background: var(--background);
   font-family: var(--font-nunito), system-ui, -apple-system, sans-serif;
+  -webkit-tap-highlight-color: transparent;
 }
 
 /* GPU Hardware-Accelerated Keyframes */
