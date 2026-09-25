@@ -1,11 +1,13 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
 
 export default function EditProfilePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
   const [statusMessage, setStatusMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   const [displayName, setDisplayName] = useState('');
@@ -26,7 +28,7 @@ export default function EditProfilePage() {
           return;
         }
 
-        const { data, error } = await supabase
+        const { data } = await supabase
           .from('profiles')
           .select('*')
           .eq('id', user.id)
@@ -40,6 +42,7 @@ export default function EditProfilePage() {
           setProfession(data.profession || '');
           setRelationshipGoal(data.relationship_goal || 'Meaningful Connection');
           setBio(data.bio || '');
+          setIsVerified(Boolean(data.is_verified));
         }
       } catch (err: any) {
         console.error('Error fetching profile:', err.message);
@@ -98,8 +101,32 @@ export default function EditProfilePage() {
   return (
     <main className="max-w-lg mx-auto w-full px-4 py-8 pb-20">
       
+      {/* Verification Status Card */}
+      {!isVerified ? (
+        <div className="mb-6 rounded-3xl bg-gradient-to-r from-[#241E2F] to-[#2F243B] border border-[#653C87]/60 p-5 shadow-xl flex items-center justify-between gap-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-1.5 text-amber-300 text-xs font-black uppercase tracking-wider">
+              <span>🛡️</span> Profile Unverified
+            </div>
+            <p className="text-xs text-[#DDD8D4] leading-relaxed">
+              Complete gesture selfie verification to earn the <strong className="text-white">✓ Verified</strong> badge and build sincere trust.
+            </p>
+          </div>
+          <Link
+            href="/verify"
+            className="px-3.5 py-2.5 rounded-xl bg-[#653C87] hover:bg-[#7A49A2] text-white text-xs font-black flex-shrink-0 shadow-md active:scale-95 transition-all"
+          >
+            Get Verified
+          </Link>
+        </div>
+      ) : (
+        <div className="mb-6 rounded-2xl bg-emerald-950/40 border border-emerald-500/30 p-3.5 flex items-center gap-2 text-xs font-bold text-emerald-300">
+          <span>✓</span> Your identity is verified and active across the community.
+        </div>
+      )}
+
       {/* Page Heading */}
-      <div className="mb-6">
+      <div className="mb-5">
         <h1 className="text-2xl font-black text-white tracking-tight">
           Your Profile
         </h1>

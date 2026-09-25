@@ -22,7 +22,7 @@ export function Navbar() {
           </span>
         </Link>
 
-        {/* Desktop Navigation Links */}
+        {/* Desktop Navigation */}
         <nav className="hidden md:flex items-center gap-6">
           <Link
             href="/discover"
@@ -48,17 +48,9 @@ export function Navbar() {
           >
             Saved
           </Link>
-          <Link
-            href="/verify"
-            className={`text-sm font-bold transition-colors ${
-              isActive('/verify') ? 'text-[#E6D7FA]' : 'text-[#DDD8D4] hover:text-white'
-            }`}
-          >
-            Verification
-          </Link>
         </nav>
 
-        {/* Action Buttons & Mobile Hamburger */}
+        {/* Action Controls */}
         <div className="flex items-center gap-2.5">
           <Link
             href="/notifications"
@@ -70,13 +62,13 @@ export function Navbar() {
           </Link>
 
           <Link
-            href="/login"
-            className="hidden sm:inline-flex px-4 py-2 rounded-xl bg-[#653C87] hover:bg-[#7A49A2] text-white text-xs font-bold transition-all shadow-md active:scale-95"
+            href="/profile"
+            className="hidden sm:inline-flex px-4 py-2 rounded-xl bg-[#241E2F] border border-[#725A7A]/30 hover:border-[#978FA8] text-white text-xs font-bold transition-all"
           >
-            Sign In
+            My Profile
           </Link>
 
-          {/* Mobile Menu Toggle Button */}
+          {/* Mobile Hamburger */}
           <button
             type="button"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -90,48 +82,42 @@ export function Navbar() {
 
       </div>
 
-      {/* Mobile Slide-Down Drawer */}
+      {/* Mobile Drawer */}
       {mobileMenuOpen && (
         <div className="md:hidden bg-[#241E2F] border-b border-[#725A7A]/40 px-5 py-4 space-y-3 shadow-2xl animate-in slide-in-from-top-2">
           <div className="grid grid-cols-2 gap-2 text-sm font-bold">
             <Link
               href="/discover"
               onClick={() => setMobileMenuOpen(false)}
-              className="p-2.5 rounded-xl bg-[#17131F] border border-[#725A7A]/25 text-white flex items-center gap-2"
+              className="p-3 rounded-xl bg-[#17131F] border border-[#725A7A]/25 text-white flex items-center gap-2.5"
             >
               <span>🧭</span> Discover
             </Link>
             <Link
               href="/messages"
               onClick={() => setMobileMenuOpen(false)}
-              className="p-2.5 rounded-xl bg-[#17131F] border border-[#725A7A]/25 text-white flex items-center gap-2"
+              className="p-3 rounded-xl bg-[#17131F] border border-[#725A7A]/25 text-white flex items-center gap-2.5"
             >
               <span>💬</span> Messages
             </Link>
             <Link
               href="/favorites"
               onClick={() => setMobileMenuOpen(false)}
-              className="p-2.5 rounded-xl bg-[#17131F] border border-[#725A7A]/25 text-white flex items-center gap-2"
+              className="p-3 rounded-xl bg-[#17131F] border border-[#725A7A]/25 text-white flex items-center gap-2.5"
             >
               <span>⭐</span> Saved
             </Link>
             <Link
-              href="/verify"
+              href="/profile"
               onClick={() => setMobileMenuOpen(false)}
-              className="p-2.5 rounded-xl bg-[#17131F] border border-[#725A7A]/25 text-white flex items-center gap-2"
+              className="p-3 rounded-xl bg-[#17131F] border border-[#725A7A]/25 text-white flex items-center gap-2.5"
             >
-              <span>🛡️</span> Verify
+              <span>👤</span> My Profile
             </Link>
           </div>
 
           <div className="pt-2 border-t border-[#725A7A]/25 flex items-center justify-between">
-            <Link
-              href="/profile"
-              onClick={() => setMobileMenuOpen(false)}
-              className="text-xs text-[#DDD8D4] hover:text-white font-bold"
-            >
-              👤 My Profile
-            </Link>
+            <span className="text-xs text-[#B8AAC3]">asiansin.love</span>
             <Link
               href="/login"
               onClick={() => setMobileMenuOpen(false)}
