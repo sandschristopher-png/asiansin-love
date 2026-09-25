@@ -1,134 +1,98 @@
-'use client';
+import React from 'react';
+import { notFound } from 'next/navigation';
+import { ChatInterface, TargetUserProfile } from '@/components/ChatInterface';
 
-import React, { useEffect, useState } from 'react';
-import { useParams, useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabaseClient';
-import { ChatInterface, TargetUserProfile, MessageItem } from '@/components/ChatInterface';
-import { DUMMY_PROFILES } from '@/lib/dummyProfiles';
+interface DummyProfile {
+  id: string;
+  fullName: string;
+  age: number;
+  city: string;
+  country: string;
+  avatarUrl: string;
+  galleryUrls?: string[];
+  isVerified: boolean;
+  relationshipIntent: string;
+  jobTitle?: string;
+  languages?: string[];
+  bio?: string;
+  reputationScore?: number;
+  childrenStatus?: string;
+}
 
-// Helper to check valid UUID format
-const isUUID = (str: string) =>
-  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+const DUMMY_MEMBERS: Record<string, DummyProfile> = {
+  'ph-camille': {
+    id: 'ph-camille',
+    fullName: 'Camille',
+    age: 26,
+    city: 'Makati, Metro Manila',
+    country: 'Philippines',
+    avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+    galleryUrls: [
+      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80',
+      'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=800&q=80',
+    ],
+    isVerified: true,
+    relationshipIntent: 'Marriage & Long-Term Partner',
+    jobTitle: 'Hospitality Specialist',
+    languages: ['Tagalog', 'English'],
+    bio: 'Dedicated to intentional living, deep family values, and genuine conversation. Seeking an honest gentleman for marriage.',
+    reputationScore: 98,
+    childrenStatus: 'No Dependents',
+  },
+  'th-siriporn': {
+    id: 'th-siriporn',
+    fullName: 'Siriporn',
+    age: 28,
+    city: 'Bangkok',
+    country: 'Thailand',
+    avatarUrl: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80',
+    isVerified: true,
+    relationshipIntent: 'Committed Courtship',
+    jobTitle: 'Graphic Designer',
+    languages: ['Thai', 'English'],
+    bio: 'Creative spirit with traditional values. Excited to connect with someone sincere.',
+    reputationScore: 95,
+    childrenStatus: 'No Dependents',
+  },
+  'ph-maricel': {
+    id: 'ph-maricel',
+    fullName: 'Maricel',
+    age: 25,
+    city: 'Cebu City',
+    country: 'Philippines',
+    avatarUrl: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80',
+    isVerified: false,
+    relationshipIntent: 'Marriage & Long-Term Partner',
+    jobTitle: 'Teacher',
+    languages: ['Cebuano', 'English'],
+    bio: 'Kindhearted teacher who loves cooking and beach walks.',
+    reputationScore: 92,
+    childrenStatus: 'No Dependents',
+  },
+};
 
-export default function ChatConversationPage() {
-  const router = useRouter();
-  const params = useParams();
-  const rawParam = (params?.userId as string) || '';
+export default async function ChatPage({
+  params,
+}: {
+  params: Promise<{ userId: string }>;
+}) {
+  const { userId } = await params;
+  const targetUser = DUMMY_MEMBERS[userId] || null;
 
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
-  const [targetUser, setTargetUser] = useState<TargetUserProfile | null>(null);
-  const [initialMessages, setInitialMessages] = useState<MessageItem[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    async function initChat() {
-      // 1. Get authenticated user session
-      const {
-        data: { user },
-      } = await supabase.auth.getUser();
-
-      if (!user) {
-        // Must be logged in for real database writes
-        router.push('/login');
-        return;
-      }
-
-      setCurrentUserId(user.id);
-
-      // 2. Resolve target user profile safely without UUID casting errors
-      let profileData: any = null;
-
-      if (isUUID(rawParam)) {
-        const { data } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', rawParam)
-          .maybeSingle();
-        profileData = data;
-      } else {
-        // Try finding profile by username/slug
-        const { data } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('username', rawParam)
-          .maybeSingle();
-        profileData = data;
-      }
-
-      if (profileData) {
-        setTargetUser({
-          id: profileData.id,
-          fullName: profileData.full_name || profileData.username || 'Member',
-          age: profileData.age || 26,
-          city: profileData.city || 'Makati',
-          country: profileData.country || 'Philippines',
-          avatarUrl: profileData.avatar_url || '/placeholder.jpg',
-          galleryUrls: profileData.gallery_urls || [],
-          isVerified: Boolean(profileData.is_verified),
-          relationshipIntent: profileData.intent || 'Long-term relationship',
-          jobTitle: profileData.job_title,
-          languages: profileData.languages || ['English'],
-          bio: profileData.bio || '',
-          trustPill: profileData.trust_pill,
-          trustStatus: profileData.trust_status,
-        });
-
-        // 3. Load message history between authenticated user and target UUID
-        const { data: history } = await supabase
-          .from('messages')
-          .select('*')
-          .or(
-            `and(sender_id.eq.${user.id},receiver_id.eq.${profileData.id}),and(sender_id.eq.${profileData.id},receiver_id.eq.${user.id})`
-          )
-          .order('created_at', { ascending: true });
-
-        if (history) {
-          setInitialMessages(history);
-        }
-      } else {
-        // Fallback to dummy profile if user is not in profiles table
-        const dummy =
-          DUMMY_PROFILES.find((p) => p.id === rawParam) || DUMMY_PROFILES[0];
-
-        setTargetUser({
-          id: dummy.id,
-          fullName: dummy.fullName,
-          age: dummy.age,
-          city: dummy.city,
-          country: dummy.country,
-          avatarUrl: dummy.avatarUrl,
-          galleryUrls: dummy.galleryUrls || [],
-          isVerified: dummy.isVerified ?? true,
-          relationshipIntent: dummy.relationshipIntent || 'Sincere connection',
-          jobTitle: dummy.jobTitle,
-          languages: dummy.languages,
-          bio: dummy.bio,
-          trustPill: dummy.trustPill,
-          trustStatus: dummy.trustStatus,
-        });
-      }
-
-      setLoading(false);
-    }
-
-    initChat();
-  }, [rawParam, router]);
-
-  if (loading || !targetUser) {
-    return (
-      <div className="min-h-screen bg-[#17131F] flex items-center justify-center text-[#E6D7FA]">
-        <div className="animate-pulse text-sm">Loading conversation...</div>
-      </div>
-    );
+  if (!targetUser) {
+    notFound();
   }
 
+  // Placeholder logged-in viewer ID for initial dummy demo
+  const currentUserId = '00000000-0000-0000-0000-000000000001';
+
   return (
-    <main className="min-h-screen bg-[#17131F]">
+    <div className="w-full flex-1 flex flex-col min-h-0 bg-[#17131F]">
       <ChatInterface
-        currentUserId={currentUserId || ''}
-        targetUser={targetUser}
-        initialMessages={initialMessages}
+        currentUserId={currentUserId}
+        targetUser={targetUser as TargetUserProfile}
+        initialMessages={[]}
       />
-    </main>
+    </div>
   );
 }
