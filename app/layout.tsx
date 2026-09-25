@@ -1,5 +1,7 @@
+﻿import InAppToast from '@/components/InAppToast';
 import './globals.css';
 import { Navbar } from '@/components/Navbar';
+import { BottomNav } from '@/components/BottomNav';
 import { OnboardingGuard } from '@/components/OnboardingGuard';
 import { FavoritesProvider } from '@/lib/favoritesContext';
 
@@ -15,13 +17,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className="h-full">
-      <body className="bg-[#17131F] text-white min-h-full overflow-y-auto selection:bg-[#653C87] selection:text-white">
+      <body className="bg-[#17131F] text-white min-h-full overflow-y-auto selection:bg-[#653C87] selection:text-white pb-24 sm:pb-0">
         <FavoritesProvider>
           <OnboardingGuard>
             <Navbar />
             <main className="w-full">
-              {children}
+              <InAppToast />
+        {children}
             </main>
+            <BottomNav />
           </OnboardingGuard>
         </FavoritesProvider>
       </body>
