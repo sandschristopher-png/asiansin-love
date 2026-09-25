@@ -8,12 +8,14 @@ import { MapPin, CheckCircle, RotateCcw, Heart, Star, MessageCircle, X } from 'l
 export interface ProfileCardProps {
   profile: {
     id: string;
-    name: string;
-    age: number;
+    name?: string;
+    age?: number;
     city?: string;
     country?: string;
     location?: string;
-    avatarUrl: string;
+    avatarUrl?: string;
+    image_url?: string;
+    photo_url?: string;
     repScore?: number;
     headline?: string;
     isVerified?: boolean;
@@ -38,6 +40,10 @@ export function ProfileCard({
   isSaved = false,
   onSave,
 }: ProfileCardProps) {
+  const displayName = profile.name || 'Member';
+  const displayAge = profile.age ? `, ${profile.age}` : '';
+  const displayAvatar = profile.avatarUrl || profile.image_url || profile.photo_url || '/dummy-1.jpg';
+
   const locationLabel = profile.city && profile.country
     ? `${profile.city}, ${profile.country}`
     : profile.location || profile.city || profile.country || 'International';
@@ -46,8 +52,8 @@ export function ProfileCard({
     return (
       <div className="relative aspect-[4/5] w-full rounded-2xl overflow-hidden bg-[#15101C] border border-[#241E2F] flex items-center justify-center">
         <Image
-          src={profile.avatarUrl}
-          alt={profile.name}
+          src={displayAvatar}
+          alt={displayName}
           fill
           className="object-cover object-[50%_20%] opacity-20 grayscale"
         />
@@ -66,8 +72,8 @@ export function ProfileCard({
     <div className="group relative aspect-[4/5] w-full rounded-2xl overflow-hidden bg-[#15101C] border border-[#241E2F] hover:border-[#653C87]/50 transition duration-300 shadow-md flex flex-col justify-end">
       <Link href={`/profile/${profile.id}`} className="absolute inset-0 z-0">
         <Image
-          src={profile.avatarUrl}
-          alt={profile.name}
+          src={displayAvatar}
+          alt={displayName}
           fill
           className="object-cover object-[50%_20%] transition-transform duration-500 group-hover:scale-105"
         />
@@ -93,7 +99,7 @@ export function ProfileCard({
         <div className="flex items-center gap-1.5">
           <Link href={`/profile/${profile.id}`} className="pointer-events-auto">
             <h3 className="text-base font-semibold text-[#E6D7FA] leading-tight hover:underline flex items-center gap-1">
-              {profile.name}, {profile.age}
+              {displayName}{displayAge}
               {profile.isVerified && (
                 <CheckCircle className="w-3.5 h-3.5 text-[#9A79BA] shrink-0" />
               )}
