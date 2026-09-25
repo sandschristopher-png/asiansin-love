@@ -1,476 +1,530 @@
-﻿'use client'
+'use client';
 
-import { useState, useEffect, useRef } from 'react'
-import { createClient } from '@/utils/supabase/client'
-import { useRouter } from 'next/navigation'
-import { Camera, Loader2, Plane, Building2, Trees, Waves } from 'lucide-react'
-import { SEA_COUNTRIES } from '@/utils/constants'
+import React, { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabaseClient';
 
 export default function OnboardingPage() {
-  const router = useRouter()
-  const supabase = createClient()
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const router = useRouter();
+  const [step, setStep] = useState(1);
+  const [userId, setUserId] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
-  const [loading, setLoading] = useState(false)
-  const [initialLoading, setInitialLoading] = useState(true)
-  const [userId, setUserId] = useState<string | null>(null)
-  const [errorMsg, setErrorMsg] = useState('')
+  // Form State
+  const [username, setUsername] = useState('');
+  const [isCheckingUsername, setIsCheckingUsername] = useState(false);
+  const [usernameStatus, setUsernameStatus] = useState<{
+    available?: boolean;
+    suggestions?: string[];
+    error?: string;
+  } | null>(null);
 
-  // Form Fields
-  const [avatarFile, setAvatarFile] = useState<File | null>(null)
-  const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
-  const [displayName, setDisplayName] = useState('')
-  const [gender, setGender] = useState('female')
-  const [lookingFor, setLookingFor] = useState('Men')
-  const [relationshipGoal, setRelationshipGoal] = useState('Long-Term Relationship')
-  const [lifestyle, setLifestyle] = useState('Metro / City')
-  const [birthdate, setBirthdate] = useState('')
-  const [country, setCountry] = useState('Philippines')
-  const [city, setCity] = useState('')
-  const [bio, setBio] = useState('')
-  const [agreed, setAgreed] = useState(false)
+  const [displayName, setDisplayName] = useState('');
+  const [birthdate, setBirthdate] = useState('');
+  const [city, setCity] = useState('');
+  const [country, setCountry] = useState('Philippines');
 
-  // Expat Travel Radar Fields
-  const [visitingCity, setVisitingCity] = useState('')
-  const [visitingDates, setVisitingDates] = useState('')
-
-  const isExpat = !SEA_COUNTRIES.includes(country as any)
+  const [relationshipIntent, setRelationshipIntent] = useState('Marriage & Long-Term Partner');
+  const [relocationIntent, setRelocationIntent] = useState('willing_to_relocate');
+  
+  // Dependents Transparency
+  const [hasChildren, setHasChildren] = useState<boolean | null>(null);
+  const [childrenCount, setChildrenCount] = useState<number>(1);
+  const [livingSituation, setLivingSituation] = useState<'living_with_me' | 'not_living_with_me'>('living_with_me');
+  
+  // Portrait
+  const [avatarUrl, setAvatarUrl] = useState('');
 
   useEffect(() => {
-    async function checkUser() {
-      const { data: { user } } = await supabase.auth.getUser()
+    async function checkAuth() {
+      const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        router.push('/login')
-        return
+        router.push('/login');
+        return;
       }
-
-      setUserId(user.id)
+      setUserId(user.id);
 
       const { data: profile } = await supabase
         .from('profiles')
-        .select('display_name, birthdate, avatar_url')
+        .select('onboarding_completed')
         .eq('id', user.id)
-        .maybeSingle()
+        .maybeSingle();
 
-      if (profile?.display_name && profile?.birthdate && profile?.avatar_url) {
-        router.push('/browse')
-        return
+      if (profile?.onboarding_completed) {
+        router.push('/discover');
       }
+    }
+    checkAuth();
+  }, [router]);
 
-      if (profile?.avatar_url) {
-        setAvatarPreview(profile.avatar_url)
+  useEffect(() => {
+    if (!username || username.trim().length < 3) {
+      setUsernameStatus(null);
+      return;
+    }
+
+    const timer = setTimeout(async () => {
+      setIsCheckingUsername(true);
+      try {
+        const res = await fetch('/api/users/check-username', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username }),
+        });
+        const data = await res.json();
+        setUsernameStatus(data);
+      } catch {
+        setUsernameStatus({ error: 'Could not verify username' });
+      } finally {
+        setIsCheckingUsername(false);
       }
+    }, 450);
 
-      setInitialLoading(false)
+    return () => clearTimeout(timer);
+  }, [username]);
+
+  const handleNextStep1 = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!usernameStatus?.available) {
+      setErrorMessage('Please choose an available username.');
+      return;
     }
-
-    checkUser()
-  }, [router, supabase])
-
-  const handlePhotoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!e.target.files || e.target.files.length === 0) return
-    const file = e.target.files[0]
-    setAvatarFile(file)
-    setAvatarPreview(URL.createObjectURL(file))
-  }
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault()
-    setErrorMsg('')
-
-    if (!agreed) {
-      setErrorMsg('You must certify that you are at least 18 years of age and agree to the terms.')
-      return
+    if (!displayName.trim() || !birthdate || !city.trim()) {
+      setErrorMessage('Please fill in all identity fields.');
+      return;
     }
+    setErrorMessage(null);
+    setStep(2);
+  };
 
-    if (!avatarFile && !avatarPreview) {
-      setErrorMsg('Please upload a clear profile photo to continue.')
-      return
+  const handleNextStep2 = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (hasChildren === null) {
+      setErrorMessage('Please specify your family & dependent status.');
+      return;
     }
+    setErrorMessage(null);
+    setStep(3);
+  };
 
-    if (bio.trim().length < 50) {
-      setErrorMsg('Please write at least 50 characters in your bio introduction.')
-      return
-    }
+  const handleCompleteOnboarding = async () => {
+    if (!userId) return;
+    setLoading(true);
+    setErrorMessage(null);
 
-    setLoading(true)
+    const calculatedChildrenStatus = !hasChildren ? 'none' : livingSituation;
+    const finalChildrenCount = !hasChildren ? 0 : childrenCount;
 
     try {
-      let finalAvatarUrl = avatarPreview?.startsWith('http') ? avatarPreview : null
-
-      if (avatarFile && userId) {
-        const fileExt = avatarFile.name.split('.').pop() || 'jpg'
-        const filePath = `${userId}/${Date.now()}.${fileExt}`
-
-        const { error: uploadError } = await supabase.storage
-          .from('avatars')
-          .upload(filePath, avatarFile, { upsert: true })
-
-        if (uploadError) throw uploadError
-
-        const { data: { publicUrl } } = supabase.storage
-          .from('avatars')
-          .getPublicUrl(filePath)
-
-        finalAvatarUrl = publicUrl
-      }
-
-      if (!finalAvatarUrl) {
-        throw new Error('Photo upload failed. Please choose the photo again.')
-      }
-
-      const { error: updateError } = await supabase
+      const { error } = await supabase
         .from('profiles')
-        .upsert({
-          id: userId,
-          display_name: displayName.trim(),
-          gender,
-          looking_for: relationshipGoal,
-          lifestyle,
-          birthdate,
-          country,
-          home_country: isExpat ? country : null,
-          is_sea_local: !isExpat,
+        .update({
+          username: username.toLowerCase().trim(),
+          full_name: displayName.trim(),
           city: city.trim(),
-          bio: bio.trim(),
-          avatar_url: finalAvatarUrl,
-          visiting_city: isExpat ? visitingCity.trim() || null : null,
-          visiting_dates: isExpat ? visitingDates.trim() || null : null,
-          updated_at: new Date().toISOString(),
+          country: country.trim(),
+          relationship_intent: relationshipIntent,
+          relocation_intent: relocationIntent,
+          children_status: calculatedChildrenStatus,
+          children_count: finalChildrenCount,
+          avatar_url: avatarUrl.trim() || null,
+          onboarding_completed: true,
+          reputation_score: 100,
+          reputation_tier: 'Standard',
         })
+        .eq('id', userId);
 
-      if (updateError) throw updateError
-
-      router.push('/browse')
-    } catch (err: any) {
-      setErrorMsg(err.message || 'An error occurred while saving your profile.')
+      if (error) {
+        setErrorMessage(error.message);
+      } else {
+        router.push('/discover');
+        router.refresh();
+      }
+    } catch {
+      setErrorMessage('Failed to save profile. Please try again.');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
-
-  if (initialLoading) {
-    return (
-      <div className="min-h-dvh bg-[#fbfbfe] flex items-center justify-center text-xs text-slate-400">
-        <Loader2 className="h-5 w-5 animate-spin text-[#6d4aff] mr-2" />
-        <span>Loading setup...</span>
-      </div>
-    )
-  }
+  };
 
   return (
-    <div className="min-h-dvh bg-[#fbfbfe] font-sans text-slate-900 flex flex-col justify-center items-center py-10 px-4 selection:bg-[#6d4aff] selection:text-white">
-      <div className="w-full max-w-lg space-y-6">
-        <div className="text-center space-y-1.5">
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900">Create Your Member Profile</h1>
-          <p className="text-xs text-slate-500">A community dedicated strictly to genuine relationships &amp; love</p>
+    <div className="min-h-[calc(100dvh-64px)] w-full flex items-center justify-center p-3.5 sm:p-6 bg-[#17131F]">
+      <div className="w-full max-w-lg rounded-3xl bg-[#241E2F] border border-[#7D7E92]/30 p-5 sm:p-8 shadow-2xl space-y-6">
+        
+        {/* Progress Stepper */}
+        <div className="flex items-center justify-between border-b border-[#7D7E92]/20 pb-4">
+          <div>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[#9A79BA]">
+              Step {step} of 3
+            </span>
+            <h1 className="text-xl font-bold text-white tracking-tight">
+              {step === 1 && 'Claim Your Identity'}
+              {step === 2 && 'Intent & Transparency'}
+              {step === 3 && 'Profile Photo'}
+            </h1>
+          </div>
+          <div className="flex gap-1.5">
+            {[1, 2, 3].map((s) => (
+              <span
+                key={s}
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  s === step ? 'w-6 bg-[#653C87]' : s < step ? 'w-2 bg-[#9A79BA]' : 'w-2 bg-[#7D7E92]/30'
+                }`}
+              />
+            ))}
+          </div>
         </div>
 
-        {errorMsg && (
-          <div className="rounded-xl border border-rose-200 bg-rose-50 p-3.5 text-xs text-rose-600 text-center">
-            {errorMsg}
+        {errorMessage && (
+          <div className="p-3 rounded-xl bg-rose-950/80 border border-rose-500/80 text-rose-200 text-xs font-semibold">
+            {errorMessage}
           </div>
         )}
 
-        <form onSubmit={handleSubmit} className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-7 shadow-xl space-y-5">
-          
-          {/* Photo Section */}
-          <div className="flex flex-col items-center justify-center space-y-2 pb-3 border-b border-slate-100">
-            <input
-              type="file"
-              ref={fileInputRef}
-              onChange={handlePhotoSelect}
-              accept="image/*"
-              className="hidden"
-            />
+        {/* STEP 1: IDENTITY */}
+        {step === 1 && (
+          <form onSubmit={handleNextStep1} className="space-y-4">
+            <div>
+              <label className="text-xs font-bold uppercase tracking-wider text-[#B6AEC7] block mb-1.5">
+                Username (@handle)
+              </label>
+              <div className="relative">
+                <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-bold text-[#7D7E92]">
+                  @
+                </span>
+                <input
+                  type="text"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_.]/g, ''))}
+                  placeholder="yourname"
+                  maxLength={20}
+                  className="w-full pl-8 pr-4 py-3 rounded-xl bg-[#17131F] border border-[#7D7E92]/30 text-white placeholder-[#7D7E92] focus:outline-none focus:border-[#9A79BA] text-base sm:text-sm font-semibold"
+                />
+              </div>
 
-            <div 
-              onClick={() => fileInputRef.current?.click()}
-              className="relative h-24 w-24 rounded-2xl overflow-hidden border-2 border-dashed border-slate-300 hover:border-[#6d4aff] cursor-pointer bg-slate-50 flex flex-col items-center justify-center group transition"
-            >
-              {avatarPreview ? (
-                <>
-                  <img src={avatarPreview} alt="Preview" className="h-full w-full object-cover" />
-                  <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition flex items-center justify-center">
-                    <Camera className="h-5 w-5 text-white" />
+              <div className="mt-2 text-xs">
+                {isCheckingUsername && (
+                  <span className="text-[#B6AEC7]">Checking availability...</span>
+                )}
+                {!isCheckingUsername && usernameStatus?.available && (
+                  <span className="text-emerald-400 font-semibold inline-flex items-center gap-1">
+                    <svg className="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" />
+                    </svg>
+                    @{username} is available!
+                  </span>
+                )}
+                {!isCheckingUsername && usernameStatus?.available === false && (
+                  <div className="space-y-1.5">
+                    <span className="text-rose-400 font-semibold">@{username} is already taken.</span>
+                    {usernameStatus.suggestions && usernameStatus.suggestions.length > 0 && (
+                      <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                        <span className="text-[#B6AEC7]">Suggested:</span>
+                        {usernameStatus.suggestions.map((sug) => (
+                          <button
+                            key={sug}
+                            type="button"
+                            onClick={() => setUsername(sug)}
+                            className="px-2 py-0.5 rounded-lg bg-[#17131F] border border-[#9A79BA]/40 text-[#ECE8F4] font-semibold text-[11px] hover:bg-[#653C87]"
+                          >
+                            @{sug}
+                          </button>
+                        ))}
+                      </div>
+                    )}
                   </div>
-                </>
-              ) : (
-                <div className="flex flex-col items-center text-slate-400 group-hover:text-[#6d4aff] transition">
-                  <Camera className="h-6 w-6 mb-1" />
-                  <span className="text-[10px] font-medium">Add Photo</span>
-                </div>
-              )}
-            </div>
-
-            <div className="text-center">
-              <span className="text-xs font-semibold text-slate-800 block">Profile Photo *</span>
-              <span className="text-[10px] text-slate-400">Upload a clear photo of your face</span>
-            </div>
-          </div>
-
-          {/* Display Name */}
-          <div>
-            <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
-              Display Name *
-            </label>
-            <input
-              type="text"
-              required
-              value={displayName}
-              onChange={(e) => setDisplayName(e.target.value)}
-              placeholder="e.g. Maria, Somchai, David"
-              className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:border-[#6d4aff] focus:bg-white focus:outline-none transition shadow-xs"
-            />
-          </div>
-
-          {/* Gender & Looking For */}
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
-                I Am A
-              </label>
-              <select
-                value={gender}
-                onChange={(e) => setGender(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3 py-2.5 text-xs text-slate-900 focus:border-[#6d4aff] focus:bg-white focus:outline-none transition shadow-xs"
-              >
-                <option value="female">Woman</option>
-                <option value="male">Man</option>
-                <option value="transgender">Trans Woman</option>
-              </select>
+                )}
+              </div>
             </div>
 
             <div>
-              <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
-                Looking For
+              <label className="text-xs font-bold uppercase tracking-wider text-[#B6AEC7] block mb-1.5">
+                Display Name (First Name)
               </label>
-              <select
-                value={lookingFor}
-                onChange={(e) => setLookingFor(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3 py-2.5 text-xs text-slate-900 focus:border-[#6d4aff] focus:bg-white focus:outline-none transition shadow-xs"
-              >
-                <option value="Men">Men</option>
-                <option value="Women">Women</option>
-                <option value="Everyone">Everyone</option>
-              </select>
+              <input
+                type="text"
+                value={displayName}
+                onChange={(e) => setDisplayName(e.target.value)}
+                placeholder="e.g. Christopher"
+                className="w-full px-4 py-3 rounded-xl bg-[#17131F] border border-[#7D7E92]/30 text-white placeholder-[#7D7E92] focus:outline-none focus:border-[#9A79BA] text-base sm:text-sm"
+              />
             </div>
-          </div>
 
-          {/* Lifestyle / Roots */}
-          <div>
-            <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
-              Lifestyle &amp; Upbringing
-            </label>
-            <div className="grid grid-cols-3 gap-2">
-              <button
-                type="button"
-                onClick={() => setLifestyle('Metro / City')}
-                className={`flex flex-col items-center justify-center p-2.5 rounded-xl border text-center transition ${
-                  lifestyle === 'Metro / City'
-                    ? 'border-[#6d4aff] bg-purple-50 text-slate-900 shadow-xs'
-                    : 'border-slate-200 bg-slate-50/50 text-slate-600 hover:border-slate-300'
-                }`}
-              >
-                <Building2 className="h-4 w-4 mb-1 text-sky-500" />
-                <span className="text-[11px] font-semibold leading-none">Metro</span>
-                <span className="text-[9px] text-slate-500 mt-0.5">Urban pace</span>
-              </button>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="text-xs font-bold uppercase tracking-wider text-[#B6AEC7] block mb-1.5">
+                  Birthdate
+                </label>
+                <input
+                  type="date"
+                  value={birthdate}
+                  onChange={(e) => setBirthdate(e.target.value)}
+                  className="w-full px-3 py-3 rounded-xl bg-[#17131F] border border-[#7D7E92]/30 text-white focus:outline-none focus:border-[#9A79BA] text-base sm:text-sm"
+                />
+              </div>
 
-              <button
-                type="button"
-                onClick={() => setLifestyle('Province / Rural')}
-                className={`flex flex-col items-center justify-center p-2.5 rounded-xl border text-center transition ${
-                  lifestyle === 'Province / Rural'
-                    ? 'border-[#6d4aff] bg-purple-50 text-slate-900 shadow-xs'
-                    : 'border-slate-200 bg-slate-50/50 text-slate-600 hover:border-slate-300'
-                }`}
-              >
-                <Trees className="h-4 w-4 mb-1 text-emerald-600" />
-                <span className="text-[11px] font-semibold leading-none">Province</span>
-                <span className="text-[9px] text-slate-500 mt-0.5">Simple roots</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setLifestyle('Coastal / Island')}
-                className={`flex flex-col items-center justify-center p-2.5 rounded-xl border text-center transition ${
-                  lifestyle === 'Coastal / Island'
-                    ? 'border-[#6d4aff] bg-purple-50 text-slate-900 shadow-xs'
-                    : 'border-slate-200 bg-slate-50/50 text-slate-600 hover:border-slate-300'
-                }`}
-              >
-                <Waves className="h-4 w-4 mb-1 text-amber-500" />
-                <span className="text-[11px] font-semibold leading-none">Coastal</span>
-                <span className="text-[9px] text-slate-500 mt-0.5">Island life</span>
-              </button>
+              <div>
+                <label className="text-xs font-bold uppercase tracking-wider text-[#B6AEC7] block mb-1.5">
+                  City
+                </label>
+                <input
+                  type="text"
+                  value={city}
+                  onChange={(e) => setCity(e.target.value)}
+                  placeholder="e.g. Makati or Las Vegas"
+                  className="w-full px-4 py-3 rounded-xl bg-[#17131F] border border-[#7D7E92]/30 text-white placeholder-[#7D7E92] focus:outline-none focus:border-[#9A79BA] text-base sm:text-sm"
+                />
+              </div>
             </div>
-          </div>
 
-          {/* Goal */}
-          <div>
-            <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
-              Relationship Goal
-            </label>
-            <select
-              value={relationshipGoal}
-              onChange={(e) => setRelationshipGoal(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3 py-2.5 text-xs text-slate-900 focus:border-[#6d4aff] focus:bg-white focus:outline-none transition shadow-xs"
-            >
-              <option value="Long-Term Relationship">Long-Term Relationship</option>
-              <option value="Dating with Intent">Dating with Intent</option>
-              <option value="Marriage-Minded">Marriage-Minded</option>
-            </select>
-          </div>
-
-          {/* Date of Birth */}
-          <div>
-            <div className="flex justify-between items-center mb-1.5">
-              <label className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
-                Date of Birth *
-              </label>
-              <span className="text-[10px] text-rose-500 font-semibold tracking-wide">MUST BE 18+</span>
-            </div>
-            <input
-              type="date"
-              required
-              value={birthdate}
-              onChange={(e) => setBirthdate(e.target.value)}
-              className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 text-xs text-slate-900 focus:border-[#6d4aff] focus:bg-white focus:outline-none transition shadow-xs"
-            />
-          </div>
-
-          {/* Country & City */}
-          <div className="grid grid-cols-2 gap-3">
             <div>
-              <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
+              <label className="text-xs font-bold uppercase tracking-wider text-[#B6AEC7] block mb-1.5">
                 Country
               </label>
               <select
                 value={country}
                 onChange={(e) => setCountry(e.target.value)}
-                className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3 py-2.5 text-xs text-slate-900 focus:border-[#6d4aff] focus:bg-white focus:outline-none transition shadow-xs"
+                className="w-full px-4 py-3 rounded-xl bg-[#17131F] border border-[#7D7E92]/30 text-white focus:outline-none focus:border-[#9A79BA] text-base sm:text-sm font-semibold"
               >
-                <optgroup label="Southeast Asia">
-                  <option value="Philippines">Philippines</option>
-                  <option value="Thailand">Thailand</option>
-                  <option value="Vietnam">Vietnam</option>
-                  <option value="Cambodia">Cambodia</option>
-                  <option value="Laos">Laos</option>
-                  <option value="Indonesia">Indonesia</option>
-                  <option value="Malaysia">Malaysia</option>
-                  <option value="Singapore">Singapore</option>
-                </optgroup>
-                <optgroup label="International / Expats">
-                  <option value="United States">United States</option>
-                  <option value="Canada">Canada</option>
-                  <option value="United Kingdom">United Kingdom</option>
-                  <option value="Australia">Australia</option>
-                  <option value="Germany">Germany</option>
-                  <option value="France">France</option>
-                  <option value="Other">Other</option>
-                </optgroup>
+                <option value="Philippines">Philippines</option>
+                <option value="Thailand">Thailand</option>
+                <option value="Cambodia">Cambodia</option>
+                <option value="Vietnam">Vietnam</option>
+                <option value="United States">United States</option>
+                <option value="Canada">Canada</option>
+                <option value="Australia">Australia</option>
+                <option value="United Kingdom">United Kingdom</option>
               </select>
             </div>
 
+            <button
+              type="submit"
+              className="w-full py-3.5 rounded-xl bg-[#653C87] hover:bg-[#9A79BA] text-white text-sm font-bold shadow-lg transition-all active:scale-95 mt-2"
+            >
+              Continue to Intent & Family
+            </button>
+          </form>
+        )}
+
+        {/* STEP 2: INTENT & DEPENDENTS */}
+        {step === 2 && (
+          <form onSubmit={handleNextStep2} className="space-y-5">
             <div>
-              <label className="block text-[11px] font-semibold uppercase tracking-wider text-slate-500 mb-1.5">
-                City / Area *
+              <label className="text-xs font-bold uppercase tracking-wider text-[#B6AEC7] block mb-2">
+                Primary Courtship Goal
               </label>
+              <div className="grid grid-cols-1 gap-2">
+                {['Marriage & Long-Term Partner', 'Committed Courtship', 'Meaningful Connection'].map((goal) => (
+                  <button
+                    key={goal}
+                    type="button"
+                    onClick={() => setRelationshipIntent(goal)}
+                    className={`px-4 py-3 rounded-xl text-xs font-bold text-left border transition-all ${
+                      relationshipIntent === goal
+                        ? 'bg-[#653C87] border-[#9A79BA] text-white'
+                        : 'bg-[#17131F] border-[#7D7E92]/30 text-[#ECE8F4] hover:border-[#7D7E92]'
+                    }`}
+                  >
+                    {goal}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
+              <label className="text-xs font-bold uppercase tracking-wider text-[#B6AEC7] block mb-2">
+                Relocation Intent
+              </label>
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  { id: 'willing_to_relocate', label: 'Willing to Relocate' },
+                  { id: 'looking_to_relocate', label: 'Looking to Relocate' },
+                  { id: 'not_relocating', label: 'Not Relocating' },
+                ].map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => setRelocationIntent(item.id)}
+                    className={`p-2.5 rounded-xl text-[11px] font-bold text-center border transition-all ${
+                      relocationIntent === item.id
+                        ? 'bg-[#653C87] border-[#9A79BA] text-white'
+                        : 'bg-[#17131F] border-[#7D7E92]/30 text-[#ECE8F4] hover:border-[#7D7E92]'
+                    }`}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Dependents Guardrail */}
+            <div className="p-4 rounded-2xl bg-[#17131F] border border-[#7D7E92]/30 space-y-3">
+              <div>
+                <label className="text-xs font-bold uppercase tracking-wider text-[#9A79BA] block">
+                  Family & Dependents Transparency
+                </label>
+                <p className="text-[11px] text-[#B6AEC7] mt-0.5">
+                  Accurate parental status is required to protect platform trust.
+                </p>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  type="button"
+                  onClick={() => setHasChildren(false)}
+                  className={`py-2.5 rounded-xl text-xs font-bold border transition-all ${
+                    hasChildren === false
+                      ? 'bg-[#653C87] border-[#9A79BA] text-white'
+                      : 'bg-[#241E2F] border-[#7D7E92]/30 text-[#ECE8F4]'
+                  }`}
+                >
+                  No Children
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setHasChildren(true)}
+                  className={`py-2.5 rounded-xl text-xs font-bold border transition-all ${
+                    hasChildren === true
+                      ? 'bg-[#653C87] border-[#9A79BA] text-white'
+                      : 'bg-[#241E2F] border-[#7D7E92]/30 text-[#ECE8F4]'
+                  }`}
+                >
+                  Has Children
+                </button>
+              </div>
+
+              {hasChildren && (
+                <div className="space-y-3 pt-2 border-t border-[#7D7E92]/20">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold text-[#ECE8F4]">Number of Dependents:</span>
+                    <div className="flex gap-1.5">
+                      {[1, 2, 3, 4].map((count) => (
+                        <button
+                          key={count}
+                          type="button"
+                          onClick={() => setChildrenCount(count)}
+                          className={`h-8 w-8 rounded-lg text-xs font-bold border transition-all ${
+                            childrenCount === count
+                              ? 'bg-[#653C87] border-[#9A79BA] text-white'
+                              : 'bg-[#241E2F] border-[#7D7E92]/30 text-[#ECE8F4]'
+                          }`}
+                        >
+                          {count === 4 ? '4+' : count}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold text-[#ECE8F4]">Living Arrangement:</span>
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        onClick={() => setLivingSituation('living_with_me')}
+                        className={`px-2.5 py-1.5 rounded-lg text-[11px] font-bold border transition-all ${
+                          livingSituation === 'living_with_me'
+                            ? 'bg-[#653C87] border-[#9A79BA] text-white'
+                            : 'bg-[#241E2F] border-[#7D7E92]/30 text-[#ECE8F4]'
+                        }`}
+                      >
+                        Living with me
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setLivingSituation('not_living_with_me')}
+                        className={`px-2.5 py-1.5 rounded-lg text-[11px] font-bold border transition-all ${
+                          livingSituation === 'not_living_with_me'
+                            ? 'bg-[#653C87] border-[#9A79BA] text-white'
+                            : 'bg-[#241E2F] border-[#7D7E92]/30 text-[#ECE8F4]'
+                        }`}
+                      >
+                        Not living with me
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => setStep(1)}
+                className="w-1/3 py-3 rounded-xl bg-[#17131F] border border-[#7D7E92]/30 text-xs font-bold text-[#ECE8F4] hover:bg-[#3B1E42]"
+              >
+                Back
+              </button>
+              <button
+                type="submit"
+                className="w-2/3 py-3 rounded-xl bg-[#653C87] hover:bg-[#9A79BA] text-white text-xs font-bold shadow-lg transition-all"
+              >
+                Continue to Photo
+              </button>
+            </div>
+          </form>
+        )}
+
+        {/* STEP 3: PHOTO UPLOAD */}
+        {step === 3 && (
+          <div className="space-y-5">
+            <div>
+              <label className="text-xs font-bold uppercase tracking-wider text-[#B6AEC7] block mb-1.5">
+                Portrait Photo URL / Headshot
+              </label>
+              <p className="text-xs text-[#B6AEC7] mb-3">
+                Provide a clear, unfiltered portrait of yourself to complete your profile setup.
+              </p>
               <input
-                type="text"
-                required
-                value={city}
-                onChange={(e) => setCity(e.target.value)}
-                placeholder="e.g. Makati, Cebu, Bangkok"
-                className="w-full rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 text-xs text-slate-900 placeholder-slate-400 focus:border-[#6d4aff] focus:bg-white focus:outline-none transition shadow-xs"
+                type="url"
+                value={avatarUrl}
+                onChange={(e) => setAvatarUrl(e.target.value)}
+                placeholder="https://example.com/your-photo.jpg"
+                className="w-full px-4 py-3 rounded-xl bg-[#17131F] border border-[#7D7E92]/30 text-white placeholder-[#7D7E92] focus:outline-none focus:border-[#9A79BA] text-base sm:text-sm"
               />
             </div>
-          </div>
 
-          {/* Conditional Expat Travel Radar */}
-          {isExpat && (
-            <div className="rounded-xl border border-amber-200 bg-amber-50/60 p-3.5 space-y-3">
-              <div className="flex items-center gap-1.5 text-xs font-semibold text-amber-900">
-                <Plane className="h-3.5 w-3.5 text-amber-600" />
-                <span>Travel Radar (Optional)</span>
+            {avatarUrl && (
+              <div className="flex justify-center py-2">
+                <div className="h-28 w-28 rounded-2xl overflow-hidden border-2 border-[#9A79BA] bg-[#17131F] shadow-lg">
+                  <img
+                    src={avatarUrl}
+                    alt="Preview"
+                    className="h-full w-full object-cover"
+                    onError={() => setErrorMessage('Invalid image URL format.')}
+                  />
+                </div>
               </div>
-              <p className="text-[11px] text-amber-800/80 leading-normal">
-                Visiting Southeast Asia soon? Add your destination and dates so locals know when you will be in town.
-              </p>
-              <div className="grid grid-cols-2 gap-2.5">
-                <input
-                  type="text"
-                  value={visitingCity}
-                  onChange={(e) => setVisitingCity(e.target.value)}
-                  placeholder="Visiting city (e.g. Manila)"
-                  className="rounded-lg border border-amber-200 bg-white px-3 py-2 text-xs text-slate-900 placeholder-slate-400 focus:border-amber-400 focus:outline-none"
-                />
-                <input
-                  type="text"
-                  value={visitingDates}
-                  onChange={(e) => setVisitingDates(e.target.value)}
-                  placeholder="Dates (e.g. Nov 10 - 24)"
-                  className="rounded-lg border border-amber-200 bg-white px-3 py-2 text-xs text-slate-900 placeholder-slate-400 focus:border-amber-400 focus:outline-none"
-                />
-              </div>
-            </div>
-          )}
-
-          {/* Bio */}
-          <div>
-            <div className="flex justify-between items-center mb-1.5">
-              <label className="text-[11px] font-semibold uppercase tracking-wider text-slate-500">
-                About Me *
-              </label>
-              <span className={`text-[10px] font-medium ${bio.length >= 50 ? 'text-emerald-600' : 'text-slate-400'}`}>
-                {bio.length}/50 min
-              </span>
-            </div>
-            <textarea
-              required
-              rows={3}
-              value={bio}
-              onChange={(e) => setBio(e.target.value)}
-              placeholder="Describe your character, interests, and what you are seeking in a life partner..."
-              className="w-full rounded-xl border border-slate-200 bg-slate-50/50 p-3 text-xs text-slate-900 placeholder-slate-400 focus:border-[#6d4aff] focus:bg-white focus:outline-none transition resize-none shadow-xs"
-            />
-          </div>
-
-          {/* Terms Checkbox */}
-          <div className="flex items-start gap-2.5 pt-1">
-            <input
-              type="checkbox"
-              id="agree"
-              checked={agreed}
-              onChange={(e) => setAgreed(e.target.checked)}
-              className="mt-0.5 h-4 w-4 rounded border-slate-300 text-[#6d4aff] focus:ring-0 cursor-pointer"
-            />
-            <label htmlFor="agree" className="text-[11px] text-slate-600 leading-snug cursor-pointer select-none">
-              I certify that I am at least 18 years of age and agree to the{' '}
-              <a href="/terms" target="_blank" className="text-slate-900 font-medium underline">Terms of Service</a>{' '}
-              and{' '}
-              <a href="/privacy" target="_blank" className="text-slate-900 font-medium underline">Privacy Policy</a>.
-            </label>
-          </div>
-
-          {/* Submit */}
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full rounded-xl bg-[#6d4aff] py-3 text-xs font-bold uppercase tracking-wider text-white hover:bg-[#5b3ae6] transition shadow-md flex items-center justify-center gap-2 disabled:opacity-50"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="h-4 w-4 animate-spin" />
-                <span>Creating Profile...</span>
-              </>
-            ) : (
-              <span>Complete &amp; Continue</span>
             )}
-          </button>
-        </form>
+
+            <div className="p-3.5 rounded-xl bg-[#17131F] border border-[#7D7E92]/30 text-xs text-[#ECE8F4] space-y-1">
+              <p className="font-bold text-white">Starting Reputation: 100% Rep</p>
+              <p className="text-[11px] text-[#B6AEC7]">
+                Your account begins in Standard Standing. Maintain respectful communication and complete pose selfie verification later to earn verified badges.
+              </p>
+            </div>
+
+            <div className="flex gap-3">
+              <button
+                type="button"
+                onClick={() => setStep(2)}
+                className="w-1/3 py-3 rounded-xl bg-[#17131F] border border-[#7D7E92]/30 text-xs font-bold text-[#ECE8F4] hover:bg-[#3B1E42]"
+              >
+                Back
+              </button>
+              <button
+                type="button"
+                onClick={handleCompleteOnboarding}
+                disabled={loading}
+                className="w-2/3 py-3 rounded-xl bg-[#653C87] hover:bg-[#9A79BA] disabled:opacity-50 text-white text-xs font-bold shadow-lg transition-all"
+              >
+                {loading ? 'Activating Profile...' : 'Complete & Discover Matches'}
+              </button>
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
-  )
+  );
 }

@@ -4,19 +4,28 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
-import { DUMMY_PROFILES } from '@/lib/dummyProfiles';
+import { DUMMY_PROFILES, DummyProfile } from '@/lib/dummyProfiles';
 
 export default function PublicProfilePage() {
   const router = useRouter();
   const params = useParams();
   const profileId = params?.id as string;
 
-  const profile = DUMMY_PROFILES.find((p) => p.id === profileId) || DUMMY_PROFILES[0];
-  const [activePhotoIndex, setActivePhotoIndex] = useState(0);
+  const foundProfile = DUMMY_PROFILES.find((p: DummyProfile) => p.id === profileId);
+  const profile: DummyProfile = foundProfile || DUMMY_PROFILES[0];
 
-  const photos = profile.galleryUrls && profile.galleryUrls.length > 0 
-    ? profile.galleryUrls 
-    : [profile.avatarUrl];
+  const [activePhotoIndex, setActivePhotoIndex] = useState<number>(0);
+
+  const photos: string[] =
+    profile.galleryUrls && profile.galleryUrls.length > 0
+      ? profile.galleryUrls
+      : [profile.avatarUrl];
+
+  const bioParagraphs: string[] = Array.isArray(profile.bio)
+    ? profile.bio
+    : typeof profile.bio === 'string'
+    ? [profile.bio]
+    : [];
 
   return (
     <main className="w-full max-w-2xl mx-auto pb-24 sm:py-8 sm:px-4">
@@ -24,7 +33,7 @@ export default function PublicProfilePage() {
       {/* Hero Photo Frame */}
       <div className="relative w-full aspect-[4/5] sm:rounded-3xl overflow-hidden bg-[#17131F] shadow-2xl">
         <Image
-          src={photos[activePhotoIndex]}
+          src={photos[activePhotoIndex] || profile.avatarUrl}
           alt={profile.fullName}
           fill
           priority
@@ -57,7 +66,7 @@ export default function PublicProfilePage() {
         {/* Dots */}
         {photos.length > 1 && (
           <div className="absolute bottom-5 left-4 right-4 flex items-center justify-center gap-2 z-20">
-            {photos.map((_, idx) => (
+            {photos.map((_: string, idx: number) => (
               <button
                 key={idx}
                 type="button"
@@ -135,24 +144,28 @@ export default function PublicProfilePage() {
           <h2 className="text-xs font-extrabold uppercase tracking-widest text-[#B8AAC3]">
             About {profile.fullName}
           </h2>
-          {profile.bio.map((paragraph, i) => (
+          {bioParagraphs.map((paragraph: string, i: number) => (
             <p key={i} className="text-base text-[#F3EBF9] leading-relaxed font-medium">
               {paragraph}
             </p>
           ))}
 
           <div className="pt-3 border-t border-[#725A7A]/25 flex flex-wrap gap-2 text-xs">
-            {profile.languages.map((lang) => (
+            {profile.languages?.map((lang: string) => (
               <span key={lang} className="px-3 py-1.5 rounded-xl bg-[#17131F] border border-[#725A7A]/30 text-[#DDD8D4] font-semibold">
                 🗣️ {lang}
               </span>
             ))}
-            <span className="px-3 py-1.5 rounded-xl bg-[#17131F] border border-[#725A7A]/30 text-[#DDD8D4] font-semibold">
-              📏 {profile.heightCm} cm
-            </span>
-            <span className="px-3 py-1.5 rounded-xl bg-[#17131F] border border-[#725A7A]/30 text-[#DDD8D4] font-semibold">
-              🎓 {profile.education}
-            </span>
+            {profile.heightCm && (
+              <span className="px-3 py-1.5 rounded-xl bg-[#17131F] border border-[#725A7A]/30 text-[#DDD8D4] font-semibold">
+                📏 {profile.heightCm} cm
+              </span>
+            )}
+            {profile.education && (
+              <span className="px-3 py-1.5 rounded-xl bg-[#17131F] border border-[#725A7A]/30 text-[#DDD8D4] font-semibold">
+                🎓 {profile.education}
+              </span>
+            )}
           </div>
         </div>
 

@@ -1,138 +1,147 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
+import { supabase } from '@/lib/supabaseClient';
+
+interface ConversationPreview {
+  partnerId: string;
+  partnerName: string;
+  partnerAvatar?: string;
+  partnerCity?: string;
+  partnerReputation?: number;
+  lastMessage: string;
+  lastMessageAt: string;
+  unreadCount: number;
+}
 
 export default function MessagesInboxPage() {
-  const [activeTab, setActiveTab] = useState<'all' | 'unread'>('all');
+  const [conversations, setConversations] = useState<ConversationPreview[]>([
+    {
+      partnerId: 'ph-camille',
+      partnerName: 'Camille',
+      partnerAvatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=400&q=80',
+      partnerCity: 'Makati, Metro Manila',
+      partnerReputation: 98,
+      lastMessage: 'Good morning! Thank you for the warm message. How was your weekend?',
+      lastMessageAt: '9:30 AM',
+      unreadCount: 1,
+    },
+    {
+      partnerId: 'th-siriporn',
+      partnerName: 'Siriporn',
+      partnerAvatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=400&q=80',
+      partnerCity: 'Bangkok, Thailand',
+      partnerReputation: 95,
+      lastMessage: 'I enjoyed learning about your work. Are you visiting soon?',
+      lastMessageAt: 'Yesterday',
+      unreadCount: 0,
+    },
+    {
+      partnerId: 'ph-maricel',
+      partnerName: 'Maricel',
+      partnerAvatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=400&q=80',
+      partnerCity: 'Cebu City, Philippines',
+      partnerReputation: 92,
+      lastMessage: 'You: Looking forward to our call this weekend.',
+      lastMessageAt: 'Tuesday',
+      unreadCount: 0,
+    },
+  ]);
 
-  const conversations = [
-    {
-      id: 'ph-camille',
-      name: 'Camille',
-      age: 26,
-      avatar: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=300&q=80',
-      lastMessage: 'Good morning! Thank you for the warm message...',
-      time: '9:30 AM',
-      unread: true,
-      city: 'Makati',
-    },
-    {
-      id: 'th-siriporn',
-      name: 'Siriporn',
-      age: 28,
-      avatar: 'https://images.unsplash.com/photo-1531746020798-e6953c6e8e04?auto=format&fit=crop&w=300&q=80',
-      lastMessage: 'I enjoyed learning about your travels in Asia.',
-      time: 'Yesterday',
-      unread: false,
-      city: 'Bangkok',
-    },
-    {
-      id: 'ph-maricel',
-      name: 'Maricel',
-      age: 33,
-      avatar: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=300&q=80',
-      lastMessage: 'You: Looking forward to our chat this weekend!',
-      time: 'Tuesday',
-      unread: false,
-      city: 'Cebu City',
-    },
-    {
-      id: 'kh-socheata',
-      name: 'Socheata',
-      age: 27,
-      avatar: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=300&q=80',
-      lastMessage: 'You: Take care always! See you soon on chat.',
-      time: 'Sep 18',
-      unread: false,
-      city: 'Phnom Penh',
-    },
-  ];
+  const getInitials = (name: string) => {
+    return name.slice(0, 2).toUpperCase();
+  };
 
   return (
-    <main className="max-w-3xl mx-auto w-full px-4 sm:px-6 py-6 pb-28 min-h-[calc(100vh-140px)] space-y-5">
+    <div className="w-full max-w-4xl mx-auto px-4 py-6 sm:py-8 space-y-6">
       
-      <div>
-        <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-          Messages
-        </h1>
-        <p className="text-xs sm:text-sm text-[#DDD8D4] mt-1">
-          Your private conversations with sincere courtship matches.
-        </p>
-      </div>
+      {/* Title & Filter Tabs */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#7D7E92]/25 pb-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-white">Direct Messages</h1>
+          <p className="text-xs text-[#B6AEC7] mt-0.5">
+            Private, authentic courtship conversations with verified members.
+          </p>
+        </div>
 
-      {/* Filter Tabs */}
-      <div className="flex items-center gap-2">
-        <button
-          onClick={() => setActiveTab('all')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border spring-press ${
-            activeTab === 'all'
-              ? 'bg-[#653C87] border-[#978FA8]/40 text-white shadow-md'
-              : 'bg-[#241E2F] border-[#725A7A]/30 text-[#DDD8D4]'
-          }`}
-        >
-          All (4)
-        </button>
-        <button
-          onClick={() => setActiveTab('unread')}
-          className={`px-4 py-2 rounded-xl text-xs font-bold transition-all border spring-press ${
-            activeTab === 'unread'
-              ? 'bg-[#653C87] border-[#978FA8]/40 text-white shadow-md'
-              : 'bg-[#241E2F] border-[#725A7A]/30 text-[#DDD8D4]'
-          }`}
-        >
-          Unread (1)
-        </button>
+        <div className="flex gap-2">
+          <button className="px-3.5 py-1.5 rounded-xl bg-[#653C87] text-white text-xs font-bold shadow-md">
+            All Messages
+          </button>
+          <button className="px-3.5 py-1.5 rounded-xl bg-[#241E2F] border border-[#7D7E92]/30 text-[#ECE8F4] text-xs font-semibold hover:bg-[#3B1E42] transition-colors">
+            Unread
+          </button>
+        </div>
       </div>
 
       {/* Conversation Thread List */}
-      <div className="rounded-3xl bg-[#241E2F] border border-[#725A7A]/35 divide-y divide-[#725A7A]/25 overflow-hidden shadow-xl">
+      <div className="space-y-2.5">
         {conversations.map((c) => (
           <Link
-            key={c.id}
-            href={`/chat/${c.id}`}
-            className="flex items-center justify-between p-4 hover:bg-[#17131F]/50 transition-all spring-press"
+            key={c.partnerId}
+            href={`/chat/${c.partnerId}`}
+            className="flex items-center justify-between p-3.5 sm:p-4 rounded-2xl bg-[#241E2F] border border-[#7D7E92]/30 hover:border-[#9A79BA] hover:bg-[#2B2338] transition-all group shadow-lg"
           >
-            <div className="flex items-center gap-3.5 min-w-0">
-              <div className="relative h-12 w-12 rounded-full overflow-hidden flex-shrink-0 border border-[#725A7A]/40">
-                <Image
-                  src={c.avatar}
-                  alt={c.name}
-                  fill
-                  className="object-cover"
-                  unoptimized
-                />
+            <div className="flex items-center gap-3.5 sm:gap-4 min-w-0">
+              
+              {/* Unified Squircle Avatar (48x48) */}
+              <div className="relative h-12 w-12 rounded-2xl overflow-hidden bg-[#17131F] border border-[#9A79BA]/40 shrink-0 flex items-center justify-center shadow-inner group-hover:scale-[1.02] transition-transform">
+                {c.partnerAvatar ? (
+                  <img
+                    src={c.partnerAvatar}
+                    alt={c.partnerName}
+                    className="h-full w-full object-cover"
+                  />
+                ) : (
+                  <span className="text-xs font-bold text-[#ECE8F4]">
+                    {getInitials(c.partnerName)}
+                  </span>
+                )}
+                {c.unreadCount > 0 && (
+                  <span className="absolute top-1 right-1 h-2.5 w-2.5 rounded-full bg-emerald-400 ring-2 ring-[#241E2F]" />
+                )}
               </div>
 
-              <div className="min-w-0">
-                <div className="flex items-center gap-1.5">
-                  <h3 className="text-sm font-extrabold text-white truncate">
-                    {c.name}, {c.age}
-                  </h3>
-                  <span className="text-[10px] text-white bg-[#653C87] px-1 rounded">✓</span>
+              {/* Text Context */}
+              <div className="min-w-0 space-y-0.5">
+                <div className="flex items-center gap-2">
+                  <h2 className="font-bold text-sm sm:text-base text-white truncate">
+                    {c.partnerName}
+                  </h2>
+                  <span className="text-[10px] px-2 py-0.5 rounded-lg bg-[#17131F] text-[#ECE8F4] border border-[#7D7E92]/30 font-semibold shrink-0">
+                    {c.partnerReputation}% Rep
+                  </span>
                 </div>
-                <p className="text-xs text-[#DDD8D4] truncate font-medium mt-0.5">
-                  <span className="text-[#B8AAC3]">📍 {c.city} • </span>
+                <p className="text-xs text-[#ECE8F4]/80 truncate max-w-xs sm:max-w-md">
                   {c.lastMessage}
                 </p>
+                {c.partnerCity && (
+                  <p className="text-[10px] text-[#7D7E92] font-mono">
+                    {c.partnerCity}
+                  </p>
+                )}
               </div>
+
             </div>
 
-            <div className="flex flex-col items-end gap-1.5 flex-shrink-0 ml-3">
-              <span className="text-[11px] font-semibold text-[#725A7A]">
-                {c.time}
+            {/* Right Side: Timestamp & Unread Badge */}
+            <div className="flex flex-col items-end gap-1.5 shrink-0 pl-2">
+              <span className="text-[11px] font-mono text-[#B6AEC7]">
+                {c.lastMessageAt}
               </span>
-              {c.unread && (
-                <span className="px-2 py-0.5 rounded-full bg-[#653C87] text-white text-[10px] font-black tracking-wide shadow-md">
-                  NEW
+              {c.unreadCount > 0 ? (
+                <span className="px-2 py-0.5 rounded-full bg-[#653C87] text-white text-[10px] font-bold shadow-md">
+                  New
                 </span>
+              ) : (
+                <span className="text-xs text-[#7D7E92]">&rsaquo;</span>
               )}
             </div>
           </Link>
         ))}
       </div>
 
-    </main>
+    </div>
   );
 }

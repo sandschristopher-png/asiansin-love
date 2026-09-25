@@ -1,160 +1,134 @@
 'use client';
 
-import React, { useState, useRef, useEffect } from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
+import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabaseClient';
+import { ChatInterface, TargetUserProfile, MessageItem } from '@/components/ChatInterface';
 import { DUMMY_PROFILES } from '@/lib/dummyProfiles';
-import { playChime } from '@/lib/sound';
+
+// Helper to check valid UUID format
+const isUUID = (str: string) =>
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
 
 export default function ChatConversationPage() {
   const router = useRouter();
   const params = useParams();
-  const userId = params?.userId as string;
+  const rawParam = (params?.userId as string) || '';
 
-  const profile = DUMMY_PROFILES.find((p) => p.id === userId) || DUMMY_PROFILES[0];
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  const [inputMessage, setInputMessage] = useState('');
-  const [messages, setMessages] = useState([
-    {
-      id: '1',
-      sender: 'them',
-      text: `Good morning! Thank you for the warm message. How was your weekend?`,
-      time: '9:30 AM',
-    },
-    {
-      id: '2',
-      sender: 'me',
-      text: `Good morning ${profile.fullName}. Weekend was quiet, enjoyed relaxing. How was your week?`,
-      time: '9:35 AM',
-    },
-  ]);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const [targetUser, setTargetUser] = useState<TargetUserProfile | null>(null);
+  const [initialMessages, setInitialMessages] = useState<MessageItem[]>([]);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    async function initChat() {
+      // 1. Get authenticated user session
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
 
-  const handleSend = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!inputMessage.trim()) return;
+      if (!user) {
+        // Must be logged in for real database writes
+        router.push('/login');
+        return;
+      }
 
-    playChime();
+      setCurrentUserId(user.id);
 
-    setMessages((prev) => [
-      ...prev,
-      {
-        id: String(Date.now()),
-        sender: 'me',
-        text: inputMessage.trim(),
-        time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-      },
-    ]);
-    setInputMessage('');
-  };
+      // 2. Resolve target user profile safely without UUID casting errors
+      let profileData: any = null;
+
+      if (isUUID(rawParam)) {
+        const { data } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', rawParam)
+          .maybeSingle();
+        profileData = data;
+      } else {
+        // Try finding profile by username/slug
+        const { data } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('username', rawParam)
+          .maybeSingle();
+        profileData = data;
+      }
+
+      if (profileData) {
+        setTargetUser({
+          id: profileData.id,
+          fullName: profileData.full_name || profileData.username || 'Member',
+          age: profileData.age || 26,
+          city: profileData.city || 'Makati',
+          country: profileData.country || 'Philippines',
+          avatarUrl: profileData.avatar_url || '/placeholder.jpg',
+          galleryUrls: profileData.gallery_urls || [],
+          isVerified: Boolean(profileData.is_verified),
+          relationshipIntent: profileData.intent || 'Long-term relationship',
+          jobTitle: profileData.job_title,
+          languages: profileData.languages || ['English'],
+          bio: profileData.bio || '',
+          trustPill: profileData.trust_pill,
+          trustStatus: profileData.trust_status,
+        });
+
+        // 3. Load message history between authenticated user and target UUID
+        const { data: history } = await supabase
+          .from('messages')
+          .select('*')
+          .or(
+            `and(sender_id.eq.${user.id},receiver_id.eq.${profileData.id}),and(sender_id.eq.${profileData.id},receiver_id.eq.${user.id})`
+          )
+          .order('created_at', { ascending: true });
+
+        if (history) {
+          setInitialMessages(history);
+        }
+      } else {
+        // Fallback to dummy profile if user is not in profiles table
+        const dummy =
+          DUMMY_PROFILES.find((p) => p.id === rawParam) || DUMMY_PROFILES[0];
+
+        setTargetUser({
+          id: dummy.id,
+          fullName: dummy.fullName,
+          age: dummy.age,
+          city: dummy.city,
+          country: dummy.country,
+          avatarUrl: dummy.avatarUrl,
+          galleryUrls: dummy.galleryUrls || [],
+          isVerified: dummy.isVerified ?? true,
+          relationshipIntent: dummy.relationshipIntent || 'Sincere connection',
+          jobTitle: dummy.jobTitle,
+          languages: dummy.languages,
+          bio: dummy.bio,
+          trustPill: dummy.trustPill,
+          trustStatus: dummy.trustStatus,
+        });
+      }
+
+      setLoading(false);
+    }
+
+    initChat();
+  }, [rawParam, router]);
+
+  if (loading || !targetUser) {
+    return (
+      <div className="min-h-screen bg-[#17131F] flex items-center justify-center text-[#E6D7FA]">
+        <div className="animate-pulse text-sm">Loading conversation...</div>
+      </div>
+    );
+  }
 
   return (
-    <div className="fixed inset-0 z-50 bg-[#17131F] flex flex-col justify-between max-w-3xl mx-auto w-full">
-      
-      {/* Dedicated Full App Chat Header (No Webpage Double Navbar) */}
-      <div className="px-4 py-3 bg-[#241E2F] border-b border-[#725A7A]/35 flex items-center justify-between shadow-md pt-[max(0.75rem,env(safe-area-inset-top))]">
-        <div className="flex items-center gap-3">
-          <button
-            type="button"
-            onClick={() => router.back()}
-            className="h-9 w-9 rounded-full bg-[#17131F] border border-[#725A7A]/35 text-white flex items-center justify-center text-sm active:scale-90 transition-transform"
-            aria-label="Back"
-          >
-            ←
-          </button>
-          
-          <div className="relative h-10 w-10 rounded-full overflow-hidden border border-[#978FA8]/40">
-            <Image
-              src={profile.avatarUrl}
-              alt={profile.fullName}
-              fill
-              className="object-cover"
-              unoptimized
-            />
-          </div>
-
-          <div>
-            <div className="flex items-center gap-1.5">
-              <h2 className="text-sm font-extrabold text-white">
-                {profile.fullName}, {profile.age}
-              </h2>
-              {profile.isVerified && (
-                <span className="text-[10px] font-bold text-white bg-[#653C87] px-1.5 py-0.2 rounded">
-                  ✓
-                </span>
-              )}
-            </div>
-            <p className="text-[11px] text-[#DDD8D4] flex items-center gap-1 font-medium">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              {profile.city} • Online
-            </p>
-          </div>
-        </div>
-
-        <Link
-          href={`/profile/${profile.id}`}
-          className="px-3.5 py-1.5 rounded-xl bg-[#17131F] border border-[#725A7A]/40 text-xs font-bold text-[#DDD8D4] hover:text-white active:scale-95 transition-all"
-        >
-          View Bio
-        </Link>
-      </div>
-
-      {/* Scrollable Message History */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3.5">
-        {messages.map((msg) => {
-          const isMe = msg.sender === 'me';
-          return (
-            <div
-              key={msg.id}
-              className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}
-            >
-              <div
-                className={`max-w-[82%] sm:max-w-[70%] px-4 py-3 rounded-2xl text-sm leading-relaxed font-medium shadow-md ${
-                  isMe
-                    ? 'bg-[#653C87] text-white rounded-br-sm'
-                    : 'bg-[#241E2F] border border-[#725A7A]/30 text-[#F3EBF9] rounded-bl-sm'
-                }`}
-              >
-                {msg.text}
-              </div>
-              <span className="text-[10px] text-[#725A7A] mt-1 px-1 font-semibold">
-                {msg.time}
-              </span>
-            </div>
-          );
-        })}
-        <div ref={messagesEndRef} />
-      </div>
-
-      {/* Sticky Bottom Input Bar */}
-      <div className="p-3 sm:p-4 bg-[#241E2F] border-t border-[#725A7A]/35 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
-        <form onSubmit={handleSend} className="flex items-center gap-2">
-          <input
-            type="text"
-            value={inputMessage}
-            onChange={(e) => setInputMessage(e.target.value)}
-            placeholder="Type a polite and sincere message..."
-            className="flex-1 px-4 py-3 rounded-xl bg-[#17131F] border border-[#725A7A]/35 text-white placeholder-[#725A7A] text-base sm:text-sm focus:outline-none focus:border-[#978FA8]"
-          />
-          <button
-            type="submit"
-            disabled={!inputMessage.trim()}
-            className="px-5 py-3 rounded-xl bg-[#653C87] hover:bg-[#7A49A2] disabled:opacity-40 text-white font-extrabold text-sm active:scale-95 transition-all shadow-md"
-          >
-            Send
-          </button>
-        </form>
-      </div>
-
-    </div>
+    <main className="min-h-screen bg-[#17131F]">
+      <ChatInterface
+        currentUserId={currentUserId || ''}
+        targetUser={targetUser}
+        initialMessages={initialMessages}
+      />
+    </main>
   );
 }

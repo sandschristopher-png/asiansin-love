@@ -1,135 +1,197 @@
 'use client';
 
-import React, { useRef, useState } from 'react';
-import Image from 'next/image';
+import React, { useState, useRef } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
+import { supabase } from '@/lib/supabaseClient';
 
-export default function GestureVerifyPage() {
+export default function VerifyPage() {
+  const router = useRouter();
   const fileInputRef = useRef<HTMLInputElement>(null);
+
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
-  const [submitting, setSubmitting] = useState(false);
-  const [submitted, setSubmitted] = useState(false);
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
 
-  const handleCaptureClick = () => {
-    fileInputRef.current?.click();
-  };
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (file) {
-      const url = URL.createObjectURL(file);
-      setPreviewUrl(url);
+  const handleCapture = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setErrorMsg(null);
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setSelectedFile(file);
+      setPreviewUrl(URL.createObjectURL(file));
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    setSubmitting(true);
-    setTimeout(() => {
-      setSubmitting(false);
-      setSubmitted(true);
-    }, 1200);
+  const handleUpload = async () => {
+    if (!selectedFile) {
+      setErrorMsg('Please snap or select a selfie first.');
+      return;
+    }
+
+    setUploading(true);
+    setErrorMsg(null);
+
+    try {
+      const { data: { user }, error: userError } = await supabase.auth.getUser();
+      if (userError || !user) {
+        throw new Error('You must be signed in to submit verification.');
+      }
+
+      const fileExt = selectedFile.name.split('.').pop() || 'jpg';
+      const filePath = `${user.id}/selfie_${Date.now()}.${fileExt}`;
+
+      // Upload directly to Supabase storage bucket
+      const { error: uploadError } = await supabase.storage
+        .from('verifications')
+        .upload(filePath, selectedFile, {
+          cacheControl: '3600',
+          upsert: true,
+        });
+
+      if (uploadError) {
+        throw uploadError;
+      }
+
+      // Update profile record with pending verification status
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({
+          verification_status: 'pending',
+          verification_image_path: filePath,
+          verification_submitted_at: new Date().toISOString(),
+        })
+        .eq('id', user.id);
+
+      if (updateError) {
+        throw updateError;
+      }
+
+      setSuccess(true);
+      setTimeout(() => {
+        router.push('/discover');
+      }, 2400);
+    } catch (err: any) {
+      console.error('Verification upload failed:', err);
+      setErrorMsg(err.message || 'Failed to upload photo. Please check network.');
+    } finally {
+      setUploading(false);
+    }
   };
 
   return (
-    <main className="max-w-lg mx-auto w-full px-4 py-8 pb-20">
+    <main className="max-w-md mx-auto w-full px-4 py-6 pb-28 space-y-6">
       
-      <div className="text-center mb-6 space-y-1.5">
-        <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-          Identity Pose Verification
+      {/* Top Header */}
+      <div className="flex items-center justify-between pb-3 border-b border-[#725A7A]/25">
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className="h-9 w-9 rounded-2xl bg-[#241E2F] border border-[#725A7A]/35 text-[#E6D7FA] flex items-center justify-center text-sm active:scale-90 transition-transform"
+        >
+          ←
+        </button>
+        <h1 className="text-xl font-black text-[#E6D7FA] tracking-tight">
+          Identity Verification
         </h1>
-        <p className="text-xs sm:text-sm text-[#DDD8D4]">
-          Earn your verified profile badge to establish genuine trust with sincere members.
-        </p>
+        <div className="w-9" />
       </div>
 
-      <div className="rounded-3xl bg-[#241E2F] border border-[#725A7A]/35 p-6 shadow-2xl space-y-6">
-        
-        {/* Pose Prompt Box */}
-        <div className="text-center space-y-3">
-          <div className="h-16 w-16 mx-auto rounded-2xl bg-[#17131F] border border-[#725A7A]/40 flex items-center justify-center text-3xl shadow-inner">
-            ✌️
+      {success ? (
+        <div className="rounded-[28px] bg-[#241E2F] border border-[#653C87]/60 p-8 text-center space-y-4 shadow-2xl">
+          <div className="h-16 w-16 mx-auto rounded-full bg-[#653C87]/30 border border-[#9A79BA] flex items-center justify-center text-3xl">
+            ✓
           </div>
-          <div>
-            <span className="text-[11px] font-black uppercase tracking-wider text-[#B8AAC3] block">
-              Your Verification Pose
-            </span>
-            <h2 className="text-lg font-black text-white">
-              Peace Sign Beside Cheek
+          <h2 className="text-xl font-black text-[#E6D7FA]">Photo Submitted</h2>
+          <p className="text-xs text-[#A8A2AB] leading-relaxed">
+            Your gesture selfie has been uploaded securely. Our team verifies submissions within a few hours to grant your profile the verified badge.
+          </p>
+        </div>
+      ) : (
+        <div className="space-y-5">
+          
+          {/* Instructions Card */}
+          <div className="p-4 rounded-[24px] bg-[#241E2F] border border-[#725A7A]/30 space-y-2 shadow-lg">
+            <h2 className="text-xs font-black uppercase tracking-wider text-[#9A79BA]">
+              Gesture Match Pose
             </h2>
-            <p className="text-xs text-[#DDD8D4] mt-1 leading-relaxed">
-              Hold up a clear two-finger peace sign touching your cheek while looking directly at the camera.
+            <p className="text-xs text-[#E6D7FA] leading-relaxed">
+              Hold up <strong className="text-white">two fingers (peace sign ✌️)</strong> beside your face in bright lighting. This confirms you are the actual person in your profile photos.
             </p>
           </div>
-        </div>
 
-        {/* Photo Upload / Camera Preview Frame */}
-        <div className="relative aspect-[4/5] w-full rounded-2xl bg-[#17131F] border-2 border-dashed border-[#725A7A]/50 overflow-hidden flex flex-col items-center justify-center p-4">
-          {previewUrl ? (
-            <Image
-              src={previewUrl}
-              alt="Verification Preview"
-              fill
-              className="object-cover"
-              unoptimized
-            />
-          ) : (
-            <div className="text-center space-y-2 text-[#DDD8D4]">
-              <div className="text-4xl text-[#725A7A]">📷</div>
-              <p className="text-xs font-semibold">No photo captured yet</p>
-            </div>
-          )}
-        </div>
+          {/* Hidden Native File/Camera Input */}
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            capture="user"
+            onChange={handleCapture}
+            className="hidden"
+          />
 
-        {/* Hidden Camera Input for iOS & Android */}
-        <input
-          ref={fileInputRef}
-          type="file"
-          accept="image/*"
-          capture="user"
-          onChange={handleFileChange}
-          className="hidden"
-        />
-
-        {/* Requirements Box */}
-        <div className="rounded-xl bg-[#17131F] border border-[#725A7A]/25 p-3.5 text-xs text-[#DDD8D4] space-y-1">
-          <span className="font-bold text-white block">Photo Requirements:</span>
-          <p>• Face and hand must be clearly visible and well-lit.</p>
-          <p>• No hats, heavy sunglasses, or face-altering filters.</p>
-          <p>• Used strictly for verification; never posted publicly.</p>
-        </div>
-
-        {submitted ? (
-          <div className="rounded-2xl bg-emerald-950/80 border border-emerald-500/50 p-4 text-center space-y-1">
-            <span className="text-lg">✓</span>
-            <h3 className="text-sm font-extrabold text-white">Verification Submitted</h3>
-            <p className="text-xs text-emerald-200">
-              Our safety team reviews submissions within 24 hours. Your badge will appear automatically upon approval.
-            </p>
-          </div>
-        ) : (
-          <div className="space-y-2.5">
-            <button
-              type="button"
-              onClick={handleCaptureClick}
-              className="w-full py-3.5 rounded-2xl bg-[#241E2F] border border-[#725A7A]/40 hover:border-[#978FA8] text-white font-extrabold text-sm active:scale-95 transition-all shadow-md"
-            >
-              {previewUrl ? 'Retake Selfie' : 'Take or Upload Selfie'}
-            </button>
-
-            {previewUrl && (
-              <button
-                type="button"
-                onClick={handleSubmit}
-                disabled={submitting}
-                className="w-full py-3.5 rounded-2xl bg-[#653C87] hover:bg-[#7A49A2] text-white font-extrabold text-sm active:scale-95 transition-all shadow-lg shadow-[#653C87]/40"
-              >
-                {submitting ? 'Submitting...' : 'Submit Verification'}
-              </button>
+          {/* Photo Capture / Preview Box */}
+          <div
+            onClick={() => fileInputRef.current?.click()}
+            className="relative aspect-[3/4] w-full rounded-[28px] bg-[#17131F] border-2 border-dashed border-[#725A7A]/50 hover:border-[#9A79BA] flex flex-col items-center justify-center overflow-hidden cursor-pointer active:scale-[0.99] transition-all shadow-inner"
+          >
+            {previewUrl ? (
+              <>
+                <img
+                  src={previewUrl}
+                  alt="Verification Preview"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                  <span className="px-4 py-2 rounded-xl bg-[#241E2F] text-xs font-bold text-[#E6D7FA]">
+                    Tap to retake
+                  </span>
+                </div>
+              </>
+            ) : (
+              <div className="p-6 text-center space-y-3 pointer-events-none">
+                <div className="h-14 w-14 mx-auto rounded-full bg-[#241E2F] border border-[#725A7A]/40 flex items-center justify-center text-[#9A79BA]">
+                  <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="text-sm font-extrabold text-[#E6D7FA]">
+                    Tap to Open Camera
+                  </p>
+                  <p className="text-[11px] text-[#A8A2AB] mt-0.5">
+                    Selfie with peace sign pose
+                  </p>
+                </div>
+              </div>
             )}
           </div>
-        )}
 
-      </div>
+          {errorMsg && (
+            <p className="text-xs text-rose-300 font-bold text-center">
+              {errorMsg}
+            </p>
+          )}
+
+          {/* Upload Button */}
+          <button
+            type="button"
+            disabled={uploading || !selectedFile}
+            onClick={handleUpload}
+            className={`w-full py-4 rounded-[22px] font-black text-xs uppercase tracking-wider shadow-xl transition-all active:scale-[0.98] ${
+              selectedFile && !uploading
+                ? 'bg-[#653C87] hover:bg-[#9A79BA] text-white shadow-[#653C87]/40'
+                : 'bg-[#241E2F] text-[#A8A2AB]/60 cursor-not-allowed border border-[#725A7A]/30'
+            }`}
+          >
+            {uploading ? 'Encrypting & Uploading...' : 'Submit Verification Photo'}
+          </button>
+
+        </div>
+      )}
+
     </main>
   );
 }
