@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Nunito } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/Navbar";
-import { BottomDock } from "@/components/BottomDock";
 import { Footer } from "@/components/Footer";
 import { FavoritesProvider } from "@/lib/favoritesContext";
 
@@ -17,17 +16,12 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
-  themeColor: "#17131F",
+  viewportFit: "cover",
 };
 
 export const metadata: Metadata = {
   title: "asiansin.love | Sincere Cross-Border Connections",
   description: "Modern, verified dating community connecting international men with sincere Southeast Asian women.",
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "black-translucent",
-    title: "asiansin.love",
-  },
 };
 
 export default function RootLayout({
@@ -36,16 +30,15 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    <html lang="en" className="dark h-full">
       <body
-        className={`${nunito.variable} font-[family-name:var(--font-nunito)] bg-[#17131F] text-[#F3EBF9] min-h-screen flex flex-col pb-36 md:pb-0`}
+        className={`${nunito.variable} font-[family-name:var(--font-nunito)] bg-[#17131F] text-[#F3EBF9] min-h-[100dvh] flex flex-col selection:bg-[#653C87] selection:text-white`}
       >
         <FavoritesProvider>
           <Navbar />
-          <div className="flex-1 w-full max-w-full page-transition">
+          <div className="flex-1 w-full max-w-full">
             {children}
           </div>
-          <BottomDock />
           <Footer />
         </FavoritesProvider>
       </body>
