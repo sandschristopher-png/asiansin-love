@@ -68,28 +68,42 @@ export function ProfileCard({ profile }: { profile: ProfileSummary }) {
             </span>
           )}
           {profile.isOnline && (
-            <span className="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 text-[10px] font-bold">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-[#17131F]/80 border border-[#725A7A]/40 text-[#DDD8D4] text-[10px] font-bold backdrop-blur-md">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#B8AAC3]" />
               Online
             </span>
           )}
         </div>
 
-        {/* Favorite Button */}
+        {/* Favorite Button (Themed SVG Star) */}
         <button
           type="button"
           onClick={handleToggle}
           aria-label={favorited ? 'Remove favorite' : 'Save profile'}
-          className="absolute top-2.5 right-2.5 h-8 w-8 rounded-full bg-[#17131F]/80 backdrop-blur-md border border-[#725A7A]/40 text-white hover:scale-110 active:scale-95 transition-all flex items-center justify-center z-10 shadow-md"
+          className="absolute top-2.5 right-2.5 h-8 w-8 rounded-full bg-[#17131F]/80 backdrop-blur-md border border-[#725A7A]/40 hover:scale-110 active:scale-95 transition-all flex items-center justify-center z-10 shadow-md"
         >
-          <span className={`text-sm ${favorited ? 'text-amber-400' : 'text-[#B8AAC3]'}`}>
-            {favorited ? '★' : '☆'}
-          </span>
+          <svg
+            className={`w-4 h-4 transition-colors ${
+              favorited ? 'text-[#F3EBF9] fill-[#653C87]' : 'text-[#B8AAC3] fill-transparent'
+            }`}
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            strokeWidth={1.75}
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
+            />
+          </svg>
         </button>
 
         {/* Location Tag */}
-        <div className="absolute bottom-2.5 left-2.5 right-2.5 z-10 flex items-center gap-1 text-xs font-bold text-[#DDD8D4] truncate">
-          <span className="text-rose-400 text-xs">📍</span>
+        <div className="absolute bottom-2.5 left-2.5 right-2.5 z-10 flex items-center gap-1.5 text-xs font-bold text-[#DDD8D4] truncate">
+          <svg className="w-3.5 h-3.5 text-[#B8AAC3] flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+          </svg>
           <span className="truncate">{profile.city}, {profile.country}</span>
         </div>
       </div>

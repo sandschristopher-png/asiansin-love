@@ -13,7 +13,7 @@ interface AccountBottomSheetProps {
 export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps) {
   const router = useRouter();
   const [profile, setProfile] = useState<any>(null);
-  
+
   const [dragY, setDragY] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const touchStartY = useRef(0);
@@ -98,7 +98,7 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
     <div className="fixed inset-0 z-50 flex items-end justify-center pointer-events-auto">
       <div
         onClick={onClose}
-        className="fixed inset-0 bg-black/70 backdrop-blur-sm animate-overlay-fade transition-opacity"
+        className="fixed inset-0 bg-black/75 backdrop-blur-sm animate-overlay-fade transition-opacity"
         aria-hidden="true"
       />
 
@@ -129,9 +129,10 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
             </span>
           </div>
 
+          {/* User Profile Summary */}
           <div className="p-4 rounded-2xl bg-[#17131F] border border-[#725A7A]/30 flex items-center justify-between gap-3 shadow-md">
             <div className="flex items-center gap-3">
-              <div className="h-12 w-12 rounded-2xl bg-[#653C87] text-white flex items-center justify-center font-black text-base border border-[#978FA8]/40 shadow-inner flex-shrink-0">
+              <div className="h-12 w-12 rounded-2xl bg-[#653C87] text-[#F3EBF9] flex items-center justify-center font-black text-base border border-[#978FA8]/40 shadow-inner flex-shrink-0">
                 {initials}
               </div>
               <div>
@@ -139,8 +140,11 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
                   {profile?.full_name || 'Your Profile'}
                   {profile?.age ? `, ${profile.age}` : ''}
                 </h3>
-                <p className="text-xs text-[#DDD8D4] flex items-center gap-1">
-                  <span>📍</span>
+                <p className="text-xs text-[#DDD8D4] flex items-center gap-1.5 mt-0.5">
+                  <svg className="w-3.5 h-3.5 text-[#B8AAC3]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                  </svg>
                   {profile?.city ? `${profile.city}, ${profile.country}` : 'Profile Incomplete'}
                 </p>
               </div>
@@ -149,21 +153,53 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
             <Link
               href="/profile"
               onClick={onClose}
-              className="px-3 py-1.5 rounded-xl bg-[#241E2F] hover:bg-[#2E263B] border border-[#725A7A]/35 text-white text-xs font-bold transition-all active:scale-95"
+              className="px-3 py-1.5 rounded-xl bg-[#241E2F] hover:bg-[#2E263B] border border-[#725A7A]/35 text-[#DDD8D4] hover:text-white text-xs font-bold transition-all active:scale-95"
             >
               Edit
             </Link>
           </div>
 
+          {/* Verification Status Card */}
+          <div className="p-4 rounded-2xl bg-[#17131F] border border-[#725A7A]/35 flex items-center justify-between gap-3 shadow-md">
+            <div className="space-y-1">
+              <div className="flex items-center gap-1.5">
+                <svg className="w-4 h-4 text-[#B8AAC3]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                </svg>
+                <span className="text-[11px] font-black uppercase tracking-wider text-white">
+                  {profile?.is_verified ? 'Identity Verified' : 'Pose Unverified'}
+                </span>
+              </div>
+              <p className="text-xs text-[#DDD8D4] leading-relaxed">
+                {profile?.is_verified
+                  ? 'Your profile carries the verified courtship badge.'
+                  : 'Earn your verified badge with a 10-second selfie pose.'}
+              </p>
+            </div>
+
+            {!profile?.is_verified && (
+              <Link
+                href="/verify"
+                onClick={onClose}
+                className="px-3.5 py-2 rounded-xl bg-[#653C87] hover:bg-[#7A49A2] text-white text-xs font-black shadow-md flex-shrink-0 active:scale-95 transition-all"
+              >
+                Verify
+              </Link>
+            )}
+          </div>
+
+          {/* Navigation Action Rows */}
           <div className="space-y-2">
             <Link
               href="/profile"
               onClick={onClose}
-              className="flex items-center justify-between p-3.5 rounded-2xl bg-[#17131F]/80 hover:bg-[#17131F] border border-[#725A7A]/30 text-white font-bold text-sm transition-all active:scale-[0.99]"
+              className="flex items-center justify-between p-3.5 rounded-2xl bg-[#17131F]/90 hover:bg-[#17131F] border border-[#725A7A]/30 text-white font-bold text-sm transition-all active:scale-[0.99]"
             >
               <div className="flex items-center gap-3">
-                <span className="text-base">📝</span>
-                <span>Edit Profile & Photos</span>
+                <svg className="w-4 h-4 text-[#B8AAC3]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                </svg>
+                <span className="text-[#DDD8D4]">Edit Profile & Photos</span>
               </div>
               <span className="text-xs text-[#725A7A]">→</span>
             </Link>
@@ -171,11 +207,13 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
             <Link
               href="/favorites"
               onClick={onClose}
-              className="flex items-center justify-between p-3.5 rounded-2xl bg-[#17131F]/80 hover:bg-[#17131F] border border-[#725A7A]/30 text-white font-bold text-sm transition-all active:scale-[0.99]"
+              className="flex items-center justify-between p-3.5 rounded-2xl bg-[#17131F]/90 hover:bg-[#17131F] border border-[#725A7A]/30 text-white font-bold text-sm transition-all active:scale-[0.99]"
             >
               <div className="flex items-center gap-3">
-                <span className="text-base">⭐</span>
-                <span>Saved Profiles</span>
+                <svg className="w-4 h-4 text-[#B8AAC3]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                </svg>
+                <span className="text-[#DDD8D4]">Saved Profiles</span>
               </div>
               <span className="text-xs text-[#725A7A]">→</span>
             </Link>
@@ -183,11 +221,14 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
             <Link
               href="/settings"
               onClick={onClose}
-              className="flex items-center justify-between p-3.5 rounded-2xl bg-[#17131F]/80 hover:bg-[#17131F] border border-[#725A7A]/30 text-white font-bold text-sm transition-all active:scale-[0.99]"
+              className="flex items-center justify-between p-3.5 rounded-2xl bg-[#17131F]/90 hover:bg-[#17131F] border border-[#725A7A]/30 text-white font-bold text-sm transition-all active:scale-[0.99]"
             >
               <div className="flex items-center gap-3">
-                <span className="text-base">⚙️</span>
-                <span>Settings & Preferences</span>
+                <svg className="w-4 h-4 text-[#B8AAC3]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                </svg>
+                <span className="text-[#DDD8D4]">Settings & Preferences</span>
               </div>
               <span className="text-xs text-[#725A7A]">→</span>
             </Link>
@@ -198,7 +239,7 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
           <button
             type="button"
             onClick={handleSignOut}
-            className="w-full py-3 rounded-2xl bg-[#17131F] hover:bg-[#201A2B] border border-rose-500/30 text-rose-300 font-extrabold text-xs tracking-wider uppercase active:scale-[0.98] transition-all"
+            className="w-full py-3 rounded-2xl bg-[#17131F] hover:bg-[#201A2B] border border-[#725A7A]/35 text-[#B8AAC3] hover:text-white font-extrabold text-xs tracking-wider uppercase active:scale-[0.98] transition-all"
           >
             Sign Out / Switch Account
           </button>

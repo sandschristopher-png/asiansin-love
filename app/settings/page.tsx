@@ -8,18 +8,14 @@ export default function SettingsPage() {
   const router = useRouter();
   const [activeTab, setActiveTab] = useState<'app' | 'notifications' | 'privacy' | 'reports'>('app');
 
-  // Preferences State
   const [imperialUnits, setImperialUnits] = useState(true);
   const [vibrations, setVibrations] = useState(true);
-
-  // Notification Toggles
   const [notifyMessages, setNotifyMessages] = useState(true);
   const [notifyVisits, setNotifyVisits] = useState(false);
   const [emailDigest, setEmailDigest] = useState(true);
 
-  // Privacy / Blocked List
   const [blockedUsers, setBlockedUsers] = useState([
-    { id: '1', name: 'ScamProfile99', date: 'Blocked Sep 12, 2026' },
+    { id: '1', name: 'Member_489', date: 'Blocked Sep 12, 2026' },
   ]);
 
   const handleUnblock = (id: string) => {
@@ -35,7 +31,7 @@ export default function SettingsPage() {
           <button
             type="button"
             onClick={() => router.back()}
-            className="h-8 w-8 rounded-full bg-[#241E2F] border border-[#725A7A]/35 text-white flex items-center justify-center text-sm active:scale-90 transition-transform"
+            className="h-8 w-8 rounded-full bg-[#241E2F] border border-[#725A7A]/35 text-[#DDD8D4] hover:text-white flex items-center justify-center text-sm active:scale-90 transition-transform"
             aria-label="Back"
           >
             ←
@@ -100,7 +96,7 @@ export default function SettingsPage() {
         </button>
       </div>
 
-      {/* --- TAB 1: APP PREFERENCES --- */}
+      {/* Tab 1: App */}
       {activeTab === 'app' && (
         <div className="rounded-3xl bg-[#241E2F] border border-[#725A7A]/35 p-5 space-y-4 shadow-xl">
           <h2 className="text-xs font-black uppercase tracking-wider text-[#B8AAC3]">
@@ -149,7 +145,7 @@ export default function SettingsPage() {
         </div>
       )}
 
-      {/* --- TAB 2: NOTIFICATIONS --- */}
+      {/* Tab 2: Notifications */}
       {activeTab === 'notifications' && (
         <div className="rounded-3xl bg-[#241E2F] border border-[#725A7A]/35 p-5 space-y-4 shadow-xl">
           <h2 className="text-xs font-black uppercase tracking-wider text-[#B8AAC3]">
@@ -218,7 +214,7 @@ export default function SettingsPage() {
         </div>
       )}
 
-      {/* --- TAB 3: PRIVACY & BLOCKED --- */}
+      {/* Tab 3: Privacy */}
       {activeTab === 'privacy' && (
         <div className="rounded-3xl bg-[#241E2F] border border-[#725A7A]/35 p-5 space-y-4 shadow-xl">
           <h2 className="text-xs font-black uppercase tracking-wider text-[#B8AAC3]">
@@ -236,7 +232,7 @@ export default function SettingsPage() {
                   <button
                     type="button"
                     onClick={() => handleUnblock(user.id)}
-                    className="px-3 py-1.5 rounded-xl bg-[#17131F] border border-[#725A7A]/35 hover:border-white text-xs font-bold text-[#DDD8D4] hover:text-white transition-all active:scale-95"
+                    className="px-3 py-1.5 rounded-xl bg-[#17131F] border border-[#725A7A]/35 hover:border-[#978FA8] text-xs font-bold text-[#DDD8D4] hover:text-white transition-all active:scale-95"
                   >
                     Unblock
                   </button>
@@ -251,11 +247,13 @@ export default function SettingsPage() {
         </div>
       )}
 
-      {/* --- TAB 4: REPORTS --- */}
+      {/* Tab 4: Reports */}
       {activeTab === 'reports' && (
-        <div className="rounded-3xl bg-[#241E2F] border border-[#725A7A]/35 p-6 text-center space-y-2 shadow-xl">
-          <div className="h-12 w-12 rounded-2xl bg-[#17131F] border border-[#725A7A]/35 mx-auto flex items-center justify-center text-xl">
-            🛡️
+        <div className="rounded-3xl bg-[#241E2F] border border-[#725A7A]/35 p-6 text-center space-y-2.5 shadow-xl">
+          <div className="h-12 w-12 rounded-2xl bg-[#17131F] border border-[#725A7A]/35 mx-auto flex items-center justify-center text-[#B8AAC3]">
+            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+            </svg>
           </div>
           <h2 className="text-base font-black text-white">No Active Reports</h2>
           <p className="text-xs text-[#DDD8D4] leading-relaxed max-w-sm mx-auto">
