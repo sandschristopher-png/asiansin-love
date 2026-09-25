@@ -38,7 +38,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark">
       <body
-        className={`${nunito.variable} font-[family-name:var(--font-nunito)] bg-[#17131F] text-[#F3EBF9] min-h-screen flex flex-col pb-24 md:pb-0`}
+        className={`${nunito.variable} font-[family-name:var(--font-nunito)] bg-[#17131F] text-[#F3EBF9] min-h-screen flex flex-col pb-36 md:pb-0`}
       >
         <FavoritesProvider>
           <Navbar />

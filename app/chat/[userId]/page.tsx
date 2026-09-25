@@ -20,13 +20,13 @@ export default function ChatConversationPage() {
     {
       id: '1',
       sender: 'them',
-      text: 'Good morning! Thank you for the warm message. How was your weekend?',
+      text: `Good morning! Thank you for the warm message. How was your weekend?`,
       time: '9:30 AM',
     },
     {
       id: '2',
       sender: 'me',
-      text: 'Good morning Camille. Weekend was quiet, enjoyed relaxing. How was your week?',
+      text: `Good morning ${profile.fullName}. Weekend was quiet, enjoyed relaxing. How was your week?`,
       time: '9:35 AM',
     },
   ]);
@@ -43,7 +43,6 @@ export default function ChatConversationPage() {
     e.preventDefault();
     if (!inputMessage.trim()) return;
 
-    // Play tactile sound on send
     playChime();
 
     setMessages((prev) => [
@@ -59,15 +58,15 @@ export default function ChatConversationPage() {
   };
 
   return (
-    <div className="fixed inset-0 top-16 z-40 bg-[#17131F] flex flex-col justify-between max-w-3xl mx-auto w-full border-x border-[#725A7A]/20">
+    <div className="fixed inset-0 z-50 bg-[#17131F] flex flex-col justify-between max-w-3xl mx-auto w-full">
       
-      {/* Thread Header */}
-      <div className="px-4 py-3 bg-[#241E2F] border-b border-[#725A7A]/35 flex items-center justify-between shadow-md">
+      {/* Dedicated Full App Chat Header (No Webpage Double Navbar) */}
+      <div className="px-4 py-3 bg-[#241E2F] border-b border-[#725A7A]/35 flex items-center justify-between shadow-md pt-[max(0.75rem,env(safe-area-inset-top))]">
         <div className="flex items-center gap-3">
           <button
             type="button"
             onClick={() => router.back()}
-            className="h-8 w-8 rounded-full bg-[#17131F] border border-[#725A7A]/35 text-white flex items-center justify-center text-sm active:scale-90 transition-transform"
+            className="h-9 w-9 rounded-full bg-[#17131F] border border-[#725A7A]/35 text-white flex items-center justify-center text-sm active:scale-90 transition-transform"
             aria-label="Back"
           >
             ←
@@ -103,14 +102,14 @@ export default function ChatConversationPage() {
 
         <Link
           href={`/profile/${profile.id}`}
-          className="px-3 py-1.5 rounded-xl bg-[#17131F] border border-[#725A7A]/40 text-xs font-bold text-[#DDD8D4] hover:text-white active:scale-95 transition-all"
+          className="px-3.5 py-1.5 rounded-xl bg-[#17131F] border border-[#725A7A]/40 text-xs font-bold text-[#DDD8D4] hover:text-white active:scale-95 transition-all"
         >
           View Bio
         </Link>
       </div>
 
-      {/* Message History */}
-      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3.5 scrollbar-thin">
+      {/* Scrollable Message History */}
+      <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3.5">
         {messages.map((msg) => {
           const isMe = msg.sender === 'me';
           return (
@@ -144,12 +143,12 @@ export default function ChatConversationPage() {
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
             placeholder="Type a polite and sincere message..."
-            className="flex-1 px-4 py-3.5 rounded-xl bg-[#17131F] border border-[#725A7A]/35 text-white placeholder-[#725A7A] text-base sm:text-sm focus:outline-none focus:border-[#978FA8]"
+            className="flex-1 px-4 py-3 rounded-xl bg-[#17131F] border border-[#725A7A]/35 text-white placeholder-[#725A7A] text-base sm:text-sm focus:outline-none focus:border-[#978FA8]"
           />
           <button
             type="submit"
             disabled={!inputMessage.trim()}
-            className="px-5 py-3.5 rounded-xl bg-[#653C87] hover:bg-[#7A49A2] disabled:opacity-40 text-white font-extrabold text-sm active:scale-95 transition-all shadow-md"
+            className="px-5 py-3 rounded-xl bg-[#653C87] hover:bg-[#7A49A2] disabled:opacity-40 text-white font-extrabold text-sm active:scale-95 transition-all shadow-md"
           >
             Send
           </button>
