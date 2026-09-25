@@ -16,7 +16,7 @@ export function BottomDock() {
 
   return (
     <>
-      <div className="md:hidden fixed bottom-4 inset-x-0 z-40 flex justify-center px-4 pointer-events-none">
+      <div className="md:hidden fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] inset-x-0 z-40 flex justify-center px-4 pointer-events-none">
         <nav className="pointer-events-auto bg-[#17131F]/90 backdrop-blur-xl border border-[#725A7A]/40 rounded-full px-5 py-2.5 shadow-2xl shadow-black/80 flex items-center gap-6">
           
           {/* Discover */}
@@ -72,7 +72,7 @@ export function BottomDock() {
             </span>
           </Link>
 
-          {/* You / Account Trigger */}
+          {/* You / Account Sheet */}
           <button
             type="button"
             onClick={() => setAccountSheetOpen(true)}

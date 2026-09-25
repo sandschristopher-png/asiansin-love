@@ -17,11 +17,18 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   userScalable: false,
+  themeColor: "#17131F",
+  viewportFit: "cover",
 };
 
 export const metadata: Metadata = {
   title: "asiansin.love | Sincere Cross-Border Connections",
   description: "Modern, verified dating community connecting international men with sincere Southeast Asian women.",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "asiansin.love",
+  },
 };
 
 export default function RootLayout({
@@ -32,7 +39,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark overflow-x-hidden">
       <body
-        className={`${nunito.variable} font-[family-name:var(--font-nunito)] bg-[#17131F] text-[#F3EBF9] min-h-screen flex flex-col overflow-x-hidden selection:bg-[#653C87] selection:text-white pb-20 md:pb-0`}
+        className={`${nunito.variable} font-[family-name:var(--font-nunito)] bg-[#17131F] text-[#F3EBF9] min-h-screen flex flex-col overflow-x-hidden selection:bg-[#653C87] selection:text-white pb-24 md:pb-0`}
       >
         <FavoritesProvider>
           <Navbar />
