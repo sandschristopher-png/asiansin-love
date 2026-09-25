@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Nunito } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/Navbar";
+import { BottomNav } from "@/components/BottomNav";
 import { Footer } from "@/components/Footer";
 import { FavoritesProvider } from "@/lib/favoritesContext";
 
@@ -32,14 +33,24 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark h-full">
       <body
-        className={`${nunito.variable} font-[family-name:var(--font-nunito)] bg-[#17131F] text-[#F3EBF9] min-h-[100dvh] flex flex-col selection:bg-[#653C87] selection:text-white`}
+        className={`${nunito.variable} font-[family-name:var(--font-nunito)] bg-[#17131F] text-[#F3EBF9] fixed inset-0 flex flex-col h-[100dvh] w-full overflow-hidden select-none selection:bg-[#653C87] selection:text-white`}
       >
         <FavoritesProvider>
-          <Navbar />
-          <div className="flex-1 w-full max-w-full">
-            {children}
+          {/* Fixed Top Header */}
+          <div className="flex-shrink-0 z-50">
+            <Navbar />
           </div>
-          <Footer />
+
+          {/* Dedicated Scroll Container (Zero window scroll prevents address bar collapse) */}
+          <div className="flex-1 w-full overflow-y-auto overscroll-y-contain flex flex-col">
+            <div className="flex-1 w-full">
+              {children}
+            </div>
+            <Footer />
+          </div>
+
+          {/* Fixed Bottom Navigation */}
+          <BottomNav />
         </FavoritesProvider>
       </body>
     </html>
