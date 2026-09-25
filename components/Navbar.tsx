@@ -22,9 +22,9 @@ export function Navbar() {
           </Link>
         </div>
 
-        {/* Center: Prominent ail-logo.png Sized by Width to Fill Center Space */}
-        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-auto flex items-center justify-center">
-          <Link href="/" className="flex items-center justify-center select-none active:scale-95 transition-transform py-1">
+        {/* Center: Perfectly Aligned to Horizontal & Vertical Baseline */}
+        <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-[45%] pointer-events-auto flex items-center justify-center">
+          <Link href="/" className="flex items-center justify-center select-none active:scale-95 transition-transform">
             <img
               src="/ail-logo.png"
               alt="asiansin.love"
