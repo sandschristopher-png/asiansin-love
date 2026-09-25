@@ -14,34 +14,47 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
   const router = useRouter();
   const [profile, setProfile] = useState<any>(null);
 
+  // Render & Animation State
+  const [mounted, setMounted] = useState(false);
   const [dragY, setDragY] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const touchStartY = useRef(0);
-  const sheetRef = useRef<HTMLDivElement>(null);
+  const isClosingRef = useRef(false);
 
-  // Android Pixel gesture back handling
+  // Animate Open/Close
+  useEffect(() => {
+    if (isOpen) {
+      isClosingRef.current = false;
+      setMounted(true);
+      setDragY(0);
+      window.history.pushState({ accountDrawer: true }, '');
+
+      const handlePopState = () => {
+        closeWithAnimation();
+      };
+      window.addEventListener('popstate', handlePopState);
+      return () => {
+        window.removeEventListener('popstate', handlePopState);
+      };
+    } else {
+      closeWithAnimation();
+    }
+  }, [isOpen]);
+
+  const closeWithAnimation = () => {
+    if (isClosingRef.current) return;
+    isClosingRef.current = true;
+    setDragY(window.innerHeight || 600);
+    setTimeout(() => {
+      setMounted(false);
+      setDragY(0);
+      onClose();
+    }, 280);
+  };
+
+  // Profile data fetch
   useEffect(() => {
     if (!isOpen) return;
-
-    window.history.pushState({ drawerOpen: true }, '');
-
-    const handlePopState = () => {
-      onClose();
-    };
-
-    window.addEventListener('popstate', handlePopState);
-    return () => {
-      window.removeEventListener('popstate', handlePopState);
-    };
-  }, [isOpen, onClose]);
-
-  // Load account data
-  useEffect(() => {
-    if (!isOpen) {
-      setDragY(0);
-      return;
-    }
-
     async function fetchAccountData() {
       try {
         const { data: { user } } = await supabase.auth.getUser();
@@ -55,34 +68,33 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
           setProfile(data || { full_name: 'Member', email: user.email });
         }
       } catch (err) {
-        console.error('Account sheet fetch note:', err);
+        console.error('Account sheet fetch:', err);
       }
     }
-
     fetchAccountData();
   }, [isOpen]);
 
+  // Touch Gesture Listeners
   const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartY.current = e.touches[0].clientY - dragY;
+    touchStartY.current = e.touches[0].clientY;
     setIsDragging(true);
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
-    const currentY = e.touches[0].clientY;
-    const diff = currentY - touchStartY.current;
-
-    // Resistance formula for upward pull, 1:1 for downward pull
-    if (diff < 0) {
-      setDragY(diff * 0.2);
+    const deltaY = e.touches[0].clientY - touchStartY.current;
+    if (deltaY > 0) {
+      // Natural downward drag following finger 1:1
+      setDragY(deltaY);
     } else {
-      setDragY(diff);
+      // Elastic rubber-band resistance when pulled up
+      setDragY(deltaY * 0.18);
     }
   };
 
   const handleTouchEnd = () => {
     setIsDragging(false);
-    if (dragY > 120) {
-      onClose();
+    if (dragY > 90) {
+      closeWithAnimation();
     } else {
       setDragY(0);
     }
@@ -90,49 +102,51 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
 
   const handleSignOut = async () => {
     await supabase.auth.signOut();
-    onClose();
+    closeWithAnimation();
     router.push('/login');
     router.refresh();
   };
 
-  if (!isOpen) return null;
+  if (!isOpen && !mounted) return null;
 
   const initials = profile?.full_name
     ? profile.full_name.slice(0, 2).toUpperCase()
     : 'ME';
 
-  // Dynamic opacity calculation based on drag progress
-  const backdropOpacity = Math.max(0.2, 0.75 - dragY / 600);
+  const progress = Math.min(Math.max(dragY / 400, 0), 1);
+  const backdropOpacity = (1 - progress) * 0.75;
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center pointer-events-auto">
-      {/* Dynamic GPU Blurred Backdrop */}
+      {/* Dynamic Backdrop */}
       <div
-        onClick={onClose}
+        onClick={closeWithAnimation}
         style={{
-          backgroundColor: `rgba(0, 0, 0, ${backdropOpacity})`,
-          transition: isDragging ? 'none' : 'background-color 0.25s ease-out',
+          opacity: backdropOpacity,
+          transition: isDragging ? 'none' : 'opacity 0.25s ease-out',
         }}
-        className="fixed inset-0 backdrop-blur-sm gpu-overlay"
+        className="fixed inset-0 bg-black backdrop-blur-sm"
         aria-hidden="true"
       />
 
-      {/* GPU Accelerated Sheet Container */}
+      {/* Sheet Container with Real-Time Direct Translation */}
       <div
-        ref={sheetRef}
-        onTouchStart={handleTouchStart}
-        onTouchMove={handleTouchMove}
-        onTouchEnd={handleTouchEnd}
         style={{
           transform: `translate3d(0, ${dragY}px, 0)`,
-          transition: isDragging ? 'none' : 'transform 0.32s cubic-bezier(0.16, 1, 0.3, 1)',
+          transition: isDragging ? 'none' : 'transform 0.28s cubic-bezier(0.16, 1, 0.3, 1)',
         }}
-        className="relative w-full max-w-lg bg-[#241E2F] border-t border-[#725A7A]/40 rounded-t-[32px] p-5 pb-8 shadow-2xl z-10 gpu-sheet max-h-[85dvh] flex flex-col justify-between overflow-y-auto select-none"
+        className="relative w-full max-w-lg bg-[#241E2F] border-t border-[#725A7A]/40 rounded-t-[32px] p-5 pb-8 shadow-2xl z-10 max-h-[85dvh] flex flex-col justify-between overflow-y-auto select-none will-change-transform"
       >
         <div className="space-y-4">
-          {/* Centered Grab Handle */}
-          <div className="w-full py-1.5 flex justify-center cursor-grab active:cursor-grabbing">
-            <div className="w-14 h-1.5 bg-[#725A7A]/60 rounded-full" />
+          
+          {/* Active Touch Drag Area */}
+          <div
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            className="w-full pt-1 pb-3 flex flex-col items-center justify-center cursor-grab active:cursor-grabbing"
+          >
+            <div className="w-14 h-1.5 bg-[#725A7A]/70 rounded-full" />
           </div>
 
           <div className="pb-2 border-b border-[#725A7A]/25">
@@ -142,7 +156,7 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
           </div>
 
           {/* User Profile Summary */}
-          <div className="p-4 rounded-2xl bg-[#17131F] border border-[#725A7A]/30 flex items-center justify-between gap-3 shadow-md transition-transform active:scale-[0.99]">
+          <div className="p-4 rounded-2xl bg-[#17131F] border border-[#725A7A]/30 flex items-center justify-between gap-3 shadow-md">
             <div className="flex items-center gap-3">
               <div className="h-12 w-12 rounded-2xl bg-[#653C87] text-[#F3EBF9] flex items-center justify-center font-black text-base border border-[#978FA8]/40 shadow-inner flex-shrink-0">
                 {initials}
@@ -164,7 +178,7 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
 
             <Link
               href="/profile"
-              onClick={onClose}
+              onClick={closeWithAnimation}
               className="px-3 py-1.5 rounded-xl bg-[#241E2F] hover:bg-[#2E263B] border border-[#725A7A]/35 text-[#DDD8D4] hover:text-white text-xs font-bold transition-all active:scale-95"
             >
               Edit
@@ -192,7 +206,7 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
             {!profile?.is_verified && (
               <Link
                 href="/verify"
-                onClick={onClose}
+                onClick={closeWithAnimation}
                 className="px-3.5 py-2 rounded-xl bg-[#653C87] hover:bg-[#7A49A2] text-white text-xs font-black shadow-md flex-shrink-0 active:scale-95 transition-all"
               >
                 Verify
@@ -200,11 +214,11 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
             )}
           </div>
 
-          {/* Action Links */}
+          {/* Navigation Action Rows */}
           <div className="space-y-2">
             <Link
               href="/profile"
-              onClick={onClose}
+              onClick={closeWithAnimation}
               className="flex items-center justify-between p-3.5 rounded-2xl bg-[#17131F]/90 hover:bg-[#17131F] border border-[#725A7A]/30 text-white font-bold text-sm transition-all active:scale-[0.985]"
             >
               <div className="flex items-center gap-3">
@@ -218,7 +232,7 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
 
             <Link
               href="/favorites"
-              onClick={onClose}
+              onClick={closeWithAnimation}
               className="flex items-center justify-between p-3.5 rounded-2xl bg-[#17131F]/90 hover:bg-[#17131F] border border-[#725A7A]/30 text-white font-bold text-sm transition-all active:scale-[0.985]"
             >
               <div className="flex items-center gap-3">
@@ -232,7 +246,7 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
 
             <Link
               href="/settings"
-              onClick={onClose}
+              onClick={closeWithAnimation}
               className="flex items-center justify-between p-3.5 rounded-2xl bg-[#17131F]/90 hover:bg-[#17131F] border border-[#725A7A]/30 text-white font-bold text-sm transition-all active:scale-[0.985]"
             >
               <div className="flex items-center gap-3">
