@@ -14,7 +14,7 @@ export function Footer() {
           <span>© {currentYear} All rights reserved.</span>
         </div>
 
-        <nav className="flex items-center gap-4 sm:gap-6 font-semibold">
+        <nav className="flex items-center gap-5 sm:gap-7 font-semibold">
           <Link href="/standards" className="hover:text-white transition-colors focus:outline-none">
             Community Standards
           </Link>
@@ -23,9 +23,6 @@ export function Footer() {
           </Link>
           <Link href="/terms" className="hover:text-white transition-colors focus:outline-none">
             Terms of Use
-          </Link>
-          <Link href="/verify" className="hover:text-white transition-colors focus:outline-none">
-            Gesture Verification
           </Link>
         </nav>
       </div>
