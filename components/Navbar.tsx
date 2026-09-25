@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -49,9 +49,9 @@ export function Navbar() {
           </button>
         </div>
 
-        {/* Center: Correctly Scaled & Centered Logo */}
+        {/* Center: Dynamic Logo Destination */}
         <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center">
-          <Link href="/" className="flex items-center active:scale-95 transition-transform">
+          <Link href={user ? "/discover" : "/"} className="flex items-center active:scale-95 transition-transform">
             <img
               src="/ail-logo.png"
               alt="asiansin.love"
@@ -60,7 +60,7 @@ export function Navbar() {
           </Link>
         </div>
 
-        {/* Right: Clean Single-Account Sign Out Button */}
+        {/* Right: Single-Account Sign Out or Sign In */}
         <div className="flex items-center">
           {user ? (
             <button

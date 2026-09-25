@@ -1,6 +1,6 @@
 ﻿'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
@@ -17,6 +17,10 @@ export default function PublicProfilePage() {
   const profile: DummyProfile = foundProfile || DUMMY_PROFILES[0];
 
   const [activePhotoIndex, setActivePhotoIndex] = useState<number>(0);
+  const [isDisliked, setIsDisliked] = useState(false);
+
+  // Swipe handling
+  const touchStartX = useRef<number | null>(null);
 
   const photos: string[] =
     profile.galleryUrls && profile.galleryUrls.length > 0
@@ -31,6 +35,58 @@ export default function PublicProfilePage() {
 
   const favorited = isFavorite(profile.id);
   const rep = profile.reputationScore ?? 100;
+
+  // Sync dislike status
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('ail_disliked_ids');
+      if (stored) {
+        const ids = JSON.parse(stored);
+        if (Array.isArray(ids) && ids.includes(profile.id)) {
+          setIsDisliked(true);
+        }
+      }
+    } catch {
+      // Fallback cleanly
+    }
+  }, [profile.id]);
+
+  const handleNextPhoto = () => {
+    if (activePhotoIndex < photos.length - 1) {
+      setActivePhotoIndex((prev) => prev + 1);
+    }
+  };
+
+  const handlePrevPhoto = () => {
+    if (activePhotoIndex > 0) {
+      setActivePhotoIndex((prev) => prev - 1);
+    }
+  };
+
+  const handlePhotoAreaClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    if (clickX < rect.width * 0.35) {
+      handlePrevPhoto();
+    } else {
+      handleNextPhoto();
+    }
+  };
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = (e: React.TouchEvent) => {
+    if (touchStartX.current === null) return;
+    const diffX = touchStartX.current - e.changedTouches[0].clientX;
+    if (diffX > 40) {
+      handleNextPhoto();
+    } else if (diffX < -40) {
+      handlePrevPhoto();
+    }
+    touchStartX.current = null;
+  };
 
   const handleToggleFavorite = () => {
     const savedObj: SavedProfile = {
@@ -47,31 +103,71 @@ export default function PublicProfilePage() {
     toggleFavorite(savedObj);
   };
 
-  const handlePass = () => {
-    router.push('/discover');
+  const handleDislikeToggle = () => {
+    const nextState = !isDisliked;
+    setIsDisliked(nextState);
+
+    try {
+      const stored = localStorage.getItem('ail_disliked_ids');
+      let ids: string[] = stored ? JSON.parse(stored) : [];
+      if (!Array.isArray(ids)) ids = [];
+
+      if (nextState) {
+        if (!ids.includes(profile.id)) ids.push(profile.id);
+      } else {
+        ids = ids.filter((item) => item !== profile.id);
+      }
+      localStorage.setItem('ail_disliked_ids', JSON.stringify(ids));
+    } catch {
+      // Ignore
+    }
   };
 
   return (
-    <main className="w-full max-w-2xl mx-auto pb-32 sm:py-8 sm:px-4">
-      {/* Hero Photo Frame */}
-      <div className="relative w-full aspect-[4/5] sm:rounded-3xl overflow-hidden bg-[#17131F] shadow-2xl">
+    <main className="w-full max-w-2xl mx-auto pb-32 sm:py-6 sm:px-4">
+      {/* Hero Photo Frame with Uncut Aspect Ratio */}
+      <div 
+        className="relative w-full aspect-[3/4] max-h-[68vh] sm:rounded-3xl overflow-hidden bg-[#17131F] shadow-2xl cursor-pointer select-none"
+        onClick={handlePhotoAreaClick}
+        onTouchStart={handleTouchStart}
+        onTouchEnd={handleTouchEnd}
+      >
         <Image
           src={photos[activePhotoIndex] || profile.avatarUrl}
           alt={profile.fullName}
           fill
           priority
           sizes="(max-width: 640px) 100vw, 640px"
-          className="object-cover object-top transition-all duration-300"
+          className="object-cover object-[50%_20%] transition-all duration-300"
           unoptimized
         />
 
-        <div className="absolute inset-0 bg-gradient-to-t from-[#17131F] via-transparent to-black/30 pointer-events-none" />
+        {/* Subtle Bottom Gradient */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#15101C] via-transparent to-black/40 pointer-events-none" />
 
-        {/* Top Controls: Back button and Rep pill */}
-        <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-20">
+        {/* Top Story Dash Indicators */}
+        {photos.length > 1 && (
+          <div className="absolute top-3 left-4 right-4 flex gap-1.5 z-30 pointer-events-none">
+            {photos.map((_, idx) => (
+              <div
+                key={idx}
+                className={`h-1 flex-1 rounded-full transition-all duration-300 ${
+                  idx === activePhotoIndex ? 'bg-white shadow-sm' : 'bg-white/30'
+                }`}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Top Bar Controls */}
+        <div className="absolute top-7 left-4 right-4 flex items-center justify-between z-30 pointer-events-auto">
+          {/* Back Button */}
           <button
             type="button"
-            onClick={() => router.back()}
+            onClick={(e) => {
+              e.stopPropagation();
+              router.back();
+            }}
             aria-label="Back"
             className="h-10 w-10 rounded-full bg-[#17131F]/80 backdrop-blur-md border border-[#7D7E92]/35 text-white flex items-center justify-center active:scale-90 transition-transform shadow-lg"
           >
@@ -80,6 +176,7 @@ export default function PublicProfilePage() {
             </svg>
           </button>
 
+          {/* Reputation Badge */}
           <div 
             className="px-3 py-1 rounded-full bg-[#17131F]/85 border border-[#7D7E92]/40 backdrop-blur-md flex items-center gap-1.5 shadow-lg"
             title={`${rep}% verified community reputation`}
@@ -89,94 +186,41 @@ export default function PublicProfilePage() {
           </div>
         </div>
 
-        {/* Multi-Photo Dots */}
-        {photos.length > 1 && (
-          <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-1.5 z-20">
-            {photos.map((_, idx) => (
-              <button
-                key={idx}
-                type="button"
-                onClick={() => setActivePhotoIndex(idx)}
-                className={`h-1.5 rounded-full transition-all ${
-                  idx === activePhotoIndex ? 'w-6 bg-white' : 'w-2 bg-white/40'
-                }`}
-                aria-label={`View photo ${idx + 1}`}
-              />
-            ))}
-          </div>
-        )}
-      </div>
-
-      {/* Main Details Body */}
-      <div className="p-4 sm:p-6 space-y-5">
-        
-        {/* Unverified Advisory if not verified */}
-        {!profile.isVerified && (
-          <div className="p-3.5 rounded-2xl bg-amber-950/40 border border-amber-500/40 text-xs space-y-1">
-            <strong className="text-amber-200 block font-black uppercase tracking-wide">
-              Community Advisory: Identity Not Yet Verified
-            </strong>
-            <p className="text-amber-100/90 leading-relaxed">
-              This member has not yet completed selfie verification. Never send money or share financial credentials.
-            </p>
-          </div>
-        )}
-
-        {/* Identity & Presence Header */}
-        <div className="space-y-1">
+        {/* Identity Directly on Photo Frame (Reference Style) */}
+        <div className="absolute bottom-4 left-4 right-4 z-20 pointer-events-none">
           <div className="flex items-center gap-2 flex-wrap">
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight flex items-center gap-2">
-              {profile.isOnline && (
-                <span className="h-3 w-3 rounded-full bg-emerald-400 inline-block shrink-0" title="Online now" />
-              )}
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight drop-shadow-md">
               {profile.fullName}, {profile.age}
             </h1>
-            {profile.isVerified ? (
-              <span className="px-2.5 py-0.5 rounded-lg bg-[#653C87] border border-[#9A79BA]/40 text-white text-xs font-bold shadow-sm">
-                Verified
-              </span>
-            ) : (
-              <span className="px-2.5 py-0.5 rounded-lg bg-[#241E2F] border border-amber-500/40 text-amber-300 text-xs font-semibold shadow-sm">
-                Unverified
+            {profile.isVerified && (
+              <span className="px-2 py-0.5 rounded-lg bg-[#653C87] border border-[#9A79BA]/50 text-white text-xs font-bold shadow-md">
+                ✓ Verified
               </span>
             )}
           </div>
-
-          <p className="text-sm font-semibold text-[#DDD8D4] flex items-center gap-1.5">
-            <span>{profile.city}, {profile.country}</span>
-            {profile.profession && (
-              <>
-                <span className="text-[#7D7E92]">-</span>
-                <span className="text-[#B6AEC7]">{profile.profession}</span>
-              </>
-            )}
+          <p className="text-xs sm:text-sm font-medium text-white/90 drop-shadow mt-0.5">
+            {profile.city}, {profile.country} {profile.profession ? `• ${profile.profession}` : ''}
           </p>
         </div>
+      </div>
 
-        {/* Trust & Relationship Goal Row */}
-        <div className="grid grid-cols-2 gap-3">
-          <div className="rounded-2xl bg-[#241E2F] border border-[#7D7E92]/25 p-3.5">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-[#B6AEC7] block">
-              Reputation
-            </span>
-            <span className="text-sm sm:text-base font-extrabold text-[#ECE8F4] flex items-center gap-1.5 mt-0.5">
-              <span className="h-2 w-2 rounded-full bg-emerald-400" />
-              {rep}% Community Trust
-            </span>
+      {/* Main Content Details */}
+      <div className="p-4 sm:p-6 space-y-4">
+        
+        {/* Streamlined Courtship & Status Row */}
+        <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[#241E2F] border border-[#7D7E92]/25">
+          <div className="flex items-center gap-2">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#B6AEC7]">Looking For:</span>
+            <span className="text-sm font-extrabold text-[#E6D7FA]">{profile.relationshipGoal}</span>
           </div>
-
-          <div className="rounded-2xl bg-[#241E2F] border border-[#7D7E92]/25 p-3.5">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-[#B6AEC7] block">
-              Looking For
-            </span>
-            <span className="text-sm sm:text-base font-extrabold text-white mt-0.5 block truncate">
-              {profile.relationshipGoal}
-            </span>
+          <div className="flex items-center gap-1.5 text-xs text-[#B6AEC7]">
+            <span className={`h-2 w-2 rounded-full ${profile.isOnline ? 'bg-emerald-400' : 'bg-[#7D7E92]'}`} />
+            {profile.isOnline ? 'Active Now' : 'Offline'}
           </div>
         </div>
 
         {/* Bio Section */}
-        <div className="rounded-3xl bg-[#241E2F] border border-[#7D7E92]/25 p-5 space-y-3.5 shadow-xl">
+        <div className="rounded-3xl bg-[#241E2F] border border-[#7D7E92]/25 p-5 space-y-3 shadow-xl">
           <h2 className="text-xs font-extrabold uppercase tracking-widest text-[#B6AEC7]">
             About {profile.fullName}
           </h2>
@@ -186,7 +230,7 @@ export default function PublicProfilePage() {
             </p>
           ))}
 
-          {/* Vitals: Languages, Height, Education */}
+          {/* Vitals */}
           <div className="pt-3 border-t border-[#7D7E92]/20 flex flex-wrap gap-2 text-xs">
             {profile.languages?.map((lang: string) => (
               <span key={lang} className="px-3 py-1.5 rounded-xl bg-[#17131F] border border-[#7D7E92]/30 text-[#DDD8D4] font-semibold">
@@ -205,17 +249,22 @@ export default function PublicProfilePage() {
             )}
           </div>
         </div>
+
       </div>
 
-      {/* Floating Bottom Action Dock: Pass, Heart, and Message */}
+      {/* Floating Bottom Action Dock: Pass (Dim), Message, Heart */}
       <div className="fixed bottom-0 left-0 right-0 p-4 bg-[#17131F]/90 backdrop-blur-lg border-t border-[#7D7E92]/20 z-40">
         <div className="max-w-md mx-auto flex items-center justify-between gap-3">
-          {/* Pass (X) */}
+          {/* Pass / Dislike (✕) */}
           <button
             type="button"
-            onClick={handlePass}
-            className="h-12 w-12 rounded-2xl bg-[#241E2F] border border-[#7D7E92]/30 flex items-center justify-center text-[#7D7E92] hover:text-[#ECE8F4] active:scale-90 transition-all shrink-0"
-            title="Pass"
+            onClick={handleDislikeToggle}
+            className={`h-12 w-12 rounded-2xl border flex items-center justify-center active:scale-90 transition-all shrink-0 ${
+              isDisliked
+                ? 'bg-white/10 border-white/30 text-white'
+                : 'bg-[#241E2F] border-[#7D7E92]/30 text-[#7D7E92] hover:text-[#ECE8F4]'
+            }`}
+            title={isDisliked ? "Un-pass" : "Pass (Dim)"}
           >
             <svg className="w-6 h-6 stroke-current" fill="none" viewBox="0 0 24 24" strokeWidth={2.2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />

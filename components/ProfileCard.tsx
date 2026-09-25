@@ -1,6 +1,6 @@
-'use client';
+﻿'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useFavorites, SavedProfile } from '@/lib/favoritesContext';
 
@@ -25,13 +25,27 @@ interface ProfileProps {
 export function ProfileCard({ profile }: ProfileProps) {
   const router = useRouter();
   const { isFavorite, toggleFavorite } = useFavorites();
-  const [dismissed, setDismissed] = useState(false);
+  const [isDisliked, setIsDisliked] = useState(false);
 
   const id = profile.id;
   const name = profile.fullName || 'Anonymous';
   const age = profile.age || '';
 
-  // Extract strictly the primary city name
+  // Check persisted dislike state from localStorage
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('ail_disliked_ids');
+      if (stored) {
+        const ids = JSON.parse(stored);
+        if (Array.isArray(ids) && ids.includes(id)) {
+          setIsDisliked(true);
+        }
+      }
+    } catch {
+      // Fallback cleanly if localStorage unavailable
+    }
+  }, [id]);
+
   const primaryCity = (profile.city || profile.country || '')
     .split(',')[0]
     .replace(/\s+City$/i, '')
@@ -64,19 +78,35 @@ export function ProfileCard({ profile }: ProfileProps) {
     toggleFavorite(savedObj);
   };
 
-  const handleDismissClick = (e: React.MouseEvent) => {
+  const handleDislikeToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
-    setDismissed(true);
-  };
+    const nextState = !isDisliked;
+    setIsDisliked(nextState);
 
-  if (dismissed) {
-    return null;
-  }
+    try {
+      const stored = localStorage.getItem('ail_disliked_ids');
+      let ids: string[] = stored ? JSON.parse(stored) : [];
+      if (!Array.isArray(ids)) ids = [];
+
+      if (nextState) {
+        if (!ids.includes(id)) ids.push(id);
+      } else {
+        ids = ids.filter((item) => item !== id);
+      }
+      localStorage.setItem('ail_disliked_ids', JSON.stringify(ids));
+    } catch {
+      // Ignore storage errors gracefully
+    }
+  };
 
   return (
     <div
       onClick={handleCardClick}
-      className="group relative rounded-2xl bg-[#241E2F] border border-[#7D7E92]/25 hover:border-[#9A79BA]/50 transition-all duration-200 overflow-hidden shadow-sm flex flex-col cursor-pointer select-none"
+      className={`group relative rounded-2xl bg-[#241E2F] border transition-all duration-300 overflow-hidden shadow-sm flex flex-col cursor-pointer select-none ${
+        isDisliked
+          ? 'opacity-35 grayscale contrast-75 border-transparent'
+          : 'border-[#7D7E92]/25 hover:border-[#9A79BA]/50'
+      }`}
     >
       {/* Photo Container */}
       <div className="relative aspect-[4/5] w-full overflow-hidden bg-[#17131F]">
@@ -112,6 +142,15 @@ export function ProfileCard({ profile }: ProfileProps) {
           <span className={`h-1.5 w-1.5 rounded-full ${rep >= 80 ? 'bg-emerald-400' : 'bg-amber-400'}`} />
           <span className="text-[10px] font-bold text-[#ECE8F4]">{rep}% Rep</span>
         </div>
+
+        {/* Disliked Indicator Tag */}
+        {isDisliked && (
+          <div className="absolute inset-0 bg-black/40 flex items-center justify-center pointer-events-none z-10">
+            <span className="px-3 py-1 rounded-full bg-[#17131F]/90 border border-white/20 text-white text-[11px] font-bold tracking-wide">
+              ✕ Passed
+            </span>
+          </div>
+        )}
       </div>
 
       {/* Info Stack Below Photo */}
@@ -119,7 +158,7 @@ export function ProfileCard({ profile }: ProfileProps) {
         <div>
           {/* Name, Age & Online Indicator */}
           <div className="flex items-center justify-center gap-1.5 truncate">
-            {isOnline && (
+            {isOnline && !isDisliked && (
               <span className="h-2 w-2 rounded-full bg-emerald-400 shrink-0" title="Online now" />
             )}
             <h3 className="text-sm font-bold text-white tracking-tight truncate">
@@ -135,19 +174,23 @@ export function ProfileCard({ profile }: ProfileProps) {
 
         {/* Bottom Action Utility Row (Pass / Like) */}
         <div className="flex items-center justify-center gap-8 pt-2.5 mt-2 border-t border-[#7D7E92]/15">
-          {/* Dismiss (?) Button */}
+          {/* Dismiss / Dislike (✕) Button */}
           <button
             type="button"
-            onClick={handleDismissClick}
-            className="h-9 w-9 rounded-full flex items-center justify-center text-[#7D7E92] hover:text-[#ECE8F4] hover:bg-[#17131F] active:scale-90 transition-all"
-            title="Pass"
+            onClick={handleDislikeToggle}
+            className={`h-9 w-9 rounded-full flex items-center justify-center active:scale-90 transition-all ${
+              isDisliked
+                ? 'bg-white/10 text-white'
+                : 'text-[#7D7E92] hover:text-[#ECE8F4] hover:bg-[#17131F]'
+            }`}
+            title={isDisliked ? "Un-pass" : "Pass (Dim)"}
           >
             <svg className="w-5 h-5 stroke-current" fill="none" viewBox="0 0 24 24" strokeWidth={2.2}>
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
           </button>
 
-          {/* Favorite / Heart (?) Button */}
+          {/* Favorite / Heart (♡) Button */}
           <button
             type="button"
             onClick={handleFavoriteClick}
