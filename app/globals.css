@@ -17,6 +17,7 @@ html, body {
   overflow: hidden;
   overscroll-behavior: none;
   -webkit-overflow-scrolling: touch;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -25,47 +26,79 @@ body {
   font-family: var(--font-nunito), system-ui, -apple-system, sans-serif;
 }
 
+/* GPU Hardware-Accelerated Keyframes */
 @keyframes sheetSlideUp {
-  from {
-    transform: translateY(100%);
-    opacity: 0.5;
+  0% {
+    transform: translate3d(0, 100%, 0);
+    opacity: 0.6;
   }
-  to {
-    transform: translateY(0);
+  100% {
+    transform: translate3d(0, 0, 0);
     opacity: 1;
   }
 }
 
 @keyframes overlayFadeIn {
-  from {
+  0% {
     opacity: 0;
+    backdrop-filter: blur(0px);
   }
-  to {
+  100% {
     opacity: 1;
+    backdrop-filter: blur(8px);
   }
 }
 
-.animate-sheet-up {
+@keyframes pageFadeIn {
+  0% {
+    opacity: 0;
+    transform: translate3d(0, 6px, 0);
+  }
+  100% {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+.gpu-sheet {
   animation: sheetSlideUp 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: transform, opacity;
+  backface-visibility: hidden;
+  transform: translateZ(0);
 }
 
-.animate-overlay-fade {
-  animation: overlayFadeIn 0.2s ease-out forwards;
+.gpu-overlay {
+  animation: overlayFadeIn 0.24s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: opacity, backdrop-filter;
+  backface-visibility: hidden;
 }
 
+main {
+  animation: pageFadeIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+  will-change: opacity, transform;
+}
+
+/* Profile Card GPU Lift */
 .profile-card-lift {
-  transition: transform 0.22s ease-out, box-shadow 0.22s ease-out, border-color 0.22s ease-out;
+  will-change: transform, box-shadow;
+  transition: transform 0.24s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.24s cubic-bezier(0.16, 1, 0.3, 1), border-color 0.24s ease-out;
 }
 
 .profile-card-lift:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.55), 0 0 14px 1px rgba(101, 60, 135, 0.2);
+  transform: translate3d(0, -3px, 0);
+  box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.6), 0 0 14px 1px rgba(101, 60, 135, 0.25);
   border-color: rgba(151, 143, 168, 0.55);
 }
 
+.profile-card-lift:active {
+  transform: translate3d(0, 0, 0) scale(0.985);
+  transition-duration: 0.1s;
+}
+
+/* Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
 }
 ::-webkit-scrollbar-track {
   background: #17131F;

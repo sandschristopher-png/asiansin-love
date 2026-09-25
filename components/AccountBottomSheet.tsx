@@ -19,6 +19,7 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
   const touchStartY = useRef(0);
   const sheetRef = useRef<HTMLDivElement>(null);
 
+  // Android Pixel gesture back handling
   useEffect(() => {
     if (!isOpen) return;
 
@@ -34,6 +35,7 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
     };
   }, [isOpen, onClose]);
 
+  // Load account data
   useEffect(() => {
     if (!isOpen) {
       setDragY(0);
@@ -61,24 +63,29 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
   }, [isOpen]);
 
   const handleTouchStart = (e: React.TouchEvent) => {
-    touchStartY.current = e.touches[0].clientY;
+    touchStartY.current = e.touches[0].clientY - dragY;
     setIsDragging(true);
   };
 
   const handleTouchMove = (e: React.TouchEvent) => {
     const currentY = e.touches[0].clientY;
     const diff = currentY - touchStartY.current;
-    if (diff > 0) {
+
+    // Resistance formula for upward pull, 1:1 for downward pull
+    if (diff < 0) {
+      setDragY(diff * 0.2);
+    } else {
       setDragY(diff);
     }
   };
 
   const handleTouchEnd = () => {
     setIsDragging(false);
-    if (dragY > 110) {
+    if (dragY > 120) {
       onClose();
+    } else {
+      setDragY(0);
     }
-    setDragY(0);
   };
 
   const handleSignOut = async () => {
@@ -94,43 +101,48 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
     ? profile.full_name.slice(0, 2).toUpperCase()
     : 'ME';
 
+  // Dynamic opacity calculation based on drag progress
+  const backdropOpacity = Math.max(0.2, 0.75 - dragY / 600);
+
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center pointer-events-auto">
+      {/* Dynamic GPU Blurred Backdrop */}
       <div
         onClick={onClose}
-        className="fixed inset-0 bg-black/75 backdrop-blur-sm animate-overlay-fade transition-opacity"
+        style={{
+          backgroundColor: `rgba(0, 0, 0, ${backdropOpacity})`,
+          transition: isDragging ? 'none' : 'background-color 0.25s ease-out',
+        }}
+        className="fixed inset-0 backdrop-blur-sm gpu-overlay"
         aria-hidden="true"
       />
 
+      {/* GPU Accelerated Sheet Container */}
       <div
         ref={sheetRef}
+        onTouchStart={handleTouchStart}
+        onTouchMove={handleTouchMove}
+        onTouchEnd={handleTouchEnd}
         style={{
-          transform: dragY > 0 ? `translateY(${dragY}px)` : undefined,
-          transition: isDragging ? 'none' : 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+          transform: `translate3d(0, ${dragY}px, 0)`,
+          transition: isDragging ? 'none' : 'transform 0.32s cubic-bezier(0.16, 1, 0.3, 1)',
         }}
-        className="relative w-full max-w-lg bg-[#241E2F] border-t border-[#725A7A]/40 rounded-t-[32px] p-5 pb-8 shadow-2xl z-10 animate-sheet-up max-h-[85dvh] flex flex-col justify-between overflow-y-auto"
+        className="relative w-full max-w-lg bg-[#241E2F] border-t border-[#725A7A]/40 rounded-t-[32px] p-5 pb-8 shadow-2xl z-10 gpu-sheet max-h-[85dvh] flex flex-col justify-between overflow-y-auto select-none"
       >
         <div className="space-y-4">
-          <div
-            onTouchStart={handleTouchStart}
-            onTouchMove={handleTouchMove}
-            onTouchEnd={handleTouchEnd}
-            className="w-full py-2 flex flex-col items-center justify-center cursor-grab active:cursor-grabbing select-none"
-          >
+          {/* Centered Grab Handle */}
+          <div className="w-full py-1.5 flex justify-center cursor-grab active:cursor-grabbing">
             <div className="w-14 h-1.5 bg-[#725A7A]/60 rounded-full" />
           </div>
 
-          <div className="flex items-center justify-between pb-2 border-b border-[#725A7A]/25">
+          <div className="pb-2 border-b border-[#725A7A]/25">
             <h2 className="text-xl font-black text-white tracking-tight">
               Your Account
             </h2>
-            <span className="text-[11px] font-bold text-[#B8AAC3] uppercase tracking-wider">
-              Swipe down to close
-            </span>
           </div>
 
           {/* User Profile Summary */}
-          <div className="p-4 rounded-2xl bg-[#17131F] border border-[#725A7A]/30 flex items-center justify-between gap-3 shadow-md">
+          <div className="p-4 rounded-2xl bg-[#17131F] border border-[#725A7A]/30 flex items-center justify-between gap-3 shadow-md transition-transform active:scale-[0.99]">
             <div className="flex items-center gap-3">
               <div className="h-12 w-12 rounded-2xl bg-[#653C87] text-[#F3EBF9] flex items-center justify-center font-black text-base border border-[#978FA8]/40 shadow-inner flex-shrink-0">
                 {initials}
@@ -188,12 +200,12 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
             )}
           </div>
 
-          {/* Navigation Action Rows */}
+          {/* Action Links */}
           <div className="space-y-2">
             <Link
               href="/profile"
               onClick={onClose}
-              className="flex items-center justify-between p-3.5 rounded-2xl bg-[#17131F]/90 hover:bg-[#17131F] border border-[#725A7A]/30 text-white font-bold text-sm transition-all active:scale-[0.99]"
+              className="flex items-center justify-between p-3.5 rounded-2xl bg-[#17131F]/90 hover:bg-[#17131F] border border-[#725A7A]/30 text-white font-bold text-sm transition-all active:scale-[0.985]"
             >
               <div className="flex items-center gap-3">
                 <svg className="w-4 h-4 text-[#B8AAC3]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -207,7 +219,7 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
             <Link
               href="/favorites"
               onClick={onClose}
-              className="flex items-center justify-between p-3.5 rounded-2xl bg-[#17131F]/90 hover:bg-[#17131F] border border-[#725A7A]/30 text-white font-bold text-sm transition-all active:scale-[0.99]"
+              className="flex items-center justify-between p-3.5 rounded-2xl bg-[#17131F]/90 hover:bg-[#17131F] border border-[#725A7A]/30 text-white font-bold text-sm transition-all active:scale-[0.985]"
             >
               <div className="flex items-center gap-3">
                 <svg className="w-4 h-4 text-[#B8AAC3]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -221,7 +233,7 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
             <Link
               href="/settings"
               onClick={onClose}
-              className="flex items-center justify-between p-3.5 rounded-2xl bg-[#17131F]/90 hover:bg-[#17131F] border border-[#725A7A]/30 text-white font-bold text-sm transition-all active:scale-[0.99]"
+              className="flex items-center justify-between p-3.5 rounded-2xl bg-[#17131F]/90 hover:bg-[#17131F] border border-[#725A7A]/30 text-white font-bold text-sm transition-all active:scale-[0.985]"
             >
               <div className="flex items-center gap-3">
                 <svg className="w-4 h-4 text-[#B8AAC3]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -239,7 +251,7 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
           <button
             type="button"
             onClick={handleSignOut}
-            className="w-full py-3 rounded-2xl bg-[#17131F] hover:bg-[#201A2B] border border-[#725A7A]/35 text-[#B8AAC3] hover:text-white font-extrabold text-xs tracking-wider uppercase active:scale-[0.98] transition-all"
+            className="w-full py-3 rounded-2xl bg-[#17131F] hover:bg-[#201A2B] border border-rose-500/30 text-rose-300 font-extrabold text-xs tracking-wider uppercase active:scale-[0.985] transition-transform"
           >
             Sign Out / Switch Account
           </button>
