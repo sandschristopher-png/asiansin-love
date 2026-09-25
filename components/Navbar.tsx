@@ -30,7 +30,6 @@ export function Navbar() {
   }, []);
 
   useEffect(() => {
-    // 1. Initial session load
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (session?.user) {
         setCurrentUser(session.user);
@@ -38,7 +37,6 @@ export function Navbar() {
       }
     });
 
-    // 2. Real-time auth listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session?.user) {
         setCurrentUser(session.user);
@@ -280,24 +278,17 @@ export function Navbar() {
                     <span>👤</span> My Profile & Photos
                   </Link>
 
-                  <div className="my-1 border-t border-[#725A7A]/25" />
-
-                  <Link
-                    href="/standards"
-                    onClick={() => setMenuOpen(false)}
-                    className="flex items-center gap-2.5 px-4 py-2 text-[#B8AAC3] hover:text-white hover:bg-[#17131F] transition-colors"
-                  >
-                    <span>📜</span> Community Standards
-                  </Link>
-
                   {currentUser && (
-                    <button
-                      type="button"
-                      onClick={handleSignOut}
-                      className="w-full text-left flex items-center gap-2.5 px-4 py-2 text-rose-300 hover:bg-rose-950/40 transition-colors"
-                    >
-                      <span>🚪</span> Sign Out
-                    </button>
+                    <>
+                      <div className="my-1 border-t border-[#725A7A]/25" />
+                      <button
+                        type="button"
+                        onClick={handleSignOut}
+                        className="w-full text-left flex items-center gap-2.5 px-4 py-2 text-rose-300 hover:bg-rose-950/40 transition-colors"
+                      >
+                        <span>🚪</span> Sign Out
+                      </button>
+                    </>
                   )}
                 </div>
               </div>
