@@ -5,17 +5,42 @@
   --foreground: #F3EBF9;
 }
 
-/* Native App Mobile Feel */
+/* Remove touch lag without capturing vertical scrolling */
 * {
   -webkit-tap-highlight-color: transparent;
 }
 
-html, body {
-  touch-action: manipulation;
-  overscroll-behavior-y: none;
+html {
+  background-color: #17131F;
+  color: #F3EBF9;
+  scroll-behavior: smooth;
 }
 
-/* Card Subtle Elevation */
+body {
+  background-color: #17131F;
+  color: #F3EBF9;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+/* Fluid Page Entry Animation */
+@keyframes pageFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.page-transition {
+  animation: pageFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Tactile feedback for mobile tap targets */
 .profile-card-lift {
   transition: transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }

@@ -18,7 +18,6 @@ export const viewport: Viewport = {
   maximumScale: 1,
   userScalable: false,
   themeColor: "#17131F",
-  viewportFit: "cover",
 };
 
 export const metadata: Metadata = {
@@ -37,13 +36,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark overflow-x-hidden">
+    <html lang="en" className="dark">
       <body
-        className={`${nunito.variable} font-[family-name:var(--font-nunito)] bg-[#17131F] text-[#F3EBF9] min-h-screen flex flex-col overflow-x-hidden selection:bg-[#653C87] selection:text-white pb-24 md:pb-0`}
+        className={`${nunito.variable} font-[family-name:var(--font-nunito)] bg-[#17131F] text-[#F3EBF9] min-h-screen flex flex-col pb-24 md:pb-0`}
       >
         <FavoritesProvider>
           <Navbar />
-          <div className="flex-1 w-full max-w-full overflow-x-hidden">
+          <div className="flex-1 w-full max-w-full page-transition">
             {children}
           </div>
           <BottomDock />
