@@ -1,20 +1,26 @@
-﻿import type { Metadata } from 'next';
-import { Nunito } from 'next/font/google';
-import './globals.css';
-import { Navbar } from '@/components/Navbar';
-import { Footer } from '@/components/Footer';
-import { FavoritesProvider } from '@/lib/favoritesContext';
-import { NotificationToast } from '@/components/NotificationToast';
+import type { Metadata, Viewport } from "next";
+import { Nunito } from "next/font/google";
+import "./globals.css";
+import { Navbar } from "@/components/Navbar";
+import { Footer } from "@/components/Footer";
+import { FavoritesProvider } from "@/lib/favoritesContext";
 
 const nunito = Nunito({
-  subsets: ['latin'],
-  variable: '--font-nunito',
-  display: 'swap',
+  variable: "--font-nunito",
+  subsets: ["latin"],
+  weight: ["400", "600", "700", "800", "900"],
 });
 
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
+
 export const metadata: Metadata = {
-  title: 'asiansin.love | Sincere Southeast Asian Courtship',
-  description: 'Dignified, scam-free dating community connecting international men with verified Southeast Asian women.',
+  title: "asiansin.love | Sincere Cross-Border Connections",
+  description: "Modern, verified dating community connecting international men with sincere Southeast Asian women.",
 };
 
 export default function RootLayout({
@@ -23,13 +29,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={nunito.variable}>
-      <body className="min-h-screen flex flex-col bg-[#17131F] text-[#F3EBF9] font-[family-name:var(--font-nunito)] antialiased">
+    <html lang="en" className="dark overflow-x-hidden">
+      <body
+        className={`${nunito.variable} font-[family-name:var(--font-nunito)] bg-[#17131F] text-[#F3EBF9] min-h-screen flex flex-col overflow-x-hidden selection:bg-[#653C87] selection:text-white`}
+      >
         <FavoritesProvider>
           <Navbar />
-          <div className="flex-1 flex flex-col">{children}</div>
+          <div className="flex-1 w-full max-w-full overflow-x-hidden">
+            {children}
+          </div>
           <Footer />
-          <NotificationToast />
         </FavoritesProvider>
       </body>
     </html>

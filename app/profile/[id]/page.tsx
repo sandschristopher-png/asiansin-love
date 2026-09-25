@@ -1,159 +1,163 @@
-﻿'use client';
+'use client';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
+import { useParams, useRouter } from 'next/navigation';
 
-interface ProfilePageProps {
-  params: Promise<{ id: string }>;
-}
+export default function PublicProfilePage() {
+  const router = useRouter();
+  const params = useParams();
+  const profileId = params?.id as string;
 
-export default function PublicProfileView(props: ProfilePageProps) {
-  const [activePhoto, setActivePhoto] = useState(0);
+  // Mock profile data designed for testing
+  const [activePhotoIndex, setActivePhotoIndex] = useState(0);
 
-  const profile = {
-    fullName: 'Camille',
-    age: 26,
-    city: 'Makati, Metro Manila',
-    country: 'Philippines',
-    jobTitle: 'Software QA Lead',
-    relationshipIntent: 'Marriage & Long-Term Partner',
-    bio: `Hello! I am a Software Quality Assurance lead living in Metro Manila.
-
-I value honest communication, family-first traditions, and genuine companionship. On weekends, I enjoy acoustic live sets, coastal day trips, and home cooking.
-
-Looking for a mature, sincere gentleman ready for a real, committed relationship leading to marriage.`,
-    isVerified: true,
-    languages: ['English (Fluent)', 'Tagalog (Native)'],
-    photos: [
-      'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1517841905240-472988babdf9?q=80&w=800&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?q=80&w=800&auto=format&fit=crop',
-      'https://images.unsplash.com/photo-1529626455594-4ff0802cfb7e?q=80&w=800&auto=format&fit=crop'
-    ]
-  };
+  const photos = [
+    'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=1000&q=80',
+    'https://images.unsplash.com/photo-1517841905240-472988babdf9?auto=format&fit=crop&w=1000&q=80',
+    'https://images.unsplash.com/photo-1524504388940-b1c1722653e1?auto=format&fit=crop&w=1000&q=80',
+  ];
 
   return (
-    <main className="max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-5 flex-1 flex flex-col justify-center">
+    <main className="w-full max-w-2xl mx-auto pb-24 sm:py-8 sm:px-4">
       
-      {/* Back Link */}
-      <div className="mb-3.5">
-        <Link
-          href="/discover"
-          className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-bold text-[#DDD8D4] hover:text-white transition-colors"
-        >
-          ← Back to Discovery Feed
-        </Link>
-      </div>
+      {/* Photo Frame Section */}
+      <div className="relative w-full aspect-[4/5] sm:rounded-3xl overflow-hidden bg-[#17131F] shadow-2xl">
+        <Image
+          src={photos[activePhotoIndex]}
+          alt="Camille"
+          fill
+          priority
+          sizes="(max-width: 640px) 100vw, 640px"
+          className="object-cover object-top transition-all duration-300"
+          unoptimized
+        />
 
-      {/* Split Dossier Layout - Fitted for single screen view */}
-      <div className="grid grid-cols-1 md:grid-cols-12 gap-5 items-start">
-        
-        {/* Left: Compact Photo Stage & Thumbnails (5 cols) */}
-        <div className="md:col-span-5 space-y-2.5">
-          <div className="relative aspect-[4/4] max-h-[440px] w-full rounded-2xl overflow-hidden bg-[#17131F] border border-[#725A7A]/35 shadow-xl">
-            <img
-              src={profile.photos[activePhoto]}
-              alt={profile.fullName}
-              className="w-full h-full object-cover"
+        {/* Gradient Shadow Overlays */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#17131F] via-transparent to-black/30 pointer-events-none" />
+
+        {/* Top Controls: Back and Quick Actions */}
+        <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-20">
+          <button
+            type="button"
+            onClick={() => router.back()}
+            aria-label="Back"
+            className="h-10 w-10 rounded-full bg-[#17131F]/80 backdrop-blur-md border border-[#725A7A]/40 text-white flex items-center justify-center text-lg active:scale-90 transition-transform shadow-lg"
+          >
+            ←
+          </button>
+          
+          <div className="flex items-center gap-2">
+            <span className="px-3 py-1 rounded-full bg-emerald-950/80 backdrop-blur-md border border-emerald-500/50 text-emerald-300 text-xs font-bold flex items-center gap-1.5 shadow-md">
+              <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+              Online
+            </span>
+          </div>
+        </div>
+
+        {/* Thumbnail Selector Dots / Bar */}
+        <div className="absolute bottom-5 left-4 right-4 flex items-center justify-center gap-2 z-20">
+          {photos.map((photo, idx) => (
+            <button
+              key={idx}
+              type="button"
+              onClick={() => setActivePhotoIndex(idx)}
+              className={`h-2.5 rounded-full transition-all ${
+                activePhotoIndex === idx
+                  ? 'w-8 bg-[#653C87] shadow-lg shadow-[#653C87]/50'
+                  : 'w-2.5 bg-white/50 hover:bg-white/80'
+              }`}
+              aria-label={`Photo ${idx + 1}`}
             />
-            {profile.isVerified && (
-              <span className="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-lg bg-[#653C87] border border-[#978FA8]/40 text-white text-[11px] font-bold shadow-md">
-                ✓ Identity Verified
-              </span>
-            )}
+          ))}
+        </div>
+      </div>
+
+      {/* Profile Details Container */}
+      <div className="px-4 pt-5 space-y-5">
+        
+        {/* Header Block: Name, Age, Verification */}
+        <div className="space-y-1.5">
+          <div className="flex items-center gap-2 flex-wrap">
+            <h1 className="text-3xl font-extrabold text-white tracking-tight">
+              Camille, 26
+            </h1>
+            <span className="px-2.5 py-1 rounded-lg bg-[#653C87] border border-[#978FA8]/40 text-white text-xs font-black tracking-wide shadow-md">
+              ✓ Photo Verified
+            </span>
           </div>
 
-          {/* Thumbnails */}
-          <div className="flex gap-2 overflow-x-auto pb-1">
-            {profile.photos.map((url, idx) => (
-              <button
-                key={idx}
-                type="button"
-                onClick={() => setActivePhoto(idx)}
-                className={`relative h-14 w-14 sm:h-16 sm:w-16 rounded-xl overflow-hidden border-2 transition-all shrink-0 ${
-                  activePhoto === idx ? 'border-[#978FA8] scale-105 shadow-md' : 'border-transparent opacity-60 hover:opacity-100'
-                }`}
-              >
-                <img src={url} alt={`Thumb ${idx}`} className="w-full h-full object-cover" />
-              </button>
-            ))}
+          <p className="text-sm sm:text-base font-semibold text-[#DDD8D4] flex items-center gap-1.5">
+            <span className="text-rose-400 text-base">📍</span>
+            Makati, Metro Manila, Philippines
+            <span className="text-[#725A7A]">•</span>
+            Software QA Lead
+          </p>
+        </div>
+
+        {/* Primary Intent Pill */}
+        <div className="rounded-2xl bg-[#241E2F] border border-[#725A7A]/35 p-3.5 flex items-center justify-between">
+          <div>
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[#B8AAC3] block">
+              Courtship Goal
+            </span>
+            <span className="text-sm sm:text-base font-extrabold text-white">
+              Marriage & Long-Term Partner
+            </span>
+          </div>
+          <span className="text-2xl">🎯</span>
+        </div>
+
+        {/* About Section */}
+        <div className="rounded-3xl bg-[#241E2F] border border-[#725A7A]/35 p-5 space-y-3.5 shadow-xl">
+          <h2 className="text-xs font-extrabold uppercase tracking-widest text-[#B8AAC3]">
+            About Camille
+          </h2>
+          
+          <p className="text-base text-[#F3EBF9] leading-relaxed font-medium">
+            Hello! I am a Software Quality Assurance lead living in Metro Manila.
+          </p>
+          <p className="text-base text-[#F3EBF9] leading-relaxed font-medium">
+            I value honest communication, family-first traditions, and genuine companionship. On weekends, I enjoy acoustic live sets, coastal day trips, and home cooking.
+          </p>
+          <p className="text-base text-[#F3EBF9] leading-relaxed font-medium">
+            Looking for a mature, sincere gentleman ready for a real, committed relationship leading to marriage.
+          </p>
+
+          <div className="pt-3 border-t border-[#725A7A]/25 flex flex-wrap gap-2 text-xs">
+            <span className="px-3 py-1.5 rounded-xl bg-[#17131F] border border-[#725A7A]/30 text-[#DDD8D4] font-semibold">
+              🗣️ English (Fluent)
+            </span>
+            <span className="px-3 py-1.5 rounded-xl bg-[#17131F] border border-[#725A7A]/30 text-[#DDD8D4] font-semibold">
+              🇵🇭 Tagalog (Native)
+            </span>
+            <span className="px-3 py-1.5 rounded-xl bg-[#17131F] border border-[#725A7A]/30 text-[#DDD8D4] font-semibold">
+              📏 165 cm
+            </span>
+            <span className="px-3 py-1.5 rounded-xl bg-[#17131F] border border-[#725A7A]/30 text-[#DDD8D4] font-semibold">
+              🎓 Bachelor's Degree
+            </span>
           </div>
         </div>
 
-        {/* Right: Info, Courtship Goal & Direct Action (7 cols) */}
-        <div className="md:col-span-7">
-          <div className="p-5 sm:p-6 rounded-2xl bg-[#241E2F] border border-[#725A7A]/35 shadow-xl space-y-4">
-            
-            {/* Header Identity */}
-            <div className="border-b border-[#725A7A]/20 pb-3">
-              <div className="flex items-baseline justify-between">
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight font-[family-name:var(--font-nunito)]">
-                  {profile.fullName}, <span className="text-[#DDD8D4] font-normal">{profile.age}</span>
-                </h1>
-                <span className="px-2 py-0.5 rounded-md bg-emerald-950 text-emerald-300 border border-emerald-500/40 text-[10px] font-bold">
-                  Online
-                </span>
-              </div>
-              <p className="text-xs sm:text-sm font-semibold text-[#DDD8D4] mt-0.5">
-                📍 {profile.city}, {profile.country} • <span className="text-[#B8AAC3] font-normal">{profile.jobTitle}</span>
-              </p>
-            </div>
+        {/* Floating/Sticky Action Button */}
+        <div className="space-y-2 pt-2">
+          <Link
+            href={`/chat/${profileId || 'camille'}`}
+            className="w-full py-4 rounded-2xl bg-[#653C87] hover:bg-[#7A49A2] text-white font-extrabold text-base text-center block shadow-xl shadow-[#653C87]/30 active:scale-[0.98] transition-all"
+          >
+            Send Direct Message
+          </Link>
 
-            {/* Courtship Goal */}
-            <div className="py-2 px-3 rounded-xl bg-[#17131F] border border-[#725A7A]/30 flex items-center justify-between">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[#B8AAC3]">
-                Courtship Goal
-              </span>
-              <p className="text-xs sm:text-sm font-bold text-white">
-                🎯 {profile.relationshipIntent}
-              </p>
-            </div>
-
-            {/* Bio Text */}
-            <div className="space-y-1">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[#B8AAC3]">
-                About Camille
-              </span>
-              <p className="text-xs sm:text-sm text-[#DDD8D4] leading-relaxed whitespace-pre-line font-normal">
-                {profile.bio}
-              </p>
-            </div>
-
-            {/* Spoken Languages */}
-            <div className="flex items-center gap-2">
-              <span className="text-[11px] font-bold uppercase tracking-wider text-[#B8AAC3] shrink-0">
-                Languages:
-              </span>
-              <div className="flex flex-wrap gap-1.5">
-                {profile.languages.map((lang) => (
-                  <span
-                    key={lang}
-                    className="px-2.5 py-0.5 rounded-lg bg-[#17131F] border border-[#725A7A]/25 text-[11px] text-[#DDD8D4]"
-                  >
-                    {lang}
-                  </span>
-                ))}
-              </div>
-            </div>
-
-            {/* Primary Action Target */}
-            <div className="pt-3 border-t border-[#725A7A]/25 space-y-2">
-              <Link
-                href="/chat/demo-1"
-                className="w-full py-3.5 rounded-xl bg-[#653C87] hover:bg-[#7A49A2] text-white font-bold text-sm sm:text-base text-center block shadow-lg shadow-[#41384E]/50 transition-all active:scale-[0.98]"
-              >
-                Send Direct Message
-              </Link>
-              
-              <p className="text-center text-[10px] text-[#978FA8]">
-                🔒 100% scam-free messaging. Financial requests are strictly prohibited.
-              </p>
-            </div>
-
-          </div>
+          <p className="text-center text-xs text-[#B8AAC3] flex items-center justify-center gap-1.5">
+            <span>🔒</span>
+            100% scam-free messaging. Financial requests are strictly prohibited.
+          </p>
         </div>
 
       </div>
+
     </main>
   );
 }
