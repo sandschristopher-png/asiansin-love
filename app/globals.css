@@ -1,23 +1,58 @@
-@import "tailwindcss";
+﻿@tailwind base;
+@tailwind components;
+@tailwind utilities;
 
 :root {
-  --plum-base: #17131F;
-  --plum-card: #241E2F;
-  --plum-line: #725A7A;
-  --plum-accent: #653C87;
-  --plum-text: #F3EBF9;
-  --plum-cream: #DDD8D4;
-}
-
-html, body, button, input, select, textarea, span, p, h1, h2, h3, h4, h5, h6, a {
-  font-family: var(--font-nunito), system-ui, -apple-system, sans-serif !important;
+  --background: #17131F;
+  --foreground: #F3EBF9;
 }
 
 body {
-  margin: 0;
-  padding: 0;
-  background-color: #17131F;
-  color: #F3EBF9;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
+  color: var(--foreground);
+  background: var(--background);
+  font-family: var(--font-nunito), system-ui, -apple-system, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Subtle, smooth page entrance animation */
+@keyframes softFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+main {
+  animation: softFadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Card hover transitions */
+.profile-card-lift {
+  transition: transform 0.22s ease-out, box-shadow 0.22s ease-out, border-color 0.22s ease-out;
+}
+
+.profile-card-lift:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 12px 28px -6px rgba(0, 0, 0, 0.55), 0 0 14px 1px rgba(101, 60, 135, 0.2);
+  border-color: rgba(151, 143, 168, 0.55);
+}
+
+/* Custom subtle scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #17131F;
+}
+::-webkit-scrollbar-thumb {
+  background: #2E263B;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #653C87;
 }

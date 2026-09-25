@@ -1,7 +1,9 @@
 ﻿'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
+import { useFavorites } from '@/lib/favoritesContext';
 
 export interface ProfileSummary {
   id: string;
@@ -16,102 +18,89 @@ export interface ProfileSummary {
   isOnline?: boolean;
 }
 
-interface ProfileCardProps {
-  profile: ProfileSummary;
-}
-
-export function ProfileCard({ profile }: ProfileCardProps) {
-  const [saved, setSaved] = useState(false);
-
-  const toggleFavorite = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setSaved(!saved);
-    // In production, wire to Supabase favorites table
-  };
+export function ProfileCard({ profile }: { profile: ProfileSummary }) {
+  const { isFavorite, toggleFavorite } = useFavorites();
+  const favorited = isFavorite(profile.id);
 
   return (
-    <div className="rounded-2xl bg-[#241E2F] border border-[#725A7A]/35 overflow-hidden shadow-lg hover:border-[#978FA8] transition-all duration-200 flex flex-col justify-between group">
+    <div className="group relative rounded-2xl bg-[#241E2F] border border-[#725A7A]/30 overflow-hidden flex flex-col justify-between profile-card-lift">
       
       {/* Photo Frame */}
-      <div className="relative aspect-[4/3.2] w-full bg-[#17131F] overflow-hidden">
-        <img
+      <div className="relative aspect-[4/5] w-full bg-[#17131F] overflow-hidden">
+        <Image
           src={profile.avatarUrl}
           alt={profile.fullName}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          fill
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
+          className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#241E2F] via-transparent to-black/25" />
 
-        {/* Status Badges */}
-        <div className="absolute top-2 left-2 flex flex-wrap gap-1 pointer-events-none">
+        {/* Subtle Bottom Vignette */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#241E2F] via-transparent to-transparent opacity-90" />
+
+        {/* Verification & Online Badges */}
+        <div className="absolute top-2.5 left-2.5 flex flex-wrap items-center gap-1.5 z-10">
           {profile.isVerified && (
-            <span className="px-1.5 py-0.5 rounded-md bg-[#653C87] border border-[#978FA8]/40 text-white text-[10px] font-bold shadow-sm">
+            <span className="px-2 py-0.5 rounded-md bg-[#653C87]/90 backdrop-blur-md border border-[#978FA8]/40 text-white text-[10px] font-black tracking-wide shadow-md">
               ✓ Verified
             </span>
           )}
           {profile.isOnline && (
-            <span className="px-1.5 py-0.5 rounded-md bg-emerald-950/90 border border-emerald-500/50 text-emerald-300 text-[10px] font-bold flex items-center gap-1 shadow-sm">
+            <span className="flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-emerald-950/80 backdrop-blur-md border border-emerald-500/40 text-emerald-300 text-[10px] font-bold">
               <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
               Online
             </span>
           )}
         </div>
 
-        {/* Bookmark / Favorite Quick Button */}
+        {/* Favorite Heart Button */}
         <button
           type="button"
-          onClick={toggleFavorite}
-          aria-label="Save Profile"
-          className={`absolute top-2 right-2 h-7 w-7 rounded-full flex items-center justify-center text-xs transition-all shadow-md ${
-            saved 
-              ? 'bg-amber-400 text-[#17131F] scale-110' 
-              : 'bg-[#17131F]/70 text-[#DDD8D4] hover:bg-[#17131F] hover:text-white'
-          }`}
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            toggleFavorite(profile.id);
+          }}
+          aria-label={favorited ? 'Remove from saved' : 'Save profile'}
+          className="absolute top-2.5 right-2.5 h-8 w-8 rounded-full bg-[#17131F]/80 backdrop-blur-md border border-[#725A7A]/40 text-white hover:scale-110 active:scale-95 transition-all flex items-center justify-center z-10 shadow-md"
         >
-          {saved ? '★' : '☆'}
+          <span className={`text-xs ${favorited ? 'text-amber-400' : 'text-[#B8AAC3]'}`}>
+            {favorited ? '★' : '☆'}
+          </span>
         </button>
 
-        {/* Location Subtitle */}
-        <div className="absolute bottom-1.5 left-2 right-2 pointer-events-none">
-          <p className="text-[11px] font-semibold text-white drop-shadow-md truncate">
-            📍 {profile.city}, {profile.country}
-          </p>
+        {/* Location Overlay */}
+        <div className="absolute bottom-2 left-2.5 right-2.5 z-10 flex items-center gap-1 text-[11px] font-bold text-[#DDD8D4] truncate">
+          <span className="text-rose-400">📍</span>
+          <span className="truncate">{profile.city}, {profile.country}</span>
         </div>
       </div>
 
-      {/* Info Body */}
-      <div className="p-3 flex-1 flex flex-col justify-between space-y-2">
+      {/* Profile Details & Actions */}
+      <div className="p-3 sm:p-3.5 flex flex-col gap-2">
         <div>
-          <h3 className="text-base sm:text-lg font-bold text-white tracking-tight truncate">
-            {profile.fullName}, <span className="text-[#DDD8D4] font-normal">{profile.age}</span>
+          <h3 className="text-sm sm:text-base font-extrabold text-white truncate">
+            {profile.fullName}, {profile.age}
           </h3>
-
           {profile.jobTitle && (
-            <p className="text-[11px] text-[#B8AAC3] font-medium truncate">
-              {profile.jobTitle}
-            </p>
+            <p className="text-[11px] text-[#DDD8D4] truncate">{profile.jobTitle}</p>
           )}
-
-          {/* Courtship Goal Tag */}
-          <div className="mt-1.5 py-1 px-2 rounded-lg bg-[#17131F] border border-[#725A7A]/25">
-            <p className="text-[10px] font-semibold text-[#DDD8D4] truncate">
-              🎯 {profile.relationshipIntent}
-            </p>
-          </div>
+          <span className="inline-block mt-1 text-[10px] font-semibold text-[#B8AAC3] bg-[#17131F] px-2 py-0.5 rounded-md border border-[#725A7A]/20 truncate max-w-full">
+            {profile.relationshipIntent}
+          </span>
         </div>
 
-        {/* Action Buttons */}
-        <div className="pt-1 flex gap-1.5">
+        {/* Action Controls */}
+        <div className="grid grid-cols-2 gap-1.5 pt-1">
           <Link
             href={`/chat/${profile.id}`}
-            className="flex-1 py-2 rounded-xl bg-[#653C87] hover:bg-[#7A49A2] text-white text-xs font-bold text-center shadow-sm transition-all active:scale-[0.98]"
+            className="py-1.5 px-2 rounded-xl bg-[#653C87] hover:bg-[#7A49A2] text-white text-xs font-bold text-center transition-all shadow-md active:scale-95"
           >
             Message
           </Link>
-
           <Link
             href={`/profile/${profile.id}`}
-            className="px-3 py-2 rounded-xl bg-[#17131F] hover:bg-[#2E263B] border border-[#725A7A]/35 text-white text-xs font-bold text-center transition-colors"
+            className="py-1.5 px-2 rounded-xl bg-[#17131F] hover:bg-[#2E263B] border border-[#725A7A]/35 text-[#DDD8D4] hover:text-white text-xs font-bold text-center transition-all active:scale-95"
           >
             Bio
           </Link>
