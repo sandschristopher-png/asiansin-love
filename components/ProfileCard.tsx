@@ -5,7 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { MapPin, CheckCircle, RotateCcw, Heart, Star, MessageCircle, X } from 'lucide-react';
 
-interface ProfileCardProps {
+export interface ProfileCardProps {
   profile: {
     id: string;
     name: string;
@@ -28,7 +28,7 @@ interface ProfileCardProps {
   onSave?: (id: string) => void;
 }
 
-export default function ProfileCard({
+export function ProfileCard({
   profile,
   isPassed = false,
   onPass,
@@ -157,3 +157,5 @@ export default function ProfileCard({
     </div>
   );
 }
+
+export default ProfileCard;

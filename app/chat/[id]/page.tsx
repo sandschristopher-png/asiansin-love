@@ -1,10 +1,10 @@
-﻿import UpgradeModal from '@/components/UpgradeModal';
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Send, Zap, ShieldAlert, CheckCheck, Clock } from 'lucide-react';
+import UpgradeModal from '@/components/UpgradeModal';
 
 function sanitizeMessage(text: string): { sanitized: string; wasMasked: boolean } {
   const normalized = text
@@ -187,7 +187,12 @@ export default function ChatConversationPage({ params }: { params: { id: string 
           </form>
         )}
       </div>
-      <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} onSelectPlan={(p) => alert('Redirecting to checkout for ' + p)} />
+
+      <UpgradeModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        onSelectPlan={(p) => alert('Plan selected: ' + p)}
+      />
     </main>
   );
 }
