@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useParams, useRouter } from 'next/navigation';
 import { DUMMY_PROFILES } from '@/lib/dummyProfiles';
+import { playChime } from '@/lib/sound';
 
 export default function ChatConversationPage() {
   const router = useRouter();
@@ -41,6 +42,9 @@ export default function ChatConversationPage() {
   const handleSend = (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputMessage.trim()) return;
+
+    // Play tactile sound on send
+    playChime();
 
     setMessages((prev) => [
       ...prev,
@@ -105,7 +109,7 @@ export default function ChatConversationPage() {
         </Link>
       </div>
 
-      {/* Message History Container */}
+      {/* Message History */}
       <div className="flex-1 overflow-y-auto px-4 py-4 space-y-3.5 scrollbar-thin">
         {messages.map((msg) => {
           const isMe = msg.sender === 'me';
