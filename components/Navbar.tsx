@@ -1,68 +1,19 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import Image from 'next/image';
 
 export function Navbar() {
-  const pathname = usePathname();
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-
-  const isActive = (path: string) => pathname === path;
-
   return (
     <header className="sticky top-0 z-50 bg-[#17131F]/95 backdrop-blur-md border-b border-[#725A7A]/30">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between relative">
         
-        {/* Original Brand Logo with Purple Heart */}
-        <Link href="/" className="flex items-center gap-2 group flex-shrink-0">
-          <span className="text-xl select-none">💜</span>
-          <span className="text-lg font-black tracking-tight text-white font-[family-name:var(--font-nunito)]">
-            asiansin.love
-          </span>
-        </Link>
-
-        {/* Desktop Navigation Links */}
-        <nav className="hidden md:flex items-center gap-8">
-          <Link
-            href="/discover"
-            className={`text-sm font-bold tracking-wide transition-colors ${
-              isActive('/discover') ? 'text-white border-b-2 border-[#653C87] pb-1' : 'text-[#DDD8D4] hover:text-white'
-            }`}
-          >
-            Discover
-          </Link>
-          <Link
-            href="/messages"
-            className={`text-sm font-bold tracking-wide transition-colors ${
-              isActive('/messages') ? 'text-white border-b-2 border-[#653C87] pb-1' : 'text-[#DDD8D4] hover:text-white'
-            }`}
-          >
-            Messages
-          </Link>
-          <Link
-            href="/favorites"
-            className={`text-sm font-bold tracking-wide transition-colors ${
-              isActive('/favorites') ? 'text-white border-b-2 border-[#653C87] pb-1' : 'text-[#DDD8D4] hover:text-white'
-            }`}
-          >
-            Saved
-          </Link>
-          <Link
-            href="/profile"
-            className={`text-sm font-bold tracking-wide transition-colors ${
-              isActive('/profile') ? 'text-white border-b-2 border-[#653C87] pb-1' : 'text-[#DDD8D4] hover:text-white'
-            }`}
-          >
-            Profile
-          </Link>
-        </nav>
-
-        {/* Actions */}
-        <div className="flex items-center gap-2.5">
+        {/* Left Action: Notifications Button */}
+        <div className="flex items-center z-10">
           <Link
             href="/notifications"
-            className="h-9 w-9 rounded-xl bg-[#241E2F] border border-[#725A7A]/30 flex items-center justify-center text-[#DDD8D4] hover:text-white hover:border-[#978FA8] transition-all relative"
+            className="h-9 w-9 rounded-xl bg-[#241E2F] border border-[#725A7A]/30 flex items-center justify-center text-[#DDD8D4] hover:text-white hover:border-[#978FA8] transition-all relative active:scale-95"
             aria-label="Notifications"
           >
             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -70,7 +21,24 @@ export function Navbar() {
             </svg>
             <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-[#653C87]" />
           </Link>
+        </div>
 
+        {/* Center: Exact Centered Brand PNG */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+          <Link href="/" className="pointer-events-auto flex items-center justify-center">
+            <Image
+              src="/ail-logo.png"
+              alt="asiansin.love"
+              width={160}
+              height={36}
+              priority
+              className="h-8 sm:h-9 w-auto object-contain"
+            />
+          </Link>
+        </div>
+
+        {/* Right Action: Sign In Button */}
+        <div className="flex items-center z-10">
           <Link
             href="/login"
             className="px-4 py-2 rounded-xl bg-[#241E2F] border border-[#725A7A]/40 hover:bg-[#653C87] text-white text-xs font-bold transition-all shadow-md active:scale-95"
