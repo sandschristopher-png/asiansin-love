@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React from 'react';
 import Link from 'next/link';
@@ -22,6 +22,21 @@ export function ProfileCard({ profile }: { profile: ProfileSummary }) {
   const { isFavorite, toggleFavorite } = useFavorites();
   const favorited = isFavorite(profile.id);
 
+  const handleToggle = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    toggleFavorite({
+      id: profile.id,
+      fullName: profile.fullName,
+      age: profile.age,
+      city: profile.city,
+      country: profile.country,
+      avatarUrl: profile.avatarUrl,
+      isVerified: profile.isVerified,
+      relationshipIntent: profile.relationshipIntent,
+    } as any);
+  };
+
   return (
     <div className="group relative rounded-2xl bg-[#241E2F] border border-[#725A7A]/30 overflow-hidden flex flex-col justify-between profile-card-lift">
       
@@ -35,7 +50,7 @@ export function ProfileCard({ profile }: { profile: ProfileSummary }) {
           className="object-cover transition-transform duration-500 ease-out group-hover:scale-105"
         />
 
-        {/* Subtle Bottom Vignette */}
+        {/* Bottom Gradient Overlay */}
         <div className="absolute inset-0 bg-gradient-to-t from-[#241E2F] via-transparent to-transparent opacity-90" />
 
         {/* Verification & Online Badges */}
@@ -53,14 +68,10 @@ export function ProfileCard({ profile }: { profile: ProfileSummary }) {
           )}
         </div>
 
-        {/* Favorite Heart Button */}
+        {/* Favorite Star Button */}
         <button
           type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            e.stopPropagation();
-            toggleFavorite(profile.id);
-          }}
+          onClick={handleToggle}
           aria-label={favorited ? 'Remove from saved' : 'Save profile'}
           className="absolute top-2.5 right-2.5 h-8 w-8 rounded-full bg-[#17131F]/80 backdrop-blur-md border border-[#725A7A]/40 text-white hover:scale-110 active:scale-95 transition-all flex items-center justify-center z-10 shadow-md"
         >
@@ -69,14 +80,14 @@ export function ProfileCard({ profile }: { profile: ProfileSummary }) {
           </span>
         </button>
 
-        {/* Location Overlay */}
+        {/* Location Tag */}
         <div className="absolute bottom-2 left-2.5 right-2.5 z-10 flex items-center gap-1 text-[11px] font-bold text-[#DDD8D4] truncate">
           <span className="text-rose-400">📍</span>
           <span className="truncate">{profile.city}, {profile.country}</span>
         </div>
       </div>
 
-      {/* Profile Details & Actions */}
+      {/* Details & Actions */}
       <div className="p-3 sm:p-3.5 flex flex-col gap-2">
         <div>
           <h3 className="text-sm sm:text-base font-extrabold text-white truncate">
