@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
@@ -13,9 +13,35 @@ interface AccountBottomSheetProps {
 export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps) {
   const router = useRouter();
   const [profile, setProfile] = useState<any>(null);
+  
+  // Touch drag state
+  const [dragY, setDragY] = useState(0);
+  const [isDragging, setIsDragging] = useState(false);
+  const touchStartY = useRef(0);
+  const sheetRef = useRef<HTMLDivElement>(null);
 
+  // Android Pixel native back-gesture handling
   useEffect(() => {
     if (!isOpen) return;
+
+    window.history.pushState({ drawerOpen: true }, '');
+
+    const handlePopState = () => {
+      onClose();
+    };
+
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [isOpen, onClose]);
+
+  // Load profile data
+  useEffect(() => {
+    if (!isOpen) {
+      setDragY(0);
+      return;
+    }
 
     async function fetchAccountData() {
       try {
@@ -37,6 +63,29 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
     fetchAccountData();
   }, [isOpen]);
 
+  const handleTouchStart = (e: React.TouchEvent) => {
+    touchStartY.current = e.touches[0].clientY;
+    setIsDragging(true);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    const currentY = e.touches[0].clientY;
+    const diff = currentY - touchStartY.current;
+    if (diff > 0) {
+      // Only drag downward
+      setDragY(diff);
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setIsDragging(false);
+    // Dismiss if pulled down more than 110px
+    if (dragY > 110) {
+      onClose();
+    }
+    setDragY(0);
+  };
+
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     onClose();
@@ -55,29 +104,38 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
       {/* Blurred Backdrop */}
       <div
         onClick={onClose}
-        className="fixed inset-0 bg-black/65 backdrop-blur-sm animate-overlay-fade transition-opacity"
+        className="fixed inset-0 bg-black/70 backdrop-blur-sm animate-overlay-fade transition-opacity"
         aria-hidden="true"
       />
 
       {/* Slide-Up Sheet Container */}
-      <div className="relative w-full max-w-lg bg-[#241E2F] border-t border-[#725A7A]/40 rounded-t-[32px] p-5 pb-8 shadow-2xl z-10 animate-sheet-up max-h-[82dvh] flex flex-col justify-between overflow-y-auto">
+      <div
+        ref={sheetRef}
+        style={{
+          transform: dragY > 0 ? `translateY(${dragY}px)` : undefined,
+          transition: isDragging ? 'none' : 'transform 0.25s cubic-bezier(0.16, 1, 0.3, 1)',
+        }}
+        className="relative w-full max-w-lg bg-[#241E2F] border-t border-[#725A7A]/40 rounded-t-[32px] p-5 pb-8 shadow-2xl z-10 animate-sheet-up max-h-[85dvh] flex flex-col justify-between overflow-y-auto"
+      >
         <div className="space-y-5">
-          {/* Grab Handle */}
-          <div className="w-12 h-1.5 bg-[#725A7A]/50 rounded-full mx-auto mb-1" />
+          {/* Touch Drag Zone & Grab Handle */}
+          <div
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            className="w-full py-2.5 -mt-2 flex flex-col items-center justify-center cursor-grab active:cursor-grabbing select-none"
+          >
+            <div className="w-14 h-1.5 bg-[#725A7A]/60 rounded-full" />
+          </div>
 
-          {/* Header Row */}
-          <div className="flex items-center justify-between pb-3 border-b border-[#725A7A]/25">
+          {/* Header Row (Clean, no 'X' button) */}
+          <div className="flex items-center justify-between pb-2 border-b border-[#725A7A]/25">
             <h2 className="text-xl font-black text-white tracking-tight">
               Your Account
             </h2>
-            <button
-              type="button"
-              onClick={onClose}
-              className="h-8 w-8 rounded-full bg-[#17131F] border border-[#725A7A]/35 text-[#B8AAC3] hover:text-white flex items-center justify-center text-sm font-bold active:scale-90 transition-transform"
-              aria-label="Close"
-            >
-              ✕
-            </button>
+            <span className="text-[11px] font-bold text-[#B8AAC3] uppercase tracking-wider">
+              Swipe down to close
+            </span>
           </div>
 
           {/* User Profile Summary Card */}
