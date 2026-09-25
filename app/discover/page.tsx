@@ -8,56 +8,51 @@ const REGIONS = ['All', 'Philippines', 'Thailand', 'Cambodia', 'Laos'];
 
 export default function DiscoverPage() {
   const [selectedRegion, setSelectedRegion] = useState('All');
+  const [searchQuery, setSearchQuery] = useState('');
   const [verifiedOnly, setVerifiedOnly] = useState(false);
 
   const filteredProfiles = DUMMY_PROFILES.filter((profile) => {
     const matchesRegion =
       selectedRegion === 'All' || profile.country.toLowerCase() === selectedRegion.toLowerCase();
     const matchesVerified = verifiedOnly ? profile.isVerified : true;
-    return matchesRegion && matchesVerified;
+    const matchesSearch =
+      profile.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      profile.city.toLowerCase().includes(searchQuery.toLowerCase());
+
+    return matchesRegion && matchesVerified && matchesSearch;
   });
 
   return (
-    <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-5">
+    <main className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-8 space-y-4">
       
-      {/* Header Block */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
-            Explore Singles
-          </h1>
-          <p className="text-xs sm:text-sm text-[#DDD8D4] mt-1">
-            Verified members seeking genuine, long-term connections across Southeast Asia.
-          </p>
+      {/* Search Bar - pinaLove Style */}
+      <div className="relative w-full">
+        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#725A7A]">
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+          </svg>
         </div>
-
-        {/* Verified Only Toggle */}
-        <button
-          type="button"
-          onClick={() => setVerifiedOnly(!verifiedOnly)}
-          className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all border self-start sm:self-auto active:scale-95 ${
-            verifiedOnly
-              ? 'bg-[#653C87] border-[#978FA8] text-white shadow-md'
-              : 'bg-[#241E2F] border-[#725A7A]/35 text-[#DDD8D4] hover:text-white'
-          }`}
-        >
-          <span>{verifiedOnly ? '✓' : '○'}</span>
-          <span>Verified Only</span>
-        </button>
+        <input
+          type="text"
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          placeholder="Search by name, city, or interests..."
+          className="w-full pl-10 pr-4 py-3 rounded-2xl bg-[#241E2F] border border-[#725A7A]/35 text-white placeholder-[#725A7A] text-sm focus:outline-none focus:border-[#978FA8] shadow-sm"
+        />
       </div>
 
-      {/* Sticky Mobile Region Filter Bar */}
-      <div className="sticky top-16 z-30 bg-[#17131F]/90 backdrop-blur-md py-2.5 -mx-4 px-4 sm:mx-0 sm:px-0 flex items-center gap-2 overflow-x-auto scrollbar-none border-b sm:border-b-0 border-[#725A7A]/20">
+      {/* Country Filters */}
+      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
         {REGIONS.map((region) => {
           const active = selectedRegion === region;
           return (
             <button
               key={region}
               onClick={() => setSelectedRegion(region)}
-              className={`px-4 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap transition-all border active:scale-95 ${
+              className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold whitespace-nowrap transition-all border active:scale-95 ${
                 active
                   ? 'bg-[#653C87] border-[#978FA8]/40 text-white shadow-md'
-                  : 'bg-[#241E2F] border-[#725A7A]/30 text-[#DDD8D4] hover:text-white'
+                  : 'bg-[#241E2F] border-[#725A7A]/30 text-[#DDD8D4]'
               }`}
             >
               {region}
@@ -67,7 +62,7 @@ export default function DiscoverPage() {
       </div>
 
       {/* Profile Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6 pt-1">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-6 pt-1">
         {filteredProfiles.map((profile) => (
           <ProfileCard
             key={profile.id}
@@ -86,6 +81,13 @@ export default function DiscoverPage() {
           />
         ))}
       </div>
+
+      {filteredProfiles.length === 0 && (
+        <div className="text-center py-16 text-[#B8AAC3] space-y-2">
+          <p className="text-base font-bold text-white">No profiles match your search.</p>
+          <p className="text-xs">Try clearing the search query or switching regions.</p>
+        </div>
+      )}
 
     </main>
   );

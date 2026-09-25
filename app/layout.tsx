@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Nunito } from "next/font/google";
 import "./globals.css";
 import { Navbar } from "@/components/Navbar";
+import { BottomDock } from "@/components/BottomDock";
 import { Footer } from "@/components/Footer";
 import { FavoritesProvider } from "@/lib/favoritesContext";
 
@@ -31,13 +32,14 @@ export default function RootLayout({
   return (
     <html lang="en" className="dark overflow-x-hidden">
       <body
-        className={`${nunito.variable} font-[family-name:var(--font-nunito)] bg-[#17131F] text-[#F3EBF9] min-h-screen flex flex-col overflow-x-hidden selection:bg-[#653C87] selection:text-white`}
+        className={`${nunito.variable} font-[family-name:var(--font-nunito)] bg-[#17131F] text-[#F3EBF9] min-h-screen flex flex-col overflow-x-hidden selection:bg-[#653C87] selection:text-white pb-20 md:pb-0`}
       >
         <FavoritesProvider>
           <Navbar />
           <div className="flex-1 w-full max-w-full overflow-x-hidden">
             {children}
           </div>
+          <BottomDock />
           <Footer />
         </FavoritesProvider>
       </body>
