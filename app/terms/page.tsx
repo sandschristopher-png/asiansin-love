@@ -1,53 +1,44 @@
-﻿import Link from 'next/link'
-import { Logo } from '@/components/Logo'
-import { ArrowLeft } from 'lucide-react'
+﻿'use client';
 
-export const metadata = {
-  title: "Terms of Service | asiansin.love",
-  description: "Terms and conditions for members using asiansin.love.",
-}
+import React from 'react';
+import Link from 'next/link';
 
 export default function TermsPage() {
   return (
-    <div className="min-h-dvh bg-[#fbfbfe] font-sans text-slate-900 pb-20 selection:bg-[#6d4aff] selection:text-white">
-      <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/80 px-4 sm:px-6 py-3.5 backdrop-blur-md flex items-center justify-between">
-        <Link href="/" className="hover:opacity-90 transition">
-          <Logo className="h-6 w-6" textSize="text-base sm:text-lg" />
-        </Link>
-        <Link href="/browse" className="flex items-center gap-1 text-xs font-semibold text-slate-600 hover:text-slate-900 transition">
-          <ArrowLeft className="h-3.5 w-3.5" />
-          <span>Browse</span>
-        </Link>
-      </header>
+    <main className="max-w-4xl mx-auto w-full px-4 py-8 flex-1">
+      <div className="border-b border-[#725A7A]/25 pb-4 mb-6">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Terms of Use</h1>
+        <p className="text-xs sm:text-sm text-[#DDD8D4] mt-1">Last updated: September 2026</p>
+      </div>
 
-      <main className="mx-auto max-w-3xl px-4 sm:px-6 pt-12 space-y-8">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Terms of Service</h1>
-          <p className="text-xs text-slate-500 mt-1">Effective Date: 2026 &bull; asiansin.love</p>
+      <div className="p-6 sm:p-8 rounded-3xl bg-[#241E2F] border border-[#725A7A]/35 shadow-xl space-y-5 text-xs sm:text-sm text-[#DDD8D4] leading-relaxed">
+        <section className="space-y-1.5">
+          <h2 className="text-base font-bold text-white">1. Zero Financial Solicitation Policy</h2>
+          <p>
+            Users agree never to solicit, request, or offer funds, money transfers, wire transfers, GCash remittances, gift cards, or financial gifts under any circumstances. Violation results in immediate, permanent account termination.
+          </p>
+        </section>
+
+        <section className="space-y-1.5">
+          <h2 className="text-base font-bold text-white">2. Sincere Intentions</h2>
+          <p>
+            asiansin.love is designated exclusively for adults seeking genuine, dignified cross-border courtship and marriage. Commercial solicitation, adult service promotion, and deceptive behavior are strictly prohibited.
+          </p>
+        </section>
+
+        <section className="space-y-1.5">
+          <h2 className="text-base font-bold text-white">3. Account Eligibility</h2>
+          <p>
+            You must be at least 18 years of age to register and participate in this platform. You are responsible for maintaining the confidentiality of your login credentials.
+          </p>
+        </section>
+
+        <div className="pt-4 border-t border-[#725A7A]/25">
+          <Link href="/" className="text-xs font-bold text-[#E6D7FA] hover:underline">
+            ← Back to Home
+          </Link>
         </div>
-
-        <div className="space-y-6 text-xs sm:text-sm text-slate-700 leading-relaxed rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 shadow-xs">
-          <section className="space-y-2">
-            <h2 className="text-base font-bold text-slate-900">1. Eligibility & Age Requirement</h2>
-            <p>You must be at least 18 years of age to register or access any part of asiansin.love. By creating an account, you affirm that all age and demographic data provided is accurate.</p>
-          </section>
-
-          <section className="space-y-2">
-            <h2 className="text-base font-bold text-slate-900">2. Anti-Scam & Zero Financial Solicitation</h2>
-            <p>asiansin.love strictly prohibits any member from requesting, soliciting, or receiving money, cryptocurrency, wire transfers, or commercial transactions. Accounts identified attempting financial fraud are banned permanently without notice.</p>
-          </section>
-
-          <section className="space-y-2">
-            <h2 className="text-base font-bold text-slate-900">3. Free Access Policy for Local Members</h2>
-            <p>Citizens and permanent residents living in Southeast Asian nations (Philippines, Thailand, Vietnam, Cambodia, Laos, Indonesia, Malaysia, Singapore) maintain 100% free access to core browsing and messaging features.</p>
-          </section>
-
-          <section className="space-y-2">
-            <h2 className="text-base font-bold text-slate-900">4. Community Guidelines & Respect</h2>
-            <p>We do not tolerate harassment, abusive conduct, solicitation of commercial sex work, or unauthorized third-party agencies.</p>
-          </section>
-        </div>
-      </main>
-    </div>
-  )
+      </div>
+    </main>
+  );
 }

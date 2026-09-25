@@ -1,33 +1,37 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
+﻿import type { Metadata } from 'next';
+import { Nunito } from 'next/font/google';
+import './globals.css';
+import { Navbar } from '@/components/Navbar';
+import { Footer } from '@/components/Footer';
+import { FavoritesProvider } from '@/lib/favoritesContext';
+import { NotificationToast } from '@/components/NotificationToast';
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
+const nunito = Nunito({
+  subsets: ['latin'],
+  variable: '--font-nunito',
+  display: 'swap',
 });
 
 export const metadata: Metadata = {
-  title: "asiansin.love | Modern Southeast Asian Dating",
-  description: "Connect directly with authentic singles across the Philippines, Thailand, Vietnam, and beyond.",
+  title: 'asiansin.love | Sincere Southeast Asian Courtship',
+  description: 'Dignified, scam-free dating community connecting international men with verified Southeast Asian women.',
 };
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode;
-}) {
+}>) {
   return (
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased dark bg-zinc-950 text-zinc-100`}
-    >
-      <body className="min-h-full flex flex-col">{children}</body>
+    <html lang="en" className={nunito.variable}>
+      <body className="min-h-screen flex flex-col bg-[#17131F] text-[#F3EBF9] font-[family-name:var(--font-nunito)] antialiased">
+        <FavoritesProvider>
+          <Navbar />
+          <div className="flex-1 flex flex-col">{children}</div>
+          <Footer />
+          <NotificationToast />
+        </FavoritesProvider>
+      </body>
     </html>
   );
 }

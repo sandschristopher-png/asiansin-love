@@ -1,176 +1,153 @@
-'use client'
+﻿'use client';
 
-import { useEffect, useState, useRef, use } from 'react'
-import { createClient } from '@/utils/supabase/client'
-import { scanMessageForTriggers } from '@/utils/guardian'
-import { Send, ArrowLeft, ShieldAlert } from 'lucide-react'
-import Link from 'next/link'
+import React, { useState } from 'react';
+import Link from 'next/link';
 
-export default function ChatConversation({ params }: { params: Promise<{ userId: string }> }) {
-  const { userId: partnerId } = use(params)
-  const supabase = createClient()
+interface ChatPageProps {
+  params: Promise<{ userId: string }>;
+}
 
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null)
-  const [partnerProfile, setPartnerProfile] = useState<any>(null)
-  const [messages, setMessages] = useState<any[]>([])
-  const [text, setText] = useState('')
-  const [loading, setLoading] = useState(false)
-  const scrollRef = useRef<HTMLDivElement>(null)
+export default function ChatScreen(props: ChatPageProps) {
+  const [inputText, setInputText] = useState('');
+  const [warning, setWarning] = useState<string | null>(null);
+  const [messages, setMessages] = useState([
+    {
+      id: '1',
+      sender: 'Camille',
+      text: 'Good morning! Thank you for the warm message. How was your weekend in the States?',
+      timestamp: '9:30 AM',
+      isMe: false,
+    },
+    {
+      id: '2',
+      sender: 'Me',
+      text: 'Good morning Camille. Weekend was quiet, enjoyed relaxing. How was your week?',
+      timestamp: '9:35 AM',
+      isMe: true,
+    },
+  ]);
 
-  useEffect(() => {
-    async function init() {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) return
-      setCurrentUserId(user.id)
+  const FINANCIAL_KEYWORDS = [
+    'gcash', 'money', 'western union', 'crypto', 'remit', 'allowance',
+    'hospital bill', 'send cash', 'wire money', 'emergency fund', 'gift card'
+  ];
 
-      // Fetch partner profile
-      const { data: partner } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', partnerId)
-        .single()
-      setPartnerProfile(partner)
+  const handleSend = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!inputText.trim()) return;
 
-      // Fetch conversation history
-      const { data: history } = await supabase
-        .from('messages')
-        .select('*')
-        .or(`and(sender_id.eq.${user.id},recipient_id.eq.${partnerId}),and(sender_id.eq.${partnerId},recipient_id.eq.${user.id})`)
-        .order('created_at', { ascending: true })
+    const lower = inputText.toLowerCase();
+    const flagged = FINANCIAL_KEYWORDS.some((word) => lower.includes(word));
 
-      if (history) setMessages(history)
+    if (flagged) {
+      setWarning(
+        'Platform Safety Advisory: asiansin.love strictly prohibits financial requests, remittances, or gifts. Genuine courtship is built on mutual respect and transparent conversation, not money transfers.'
+      );
+      return;
     }
 
-    init()
-
-    // Listen for incoming messages in real-time
-    const channel = supabase
-      .channel(`chat-${partnerId}`)
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'messages' },
-        (payload) => {
-          const newMsg = payload.new
-          if (
-            (newMsg.sender_id === partnerId && newMsg.recipient_id === currentUserId) ||
-            (newMsg.sender_id === currentUserId && newMsg.recipient_id === partnerId)
-          ) {
-            setMessages((prev) => [...prev, newMsg])
-          }
-        }
-      )
-      .subscribe()
-
-    return () => {
-      supabase.removeChannel(channel)
-    }
-  }, [partnerId, currentUserId, supabase])
-
-  useEffect(() => {
-    scrollRef.current?.scrollIntoView({ behavior: 'smooth' })
-  }, [messages])
-
-  const handleSend = async (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!text.trim() || loading) return
-
-    setLoading(true)
-
-    const res = await fetch('/api/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ recipientId: partnerId, content: text }),
-    })
-
-    if (res.ok) {
-      setText('')
-    } else {
-      const err = await res.json()
-      alert(err.error || 'Failed to send message.')
-    }
-    setLoading(false)
-  }
+    setWarning(null);
+    setMessages((prev) => [
+      ...prev,
+      {
+        id: Date.now().toString(),
+        sender: 'Me',
+        text: inputText.trim(),
+        timestamp: 'Just now',
+        isMe: true,
+      },
+    ]);
+    setInputText('');
+  };
 
   return (
-    <div className="flex h-screen flex-col bg-zinc-950 font-sans text-zinc-100">
-      {/* Top Header */}
-      <div className="flex items-center justify-between border-b border-zinc-800 bg-zinc-900/70 px-4 py-3 backdrop-blur">
-        <div className="flex items-center space-x-3">
-          <Link href="/inbox" className="rounded-lg p-1 text-zinc-400 hover:bg-zinc-800 hover:text-white">
-            <ArrowLeft className="h-5 w-5" />
+    <main className="max-w-4xl mx-auto w-full px-3 sm:px-6 py-4 flex-1 flex flex-col">
+      <div className="p-3 sm:p-4 rounded-2xl bg-[#241E2F] border border-[#725A7A]/35 shadow-md flex items-center justify-between mb-4">
+        <div className="flex items-center gap-3">
+          <Link
+            href="/messages"
+            className="h-8 w-8 rounded-xl bg-[#17131F] border border-[#725A7A]/35 text-[#DDD8D4] hover:text-white flex items-center justify-center text-sm font-bold"
+          >
+            ←
           </Link>
-          <div className="h-9 w-9 overflow-hidden rounded-full bg-zinc-800">
-            {partnerProfile?.avatar_url ? (
-              <img src={partnerProfile.avatar_url} alt="" className="h-full w-full object-cover" />
-            ) : (
-              <div className="flex h-full w-full items-center justify-center text-xs text-zinc-500">?</div>
-            )}
+          <div className="relative h-10 w-10 rounded-full overflow-hidden bg-[#17131F] shrink-0 border border-[#725A7A]/40">
+            <img
+              src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800&auto=format&fit=crop"
+              alt="Camille"
+              className="w-full h-full object-cover"
+            />
           </div>
           <div>
-            <h2 className="text-sm font-semibold text-white">{partnerProfile?.display_name || 'Member'}</h2>
-            <p className="text-[11px] text-zinc-400">{partnerProfile?.city ? `${partnerProfile.city}, ` : ''}{partnerProfile?.country || ''}</p>
+            <div className="flex items-center gap-1.5">
+              <h2 className="text-base font-bold text-white">Camille, 26</h2>
+              <span className="px-1.5 py-0.2 rounded-md bg-[#653C87] text-white text-[10px] font-bold">
+                ✓ Verified
+              </span>
+            </div>
+            <p className="text-[11px] text-[#DDD8D4]">📍 Makati, Philippines • Online</p>
           </div>
         </div>
 
-        <div className="flex items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-2.5 py-1 text-[11px] font-medium text-emerald-400">
-          <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
-          <span>Guardian Active</span>
-        </div>
+        <Link
+          href="/profile/demo-1"
+          className="px-3 py-1.5 rounded-xl bg-[#17131F] border border-[#725A7A]/35 text-xs font-bold text-[#DDD8D4] hover:text-white transition-colors"
+        >
+          View Bio
+        </Link>
       </div>
 
-      {/* Messages Feed */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {messages.map((m) => {
-          const isMe = m.sender_id === currentUserId
-          const trigger = !isMe ? scanMessageForTriggers(m.content) : null
-
-          return (
-            <div key={m.id} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
-              <div
-                className={`max-w-[80%] rounded-2xl px-4 py-2 text-sm leading-relaxed ${
-                  isMe
-                    ? 'bg-rose-600 text-white rounded-br-none'
-                    : 'bg-zinc-900 border border-zinc-800 text-zinc-100 rounded-bl-none'
-                }`}
-              >
-                {m.content}
-              </div>
-
-              {/* Smart Guardian Scam/External Advisory */}
-              {trigger && (
-                <div className="mt-1.5 flex max-w-[80%] items-start gap-2 rounded-xl border border-amber-900/60 bg-amber-950/40 p-2.5 text-xs text-amber-200">
-                  <ShieldAlert className="h-4 w-4 shrink-0 text-amber-400 mt-0.5" />
-                  <div>
-                    <span className="font-semibold text-amber-300">{trigger.warningTitle}: </span>
-                    <span>{trigger.warningAdvice}</span>
-                  </div>
-                </div>
-              )}
-            </div>
-          )
-        })}
-        <div ref={scrollRef} />
-      </div>
-
-      {/* Input */}
-      <form onSubmit={handleSend} className="border-t border-zinc-800 bg-zinc-900/80 p-3">
-        <div className="flex items-center space-x-2">
-          <input
-            type="text"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder="Type your message..."
-            className="flex-1 rounded-full border border-zinc-700 bg-zinc-800 px-4 py-2 text-sm text-white placeholder-zinc-500 focus:border-rose-500 focus:outline-none"
-          />
-          <button
-            type="submit"
-            disabled={loading}
-            className="flex h-9 w-9 items-center justify-center rounded-full bg-rose-600 text-white hover:bg-rose-500 disabled:opacity-50 transition"
+      <div className="flex-1 rounded-2xl bg-[#241E2F] border border-[#725A7A]/35 p-4 overflow-y-auto space-y-3 min-h-[360px]">
+        {messages.map((m) => (
+          <div
+            key={m.id}
+            className={`flex flex-col ${m.isMe ? 'items-end' : 'items-start'}`}
           >
-            <Send className="h-4 w-4" />
+            <div
+              className={`max-w-[80%] sm:max-w-[70%] p-3.5 rounded-2xl text-sm leading-relaxed ${
+                m.isMe
+                  ? 'bg-[#653C87] text-white rounded-br-xs'
+                  : 'bg-[#17131F] text-[#F3EBF9] border border-[#725A7A]/30 rounded-bl-xs'
+              }`}
+            >
+              {m.text}
+            </div>
+            <span className="text-[10px] text-[#978FA8] mt-1 px-1">{m.timestamp}</span>
+          </div>
+        ))}
+      </div>
+
+      {warning && (
+        <div className="mt-3 p-3.5 rounded-2xl bg-rose-950/90 border border-rose-500/60 text-rose-200 text-xs leading-relaxed animate-in fade-in flex items-start justify-between gap-3">
+          <div>
+            <p className="font-bold mb-0.5">⚠️ Security Warning</p>
+            <p>{warning}</p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setWarning(null)}
+            className="text-white hover:text-rose-200 font-bold px-2 py-1 bg-rose-900 rounded-lg text-[10px]"
+          >
+            Acknowledge
           </button>
         </div>
+      )}
+
+      <form onSubmit={handleSend} className="mt-3 flex gap-2">
+        <input
+          type="text"
+          value={inputText}
+          onChange={(e) => setInputText(e.target.value)}
+          placeholder="Type a polite and sincere message..."
+          className="flex-1 px-4 py-3 rounded-xl bg-[#241E2F] border border-[#725A7A]/35 text-white text-sm focus:outline-none focus:border-[#978FA8]"
+        />
+        <button
+          type="submit"
+          disabled={!inputText.trim()}
+          className="px-5 py-3 rounded-xl bg-[#653C87] hover:bg-[#7A49A2] disabled:opacity-40 disabled:cursor-not-allowed text-white text-sm font-bold shadow-md transition-all active:scale-[0.98]"
+        >
+          Send
+        </button>
       </form>
-    </div>
-  )
+    </main>
+  );
 }

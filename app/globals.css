@@ -1,11 +1,23 @@
 @import "tailwindcss";
 
 :root {
-  --background: #fbfbfe;
-  --foreground: #0f172a;
+  --plum-base: #17131F;
+  --plum-card: #241E2F;
+  --plum-line: #725A7A;
+  --plum-accent: #653C87;
+  --plum-text: #F3EBF9;
+  --plum-cream: #DDD8D4;
+}
+
+html, body, button, input, select, textarea, span, p, h1, h2, h3, h4, h5, h6, a {
+  font-family: var(--font-nunito), system-ui, -apple-system, sans-serif !important;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
+  margin: 0;
+  padding: 0;
+  background-color: #17131F;
+  color: #F3EBF9;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
 }

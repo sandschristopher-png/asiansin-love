@@ -1,0 +1,57 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 420 110" width="100%" height="100%">
+  <defs>
+    <!-- Soft Glow Filter -->
+    <filter id="badgeShadow" x="-15%" y="-15%" width="130%" height="130%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#000000" flood-opacity="0.6"/>
+      <feDropShadow dx="0" dy="0" stdDeviation="12" flood-color="#653C87" flood-opacity="0.45"/>
+    </filter>
+
+    <!-- Warm Gradient for Heart & Accent -->
+    <linearGradient id="heartGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#E6D7FA"/>
+      <stop offset="30%" stop-color="#B8AAC3"/>
+      <stop offset="70%" stop-color="#9A79BA"/>
+      <stop offset="100%" stop-color="#653C87"/>
+    </linearGradient>
+
+    <!-- Script Love Gradient -->
+    <linearGradient id="loveGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#F3EBF9"/>
+      <stop offset="100%" stop-color="#DDD8D4"/>
+    </linearGradient>
+  </defs>
+
+  <g transform="rotate(-3 210 55)" filter="url(#badgeShadow)">
+    
+    <!-- Outer Brand Backing Sticker Contour (Deep Plum #241E2F & #653C87) -->
+    <!-- "asians" backing -->
+    <path d="M 28 55 C 28 30, 48 16, 80 16 L 220 16 C 248 16, 268 28, 268 50 C 268 55, 275 60, 290 60 L 375 60 C 400 60, 415 72, 415 88 C 415 105, 395 114, 360 114 L 140 114 C 90 114, 28 95, 28 55 Z" 
+          fill="#241E2F" stroke="#653C87" stroke-width="6" stroke-linejoin="round" />
+
+    <!-- Top Word: asians (Custom Rounded Heavy Forms) -->
+    <!-- 'a' -->
+    <text x="44" y="54" font-family="'Nunito', 'Arial Rounded MT Bold', sans-serif" font-size="44" font-weight="900" fill="#FFFFFF" letter-spacing="-1">asians</text>
+    
+    <!-- Word 'in' (Tucked in lighter lavender) -->
+    <text x="186" y="54" font-family="'Nunito', 'Arial Rounded MT Bold', sans-serif" font-size="44" font-weight="800" fill="#DDD8D4" letter-spacing="-1">in</text>
+
+    <!-- The Heart Dot over the 'i' in 'in' -->
+    <path d="M 201 19 C 201 14, 194 11, 190 15 C 186 11, 179 14, 179 19 C 179 25, 190 31, 190 31 C 190 31, 201 25, 201 19 Z" 
+          fill="url(#heartGrad)" stroke="#241E2F" stroke-width="2" />
+
+    <!-- Lower Interlocking Swoop: .love -->
+    <g transform="translate(135, 52)">
+      <!-- Connected cursive / fluid LOVE -->
+      <text x="0" y="44" font-family="'Nunito', 'Brush Script MT', cursive, sans-serif" font-style="italic" font-size="52" font-weight="900" fill="url(#loveGrad)" letter-spacing="1">
+        .love
+      </text>
+
+      <!-- Romantic Accent Swash underneath -->
+      <path d="M -5 50 Q 80 62, 170 42 Q 80 54, -5 50 Z" fill="#9A79BA" />
+      
+      <!-- Sparkle Star Accent -->
+      <path d="M 175 32 Q 178 32, 180 28 Q 182 32, 185 32 Q 182 34, 180 37 Q 178 34, 175 32 Z" fill="#F3EBF9" />
+    </g>
+
+  </g>
+</svg>

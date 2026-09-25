@@ -1,254 +1,111 @@
-﻿import Link from 'next/link'
-import { createClient } from '@/utils/supabase/server'
-import { Logo } from '@/components/Logo'
-import { ShieldCheck, Sparkles, ArrowRight, CheckCircle2, Compass, BadgeCheck } from 'lucide-react'
-import { SEA_COUNTRIES } from '@/utils/constants'
-import { UserMenu } from '@/components/UserMenu'
+﻿'use client';
 
-interface ShowcaseProfile {
-  id: string
-  display_name: string
-  city: string | null
-  country: string
-  avatar_url: string
-  gender: string
-  visiting_city: string | null
-  is_verified: boolean | null
-}
+import React from 'react';
+import Link from 'next/link';
 
-export default async function HomePage() {
-  const supabase = await createClient()
-
-  const { data: { user } } = await supabase.auth.getUser()
-
-  let currentProfile = null
-  if (user) {
-    const { data: myProfile } = await supabase
-      .from('profiles')
-      .select('id, display_name, avatar_url')
-      .eq('id', user.id)
-      .maybeSingle()
-    currentProfile = myProfile
-  }
-
-  const { data: profiles } = await supabase
-    .from('profiles')
-    .select('id, display_name, city, country, avatar_url, gender, visiting_city, is_verified')
-    .not('avatar_url', 'is', null)
-    .order('created_at', { ascending: false })
-    .limit(12)
-
-  const showcaseProfiles = (profiles as ShowcaseProfile[] | null) || []
-
+export default function HomePage() {
   return (
-    <div className="min-h-dvh bg-[#fbfbfe] font-sans text-slate-900 selection:bg-[#6d4aff] selection:text-white relative overflow-hidden">
+    <main className="max-w-5xl mx-auto w-full px-4 sm:px-6 py-6 sm:py-10 flex-1 flex flex-col justify-center text-center">
       
-      {/* Soft Lilac Glow */}
-      <div className="pointer-events-none absolute -top-40 left-1/2 -translate-x-1/2 h-[480px] w-[800px] bg-gradient-to-b from-[#6d4aff]/15 via-[#9333ea]/5 to-transparent blur-3xl opacity-70" />
+      {/* Hero Header */}
+      <div className="space-y-3 max-w-3xl mx-auto">
+        <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white tracking-tight leading-tight font-[family-name:var(--font-nunito)]">
+          Genuine Courtship with Sincere Southeast Asian Singles.
+        </h1>
+        <p className="text-xs sm:text-sm md:text-base text-[#DDD8D4] max-w-2xl mx-auto font-normal leading-relaxed">
+          A dignified, safe dating community connecting international men with verified women across Southeast Asia. Every profile verified through dynamic gesture selfies.
+        </p>
+      </div>
 
-      {/* Navigation */}
-      <header className="sticky top-0 z-50 border-b border-slate-200/80 bg-white/80 backdrop-blur-md">
-        <div className="mx-auto flex max-w-6xl items-center justify-between px-4 sm:px-6 py-3.5">
-          <Link href="/" className="hover:opacity-90 transition">
-            <Logo className="h-6 w-6" textSize="text-base sm:text-lg" />
-          </Link>
+      {/* Primary Action Buttons */}
+      <div className="mt-6 flex flex-wrap items-center justify-center gap-3">
+        <Link
+          href="/discover"
+          className="px-6 py-2.5 sm:py-3 rounded-2xl bg-[#653C87] hover:bg-[#7A49A2] text-white font-bold text-xs sm:text-sm md:text-base shadow-lg shadow-[#41384E]/50 transition-all active:scale-[0.98]"
+        >
+          Explore Verified Profiles
+        </Link>
+        <Link
+          href="/standards"
+          className="px-5 py-2.5 sm:py-3 rounded-2xl bg-[#241E2F] hover:bg-[#2E263B] border border-[#725A7A]/35 text-[#DDD8D4] hover:text-white font-bold text-xs sm:text-sm md:text-base transition-colors"
+        >
+          Community Standards
+        </Link>
+      </div>
 
-          <nav className="flex items-center gap-2.5 sm:gap-3">
-            <Link
-              href="/features"
-              className="text-xs font-semibold text-slate-600 hover:text-slate-900 transition hidden sm:inline"
-            >
-              Features
-            </Link>
-            <Link
-              href="/browse"
-              className="text-xs font-semibold text-slate-600 hover:text-slate-900 transition hidden sm:inline"
-            >
-              Browse
-            </Link>
-            {currentProfile ? (
-              <UserMenu
-                userId={currentProfile.id}
-                displayName={currentProfile.display_name}
-                avatarUrl={currentProfile.avatar_url}
-              />
-            ) : (
-              <>
-                <Link
-                  href="/login?mode=signin"
-                  className="rounded-lg border border-slate-300 bg-white px-3.5 py-1.5 text-xs font-semibold text-slate-700 hover:border-slate-400 hover:text-slate-900 transition shadow-xs"
-                >
-                  Sign In
-                </Link>
-                <Link
-                  href="/login?mode=signup"
-                  className="rounded-lg bg-[#6d4aff] px-3.5 py-1.5 text-xs font-bold text-white hover:bg-[#5b3ae6] transition shadow-sm"
-                >
-                  Join Free
-                </Link>
-              </>
-            )}
-          </nav>
-        </div>
-      </header>
-
-      <main className="relative z-10 mx-auto max-w-6xl px-4 sm:px-6 pt-16 sm:pt-20 pb-20">
+      {/* Streamlined, Compact Trust Features (No Emojis, Clean SVGs) */}
+      <div className="mt-8 sm:mt-10 grid grid-cols-1 md:grid-cols-3 gap-3 text-left">
         
-        {/* Hero */}
-        <div className="text-center max-w-2xl mx-auto space-y-4">
-          <div className="inline-flex items-center gap-2 rounded-full border border-purple-200 bg-purple-50 px-3.5 py-1 text-xs font-semibold text-[#6d4aff]">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-            </span>
-            <span>Southeast Asian Dating</span>
+        {/* Card 1: Verification */}
+        <div className="p-4 rounded-xl bg-[#241E2F]/80 border border-[#725A7A]/30 hover:border-[#978FA8]/50 transition-all space-y-1.5">
+          <div className="flex items-center gap-2 text-[#E6D7FA]">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-4 h-4 text-[#978FA8]"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+              <path d="m9 12 2 2 4-4" />
+            </svg>
+            <h2 className="text-xs sm:text-sm font-bold text-white">Live Gesture Verification</h2>
           </div>
-
-          <h1 className="text-3xl sm:text-5xl font-black text-slate-900 tracking-tight leading-[1.15]">
-            Meaningful Romance Across <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#6d4aff] via-[#7c3aed] to-[#a855f7]">
-              Southeast Asia
-            </span>
-          </h1>
-
-          <p className="text-xs sm:text-sm text-slate-600 max-w-md mx-auto leading-relaxed">
-            A verified community built for serious, lasting relationships. Always 100% free for locals.
+          <p className="text-[11px] sm:text-xs text-[#DDD8D4] leading-relaxed">
+            Every member is cross-referenced with randomized selfie poses to prevent fakes and catfishing.
           </p>
-
-          {/* Action Buttons */}
-          <div className="pt-2 flex flex-col sm:flex-row items-center justify-center gap-2.5">
-            <Link
-              href="/login?mode=signup"
-              className="w-full sm:w-auto rounded-xl bg-[#6d4aff] px-6 py-2.5 text-xs font-bold text-white hover:bg-[#5b3ae6] transition shadow-md flex items-center justify-center gap-2 group"
-            >
-              <span>Create Free Account</span>
-              <ArrowRight className="h-3.5 w-3.5 group-hover:translate-x-0.5 transition" />
-            </Link>
-            <Link
-              href="/browse"
-              className="w-full sm:w-auto rounded-xl border border-slate-300 bg-white px-6 py-2.5 text-xs font-semibold text-slate-700 hover:border-slate-400 hover:text-slate-900 transition flex items-center justify-center gap-2 shadow-xs"
-            >
-              <Compass className="h-3.5 w-3.5 text-slate-500" />
-              <span>Explore Members</span>
-            </Link>
-          </div>
-
-          {/* Value Micro-Pills */}
-          <div className="pt-2 flex flex-wrap items-center justify-center gap-4 text-xs text-slate-600">
-            <div className="flex items-center gap-1.5">
-              <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
-              <span>Free for Locals</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <ShieldCheck className="h-3.5 w-3.5 text-emerald-600" />
-              <span>Anti-Scam Protection</span>
-            </div>
-            <div className="flex items-center gap-1.5">
-              <Sparkles className="h-3.5 w-3.5 text-[#6d4aff]" />
-              <span>Pose-Verified Profiles</span>
-            </div>
-          </div>
         </div>
 
-        {/* Member Directory Preview */}
-        <section className="mt-14">
-          <div className="flex items-center justify-between mb-3 px-0.5">
-            <h2 className="text-xs sm:text-sm font-semibold uppercase tracking-wider text-slate-500 flex items-center gap-2">
-              <span className="h-1.5 w-1.5 rounded-full bg-emerald-500" />
-              <span>Active Members</span>
-            </h2>
-            <Link
-              href="/browse"
-              className="text-xs font-semibold text-[#6d4aff] hover:text-[#5b3ae6] transition flex items-center gap-1"
+        {/* Card 2: Safe Environment */}
+        <div className="p-4 rounded-xl bg-[#241E2F]/80 border border-[#725A7A]/30 hover:border-[#978FA8]/50 transition-all space-y-1.5">
+          <div className="flex items-center gap-2 text-[#E6D7FA]">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-4 h-4 text-[#978FA8]"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
             >
-              <span>View Directory</span>
-              <ArrowRight className="h-3 w-3" />
-            </Link>
+              <rect width="18" height="11" x="3" y="11" rx="2" ry="2" />
+              <path d="M7 11V7a5 5 0 0 1 10 0v4" />
+            </svg>
+            <h2 className="text-xs sm:text-sm font-bold text-white">Zero Solicitation Safeguards</h2>
           </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
-            {showcaseProfiles.length > 0 ? (
-              showcaseProfiles.map((p: ShowcaseProfile) => {
-                const isForeignVisitor = Boolean(p.visiting_city?.trim()) && !SEA_COUNTRIES.includes(p.country as any)
-                return (
-                  <Link
-                    key={p.id}
-                    href={`/profile/${p.id}`}
-                    className="group relative flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white transition hover:border-[#6d4aff]/60 hover:shadow-md hover:-translate-y-0.5"
-                  >
-                    <div className="relative aspect-[3/4] w-full bg-slate-100 overflow-hidden">
-                      <img
-                        src={p.avatar_url}
-                        alt={p.display_name}
-                        className="h-full w-full object-cover transition duration-300 group-hover:scale-105"
-                      />
-                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/10 to-transparent pointer-events-none" />
-                      
-                      {isForeignVisitor && (
-                        <div className="absolute top-2 left-2 rounded border border-amber-500/30 bg-black/60 px-1.5 py-0.5 text-[9px] font-semibold text-amber-300 backdrop-blur-sm">
-                          ✈️ Visiting
-                        </div>
-                      )}
-
-                      <div className="absolute bottom-2 left-2 right-2 text-white">
-                        <div className="flex items-center gap-1">
-                          <p className="text-xs font-semibold truncate group-hover:text-purple-300 transition">
-                            {p.display_name}
-                          </p>
-                          {p.is_verified && (
-                            <BadgeCheck className="h-3 w-3 text-sky-400 fill-sky-400/20 shrink-0" />
-                          )}
-                        </div>
-                        <p className="text-[10px] text-slate-300 truncate">
-                          {p.city ? `${p.city}, ` : ''}{p.country}
-                        </p>
-                      </div>
-                    </div>
-                  </Link>
-                )
-              })
-            ) : (
-              <div className="col-span-full py-8 text-center text-xs text-slate-400">
-                Active member directory loading...
-              </div>
-            )}
-          </div>
-        </section>
-
-        {/* Editorial Section */}
-        <section className="mt-16 rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 shadow-xs">
-          <div className="max-w-2xl space-y-3">
-            <h2 className="text-lg sm:text-xl font-bold text-slate-900 tracking-tight">
-              A Direct, Honest Way to Meet in Southeast Asia
-            </h2>
-            <p className="text-xs sm:text-sm text-slate-700 leading-relaxed">
-              <strong className="text-slate-900">asiansin.love</strong> connects foreign men with verified singles across Southeast Asia who are looking for genuine, lasting romance. No agencies, no paid chat operators, and no pay-per-letter tricks.
-            </p>
-            <p className="text-xs sm:text-sm text-slate-500 leading-relaxed">
-              If you live in Southeast Asia, the platform is <strong className="text-slate-800">100% free</strong>—always. If you are traveling or looking from abroad, you get real verified profiles and tools like <strong className="text-slate-800">Travel Radar</strong> to coordinate trips in advance.
-            </p>
-          </div>
-        </section>
-
-      </main>
-
-      {/* Footer */}
-      <footer className="border-t border-slate-200 bg-white py-6 px-4 sm:px-6 text-xs text-slate-500">
-        <div className="mx-auto max-w-6xl flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <Logo className="h-5 w-5" textSize="text-xs" />
-            <span className="text-slate-500">&copy; 2026 asiansin.love &bull; Southeast Asian Dating</span>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-4 text-xs">
-            <Link href="/browse" className="hover:text-slate-900 transition">Browse</Link>
-            <Link href="/features" className="hover:text-slate-900 transition">Features</Link>
-            <Link href="/terms" className="hover:text-slate-900 transition">Terms</Link>
-            <Link href="/privacy" className="hover:text-slate-900 transition">Privacy</Link>
-          </div>
+          <p className="text-[11px] sm:text-xs text-[#DDD8D4] leading-relaxed">
+            Automated detection intercepts financial or remittance requests to keep conversations authentic.
+          </p>
         </div>
-      </footer>
 
-    </div>
-  )
+        {/* Card 3: Dignified Connections */}
+        <div className="p-4 rounded-xl bg-[#241E2F]/80 border border-[#725A7A]/30 hover:border-[#978FA8]/50 transition-all space-y-1.5">
+          <div className="flex items-center gap-2 text-[#E6D7FA]">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="w-4 h-4 text-[#978FA8]"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+            >
+              <path d="M19 14c1.49-1.46 3-3.21 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.76 0-3 .5-4.5 2-1.5-1.5-2.74-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4.05 3 5.5l7 7Z" />
+            </svg>
+            <h2 className="text-xs sm:text-sm font-bold text-white">Sincere Courtship Only</h2>
+          </div>
+          <p className="text-[11px] sm:text-xs text-[#DDD8D4] leading-relaxed">
+            Designed exclusively for respectful individuals seeking genuine companionship and lasting partnership.
+          </p>
+        </div>
+
+      </div>
+
+    </main>
+  );
 }

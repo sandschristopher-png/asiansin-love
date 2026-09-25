@@ -1,53 +1,44 @@
-﻿import Link from 'next/link'
-import { Logo } from '@/components/Logo'
-import { ArrowLeft } from 'lucide-react'
+﻿'use client';
 
-export const metadata = {
-  title: "Privacy Policy | asiansin.love",
-  description: "Privacy practices and data handling policies for asiansin.love.",
-}
+import React from 'react';
+import Link from 'next/link';
 
 export default function PrivacyPage() {
   return (
-    <div className="min-h-dvh bg-[#fbfbfe] font-sans text-slate-900 pb-20 selection:bg-[#6d4aff] selection:text-white">
-      <header className="sticky top-0 z-40 border-b border-slate-200/80 bg-white/80 px-4 sm:px-6 py-3.5 backdrop-blur-md flex items-center justify-between">
-        <Link href="/" className="hover:opacity-90 transition">
-          <Logo className="h-6 w-6" textSize="text-base sm:text-lg" />
-        </Link>
-        <Link href="/browse" className="flex items-center gap-1 text-xs font-semibold text-slate-600 hover:text-slate-900 transition">
-          <ArrowLeft className="h-3.5 w-3.5" />
-          <span>Browse</span>
-        </Link>
-      </header>
+    <main className="max-w-4xl mx-auto w-full px-4 py-8 flex-1">
+      <div className="border-b border-[#725A7A]/25 pb-4 mb-6">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Privacy Policy</h1>
+        <p className="text-xs sm:text-sm text-[#DDD8D4] mt-1">Last updated: September 2026</p>
+      </div>
 
-      <main className="mx-auto max-w-3xl px-4 sm:px-6 pt-12 space-y-8">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight">Privacy Policy</h1>
-          <p className="text-xs text-slate-500 mt-1">Effective Date: 2026 &bull; asiansin.love</p>
+      <div className="p-6 sm:p-8 rounded-3xl bg-[#241E2F] border border-[#725A7A]/35 shadow-xl space-y-5 text-xs sm:text-sm text-[#DDD8D4] leading-relaxed">
+        <section className="space-y-1.5">
+          <h2 className="text-base font-bold text-white">1. Information We Collect</h2>
+          <p>
+            asiansin.love collects information you provide directly during account registration, profile setup, and gesture identity verification. This includes email addresses, display names, age, location, and photos submitted for human review.
+          </p>
+        </section>
+
+        <section className="space-y-1.5">
+          <h2 className="text-base font-bold text-white">2. Verification Selfies</h2>
+          <p>
+            Selfies taken with requested gesture poses are used strictly by our moderation team to confirm identity and prevent catfishing. Verification selfies are never sold, rented, or made public on your profile.
+          </p>
+        </section>
+
+        <section className="space-y-1.5">
+          <h2 className="text-base font-bold text-white">3. Data Protection</h2>
+          <p>
+            We implement Row Level Security (RLS) and encrypted database connections to ensure your private chat messages and personal details remain confidential between you and your conversational partner.
+          </p>
+        </section>
+
+        <div className="pt-4 border-t border-[#725A7A]/25">
+          <Link href="/" className="text-xs font-bold text-[#E6D7FA] hover:underline">
+            ← Back to Home
+          </Link>
         </div>
-
-        <div className="space-y-6 text-xs sm:text-sm text-slate-700 leading-relaxed rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 shadow-xs">
-          <section className="space-y-2">
-            <h2 className="text-base font-bold text-slate-900">1. Information We Collect</h2>
-            <p>We collect information provided directly by you during signup, including email address, display name, age/birthdate, location, and photos you choose to upload.</p>
-          </section>
-
-          <section className="space-y-2">
-            <h2 className="text-base font-bold text-slate-900">2. Photo Protection & Public Masking</h2>
-            <p>Your secondary photo albums are masked from anonymous public web visitors and web scrapers. Only authenticated, logged-in members can see full photo galleries.</p>
-          </section>
-
-          <section className="space-y-2">
-            <h2 className="text-base font-bold text-slate-900">3. Right to Erasure (Self-Serve Deletion)</h2>
-            <p>Every member has the permanent right to wipe their profile data. Our Settings page provides a direct, immediate deletion endpoint that permanently purges your account from all database records.</p>
-          </section>
-
-          <section className="space-y-2">
-            <h2 className="text-base font-bold text-slate-900">4. No Data Brokering</h2>
-            <p>We do not sell, rent, or trade your personal profile data or messages to third-party advertisers or data brokers.</p>
-          </section>
-        </div>
-      </main>
-    </div>
-  )
+      </div>
+    </main>
+  );
 }
