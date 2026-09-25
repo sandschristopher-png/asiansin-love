@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -21,7 +21,7 @@ export default function EditProfilePage() {
     city: '',
     country: '',
     profession: '',
-    relationship_goal: 'Meaningful Connection',
+    relationship_goal: 'Marriage',
     bio: '',
   });
 
@@ -40,23 +40,23 @@ export default function EditProfilePage() {
         .single();
 
       if (data) {
-        if (data.username) {
-          setInitialHasUsername(true);
-          setUsername(data.username);
-        }
         setFormData({
           full_name: data.full_name || '',
           age: data.age ? String(data.age) : '',
           city: data.city || '',
           country: data.country || '',
           profession: data.profession || '',
-          relationship_goal: data.relationship_goal || 'Meaningful Connection',
+          relationship_goal: data.relationship_goal || 'Marriage',
           bio: data.bio || '',
         });
+
+        if (data.username) {
+          setUsername(data.username);
+          setInitialHasUsername(true);
+        }
       }
       setLoading(false);
     }
-
     loadProfile();
   }, [router]);
 
@@ -71,7 +71,7 @@ export default function EditProfilePage() {
 
     setUsernameStatus('checking');
     try {
-      const res = await fetch(`/api/users/check-username?username=${encodeURIComponent(clean)}`);
+      const res = await fetch(`/api/users/check-username?username=${clean}`);
       const data = await res.json();
       setUsernameStatus(data.available ? 'available' : 'taken');
     } catch {
@@ -84,65 +84,61 @@ export default function EditProfilePage() {
     setSaving(true);
     setStatusMsg(null);
 
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) return;
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
 
-    if (!initialHasUsername && username.trim().length >= 3 && usernameStatus === 'taken') {
-      setStatusMsg({ type: 'error', text: 'Please choose an available username before saving.' });
-      setSaving(false);
-      return;
-    }
+      const updates: Record<string, any> = {
+        id: user.id,
+        full_name: formData.full_name.trim(),
+        age: formData.age ? parseInt(formData.age, 10) : null,
+        city: formData.city.trim(),
+        country: formData.country.trim(),
+        profession: formData.profession.trim(),
+        relationship_goal: formData.relationship_goal,
+        bio: formData.bio.trim(),
+        updated_at: new Date().toISOString(),
+      };
 
-    const payload: Record<string, any> = {
-      full_name: formData.full_name.trim(),
-      age: formData.age ? parseInt(formData.age, 10) : null,
-      city: formData.city.trim(),
-      country: formData.country.trim(),
-      profession: formData.profession.trim(),
-      relationship_goal: formData.relationship_goal,
-      bio: formData.bio.trim(),
-      updated_at: new Date().toISOString(),
-    };
-
-    if (!initialHasUsername && username.trim().length >= 3) {
-      payload.username = username.trim();
-      payload.username_changed_at = new Date().toISOString();
-    }
-
-    const { error } = await supabase
-      .from('profiles')
-      .update(payload)
-      .eq('id', user.id);
-
-    if (error) {
-      setStatusMsg({ type: 'error', text: error.message });
-    } else {
-      setStatusMsg({ type: 'success', text: 'Profile updated successfully.' });
-      if (!initialHasUsername && payload.username) {
-        setInitialHasUsername(true);
+      if (!initialHasUsername && username.trim().length >= 3 && usernameStatus === 'available') {
+        updates.username = username.trim();
       }
+
+      const { error } = await supabase
+        .from('profiles')
+        .upsert(updates);
+
+      if (error) throw error;
+
+      setStatusMsg({ type: 'success', text: 'Profile updated successfully!' });
+      setTimeout(() => {
+        router.push('/profile');
+      }, 1000);
+    } catch (err: any) {
+      setStatusMsg({ type: 'error', text: err.message || 'Failed to update profile.' });
+    } finally {
+      setSaving(false);
     }
-    setSaving(false);
   };
 
   if (loading) {
     return (
-      <div className="min-h-[70vh] flex items-center justify-center">
-        <div className="h-8 w-8 rounded-full border-2 border-[#9A79BA] border-t-transparent animate-spin" />
+      <div className="min-h-[70vh] flex items-center justify-center text-sm font-semibold text-[#B6AEC7]">
+        Loading profile settings...
       </div>
     );
   }
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-8">
+    <div className="max-w-xl mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white">Edit Profile</h1>
-          <p className="text-sm text-[#B6AEC7] mt-1">Manage your public information and verification status</p>
+          <h1 className="text-2xl font-black text-white tracking-tight">Edit Profile</h1>
+          <p className="text-xs text-[#B6AEC7] mt-0.5">Manage your public information and identity handle</p>
         </div>
         <Link
           href="/profile"
-          className="text-xs font-semibold px-3 py-1.5 rounded-xl bg-[#241E2F] border border-[#7D7E92]/30 text-[#ECE8F4] hover:text-white"
+          className="text-xs font-bold text-[#E6D7FA] hover:text-white px-3 py-1.5 rounded-xl bg-[#241E2F] border border-[#7D7E92]/30 transition-colors"
         >
           View Profile
         </Link>
@@ -150,27 +146,27 @@ export default function EditProfilePage() {
 
       {statusMsg && (
         <div
-          className={`p-3.5 rounded-xl mb-6 text-sm border font-medium ${
+          className={`p-3.5 rounded-2xl text-xs font-semibold mb-6 border ${
             statusMsg.type === 'success'
-              ? 'bg-emerald-950/60 border-emerald-500/50 text-emerald-200'
-              : 'bg-rose-950/60 border-rose-500/50 text-rose-200'
+              ? 'bg-emerald-950/40 border-emerald-500/40 text-emerald-200'
+              : 'bg-rose-950/40 border-rose-500/40 text-rose-200'
           }`}
         >
           {statusMsg.text}
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="space-y-5">
-        {/* Username Section */}
-        <div className="p-4 rounded-2xl bg-[#241E2F]/60 border border-[#7D7E92]/25 space-y-2">
+      <form onSubmit={handleSubmit} className="space-y-4">
+        {/* Handle Claim */}
+        <div className="p-4 rounded-2xl bg-[#241E2F] border border-[#7D7E92]/25 space-y-1.5">
           <label className="block text-xs font-bold uppercase tracking-wider text-[#B6AEC7]">
-            Username
+            Member Handle
           </label>
           {initialHasUsername ? (
             <div className="flex items-center justify-between">
-              <span className="font-mono text-white text-base">@{username}</span>
+              <span className="font-mono text-sm text-white font-bold">@{username}</span>
               <span className="text-xs px-2.5 py-1 rounded-lg bg-[#17131F] border border-[#7D7E92]/30 text-[#B6AEC7]">
-                Handle Locked (Anti-Scam Protection)
+                Handle Locked
               </span>
             </div>
           ) : (
@@ -187,9 +183,9 @@ export default function EditProfilePage() {
               </div>
               <p className="text-[11px] text-[#7D7E92] mt-1.5">
                 {usernameStatus === 'checking' && 'Checking availability...'}
-                {usernameStatus === 'available' && <span className="text-emerald-400">Username is available. Once set, changes require cooldown/verification.</span>}
-                {usernameStatus === 'taken' && <span className="text-rose-400">Username is taken.</span>}
-                {usernameStatus === 'idle' && 'Claim your unique handle. Once claimed, frequent handle changes are restricted.'}
+                {usernameStatus === 'available' && <span className="text-emerald-400">Handle is available.</span>}
+                {usernameStatus === 'taken' && <span className="text-rose-400">Handle is already taken.</span>}
+                {usernameStatus === 'idle' && 'Claim your unique handle.'}
               </p>
             </div>
           )}
@@ -226,7 +222,7 @@ export default function EditProfilePage() {
           </div>
           <div>
             <label className="block text-xs font-bold uppercase tracking-wider text-[#B6AEC7] mb-1.5">
-              City / Region
+              City
             </label>
             <input
               type="text"
@@ -248,7 +244,7 @@ export default function EditProfilePage() {
           </div>
         </div>
 
-        {/* Profession & Relationship Goal */}
+        {/* Profession & Relationship Intent */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
             <label className="block text-xs font-bold uppercase tracking-wider text-[#B6AEC7] mb-1.5">
@@ -270,9 +266,10 @@ export default function EditProfilePage() {
               onChange={(e) => setFormData({ ...formData, relationship_goal: e.target.value })}
               className="w-full px-4 py-2.5 rounded-xl bg-[#241E2F] border border-[#7D7E92]/30 text-white text-sm focus:outline-none focus:border-[#9A79BA]"
             >
-              <option value="Meaningful Connection">Meaningful Connection</option>
-              <option value="Marriage & Long-Term Partner">Marriage & Long-Term Partner</option>
-              <option value="Committed Courtship">Committed Courtship</option>
+              <option value="Marriage">Marriage</option>
+              <option value="Serious Relationship">Serious Relationship</option>
+              <option value="Long-Term Dating">Long-Term Dating</option>
+              <option value="Casual Dating">Casual Dating</option>
             </select>
           </div>
         </div>
@@ -286,7 +283,7 @@ export default function EditProfilePage() {
             rows={4}
             value={formData.bio}
             onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-            placeholder="Tell sincere community members about your lifestyle and relationship goals..."
+            placeholder="Tell sincere community members about your values and relationship goals..."
             className="w-full px-4 py-2.5 rounded-xl bg-[#241E2F] border border-[#7D7E92]/30 text-white text-sm focus:outline-none focus:border-[#9A79BA]"
           />
         </div>
@@ -294,7 +291,7 @@ export default function EditProfilePage() {
         <button
           type="submit"
           disabled={saving}
-          className="w-full py-3 rounded-xl bg-[#653C87] hover:bg-[#9A79BA] text-white font-bold text-sm shadow-md transition-all disabled:opacity-50"
+          className="w-full py-3 rounded-xl bg-[#653C87] hover:bg-[#7D48A5] text-white font-bold text-sm shadow-md transition-all disabled:opacity-50 active:scale-[0.99]"
         >
           {saving ? 'Saving Changes...' : 'Save Profile'}
         </button>
