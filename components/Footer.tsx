@@ -1,30 +1,44 @@
-﻿'use client';
+'use client';
 
 import React from 'react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 export function Footer() {
-  const currentYear = new Date().getFullYear();
+  const pathname = usePathname();
+
+  // Hide footer completely inside active chat conversation
+  if (pathname.startsWith('/chat/')) return null;
 
   return (
-    <footer className="w-full border-t border-[#725A7A]/25 bg-[#17131F]/90 py-5 mt-auto">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-10 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-[#B8AAC3]">
-        <div className="flex items-center gap-2">
-          <span className="font-bold text-white">asiansin.love</span>
-          <span>© {currentYear} All rights reserved.</span>
-        </div>
+    <footer className="border-t border-[#725A7A]/25 bg-[#17131F] py-8 pb-28 md:pb-10 px-4 text-center">
+      <div className="max-w-4xl mx-auto space-y-4">
+        
+        {/* Subtle Brand & Mission Tag */}
+        <p className="text-xs text-[#DDD8D4]/80 font-medium max-w-md mx-auto leading-relaxed">
+          <strong className="text-white font-extrabold">asiansin.love</strong> — A sincere, verified courtship community connecting intentional international men with Southeast Asian women.
+        </p>
 
-        <nav className="flex items-center gap-5 sm:gap-7 font-semibold">
-          <Link href="/standards" className="hover:text-white transition-colors focus:outline-none">
+        {/* Legal & Standards Links */}
+        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs font-bold text-[#B8AAC3]">
+          <Link href="/standards" className="hover:text-white transition-colors">
             Community Standards
           </Link>
-          <Link href="/privacy" className="hover:text-white transition-colors focus:outline-none">
+          <span className="text-[#725A7A]">•</span>
+          <Link href="/privacy" className="hover:text-white transition-colors">
             Privacy Policy
           </Link>
-          <Link href="/terms" className="hover:text-white transition-colors focus:outline-none">
+          <span className="text-[#725A7A]">•</span>
+          <Link href="/terms" className="hover:text-white transition-colors">
             Terms of Use
           </Link>
-        </nav>
+        </div>
+
+        {/* Copyright */}
+        <p className="text-[11px] text-[#725A7A] font-semibold">
+          © 2026 asiansin.love. All rights reserved. Financial solicitations strictly prohibited.
+        </p>
+
       </div>
     </footer>
   );

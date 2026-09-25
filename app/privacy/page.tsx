@@ -1,44 +1,40 @@
-﻿'use client';
+'use client';
 
 import React from 'react';
-import Link from 'next/link';
 
-export default function PrivacyPage() {
+export default function PrivacyPolicyPage() {
   return (
-    <main className="max-w-4xl mx-auto w-full px-4 py-8 flex-1">
-      <div className="border-b border-[#725A7A]/25 pb-4 mb-6">
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Privacy Policy</h1>
-        <p className="text-xs sm:text-sm text-[#DDD8D4] mt-1">Last updated: September 2026</p>
+    <main className="max-w-3xl mx-auto px-4 sm:px-6 py-8 pb-28 space-y-6">
+      
+      <div className="space-y-1">
+        <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
+          Privacy Policy
+        </h1>
+        <p className="text-xs sm:text-sm text-[#DDD8D4]">
+          How we protect your personal information, photos, and messages.
+        </p>
       </div>
 
-      <div className="p-6 sm:p-8 rounded-3xl bg-[#241E2F] border border-[#725A7A]/35 shadow-xl space-y-5 text-xs sm:text-sm text-[#DDD8D4] leading-relaxed">
-        <section className="space-y-1.5">
-          <h2 className="text-base font-bold text-white">1. Information We Collect</h2>
-          <p>
-            asiansin.love collects information you provide directly during account registration, profile setup, and gesture identity verification. This includes email addresses, display names, age, location, and photos submitted for human review.
-          </p>
-        </section>
+      <div className="rounded-3xl bg-[#241E2F] border border-[#725A7A]/35 p-6 sm:p-8 space-y-5 shadow-xl text-sm leading-relaxed text-[#DDD8D4]">
+        <p>
+          Your privacy and safety are paramount. We never sell your personal data, chat history, or verification photos to advertising brokers or external marketing companies.
+        </p>
+        
+        <h3 className="text-sm font-extrabold text-white uppercase tracking-wider pt-2">
+          Verification Selfie Security
+        </h3>
+        <p>
+          Photos uploaded solely for gesture identity verification are stored in encrypted, non-public storage containers. They are reviewed strictly by our safety audit team and are never published to your public bio or shared with other members.
+        </p>
 
-        <section className="space-y-1.5">
-          <h2 className="text-base font-bold text-white">2. Verification Selfies</h2>
-          <p>
-            Selfies taken with requested gesture poses are used strictly by our moderation team to confirm identity and prevent catfishing. Verification selfies are never sold, rented, or made public on your profile.
-          </p>
-        </section>
-
-        <section className="space-y-1.5">
-          <h2 className="text-base font-bold text-white">3. Data Protection</h2>
-          <p>
-            We implement Row Level Security (RLS) and encrypted database connections to ensure your private chat messages and personal details remain confidential between you and your conversational partner.
-          </p>
-        </section>
-
-        <div className="pt-4 border-t border-[#725A7A]/25">
-          <Link href="/" className="text-xs font-bold text-[#E6D7FA] hover:underline">
-            ← Back to Home
-          </Link>
-        </div>
+        <h3 className="text-sm font-extrabold text-white uppercase tracking-wider pt-2">
+          Account Deletion & Data Erasure
+        </h3>
+        <p>
+          You retain full ownership of your data. You may update your profile or delete your account at any time from your settings screen, which purges your active profile and messages from our live directory.
+        </p>
       </div>
+
     </main>
   );
 }
