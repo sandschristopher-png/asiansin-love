@@ -1,128 +1,132 @@
-﻿'use client';
+'use client';
 
-import React, { useState, useRef } from 'react';
-import Link from 'next/link';
+import React, { useRef, useState } from 'react';
+import Image from 'next/image';
 
-export default function GestureVerificationPage() {
-  const [photoSelected, setPhotoSelected] = useState<string | null>(null);
-  const [submitted, setSubmitted] = useState(false);
+export default function GestureVerifyPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleCaptureClick = () => {
+    fileInputRef.current?.click();
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
-      const previewUrl = URL.createObjectURL(file);
-      setPhotoSelected(previewUrl);
+    const file = e.target.files?.[0];
+    if (file) {
+      const url = URL.createObjectURL(file);
+      setPreviewUrl(url);
     }
   };
 
-  const handleConfirmSubmit = () => {
-    setSubmitted(true);
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setSubmitting(true);
+    setTimeout(() => {
+      setSubmitting(false);
+      setSubmitted(true);
+    }, 1200);
   };
 
   return (
-    <main className="max-w-xl mx-auto w-full px-4 py-8 sm:py-12 flex-1 flex flex-col justify-center text-center">
+    <main className="max-w-lg mx-auto w-full px-4 py-8 pb-20">
       
-      {/* Hidden Mobile Native Camera Input */}
-      <input
-        type="file"
-        ref={fileInputRef}
-        accept="image/*"
-        capture="user"
-        onChange={handleFileChange}
-        className="hidden"
-      />
-
-      <div className="mb-6">
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight font-[family-name:var(--font-nunito)]">
+      <div className="text-center mb-6 space-y-1.5">
+        <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
           Identity Pose Verification
         </h1>
-        <p className="text-xs sm:text-sm text-[#DDD8D4] mt-1 max-w-sm mx-auto">
+        <p className="text-xs sm:text-sm text-[#DDD8D4]">
           Earn your verified profile badge to establish genuine trust with sincere members.
         </p>
       </div>
 
-      <div className="p-6 sm:p-8 rounded-3xl bg-[#241E2F] border border-[#725A7A]/35 shadow-2xl space-y-5">
+      <div className="rounded-3xl bg-[#241E2F] border border-[#725A7A]/35 p-6 shadow-2xl space-y-6">
         
-        {submitted ? (
-          <div className="space-y-4 py-6 animate-in fade-in zoom-in-95 duration-300">
-            <div className="h-16 w-16 mx-auto rounded-full bg-emerald-950/80 border border-emerald-500/50 flex items-center justify-center text-2xl text-emerald-300">
-              ✓
-            </div>
-            <h2 className="text-lg font-bold text-white">Pose Submitted for Review</h2>
-            <p className="text-xs sm:text-sm text-[#DDD8D4] max-w-xs mx-auto">
-              Our moderation team is reviewing your selfie. Your profile check will activate shortly.
+        {/* Pose Prompt Box */}
+        <div className="text-center space-y-3">
+          <div className="h-16 w-16 mx-auto rounded-2xl bg-[#17131F] border border-[#725A7A]/40 flex items-center justify-center text-3xl shadow-inner">
+            ✌️
+          </div>
+          <div>
+            <span className="text-[11px] font-black uppercase tracking-wider text-[#B8AAC3] block">
+              Your Verification Pose
+            </span>
+            <h2 className="text-lg font-black text-white">
+              Peace Sign Beside Cheek
+            </h2>
+            <p className="text-xs text-[#DDD8D4] mt-1 leading-relaxed">
+              Hold up a clear two-finger peace sign touching your cheek while looking directly at the camera.
             </p>
-            <Link
-              href="/discover"
-              className="inline-block mt-2 px-6 py-2.5 rounded-xl bg-[#653C87] hover:bg-[#7A49A2] text-white text-xs sm:text-sm font-bold shadow-md transition-all active:scale-95"
-            >
-              Return to Discovery
-            </Link>
+          </div>
+        </div>
+
+        {/* Photo Upload / Camera Preview Frame */}
+        <div className="relative aspect-[4/5] w-full rounded-2xl bg-[#17131F] border-2 border-dashed border-[#725A7A]/50 overflow-hidden flex flex-col items-center justify-center p-4">
+          {previewUrl ? (
+            <Image
+              src={previewUrl}
+              alt="Verification Preview"
+              fill
+              className="object-cover"
+              unoptimized
+            />
+          ) : (
+            <div className="text-center space-y-2 text-[#DDD8D4]">
+              <div className="text-4xl text-[#725A7A]">📷</div>
+              <p className="text-xs font-semibold">No photo captured yet</p>
+            </div>
+          )}
+        </div>
+
+        {/* Hidden Camera Input for iOS & Android */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          capture="user"
+          onChange={handleFileChange}
+          className="hidden"
+        />
+
+        {/* Requirements Box */}
+        <div className="rounded-xl bg-[#17131F] border border-[#725A7A]/25 p-3.5 text-xs text-[#DDD8D4] space-y-1">
+          <span className="font-bold text-white block">Photo Requirements:</span>
+          <p>• Face and hand must be clearly visible and well-lit.</p>
+          <p>• No hats, heavy sunglasses, or face-altering filters.</p>
+          <p>• Used strictly for verification; never posted publicly.</p>
+        </div>
+
+        {submitted ? (
+          <div className="rounded-2xl bg-emerald-950/80 border border-emerald-500/50 p-4 text-center space-y-1">
+            <span className="text-lg">✓</span>
+            <h3 className="text-sm font-extrabold text-white">Verification Submitted</h3>
+            <p className="text-xs text-emerald-200">
+              Our safety team reviews submissions within 24 hours. Your badge will appear automatically upon approval.
+            </p>
           </div>
         ) : (
-          <>
-            {photoSelected ? (
-              <div className="space-y-4 animate-in fade-in duration-200">
-                <div className="relative aspect-square w-48 mx-auto rounded-2xl overflow-hidden border-2 border-[#653C87] shadow-xl">
-                  <img src={photoSelected} alt="Verification selfie preview" className="w-full h-full object-cover" />
-                </div>
-                <div className="flex justify-center gap-3">
-                  <button
-                    type="button"
-                    onClick={() => fileInputRef.current?.click()}
-                    className="px-4 py-2 rounded-xl bg-[#17131F] border border-[#725A7A]/35 text-xs font-bold text-[#DDD8D4] hover:text-white"
-                  >
-                    Retake
-                  </button>
-                  <button
-                    type="button"
-                    onClick={handleConfirmSubmit}
-                    className="px-5 py-2 rounded-xl bg-[#653C87] hover:bg-[#7A49A2] text-xs font-bold text-white shadow-md active:scale-95 transition-all"
-                  >
-                    Submit Pose
-                  </button>
-                </div>
-              </div>
-            ) : (
-              <>
-                <div className="h-16 w-16 mx-auto rounded-2xl bg-[#17131F] border border-[#725A7A]/35 flex items-center justify-center text-3xl shadow-inner">
-                  ✌️
-                </div>
+          <div className="space-y-2.5">
+            <button
+              type="button"
+              onClick={handleCaptureClick}
+              className="w-full py-3.5 rounded-2xl bg-[#241E2F] border border-[#725A7A]/40 hover:border-[#978FA8] text-white font-extrabold text-sm active:scale-95 transition-all shadow-md"
+            >
+              {previewUrl ? 'Retake Selfie' : 'Take or Upload Selfie'}
+            </button>
 
-                <div className="space-y-1">
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#978FA8]">
-                    Your Verification Pose
-                  </span>
-                  <h2 className="text-base sm:text-lg font-bold text-white">
-                    Peace Sign Beside Cheek
-                  </h2>
-                  <p className="text-xs text-[#DDD8D4] max-w-xs mx-auto leading-relaxed">
-                    Hold up a clear two-finger peace sign touching your cheek while looking directly at the camera.
-                  </p>
-                </div>
-
-                <div className="p-3.5 rounded-xl bg-[#17131F]/70 border border-[#725A7A]/25 text-left text-xs text-[#DDD8D4] space-y-1">
-                  <p className="font-bold text-white flex items-center gap-1.5">
-                    <span>📷</span> Photo Requirements:
-                  </p>
-                  <ul className="list-disc pl-4 space-y-0.5 text-[11px] text-[#B8AAC3]">
-                    <li>Face and hand must be clearly visible and well-lit.</li>
-                    <li>No hats, heavy sunglasses, or face-altering filters.</li>
-                    <li>Used strictly for verification; never posted publicly.</li>
-                  </ul>
-                </div>
-
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  className="w-full py-3.5 rounded-2xl bg-[#653C87] hover:bg-[#7A49A2] text-white font-bold text-sm shadow-lg shadow-[#41384E]/50 transition-all active:scale-[0.98]"
-                >
-                  Take or Upload Selfie
-                </button>
-              </>
+            {previewUrl && (
+              <button
+                type="button"
+                onClick={handleSubmit}
+                disabled={submitting}
+                className="w-full py-3.5 rounded-2xl bg-[#653C87] hover:bg-[#7A49A2] text-white font-extrabold text-sm active:scale-95 transition-all shadow-lg shadow-[#653C87]/40"
+              >
+                {submitting ? 'Submitting...' : 'Submit Verification'}
+              </button>
             )}
-          </>
+          </div>
         )}
 
       </div>

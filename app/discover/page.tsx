@@ -18,10 +18,10 @@ export default function DiscoverPage() {
   });
 
   return (
-    <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-6">
+    <main className="max-w-7xl mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-5">
       
       {/* Header Block */}
-      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
         <div>
           <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
             Explore Singles
@@ -35,7 +35,7 @@ export default function DiscoverPage() {
         <button
           type="button"
           onClick={() => setVerifiedOnly(!verifiedOnly)}
-          className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all border self-start sm:self-auto ${
+          className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold transition-all border self-start sm:self-auto active:scale-95 ${
             verifiedOnly
               ? 'bg-[#653C87] border-[#978FA8] text-white shadow-md'
               : 'bg-[#241E2F] border-[#725A7A]/35 text-[#DDD8D4] hover:text-white'
@@ -46,18 +46,18 @@ export default function DiscoverPage() {
         </button>
       </div>
 
-      {/* Region Filter Pills */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+      {/* Sticky Mobile Region Filter Bar */}
+      <div className="sticky top-16 z-30 bg-[#17131F]/90 backdrop-blur-md py-2.5 -mx-4 px-4 sm:mx-0 sm:px-0 flex items-center gap-2 overflow-x-auto scrollbar-none border-b sm:border-b-0 border-[#725A7A]/20">
         {REGIONS.map((region) => {
           const active = selectedRegion === region;
           return (
             <button
               key={region}
               onClick={() => setSelectedRegion(region)}
-              className={`px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all border ${
+              className={`px-4 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap transition-all border active:scale-95 ${
                 active
                   ? 'bg-[#653C87] border-[#978FA8]/40 text-white shadow-md'
-                  : 'bg-[#241E2F] border-[#725A7A]/30 text-[#DDD8D4] hover:text-white hover:border-[#725A7A]/60'
+                  : 'bg-[#241E2F] border-[#725A7A]/30 text-[#DDD8D4] hover:text-white'
               }`}
             >
               {region}
@@ -67,7 +67,7 @@ export default function DiscoverPage() {
       </div>
 
       {/* Profile Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6 pt-1">
         {filteredProfiles.map((profile) => (
           <ProfileCard
             key={profile.id}
@@ -86,13 +86,6 @@ export default function DiscoverPage() {
           />
         ))}
       </div>
-
-      {filteredProfiles.length === 0 && (
-        <div className="text-center py-16 text-[#B8AAC3] space-y-2">
-          <p className="text-base font-bold text-white">No profiles match your criteria.</p>
-          <p className="text-xs">Try switching regions or turning off the verified filter.</p>
-        </div>
-      )}
 
     </main>
   );
