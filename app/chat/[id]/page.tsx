@@ -1,4 +1,5 @@
-﻿'use client';
+﻿import UpgradeModal from '@/components/UpgradeModal';
+'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
@@ -48,6 +49,7 @@ export default function ChatConversationPage({ params }: { params: { id: string 
   const [sentCount, setSentCount] = useState(0);
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
   const [showSafetyNotice, setShowSafetyNotice] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -159,7 +161,7 @@ export default function ChatConversationPage({ params }: { params: { id: string 
               {formatTimer(cooldownSeconds)}
             </span>
             <button
-              onClick={() => alert('Opens AIL Club Membership Upgrade Modal')}
+              onClick={() => setShowUpgradeModal(true)}
               className="w-full flex items-center justify-center gap-2 py-2.5 rounded-full bg-gradient-to-r from-[#653C87] to-[#9A79BA] text-[#15101C] font-bold text-xs shadow-lg hover:opacity-95 transition"
             >
               <Zap className="w-4 h-4 fill-current" />
@@ -185,6 +187,7 @@ export default function ChatConversationPage({ params }: { params: { id: string 
           </form>
         )}
       </div>
+      <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} onSelectPlan={(p) => alert('Redirecting to checkout for ' + p)} />
     </main>
   );
 }

@@ -1,98 +1,113 @@
 ﻿'use client';
 
-import React, { useState } from 'react';
-import { ProfileCard } from '@/components/ProfileCard';
-import { DUMMY_PROFILES } from '@/lib/dummyProfiles';
+import React, { useState, useEffect } from 'react';
+import ProfileCard from '@/components/ProfileCard';
+import { getLocalInteractions, toggleInteraction, undoPass } from '@/lib/interactions';
 
-// Ordered by online dating activity & adoption priority
-const REGIONS = ['All', 'Philippines', 'Thailand', 'Vietnam', 'Cambodia', 'Laos'];
+const DEMO_PROFILES = [
+  {
+    id: 'camille-1',
+    name: 'Camille',
+    age: 28,
+    city: 'Makati',
+    country: 'Philippines',
+    avatarUrl: '/dummy-1.jpg',
+    repScore: 98,
+    headline: 'Kind-hearted creative exploring the world, passionate about family.',
+    isVerified: true,
+    isOnline: true,
+  },
+  {
+    id: 'sothea-2',
+    name: 'Sothea',
+    age: 26,
+    city: 'Phnom Penh',
+    country: 'Cambodia',
+    avatarUrl: '/dummy-2.jpg',
+    repScore: 95,
+    headline: 'Architectural assistant who loves cafe hopping and watercolor.',
+    isVerified: true,
+    isOnline: false,
+  },
+  {
+    id: 'linh-3',
+    name: 'Thao Linh',
+    age: 27,
+    city: 'Da Nang',
+    country: 'Vietnam',
+    avatarUrl: '/dummy-3.jpg',
+    repScore: 99,
+    headline: 'Hospitality professional dreaming of cross-border adventures.',
+    isVerified: true,
+    isOnline: true,
+  }
+];
 
 export default function DiscoverPage() {
-  const [selectedRegion, setSelectedRegion] = useState('All');
-  const [searchQuery, setSearchQuery] = useState('');
-  const [verifiedOnly, setVerifiedOnly] = useState(false);
-
-  const filteredProfiles = DUMMY_PROFILES.filter((profile) => {
-    const matchesRegion =
-      selectedRegion === 'All' || profile.country.toLowerCase() === selectedRegion.toLowerCase();
-    const matchesVerified = verifiedOnly ? profile.isVerified : true;
-    const matchesSearch =
-      profile.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      profile.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      profile.country.toLowerCase().includes(searchQuery.toLowerCase());
-
-    return matchesRegion && matchesVerified && matchesSearch;
+  const [activeCountry, setActiveCountry] = useState('All');
+  const [interactions, setInteractions] = useState<{ liked: string[]; saved: string[]; passed: string[] }>({
+    liked: [],
+    saved: [],
+    passed: [],
   });
 
+  useEffect(() => {
+    setInteractions(getLocalInteractions());
+
+    const handleSync = () => setInteractions(getLocalInteractions());
+    window.addEventListener('ail-interaction-sync', handleSync);
+    return () => window.removeEventListener('ail-interaction-sync', handleSync);
+  }, []);
+
+  const handleToggle = async (id: string, type: 'like' | 'save' | 'pass') => {
+    await toggleInteraction(id, type);
+    setInteractions(getLocalInteractions());
+  };
+
+  const handleUndo = async (id: string) => {
+    await undoPass(id);
+    setInteractions(getLocalInteractions());
+  };
+
+  const filtered = activeCountry === 'All' 
+    ? DEMO_PROFILES 
+    : DEMO_PROFILES.filter(p => p.country.toLowerCase().includes(activeCountry.toLowerCase()));
+
   return (
-    <main className="max-w-7xl mx-auto px-3 sm:px-6 py-4 sm:py-8 space-y-4">
-      
-      {/* Search Bar */}
-      <div className="relative w-full">
-        <div className="absolute inset-y-0 left-0 pl-3.5 flex items-center pointer-events-none text-[#725A7A]">
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-          </svg>
-        </div>
-        <input
-          type="text"
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          placeholder="Search by name, city, or interests..."
-          className="w-full pl-10 pr-4 py-3 rounded-2xl bg-[#241E2F] border border-[#725A7A]/35 text-white placeholder-[#725A7A] text-sm focus:outline-none focus:border-[#978FA8] shadow-sm"
-        />
-      </div>
-
-      {/* Country Filters - Priority Ordered with Smooth Mobile Scroll */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none select-none">
-        {REGIONS.map((region) => {
-          const active = selectedRegion === region;
-          return (
-            <button
-              key={region}
-              type="button"
-              onClick={() => setSelectedRegion(region)}
-              className={`px-4 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap transition-all border active:scale-95 ${
-                active
-                  ? 'bg-[#653C87] border-[#978FA8]/40 text-white shadow-md'
-                  : 'bg-[#241E2F] border-[#725A7A]/30 text-[#DDD8D4] hover:text-white hover:border-[#9A79BA]/40'
-              }`}
-            >
-              {region}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* Profile Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2.5 sm:gap-6 pt-1">
-        {filteredProfiles.map((profile) => (
-          <ProfileCard
-            key={profile.id}
-            profile={{
-              id: profile.id,
-              fullName: profile.fullName,
-              age: profile.age,
-              city: profile.city,
-              country: profile.country,
-              avatarUrl: profile.avatarUrl,
-              isVerified: profile.isVerified,
-              relationshipIntent: profile.relationshipGoal,
-              jobTitle: profile.profession,
-              isOnline: profile.isOnline,
-              reputationScore: profile.reputationScore,
-            }}
-          />
+    <main className="min-h-screen bg-[#15101C] text-[#E6D7FA] pb-24 px-4 pt-4 max-w-lg mx-auto">
+      {/* Country Filter Bar */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-3 scrollbar-none">
+        {['All', 'Philippines', 'Cambodia', 'Vietnam', 'Thailand'].map(country => (
+          <button
+            key={country}
+            onClick={() => setActiveCountry(country)}
+            className={`px-3.5 py-1.5 rounded-full text-xs font-semibold whitespace-nowrap transition ${
+              activeCountry === country
+                ? 'bg-[#653C87] text-[#E6D7FA] shadow-md'
+                : 'bg-[#241E2F] text-[#7D7E92] hover:text-[#E6D7FA]'
+            }`}
+          >
+            {country}
+          </button>
         ))}
       </div>
 
-      {filteredProfiles.length === 0 && (
-        <div className="text-center py-16 text-[#B8AAC3] space-y-2">
-          <p className="text-base font-bold text-white">No profiles match your search.</p>
-          <p className="text-xs">Try clearing the search query or switching regions.</p>
-        </div>
-      )}
-
+      {/* Discovery Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 mt-2">
+        {filtered.map(profile => (
+          <ProfileCard
+            key={profile.id}
+            profile={profile}
+            isPassed={interactions.passed.includes(profile.id)}
+            isLiked={interactions.liked.includes(profile.id)}
+            isSaved={interactions.saved.includes(profile.id)}
+            onPass={(id) => handleToggle(id, 'pass')}
+            onUndoPass={handleUndo}
+            onLike={(id) => handleToggle(id, 'like')}
+            onSave={(id) => handleToggle(id, 'save')}
+          />
+        ))}
+      </div>
     </main>
   );
 }
