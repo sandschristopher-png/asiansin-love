@@ -2,14 +2,13 @@
 
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 
 export function Navbar() {
   return (
     <header className="sticky top-0 z-50 bg-[#17131F]/95 backdrop-blur-md border-b border-[#725A7A]/30">
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between relative">
         
-        {/* Left Action: Notifications Button */}
+        {/* Left Action: Notifications */}
         <div className="flex items-center z-10">
           <Link
             href="/notifications"
@@ -23,21 +22,19 @@ export function Navbar() {
           </Link>
         </div>
 
-        {/* Center: Prominent Centered Brand Logo */}
-        <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-          <Link href="/" className="pointer-events-auto flex items-center justify-center py-1">
-            <Image
+        {/* Center: Exact ail-logo.png rendered clean and bold */}
+        <div className="absolute inset-0 flex items-center justify-center pointer-events-none px-16">
+          <Link href="/" className="pointer-events-auto flex items-center justify-center">
+            {/* Standard img tag bypasses Next.js downscaling */}
+            <img
               src="/ail-logo.png"
               alt="asiansin.love"
-              width={260}
-              height={56}
-              priority
-              className="h-10 sm:h-12 w-auto object-contain max-w-[210px] sm:max-w-[280px]"
+              className="h-9 sm:h-11 w-auto max-w-[220px] sm:max-w-[280px] object-contain drop-shadow-md"
             />
           </Link>
         </div>
 
-        {/* Right Action: Sign In Button */}
+        {/* Right Action: Sign In */}
         <div className="flex items-center z-10">
           <Link
             href="/login"

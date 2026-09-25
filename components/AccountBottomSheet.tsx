@@ -14,14 +14,13 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
   const router = useRouter();
   const [profile, setProfile] = useState<any>(null);
 
-  // Render & Animation State
   const [mounted, setMounted] = useState(false);
   const [dragY, setDragY] = useState(0);
   const [isDragging, setIsDragging] = useState(false);
   const touchStartY = useRef(0);
   const isClosingRef = useRef(false);
 
-  // Animate Open/Close
+  // Sync open/close with browser history for Pixel back gestures
   useEffect(() => {
     if (isOpen) {
       isClosingRef.current = false;
@@ -36,7 +35,7 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
       return () => {
         window.removeEventListener('popstate', handlePopState);
       };
-    } else {
+    } else if (mounted) {
       closeWithAnimation();
     }
   }, [isOpen]);
@@ -44,15 +43,14 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
   const closeWithAnimation = () => {
     if (isClosingRef.current) return;
     isClosingRef.current = true;
-    setDragY(window.innerHeight || 600);
+    setDragY(window.innerHeight || 650);
     setTimeout(() => {
       setMounted(false);
       setDragY(0);
       onClose();
-    }, 280);
+    }, 250);
   };
 
-  // Profile data fetch
   useEffect(() => {
     if (!isOpen) return;
     async function fetchAccountData() {
@@ -74,7 +72,7 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
     fetchAccountData();
   }, [isOpen]);
 
-  // Touch Gesture Listeners
+  // Touch handlers attached to handle & top section
   const handleTouchStart = (e: React.TouchEvent) => {
     touchStartY.current = e.touches[0].clientY;
     setIsDragging(true);
@@ -83,11 +81,9 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
   const handleTouchMove = (e: React.TouchEvent) => {
     const deltaY = e.touches[0].clientY - touchStartY.current;
     if (deltaY > 0) {
-      // Natural downward drag following finger 1:1
       setDragY(deltaY);
     } else {
-      // Elastic rubber-band resistance when pulled up
-      setDragY(deltaY * 0.18);
+      setDragY(deltaY * 0.15); // soft resistance when pushing up
     }
   };
 
@@ -118,7 +114,7 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center pointer-events-auto">
-      {/* Dynamic Backdrop */}
+      {/* Blurred Backdrop */}
       <div
         onClick={closeWithAnimation}
         style={{
@@ -129,27 +125,32 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
         aria-hidden="true"
       />
 
-      {/* Sheet Container with Real-Time Direct Translation */}
+      {/* Sheet Container */}
       <div
         style={{
           transform: `translate3d(0, ${dragY}px, 0)`,
-          transition: isDragging ? 'none' : 'transform 0.28s cubic-bezier(0.16, 1, 0.3, 1)',
+          transition: isDragging ? 'none' : 'transform 0.26s cubic-bezier(0.16, 1, 0.3, 1)',
         }}
         className="relative w-full max-w-lg bg-[#241E2F] border-t border-[#725A7A]/40 rounded-t-[32px] p-5 pb-8 shadow-2xl z-10 max-h-[85dvh] flex flex-col justify-between overflow-y-auto select-none will-change-transform"
       >
         <div className="space-y-4">
           
-          {/* Active Touch Drag Area */}
+          {/* Active Grab Area with touch-none to prevent Android scroll hijacking */}
           <div
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
-            className="w-full pt-1 pb-3 flex flex-col items-center justify-center cursor-grab active:cursor-grabbing"
+            className="w-full pt-1 pb-4 flex flex-col items-center justify-center cursor-grab active:cursor-grabbing touch-none"
           >
-            <div className="w-14 h-1.5 bg-[#725A7A]/70 rounded-full" />
+            <div className="w-14 h-1.5 bg-[#725A7A]/80 rounded-full" />
           </div>
 
-          <div className="pb-2 border-b border-[#725A7A]/25">
+          <div
+            onTouchStart={handleTouchStart}
+            onTouchMove={handleTouchMove}
+            onTouchEnd={handleTouchEnd}
+            className="pb-2 border-b border-[#725A7A]/25 touch-none"
+          >
             <h2 className="text-xl font-black text-white tracking-tight">
               Your Account
             </h2>
