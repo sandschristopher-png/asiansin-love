@@ -1,10 +1,11 @@
-'use client';
+﻿'use client';
 
 import React, { useState } from 'react';
 import { ProfileCard } from '@/components/ProfileCard';
 import { DUMMY_PROFILES } from '@/lib/dummyProfiles';
 
-const REGIONS = ['All', 'Philippines', 'Thailand', 'Cambodia', 'Laos'];
+// Ordered by online dating activity & adoption priority
+const REGIONS = ['All', 'Philippines', 'Thailand', 'Vietnam', 'Cambodia', 'Laos'];
 
 export default function DiscoverPage() {
   const [selectedRegion, setSelectedRegion] = useState('All');
@@ -17,7 +18,8 @@ export default function DiscoverPage() {
     const matchesVerified = verifiedOnly ? profile.isVerified : true;
     const matchesSearch =
       profile.fullName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      profile.city.toLowerCase().includes(searchQuery.toLowerCase());
+      profile.city.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      profile.country.toLowerCase().includes(searchQuery.toLowerCase());
 
     return matchesRegion && matchesVerified && matchesSearch;
   });
@@ -41,18 +43,19 @@ export default function DiscoverPage() {
         />
       </div>
 
-      {/* Country Filters */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-1 scrollbar-none">
+      {/* Country Filters - Priority Ordered with Smooth Mobile Scroll */}
+      <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none select-none">
         {REGIONS.map((region) => {
           const active = selectedRegion === region;
           return (
             <button
               key={region}
+              type="button"
               onClick={() => setSelectedRegion(region)}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-extrabold whitespace-nowrap transition-all border active:scale-95 ${
+              className={`px-4 py-2 rounded-xl text-xs font-extrabold whitespace-nowrap transition-all border active:scale-95 ${
                 active
                   ? 'bg-[#653C87] border-[#978FA8]/40 text-white shadow-md'
-                  : 'bg-[#241E2F] border-[#725A7A]/30 text-[#DDD8D4]'
+                  : 'bg-[#241E2F] border-[#725A7A]/30 text-[#DDD8D4] hover:text-white hover:border-[#9A79BA]/40'
               }`}
             >
               {region}
