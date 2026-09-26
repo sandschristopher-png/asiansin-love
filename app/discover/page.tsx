@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { Footer } from '@/components/Footer';
 import { createClient } from '@/lib/supabase/client';
+import { ActionType, getLocalCardActions, persistCardAction } from '@/lib/interactions';
 
 const PRIORITY_ORDER = ['Philippines', 'Thailand', 'Cambodia', 'Vietnam', 'Indonesia', 'Laos'];
 
@@ -130,8 +131,6 @@ const DEMO_PROFILES: ProfileItem[] = [
   },
 ];
 
-type ActionType = 'pass' | 'star' | 'like';
-
 export default function DiscoverPage() {
   const [supabase] = useState(() => createClient());
   const [profiles, setProfiles] = useState<ProfileItem[]>(DEMO_PROFILES);
@@ -165,11 +164,57 @@ export default function DiscoverPage() {
     setActiveNowOnly(false);
   };
 
+  // Hydrate card actions from local storage and Supabase favorites
+  useEffect(() => {
+    const local = getLocalCardActions();
+    setCardActions(local);
+
+    async function hydrateRemoteFavorites() {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const { data: remoteFavorites, error } = await supabase
+          .from('favorites')
+          .select('favorite_profile_id')
+          .eq('user_id', user.id);
+
+        if (!error && remoteFavorites) {
+          setCardActions((prev) => {
+            const merged = { ...prev };
+            remoteFavorites.forEach((fav: { favorite_profile_id: string }) => {
+              if (!merged[fav.favorite_profile_id]) {
+                merged[fav.favorite_profile_id] = 'like';
+              }
+            });
+            return merged;
+          });
+        }
+      } catch (err) {
+        console.error('Error hydrating favorites:', err);
+      }
+    }
+
+    hydrateRemoteFavorites();
+  }, [supabase]);
+
   const triggerAction = (id: string, action: ActionType) => {
-    setCardActions((prev) => ({
-      ...prev,
-      [id]: prev[id] === action ? (null as any) : action,
-    }));
+    const currentAction = cardActions[id];
+    const isCurrentlyActive = currentAction === action;
+
+    // Optimistic UI update
+    setCardActions((prev) => {
+      const next = { ...prev };
+      if (isCurrentlyActive) {
+        delete next[id];
+      } else {
+        next[id] = action;
+      }
+      return next;
+    });
+
+    // Persist to Supabase and LocalStorage
+    persistCardAction(supabase, id, action, isCurrentlyActive);
   };
 
   useEffect(() => {
@@ -246,7 +291,6 @@ export default function DiscoverPage() {
         
         {/* Streamlined Top Control Bar */}
         <div className="space-y-2.5 sm:space-y-0">
-          {/* Desktop Single Row / Mobile Row 1 & 2 */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3">
             
             {/* Search Input + Mobile Filter Button Row */}
@@ -258,44 +302,60 @@ export default function DiscoverPage() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search by name, city, or interests..."
-                  className="w-full pl-10 pr-4 py-2 rounded-full bg-[#261F33] border border-[#7D7E92]/30 text-sm text-white placeholder-[#9A79BA]/60 shadow-inner focus:outline-none focus:border-[#9A79BA] transition"
+                  className="w-full bg-[#1D1726] border border-[#7D7E92]/30 rounded-xl pl-10 pr-4 py-2 sm:py-2.5 text-xs sm:text-sm text-white placeholder-[#7D7E92] focus:outline-none focus:border-[#9A79BA] focus:ring-1 focus:ring-[#9A79BA] transition"
                 />
               </div>
 
-              {/* Mobile-Only Filters Trigger Button */}
+              {/* Mobile Filter Button */}
               <button
                 type="button"
-                onClick={() => setFiltersOpen(!filtersOpen)}
-                className={`sm:hidden shrink-0 flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold border transition ${
-                  filtersOpen || activeFiltersCount > 0
-                    ? 'bg-[#653C87] border-[#9A79BA] text-white shadow-md'
-                    : 'bg-[#261F33] border-[#7D7E92]/30 text-[#E6D7FA] hover:border-[#9A79BA]/60 hover:text-white'
-                }`}
+                onClick={() => setFiltersOpen(true)}
+                className="relative sm:hidden flex items-center justify-center p-2.5 rounded-xl bg-[#1D1726] border border-[#7D7E92]/30 text-[#E6D7FA] active:bg-[#2B2338] transition shrink-0"
+                aria-label="Open Filters"
               >
-                <SlidersHorizontal className="w-4 h-4 shrink-0" />
-                <span>Filters</span>
+                <SlidersHorizontal className="w-4 h-4 text-[#C9A4E8]" />
                 {activeFiltersCount > 0 && (
-                  <span className="w-4.5 h-4.5 px-1 rounded-full bg-amber-400 text-black font-bold text-[10px] flex items-center justify-center">
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#653C87] text-white text-[9px] font-bold rounded-full flex items-center justify-center border-2 border-[#130f18]">
                     {activeFiltersCount}
                   </span>
                 )}
               </button>
             </div>
 
-            {/* Gender Segmented Switch (Full width grid on mobile, inline on desktop) */}
-            <div className="flex items-center bg-[#261F33] border border-[#7D7E92]/30 p-1 rounded-full shadow-sm">
-              {(['All', 'woman', 'man', 'trans'] as const).map((genderOption) => {
-                const isActive = selectedGender === genderOption;
-                const label = genderOption === 'All' ? 'All' : genderOption === 'woman' ? 'Women' : genderOption === 'man' ? 'Men' : 'Trans';
+            {/* Desktop Filters Trigger */}
+            <div className="hidden sm:flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setFiltersOpen(true)}
+                className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-[#1D1726] border border-[#7D7E92]/30 text-xs font-semibold text-[#E6D7FA] hover:border-[#9A79BA]/60 hover:text-white transition"
+              >
+                <SlidersHorizontal className="w-3.5 h-3.5 text-[#C9A4E8]" />
+                <span>Filters</span>
+                {activeFiltersCount > 0 && (
+                  <span className="px-1.5 py-0.2 bg-[#653C87] text-white text-[10px] rounded-full font-bold ml-0.5">
+                    {activeFiltersCount}
+                  </span>
+                )}
+              </button>
+            </div>
+          </div>
+
+          {/* Quick Filter Horizontal Scrollbar: Gender + Countries */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 pt-2 sm:pt-2.5 scrollbar-none no-scrollbar">
+            {/* Gender Segmented Switch */}
+            <div className="flex items-center bg-[#1D1726] p-0.5 rounded-lg border border-[#7D7E92]/30 shrink-0 mr-1.5">
+              {(['All', 'woman', 'trans', 'man'] as const).map((gender) => {
+                const label = gender === 'All' ? 'All' : gender === 'woman' ? 'Women' : gender === 'trans' ? 'Trans' : 'Men';
+                const active = selectedGender === gender;
                 return (
                   <button
-                    key={genderOption}
+                    key={gender}
                     type="button"
-                    onClick={() => setSelectedGender(genderOption)}
-                    className={`flex-1 sm:flex-initial px-3 sm:px-3.5 py-1.5 rounded-full text-xs font-semibold text-center transition-all duration-150 ${
-                      isActive
-                        ? 'bg-[#653C87] text-white shadow-md'
-                        : 'text-[#E6D7FA]/75 hover:text-white hover:bg-white/5'
+                    onClick={() => setSelectedGender(gender)}
+                    className={`px-2.5 py-1 text-[11px] font-medium rounded-md transition-all ${
+                      active
+                        ? 'bg-[#653C87] text-white shadow-sm'
+                        : 'text-[#D5CEE5] hover:text-white'
                     }`}
                   >
                     {label}
@@ -304,152 +364,168 @@ export default function DiscoverPage() {
               })}
             </div>
 
-            {/* Desktop-Only Filters Trigger Button */}
-            <button
-              type="button"
-              onClick={() => setFiltersOpen(!filtersOpen)}
-              className={`hidden sm:flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold border transition shrink-0 ${
-                filtersOpen || activeFiltersCount > 0
-                  ? 'bg-[#653C87] border-[#9A79BA] text-white shadow-md'
-                  : 'bg-[#261F33] border-[#7D7E92]/30 text-[#E6D7FA] hover:border-[#9A79BA]/60 hover:text-white'
-              }`}
-            >
-              <SlidersHorizontal className="w-4 h-4 shrink-0" />
-              <span>Filters</span>
-              {activeFiltersCount > 0 && (
-                <span className="w-5 h-5 rounded-full bg-amber-400 text-black font-bold text-[10px] flex items-center justify-center">
-                  {activeFiltersCount}
-                </span>
-              )}
-            </button>
+            <div className="h-4 w-[1px] bg-[#7D7E92]/30 shrink-0 mx-0.5" />
+
+            {/* Country Pills */}
+            {sortedCountries.map((c) => {
+              const active = selectedCountry.toLowerCase() === c.toLowerCase();
+              return (
+                <button
+                  key={c}
+                  type="button"
+                  onClick={() => setSelectedCountry(c)}
+                  className={`px-3 py-1 rounded-lg text-xs font-medium whitespace-nowrap transition-all shrink-0 border ${
+                    active
+                      ? 'bg-[#653C87] text-white border-[#9A79BA] shadow-sm'
+                      : 'bg-[#1D1726] text-[#D5CEE5] border-[#7D7E92]/25 hover:border-[#9A79BA]/40 hover:text-white'
+                  }`}
+                >
+                  {c}
+                </button>
+              );
+            })}
           </div>
         </div>
 
-        {/* Collapsible Filters Drawer (Smooth Slide-In / Slide-Out) */}
-        <div className={`overflow-hidden transition-all duration-300 ease-out ${
-          filtersOpen ? 'max-h-[500px] opacity-100 translate-y-0 mb-3 pointer-events-auto' : 'max-h-0 opacity-0 -translate-y-2 pointer-events-none'
-        }`}>
-          <div className="bg-[#1D1726] border border-[#7D7E92]/35 rounded-3xl p-4 sm:p-5 shadow-2xl space-y-4">
-            <div className="flex items-center justify-between border-b border-[#7D7E92]/20 pb-3">
-              <h4 className="text-xs font-bold text-white uppercase tracking-wider">Refine Matches</h4>
-              {activeFiltersCount > 0 && (
-                <button
-                  type="button"
-                  onClick={resetFilters}
-                  className="flex items-center gap-1.5 text-xs text-[#9A79BA] hover:text-white transition"
-                >
-                  <RotateCcw className="w-3.5 h-3.5" />
-                  Reset all
-                </button>
-              )}
-            </div>
+        {/* Filter Drawer / Modal Backdrop */}
+        {filtersOpen && (
+          <div 
+            className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex justify-end"
+            onClick={() => setFiltersOpen(false)}
+          >
+            <div 
+              className="w-full max-w-sm sm:max-w-md bg-[#1B1524] h-full border-l border-[#7D7E92]/30 p-5 sm:p-6 overflow-y-auto flex flex-col justify-between"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="space-y-6">
+                <div className="flex items-center justify-between pb-4 border-b border-[#7D7E92]/20">
+                  <div className="flex items-center gap-2">
+                    <SlidersHorizontal className="w-5 h-5 text-[#C9A4E8]" />
+                    <h2 className="text-base font-bold text-white">Refine Discover Feed</h2>
+                  </div>
+                  <button 
+                    type="button" 
+                    onClick={() => setFiltersOpen(false)}
+                    className="p-1.5 rounded-lg text-[#D5CEE5] hover:text-white hover:bg-[#2B2338] transition"
+                  >
+                    <XIcon className="w-5 h-5" />
+                  </button>
+                </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-1">
-              {/* Age Range Filter */}
-              <div>
-                <label className="block text-xs font-semibold text-[#D5CEE5] mb-2">
-                  Age Range: <span className="text-white font-mono">{minAge} - {maxAge}</span>
-                </label>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="number"
-                    min="18"
-                    max={maxAge}
-                    value={minAge}
-                    onChange={(e) => setMinAge(Math.min(Number(e.target.value), maxAge))}
-                    className="w-16 px-2 py-1.5 bg-[#261F33] border border-[#7D7E92]/30 rounded-xl text-xs text-white text-center focus:border-[#9A79BA] outline-none"
-                  />
-                  <span className="text-xs text-[#7D7E92]">to</span>
-                  <input
-                    type="number"
-                    min={minAge}
-                    max="80"
-                    value={maxAge}
-                    onChange={(e) => setMaxAge(Math.max(Number(e.target.value), minAge))}
-                    className="w-16 px-2 py-1.5 bg-[#261F33] border border-[#7D7E92]/30 rounded-xl text-xs text-white text-center focus:border-[#9A79BA] outline-none"
-                  />
+                {/* Age Slider Range */}
+                <div className="space-y-3">
+                  <div className="flex justify-between items-center text-xs font-semibold text-[#D5CEE5]">
+                    <span>Age Range</span>
+                    <span className="text-white font-mono">{minAge} – {maxAge} yrs</span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div>
+                      <label className="text-[10px] text-[#A8A2AB] uppercase font-bold">Min Age</label>
+                      <input 
+                        type="range" 
+                        min="18" 
+                        max="65" 
+                        value={minAge} 
+                        onChange={(e) => setMinAge(Math.min(Number(e.target.value), maxAge - 1))}
+                        className="w-full accent-[#9A79BA]" 
+                      />
+                    </div>
+                    <div>
+                      <label className="text-[10px] text-[#A8A2AB] uppercase font-bold">Max Age</label>
+                      <input 
+                        type="range" 
+                        min="18" 
+                        max="65" 
+                        value={maxAge} 
+                        onChange={(e) => setMaxAge(Math.max(Number(e.target.value), minAge + 1))}
+                        className="w-full accent-[#9A79BA]" 
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                {/* Intent Filter */}
+                <div className="space-y-2">
+                  <span className="text-xs font-semibold text-[#D5CEE5]">Relationship Intent</span>
+                  <div className="grid grid-cols-2 gap-2">
+                    {RELATIONSHIP_INTENTS.map((intent) => {
+                      const active = selectedIntent === intent;
+                      return (
+                        <button
+                          key={intent}
+                          type="button"
+                          onClick={() => setSelectedIntent(intent)}
+                          className={`text-left text-xs px-3 py-2 rounded-lg border transition ${
+                            active
+                              ? 'bg-[#653C87] border-[#9A79BA] text-white font-semibold'
+                              : 'bg-[#221B2E] border-[#7D7E92]/20 text-[#D5CEE5] hover:border-[#9A79BA]/40'
+                          }`}
+                        >
+                          {intent}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Verified Only Toggle */}
+                <div className="flex items-center justify-between sm:justify-start sm:gap-3 pt-2 sm:pt-6">
+                  <span className="text-xs font-semibold text-[#D5CEE5]">Verified Members Only</span>
+                  <button
+                    type="button"
+                    onClick={() => setVerifiedOnly(!verifiedOnly)}
+                    className={`w-11 h-6 rounded-full transition-colors flex items-center px-0.5 ${
+                      verifiedOnly ? 'bg-[#653C87]' : 'bg-[#2B2338]'
+                    }`}
+                  >
+                    <div className={`w-5 h-5 rounded-full bg-white transition-transform ${
+                      verifiedOnly ? 'translate-x-5' : 'translate-x-0'
+                    }`} />
+                  </button>
+                </div>
+
+                {/* Active Today Toggle */}
+                <div className="flex items-center justify-between sm:justify-start sm:gap-3 pt-2 sm:pt-6">
+                  <span className="text-xs font-semibold text-[#D5CEE5]">Active Now / Today</span>
+                  <button
+                    type="button"
+                    onClick={() => setActiveNowOnly(!activeNowOnly)}
+                    className={`w-11 h-6 rounded-full transition-colors flex items-center px-0.5 ${
+                      activeNowOnly ? 'bg-[#653C87]' : 'bg-[#2B2338]'
+                    }`}
+                  >
+                    <div className={`w-5 h-5 rounded-full bg-white transition-transform ${
+                      activeNowOnly ? 'translate-x-5' : 'translate-x-0'
+                    }`} />
+                  </button>
                 </div>
               </div>
 
-              {/* Relationship Intent Filter */}
-              <div>
-                <label className="block text-xs font-semibold text-[#D5CEE5] mb-2">
-                  Relationship Intent
-                </label>
-                <select
-                  value={selectedIntent}
-                  onChange={(e) => setSelectedIntent(e.target.value)}
-                  className="w-full px-3 py-1.5 bg-[#261F33] border border-[#7D7E92]/30 rounded-xl text-xs text-white focus:border-[#9A79BA] outline-none"
-                >
-                  {RELATIONSHIP_INTENTS.map((intent) => (
-                    <option key={intent} value={intent} className="bg-[#1D1726] text-white">
-                      {intent}
-                    </option>
-                  ))}
-                </select>
-              </div>
-
-              {/* Verified Only Toggle */}
-              <div className="flex items-center justify-between sm:justify-start sm:gap-3 pt-2 sm:pt-6">
-                <span className="text-xs font-semibold text-[#D5CEE5]">Verified Members Only</span>
+              {/* Drawer Bottom Actions */}
+              <div className="pt-6 border-t border-[#7D7E92]/20 flex items-center gap-3">
                 <button
                   type="button"
-                  onClick={() => setVerifiedOnly(!verifiedOnly)}
-                  className={`w-10 h-6 rounded-full p-1 transition-colors ${
-                    verifiedOnly ? 'bg-[#653C87]' : 'bg-[#261F33] border border-[#7D7E92]/40'
-                  }`}
+                  onClick={resetFilters}
+                  className="flex-1 py-2.5 rounded-xl border border-[#7D7E92]/30 text-xs font-semibold text-[#D5CEE5] hover:text-white hover:bg-[#2B2338] transition flex items-center justify-center gap-1.5"
                 >
-                  <div
-                    className={`w-4 h-4 rounded-full bg-white transition-transform ${
-                      verifiedOnly ? 'translate-x-4' : 'translate-x-0'
-                    }`}
-                  />
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  Reset
                 </button>
-              </div>
-
-              {/* Active Today Toggle */}
-              <div className="flex items-center justify-between sm:justify-start sm:gap-3 pt-2 sm:pt-6">
-                <span className="text-xs font-semibold text-[#D5CEE5]">Active Now / Today</span>
                 <button
                   type="button"
-                  onClick={() => setActiveNowOnly(!activeNowOnly)}
-                  className={`w-10 h-6 rounded-full p-1 transition-colors ${
-                    activeNowOnly ? 'bg-emerald-600' : 'bg-[#261F33] border border-[#7D7E92]/40'
-                  }`}
+                  onClick={() => setFiltersOpen(false)}
+                  className="flex-1 py-2.5 rounded-xl bg-[#653C87] text-white text-xs font-semibold hover:bg-[#7D4B9F] transition shadow-md flex items-center justify-center gap-1.5"
                 >
-                  <div
-                    className={`w-4 h-4 rounded-full bg-white transition-transform ${
-                      activeNowOnly ? 'translate-x-4' : 'translate-x-0'
-                    }`}
-                  />
+                  <Check className="w-3.5 h-3.5" />
+                  Apply
                 </button>
               </div>
             </div>
           </div>
-        </div>
+        )}
 
-        {/* Prioritized Horizontal Country Chips */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
-          {sortedCountries.map((country) => {
-            const isActive = selectedCountry === country;
-            return (
-              <button
-                key={country}
-                onClick={() => setSelectedCountry(country)}
-                className={`px-3.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition ${
-                  isActive
-                    ? 'bg-[#653C87] text-white font-bold shadow-md shadow-[#653C87]/40'
-                    : 'bg-[#261F33] border border-[#7D7E92]/30 text-[#E6D7FA] hover:text-white hover:border-[#9A79BA] hover:bg-[#653C87]/20 shadow-sm'
-                }`}
-              >
-                {country}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Catalog Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 pt-1">
+        {/* Discovery Feed Profile Card Grid */}
+        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4.5 pt-1">
           {filteredProfiles.map((profile) => {
             const state = cardActions[profile.id];
             const isPassed = state === 'pass';
@@ -459,9 +535,9 @@ export default function DiscoverPage() {
             return (
               <div
                 key={profile.id}
-                className={`group relative rounded-3xl overflow-hidden bg-[#1D1726] border flex flex-col justify-between shadow-lg transition-all duration-300 ${
+                className={`group relative rounded-2xl overflow-hidden bg-[#1E1727] border transition-all duration-300 flex flex-col justify-between ${
                   isPassed
-                    ? 'opacity-40 grayscale border-zinc-800 scale-[0.98]'
+                    ? 'opacity-40 grayscale border-zinc-700'
                     : isLiked
                     ? 'border-rose-500/50 shadow-rose-950/20 shadow-xl'
                     : isStarred
@@ -469,41 +545,45 @@ export default function DiscoverPage() {
                     : 'border-[#7D7E92]/25 hover:border-[#9A79BA]/50'
                 }`}
               >
-                {/* Passed Badge Overlay */}
-                {isPassed && (
-                  <div className="absolute inset-0 z-30 flex items-center justify-center bg-black/60 backdrop-blur-[2px] pointer-events-none transition-all">
-                    <span className="px-3.5 py-1 rounded-full text-[11px] font-bold tracking-widest uppercase bg-zinc-900/90 text-zinc-300 border border-zinc-700/80 shadow-2xl">
-                      Passed
-                    </span>
-                  </div>
-                )}
-
-                {/* Photo Area */}
-                <Link href={`/profile/${profile.id}`} className="block relative aspect-[4/5] w-full overflow-hidden">
+                {/* Visual Media Header */}
+                <Link href={`/profile/${profile.id}`} className="relative block aspect-[4/5] w-full overflow-hidden bg-[#261F33]">
                   <Image
                     src={profile.avatarUrl}
                     alt={profile.name}
                     fill
-                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
-                    className="object-cover group-hover:scale-105 transition duration-300"
+                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+                    className="object-cover group-hover:scale-105 transition-transform duration-300"
+                    priority={false}
                   />
 
-                  {profile.online && (
-                    <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md text-[10px] font-medium text-white">
-                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                      Online
+                  {/* Top Badges Overlay */}
+                  <div className="absolute top-2 left-2 right-2 flex items-center justify-between z-10">
+                    {/* Trust / Rep Pill */}
+                    <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-[10px] font-bold text-emerald-400">
+                      <ShieldCheck className="w-3 h-3 text-emerald-400" />
+                      <span>{profile.repScore}%</span>
                     </div>
-                  )}
 
-                  <div className="absolute top-2.5 right-2.5 flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md text-[10px] font-medium text-[#E6D7FA]">
-                    <ShieldCheck className="w-3 h-3 text-[#C9A4E8]" />
-                    <span>{profile.repScore}%</span>
+                    {/* Online Dot */}
+                    {profile.online && (
+                      <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-[9px] font-medium text-emerald-400">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                        <span className="hidden sm:inline">Active</span>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Intent Tag Overlay */}
+                  <div className="absolute bottom-2.5 left-2 z-10">
+                    <span className="px-2 py-0.5 rounded-md bg-[#653C87]/80 backdrop-blur-md text-[10px] font-semibold text-white tracking-wide border border-white/10">
+                      {profile.intent}
+                    </span>
                   </div>
 
                   <div className="absolute inset-0 bg-gradient-to-t from-[#1D1726] via-transparent to-transparent opacity-80" />
                 </Link>
 
-                {/* Profile Details & Tactile Circular Button Pods (Option B) */}
+                {/* Profile Details & Tactile Circular Button Pods */}
                 <div className="p-3 sm:p-3.5 space-y-2.5 bg-[#261F33]">
                   <Link href={`/profile/${profile.id}`} className="block">
                     <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-1.5 truncate">
@@ -516,7 +596,7 @@ export default function DiscoverPage() {
                     </p>
                   </Link>
 
-                  {/* Option B Action Bar: Tactile Circular Button Bases */}
+                  {/* Action Bar */}
                   <div className="flex items-center justify-between pt-2 border-t border-[#7D7E92]/20">
                     
                     {/* Pass (X) */}
