@@ -1,19 +1,45 @@
 ﻿'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Heart as LucideHeart, ChevronRight, XCircle, UserCircle2 } from 'lucide-react';
+import { 
+  Heart as LucideHeart, 
+  ChevronRight, 
+  XCircle, 
+  UserCircle2, 
+  Search, 
+  MessageSquare, 
+  Layers, 
+  User 
+} from 'lucide-react';
 import { AccountBottomSheet } from '@/components/AccountBottomSheet';
 
 export function BottomNav() {
   const pathname = usePathname();
   const [accountSheetOpen, setAccountSheetOpen] = useState(false);
   const [listsOpen, setListsOpen] = useState(false);
+  const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
 
   const isActive = (path: string) => pathname === path;
 
-  // Don't show on individual profile deep dives or chat rooms
+  // Auto-hide bottom nav when mobile virtual keyboard expands
+  useEffect(() => {
+    if (typeof window === 'undefined' || !window.visualViewport) return;
+
+    const handleResize = () => {
+      if (!window.visualViewport) return;
+      const isKeyboard = window.visualViewport.height < window.innerHeight * 0.82;
+      setIsKeyboardOpen(isKeyboard);
+    };
+
+    window.visualViewport.addEventListener('resize', handleResize);
+    return () => {
+      window.visualViewport?.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  // Suppress on individual profile deep dives or chat rooms
   if (pathname.startsWith('/chat/') || pathname.startsWith('/profile/')) {
     return null;
   }
@@ -21,8 +47,12 @@ export function BottomNav() {
   return (
     <>
       {/* Floating Bottom Navigation Bar */}
-      <div className="sm:hidden fixed bottom-3 left-0 right-0 z-50 px-4 pointer-events-none flex justify-center">
-        <nav className="pointer-events-auto bg-[#241E2F]/95 backdrop-blur-xl border border-[#7D7E92]/40 rounded-[28px] px-3 py-1.5 shadow-2xl shadow-black/80 w-full max-w-sm transition-transform">
+      <div 
+        className={`sm:hidden fixed bottom-3 left-0 right-0 z-50 px-4 pointer-events-none flex justify-center transition-all duration-300 ease-out ${
+          isKeyboardOpen ? 'translate-y-24 opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'
+        }`}
+      >
+        <nav className="pointer-events-auto bg-[#261F33]/95 backdrop-blur-xl border border-[#9A79BA]/35 rounded-[28px] px-3 py-1.5 shadow-2xl shadow-black/80 w-full max-w-sm transition-transform">
           <div className="grid grid-cols-5 items-center">
             
             {/* 1. DISCOVER */}
@@ -30,15 +60,13 @@ export function BottomNav() {
               href="/discover"
               onClick={() => setListsOpen(false)}
               className={`flex flex-col items-center justify-center py-1 transition-transform active:scale-[0.88] ${
-                isActive('/discover') ? 'text-[#E6D7FA]' : 'text-[#A8A2AB] hover:text-[#E6D7FA]'
+                isActive('/discover') ? 'text-[#E6D7FA]' : 'text-[#9A79BA] hover:text-[#E6D7FA]'
               }`}
             >
               <div className={`p-1.5 rounded-full transition-all duration-200 ${isActive('/discover') ? 'bg-[#653C87] text-[#E6D7FA] shadow-md shadow-[#653C87]/40' : ''}`}>
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={isActive('/discover') ? 2.5 : 2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-                </svg>
+                <Search className="w-5 h-5" strokeWidth={isActive('/discover') ? 2.5 : 2} />
               </div>
-              <span className={`text-[10px] tracking-wide font-extrabold mt-0.5 ${isActive('/discover') ? 'text-[#E6D7FA]' : 'text-[#A8A2AB]'}`}>
+              <span className={`text-[10px] tracking-wide font-extrabold mt-0.5 ${isActive('/discover') ? 'text-[#E6D7FA]' : 'text-[#9A79BA]'}`}>
                 Discover
               </span>
             </Link>
@@ -48,15 +76,13 @@ export function BottomNav() {
               href="/favorites"
               onClick={() => setListsOpen(false)}
               className={`flex flex-col items-center justify-center py-1 transition-transform active:scale-[0.88] ${
-                isActive('/favorites') ? 'text-[#E6D7FA]' : 'text-[#A8A2AB] hover:text-[#E6D7FA]'
+                isActive('/favorites') ? 'text-[#E6D7FA]' : 'text-[#9A79BA] hover:text-[#E6D7FA]'
               }`}
             >
               <div className={`p-1.5 rounded-full transition-all duration-200 ${isActive('/favorites') ? 'bg-[#653C87] text-[#E6D7FA] shadow-md shadow-[#653C87]/40' : ''}`}>
-                <svg className="w-5 h-5" fill={isActive('/favorites') ? 'currentColor' : 'none'} viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                </svg>
+                <LucideHeart className="w-5 h-5" fill={isActive('/favorites') ? 'currentColor' : 'none'} strokeWidth={2} />
               </div>
-              <span className={`text-[10px] tracking-wide font-extrabold mt-0.5 ${isActive('/favorites') ? 'text-[#E6D7FA]' : 'text-[#A8A2AB]'}`}>
+              <span className={`text-[10px] tracking-wide font-extrabold mt-0.5 ${isActive('/favorites') ? 'text-[#E6D7FA]' : 'text-[#9A79BA]'}`}>
                 Saved
               </span>
             </Link>
@@ -65,34 +91,30 @@ export function BottomNav() {
             <Link
               href="/messages"
               onClick={() => setListsOpen(false)}
-              className={`flex flex-col items-center justify-center py-1 transition-transform active:scale-[0.88] relative ${
-                isActive('/messages') ? 'text-[#E6D7FA]' : 'text-[#A8A2AB] hover:text-[#E6D7FA]'
+              className={`flex flex-col items-center justify-center py-1 transition-transform active:scale-[0.88] ${
+                isActive('/messages') ? 'text-[#E6D7FA]' : 'text-[#9A79BA] hover:text-[#E6D7FA]'
               }`}
             >
               <div className={`p-1.5 rounded-full transition-all duration-200 relative ${isActive('/messages') ? 'bg-[#653C87] text-[#E6D7FA] shadow-md shadow-[#653C87]/40' : ''}`}>
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={isActive('/messages') ? 2.5 : 2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-                </svg>
+                <MessageSquare className="w-5 h-5" strokeWidth={isActive('/messages') ? 2.5 : 2} />
               </div>
-              <span className={`text-[10px] tracking-wide font-extrabold mt-0.5 ${isActive('/messages') ? 'text-[#E6D7FA]' : 'text-[#A8A2AB]'}`}>
+              <span className={`text-[10px] tracking-wide font-extrabold mt-0.5 ${isActive('/messages') ? 'text-[#E6D7FA]' : 'text-[#9A79BA]'}`}>
                 Inbox
               </span>
             </Link>
 
-            {/* 4. LISTS (Menu Sheet) */}
+            {/* 4. LISTS */}
             <button
               type="button"
               onClick={() => setListsOpen(!listsOpen)}
               className={`flex flex-col items-center justify-center py-1 transition-transform active:scale-[0.88] ${
-                listsOpen ? 'text-[#E6D7FA]' : 'text-[#A8A2AB] hover:text-[#E6D7FA]'
+                listsOpen ? 'text-[#E6D7FA]' : 'text-[#9A79BA] hover:text-[#E6D7FA]'
               }`}
             >
               <div className={`p-1.5 rounded-full transition-all duration-200 ${listsOpen ? 'bg-[#653C87] text-[#E6D7FA] shadow-md shadow-[#653C87]/40' : ''}`}>
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 10h16M4 14h16M4 18h16" />
-                </svg>
+                <Layers className="w-5 h-5" strokeWidth={2} />
               </div>
-              <span className={`text-[10px] tracking-wide font-extrabold mt-0.5 ${listsOpen ? 'text-[#E6D7FA]' : 'text-[#A8A2AB]'}`}>
+              <span className={`text-[10px] tracking-wide font-extrabold mt-0.5 ${listsOpen ? 'text-[#E6D7FA]' : 'text-[#9A79BA]'}`}>
                 Lists
               </span>
             </button>
@@ -105,15 +127,13 @@ export function BottomNav() {
                 setAccountSheetOpen(true);
               }}
               className={`flex flex-col items-center justify-center py-1 transition-transform active:scale-[0.88] ${
-                accountSheetOpen ? 'text-[#E6D7FA]' : 'text-[#A8A2AB] hover:text-[#E6D7FA]'
+                accountSheetOpen ? 'text-[#E6D7FA]' : 'text-[#9A79BA] hover:text-[#E6D7FA]'
               }`}
             >
               <div className={`p-1.5 rounded-full transition-all duration-200 ${accountSheetOpen ? 'bg-[#653C87] text-[#E6D7FA] shadow-md shadow-[#653C87]/40' : ''}`}>
-                <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={accountSheetOpen ? 2.5 : 2} d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
-                </svg>
+                <User className="w-5 h-5" strokeWidth={accountSheetOpen ? 2.5 : 2} />
               </div>
-              <span className={`text-[10px] tracking-wide font-extrabold mt-0.5 ${accountSheetOpen ? 'text-[#E6D7FA]' : 'text-[#A8A2AB]'}`}>
+              <span className={`text-[10px] tracking-wide font-extrabold mt-0.5 ${accountSheetOpen ? 'text-[#E6D7FA]' : 'text-[#9A79BA]'}`}>
                 You
               </span>
             </button>
@@ -122,45 +142,51 @@ export function BottomNav() {
         </nav>
       </div>
 
-      {/* Lists Dropdown Sheet */}
+      {/* Lists Dropdown / Slide Sheet */}
       {listsOpen && (
-        <div className="sm:hidden fixed inset-0 z-40 bg-black/60 backdrop-blur-sm flex items-end justify-center pb-20 px-4" onClick={() => setListsOpen(false)}>
-          <div className="w-full max-w-sm rounded-3xl bg-[#241E2F] border border-[#7D7E92]/35 p-4 space-y-2 shadow-2xl" onClick={(e) => e.stopPropagation()}>
-            <div className="text-xs font-bold uppercase tracking-wider text-[#B6AEC7] px-2 pb-1">
+        <div 
+          className="sm:hidden fixed inset-0 z-[60] bg-black/70 backdrop-blur-md flex items-end justify-center pb-20 px-4 animate-in fade-in duration-200" 
+          onClick={() => setListsOpen(false)}
+        >
+          <div 
+            className="w-full max-w-sm rounded-3xl bg-[#261F33] border border-[#9A79BA]/35 p-4 space-y-2 shadow-2xl animate-in slide-in-from-bottom-6 duration-200" 
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="text-xs font-bold uppercase tracking-wider text-[#9A79BA] px-2 pb-1">
               Member Lists
             </div>
             
             <Link
               href="/favorites"
               onClick={() => setListsOpen(false)}
-              className="flex items-center justify-between p-3 rounded-2xl bg-[#17131F] hover:bg-[#653C87]/30 text-white font-semibold text-sm transition-colors"
+              className="flex items-center justify-between p-3 rounded-2xl bg-[#130F18] hover:bg-[#653C87]/30 text-white font-semibold text-sm transition-colors"
             >
               <span className="flex items-center gap-2.5">
-                <LucideHeart className="w-4 h-4 text-[#C9A4E8]" /> <span>My Favorites</span>
+                <LucideHeart className="w-4 h-4 text-[#9A79BA]" /> <span>My Favorites</span>
               </span>
-              <ChevronRight className="w-4 h-4 text-[#7D7E92]" />
+              <ChevronRight className="w-4 h-4 text-[#9A79BA]" />
             </Link>
 
             <Link
               href="/discover?filter=passed"
               onClick={() => setListsOpen(false)}
-              className="flex items-center justify-between p-3 rounded-2xl bg-[#17131F] hover:bg-[#653C87]/30 text-white font-semibold text-sm transition-colors"
+              className="flex items-center justify-between p-3 rounded-2xl bg-[#130F18] hover:bg-[#653C87]/30 text-white font-semibold text-sm transition-colors"
             >
               <span className="flex items-center gap-2.5">
-                <XCircle className="w-4 h-4 text-[#8E849C]" /> <span>Disliked / Passed</span>
+                <XCircle className="w-4 h-4 text-[#9A79BA]" /> <span>Disliked / Passed</span>
               </span>
-              <ChevronRight className="w-4 h-4 text-[#7D7E92]" />
+              <ChevronRight className="w-4 h-4 text-[#9A79BA]" />
             </Link>
 
             <Link
               href="/profile"
               onClick={() => setListsOpen(false)}
-              className="flex items-center justify-between p-3 rounded-2xl bg-[#17131F] hover:bg-[#653C87]/30 text-white font-semibold text-sm transition-colors"
+              className="flex items-center justify-between p-3 rounded-2xl bg-[#130F18] hover:bg-[#653C87]/30 text-white font-semibold text-sm transition-colors"
             >
               <span className="flex items-center gap-2.5">
-                <UserCircle2 className="w-4 h-4 text-[#C9A4E8]" /> <span>My Bio</span>
+                <UserCircle2 className="w-4 h-4 text-[#9A79BA]" /> <span>My Bio</span>
               </span>
-              <ChevronRight className="w-4 h-4 text-[#7D7E92]" />
+              <ChevronRight className="w-4 h-4 text-[#9A79BA]" />
             </Link>
           </div>
         </div>

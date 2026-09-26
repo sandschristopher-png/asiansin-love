@@ -115,14 +115,26 @@ export default function VerifyPage() {
         ) : (
           <div className="space-y-6">
             
-            {/* Instructions Card */}
-            <div className="p-5 rounded-3xl bg-[#261F33] border border-[#9A79BA]/35 space-y-2 shadow-xl">
-              <span className="text-xs font-bold uppercase tracking-wider text-[#9A79BA] block">
-                Gesture Match Pose
-              </span>
-              <p className="text-xs sm:text-sm text-[#E6D7FA] leading-relaxed">
-                Hold up <strong className="text-white">two fingers (peace sign ✌️)</strong> beside your face in bright lighting. This confirms you are the actual person in your profile photos.
-              </p>
+            {/* Instructions & Reference Card */}
+            <div className="p-5 rounded-3xl bg-[#261F33] border border-[#9A79BA]/35 space-y-4 shadow-xl">
+              <div className="space-y-1">
+                <span className="text-xs font-bold uppercase tracking-wider text-[#9A79BA] block">
+                  Gesture Match Pose
+                </span>
+                <p className="text-xs sm:text-sm text-[#E6D7FA] leading-relaxed">
+                  Hold up exactly three fingers (index, middle, and ring) beside your cheek in bright lighting, exactly as shown below. This confirms you are the actual person in your profile photos.
+                </p>
+              </div>
+
+              {/* Reference Asset Display */}
+              <div className="flex flex-col items-center justify-center pt-2">
+                <div className="w-36 h-48 rounded-2xl overflow-hidden border-2 border-[#9A79BA]/50 shadow-xl bg-[#130F18]">
+                  <img src="/three-fingers.jpg" alt="Three Fingers Verification Pose Reference" className="w-full h-full object-cover" />
+                </div>
+                <span className="text-[11px] font-semibold text-[#9A79BA] mt-2 tracking-wide">
+                  Match this exact pose
+                </span>
+              </div>
             </div>
 
             {/* Hidden Native File/Camera Input */}

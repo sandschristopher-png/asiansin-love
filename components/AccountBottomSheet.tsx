@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
@@ -111,7 +111,7 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
   const backdropOpacity = (1 - progress) * 0.75;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center pointer-events-auto">
+    <div className="fixed inset-0 z-[60] flex items-end justify-center pointer-events-auto">
       <div
         onClick={closeWithAnimation}
         style={{
@@ -128,7 +128,7 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
           transform: `translate3d(0, ${dragY}px, 0)`,
           transition: isDragging ? 'none' : 'transform 0.26s cubic-bezier(0.16, 1, 0.3, 1)',
         }}
-        className="relative w-full max-w-lg bg-[#241E2F] border-t border-[#725A7A]/40 rounded-t-[28px] p-5 pb-8 shadow-2xl z-10 max-h-[85dvh] flex flex-col justify-between overflow-y-auto select-none will-change-transform"
+        className="relative w-full max-w-lg bg-[#261F33] border-t border-[#725A7A]/40 rounded-t-[28px] p-5 pb-8 shadow-2xl z-10 max-h-[85dvh] flex flex-col justify-between overflow-y-auto select-none will-change-transform"
       >
         <div className="space-y-4">
           
@@ -146,7 +146,7 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
-            className="pb-2 border-b border-[#725A7A]/25 touch-none"
+            className="pb-2 border-b border-[#9A79BA]/25 touch-none"
           >
             <h2 className="text-xl font-black text-[#E6D7FA] tracking-tight">
               Your Account
@@ -154,7 +154,7 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
           </div>
 
           {/* User Profile Summary: Circular rounded-full avatar matching chat rows */}
-          <div className="p-4 rounded-2xl bg-[#17131F] border border-[#725A7A]/30 flex items-center justify-between gap-3 shadow-md">
+          <div className="p-4 rounded-2xl bg-[#130F18] border border-[#725A7A]/30 flex items-center justify-between gap-3 shadow-md">
             <div className="flex items-center gap-3">
               <div className="h-12 w-12 rounded-full bg-[#653C87] text-[#E6D7FA] flex items-center justify-center font-black text-base border border-[#9A79BA]/50 shadow-inner flex-shrink-0">
                 {initials}
@@ -177,14 +177,14 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
             <Link
               href="/profile"
               onClick={closeWithAnimation}
-              className="px-3.5 py-1.5 rounded-xl bg-[#241E2F] hover:bg-[#653C87]/30 border border-[#725A7A]/40 text-[#E6D7FA] hover:text-white text-xs font-bold transition-all active:scale-95"
+              className="px-3.5 py-1.5 rounded-xl bg-[#261F33] hover:bg-[#653C87]/30 border border-[#725A7A]/40 text-[#E6D7FA] hover:text-white text-xs font-bold transition-all active:scale-95"
             >
               Edit
             </Link>
           </div>
 
           {/* Verification Status Card */}
-          <div className="p-4 rounded-2xl bg-[#17131F] border border-[#725A7A]/35 flex items-center justify-between gap-3 shadow-md">
+          <div className="p-4 rounded-2xl bg-[#130F18] border border-[#9A79BA]/35 flex items-center justify-between gap-3 shadow-md">
             <div className="space-y-1">
               <div className="flex items-center gap-1.5">
                 <svg className="w-4 h-4 text-[#9A79BA]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -217,7 +217,7 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
             <Link
               href="/profile"
               onClick={closeWithAnimation}
-              className="flex items-center justify-between p-3.5 rounded-2xl bg-[#17131F]/90 hover:bg-[#17131F] border border-[#725A7A]/30 text-white font-bold text-sm transition-all active:scale-[0.985]"
+              className="flex items-center justify-between p-3.5 rounded-2xl bg-[#130F18]/90 hover:bg-[#130F18] border border-[#725A7A]/30 text-white font-bold text-sm transition-all active:scale-[0.985]"
             >
               <div className="flex items-center gap-3">
                 <svg className="w-4 h-4 text-[#9A79BA]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -231,7 +231,7 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
             <Link
               href="/favorites"
               onClick={closeWithAnimation}
-              className="flex items-center justify-between p-3.5 rounded-2xl bg-[#17131F]/90 hover:bg-[#17131F] border border-[#725A7A]/30 text-white font-bold text-sm transition-all active:scale-[0.985]"
+              className="flex items-center justify-between p-3.5 rounded-2xl bg-[#130F18]/90 hover:bg-[#130F18] border border-[#725A7A]/30 text-white font-bold text-sm transition-all active:scale-[0.985]"
             >
               <div className="flex items-center gap-3">
                 <svg className="w-4 h-4 text-[#9A79BA]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -245,7 +245,7 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
             <Link
               href="/settings"
               onClick={closeWithAnimation}
-              className="flex items-center justify-between p-3.5 rounded-2xl bg-[#17131F]/90 hover:bg-[#17131F] border border-[#725A7A]/30 text-white font-bold text-sm transition-all active:scale-[0.985]"
+              className="flex items-center justify-between p-3.5 rounded-2xl bg-[#130F18]/90 hover:bg-[#130F18] border border-[#725A7A]/30 text-white font-bold text-sm transition-all active:scale-[0.985]"
             >
               <div className="flex items-center gap-3">
                 <svg className="w-4 h-4 text-[#9A79BA]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -259,11 +259,11 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
           </div>
         </div>
 
-        <div className="pt-4 mt-3 border-t border-[#725A7A]/25">
+        <div className="pt-4 mt-3 border-t border-[#9A79BA]/25">
           <button
             type="button"
             onClick={handleSignOut}
-            className="w-full py-3 rounded-2xl bg-[#17131F] hover:bg-[#201A2B] border border-rose-500/30 text-rose-300 font-extrabold text-xs tracking-wider uppercase active:scale-[0.985] transition-transform"
+            className="w-full py-3 rounded-2xl bg-[#130F18] hover:bg-[#201A2B] border border-rose-500/30 text-rose-300 font-extrabold text-xs tracking-wider uppercase active:scale-[0.985] transition-transform"
           >
             Sign Out / Switch Account
           </button>
