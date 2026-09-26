@@ -1,10 +1,8 @@
 'use client';
-
 import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
 import { InteractionReviewModal } from './InteractionReviewModal';
-
 export interface TargetUserProfile {
   id: string;
   fullName: string;
@@ -23,7 +21,6 @@ export interface TargetUserProfile {
   reputationScore?: number;
   childrenStatus?: string;
 }
-
 export interface MessageItem {
   id: string;
   sender_id: string;
@@ -32,13 +29,11 @@ export interface MessageItem {
   created_at: string;
   read?: boolean;
 }
-
 interface ChatInterfaceProps {
   currentUserId: string;
   targetUser: TargetUserProfile;
   initialMessages?: MessageItem[];
 }
-
 export function ChatInterface({ currentUserId, targetUser, initialMessages = [] }: ChatInterfaceProps) {
   const [messages, setMessages] = useState<MessageItem[]>(initialMessages);
   const [input, setInput] = useState('');
@@ -48,29 +43,22 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
   const [showMobileBio, setShowMobileBio] = useState(false);
   const [showSafetyMenu, setShowSafetyMenu] = useState(false);
   const [feedbackSuccess, setFeedbackSuccess] = useState<string | null>(null);
-
   const allPhotos = [targetUser.avatarUrl, ...(targetUser.galleryUrls || [])].filter(Boolean);
   const [activePhotoIndex, setActivePhotoIndex] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
-
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
-
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
-
   useEffect(() => {
     async function markAsRead() {
       if (!currentUserId || currentUserId.startsWith('00000000')) return;
-
       const unreadIds = messages
         .filter((m) => m.sender_id === targetUser.id && m.receiver_id === currentUserId && !m.read)
         .map((m) => m.id);
-
       if (unreadIds.length > 0) {
         await supabase
           .from('messages')
@@ -78,10 +66,8 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
           .in('id', unreadIds);
       }
     }
-
     markAsRead();
   }, [messages, currentUserId, targetUser.id]);
-
   useEffect(() => {
     const channel = supabase
       .channel(`chat_${targetUser.id}_${currentUserId}`)
@@ -98,7 +84,6 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
             const isRelevant =
               (newMsg.sender_id === currentUserId && newMsg.receiver_id === targetUser.id) ||
               (newMsg.sender_id === targetUser.id && newMsg.receiver_id === currentUserId);
-
             if (isRelevant) {
               setMessages((prev) => {
                 if (prev.some((m) => m.id === newMsg.id)) return prev;
@@ -114,20 +99,16 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
         }
       )
       .subscribe();
-
     return () => {
       supabase.removeChannel(channel);
     };
   }, [currentUserId, targetUser.id]);
-
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     const cleanContent = input.trim();
     if (!cleanContent || isSending) return;
-
     setIsSending(true);
     setErrorMessage(null);
-
     try {
       const res = await fetch('/api/messages/send', {
         method: 'POST',
@@ -138,9 +119,7 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
           content: cleanContent,
         }),
       });
-
       const data = await res.json();
-
       if (!res.ok) {
         setErrorMessage(data.error || 'Message could not be sent.');
       } else {
@@ -158,13 +137,11 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
       setIsSending(false);
     }
   };
-
   const handleQuickReport = async (category: string, penalty: number, label: string) => {
     setShowSafetyMenu(false);
     if (!confirm(`Are you sure you want to log this report: "${label}"? This will be added to community moderation logs.`)) {
       return;
     }
-
     try {
       const { error } = await supabase.from('reputation_reports').insert({
         reporter_id: currentUserId,
@@ -173,7 +150,6 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
         penalty_points: penalty,
         notes: `Direct chat report: ${label}`,
       });
-
       if (error) {
         setErrorMessage('Unable to log incident.');
       } else {
@@ -184,19 +160,15 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
       setErrorMessage('Network error submitting report.');
     }
   };
-
   const handleNextPhoto = (e?: React.MouseEvent) => {
     e?.stopPropagation();
     setActivePhotoIndex((prev) => (prev + 1) % allPhotos.length);
   };
-
   const handlePrevPhoto = (e?: React.MouseEvent) => {
     e?.stopPropagation();
     setActivePhotoIndex((prev) => (prev - 1 + allPhotos.length) % allPhotos.length);
   };
-
   const rep = targetUser.reputationScore ?? 100;
-
   return (
     <div className="w-full max-w-6xl mx-auto px-2 sm:px-6 py-2 sm:py-4 flex flex-col h-[calc(100dvh-64px)] max-h-[960px]">
       
@@ -222,7 +194,6 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
           </div>
         </div>
       </div>
-
       {/* Main Split Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 sm:gap-5 flex-1 min-h-0 overflow-hidden relative">
         
@@ -242,7 +213,6 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
                   className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#17131F] via-transparent to-transparent opacity-80" />
-
                 {/* Badges */}
                 <div className="absolute top-3 left-3 flex flex-col gap-1.5 pointer-events-none">
                   {targetUser.isVerified && (
@@ -254,13 +224,11 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
                     {rep}% Reputation
                   </span>
                 </div>
-
                 <div className="absolute top-3 right-3">
                   <span className="px-2.5 py-1 rounded-lg bg-black/60 backdrop-blur-md border border-white/20 text-xs font-mono font-bold text-white">
                     {activePhotoIndex + 1} / {allPhotos.length}
                   </span>
                 </div>
-
                 {allPhotos.length > 1 && (
                   <div className="absolute inset-x-2 top-1/2 -translate-y-1/2 flex justify-between pointer-events-none">
                     <button
@@ -283,14 +251,12 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
                     </button>
                   </div>
                 )}
-
                 <div className="absolute bottom-3 left-3.5 right-3.5 pointer-events-none">
                   <p className="text-sm text-white font-semibold drop-shadow-md">
                     {targetUser.city}, {targetUser.country}
                   </p>
                 </div>
               </div>
-
               {allPhotos.length > 1 && (
                 <div className="flex gap-2 overflow-x-auto pb-1">
                   {allPhotos.map((url, idx) => (
@@ -310,7 +276,6 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
                 </div>
               )}
             </div>
-
             {/* Profile Info */}
             <div>
               <div className="flex items-baseline justify-between">
@@ -328,7 +293,6 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
                 <p className="text-sm font-medium text-[#ECE8F4] mt-0.5">{targetUser.jobTitle}</p>
               )}
             </div>
-
             {/* Courtship & Dependents */}
             <div className="grid grid-cols-2 gap-2">
               <div className="p-3 rounded-2xl bg-[#17131F] border border-[#7D7E92]/30">
@@ -337,7 +301,6 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
                 </span>
                 <p className="text-xs font-semibold text-white truncate">{targetUser.relationshipIntent}</p>
               </div>
-
               <div className="p-3 rounded-2xl bg-[#17131F] border border-[#7D7E92]/30">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-[#9A79BA] block mb-0.5">
                   Family Status
@@ -347,7 +310,6 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
                 </p>
               </div>
             </div>
-
             {targetUser.bio && (
               <div className="p-3.5 rounded-2xl bg-[#17131F]/60 border border-[#7D7E92]/20">
                 <span className="text-xs font-bold uppercase tracking-wider text-[#9A79BA] block mb-1">
@@ -359,7 +321,6 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
               </div>
             )}
           </div>
-
           <button
             onClick={() => setShowReviewModal(true)}
             className="w-full mt-4 py-3 rounded-2xl bg-[#17131F] hover:bg-[#3B1E42] border border-[#7D7E92]/30 text-xs font-bold text-white transition-colors"
@@ -367,7 +328,6 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
             Leave Courtship Feedback
           </button>
         </div>
-
         {/* Right Column: Chat Feed & Controls */}
         <div className="col-span-1 lg:col-span-7 flex flex-col rounded-2xl sm:rounded-3xl bg-[#241E2F] border border-[#7D7E92]/30 shadow-2xl overflow-hidden min-h-0">
           
@@ -400,7 +360,6 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
                 </p>
               </div>
             </div>
-
             <div className="flex items-center gap-2 relative">
               <button
                 type="button"
@@ -409,7 +368,6 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
               >
                 Flag
               </button>
-
               {/* 1-Tap Safety Menu */}
               {showSafetyMenu && (
                 <div className="absolute right-0 top-10 z-30 w-64 rounded-2xl bg-[#17131F] border border-[#7D7E92]/40 shadow-2xl p-2 space-y-1">
@@ -442,7 +400,6 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
                   </button>
                 </div>
               )}
-
               <button
                 type="button"
                 onClick={() => setIsLightboxOpen(true)}
@@ -459,21 +416,18 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
               </button>
             </div>
           </div>
-
           {/* Safety Rule Banner */}
           <div className="px-3.5 sm:px-5 py-2 bg-[#17131F]/90 border-b border-[#7D7E92]/20 flex items-center justify-between text-[11px] text-[#ECE8F4] shrink-0">
             <span>
               <strong className="text-white font-bold">Safeguard:</strong> Never send financial wires or allowances.
             </span>
           </div>
-
           {/* Feedback Success Notification */}
           {feedbackSuccess && (
             <div className="px-4 py-2 bg-emerald-950 border-b border-emerald-500 text-emerald-200 text-xs font-semibold shrink-0">
               {feedbackSuccess}
             </div>
           )}
-
           {/* Message Thread Area */}
           <div className="flex-1 p-3 sm:p-5 overflow-y-auto space-y-3 min-h-0">
             {messages.length === 0 ? (
@@ -494,7 +448,7 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
               messages.map((m) => {
                 const isMe = m.sender_id === currentUserId;
                 return (
-                  <div key={m.id} className={lex items-end gap-2 ${isMe ? 'justify-end' : 'justify-start'}}>
+                  <div key={m.id} className={`flex items-end gap-2 ${isMe ? 'justify-end' : 'justify-start'}`}>
                     {!isMe && (
                       <div className="w-7 h-7 rounded-full overflow-hidden shrink-0 border border-[#9A79BA]/30 bg-[#261F33] mb-1">
                         <img 
@@ -541,7 +495,6 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
             )}
             <div ref={messagesEndRef} />
           </div>
-
           {/* Composer Bar (16px base text preventing iOS auto-zoom) */}
           <form 
             onSubmit={handleSendMessage} 
@@ -563,11 +516,8 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
               {isSending ? 'Sending...' : 'Send'}
             </button>
           </form>
-
         </div>
-
       </div>
-
       {/* MOBILE BIO SLIDEOVER DRAWER */}
       {showMobileBio && (
         <div 
@@ -587,28 +537,23 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
                 Close
               </button>
             </div>
-
             <div className="relative aspect-square w-full rounded-2xl overflow-hidden border border-[#7D7E92]/30">
               <img src={targetUser.avatarUrl} alt={targetUser.fullName} className="w-full h-full object-cover" />
             </div>
-
             <div>
               <h3 className="text-xl font-bold text-white">{targetUser.fullName}, {targetUser.age}</h3>
               <p className="text-xs text-[#B6AEC7]">{targetUser.city}, {targetUser.country}</p>
             </div>
-
             <div className="space-y-2">
               <div className="p-3 rounded-xl bg-[#17131F] border border-[#7D7E92]/30 text-xs">
                 <span className="text-[10px] font-bold uppercase text-[#9A79BA] block">Courtship Goal</span>
                 <span className="font-semibold text-white">{targetUser.relationshipIntent}</span>
               </div>
-
               <div className="p-3 rounded-xl bg-[#17131F] border border-[#7D7E92]/30 text-xs">
                 <span className="text-[10px] font-bold uppercase text-[#9A79BA] block">Family Transparency</span>
                 <span className="font-semibold text-[#ECE8F4]">{targetUser.childrenStatus || 'No Dependents'}</span>
               </div>
             </div>
-
             {targetUser.bio && (
               <div className="p-3.5 rounded-xl bg-[#17131F] border border-[#7D7E92]/20 text-xs text-[#ECE8F4] leading-relaxed">
                 {targetUser.bio}
@@ -617,7 +562,6 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
           </div>
         </div>
       )}
-
       {/* FULLSCREEN PHOTO LIGHTBOX */}
       {isLightboxOpen && (
         <div 
@@ -643,14 +587,12 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
                 Close
               </button>
             </div>
-
             <div className="relative w-full max-h-[70vh] aspect-[4/3] rounded-2xl overflow-hidden bg-black border border-[#7D7E92]/30 flex items-center justify-center shadow-2xl">
               <img
                 src={allPhotos[activePhotoIndex]}
                 alt={`${targetUser.fullName} photo ${activePhotoIndex + 1}`}
                 className="w-full h-full object-contain"
               />
-
               {allPhotos.length > 1 && (
                 <>
                   <button
@@ -677,7 +619,6 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
           </div>
         </div>
       )}
-
       <InteractionReviewModal
         isOpen={showReviewModal}
         reviewerId={currentUserId}
@@ -689,10 +630,8 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
           setTimeout(() => setFeedbackSuccess(null), 5000);
         }}
       />
-
     </div>
   );
 }
-
 export default ChatInterface;
-
+
