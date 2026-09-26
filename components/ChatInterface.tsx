@@ -494,7 +494,16 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
               messages.map((m) => {
                 const isMe = m.sender_id === currentUserId;
                 return (
-                  <div key={m.id} className={`flex ${isMe ? 'justify-end' : 'justify-start'}`}>
+                  <div key={m.id} className={lex items-end gap-2 ${isMe ? 'justify-end' : 'justify-start'}}>
+                    {!isMe && (
+                      <div className="w-7 h-7 rounded-full overflow-hidden shrink-0 border border-[#9A79BA]/30 bg-[#261F33] mb-1">
+                        <img 
+                          src={targetUser.avatarUrl || '/dummy-1.jpg'} 
+                          alt={targetUser.fullName} 
+                          className="w-full h-full object-cover" 
+                        />
+                      </div>
+                    )}
                     <div
                       className={`max-w-[85%] sm:max-w-[78%] px-3.5 sm:px-4 py-2.5 sm:py-3 rounded-2xl text-[13px] sm:text-[14px] leading-relaxed shadow-sm ${
                         isMe
@@ -686,3 +695,4 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
 }
 
 export default ChatInterface;
+

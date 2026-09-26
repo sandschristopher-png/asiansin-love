@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -14,14 +14,49 @@ import {
   User 
 } from 'lucide-react';
 import { AccountBottomSheet } from '@/components/AccountBottomSheet';
+import { createClient } from '@/lib/supabase/client';
 
 export function BottomNav() {
   const pathname = usePathname();
+  const [supabase] = useState(() => createClient());
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [accountSheetOpen, setAccountSheetOpen] = useState(false);
   const [listsOpen, setListsOpen] = useState(false);
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
 
   const isActive = (path: string) => pathname === path;
+
+  useEffect(() => {
+    async function loadUserAvatar() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const { data } = await supabase
+          .from('profiles')
+          .select('avatar_url')
+          .eq('id', user.id)
+          .single();
+        setAvatarUrl(data?.avatar_url || user.user_metadata?.avatar_url || null);
+      }
+    }
+    loadUserAvatar();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (session?.user) {
+        const { data } = await supabase
+          .from('profiles')
+          .select('avatar_url')
+          .eq('id', session.user.id)
+          .single();
+        setAvatarUrl(data?.avatar_url || session.user.user_metadata?.avatar_url || null);
+      } else {
+        setAvatarUrl(null);
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [supabase]);
 
   // Auto-hide bottom nav when mobile virtual keyboard expands
   useEffect(() => {
@@ -119,7 +154,7 @@ export function BottomNav() {
               </span>
             </button>
 
-            {/* 5. YOU */}
+            {/* 5. YOU (Avatar Trigger with micro-indicator) */}
             <button
               type="button"
               onClick={() => {
@@ -130,8 +165,22 @@ export function BottomNav() {
                 accountSheetOpen ? 'text-[#E6D7FA]' : 'text-[#9A79BA] hover:text-[#E6D7FA]'
               }`}
             >
-              <div className={`p-1.5 rounded-full transition-all duration-200 ${accountSheetOpen ? 'bg-[#653C87] text-[#E6D7FA] shadow-md shadow-[#653C87]/40' : ''}`}>
-                <User className="w-5 h-5" strokeWidth={accountSheetOpen ? 2.5 : 2} />
+              <div className="relative">
+                <div className={`w-8 h-8 rounded-full overflow-hidden flex items-center justify-center transition-all duration-200 ${
+                  accountSheetOpen 
+                    ? 'ring-2 ring-[#E6D7FA] bg-[#653C87]' 
+                    : 'border border-[#9A79BA]/50 bg-[#1D1726]'
+                }`}>
+                  {avatarUrl ? (
+                    <img src={avatarUrl} alt="You" className="w-full h-full object-cover" />
+                  ) : (
+                    <User className="w-4 h-4 text-[#C9A4E8]" />
+                  )}
+                </div>
+                {/* Mini indicator badge on the avatar rim */}
+                <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#653C87] border border-[#261F33] flex items-center justify-center">
+                  <span className="w-1 h-1 rounded-full bg-[#E6D7FA]" />
+                </span>
               </div>
               <span className={`text-[10px] tracking-wide font-extrabold mt-0.5 ${accountSheetOpen ? 'text-[#E6D7FA]' : 'text-[#9A79BA]'}`}>
                 You
