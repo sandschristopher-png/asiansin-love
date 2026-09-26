@@ -255,7 +255,7 @@ export default function DiscoverPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search by name, city, or interests..."
-              className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-[#261F33] border border-[#7D7E92]/30 text-sm text-white placeholder-[#9A79BA]/60 shadow-inner focus:outline-none focus:border-[#9A79BA] transition"
+              className="w-full pl-10 pr-4 py-2 rounded-full bg-[#261F33] border border-[#7D7E92]/30 text-sm text-white placeholder-[#9A79BA]/60 shadow-inner focus:outline-none focus:border-[#9A79BA] transition"
             />
           </div>
 
@@ -263,7 +263,7 @@ export default function DiscoverPage() {
           <div className="flex items-center gap-2">
             
             {/* Gender Segmented Switch */}
-            <div className="flex items-center bg-[#261F33] border border-[#7D7E92]/30 p-1 rounded-2xl shadow-sm">
+            <div className="flex items-center bg-[#261F33] border border-[#7D7E92]/30 p-1 rounded-full shadow-sm">
               {(['All', 'woman', 'man', 'trans'] as const).map((genderOption) => {
                 const isActive = selectedGender === genderOption;
                 const label = genderOption === 'All' ? 'All' : genderOption === 'woman' ? 'Women' : genderOption === 'man' ? 'Men' : 'Trans';
@@ -271,7 +271,7 @@ export default function DiscoverPage() {
                   <button
                     key={genderOption}
                     onClick={() => setSelectedGender(genderOption)}
-                    className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all duration-150 ${
+                    className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-150 ${
                       isActive
                         ? 'bg-[#653C87] text-white shadow-md'
                         : 'text-[#E6D7FA]/75 hover:text-white hover:bg-white/5'
@@ -286,7 +286,7 @@ export default function DiscoverPage() {
             {/* Filter Drawer Toggle Button */}
             <button
               onClick={() => setFiltersOpen(!filtersOpen)}
-              className={`flex items-center gap-2 px-3.5 py-2.5 rounded-2xl text-xs font-semibold border transition ${
+              className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold border transition ${
                 filtersOpen || activeFiltersCount > 0
                   ? 'bg-[#653C87] border-[#9A79BA] text-white shadow-md'
                   : 'bg-[#261F33] border-[#7D7E92]/30 text-[#E6D7FA] hover:border-[#9A79BA]/60 hover:text-white'
