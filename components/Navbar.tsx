@@ -13,7 +13,7 @@ export function Navbar() {
   const router = useRouter();
   const [supabase] = useState(() => createClient());
   const [user, setUser] = useState<any>(null);
-  const [profile, setProfile] = useState<{ display_name?: string; avatar_url?: string } | null>(null);
+  const [profile, setProfile] = useState<{ name?: string; display_name?: string; avatar_url?: string; photos?: string[] } | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -25,7 +25,7 @@ export function Navbar() {
       if (user) {
         const { data } = await supabase
           .from('profiles')
-          .select('display_name, avatar_url')
+          .select('name, display_name, avatar_url, photos')
           .eq('id', user.id)
           .single();
         if (data) setProfile(data);
@@ -39,7 +39,7 @@ export function Navbar() {
       if (currentUser) {
         const { data } = await supabase
           .from('profiles')
-          .select('display_name, avatar_url')
+          .select('name, display_name, avatar_url, photos')
           .eq('id', currentUser.id)
           .single();
         if (data) setProfile(data);
@@ -73,8 +73,8 @@ export function Navbar() {
     router.refresh();
   };
 
-  const displayName = profile?.display_name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Member';
-  const avatarUrl = profile?.avatar_url || user?.user_metadata?.avatar_url || null;
+  const displayName = profile?.name || profile?.display_name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Member';
+  const avatarUrl = profile?.avatar_url || (Array.isArray(profile?.photos) && profile.photos.length > 0 ? profile.photos[0] : null) || user?.user_metadata?.avatar_url || user?.user_metadata?.picture || null;
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-[#7D7E92]/20 bg-[#17131F]/95 backdrop-blur-md">
@@ -83,51 +83,26 @@ export function Navbar() {
         {/* Left: Squircle Bell Icon */}
         <div className="flex items-center">
           <button
-            type="button"
-            className="h-9 w-9 rounded-2xl bg-[#241E2F] border border-[#7D7E92]/30 flex items-center justify-center text-[#B6AEC7] hover:text-white hover:border-[#9A79BA]/50 transition-colors shadow-sm"
-            title="Notifications"
-          >
-            <Bell className="w-4 h-4" />
-          </button>
-        </div>
-
-        {/* Center: Brand Logo */}
-        <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center">
-          <Link href={user ? "/discover" : "/"} className="flex items-center active:scale-95 transition-transform">
-            <img
-              src="/ail-logo.png"
-              alt="asiansin.love"
-              className="w-44 sm:w-52 h-auto object-contain shrink-0"
-            />
-          </Link>
-        </div>
-
-        {/* Right: User Pill Dropdown or Sign In */}
-        <div className="flex items-center">
-          {user ? (
-            <div className="relative" ref={menuRef}>
-              <button
-                type="button"
-                onClick={() => setMenuOpen(!menuOpen)}
-                className={`flex items-center gap-2 pl-1 pr-2.5 py-1 rounded-full bg-[#261F33] border transition-all shadow-sm focus:outline-none ${
-                  menuOpen 
-                    ? 'border-[#9A79BA] ring-1 ring-[#9A79BA]/50 text-white' 
-                    : 'border-[#7D7E92]/30 text-[#E6D7FA] hover:border-[#9A79BA]/60 hover:text-white'
-                }`}
-                title="Account Menu"
-              >
-                <div className="w-7 h-7 rounded-full overflow-hidden bg-[#653C87]/40 border border-[#9A79BA]/40 flex items-center justify-center shrink-0">
-                  {avatarUrl ? (
-                    <img src={avatarUrl} alt={displayName} className="w-full h-full object-cover" />
-                  ) : (
-                    <User className="w-4 h-4 text-[#C9A4E8]" />
-                  )}
-                </div>
-                <span className="hidden sm:inline-block text-xs font-semibold max-w-[100px] truncate">
-                  {displayName}
-                </span>
-                <ChevronDown className={`w-3.5 h-3.5 text-[#9A79BA] transition-transform duration-200 ${menuOpen ? 'rotate-180' : ''}`} />
-              </button>
+                  type="button"
+                  onClick={() => setMenuOpen(!menuOpen)}
+                  className="flex items-center gap-1.5 sm:gap-2 p-1 sm:pl-1.5 sm:pr-2.5 rounded-full bg-[#261F33] hover:bg-[#322842] border border-[#9A79BA]/30 transition-all shadow-sm focus:outline-none active:scale-95"
+                  title="Account Menu"
+                  aria-expanded={menuOpen}
+                >
+                  <div className="w-8 h-8 rounded-full overflow-hidden bg-[#653C87]/40 border border-[#9A79BA]/40 flex items-center justify-center shrink-0">
+                    {avatarUrl ? (
+                      <img src={avatarUrl} alt={displayName} className="w-full h-full object-cover" />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center bg-[#3D2554] text-[#C9A4E8] font-bold text-xs uppercase">
+                        {displayName ? displayName.charAt(0) : <User className="w-4 h-4 text-[#C9A4E8]" />}
+                      </div>
+                    )}
+                  </div>
+                  <span className="hidden sm:inline-block text-xs font-semibold max-w-[110px] truncate text-white">
+                    {displayName}
+                  </span>
+                  <ChevronDown className={`w-3.5 h-3.5 text-[#9A79BA] transition-transform duration-200 ${menuOpen ? 'rotate-180' : ''}`} />
+                </button>
 
               {menuOpen && (
                 <div className="absolute right-0 mt-2.5 w-56 rounded-2xl bg-[#1D1726] border border-[#7D7E92]/30 shadow-2xl py-2 z-50 text-xs backdrop-blur-xl animate-in fade-in zoom-in-95 duration-100">

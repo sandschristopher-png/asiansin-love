@@ -70,6 +70,8 @@ export default function MyProfilePage() {
   const [location, setLocation] = useState('Las Vegas, NV');
   const [locationSource, setLocationSource] = useState<'gps_verified' | 'self_reported'>('self_reported');
   const [locationVerifiedAt, setLocationVerifiedAt] = useState<string | null>(null);
+  const [latitude, setLatitude] = useState<number | null>(null);
+  const [longitude, setLongitude] = useState<number | null>(null);
   const [isLocating, setIsLocating] = useState<boolean>(false);
   const [locError, setLocError] = useState<string | null>(null);
   const [bio, setBio] = useState('Down-to-earth tech professional with a passion for creative projects, travel, and honest conversations. Looking for someone grounded who values intentional courtship and a genuine future.');
@@ -120,6 +122,8 @@ export default function MyProfilePage() {
         if (data.location) setLocation(data.location);
         if (data.location_source) setLocationSource(data.location_source);
         if (data.location_verified_at) setLocationVerifiedAt(data.location_verified_at);
+          if (data.latitude) setLatitude(data.latitude);
+          if (data.longitude) setLongitude(data.longitude);
         if (data.bio) setBio(data.bio);
         if (data.looking_for) setLookingFor(data.looking_for);
         if (data.occupation) setProfession(data.occupation);
@@ -143,7 +147,7 @@ export default function MyProfilePage() {
   const handleSave = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
-      await supabase.from('profiles').upsert({
+      const payload: any = {
         id: user.id,
         name,
         age: Number(age),
@@ -164,7 +168,17 @@ export default function MyProfilePage() {
         drinking,
         smoking,
         updated_at: new Date().toISOString()
-      });
+      };
+
+      if (latitude !== null) payload.latitude = latitude;
+      if (longitude !== null) payload.longitude = longitude;
+
+      const { error } = await supabase.from('profiles').upsert(payload);
+      if (error) {
+        console.error('Supabase profile save error:', error);
+        alert('Failed to save profile: ' + error.message);
+        return;
+      }
     }
     setSaveSuccess(true);
     setIsEditing(false);
@@ -296,6 +310,8 @@ export default function MyProfilePage() {
                           setLocation(formatted);
                           setLocationSource('gps_verified');
                           setLocationVerifiedAt(new Date().toISOString());
+                            if (res.data.latitude) setLatitude(res.data.latitude);
+                            if (res.data.longitude) setLongitude(res.data.longitude);
                         } else if (res.error) {
                           setLocError(res.error);
                         }
