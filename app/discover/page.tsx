@@ -1,8 +1,9 @@
 ﻿'use client';
 
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import { useSearchParams } from 'next/navigation';
 import { 
   Search, Heart, X as XIcon, Star, MessageCircle, 
   MapPin, ShieldCheck, CheckCircle, SlidersHorizontal, 
@@ -69,7 +70,7 @@ const DEMO_PROFILES: ProfileItem[] = [
     name: 'Maricel',
     age: 28,
     gender: 'woman',
-    location: 'Caayaan, Samar',
+    location: 'Calbayog, Samar',
     country: 'Philippines',
     avatarUrl: '/dummy-3.jpg',
     repScore: 97,
@@ -131,21 +132,60 @@ const DEMO_PROFILES: ProfileItem[] = [
   },
 ];
 
-export default function DiscoverPage() {
+function DiscoverContent() {
+  const searchParams = useSearchParams();
   const [supabase] = useState(() => createClient());
   const [profiles, setProfiles] = useState<ProfileItem[]>(DEMO_PROFILES);
-  const [searchQuery, setSearchQuery] = useState('');
-  const [selectedCountry, setSelectedCountry] = useState('All');
-  const [selectedGender, setSelectedGender] = useState<'All' | 'woman' | 'man' | 'trans'>('All');
+
+  // Initialize filter states from URL search parameters if available
+  const [searchQuery, setSearchQuery] = useState(() => searchParams.get('q') || '');
+  const [selectedCountry, setSelectedCountry] = useState(() => searchParams.get('country') || 'All');
+  const [selectedGender, setSelectedGender] = useState<'All' | 'woman' | 'man' | 'trans'>(() => {
+    const g = searchParams.get('gender');
+    return g && ['All', 'woman', 'man', 'trans'].includes(g) ? (g as any) : 'All';
+  });
+
+  const [filtersOpen, setFiltersOpen] = useState(false);
+  const [minAge, setMinAge] = useState<number>(() => {
+    const val = Number(searchParams.get('minAge'));
+    return !isNaN(val) && val >= 18 && val <= 65 ? val : 18;
+  });
+  const [maxAge, setMaxAge] = useState<number>(() => {
+    const val = Number(searchParams.get('maxAge'));
+    return !isNaN(val) && val >= 18 && val <= 65 ? val : 65;
+  });
+  const [selectedIntent, setSelectedIntent] = useState<string>(() => searchParams.get('intent') || 'All');
+  const [verifiedOnly, setVerifiedOnly] = useState<boolean>(() => searchParams.get('verified') === 'true');
+  const [activeNowOnly, setActiveNowOnly] = useState<boolean>(() => searchParams.get('active') === 'true');
+
   const [cardActions, setCardActions] = useState<Record<string, ActionType>>({});
 
-  // Slide-out Drawer Filter States
-  const [filtersOpen, setFiltersOpen] = useState(false);
-  const [minAge, setMinAge] = useState<number>(18);
-  const [maxAge, setMaxAge] = useState<number>(65);
-  const [selectedIntent, setSelectedIntent] = useState<string>('All');
-  const [verifiedOnly, setVerifiedOnly] = useState<boolean>(false);
-  const [activeNowOnly, setActiveNowOnly] = useState<boolean>(false);
+  // Sync state back to URL query parameters smoothly
+  useEffect(() => {
+    const params = new URLSearchParams();
+
+    if (searchQuery.trim()) params.set('q', searchQuery.trim());
+    if (selectedCountry !== 'All') params.set('country', selectedCountry);
+    if (selectedGender !== 'All') params.set('gender', selectedGender);
+    if (minAge > 18) params.set('minAge', minAge.toString());
+    if (maxAge < 65) params.set('maxAge', maxAge.toString());
+    if (selectedIntent !== 'All') params.set('intent', selectedIntent);
+    if (verifiedOnly) params.set('verified', 'true');
+    if (activeNowOnly) params.set('active', 'true');
+
+    const newQueryString = params.toString();
+    const newRelativePathQuery = window.location.pathname + (newQueryString ? `?${newQueryString}` : '');
+    window.history.replaceState(null, '', newRelativePathQuery);
+  }, [
+    searchQuery,
+    selectedCountry,
+    selectedGender,
+    minAge,
+    maxAge,
+    selectedIntent,
+    verifiedOnly,
+    activeNowOnly,
+  ]);
 
   const activeFiltersCount = useMemo(() => {
     let count = 0;
@@ -202,7 +242,6 @@ export default function DiscoverPage() {
     const currentAction = cardActions[id];
     const isCurrentlyActive = currentAction === action;
 
-    // Optimistic UI update
     setCardActions((prev) => {
       const next = { ...prev };
       if (isCurrentlyActive) {
@@ -213,7 +252,6 @@ export default function DiscoverPage() {
       return next;
     });
 
-    // Persist to Supabase and LocalStorage
     persistCardAction(supabase, id, action, isCurrentlyActive);
   };
 
@@ -558,13 +596,11 @@ export default function DiscoverPage() {
 
                   {/* Top Badges Overlay */}
                   <div className="absolute top-2 left-2 right-2 flex items-center justify-between z-10">
-                    {/* Trust / Rep Pill */}
                     <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-[10px] font-bold text-emerald-400">
                       <ShieldCheck className="w-3 h-3 text-emerald-400" />
                       <span>{profile.repScore}%</span>
                     </div>
 
-                    {/* Online Dot */}
                     {profile.online && (
                       <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-[9px] font-medium text-emerald-400">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
@@ -629,7 +665,7 @@ export default function DiscoverPage() {
 
                     {/* Message / Chat */}
                     <Link 
-                      href={`/profile/${profile.id}`}
+                      href={`/chat/${profile.id}`}
                       aria-label="Message" 
                       className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center bg-[#1D1726] border border-[#7D7E92]/30 text-[#E6D7FA]/70 hover:text-[#C9A4E8] hover:border-[#9A79BA]/60 hover:bg-[#653C87]/30 transition active:scale-90"
                     >
@@ -662,5 +698,13 @@ export default function DiscoverPage() {
       {/* Persistent Bottom Footer */}
       <Footer />
     </div>
+  );
+}
+
+export default function DiscoverPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#130f18] text-[#E6D7FA] p-8 text-center text-xs">Loading discover feed...</div>}>
+      <DiscoverContent />
+    </Suspense>
   );
 }
