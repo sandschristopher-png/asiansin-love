@@ -1,5 +1,7 @@
-﻿'use client';
+'use client';
 
+import { getDistanceLabel } from '@/lib/location';
+﻿
 import React, { useState, useEffect, useMemo, useRef, Suspense } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -30,6 +32,9 @@ export interface ProfileItem {
   age: number;
   gender: 'woman' | 'man' | 'trans';
   location: string;
+  latitude?: number | null;
+  longitude?: number | null;
+  location_source?: 'gps_verified' | 'self_reported' | null;
   country: string;
   avatarUrl: string;
   repScore: number;
@@ -181,6 +186,7 @@ export const SEED_PROFILES: ProfileItem[] = [
 function DiscoverContent() {
   const searchParams = useSearchParams();
   const [supabase] = useState(() => createClient());
+  const [currentUserCoords, setCurrentUserCoords] = useState<{ lat: number; lon: number } | null>(null);
   const [profiles, setProfiles] = useState<ProfileItem[]>(SEED_PROFILES);
 
   const [searchQuery, setSearchQuery] = useState(() => searchParams.get('q') || '');
@@ -354,10 +360,25 @@ function DiscoverContent() {
 
   useEffect(() => {
     async function loadLiveProfiles() {
+        try {
+          const { data: { user } } = await supabase.auth.getUser();
+          if (user) {
+            const { data: userProfile } = await supabase
+              .from('profiles')
+              .select('latitude, longitude')
+              .eq('id', user.id)
+              .maybeSingle();
+            if (userProfile?.latitude && userProfile?.longitude) {
+              setCurrentUserCoords({ lat: userProfile.latitude, lon: userProfile.longitude });
+            }
+          }
+        } catch (e) {
+          console.warn('Could not load user location for distance calculation', e);
+        }
       try {
         const { data, error } = await supabase
           .from('profiles')
-          .select('id, display_name, full_name, username, age, gender, city, country, avatar_url, is_verified, reputation_score, last_active, intent, occupation, bio')
+          .select('id, display_name, full_name, username, age, gender, city, country, avatar_url, is_verified, reputation_score, last_active, intent, occupation, bio, latitude, longitude, location_source')
           .order('created_at', { ascending: false })
           .limit(40);
 
@@ -381,6 +402,9 @@ function DiscoverContent() {
               avatarUrl: row.avatar_url || '/jennalyn.png',
               repScore: row.reputation_score || 98,
               verified: Boolean(row.is_verified),
+                latitude: row.latitude,
+                longitude: row.longitude,
+                location_source: row.location_source,
               online: row.last_active ? (Date.now() - new Date(row.last_active).getTime() < 1000 * 60 * 15) : true,
               intent: row.intent || 'Marriage',
               bio: row.bio,
@@ -575,10 +599,27 @@ function DiscoverContent() {
                       {profile.name}, {profile.age}
                       {profile.verified && <CheckCircle className="w-3.5 h-3.5 text-[#9A79BA] shrink-0" />}
                     </h3>
-                    <p className="text-[11px] sm:text-xs font-medium text-[#E6D7FA]/80 flex items-center gap-1.5 truncate mt-0.5">
-                      <MapPin className="w-3 h-3 text-[#9A79BA] shrink-0" />
-                      {profile.location}
-                    </p>
+                    {(() => {
+                        const isVerified = profile.location_source === 'gps_verified';
+                        const distance = currentUserCoords
+                          ? getDistanceLabel(currentUserCoords.lat, currentUserCoords.lon, profile.latitude, profile.longitude)
+                          : null;
+                        return (
+                          <p className="text-[11px] sm:text-xs font-medium text-[#E6D7FA]/80 flex items-center gap-1.5 truncate mt-0.5">
+                            <MapPin
+                              className={`w-3 h-3 shrink-0 ${
+                                isVerified ? 'text-emerald-400' : 'text-[#9A79BA]'
+                              }`}
+                            />
+                            <span className="truncate">{profile.location}</span>
+                            {isVerified && distance && (
+                              <span className="text-[10px] text-emerald-300 font-normal shrink-0">
+                                � {distance}
+                              </span>
+                            )}
+                          </p>
+                        );
+                      })()}
                   </Link>
 
                   <div className="flex items-center justify-between pt-2 border-t border-[#7D7E92]/20">
