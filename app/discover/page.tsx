@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { 
   Search, Heart, X as XIcon, Star, MessageCircle, 
   MapPin, ShieldCheck, CheckCircle, SlidersHorizontal, 
-  RotateCcw, Sparkles, Check
+  RotateCcw, Check
 } from 'lucide-react';
 import { Footer } from '@/components/Footer';
 import { createClient } from '@/lib/supabase/client';
@@ -245,24 +245,44 @@ export default function DiscoverPage() {
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 pt-5 pb-16 space-y-4">
         
         {/* Streamlined Top Control Bar */}
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-          
-          {/* Search Input */}
-          <div className="relative flex-1">
-            <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A8A2AB]" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search by name, city, or interests..."
-              className="w-full pl-10 pr-4 py-2 rounded-full bg-[#261F33] border border-[#7D7E92]/30 text-sm text-white placeholder-[#9A79BA]/60 shadow-inner focus:outline-none focus:border-[#9A79BA] transition"
-            />
-          </div>
-
-          {/* Controls Cluster: Gender Segmented Switch + Drawer Filter Button */}
-          <div className="flex items-center gap-2">
+        <div className="space-y-2.5 sm:space-y-0">
+          {/* Desktop Single Row / Mobile Row 1 & 2 */}
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3">
             
-            {/* Gender Segmented Switch */}
+            {/* Search Input + Mobile Filter Button Row */}
+            <div className="flex items-center gap-2 flex-1">
+              <div className="relative flex-1">
+                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A8A2AB]" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search by name, city, or interests..."
+                  className="w-full pl-10 pr-4 py-2 rounded-full bg-[#261F33] border border-[#7D7E92]/30 text-sm text-white placeholder-[#9A79BA]/60 shadow-inner focus:outline-none focus:border-[#9A79BA] transition"
+                />
+              </div>
+
+              {/* Mobile-Only Filters Trigger Button */}
+              <button
+                type="button"
+                onClick={() => setFiltersOpen(!filtersOpen)}
+                className={`sm:hidden shrink-0 flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold border transition ${
+                  filtersOpen || activeFiltersCount > 0
+                    ? 'bg-[#653C87] border-[#9A79BA] text-white shadow-md'
+                    : 'bg-[#261F33] border-[#7D7E92]/30 text-[#E6D7FA] hover:border-[#9A79BA]/60 hover:text-white'
+                }`}
+              >
+                <SlidersHorizontal className="w-4 h-4 shrink-0" />
+                <span>Filters</span>
+                {activeFiltersCount > 0 && (
+                  <span className="w-4.5 h-4.5 px-1 rounded-full bg-amber-400 text-black font-bold text-[10px] flex items-center justify-center">
+                    {activeFiltersCount}
+                  </span>
+                )}
+              </button>
+            </div>
+
+            {/* Gender Segmented Switch (Full width grid on mobile, inline on desktop) */}
             <div className="flex items-center bg-[#261F33] border border-[#7D7E92]/30 p-1 rounded-full shadow-sm">
               {(['All', 'woman', 'man', 'trans'] as const).map((genderOption) => {
                 const isActive = selectedGender === genderOption;
@@ -270,8 +290,9 @@ export default function DiscoverPage() {
                 return (
                   <button
                     key={genderOption}
+                    type="button"
                     onClick={() => setSelectedGender(genderOption)}
-                    className={`px-3.5 py-1.5 rounded-full text-xs font-semibold transition-all duration-150 ${
+                    className={`flex-1 sm:flex-initial px-3 sm:px-3.5 py-1.5 rounded-full text-xs font-semibold text-center transition-all duration-150 ${
                       isActive
                         ? 'bg-[#653C87] text-white shadow-md'
                         : 'text-[#E6D7FA]/75 hover:text-white hover:bg-white/5'
@@ -283,17 +304,18 @@ export default function DiscoverPage() {
               })}
             </div>
 
-            {/* Filter Drawer Toggle Button */}
+            {/* Desktop-Only Filters Trigger Button */}
             <button
+              type="button"
               onClick={() => setFiltersOpen(!filtersOpen)}
-              className={`flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold border transition ${
+              className={`hidden sm:flex items-center gap-2 px-4 py-2 rounded-full text-xs font-semibold border transition shrink-0 ${
                 filtersOpen || activeFiltersCount > 0
                   ? 'bg-[#653C87] border-[#9A79BA] text-white shadow-md'
                   : 'bg-[#261F33] border-[#7D7E92]/30 text-[#E6D7FA] hover:border-[#9A79BA]/60 hover:text-white'
               }`}
             >
-              <SlidersHorizontal className="w-4 h-4" />
-              <span className="hidden sm:inline">Filters</span>
+              <SlidersHorizontal className="w-4 h-4 shrink-0" />
+              <span>Filters</span>
               {activeFiltersCount > 0 && (
                 <span className="w-5 h-5 rounded-full bg-amber-400 text-black font-bold text-[10px] flex items-center justify-center">
                   {activeFiltersCount}
@@ -303,16 +325,16 @@ export default function DiscoverPage() {
           </div>
         </div>
 
-        {/* Collapsible Filters Drawer */}
-        {filtersOpen && (
-          <div className="bg-[#1D1726] border border-[#7D7E92]/35 rounded-2xl p-4 sm:p-5 shadow-2xl space-y-4 animate-in fade-in slide-in-from-top-2 duration-200">
+        {/* Collapsible Filters Drawer (Smooth Slide-In / Slide-Out) */}
+        <div className={`overflow-hidden transition-all duration-300 ease-out ${
+          filtersOpen ? 'max-h-[500px] opacity-100 translate-y-0 mb-3 pointer-events-auto' : 'max-h-0 opacity-0 -translate-y-2 pointer-events-none'
+        }`}>
+          <div className="bg-[#1D1726] border border-[#7D7E92]/35 rounded-3xl p-4 sm:p-5 shadow-2xl space-y-4">
             <div className="flex items-center justify-between border-b border-[#7D7E92]/20 pb-3">
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-amber-400" />
-                <h4 className="text-sm font-bold text-white tracking-wide">Refine Matches</h4>
-              </div>
+              <h4 className="text-xs font-bold text-white uppercase tracking-wider">Refine Matches</h4>
               {activeFiltersCount > 0 && (
                 <button
+                  type="button"
                   onClick={resetFilters}
                   className="flex items-center gap-1.5 text-xs text-[#9A79BA] hover:text-white transition"
                 >
@@ -323,7 +345,6 @@ export default function DiscoverPage() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-1">
-              
               {/* Age Range Filter */}
               <div>
                 <label className="block text-xs font-semibold text-[#D5CEE5] mb-2">
@@ -403,10 +424,9 @@ export default function DiscoverPage() {
                   />
                 </button>
               </div>
-
             </div>
           </div>
-        )}
+        </div>
 
         {/* Prioritized Horizontal Country Chips */}
         <div className="flex items-center gap-2 overflow-x-auto pb-1 no-scrollbar">
