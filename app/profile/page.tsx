@@ -489,7 +489,8 @@ export default function MyProfilePage() {
               {isEditing ? (
                 /* Edit Mode: Compact Wrapped Pill Triggers */
                 <div className="flex flex-wrap items-center gap-2">
-                  {/* Profession Input */}
+                                    <p className="w-full text-[10px] font-bold uppercase tracking-widest text-[#9A79BA] mt-1">BASICS</p>
+{/* Profession Input */}
                   <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#181222] border border-[#9A79BA]/40 text-xs">
                     <Briefcase className="w-3.5 h-3.5 text-[#9A79BA] shrink-0" />
                     <span className="text-[#D5CEE5]/70">Work:</span>
@@ -502,14 +503,16 @@ export default function MyProfilePage() {
                     />
                   </div>
 
-                  {renderDropdownPill('Intent', intent, INTENT_OPTIONS, setIntent, 'intent', Heart)}
+                                    <p className="w-full text-[10px] font-bold uppercase tracking-widest text-[#9A79BA] mt-1">RELATIONSHIP GOALS</p>
+{renderDropdownPill('Intent', intent, INTENT_OPTIONS, setIntent, 'intent', Heart)}
                   {renderDropdownPill('Faith', religion, RELIGION_OPTIONS, setReligion, 'religion', Flower2)}
                   {renderDropdownPill('Relocation', relocation, RELOCATION_OPTIONS, setRelocation, 'relocation', Globe)}
                   {renderDropdownPill('Status', maritalStatus, MARITAL_OPTIONS, setMaritalStatus, 'maritalStatus', HeartHandshake)}
                   {renderDropdownPill('Kids', hasKids, HAS_KIDS_OPTIONS, setHasKids, 'hasKids', Baby)}
                   {renderDropdownPill('Wants Kids', wantsKids, WANTS_KIDS_OPTIONS, setWantsKids, 'wantsKids', Baby)}
                   {renderDropdownPill('Height', height, HEIGHT_OPTIONS, setHeight, 'height', Ruler, true)}
-                  {renderDropdownPill('Drinks', drinking, DRINKING_OPTIONS, setDrinking, 'drinking', Wine)}
+                                    <p className="w-full text-[10px] font-bold uppercase tracking-widest text-[#9A79BA] mt-1">LIFESTYLE</p>
+{renderDropdownPill('Drinks', drinking, DRINKING_OPTIONS, setDrinking, 'drinking', Wine)}
                   {renderDropdownPill('Smokes', smoking, SMOKING_OPTIONS, setSmoking, 'smoking', Cigarette)}
 
                   {/* Languages Input */}
@@ -593,5 +596,8 @@ export default function MyProfilePage() {
     </div>
   );
 }
+
+
+
 
 
