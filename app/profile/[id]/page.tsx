@@ -35,7 +35,7 @@ export default function PublicProfilePage() {
             username: 'camille',
             age: 26,
             location: 'Makati, Philippines',
-            bio: 'Working in corporate Makati on weekdays, spending time with church and cooking adobo for my nieces on weekends. Not here for games or flings—seeking a God fearing, mature gentleman ready for something real.',
+            bio: 'Working in corporate Makati on weekdays, spending time with church and cooking adobo for my nieces on weekends. Not here for games or flingsseeking a God fearing, mature gentleman ready for something real.',
             looking_for: 'A sincere, patient, and grounded partner who values family, communicates openly, and is ready for an intentional cross-border commitment.',
             occupation: 'Customer Support Lead',
             intentions: 'Marriage & Kids',
