@@ -13,7 +13,7 @@ import { Footer } from '@/components/Footer';
 import { createClient } from '@/lib/supabase/client';
 import { ActionType, getLocalCardActions, persistCardAction } from '@/lib/interactions';
 
-const PRIORITY_ORDER = ['Philippines', 'Thailand', 'Cambodia', 'Vietnam', 'Indonesia', 'Laos'];
+const PRIORITY_ORDER = ['Philippines', 'Thailand', 'Vietnam', 'Laos', 'Cambodia', 'Indonesia'];
 
 const RELATIONSHIP_INTENTS = [
   'All',
@@ -24,7 +24,7 @@ const RELATIONSHIP_INTENTS = [
   'Friendship'
 ];
 
-interface ProfileItem {
+export interface ProfileItem {
   id: string;
   name: string;
   age: number;
@@ -36,108 +36,153 @@ interface ProfileItem {
   verified: boolean;
   online: boolean;
   intent?: string;
+  bio?: string;
+  occupation?: string;
 }
 
-const DEMO_PROFILES: ProfileItem[] = [
+export const SEED_PROFILES: ProfileItem[] = [
   {
-    id: 'dummy-1',
-    name: 'Siriporn',
-    age: 25,
-    gender: 'woman',
-    location: 'Bangkok, Thailand',
-    country: 'Thailand',
-    avatarUrl: '/dummy-1.jpg',
-    repScore: 98,
-    verified: true,
-    online: true,
-    intent: 'Marriage',
-  },
-  {
-    id: 'dummy-2',
-    name: 'Camille',
+    id: 'jennalyn',
+    name: 'Jennalyn',
     age: 26,
     gender: 'woman',
-    location: 'Makati, Philippines',
+    location: 'Cebu City, Philippines',
     country: 'Philippines',
-    avatarUrl: '/dummy-2.jpg',
-    repScore: 100,
-    verified: true,
-    online: true,
-    intent: 'Long-term Relationship',
-  },
-  {
-    id: 'dummy-3',
-    name: 'Maricel',
-    age: 28,
-    gender: 'woman',
-    location: 'Calbayog, Samar',
-    country: 'Philippines',
-    avatarUrl: '/dummy-3.jpg',
-    repScore: 97,
-    verified: true,
-    online: false,
-    intent: 'Serious Dating',
-  },
-  {
-    id: 'dummy-4',
-    name: 'Sreyneang',
-    age: 24,
-    gender: 'woman',
-    location: 'Kampot, Cambodia',
-    country: 'Cambodia',
-    avatarUrl: '/dummy-4.jpg',
+    avatarUrl: '/jennalyn.png',
     repScore: 99,
     verified: true,
     online: true,
     intent: 'Marriage',
+    occupation: 'Hotel front desk',
+    bio: 'Simple bisaya girl here. Working shift in hotel so sometimes reply slow if busy at desk. Off days i just stay home with my family, cook sinigang or go church on sunday. Not into party or games. Looking for honest man who is mature and ready for serious future. No scammers pls!',
   },
   {
-    id: 'dummy-5',
-    name: 'Danica',
-    age: 27,
+    id: 'jhoanna',
+    name: 'Jhoanna',
+    age: 28,
     gender: 'woman',
-    location: 'Tandag, Philippines',
+    location: 'Quezon City, Philippines',
     country: 'Philippines',
-    avatarUrl: '/dummy-5.jpg',
-    repScore: 96,
-    verified: true,
-    online: false,
-    intent: 'Long-term Relationship',
-  },
-  {
-    id: 'dummy-6',
-    name: 'Bianca',
-    age: 25,
-    gender: 'trans',
-    location: 'Taguig City, Philippines',
-    country: 'Philippines',
-    avatarUrl: '/dummy-6.jpg',
+    avatarUrl: '/jhoanna.png',
     repScore: 98,
     verified: true,
     online: true,
-    intent: 'Serious Dating',
+    intent: 'Long-term Relationship',
+    occupation: 'Accounting clerk',
+    bio: 'From QC. Ordinary girl with simple life. Weekdays busy with work and traffic in manila haha. When free i like to bake banana cake or watch netflix with my sister. Im quiet at first but talkative once comfortable. Seeking someone respectful and have sense of humor.',
   },
   {
-    id: 'dummy-7',
-    name: 'Jasmine',
-    age: 29,
+    id: 'anong',
+    name: 'Anong',
+    age: 27,
     gender: 'woman',
-    location: 'Taguig City, Philippines',
-    country: 'Philippines',
-    avatarUrl: '/dummy-7.jpg',
-    repScore: 95,
+    location: 'Chiang Mai, Thailand',
+    country: 'Thailand',
+    avatarUrl: '/anong.png',
+    repScore: 99,
     verified: true,
     online: false,
     intent: 'Marriage',
+    occupation: 'Small coffee shop',
+    bio: 'Hello ka! Im from Chiang Mai, North Thailand. I have small coffee and flower shop near my house. I like peaceful life, plant flowers, make food for family and go temple. My english is not perfect but i try my best to learn. Hope to find good man with warm heart who want family.',
+  },
+  {
+    id: 'ploy',
+    name: 'Ploy',
+    age: 25,
+    gender: 'woman',
+    location: 'Bangkok, Thailand',
+    country: 'Thailand',
+    avatarUrl: '/ploy%20chaiyaphon.png',
+    repScore: 97,
+    verified: true,
+    online: true,
+    intent: 'Serious Dating',
+    occupation: 'Freelance graphic design',
+    bio: 'Bangkok girl! I do freelance design from home and coffee shops. Food lover especially spicy somtum and street noodles haha. I can speak english quite okay. Looking for nice guy who is sincere and communicative. Dont message me if you just want play around.',
+  },
+  {
+    id: 'suwannarat',
+    name: 'Suwannarat',
+    age: 29,
+    gender: 'woman',
+    location: 'Khon Kaen, Thailand',
+    country: 'Thailand',
+    avatarUrl: '/suwannarat.png',
+    repScore: 100,
+    verified: true,
+    online: false,
+    intent: 'Marriage',
+    occupation: 'Primary teacher',
+    bio: 'Greeting from Isan. I work as teacher for small children in school. Simple countryside life. Free time i help my parents grow vegetable and cook thai food at home. I looking for serious gentleman, good habit, ready for settle down. Respect each other is most important for me.',
+  },
+  {
+    id: 'mai',
+    name: 'Mai',
+    age: 25,
+    gender: 'woman',
+    location: 'Da Nang, Vietnam',
+    country: 'Vietnam',
+    avatarUrl: '/nguyen%20thi%20mai.png',
+    repScore: 98,
+    verified: true,
+    online: true,
+    intent: 'Marriage',
+    occupation: 'Teaching assistant',
+    bio: 'Hello! Im Mai from Da Nang city near the beach. Im teaching assistant for kid english center. I love walking by sea in morning and drink coconut. Family is very important to me. Hope to find a kind gentleman who is family oriented and want long term relationship leading to marriage.',
+  },
+  {
+    id: 'linh-pham',
+    name: 'Linh Pham',
+    age: 27,
+    gender: 'woman',
+    location: 'Ho Chi Minh City, Vietnam',
+    country: 'Vietnam',
+    avatarUrl: '/pham.png',
+    repScore: 96,
+    verified: true,
+    online: true,
+    intent: 'Long-term Relationship',
+    occupation: 'Sales online',
+    bio: 'Live in Saigon. Daytime quite busy with online shop business. In evening i just like stay home cooking or go out for iced milk coffee with friend. Straightforward person, what you see is what you get. Want to meet a mature guy with clear plan for future.',
+  },
+  {
+    id: 'thu-trang',
+    name: 'Thu Trang',
+    age: 28,
+    gender: 'woman',
+    location: 'Hanoi, Vietnam',
+    country: 'Vietnam',
+    avatarUrl: '/trang.png',
+    repScore: 99,
+    verified: true,
+    online: false,
+    intent: 'Marriage',
+    occupation: 'Pharmacy store',
+    bio: 'From Hanoi capital. Working in pharmacy. Im calm and traditional girl, not like crowded or noisy bar. My hobby is reading, cooking vietnamese soup, and walk around west lake when weather cool. Looking for honest man who value loyalty and want to build family together.',
+  },
+  {
+    id: 'khamla',
+    name: 'Khamla',
+    age: 24,
+    gender: 'woman',
+    location: 'Vientiane, Laos',
+    country: 'Laos',
+    avatarUrl: '/khamla%20sithirath.png',
+    repScore: 98,
+    verified: true,
+    online: true,
+    intent: 'Marriage',
+    occupation: 'Shop staff',
+    bio: 'Sabaidee from Vientiane, Laos! I work at local shop selling silk clothes and handicraft. Life here is slow and quiet. I dont speak english very fast so please be patient with me haha. Looking for sincere man, good heart, who will treat me well and not break my heart.',
   },
 ];
 
 function DiscoverContent() {
   const searchParams = useSearchParams();
   const [supabase] = useState(() => createClient());
-  const [profiles, setProfiles] = useState<ProfileItem[]>(DEMO_PROFILES);
+  const [profiles, setProfiles] = useState<ProfileItem[]>(SEED_PROFILES);
 
-  // Initialize filter states from URL search parameters if available
   const [searchQuery, setSearchQuery] = useState(() => searchParams.get('q') || '');
   const [selectedCountry, setSelectedCountry] = useState(() => searchParams.get('country') || 'All');
   const [selectedGender, setSelectedGender] = useState<'All' | 'woman' | 'man' | 'trans'>(() => {
@@ -160,7 +205,6 @@ function DiscoverContent() {
 
   const [cardActions, setCardActions] = useState<Record<string, ActionType>>({});
 
-  // Sync state back to URL query parameters smoothly
   useEffect(() => {
     const params = new URLSearchParams();
 
@@ -204,7 +248,6 @@ function DiscoverContent() {
     setActiveNowOnly(false);
   };
 
-  // Hydrate card actions from local storage and Supabase favorites
   useEffect(() => {
     const local = getLocalCardActions();
     setCardActions(local);
@@ -260,7 +303,7 @@ function DiscoverContent() {
       try {
         const { data, error } = await supabase
           .from('profiles')
-          .select('id, display_name, full_name, username, age, gender, city, country, avatar_url, is_verified, reputation_score, last_active, relationship_intent')
+          .select('id, display_name, full_name, username, age, gender, city, country, avatar_url, is_verified, reputation_score, last_active, relationship_intent, occupation, bio')
           .order('created_at', { ascending: false })
           .limit(40);
 
@@ -277,19 +320,24 @@ function DiscoverContent() {
             return {
               id: row.id,
               name: row.display_name || row.full_name || row.username || 'Member',
-              age: row.age || 24,
+              age: row.age || 25,
               gender: ['woman', 'man', 'trans'].includes(normGender) ? normGender : 'woman',
               location: cityVal,
               country: countryVal,
-              avatarUrl: row.avatar_url || '/dummy-1.jpg',
-              repScore: row.reputation_score || 100,
+              avatarUrl: row.avatar_url || '/jennalyn.png',
+              repScore: row.reputation_score || 98,
               verified: Boolean(row.is_verified),
               online: row.last_active ? (Date.now() - new Date(row.last_active).getTime() < 1000 * 60 * 15) : true,
               intent: row.relationship_intent || 'Marriage',
+              bio: row.bio,
+              occupation: row.occupation,
             };
           });
 
-          setProfiles([...liveItems, ...DEMO_PROFILES]);
+          // Avoid duplicating profiles that exist in remote DB
+          const liveIds = new Set(liveItems.map(p => p.id));
+          const uniqueSeeds = SEED_PROFILES.filter(p => !liveIds.has(p.id));
+          setProfiles([...liveItems, ...uniqueSeeds]);
         }
       } catch (err) {
         console.error('Failed to load discovery profiles:', err);
@@ -327,11 +375,10 @@ function DiscoverContent() {
     <div className="min-h-screen flex flex-col bg-[#130f18] text-[#E6D7FA]">
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 pt-5 pb-16 space-y-4">
         
-        {/* Streamlined Top Control Bar */}
+        {/* Top Control Bar */}
         <div className="space-y-2.5 sm:space-y-0">
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3">
             
-            {/* Search Input + Mobile Filter Button Row */}
             <div className="flex items-center gap-2 flex-1">
               <div className="relative flex-1">
                 <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A8A2AB]" />
@@ -344,7 +391,6 @@ function DiscoverContent() {
                 />
               </div>
 
-              {/* Mobile Filter Button */}
               <button
                 type="button"
                 onClick={() => setFiltersOpen(true)}
@@ -360,7 +406,6 @@ function DiscoverContent() {
               </button>
             </div>
 
-            {/* Desktop Filters Trigger */}
             <div className="hidden sm:flex items-center gap-2">
               <button
                 type="button"
@@ -378,9 +423,8 @@ function DiscoverContent() {
             </div>
           </div>
 
-          {/* Quick Filter Horizontal Scrollbar: Gender + Countries */}
+          {/* Quick Filter Horizontal Scrollbar */}
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1 pt-2 sm:pt-2.5 scrollbar-none no-scrollbar">
-            {/* Gender Segmented Switch */}
             <div className="flex items-center bg-[#1D1726] p-0.5 rounded-lg border border-[#7D7E92]/30 shrink-0 mr-1.5">
               {(['All', 'woman', 'trans', 'man'] as const).map((gender) => {
                 const label = gender === 'All' ? 'All' : gender === 'woman' ? 'Women' : gender === 'trans' ? 'Trans' : 'Men';
@@ -404,7 +448,6 @@ function DiscoverContent() {
 
             <div className="h-4 w-[1px] bg-[#7D7E92]/30 shrink-0 mx-0.5" />
 
-            {/* Country Pills */}
             {sortedCountries.map((c) => {
               const active = selectedCountry.toLowerCase() === c.toLowerCase();
               return (
@@ -425,7 +468,7 @@ function DiscoverContent() {
           </div>
         </div>
 
-        {/* Filter Drawer / Modal Backdrop */}
+        {/* Filter Drawer */}
         {filtersOpen && (
           <div 
             className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex justify-end"
@@ -450,7 +493,6 @@ function DiscoverContent() {
                   </button>
                 </div>
 
-                {/* Age Slider Range */}
                 <div className="space-y-3">
                   <div className="flex justify-between items-center text-xs font-semibold text-[#D5CEE5]">
                     <span>Age Range</span>
@@ -482,7 +524,6 @@ function DiscoverContent() {
                   </div>
                 </div>
 
-                {/* Intent Filter */}
                 <div className="space-y-2">
                   <span className="text-xs font-semibold text-[#D5CEE5]">Relationship Intent</span>
                   <div className="grid grid-cols-2 gap-2">
@@ -506,7 +547,6 @@ function DiscoverContent() {
                   </div>
                 </div>
 
-                {/* Verified Only Toggle */}
                 <div className="flex items-center justify-between sm:justify-start sm:gap-3 pt-2 sm:pt-6">
                   <span className="text-xs font-semibold text-[#D5CEE5]">Verified Members Only</span>
                   <button
@@ -522,7 +562,6 @@ function DiscoverContent() {
                   </button>
                 </div>
 
-                {/* Active Today Toggle */}
                 <div className="flex items-center justify-between sm:justify-start sm:gap-3 pt-2 sm:pt-6">
                   <span className="text-xs font-semibold text-[#D5CEE5]">Active Now / Today</span>
                   <button
@@ -539,7 +578,6 @@ function DiscoverContent() {
                 </div>
               </div>
 
-              {/* Drawer Bottom Actions */}
               <div className="pt-6 border-t border-[#7D7E92]/20 flex items-center gap-3">
                 <button
                   type="button"
@@ -562,7 +600,7 @@ function DiscoverContent() {
           </div>
         )}
 
-        {/* Discovery Feed Profile Card Grid */}
+        {/* Discovery Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4.5 pt-1">
           {filteredProfiles.map((profile) => {
             const state = cardActions[profile.id];
@@ -583,7 +621,6 @@ function DiscoverContent() {
                     : 'border-[#7D7E92]/25 hover:border-[#9A79BA]/50'
                 }`}
               >
-                {/* Visual Media Header */}
                 <Link href={`/profile/${profile.id}`} className="relative block aspect-[4/5] w-full overflow-hidden bg-[#261F33]">
                   <Image
                     src={profile.avatarUrl}
@@ -594,7 +631,6 @@ function DiscoverContent() {
                     priority={false}
                   />
 
-                  {/* Top Badges Overlay */}
                   <div className="absolute top-2 left-2 right-2 flex items-center justify-between z-10">
                     <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-[10px] font-bold text-emerald-400">
                       <ShieldCheck className="w-3 h-3 text-emerald-400" />
@@ -609,7 +645,6 @@ function DiscoverContent() {
                     )}
                   </div>
 
-                  {/* Intent Tag Overlay */}
                   <div className="absolute bottom-2.5 left-2 z-10">
                     <span className="px-2 py-0.5 rounded-md bg-[#653C87]/80 backdrop-blur-md text-[10px] font-semibold text-white tracking-wide border border-white/10">
                       {profile.intent}
@@ -619,7 +654,6 @@ function DiscoverContent() {
                   <div className="absolute inset-0 bg-gradient-to-t from-[#1D1726] via-transparent to-transparent opacity-80" />
                 </Link>
 
-                {/* Profile Details & Tactile Circular Button Pods */}
                 <div className="p-3 sm:p-3.5 space-y-2.5 bg-[#261F33]">
                   <Link href={`/profile/${profile.id}`} className="block">
                     <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-1.5 truncate">
@@ -632,10 +666,7 @@ function DiscoverContent() {
                     </p>
                   </Link>
 
-                  {/* Action Bar */}
                   <div className="flex items-center justify-between pt-2 border-t border-[#7D7E92]/20">
-                    
-                    {/* Pass (X) */}
                     <button 
                       type="button"
                       aria-label="Pass"
@@ -649,7 +680,6 @@ function DiscoverContent() {
                       <XIcon className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
                     </button>
 
-                    {/* Star / Super Like */}
                     <button 
                       type="button"
                       aria-label="Favorite"
@@ -663,7 +693,6 @@ function DiscoverContent() {
                       <Star className={`w-4 h-4 sm:w-4.5 sm:h-4.5 ${isStarred ? 'fill-amber-400' : ''}`} />
                     </button>
 
-                    {/* Message / Chat */}
                     <Link 
                       href={`/chat/${profile.id}`}
                       aria-label="Message" 
@@ -672,7 +701,6 @@ function DiscoverContent() {
                       <MessageCircle className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
                     </Link>
 
-                    {/* Like (Heart) */}
                     <button 
                       type="button"
                       aria-label="Like"
@@ -685,7 +713,6 @@ function DiscoverContent() {
                     >
                       <Heart className={`w-4 h-4 sm:w-4.5 sm:h-4.5 ${isLiked ? 'fill-rose-500' : ''}`} />
                     </button>
-
                   </div>
                 </div>
               </div>
@@ -695,7 +722,6 @@ function DiscoverContent() {
 
       </main>
 
-      {/* Persistent Bottom Footer */}
       <Footer />
     </div>
   );

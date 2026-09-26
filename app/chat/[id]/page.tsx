@@ -7,55 +7,123 @@ import { ArrowLeft, Send, Zap, ShieldAlert, CheckCheck, Clock } from 'lucide-rea
 import UpgradeModal from '@/components/UpgradeModal';
 import { createClient } from '@/lib/supabase/client';
 
-const PLACEHOLDER_USERS: Record<string, { name: string; avatar: string; location: string; rep: number; initialReply: string }> = {
-  'dummy-1': {
-    name: 'Siriporn',
-    avatar: '/dummy-1.jpg',
-    location: 'Bangkok, Thailand',
-    rep: 98,
-    initialReply: 'Sawasdee ka! So glad you reached out. What parts of Asia have you traveled to recently?'
-  },
-  'dummy-2': {
-    name: 'Camille',
-    avatar: '/dummy-2.jpg',
-    location: 'Makati, Philippines',
-    rep: 100,
-    initialReply: 'Hi! Nice to connect with you. I love meeting sincere people who appreciate authentic culture.'
-  },
-  'dummy-3': {
-    name: 'Maricel',
-    avatar: '/dummy-3.jpg',
-    location: 'Calbayog, Samar',
-    rep: 97,
-    initialReply: 'Hello po! Hope you are having a wonderful day. Always happy to chat with someone grounded.'
-  },
-  'dummy-4': {
-    name: 'Sreyneang',
-    avatar: '/dummy-4.jpg',
-    location: 'Kampot, Cambodia',
+interface Persona {
+  name: string;
+  avatar: string;
+  location: string;
+  rep: number;
+  initialReply: string;
+  followups: string[];
+}
+
+const PLACEHOLDER_USERS: Record<string, Persona> = {
+  'jennalyn': {
+    name: 'Jennalyn',
+    avatar: '/jennalyn.png',
+    location: 'Cebu City, Philippines',
     rep: 99,
-    initialReply: 'Sousdey! Great to see your profile. Kampot is quiet and lovely — what is your favorite city?'
+    initialReply: 'Hello po! Thank you for the message. Im just drinking coffee before my shift starts. How is your day there?',
+    followups: [
+      'Yes, hospitality work is tiring sometimes but i enjoy meeting polite guests. Are you having busy day today?',
+      'Aww thank you! My mother always told me to be honest and work hard. What kind of work do you do?',
+      'Cebu has nice beaches if you go south to Moalboal. Have you visited Philippines before?'
+    ]
   },
-  'dummy-5': {
-    name: 'Danica',
-    avatar: '/dummy-5.jpg',
-    location: 'Tandag, Philippines',
-    rep: 96,
-    initialReply: 'Hey! Thanks for saying hi. Are you planning any trips to Southeast Asia soon?'
-  },
-  'dummy-6': {
-    name: 'Bianca',
-    avatar: '/dummy-6.jpg',
-    location: 'Taguig, Philippines',
+  'jhoanna': {
+    name: 'Jhoanna',
+    avatar: '/jhoanna.png',
+    location: 'Quezon City, Philippines',
     rep: 98,
-    initialReply: 'Hello! Really appreciate you stopping by my profile. How is your week going?'
+    initialReply: 'Good day! Thanks for dropping by my profile. Glad to meet you. Where are you from po?',
+    followups: [
+      'Haha yes, traffic here in Manila is crazy every day! How is life over there?',
+      'I appreciate sincere people. Hard to find gentlemen online now. What made you message me?',
+      'Sounds nice! When I have day off, I usually just bake or watch movies with my sister.'
+    ]
   },
-  'dummy-7': {
-    name: 'Jasmine',
-    avatar: '/dummy-7.jpg',
-    location: 'Taguig, Philippines',
-    rep: 95,
-    initialReply: 'Hi there! Wishing you a peaceful day. What kind of relationship are you hoping to build?'
+  'anong': {
+    name: 'Anong',
+    avatar: '/anong.png',
+    location: 'Chiang Mai, Thailand',
+    rep: 99,
+    initialReply: 'Sawasdee kha! Thank you for say hi to me. Today Chiang Mai is nice weather. Have you ever come to Thailand before?',
+    followups: [
+      'Chiang Mai is very calm not like Bangkok. Many mountains and fresh air. Do you like city or quiet place?',
+      'Thank you na ka. I try practice english every day so we can understand each other.',
+      'That is so kind of you! Sincerity is what I want most in life.'
+    ]
+  },
+  'ploy': {
+    name: 'Ploy',
+    avatar: '/ploy%20chaiyaphon.png',
+    location: 'Bangkok, Thailand',
+    rep: 97,
+    initialReply: 'Hey there! Thanks for reaching out. Always nice to chat with someone genuine. What kind of food do you like?',
+    followups: [
+      'Street food here is top tier, especially spicy papaya salad! Can you handle spicy food haha?',
+      'Freelance design keeps me busy but gives me freedom. What about you, what keeps you busy?',
+      'I like that you are straightforward. No time for mind games on here.'
+    ]
+  },
+  'suwannarat': {
+    name: 'Suwannarat',
+    avatar: '/suwannarat.png',
+    location: 'Khon Kaen, Thailand',
+    rep: 100,
+    initialReply: 'Sawasdee kha. Nice to meet you na ka. I hope you having good day. What are you looking for on here?',
+    followups: [
+      'Teaching small children takes patience, but I love them very much. Do you like kids?',
+      'Isan countryside is very simple. We grow our own herbs and cook together as family.',
+      'Thank you for your respect. Good values and loyalty are the most important things for a future husband.'
+    ]
+  },
+  'mai': {
+    name: 'Mai',
+    avatar: '/nguyen%20thi%20mai.png',
+    location: 'Da Nang, Vietnam',
+    rep: 98,
+    initialReply: 'Xin chao! Very happy to receive your message. Da Nang is windy tonight. How was your work today?',
+    followups: [
+      'My students were very energetic today haha. What time is it over where you are?',
+      'Walking by My Khe beach in the morning gives me peaceful energy. Do you like the ocean?',
+      'I am glad you are looking for serious relationship too. Life is better when shared with good person.'
+    ]
+  },
+  'linh-pham': {
+    name: 'Linh Pham',
+    avatar: '/pham.png',
+    location: 'Ho Chi Minh City, Vietnam',
+    rep: 96,
+    initialReply: 'Chao anh! Thank you for text me. Im just finishing my dinner here. What do you usually do on weekend?',
+    followups: [
+      'Saigon is fast and lively, lots of motorbikes! But at night I prefer quiet iced coffee.',
+      'I like a man who is honest and has clear goals. Talk is easy, action is what matters.',
+      'That sounds really interesting! Tell me more about your life.'
+    ]
+  },
+  'thu-trang': {
+    name: 'Thu Trang',
+    avatar: '/trang.png',
+    location: 'Hanoi, Vietnam',
+    rep: 99,
+    initialReply: 'Xin chao anh. Thank you for your nice message. It is rare to meet polite person online. What season you like most?',
+    followups: [
+      'Autumn in Hanoi is the most beautiful when the leaves turn and the air is cool. Have you visited Vietnam?',
+      'Working at the pharmacy teaches me to care for people carefully. Health and family come first.',
+      'Thank you anh. It is pleasant to have a gentle conversation with someone mature.'
+    ]
+  },
+  'khamla': {
+    name: 'Khamla',
+    avatar: '/khamla%20sithirath.png',
+    location: 'Vientiane, Laos',
+    rep: 98,
+    initialReply: 'Sabaidee! Very nice to see your message. Greetings from Laos. Do you know where Laos country is?',
+    followups: [
+      'Haha yes, many people don’t know Laos, it is small and quiet next to Thailand and Vietnam.',
+      'We weave silk patterns by hand here. It takes weeks for one scarf. Patience is everything.',
+      'Thank you for being so polite to me. Please bear with my english, I try my best!'
+    ]
   }
 };
 
@@ -95,22 +163,22 @@ function sanitizeMessage(text: string): { sanitized: string; wasMasked: boolean 
 export default function ChatConversationPage({ params }: { params: { id: string } }) {
   const [supabase] = useState(() => createClient());
   const targetId = params.id;
-  const isPlaceholderBot = Boolean(PLACEHOLDER_USERS[targetId]);
+  const botPersona = PLACEHOLDER_USERS[targetId];
 
   const [currentUserId, setCurrentUserId] = useState<string>('guest-user');
   const [targetInfo, setTargetInfo] = useState({
-    name: PLACEHOLDER_USERS[targetId]?.name || 'Member',
-    avatar: PLACEHOLDER_USERS[targetId]?.avatar || '/dummy-1.jpg',
-    rep: PLACEHOLDER_USERS[targetId]?.rep || 98,
+    name: botPersona?.name || 'Member',
+    avatar: botPersona?.avatar || '/jennalyn.png',
+    rep: botPersona?.rep || 98,
   });
 
   const [messages, setMessages] = useState<ChatMessage[]>(() => {
-    if (isPlaceholderBot) {
+    if (botPersona) {
       return [
         {
           id: 'welcome-bot-msg',
           sender: 'them',
-          text: PLACEHOLDER_USERS[targetId].initialReply,
+          text: botPersona.initialReply,
           time: 'Just now'
         }
       ];
@@ -125,12 +193,10 @@ export default function ChatConversationPage({ params }: { params: { id: string 
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
-  // Auto-scroll
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Cooldown countdown
   useEffect(() => {
     if (cooldownSeconds <= 0) return;
     const interval = setInterval(() => {
@@ -139,7 +205,6 @@ export default function ChatConversationPage({ params }: { params: { id: string 
     return () => clearInterval(interval);
   }, [cooldownSeconds]);
 
-  // Load User & Target Profile
   useEffect(() => {
     async function initUserAndTarget() {
       const { data: { user } } = await supabase.auth.getUser();
@@ -158,12 +223,11 @@ export default function ChatConversationPage({ params }: { params: { id: string 
         if (prof) {
           setTargetInfo({
             name: prof.display_name || prof.full_name || 'Member',
-            avatar: prof.avatar_url || '/dummy-1.jpg',
+            avatar: prof.avatar_url || '/jennalyn.png',
             rep: prof.reputation_score || 98,
           });
         }
 
-        // Fetch existing Supabase conversation
         if (user) {
           const { data: remoteMsgs } = await supabase
             .from('messages')
@@ -186,7 +250,6 @@ export default function ChatConversationPage({ params }: { params: { id: string 
     initUserAndTarget();
   }, [supabase, targetId]);
 
-  // Supabase Realtime Listener
   useEffect(() => {
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(targetId);
     if (!isUuid || currentUserId === 'guest-user') return;
@@ -249,7 +312,6 @@ export default function ChatConversationPage({ params }: { params: { id: string 
       setCooldownSeconds(300);
     }
 
-    // Persist to Supabase if target is a real UUID and user is logged in
     const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(targetId);
     if (isUuid && currentUserId !== 'guest-user') {
       try {
@@ -261,16 +323,10 @@ export default function ChatConversationPage({ params }: { params: { id: string 
       } catch (err) {
         console.error('Failed to save message to Supabase:', err);
       }
-    } else if (isPlaceholderBot) {
-      // Simulate realistic responsive bot reply for cold-start engagement
+    } else if (botPersona) {
       setTimeout(() => {
-        const botAnswers = [
-          'That sounds really wonderful! It is nice to meet someone genuine on here.',
-          'Thank you for sharing that with me! How long have you lived where you are?',
-          'I completely agree. Sincerity and good intentions matter most to me.',
-          'Such a thoughtful message! I appreciate you taking the time to write to me.'
-        ];
-        const randomAnswer = botAnswers[Math.floor(Math.random() * botAnswers.length)];
+        const pool = botPersona.followups;
+        const randomAnswer = pool[Math.floor(Math.random() * pool.length)];
 
         setMessages((prev) => [
           ...prev,
@@ -281,7 +337,7 @@ export default function ChatConversationPage({ params }: { params: { id: string 
             time: 'Just now',
           },
         ]);
-      }, 1800);
+      }, 1600);
     }
   };
 
@@ -293,7 +349,6 @@ export default function ChatConversationPage({ params }: { params: { id: string 
 
   return (
     <main className="min-h-screen bg-[#130F18] text-[#E6D7FA] flex flex-col justify-between">
-      {/* Dynamic Header */}
       <div className="sticky top-0 z-30 flex items-center justify-between px-4 py-3 bg-[#181222]/95 backdrop-blur-md border-b border-[#9A79BA]/30">
         <div className="flex items-center gap-3">
           <Link href="/discover" className="text-[#9A79BA] hover:text-[#E6D7FA] transition">
@@ -313,7 +368,6 @@ export default function ChatConversationPage({ params }: { params: { id: string 
         </span>
       </div>
 
-      {/* Message Stream */}
       <div className="flex-1 overflow-y-auto p-4 space-y-3 max-w-md mx-auto w-full">
         {showSafetyNotice && (
           <div className="p-3 rounded-2xl bg-[#261F33] border border-amber-400/50 text-[11px] text-amber-200 flex items-start gap-2 shadow-md">
@@ -347,7 +401,6 @@ export default function ChatConversationPage({ params }: { params: { id: string 
         <div ref={chatEndRef} />
       </div>
 
-      {/* Input Action Zone */}
       <div className="sticky bottom-0 z-30 bg-[#181222]/95 backdrop-blur-md border-t border-[#9A79BA]/30 p-3 max-w-md mx-auto w-full">
         {cooldownSeconds > 0 ? (
           <div className="p-4 rounded-2xl bg-[#241E2F] border border-[#9A79BA]/50 flex flex-col items-center gap-2.5 shadow-xl text-center">

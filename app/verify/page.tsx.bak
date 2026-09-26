@@ -54,14 +54,11 @@ export default function VerifyPage() {
         throw uploadError;
       }
 
-      // Update profile record with verified status and trust boost for testing
+      // Update profile record with pending verification status
       const { error: updateError } = await supabase
         .from('profiles')
         .update({
-          is_verified: true,
-          verification_status: 'verified',
-          reputation_score: 100,
-          reputation_tier: 'Trusted',
+          verification_status: 'pending',
           verification_image_path: filePath,
           verification_submitted_at: new Date().toISOString(),
         })
@@ -212,4 +209,3 @@ export default function VerifyPage() {
     </main>
   );
 }
-
