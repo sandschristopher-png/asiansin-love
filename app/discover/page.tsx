@@ -204,6 +204,7 @@ function DiscoverContent() {
   const [activeNowOnly, setActiveNowOnly] = useState<boolean>(() => searchParams.get('active') === 'true');
 
   const [cardActions, setCardActions] = useState<Record<string, ActionType>>({});
+  const [lastPassed, setLastPassed] = useState<{ id: string; name: string } | null>(null);
 
   useEffect(() => {
     const params = new URLSearchParams();
@@ -281,7 +282,7 @@ function DiscoverContent() {
     hydrateRemoteFavorites();
   }, [supabase]);
 
-  const triggerAction = (id: string, action: ActionType) => {
+  const triggerAction = (id: string, action: ActionType, name?: string) => {
     const currentAction = cardActions[id];
     const isCurrentlyActive = currentAction === action;
 
@@ -295,7 +296,25 @@ function DiscoverContent() {
       return next;
     });
 
+    if (action === 'pass' && !isCurrentlyActive && name) {
+      setLastPassed({ id, name });
+    } else if (lastPassed?.id === id) {
+      setLastPassed(null);
+    }
+
     persistCardAction(supabase, id, action, isCurrentlyActive);
+  };
+
+  const undoLastPass = () => {
+    if (!lastPassed) return;
+    const targetId = lastPassed.id;
+    setCardActions((prev) => {
+      const next = { ...prev };
+      delete next[targetId];
+      return next;
+    });
+    persistCardAction(supabase, targetId, 'pass', true);
+    setLastPassed(null);
   };
 
   useEffect(() => {
@@ -368,7 +387,8 @@ function DiscoverContent() {
     const matchesVerified = !verifiedOnly || profile.verified;
     const matchesOnline = !activeNowOnly || profile.online;
 
-    return matchesCountry && matchesGender && matchesQuery && matchesAge && matchesIntent && matchesVerified && matchesOnline;
+    const isPassed = cardActions[profile.id] === 'pass';
+    return !isPassed && matchesCountry && matchesGender && matchesQuery && matchesAge && matchesIntent && matchesVerified && matchesOnline;
   });
 
   return (
@@ -381,20 +401,20 @@ function DiscoverContent() {
             
             <div className="flex items-center gap-2 flex-1">
               <div className="relative flex-1">
-                <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A8A2AB]" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A8A2AB] pointer-events-none" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search by name, city, or interests..."
-                  className="w-full bg-[#1D1726] border border-[#7D7E92]/30 rounded-xl pl-10 pr-4 py-2 sm:py-2.5 text-xs sm:text-sm text-white placeholder-[#7D7E92] focus:outline-none focus:border-[#9A79BA] focus:ring-1 focus:ring-[#9A79BA] transition"
+                  className="w-full bg-[#1D1726] border border-[#7D7E92]/30 rounded-full pl-11 pr-4 py-2.5 text-xs sm:text-sm text-white placeholder-[#7D7E92] focus:outline-none focus:border-[#9A79BA] focus:ring-1 focus:ring-[#9A79BA] transition"
                 />
               </div>
 
               <button
                 type="button"
                 onClick={() => setFiltersOpen(true)}
-                className="relative sm:hidden flex items-center justify-center p-2.5 rounded-xl bg-[#1D1726] border border-[#7D7E92]/30 text-[#E6D7FA] active:bg-[#2B2338] transition shrink-0"
+                className="relative sm:hidden flex items-center justify-center p-2.5 rounded-full bg-[#1D1726] border border-[#7D7E92]/30 text-[#E6D7FA] active:bg-[#2B2338] transition shrink-0"
                 aria-label="Open Filters"
               >
                 <SlidersHorizontal className="w-4 h-4 text-[#C9A4E8]" />
@@ -410,7 +430,7 @@ function DiscoverContent() {
               <button
                 type="button"
                 onClick={() => setFiltersOpen(true)}
-                className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-[#1D1726] border border-[#7D7E92]/30 text-xs font-semibold text-[#E6D7FA] hover:border-[#9A79BA]/60 hover:text-white transition"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#1D1726] border border-[#7D7E92]/30 text-xs font-semibold text-[#E6D7FA] hover:border-[#9A79BA]/60 hover:text-white transition"
               >
                 <SlidersHorizontal className="w-3.5 h-3.5 text-[#C9A4E8]" />
                 <span>Filters</span>
@@ -425,20 +445,16 @@ function DiscoverContent() {
 
           {/* Quick Filter Horizontal Scrollbar */}
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1 pt-2 sm:pt-2.5 scrollbar-none no-scrollbar">
-            <div className="flex items-center bg-[#1D1726] p-0.5 rounded-lg border border-[#7D7E92]/30 shrink-0 mr-1.5">
-              {(['All', 'woman', 'trans', 'man'] as const).map((gender) => {
+            <div className="flex items-center bg-[#1D1726] p-0.5 rounded-full border border-[#7D7E92]/30 shrink-0 mr-1.5">
+              {(['All', 'woman', 'trans', 'man']).map((gender) => {
                 const label = gender === 'All' ? 'All' : gender === 'woman' ? 'Women' : gender === 'trans' ? 'Trans' : 'Men';
                 const active = selectedGender === gender;
                 return (
                   <button
                     key={gender}
                     type="button"
-                    onClick={() => setSelectedGender(gender)}
-                    className={`px-2.5 py-1 text-[11px] font-medium rounded-md transition-all ${
-                      active
-                        ? 'bg-[#653C87] text-white shadow-sm'
-                        : 'text-[#D5CEE5] hover:text-white'
-                    }`}
+                    onClick={() => setSelectedGender(gender as any)}
+                    className={'px-3 py-1 text-[11px] font-medium rounded-full transition-all ' + (active ? 'bg-[#653C87] text-white shadow-sm' : 'text-[#D5CEE5] hover:text-white')}
                   >
                     {label}
                   </button>
@@ -455,11 +471,7 @@ function DiscoverContent() {
                   key={c}
                   type="button"
                   onClick={() => setSelectedCountry(c)}
-                  className={`px-3 py-1 rounded-lg text-xs font-medium whitespace-nowrap transition-all shrink-0 border ${
-                    active
-                      ? 'bg-[#653C87] text-white border-[#9A79BA] shadow-sm'
-                      : 'bg-[#1D1726] text-[#D5CEE5] border-[#7D7E92]/25 hover:border-[#9A79BA]/40 hover:text-white'
-                  }`}
+                  className={'px-3.5 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all shrink-0 border ' + (active ? 'bg-[#653C87] text-white border-[#9A79BA] shadow-sm' : 'bg-[#1D1726] text-[#D5CEE5] border-[#7D7E92]/25 hover:border-[#9A79BA]/40 hover:text-white')}
                 >
                   {c}
                 </button>
@@ -468,160 +480,25 @@ function DiscoverContent() {
           </div>
         </div>
 
-        {/* Filter Drawer */}
-        {filtersOpen && (
-          <div 
-            className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex justify-end"
-            onClick={() => setFiltersOpen(false)}
-          >
-            <div 
-              className="w-full max-w-sm sm:max-w-md bg-[#1B1524] h-full border-l border-[#7D7E92]/30 p-5 sm:p-6 overflow-y-auto flex flex-col justify-between"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="space-y-6">
-                <div className="flex items-center justify-between pb-4 border-b border-[#7D7E92]/20">
-                  <div className="flex items-center gap-2">
-                    <SlidersHorizontal className="w-5 h-5 text-[#C9A4E8]" />
-                    <h2 className="text-base font-bold text-white">Refine Discover Feed</h2>
-                  </div>
-                  <button 
-                    type="button" 
-                    onClick={() => setFiltersOpen(false)}
-                    className="p-1.5 rounded-lg text-[#D5CEE5] hover:text-white hover:bg-[#2B2338] transition"
-                  >
-                    <XIcon className="w-5 h-5" />
-                  </button>
-                </div>
-
-                <div className="space-y-3">
-                  <div className="flex justify-between items-center text-xs font-semibold text-[#D5CEE5]">
-                    <span>Age Range</span>
-                    <span className="text-white font-mono">{minAge} – {maxAge} yrs</span>
-                  </div>
-                  <div className="grid grid-cols-2 gap-3">
-                    <div>
-                      <label className="text-[10px] text-[#A8A2AB] uppercase font-bold">Min Age</label>
-                      <input 
-                        type="range" 
-                        min="18" 
-                        max="65" 
-                        value={minAge} 
-                        onChange={(e) => setMinAge(Math.min(Number(e.target.value), maxAge - 1))}
-                        className="w-full accent-[#9A79BA]" 
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[10px] text-[#A8A2AB] uppercase font-bold">Max Age</label>
-                      <input 
-                        type="range" 
-                        min="18" 
-                        max="65" 
-                        value={maxAge} 
-                        onChange={(e) => setMaxAge(Math.max(Number(e.target.value), minAge + 1))}
-                        className="w-full accent-[#9A79BA]" 
-                      />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  <span className="text-xs font-semibold text-[#D5CEE5]">Relationship Intent</span>
-                  <div className="grid grid-cols-2 gap-2">
-                    {RELATIONSHIP_INTENTS.map((intent) => {
-                      const active = selectedIntent === intent;
-                      return (
-                        <button
-                          key={intent}
-                          type="button"
-                          onClick={() => setSelectedIntent(intent)}
-                          className={`text-left text-xs px-3 py-2 rounded-lg border transition ${
-                            active
-                              ? 'bg-[#653C87] border-[#9A79BA] text-white font-semibold'
-                              : 'bg-[#221B2E] border-[#7D7E92]/20 text-[#D5CEE5] hover:border-[#9A79BA]/40'
-                          }`}
-                        >
-                          {intent}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                <div className="flex items-center justify-between sm:justify-start sm:gap-3 pt-2 sm:pt-6">
-                  <span className="text-xs font-semibold text-[#D5CEE5]">Verified Members Only</span>
-                  <button
-                    type="button"
-                    onClick={() => setVerifiedOnly(!verifiedOnly)}
-                    className={`w-11 h-6 rounded-full transition-colors flex items-center px-0.5 ${
-                      verifiedOnly ? 'bg-[#653C87]' : 'bg-[#2B2338]'
-                    }`}
-                  >
-                    <div className={`w-5 h-5 rounded-full bg-white transition-transform ${
-                      verifiedOnly ? 'translate-x-5' : 'translate-x-0'
-                    }`} />
-                  </button>
-                </div>
-
-                <div className="flex items-center justify-between sm:justify-start sm:gap-3 pt-2 sm:pt-6">
-                  <span className="text-xs font-semibold text-[#D5CEE5]">Active Now / Today</span>
-                  <button
-                    type="button"
-                    onClick={() => setActiveNowOnly(!activeNowOnly)}
-                    className={`w-11 h-6 rounded-full transition-colors flex items-center px-0.5 ${
-                      activeNowOnly ? 'bg-[#653C87]' : 'bg-[#2B2338]'
-                    }`}
-                  >
-                    <div className={`w-5 h-5 rounded-full bg-white transition-transform ${
-                      activeNowOnly ? 'translate-x-5' : 'translate-x-0'
-                    }`} />
-                  </button>
-                </div>
-              </div>
-
-              <div className="pt-6 border-t border-[#7D7E92]/20 flex items-center gap-3">
-                <button
-                  type="button"
-                  onClick={resetFilters}
-                  className="flex-1 py-2.5 rounded-xl border border-[#7D7E92]/30 text-xs font-semibold text-[#D5CEE5] hover:text-white hover:bg-[#2B2338] transition flex items-center justify-center gap-1.5"
-                >
-                  <RotateCcw className="w-3.5 h-3.5" />
-                  Reset
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setFiltersOpen(false)}
-                  className="flex-1 py-2.5 rounded-xl bg-[#653C87] text-white text-xs font-semibold hover:bg-[#7D4B9F] transition shadow-md flex items-center justify-center gap-1.5"
-                >
-                  <Check className="w-3.5 h-3.5" />
-                  Apply
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
         {/* Discovery Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4.5 pt-1">
           {filteredProfiles.map((profile) => {
             const state = cardActions[profile.id];
-            const isPassed = state === 'pass';
             const isLiked = state === 'like';
             const isStarred = state === 'star';
 
             return (
               <div
                 key={profile.id}
-                className={`group relative rounded-2xl overflow-hidden bg-[#1E1727] border transition-all duration-300 flex flex-col justify-between ${
-                  isPassed
-                    ? 'opacity-40 grayscale border-zinc-700'
-                    : isLiked
-                    ? 'border-rose-500/50 shadow-rose-950/20 shadow-xl'
+                className={'group relative rounded-2xl overflow-hidden bg-[#1E1727] border transition-all duration-300 flex flex-col justify-between ' + (
+                  isLiked
+                    ? 'border-rose-500/60 shadow-[0_0_20px_rgba(244,63,94,0.18)]'
                     : isStarred
-                    ? 'border-amber-400/50 shadow-amber-950/20 shadow-xl'
+                    ? 'border-amber-400/60 shadow-[0_0_20px_rgba(251,191,36,0.18)]'
                     : 'border-[#7D7E92]/25 hover:border-[#9A79BA]/50'
-                }`}
+                )}
               >
-                <Link href={`/profile/${profile.id}`} className="relative block aspect-[4/5] w-full overflow-hidden bg-[#261F33]">
+                <Link href={'/profile/' + profile.id} className="relative block aspect-[4/5] w-full overflow-hidden bg-[#261F33]">
                   <Image
                     src={profile.avatarUrl}
                     alt={profile.name}
@@ -655,7 +532,7 @@ function DiscoverContent() {
                 </Link>
 
                 <div className="p-3 sm:p-3.5 space-y-2.5 bg-[#261F33]">
-                  <Link href={`/profile/${profile.id}`} className="block">
+                  <Link href={'/profile/' + profile.id} className="block">
                     <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-1.5 truncate">
                       {profile.name}, {profile.age}
                       {profile.verified && <CheckCircle className="w-3.5 h-3.5 text-[#9A79BA] shrink-0" />}
@@ -670,12 +547,8 @@ function DiscoverContent() {
                     <button 
                       type="button"
                       aria-label="Pass"
-                      onClick={() => triggerAction(profile.id, 'pass')}
-                      className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border transition-all duration-150 active:scale-90 ${
-                        isPassed 
-                          ? 'text-zinc-500 bg-zinc-800/90 border-zinc-700' 
-                          : 'bg-[#1D1726] border-[#7D7E92]/30 text-[#E6D7FA]/70 hover:text-white hover:border-[#9A79BA]/60 hover:bg-[#1D1726]/80'
-                      }`}
+                      onClick={() => triggerAction(profile.id, 'pass', profile.name)}
+                      className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border transition-all duration-150 active:scale-90 bg-[#1D1726] border-[#7D7E92]/30 text-[#E6D7FA]/70 hover:text-white hover:border-zinc-500 hover:bg-zinc-800/80"
                     >
                       <XIcon className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
                     </button>
@@ -684,17 +557,17 @@ function DiscoverContent() {
                       type="button"
                       aria-label="Favorite"
                       onClick={() => triggerAction(profile.id, 'star')}
-                      className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border transition-all duration-200 active:scale-95 ${
+                      className={'w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border transition-all duration-200 active:scale-95 ' + (
                         isStarred 
-                          ? 'text-amber-400 bg-amber-400/20 border-amber-400/60 shadow-[0_0_12px_rgba(251,191,36,0.3)]' 
+                          ? 'text-amber-400 bg-amber-400/20 border-amber-400/60 shadow-[0_0_12px_rgba(251,191,36,0.35)] scale-105' 
                           : 'bg-[#1D1726] border-[#7D7E92]/30 text-[#E6D7FA]/70 hover:text-amber-400 hover:border-amber-400/40 hover:bg-[#1D1726]/80'
-                      }`}
+                      )}
                     >
-                      <Star className={`w-4 h-4 sm:w-4.5 sm:h-4.5 ${isStarred ? 'fill-amber-400' : ''}`} />
+                      <Star className={'w-4 h-4 sm:w-4.5 sm:h-4.5 ' + (isStarred ? 'fill-amber-400' : '')} />
                     </button>
 
                     <Link 
-                      href={`/chat/${profile.id}`}
+                      href={'/chat/' + profile.id}
                       aria-label="Message" 
                       className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center bg-[#1D1726] border border-[#7D7E92]/30 text-[#E6D7FA]/70 hover:text-[#C9A4E8] hover:border-[#9A79BA]/60 hover:bg-[#653C87]/30 transition active:scale-90"
                     >
@@ -705,13 +578,13 @@ function DiscoverContent() {
                       type="button"
                       aria-label="Like"
                       onClick={() => triggerAction(profile.id, 'like')}
-                      className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border transition-all duration-200 active:scale-95 ${
+                      className={'w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border transition-all duration-200 active:scale-95 ' + (
                         isLiked 
-                          ? 'text-rose-400 bg-rose-500/20 border-rose-500/60 shadow-[0_0_12px_rgba(244,63,94,0.3)]' 
+                          ? 'text-rose-400 bg-rose-500/20 border-rose-500/60 shadow-[0_0_12px_rgba(244,63,94,0.35)] scale-105' 
                           : 'bg-[#1D1726] border-[#7D7E92]/30 text-[#E6D7FA]/70 hover:text-rose-400 hover:border-rose-400/40 hover:bg-[#1D1726]/80'
-                      }`}
+                      )}
                     >
-                      <Heart className={`w-4 h-4 sm:w-4.5 sm:h-4.5 ${isLiked ? 'fill-rose-500' : ''}`} />
+                      <Heart className={'w-4 h-4 sm:w-4.5 sm:h-4.5 ' + (isLiked ? 'fill-rose-500' : '')} />
                     </button>
                   </div>
                 </div>
@@ -720,7 +593,156 @@ function DiscoverContent() {
           })}
         </div>
 
+        {/* Undo Dismissal Snackbar */}
+        {lastPassed && (
+          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-4 py-2.5 rounded-full bg-[#1D1726]/95 border border-[#9A79BA]/40 shadow-2xl backdrop-blur-md">
+            <span className="text-xs text-[#E6D7FA]">Passed <strong className="text-white">{lastPassed.name}</strong></span>
+            <button
+              type="button"
+              onClick={undoLastPass}
+              className="px-3 py-1 rounded-full bg-[#653C87] hover:bg-[#7D4B9F] text-white text-xs font-semibold flex items-center gap-1 transition shadow-sm"
+            >
+              <RotateCcw className="w-3 h-3" />
+              Undo
+            </button>
+          </div>
+        )}
+
       </main>
+
+      {/* Filter Drawer */}
+      <div 
+        className={'fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex justify-end transition-opacity duration-300 ' + (
+          filtersOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+        )}
+        onClick={() => setFiltersOpen(false)}
+      >
+        <div 
+          className={'w-full max-w-sm sm:max-w-md bg-[#1B1524] h-full border-l border-[#7D7E92]/30 p-5 sm:p-6 overflow-y-auto flex flex-col justify-between transform transition-transform duration-300 ease-out ' + (
+            filtersOpen ? 'translate-x-0' : 'translate-x-full'
+          )}
+          onClick={(e) => e.stopPropagation()}
+        >
+          <div className="space-y-6">
+            <div className="flex items-center justify-between pb-4 border-b border-[#7D7E92]/20">
+              <div className="flex items-center gap-2">
+                <SlidersHorizontal className="w-5 h-5 text-[#C9A4E8]" />
+                <h2 className="text-base font-bold text-white">Refine Discover Feed</h2>
+              </div>
+              <button 
+                type="button" 
+                onClick={() => setFiltersOpen(false)}
+                className="p-1.5 rounded-full text-[#D5CEE5] hover:text-white hover:bg-[#2B2338] transition"
+              >
+                <XIcon className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-3">
+              <div className="flex justify-between items-center text-xs font-semibold text-[#D5CEE5]">
+                <span>Age Range</span>
+                <span className="text-white font-mono">{minAge} � {maxAge} yrs</span>
+              </div>
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="text-[10px] text-[#A8A2AB] uppercase font-bold">Min Age</label>
+                  <input 
+                    type="range" 
+                    min="18" 
+                    max="65" 
+                    value={minAge} 
+                    onChange={(e) => setMinAge(Math.min(Number(e.target.value), maxAge - 1))}
+                    className="w-full accent-[#9A79BA]" 
+                  />
+                </div>
+                <div>
+                  <label className="text-[10px] text-[#A8A2AB] uppercase font-bold">Max Age</label>
+                  <input 
+                    type="range" 
+                    min="18" 
+                    max="65" 
+                    value={maxAge} 
+                    onChange={(e) => setMaxAge(Math.max(Number(e.target.value), minAge + 1))}
+                    className="w-full accent-[#9A79BA]" 
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <span className="text-xs font-semibold text-[#D5CEE5]">Relationship Intent</span>
+              <div className="grid grid-cols-2 gap-2">
+                {RELATIONSHIP_INTENTS.map((intent) => {
+                  const active = selectedIntent === intent;
+                  return (
+                    <button
+                      key={intent}
+                      type="button"
+                      onClick={() => setSelectedIntent(intent)}
+                      className={'text-left text-xs px-3 py-2 rounded-xl border transition ' + (
+                        active
+                          ? 'bg-[#653C87] border-[#9A79BA] text-white font-semibold shadow-sm'
+                          : 'bg-[#221B2E] border-[#7D7E92]/20 text-[#D5CEE5] hover:border-[#9A79BA]/40'
+                      )}
+                    >
+                      {intent}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between sm:justify-start sm:gap-3 pt-2 sm:pt-6">
+              <span className="text-xs font-semibold text-[#D5CEE5]">Verified Members Only</span>
+              <button
+                type="button"
+                onClick={() => setVerifiedOnly(!verifiedOnly)}
+                className={'w-11 h-6 rounded-full transition-colors flex items-center px-0.5 ' + (
+                  verifiedOnly ? 'bg-[#653C87]' : 'bg-[#2B2338]'
+                )}
+              >
+                <div className={'w-5 h-5 rounded-full bg-white transition-transform ' + (
+                  verifiedOnly ? 'translate-x-5' : 'translate-x-0'
+                )} />
+              </button>
+            </div>
+
+            <div className="flex items-center justify-between sm:justify-start sm:gap-3 pt-2 sm:pt-6">
+              <span className="text-xs font-semibold text-[#D5CEE5]">Active Now / Today</span>
+              <button
+                type="button"
+                onClick={() => setActiveNowOnly(!activeNowOnly)}
+                className={'w-11 h-6 rounded-full transition-colors flex items-center px-0.5 ' + (
+                  activeNowOnly ? 'bg-[#653C87]' : 'bg-[#2B2338]'
+                )}
+              >
+                <div className={'w-5 h-5 rounded-full bg-white transition-transform ' + (
+                  activeNowOnly ? 'translate-x-5' : 'translate-x-0'
+                )} />
+              </button>
+            </div>
+          </div>
+
+          <div className="pt-6 border-t border-[#7D7E92]/20 flex items-center gap-3">
+            <button
+              type="button"
+              onClick={resetFilters}
+              className="flex-1 py-2.5 rounded-full border border-[#7D7E92]/30 text-xs font-semibold text-[#D5CEE5] hover:text-white hover:bg-[#2B2338] transition flex items-center justify-center gap-1.5"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              Reset
+            </button>
+            <button
+              type="button"
+              onClick={() => setFiltersOpen(false)}
+              className="flex-1 py-2.5 rounded-full bg-[#653C87] text-white text-xs font-semibold hover:bg-[#7D4B9F] transition shadow-md flex items-center justify-center gap-1.5"
+            >
+              <Check className="w-3.5 h-3.5" />
+              Apply
+            </button>
+          </div>
+        </div>
+      </div>
 
       <Footer />
     </div>
