@@ -22,11 +22,11 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#15101C] text-[#E6D7FA] flex flex-col justify-center px-4 py-12">
-      <div className="w-full max-w-sm mx-auto bg-[#241E2F]/80 backdrop-blur-xl border border-[#653C87]/40 rounded-3xl p-6 shadow-2xl">
+    <main className="min-h-screen bg-[#130F18] text-[#E6D7FA] flex flex-col justify-center px-4 py-12">
+      <div className="w-full max-w-sm mx-auto bg-[#261F33] border border-[#9A79BA]/35 rounded-3xl p-6 sm:p-8 shadow-2xl">
         <Link
           href="/login"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#9A79BA] hover:text-[#E6D7FA] transition mb-6"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#C9A4E8] hover:text-white transition mb-6"
         >
           <ArrowLeft className="w-4 h-4" />
           Back to Login
@@ -37,11 +37,11 @@ export default function ForgotPasswordPage() {
             <div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
               <CheckCircle2 className="w-7 h-7" />
             </div>
-            <h1 className="text-xl font-bold text-[#E6D7FA]">Reset Link Sent</h1>
-            <p className="text-xs text-[#7D7E92] leading-relaxed">
+            <h1 className="text-xl font-bold text-white">Reset Link Sent</h1>
+            <p className="text-sm text-[#E6D7FA] leading-relaxed">
               If an account is associated with <span className="text-[#E6D7FA] font-medium">{email}</span>, you will receive a secure password recovery link shortly.
             </p>
-            <div className="p-3 rounded-xl bg-[#15101C]/60 border border-[#241E2F] text-[11px] text-[#7D7E92] text-left leading-normal w-full mt-2">
+            <div className="p-3 rounded-xl bg-[#181222] border border-[#9A79BA]/30 text-xs text-[#E6D7FA] text-left leading-normal w-full mt-2">
               <span className="font-semibold text-[#E6D7FA] block mb-0.5">Check Your Junk Folder</span>
               Security emails sometimes filter into spam or promotions tabs. Please check there if nothing arrives within 2 minutes.
             </div>
@@ -57,22 +57,22 @@ export default function ForgotPasswordPage() {
             <div className="flex flex-col space-y-1">
               <div className="flex items-center gap-2 mb-1">
                 <ShieldCheck className="w-5 h-5 text-[#9A79BA]" />
-                <h1 className="text-lg font-bold text-[#E6D7FA]">Reset Your Password</h1>
+                <h1 className="text-xl font-bold text-white">Reset Your Password</h1>
               </div>
-              <p className="text-xs text-[#7D7E92] leading-relaxed">
+              <p className="text-sm text-[#E6D7FA] leading-relaxed">
                 Enter your account email address and we will dispatch a confidential reset link.
               </p>
             </div>
 
             <div className="relative">
-              <Mail className="w-4 h-4 text-[#7D7E92] absolute left-3.5 top-1/2 -translate-y-1/2" />
+              <Mail className="w-4 h-4 text-[#9A79BA] absolute left-3.5 top-1/2 -translate-y-1/2" />
               <input
                 type="email"
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="you@example.com"
-                className="w-full bg-[#15101C] border border-[#241E2F] focus:border-[#653C87] rounded-full pl-10 pr-4 py-2.5 text-xs text-[#E6D7FA] placeholder-[#7D7E92] outline-none transition"
+                className="w-full bg-[#181222] border border-[#9A79BA]/40 focus:border-[#9A79BA] rounded-2xl pl-10 pr-4 py-3 text-sm text-white placeholder-[#9A79BA]/60 outline-none transition"
               />
             </div>
 

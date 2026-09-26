@@ -1,8 +1,8 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useRef } from 'react';
-import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { ArrowLeft, Camera, CheckCircle2, ShieldCheck } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 
 export default function VerifyPage() {
@@ -81,117 +81,119 @@ export default function VerifyPage() {
   };
 
   return (
-    <main className="max-w-md mx-auto w-full px-4 py-6 pb-28 space-y-6">
-      
-      {/* Top Header */}
-      <div className="flex items-center justify-between pb-3 border-b border-[#725A7A]/25">
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className="h-9 w-9 rounded-2xl bg-[#241E2F] border border-[#725A7A]/35 text-[#E6D7FA] flex items-center justify-center text-sm active:scale-90 transition-transform"
-        >
-          ←
-        </button>
-        <h1 className="text-xl font-black text-[#E6D7FA] tracking-tight">
-          Identity Verification
-        </h1>
-        <div className="w-9" />
-      </div>
-
-      {success ? (
-        <div className="rounded-[28px] bg-[#241E2F] border border-[#653C87]/60 p-8 text-center space-y-4 shadow-2xl">
-          <div className="h-16 w-16 mx-auto rounded-full bg-[#653C87]/30 border border-[#9A79BA] flex items-center justify-center text-3xl">
-            ✓
-          </div>
-          <h2 className="text-xl font-black text-[#E6D7FA]">Photo Submitted</h2>
-          <p className="text-xs text-[#A8A2AB] leading-relaxed">
-            Your gesture selfie has been uploaded securely. Our team verifies submissions within a few hours to grant your profile the verified badge.
-          </p>
-        </div>
-      ) : (
-        <div className="space-y-5">
-          
-          {/* Instructions Card */}
-          <div className="p-4 rounded-[24px] bg-[#241E2F] border border-[#725A7A]/30 space-y-2 shadow-lg">
-            <h2 className="text-xs font-black uppercase tracking-wider text-[#9A79BA]">
-              Gesture Match Pose
-            </h2>
-            <p className="text-xs text-[#E6D7FA] leading-relaxed">
-              Hold up <strong className="text-white">two fingers (peace sign ✌️)</strong> beside your face in bright lighting. This confirms you are the actual person in your profile photos.
-            </p>
-          </div>
-
-          {/* Hidden Native File/Camera Input */}
-          <input
-            ref={fileInputRef}
-            type="file"
-            accept="image/*"
-            capture="user"
-            onChange={handleCapture}
-            className="hidden"
-          />
-
-          {/* Photo Capture / Preview Box */}
-          <div
-            onClick={() => fileInputRef.current?.click()}
-            className="relative aspect-[3/4] w-full rounded-[28px] bg-[#17131F] border-2 border-dashed border-[#725A7A]/50 hover:border-[#9A79BA] flex flex-col items-center justify-center overflow-hidden cursor-pointer active:scale-[0.99] transition-all shadow-inner"
-          >
-            {previewUrl ? (
-              <>
-                <img
-                  src={previewUrl}
-                  alt="Verification Preview"
-                  className="w-full h-full object-cover"
-                />
-                <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-                  <span className="px-4 py-2 rounded-xl bg-[#241E2F] text-xs font-bold text-[#E6D7FA]">
-                    Tap to retake
-                  </span>
-                </div>
-              </>
-            ) : (
-              <div className="p-6 text-center space-y-3 pointer-events-none">
-                <div className="h-14 w-14 mx-auto rounded-full bg-[#241E2F] border border-[#725A7A]/40 flex items-center justify-center text-[#9A79BA]">
-                  <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.75} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
-                  </svg>
-                </div>
-                <div>
-                  <p className="text-sm font-extrabold text-[#E6D7FA]">
-                    Tap to Open Camera
-                  </p>
-                  <p className="text-[11px] text-[#A8A2AB] mt-0.5">
-                    Selfie with peace sign pose
-                  </p>
-                </div>
-              </div>
-            )}
-          </div>
-
-          {errorMsg && (
-            <p className="text-xs text-rose-300 font-bold text-center">
-              {errorMsg}
-            </p>
-          )}
-
-          {/* Upload Button */}
+    <main className="min-h-screen bg-[#130F18] text-[#E6D7FA] flex flex-col justify-start">
+      <div className="max-w-md mx-auto w-full px-4 py-8 pb-28 space-y-6">
+        
+        {/* Top Header */}
+        <div className="flex items-center justify-between pb-4 border-b border-[#9A79BA]/25">
           <button
             type="button"
-            disabled={uploading || !selectedFile}
-            onClick={handleUpload}
-            className={`w-full py-4 rounded-[22px] font-black text-xs uppercase tracking-wider shadow-xl transition-all active:scale-[0.98] ${
-              selectedFile && !uploading
-                ? 'bg-[#653C87] hover:bg-[#9A79BA] text-white shadow-[#653C87]/40'
-                : 'bg-[#241E2F] text-[#A8A2AB]/60 cursor-not-allowed border border-[#725A7A]/30'
-            }`}
+            onClick={() => router.back()}
+            className="h-10 w-10 rounded-2xl bg-[#261F33] border border-[#9A79BA]/35 text-[#E6D7FA] hover:text-white flex items-center justify-center text-sm active:scale-90 transition"
           >
-            {uploading ? 'Encrypting & Uploading...' : 'Submit Verification Photo'}
+            <ArrowLeft className="w-5 h-5" />
           </button>
-
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="w-5 h-5 text-[#9A79BA]" />
+            <h1 className="text-xl font-bold text-white tracking-tight">
+              Identity Verification
+            </h1>
+          </div>
+          <div className="w-10" />
         </div>
-      )}
 
+        {success ? (
+          <div className="rounded-3xl bg-[#261F33] border border-[#9A79BA]/40 p-8 text-center space-y-4 shadow-2xl">
+            <div className="h-16 w-16 mx-auto rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center">
+              <CheckCircle2 className="w-8 h-8" />
+            </div>
+            <h2 className="text-xl font-bold text-white">Photo Submitted</h2>
+            <p className="text-sm text-[#E6D7FA] leading-relaxed">
+              Your gesture selfie has been uploaded securely. Our team verifies submissions within a few hours to grant your profile the verified badge.
+            </p>
+          </div>
+        ) : (
+          <div className="space-y-6">
+            
+            {/* Instructions Card */}
+            <div className="p-5 rounded-3xl bg-[#261F33] border border-[#9A79BA]/35 space-y-2 shadow-xl">
+              <span className="text-xs font-bold uppercase tracking-wider text-[#9A79BA] block">
+                Gesture Match Pose
+              </span>
+              <p className="text-xs sm:text-sm text-[#E6D7FA] leading-relaxed">
+                Hold up <strong className="text-white">two fingers (peace sign ✌️)</strong> beside your face in bright lighting. This confirms you are the actual person in your profile photos.
+              </p>
+            </div>
+
+            {/* Hidden Native File/Camera Input */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              capture="user"
+              onChange={handleCapture}
+              className="hidden"
+            />
+
+            {/* Photo Capture / Preview Box */}
+            <div
+              onClick={() => fileInputRef.current?.click()}
+              className="relative aspect-[3/4] w-full rounded-3xl bg-[#181222] border-2 border-dashed border-[#9A79BA]/50 hover:border-[#9A79BA] flex flex-col items-center justify-center overflow-hidden cursor-pointer active:scale-[0.99] transition shadow-inner"
+            >
+              {previewUrl ? (
+                <>
+                  <img
+                    src={previewUrl}
+                    alt="Verification Preview"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
+                    <span className="px-4 py-2 rounded-2xl bg-[#261F33] border border-[#9A79BA]/40 text-xs font-bold text-white shadow-lg">
+                      Tap to retake
+                    </span>
+                  </div>
+                </>
+              ) : (
+                <div className="p-6 text-center space-y-3 pointer-events-none">
+                  <div className="h-16 w-16 mx-auto rounded-2xl bg-[#261F33] border border-[#9A79BA]/40 flex items-center justify-center text-[#9A79BA] shadow-lg">
+                    <Camera className="w-8 h-8 text-[#C9A4E8]" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-bold text-white">
+                      Tap to Open Camera
+                    </p>
+                    <p className="text-xs text-[#E6D7FA] mt-0.5">
+                      Selfie with peace sign pose
+                    </p>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {errorMsg && (
+              <p className="text-xs text-rose-400 font-semibold text-center bg-rose-950/40 border border-rose-500/40 rounded-xl py-2 px-3">
+                {errorMsg}
+              </p>
+            )}
+
+            {/* Upload Button */}
+            <button
+              type="button"
+              disabled={uploading || !selectedFile}
+              onClick={handleUpload}
+              className={`w-full py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider shadow-lg transition active:scale-95 ${
+                selectedFile && !uploading
+                  ? 'bg-[#653C87] hover:bg-[#7D49A8] text-white shadow-[#653C87]/40'
+                  : 'bg-[#261F33] text-[#9A79BA]/50 cursor-not-allowed border border-[#9A79BA]/25'
+              }`}
+            >
+              {uploading ? 'Encrypting & Uploading...' : 'Submit Verification Photo'}
+            </button>
+
+          </div>
+        )}
+
+      </div>
     </main>
   );
 }

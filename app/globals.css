@@ -14,3 +14,41 @@
 .animate-slide-down {
   animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+/* ==========================================================================
+   UNIFORM INTERACTION TIMING (MOTION ONLY - ZERO VISUAL/LAYOUT CHANGES)
+   ========================================================================== */
+
+/* Remove mobile tap gray highlight box without altering design */
+*, *::before, *::after {
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Universal tactile micro-press curve for interactive elements */
+button, 
+a, 
+input[type="button"], 
+input[type="submit"] {
+  transition: transform 120ms cubic-bezier(0.2, 0, 0, 1), 
+              opacity 120ms ease, 
+              background-color 150ms ease, 
+              border-color 150ms ease, 
+              color 150ms ease;
+  will-change: transform;
+}
+
+/* Subtle physical compression on press/tap across mobile and desktop */
+button:active, 
+a:active, 
+input[type="button"]:active, 
+input[type="submit"]:active {
+  transform: scale(0.97) translateZ(0);
+}
+
+/* Smooth lift & settle for grid cards on desktop hover */
+@media (hover: hover) and (pointer: fine) {
+  .group {
+    transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1), 
+                box-shadow 200ms ease, 
+                border-color 200ms ease;
+  }
+}

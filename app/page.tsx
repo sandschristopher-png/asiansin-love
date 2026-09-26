@@ -2,111 +2,77 @@
 
 import React from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
-import { ShieldCheck, HeartHandshake, Zap, MessageSquareHeart, CheckCircle2, ArrowRight } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
+import { Footer } from '@/components/Footer';
 
 export default function HomePage() {
   return (
-    <main className="min-h-screen bg-[#15101C] text-[#E6D7FA] pb-24">
+    <div className="min-h-screen flex flex-col bg-[#130f18] text-[#E6D7FA]">
+      
       {/* Hero Section */}
-      <section className="relative px-6 pt-12 pb-16 max-w-lg mx-auto text-center flex flex-col items-center">
-        <span className="px-3.5 py-1 rounded-full bg-[#241E2F] border border-[#653C87]/60 text-xs font-semibold text-[#9A79BA] mb-4">
-          A Modern Sanctuary for Cross-Border Courtship
-        </span>
+      <main className="flex-1 max-w-4xl mx-auto w-full px-4 sm:px-6 py-16 sm:py-24 flex flex-col items-center justify-center text-center space-y-8">
         
-        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#E6D7FA] leading-tight">
-          Where Intentional Love Crosses Oceans.
-        </h1>
-        
-        <p className="mt-3 text-sm text-[#7D7E92] leading-relaxed max-w-sm">
-          No 2000s forum clutter, no third-party ads, no robotic chat spam. Just authentic singles, verified conduct, and fair communication.
-        </p>
+        {/* Main Headline with Purple to White Gradient */}
+        <div className="space-y-5 max-w-2xl">
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-tight bg-gradient-to-r from-[#9A79BA] via-[#DDD8D4] to-white bg-clip-text text-transparent">
+            Where Intentional Love Crosses Oceans
+          </h1>
+          <p className="text-sm sm:text-base text-[#E6D7FA] leading-relaxed font-normal max-w-xl mx-auto">
+            asiansin.love is an intentional platform connecting international singles with sincere women across Southeast Asia. Designed for meaningful dialogue, family values, and genuine long-term relationships.
+          </p>
+        </div>
 
-        <div className="mt-6 flex flex-col w-full gap-2.5">
+        {/* Primary Call to Actions */}
+        <div className="flex flex-col sm:flex-row items-center gap-3 w-full sm:w-auto pt-2">
           <Link
             href="/discover"
-            className="w-full py-3.5 rounded-full bg-gradient-to-r from-[#653C87] to-[#9A79BA] text-[#15101C] font-bold text-sm shadow-xl flex items-center justify-center gap-2 hover:opacity-95 transition"
+            className="w-full sm:w-auto px-7 py-3 rounded-2xl bg-[#653C87] hover:bg-[#7D49A8] text-xs font-semibold text-white transition active:scale-95 shadow-xl flex items-center justify-center gap-2"
           >
-            Explore Profiles <ArrowRight className="w-4 h-4" />
+            <span>Explore Profiles</span>
+            <ArrowRight className="w-4 h-4" />
           </Link>
           <Link
-            href="/register"
-            className="w-full py-3 rounded-full bg-[#241E2F] border border-[#241E2F] hover:border-[#653C87]/60 text-xs font-semibold text-[#E6D7FA] transition"
+            href="/login"
+            className="w-full sm:w-auto px-7 py-3 rounded-2xl bg-[#261F33] hover:bg-[#2F2540] border border-[#9A79BA]/40 text-sm font-semibold text-white hover:border-[#9A79BA] transition active:scale-95"
           >
             Create Your Account
           </Link>
         </div>
-      </section>
 
-      {/* Philosophy / Contrast Section */}
-      <section className="px-6 py-8 max-w-lg mx-auto border-t border-[#241E2F]/80">
-        <h2 className="text-xs uppercase tracking-widest text-[#9A79BA] font-bold text-center mb-6">
-          Why Asians in Love is Different
-        </h2>
-
-        <div className="grid gap-3">
-          <div className="p-4 rounded-2xl bg-[#241E2F]/50 border border-[#241E2F] flex items-start gap-3.5">
-            <div className="p-2 rounded-xl bg-[#653C87]/20 text-[#9A79BA] shrink-0">
-              <HeartHandshake className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="text-sm font-semibold text-[#E6D7FA]">Always Free for Sincere Women</h3>
-              <p className="text-xs text-[#7D7E92] mt-0.5 leading-relaxed">
-                Southeast Asian members message 100% free with no waiting periods or paywalled inboxes.
-              </p>
-            </div>
+        {/* Value Pillars: Focused on Experience & Intent */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-12 text-left w-full">
+          <div className="p-6 rounded-3xl bg-[#261F33] border border-[#9A79BA]/35 shadow-xl space-y-2.5">
+            <h3 className="text-xs font-bold text-white uppercase tracking-wider">
+              Always Free for Women
+            </h3>
+            <p className="text-sm text-[#E6D7FA] leading-relaxed">
+              Southeast Asian members browse, match, and message completely free with unhindered inboxes.
+            </p>
           </div>
 
-          <div className="p-4 rounded-2xl bg-[#241E2F]/50 border border-[#241E2F] flex items-start gap-3.5">
-            <div className="p-2 rounded-xl bg-[#653C87]/20 text-[#9A79BA] shrink-0">
-              <Zap className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="text-sm font-semibold text-[#E6D7FA]">Zero Bot Automation</h3>
-              <p className="text-xs text-[#7D7E92] mt-0.5 leading-relaxed">
-                We ban robotic copy-paste greetings and shoutboxes. Every outreach is typed with real intention.
-              </p>
-            </div>
+          <div className="p-6 rounded-3xl bg-[#261F33] border border-[#9A79BA]/35 shadow-xl space-y-2.5">
+            <h3 className="text-xs font-bold text-white uppercase tracking-wider">
+              Direct & Uncluttered
+            </h3>
+            <p className="text-sm text-[#E6D7FA] leading-relaxed">
+              No coin packs, micro-transactions, or third-party ad clutter. Just clean profiles and direct communication.
+            </p>
           </div>
 
-          <div className="p-4 rounded-2xl bg-[#241E2F]/50 border border-[#241E2F] flex items-start gap-3.5">
-            <div className="p-2 rounded-xl bg-[#653C87]/20 text-[#9A79BA] shrink-0">
-              <ShieldCheck className="w-5 h-5" />
-            </div>
-            <div>
-              <h3 className="text-sm font-semibold text-[#E6D7FA]">Reputation Through Conduct</h3>
-              <p className="text-xs text-[#7D7E92] mt-0.5 leading-relaxed">
-                Trust earned through authentic profile completeness, response consistency, and clean conduct—zero invasive ID uploads.
-              </p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Featured Preview Card */}
-      <section className="px-6 py-6 max-w-lg mx-auto">
-        <div className="relative aspect-[4/5] rounded-3xl overflow-hidden border border-[#241E2F] shadow-2xl">
-          <Image
-            src="/dummy-1.jpg"
-            alt="Featured profile"
-            fill
-            className="object-cover object-[50%_20%]"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-[#15101C] via-transparent to-transparent" />
-          <div className="absolute bottom-4 left-4 right-4">
-            <span className="px-2.5 py-0.5 rounded-full bg-[#15101C]/80 border border-emerald-500/40 text-[10px] font-medium text-emerald-400 backdrop-blur-md">
-              Verified & Active
-            </span>
-            <h4 className="text-lg font-bold text-[#E6D7FA] mt-1.5 flex items-center gap-1">
-              Camille, 28 <CheckCircle2 className="w-4 h-4 text-[#9A79BA]" />
-            </h4>
-            <p className="text-xs text-[#9A79BA]">Makati, Philippines</p>
-            <p className="text-xs text-[#7D7E92] italic mt-1 line-clamp-1">
-              "Kind-hearted creative exploring the world, passionate about family."
+          <div className="p-6 rounded-3xl bg-[#261F33] border border-[#9A79BA]/35 shadow-xl space-y-2.5">
+            <h3 className="text-xs font-bold text-white uppercase tracking-wider">
+              Intentional Courtship
+            </h3>
+            <p className="text-sm text-[#E6D7FA] leading-relaxed">
+              Built for people seeking marriage, family, and lifelong cross-border commitments.
             </p>
           </div>
         </div>
-      </section>
-    </main>
+
+      </main>
+
+      {/* Persistent Bottom Footer */}
+      <Footer />
+    </div>
   );
 }

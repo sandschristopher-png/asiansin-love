@@ -684,3 +684,5 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
     </div>
   );
 }
+
+export default ChatInterface;

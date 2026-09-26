@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -149,11 +149,11 @@ export default function OnboardingPage() {
   };
 
   return (
-    <div className="min-h-[calc(100dvh-64px)] w-full flex items-center justify-center p-3.5 sm:p-6 bg-[#17131F]">
-      <div className="w-full max-w-lg rounded-3xl bg-[#241E2F] border border-[#7D7E92]/30 p-5 sm:p-8 shadow-2xl space-y-6">
+    <div className="min-h-[calc(100dvh-64px)] w-full flex items-center justify-center p-3.5 sm:p-6 bg-[#130F18]">
+      <div className="w-full max-w-lg rounded-3xl bg-[#261F33] border border-[#9A79BA]/35 p-6 sm:p-8 shadow-2xl space-y-6">
         
         {/* Progress Stepper */}
-        <div className="flex items-center justify-between border-b border-[#7D7E92]/20 pb-4">
+        <div className="flex items-center justify-between border-b border-[#9A79BA]/25 pb-4">
           <div>
             <span className="text-[11px] font-bold uppercase tracking-wider text-[#9A79BA]">
               Step {step} of 3
@@ -169,7 +169,7 @@ export default function OnboardingPage() {
               <span
                 key={s}
                 className={`h-2 rounded-full transition-all duration-300 ${
-                  s === step ? 'w-6 bg-[#653C87]' : s < step ? 'w-2 bg-[#9A79BA]' : 'w-2 bg-[#7D7E92]/30'
+                  s === step ? 'w-6 bg-[#653C87]' : s < step ? 'w-2 bg-[#9A79BA]' : 'w-2 bg-[#9A79BA]/20'
                 }`}
               />
             ))}
@@ -177,7 +177,7 @@ export default function OnboardingPage() {
         </div>
 
         {errorMessage && (
-          <div className="p-3 rounded-xl bg-rose-950/80 border border-rose-500/80 text-rose-200 text-xs font-semibold">
+          <div className="p-3 rounded-2xl bg-rose-950/80 border border-rose-500/80 text-rose-200 text-xs font-semibold">
             {errorMessage}
           </div>
         )}
@@ -186,7 +186,7 @@ export default function OnboardingPage() {
         {step === 1 && (
           <form onSubmit={handleNextStep1} className="space-y-4">
             <div>
-              <label className="text-xs font-bold uppercase tracking-wider text-[#B6AEC7] block mb-1.5">
+              <label className="text-xs font-bold uppercase tracking-wider text-[#9A79BA] block mb-1.5">
                 Username (@handle)
               </label>
               <div className="relative">
@@ -199,13 +199,13 @@ export default function OnboardingPage() {
                   onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_.]/g, ''))}
                   placeholder="yourname"
                   maxLength={20}
-                  className="w-full pl-8 pr-4 py-3 rounded-xl bg-[#17131F] border border-[#7D7E92]/30 text-white placeholder-[#7D7E92] focus:outline-none focus:border-[#9A79BA] text-base sm:text-sm font-semibold"
+                  className="w-full pl-8 pr-4 py-3 rounded-2xl bg-[#181222] border border-[#9A79BA]/40 text-white placeholder-[#9A79BA]/60 focus:outline-none focus:border-[#9A79BA] text-base sm:text-sm font-semibold transition"
                 />
               </div>
 
               <div className="mt-2 text-xs">
                 {isCheckingUsername && (
-                  <span className="text-[#B6AEC7]">Checking availability...</span>
+                  <span className="text-[#C9A4E8]">Checking availability...</span>
                 )}
                 {!isCheckingUsername && usernameStatus?.available && (
                   <span className="text-emerald-400 font-semibold inline-flex items-center gap-1">
@@ -220,7 +220,7 @@ export default function OnboardingPage() {
                     <span className="text-rose-400 font-semibold">@{username} is already taken.</span>
                     {usernameStatus.suggestions && usernameStatus.suggestions.length > 0 && (
                       <div className="flex flex-wrap items-center gap-1.5 pt-1">
-                        <span className="text-[#B6AEC7]">Suggested:</span>
+                        <span className="text-[#C9A4E8]">Suggested:</span>
                         {usernameStatus.suggestions.map((sug) => (
                           <button
                             key={sug}
@@ -239,7 +239,7 @@ export default function OnboardingPage() {
             </div>
 
             <div>
-              <label className="text-xs font-bold uppercase tracking-wider text-[#B6AEC7] block mb-1.5">
+              <label className="text-xs font-bold uppercase tracking-wider text-[#9A79BA] block mb-1.5">
                 Display Name (First Name)
               </label>
               <input
@@ -247,25 +247,25 @@ export default function OnboardingPage() {
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 placeholder="e.g. Christopher"
-                className="w-full px-4 py-3 rounded-xl bg-[#17131F] border border-[#7D7E92]/30 text-white placeholder-[#7D7E92] focus:outline-none focus:border-[#9A79BA] text-base sm:text-sm"
+                className="w-full px-4 py-3 rounded-2xl bg-[#181222] border border-[#9A79BA]/40 text-white placeholder-[#9A79BA]/60 focus:outline-none focus:border-[#9A79BA] text-base sm:text-sm transition"
               />
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-bold uppercase tracking-wider text-[#B6AEC7] block mb-1.5">
+                <label className="text-xs font-bold uppercase tracking-wider text-[#9A79BA] block mb-1.5">
                   Birthdate
                 </label>
                 <input
                   type="date"
                   value={birthdate}
                   onChange={(e) => setBirthdate(e.target.value)}
-                  className="w-full px-3 py-3 rounded-xl bg-[#17131F] border border-[#7D7E92]/30 text-white focus:outline-none focus:border-[#9A79BA] text-base sm:text-sm"
+                  className="w-full px-3 py-3 rounded-2xl bg-[#181222] border border-[#9A79BA]/40 text-white focus:outline-none focus:border-[#9A79BA] text-base sm:text-sm transition"
                 />
               </div>
 
               <div>
-                <label className="text-xs font-bold uppercase tracking-wider text-[#B6AEC7] block mb-1.5">
+                <label className="text-xs font-bold uppercase tracking-wider text-[#9A79BA] block mb-1.5">
                   City
                 </label>
                 <input
@@ -273,19 +273,19 @@ export default function OnboardingPage() {
                   value={city}
                   onChange={(e) => setCity(e.target.value)}
                   placeholder="e.g. Makati or Las Vegas"
-                  className="w-full px-4 py-3 rounded-xl bg-[#17131F] border border-[#7D7E92]/30 text-white placeholder-[#7D7E92] focus:outline-none focus:border-[#9A79BA] text-base sm:text-sm"
+                  className="w-full px-4 py-3 rounded-2xl bg-[#181222] border border-[#9A79BA]/40 text-white placeholder-[#9A79BA]/60 focus:outline-none focus:border-[#9A79BA] text-base sm:text-sm transition"
                 />
               </div>
             </div>
 
             <div>
-              <label className="text-xs font-bold uppercase tracking-wider text-[#B6AEC7] block mb-1.5">
+              <label className="text-xs font-bold uppercase tracking-wider text-[#9A79BA] block mb-1.5">
                 Country
               </label>
               <select
                 value={country}
                 onChange={(e) => setCountry(e.target.value)}
-                className="w-full px-4 py-3 rounded-xl bg-[#17131F] border border-[#7D7E92]/30 text-white focus:outline-none focus:border-[#9A79BA] text-base sm:text-sm font-semibold"
+                className="w-full px-4 py-3 rounded-2xl bg-[#181222] border border-[#9A79BA]/40 text-white focus:outline-none focus:border-[#9A79BA] text-base sm:text-sm transition font-semibold"
               >
                 <option value="Philippines">Philippines</option>
                 <option value="Thailand">Thailand</option>
@@ -300,7 +300,7 @@ export default function OnboardingPage() {
 
             <button
               type="submit"
-              className="w-full py-3.5 rounded-xl bg-[#653C87] hover:bg-[#9A79BA] text-white text-sm font-bold shadow-lg transition-all active:scale-95 mt-2"
+              className="w-full py-3.5 rounded-2xl bg-[#653C87] hover:bg-[#7D49A8] text-white text-sm font-bold shadow-lg shadow-[#653C87]/40 transition active:scale-95 mt-2"
             >
               Continue to Intent & Family
             </button>
@@ -311,7 +311,7 @@ export default function OnboardingPage() {
         {step === 2 && (
           <form onSubmit={handleNextStep2} className="space-y-5">
             <div>
-              <label className="text-xs font-bold uppercase tracking-wider text-[#B6AEC7] block mb-2">
+              <label className="text-xs font-bold uppercase tracking-wider text-[#9A79BA] block mb-2">
                 Primary Courtship Goal
               </label>
               <div className="grid grid-cols-1 gap-2">
@@ -320,7 +320,7 @@ export default function OnboardingPage() {
                     key={goal}
                     type="button"
                     onClick={() => setRelationshipIntent(goal)}
-                    className={`px-4 py-3 rounded-xl text-xs font-bold text-left border transition-all ${
+                    className={`px-4 py-3 rounded-2xl text-xs font-bold text-left border transition-all ${
                       relationshipIntent === goal
                         ? 'bg-[#653C87] border-[#9A79BA] text-white'
                         : 'bg-[#17131F] border-[#7D7E92]/30 text-[#ECE8F4] hover:border-[#7D7E92]'
@@ -333,7 +333,7 @@ export default function OnboardingPage() {
             </div>
 
             <div>
-              <label className="text-xs font-bold uppercase tracking-wider text-[#B6AEC7] block mb-2">
+              <label className="text-xs font-bold uppercase tracking-wider text-[#9A79BA] block mb-2">
                 Relocation Intent
               </label>
               <div className="grid grid-cols-3 gap-2">
@@ -346,7 +346,7 @@ export default function OnboardingPage() {
                     key={item.id}
                     type="button"
                     onClick={() => setRelocationIntent(item.id)}
-                    className={`p-2.5 rounded-xl text-[11px] font-bold text-center border transition-all ${
+                    className={`p-2.5 rounded-2xl text-[11px] font-bold text-center border transition-all ${
                       relocationIntent === item.id
                         ? 'bg-[#653C87] border-[#9A79BA] text-white'
                         : 'bg-[#17131F] border-[#7D7E92]/30 text-[#ECE8F4] hover:border-[#7D7E92]'
@@ -359,12 +359,12 @@ export default function OnboardingPage() {
             </div>
 
             {/* Dependents Guardrail */}
-            <div className="p-4 rounded-2xl bg-[#17131F] border border-[#7D7E92]/30 space-y-3">
+            <div className="p-4 rounded-2xl bg-[#181222] border border-[#9A79BA]/35 space-y-3">
               <div>
                 <label className="text-xs font-bold uppercase tracking-wider text-[#9A79BA] block">
                   Family & Dependents Transparency
                 </label>
-                <p className="text-[11px] text-[#B6AEC7] mt-0.5">
+                <p className="text-xs text-[#E6D7FA] mt-0.5">
                   Accurate parental status is required to protect platform trust.
                 </p>
               </div>
@@ -373,10 +373,10 @@ export default function OnboardingPage() {
                 <button
                   type="button"
                   onClick={() => setHasChildren(false)}
-                  className={`py-2.5 rounded-xl text-xs font-bold border transition-all ${
+                  className={`py-2.5 rounded-2xl text-xs font-bold border transition-all ${
                     hasChildren === false
                       ? 'bg-[#653C87] border-[#9A79BA] text-white'
-                      : 'bg-[#241E2F] border-[#7D7E92]/30 text-[#ECE8F4]'
+                      : 'bg-[#181222] border-[#9A79BA]/30 text-[#E6D7FA] hover:border-[#9A79BA]/60'
                   }`}
                 >
                   No Children
@@ -384,10 +384,10 @@ export default function OnboardingPage() {
                 <button
                   type="button"
                   onClick={() => setHasChildren(true)}
-                  className={`py-2.5 rounded-xl text-xs font-bold border transition-all ${
+                  className={`py-2.5 rounded-2xl text-xs font-bold border transition-all ${
                     hasChildren === true
                       ? 'bg-[#653C87] border-[#9A79BA] text-white'
-                      : 'bg-[#241E2F] border-[#7D7E92]/30 text-[#ECE8F4]'
+                      : 'bg-[#181222] border-[#9A79BA]/30 text-[#E6D7FA] hover:border-[#9A79BA]/60'
                   }`}
                 >
                   Has Children
@@ -395,7 +395,7 @@ export default function OnboardingPage() {
               </div>
 
               {hasChildren && (
-                <div className="space-y-3 pt-2 border-t border-[#7D7E92]/20">
+                <div className="space-y-3 pt-2 border-t border-[#9A79BA]/25">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-semibold text-[#ECE8F4]">Number of Dependents:</span>
                     <div className="flex gap-1.5">
@@ -407,7 +407,7 @@ export default function OnboardingPage() {
                           className={`h-8 w-8 rounded-lg text-xs font-bold border transition-all ${
                             childrenCount === count
                               ? 'bg-[#653C87] border-[#9A79BA] text-white'
-                              : 'bg-[#241E2F] border-[#7D7E92]/30 text-[#ECE8F4]'
+                              : 'bg-[#181222] border-[#9A79BA]/30 text-[#E6D7FA] hover:border-[#9A79BA]/60'
                           }`}
                         >
                           {count === 4 ? '4+' : count}
@@ -425,7 +425,7 @@ export default function OnboardingPage() {
                         className={`px-2.5 py-1.5 rounded-lg text-[11px] font-bold border transition-all ${
                           livingSituation === 'living_with_me'
                             ? 'bg-[#653C87] border-[#9A79BA] text-white'
-                            : 'bg-[#241E2F] border-[#7D7E92]/30 text-[#ECE8F4]'
+                            : 'bg-[#181222] border-[#9A79BA]/30 text-[#E6D7FA] hover:border-[#9A79BA]/60'
                         }`}
                       >
                         Living with me
@@ -436,7 +436,7 @@ export default function OnboardingPage() {
                         className={`px-2.5 py-1.5 rounded-lg text-[11px] font-bold border transition-all ${
                           livingSituation === 'not_living_with_me'
                             ? 'bg-[#653C87] border-[#9A79BA] text-white'
-                            : 'bg-[#241E2F] border-[#7D7E92]/30 text-[#ECE8F4]'
+                            : 'bg-[#181222] border-[#9A79BA]/30 text-[#E6D7FA] hover:border-[#9A79BA]/60'
                         }`}
                       >
                         Not living with me
@@ -451,13 +451,13 @@ export default function OnboardingPage() {
               <button
                 type="button"
                 onClick={() => setStep(1)}
-                className="w-1/3 py-3 rounded-xl bg-[#17131F] border border-[#7D7E92]/30 text-xs font-bold text-[#ECE8F4] hover:bg-[#3B1E42]"
+                className="w-1/3 py-3 rounded-2xl bg-[#17131F] border border-[#7D7E92]/30 text-xs font-bold text-[#ECE8F4] hover:bg-[#3B1E42]"
               >
                 Back
               </button>
               <button
                 type="submit"
-                className="w-2/3 py-3 rounded-xl bg-[#653C87] hover:bg-[#9A79BA] text-white text-xs font-bold shadow-lg transition-all"
+                className="w-2/3 py-3 rounded-2xl bg-[#653C87] hover:bg-[#7D49A8] text-white text-xs font-bold shadow-lg shadow-[#653C87]/40 transition active:scale-95"
               >
                 Continue to Photo
               </button>
@@ -469,10 +469,10 @@ export default function OnboardingPage() {
         {step === 3 && (
           <div className="space-y-5">
             <div>
-              <label className="text-xs font-bold uppercase tracking-wider text-[#B6AEC7] block mb-1.5">
+              <label className="text-xs font-bold uppercase tracking-wider text-[#9A79BA] block mb-1.5">
                 Portrait Photo URL / Headshot
               </label>
-              <p className="text-xs text-[#B6AEC7] mb-3">
+              <p className="text-xs text-[#E6D7FA] mb-3">
                 Provide a clear, unfiltered portrait of yourself to complete your profile setup.
               </p>
               <input
@@ -480,7 +480,7 @@ export default function OnboardingPage() {
                 value={avatarUrl}
                 onChange={(e) => setAvatarUrl(e.target.value)}
                 placeholder="https://example.com/your-photo.jpg"
-                className="w-full px-4 py-3 rounded-xl bg-[#17131F] border border-[#7D7E92]/30 text-white placeholder-[#7D7E92] focus:outline-none focus:border-[#9A79BA] text-base sm:text-sm"
+                className="w-full px-4 py-3 rounded-2xl bg-[#181222] border border-[#9A79BA]/40 text-white placeholder-[#9A79BA]/60 focus:outline-none focus:border-[#9A79BA] text-base sm:text-sm transition"
               />
             </div>
 
@@ -497,9 +497,9 @@ export default function OnboardingPage() {
               </div>
             )}
 
-            <div className="p-3.5 rounded-xl bg-[#17131F] border border-[#7D7E92]/30 text-xs text-[#ECE8F4] space-y-1">
+            <div className="p-3.5 rounded-2xl bg-[#17131F] border border-[#7D7E92]/30 text-xs text-[#ECE8F4] space-y-1">
               <p className="font-bold text-white">Starting Reputation: 100% Rep</p>
-              <p className="text-[11px] text-[#B6AEC7]">
+              <p className="text-xs text-[#E6D7FA]">
                 Your account begins in Standard Standing. Maintain respectful communication and complete pose selfie verification later to earn verified badges.
               </p>
             </div>
@@ -508,7 +508,7 @@ export default function OnboardingPage() {
               <button
                 type="button"
                 onClick={() => setStep(2)}
-                className="w-1/3 py-3 rounded-xl bg-[#17131F] border border-[#7D7E92]/30 text-xs font-bold text-[#ECE8F4] hover:bg-[#3B1E42]"
+                className="w-1/3 py-3 rounded-2xl bg-[#17131F] border border-[#7D7E92]/30 text-xs font-bold text-[#ECE8F4] hover:bg-[#3B1E42]"
               >
                 Back
               </button>
@@ -516,7 +516,7 @@ export default function OnboardingPage() {
                 type="button"
                 onClick={handleCompleteOnboarding}
                 disabled={loading}
-                className="w-2/3 py-3 rounded-xl bg-[#653C87] hover:bg-[#9A79BA] disabled:opacity-50 text-white text-xs font-bold shadow-lg transition-all"
+                className="w-2/3 py-3 rounded-2xl bg-[#653C87] hover:bg-[#7D49A8] disabled:opacity-50 text-white text-xs font-bold shadow-lg shadow-[#653C87]/40 transition active:scale-95"
               >
                 {loading ? 'Activating Profile...' : 'Complete & Discover Matches'}
               </button>

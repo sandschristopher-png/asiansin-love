@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { Heart as LucideHeart, ChevronRight, XCircle, UserCircle2 } from 'lucide-react';
 import { AccountBottomSheet } from '@/components/AccountBottomSheet';
 
 export function BottomNav() {
@@ -135,9 +136,9 @@ export function BottomNav() {
               className="flex items-center justify-between p-3 rounded-2xl bg-[#17131F] hover:bg-[#653C87]/30 text-white font-semibold text-sm transition-colors"
             >
               <span className="flex items-center gap-2.5">
-                <span className="text-rose-400">♥</span> My Favorites
+                <LucideHeart className="w-4 h-4 text-[#C9A4E8]" /> <span>My Favorites</span>
               </span>
-              <span className="text-xs text-[#7D7E92]">→</span>
+              <ChevronRight className="w-4 h-4 text-[#7D7E92]" />
             </Link>
 
             <Link
@@ -146,9 +147,9 @@ export function BottomNav() {
               className="flex items-center justify-between p-3 rounded-2xl bg-[#17131F] hover:bg-[#653C87]/30 text-white font-semibold text-sm transition-colors"
             >
               <span className="flex items-center gap-2.5">
-                <span className="text-[#7D7E92]">✕</span> Disliked / Passed
+                <XCircle className="w-4 h-4 text-[#8E849C]" /> <span>Disliked / Passed</span>
               </span>
-              <span className="text-xs text-[#7D7E92]">→</span>
+              <ChevronRight className="w-4 h-4 text-[#7D7E92]" />
             </Link>
 
             <Link
@@ -157,9 +158,9 @@ export function BottomNav() {
               className="flex items-center justify-between p-3 rounded-2xl bg-[#17131F] hover:bg-[#653C87]/30 text-white font-semibold text-sm transition-colors"
             >
               <span className="flex items-center gap-2.5">
-                <span className="text-emerald-400">👤</span> My Dossier
+                <UserCircle2 className="w-4 h-4 text-[#C9A4E8]" /> <span>My Bio</span>
               </span>
-              <span className="text-xs text-[#7D7E92]">→</span>
+              <ChevronRight className="w-4 h-4 text-[#7D7E92]" />
             </Link>
           </div>
         </div>

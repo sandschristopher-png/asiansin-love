@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
@@ -36,7 +36,7 @@ export default function NotificationsPage() {
           <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
             Notifications
           </h1>
-          <p className="text-xs sm:text-sm text-[#DDD8D4] mt-0.5">
+          <p className="text-sm text-[#E6D7FA] mt-0.5">
             Activity updates, messages, and security notices.
           </p>
         </div>
@@ -44,7 +44,7 @@ export default function NotificationsPage() {
         {notifications.some((n) => !n.read) && (
           <button
             onClick={markAllRead}
-            className="text-xs font-bold text-[#B8AAC3] hover:text-white active:scale-95 transition-all"
+            className="text-xs font-bold text-[#C9A4E8] hover:text-white active:scale-95 transition-all"
           >
             Mark all read
           </button>
@@ -59,8 +59,8 @@ export default function NotificationsPage() {
             href={item.link}
             className={`block p-4 rounded-2xl border transition-all active:scale-[0.99] ${
               !item.read
-                ? 'bg-[#241E2F] border-[#653C87]/60 shadow-lg'
-                : 'bg-[#17131F] border-[#725A7A]/25 text-[#DDD8D4]'
+                ? 'bg-[#261F33] border-[#9A79BA]/45 shadow-xl hover:border-[#9A79BA]/70'
+                : 'bg-[#181222] border-[#9A79BA]/20 hover:border-[#9A79BA]/40'
             }`}
           >
             <div className="flex items-start justify-between gap-3">
@@ -70,14 +70,14 @@ export default function NotificationsPage() {
                     {item.title}
                   </h3>
                   {!item.read && (
-                    <span className="h-2 w-2 rounded-full bg-[#653C87]" />
+                    <span className="h-2 w-2 rounded-full bg-[#9A79BA] ring-2 ring-[#653C87]/40 shadow-sm shadow-[#9A79BA]/60" />
                   )}
                 </div>
-                <p className="text-xs text-[#DDD8D4] leading-relaxed">
+                <p className="text-xs text-[#E6D7FA] leading-relaxed">
                   {item.body}
                 </p>
               </div>
-              <span className="text-[10px] font-semibold text-[#725A7A] whitespace-nowrap">
+              <span className="text-[11px] font-semibold text-[#C9A4E8] whitespace-nowrap">
                 {item.time}
               </span>
             </div>
@@ -85,10 +85,10 @@ export default function NotificationsPage() {
         ))}
 
         {notifications.length === 0 && (
-          <div className="rounded-3xl bg-[#241E2F] border border-[#725A7A]/30 p-10 text-center space-y-2">
+          <div className="rounded-3xl bg-[#261F33] border border-[#9A79BA]/35 p-10 shadow-2xl text-center space-y-2">
             <span className="text-3xl">🔔</span>
             <h3 className="text-sm font-extrabold text-white">All caught up!</h3>
-            <p className="text-xs text-[#DDD8D4]">You have no unread notifications right now.</p>
+            <p className="text-sm text-[#E6D7FA]">You have no unread notifications right now.</p>
           </div>
         )}
       </div>

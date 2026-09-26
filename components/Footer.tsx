@@ -1,30 +1,37 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import Link from 'next/link';
 
 export function Footer() {
   return (
-    <footer className="w-full bg-[#17131F] border-t border-[#725A7A]/20 py-6 px-4 text-center select-none">
-      <div className="max-w-md mx-auto space-y-2">
+    <footer className="w-full border-t border-[#241E2F] bg-[#17131F]/80 backdrop-blur-md mt-auto">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-[#7D7E92]">
         
-        {/* Brand & Copyright */}
-        <p className="text-xs text-[#725A7A] font-semibold">
-          <strong className="text-[#DDD8D4] font-black">asiansin.love</strong> &copy; 2026 All rights reserved.
-        </p>
+        {/* Left: Brand & Copyright */}
+        <div className="flex items-center gap-2">
+          <span>&copy; 2026 asiansin.love. All rights reserved.</span>
+        </div>
 
-        {/* Clean Inline Links */}
-        <div className="flex items-center justify-center gap-2.5 text-[11px] font-bold text-[#B8AAC3]">
-          <Link href="/standards" className="hover:text-white transition-colors">
-            Standards
+        {/* Right: All Legal, Trust, & Support Links */}
+        <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 font-medium">
+          <Link href="/terms" className="hover:text-[#E6D7FA] transition">
+            Terms of Service
           </Link>
-          <span className="text-[#725A7A]">•</span>
-          <Link href="/privacy" className="hover:text-white transition-colors">
-            Privacy
+          <Link href="/privacy" className="hover:text-[#E6D7FA] transition">
+            Privacy Policy
           </Link>
-          <span className="text-[#725A7A]">•</span>
-          <Link href="/terms" className="hover:text-white transition-colors">
-            Terms
+          <Link href="/safety" className="hover:text-[#E6D7FA] transition">
+            Safety & Verification
+          </Link>
+          <Link href="/guidelines" className="hover:text-[#E6D7FA] transition">
+            Community Guidelines
+          </Link>
+          <Link href="/anti-scam" className="hover:text-[#E6D7FA] transition">
+            Anti-Scam Policy
+          </Link>
+          <Link href="/support" className="hover:text-[#E6D7FA] transition">
+            Contact Support
           </Link>
         </div>
 
@@ -32,3 +39,5 @@ export function Footer() {
     </footer>
   );
 }
+
+export default Footer;

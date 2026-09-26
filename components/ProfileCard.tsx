@@ -50,11 +50,11 @@ export function ProfileCard({
 
   if (isPassed) {
     return (
-      <div className="relative aspect-[4/5] w-full rounded-2xl overflow-hidden bg-[#15101C] border border-[#241E2F] flex items-center justify-center">
+      <div className="relative aspect-[4/5] w-full rounded-2xl overflow-hidden bg-[#261F33] border border-[#9A79BA]/35 flex items-center justify-center">
         <Image
           src={displayAvatar}
           alt={displayName}
-          fill
+          fill sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
           className="object-cover object-[50%_20%] opacity-20 grayscale"
         />
         <button
@@ -69,15 +69,15 @@ export function ProfileCard({
   }
 
   return (
-    <div className="group relative aspect-[4/5] w-full rounded-2xl overflow-hidden bg-[#15101C] border border-[#241E2F] hover:border-[#653C87]/50 transition duration-300 shadow-md flex flex-col justify-end">
+    <div className="group relative aspect-[4/5] w-full rounded-2xl overflow-hidden bg-[#261F33] border border-[#9A79BA]/35 hover:border-[#9A79BA]/70 transition duration-300 shadow-xl flex flex-col justify-end">
       <Link href={`/profile/${profile.id}`} className="absolute inset-0 z-0">
         <Image
           src={displayAvatar}
           alt={displayName}
-          fill
+          fill sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
           className="object-cover object-[50%_20%] transition-transform duration-500 group-hover:scale-105"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#15101C] via-[#15101C]/40 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#130F18] via-[#130F18]/50 to-transparent" />
       </Link>
 
       <div className="absolute top-3 left-3 right-3 z-10 flex items-center justify-between pointer-events-none">
@@ -89,7 +89,7 @@ export function ProfileCard({
         ) : <div />}
 
         {profile.repScore !== undefined && (
-          <span className="px-2 py-0.5 rounded-full bg-[#241E2F]/80 border border-[#653C87]/50 text-[10px] font-semibold text-[#E6D7FA] backdrop-blur-md">
+          <span className="px-2 py-0.5 rounded-full bg-[#261F33]/90 border border-[#9A79BA]/50 text-[10px] font-bold text-white backdrop-blur-md">
             {profile.repScore}% Rep
           </span>
         )}
@@ -98,7 +98,7 @@ export function ProfileCard({
       <div className="relative z-10 p-3 flex flex-col gap-1.5 pointer-events-none">
         <div className="flex items-center gap-1.5">
           <Link href={`/profile/${profile.id}`} className="pointer-events-auto">
-            <h3 className="text-base font-semibold text-[#E6D7FA] leading-tight hover:underline flex items-center gap-1">
+            <h3 className="text-base font-bold text-white leading-tight hover:underline flex items-center gap-1">
               {displayName}{displayAge}
               {profile.isVerified && (
                 <CheckCircle className="w-3.5 h-3.5 text-[#9A79BA] shrink-0" />
@@ -107,22 +107,22 @@ export function ProfileCard({
           </Link>
         </div>
 
-        <div className="flex items-center gap-1 text-xs text-[#9A79BA]">
+        <div className="flex items-center gap-1 text-xs font-semibold text-[#E6D7FA]">
           <MapPin className="w-3 h-3 shrink-0" />
           <span className="truncate">{locationLabel}</span>
         </div>
 
         {profile.headline && (
-          <p className="text-[11px] text-[#7D7E92] line-clamp-1 italic">
+          <p className="text-xs text-[#E6D7FA]/90 line-clamp-1 italic">
             "{profile.headline}"
           </p>
         )}
 
-        <div className="mt-1 pt-2 border-t border-[#241E2F]/80 flex items-center justify-around pointer-events-auto">
+        <div className="mt-1 pt-2 border-t border-[#9A79BA]/20 flex items-center justify-around pointer-events-auto">
           <button
             onClick={() => onPass?.(profile.id)}
             title="Pass"
-            className="p-2 rounded-full text-[#7D7E92] hover:text-rose-400 hover:bg-rose-500/10 transition"
+            className="p-2 rounded-full text-[#9A79BA] hover:text-rose-400 hover:bg-[#653C87]/20 transition"
           >
             <X className="w-4 h-4" />
           </button>
@@ -136,7 +136,7 @@ export function ProfileCard({
                 : 'text-[#E6D7FA] hover:text-rose-400 hover:bg-rose-500/10'
             }`}
           >
-            <Heart className={`w-4 h-4 ${isLiked ? 'fill-rose-400' : ''}`} />
+            <Heart className={`w-4 h-4 ${isLiked ? 'fill sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"-rose-400' : ''}`} />
           </button>
 
           <button
@@ -148,7 +148,7 @@ export function ProfileCard({
                 : 'text-[#E6D7FA] hover:text-amber-400 hover:bg-amber-500/10'
             }`}
           >
-            <Star className={`w-4 h-4 ${isSaved ? 'fill-amber-400' : ''}`} />
+            <Star className={`w-4 h-4 ${isSaved ? 'fill sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"-amber-400' : ''}`} />
           </button>
 
           <Link

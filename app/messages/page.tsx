@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -57,19 +57,19 @@ export default function MessagesInboxPage() {
     <div className="w-full max-w-4xl mx-auto px-4 py-6 sm:py-8 space-y-6">
       
       {/* Title & Filter Tabs */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#7D7E92]/25 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#9A79BA]/30 pb-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-white">Direct Messages</h1>
-          <p className="text-xs text-[#B6AEC7] mt-0.5">
+          <p className="text-sm text-[#E6D7FA] mt-0.5">
             Private, authentic courtship conversations with verified members.
           </p>
         </div>
 
         <div className="flex gap-2">
-          <button className="px-3.5 py-1.5 rounded-xl bg-[#653C87] text-white text-xs font-bold shadow-md">
+          <button className="px-3.5 py-1.5 rounded-xl bg-[#653C87] text-white text-xs font-bold shadow-md shadow-[#653C87]/40">
             All Messages
           </button>
-          <button className="px-3.5 py-1.5 rounded-xl bg-[#241E2F] border border-[#7D7E92]/30 text-[#ECE8F4] text-xs font-semibold hover:bg-[#3B1E42] transition-colors">
+          <button className="px-3.5 py-1.5 rounded-xl bg-[#261F33] border border-[#9A79BA]/35 text-[#E6D7FA] text-xs font-semibold hover:bg-[#653C87]/20 hover:text-white transition-colors">
             Unread
           </button>
         </div>
@@ -81,12 +81,12 @@ export default function MessagesInboxPage() {
           <Link
             key={c.partnerId}
             href={`/chat/${c.partnerId}`}
-            className="flex items-center justify-between p-3.5 sm:p-4 rounded-2xl bg-[#241E2F] border border-[#7D7E92]/30 hover:border-[#9A79BA] hover:bg-[#2B2338] transition-all group shadow-lg"
+            className="flex items-center justify-between p-3.5 sm:p-4 rounded-2xl bg-[#261F33] border border-[#9A79BA]/35 hover:border-[#9A79BA]/70 hover:bg-[#2D243D] transition-all group shadow-xl"
           >
             <div className="flex items-center gap-3.5 sm:gap-4 min-w-0">
               
               {/* Unified Squircle Avatar (48x48) */}
-              <div className="relative h-12 w-12 rounded-2xl overflow-hidden bg-[#17131F] border border-[#9A79BA]/40 shrink-0 flex items-center justify-center shadow-inner group-hover:scale-[1.02] transition-transform">
+              <div className="relative h-12 w-12 rounded-2xl overflow-hidden bg-[#181222] border border-[#9A79BA]/50 shrink-0 flex items-center justify-center shadow-inner group-hover:scale-[1.02] transition-transform">
                 {c.partnerAvatar ? (
                   <img
                     src={c.partnerAvatar}
@@ -99,7 +99,7 @@ export default function MessagesInboxPage() {
                   </span>
                 )}
                 {c.unreadCount > 0 && (
-                  <span className="absolute top-1 right-1 h-2.5 w-2.5 rounded-full bg-emerald-400 ring-2 ring-[#241E2F]" />
+                  <span className="absolute top-1 right-1 h-2.5 w-2.5 rounded-full bg-emerald-400 ring-2 ring-[#261F33]" />
                 )}
               </div>
 
@@ -109,15 +109,15 @@ export default function MessagesInboxPage() {
                   <h2 className="font-bold text-sm sm:text-base text-white truncate">
                     {c.partnerName}
                   </h2>
-                  <span className="text-[10px] px-2 py-0.5 rounded-lg bg-[#17131F] text-[#ECE8F4] border border-[#7D7E92]/30 font-semibold shrink-0">
+                  <span className="text-[10px] px-2 py-0.5 rounded-lg bg-[#181222] text-[#E6D7FA] border border-[#9A79BA]/40 font-semibold shrink-0">
                     {c.partnerReputation}% Rep
                   </span>
                 </div>
-                <p className="text-xs text-[#ECE8F4]/80 truncate max-w-xs sm:max-w-md">
+                <p className="text-xs text-[#E6D7FA] truncate max-w-xs sm:max-w-md">
                   {c.lastMessage}
                 </p>
                 {c.partnerCity && (
-                  <p className="text-[10px] text-[#7D7E92] font-mono">
+                  <p className="text-[11px] text-[#C9A4E8] font-medium">
                     {c.partnerCity}
                   </p>
                 )}
@@ -127,15 +127,15 @@ export default function MessagesInboxPage() {
 
             {/* Right Side: Timestamp & Unread Badge */}
             <div className="flex flex-col items-end gap-1.5 shrink-0 pl-2">
-              <span className="text-[11px] font-mono text-[#B6AEC7]">
+              <span className="text-[11px] font-medium text-[#C9A4E8]">
                 {c.lastMessageAt}
               </span>
               {c.unreadCount > 0 ? (
-                <span className="px-2 py-0.5 rounded-full bg-[#653C87] text-white text-[10px] font-bold shadow-md">
+                <span className="px-2 py-0.5 rounded-full bg-[#653C87] text-white text-[10px] font-bold shadow-md shadow-[#653C87]/40">
                   New
                 </span>
               ) : (
-                <span className="text-xs text-[#7D7E92]">&rsaquo;</span>
+                <span className="text-base text-[#9A79BA]">&rsaquo;</span>
               )}
             </div>
           </Link>

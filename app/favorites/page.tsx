@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import Link from 'next/link';
@@ -12,19 +12,19 @@ export default function FavoritesPage() {
     <main className="max-w-6xl mx-auto w-full px-4 sm:px-6 py-6 pb-28 space-y-6">
       
       {/* Clean Uncluttered Header */}
-      <div className="flex items-center justify-between gap-4 pb-4 border-b border-[#725A7A]/25">
+      <div className="flex items-center justify-between gap-4 pb-4 border-b border-[#9A79BA]/30">
         <div>
           <h1 className="text-2xl sm:text-3xl font-black text-white tracking-tight">
             Saved Profiles ({favorites.length})
           </h1>
-          <p className="text-xs sm:text-sm text-[#DDD8D4] mt-1">
+          <p className="text-sm text-[#E6D7FA] mt-1">
             Members bookmarked for sincere courtship and deeper conversation.
           </p>
         </div>
 
         <Link
           href="/discover"
-          className="px-3.5 py-2 rounded-xl bg-[#241E2F] hover:bg-[#2E263B] border border-[#725A7A]/35 text-white text-xs font-bold whitespace-nowrap transition-all active:scale-95 flex-shrink-0"
+          className="px-3.5 py-2 rounded-xl bg-[#261F33] hover:bg-[#2F2540] border border-[#9A79BA]/40 text-[#E6D7FA] hover:text-white text-xs font-bold whitespace-nowrap transition-all active:scale-95 flex-shrink-0"
         >
           ← Browse
         </Link>
@@ -47,7 +47,7 @@ export default function FavoritesPage() {
 
           <div className="space-y-1.5">
             <h2 className="text-xl font-black text-white">No Saved Profiles Yet</h2>
-            <p className="text-xs sm:text-sm text-[#DDD8D4] leading-relaxed">
+            <p className="text-sm text-[#E6D7FA] leading-relaxed">
               When someone matches your values and relationship goals, tap the star on their card to bookmark them here.
             </p>
           </div>
