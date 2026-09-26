@@ -317,14 +317,10 @@ export default function MyProfilePage() {
                   </div>
                   <input
                     type="text"
+                    readOnly
                     value={location}
-                    onChange={(e) => {
-                      setLocation(e.target.value);
-                      setLocationSource('self_reported');
-                      setLocationVerifiedAt(null);
-                    }}
-                    placeholder="City, Country"
-                    className="w-full mt-1.5 px-3 py-1.5 rounded-xl bg-[#181222] border border-[#9A79BA]/40 text-xs text-white focus:outline-none focus:border-[#C9A4E8]"
+                    placeholder="GPS location will appear here"
+                    className="w-full mt-1.5 px-3 py-1.5 rounded-xl bg-[#181222]/50 border border-[#9A79BA]/30 text-xs text-gray-400 cursor-not-allowed focus:outline-none"
                   />
                   {locError && <p className="text-[10px] text-red-400 mt-1">{locError}</p>}
                 </div>
@@ -597,3 +593,4 @@ export default function MyProfilePage() {
     </div>
   );
 }
+
