@@ -1,23 +1,48 @@
-'use client';
+﻿'use client';
+
+import { captureCurrentLocation, formatVerifiedDate } from '@/lib/location';
 
 import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { 
-  ArrowLeft, ShieldCheck, MapPin, Briefcase, 
-  Heart, Languages, Globe, User, Edit3, Settings, 
-  Save, Check, Camera, X, ChevronDown, Baby, Sparkles, HeartHandshake,
-  Ruler, Wine, Cigarette
-} from 'lucide-react';
+  ArrowLeft, ShieldCheck, MapPin, Briefcase, Flower2, Heart, Languages, Globe, User, Edit3, Settings, Save, Check, Camera, X, ChevronDown, Baby, Sparkles, HeartHandshake, Ruler, Wine, Cigarette, Loader2, Navigation, CheckCircle2 } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 import { Footer } from '@/components/Footer';
 
+
+export const NATIONALITY_OPTIONS = [
+  'Philippines',
+  'Vietnam',
+  'Thailand',
+  'Cambodia',
+  'Indonesia',
+  'Malaysia',
+  'Singapore',
+  'Laos',
+  'Myanmar (Burma)',
+  'Timor-Leste',
+  'Brunei',
+  'United States',
+  'Canada',
+  'United Kingdom',
+  'Australia',
+  'Japan',
+  'South Korea',
+  'Taiwan',
+  'Other'
+];
+
 const INTENT_OPTIONS = ['Marriage & Kids', 'Marriage', 'Marriage (No Kids)', 'Life Partner'];
-const RELIGION_OPTIONS = ['Catholic', 'Christian', 'Buddhist', 'Muslim', 'Spiritual', 'None'];
+const RELIGION_OPTIONS = ['Catholic', 'Christian', 'Buddhist', 'Muslim', 'Spiritual', 'None',
+  'Other'
+];
 const MARITAL_OPTIONS = ['Never Married', 'Divorced', 'Widowed', 'Separated'];
 const HAS_KIDS_OPTIONS = ['No', 'Yes (Lives with me)', 'Yes (Lives away)'];
 const WANTS_KIDS_OPTIONS = ['Yes', 'Open', 'No'];
-const RELOCATION_OPTIONS = ['Can Relocate', 'Open to Either', 'Cannot Relocate'];
+const RELOCATION_OPTIONS = ['Can Relocate', 'Open to Either', 'Cannot Relocate',
+  'Other'
+];
 const DRINKING_OPTIONS = ['No', 'Socially', 'Yes'];
 const SMOKING_OPTIONS = ['No', 'Occasionally', 'Yes'];
 
@@ -43,6 +68,10 @@ export default function MyProfilePage() {
   const [name, setName] = useState('Christopher');
   const [age, setAge] = useState(30);
   const [location, setLocation] = useState('Las Vegas, NV');
+  const [locationSource, setLocationSource] = useState<'gps_verified' | 'self_reported'>('self_reported');
+  const [locationVerifiedAt, setLocationVerifiedAt] = useState<string | null>(null);
+  const [isLocating, setIsLocating] = useState<boolean>(false);
+  const [locError, setLocError] = useState<string | null>(null);
   const [bio, setBio] = useState('Down-to-earth tech professional with a passion for creative projects, travel, and honest conversations. Looking for someone grounded who values intentional courtship and a genuine future.');
   const [lookingFor, setLookingFor] = useState('A sincere, patient, and grounded partner who values family, communicates openly, and is ready for an intentional cross-border commitment.');
   
@@ -89,6 +118,8 @@ export default function MyProfilePage() {
         if (data.name) setName(data.name);
         if (data.age) setAge(data.age);
         if (data.location) setLocation(data.location);
+        if (data.location_source) setLocationSource(data.location_source);
+        if (data.location_verified_at) setLocationVerifiedAt(data.location_verified_at);
         if (data.bio) setBio(data.bio);
         if (data.looking_for) setLookingFor(data.looking_for);
         if (data.occupation) setProfession(data.occupation);
@@ -117,6 +148,8 @@ export default function MyProfilePage() {
         name,
         age: Number(age),
         location,
+        location_source: locationSource,
+        location_verified_at: locationVerifiedAt,
         bio,
         looking_for: lookingFor,
         occupation: profession,
@@ -140,26 +173,30 @@ export default function MyProfilePage() {
   };
 
   const renderDropdownPill = (
+    label: string,
     value: string, 
     options: string[], 
     setter: (val: string) => void, 
     dropdownKey: string,
+    Icon: any,
     scrollable: boolean = false
   ) => {
     const isOpen = openDropdown === dropdownKey;
     return (
-      <div className="relative flex-1">
+      <div className="relative inline-block">
         <button
           type="button"
           onClick={() => setOpenDropdown(isOpen ? null : dropdownKey)}
-          className="w-full flex items-center justify-between px-2.5 py-1 rounded-lg bg-[#181222] border border-[#9A79BA]/40 text-xs text-white hover:border-[#9A79BA] transition text-left"
+          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#181222] border border-[#9A79BA]/40 hover:border-[#9A79BA] text-xs font-medium text-white transition active:scale-95"
         >
-          <span className="truncate pr-1 font-medium">{value}</span>
-          <ChevronDown className={`w-3.5 h-3.5 text-[#9A79BA] shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+          <Icon className="w-3.5 h-3.5 text-[#9A79BA] shrink-0" />
+          <span className="text-[#D5CEE5]/70">{label}:</span>
+          <span className="font-semibold text-white">{value}</span>
+          <ChevronDown className={`w-3 h-3 text-[#9A79BA] shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
         </button>
 
         {isOpen && (
-          <div className={`absolute left-0 bottom-full mb-1 w-44 rounded-xl bg-[#261F33] border border-[#9A79BA]/40 shadow-2xl py-1 z-50 overflow-y-auto ${scrollable ? 'max-h-52' : ''}`}>
+          <div className={`absolute left-0 top-full mt-1.5 w-48 rounded-2xl bg-[#20182E] border border-[#9A79BA]/40 shadow-2xl py-1.5 z-50 overflow-y-auto backdrop-blur-md ${scrollable ? 'max-h-52' : ''}`}>
             {options.map((opt) => (
               <button
                 key={opt}
@@ -170,8 +207,8 @@ export default function MyProfilePage() {
                 }}
                 className={`w-full text-left px-3 py-1.5 text-xs transition flex items-center justify-between ${
                   value === opt 
-                    ? 'bg-[#653C87] text-white font-semibold' 
-                    : 'text-[#E6D7FA] hover:bg-[#181222] hover:text-white'
+                    ? 'text-white font-bold bg-[#653C87]/40' 
+                    : 'text-[#D5CEE5] hover:bg-[#2B203C] hover:text-white'
                 }`}
               >
                 <span>{opt}</span>
@@ -244,13 +281,52 @@ export default function MyProfilePage() {
                   </div>
                 </div>
                 <div>
-                  <label className="text-[10px] uppercase font-bold text-[#9A79BA]">Location</label>
+                  <div className="flex items-center justify-between">
+                    <label className="text-[10px] uppercase font-bold text-[#9A79BA]">Location</label>
+                    <button
+                      type="button"
+                      disabled={isLocating}
+                      onClick={async () => {
+                        setIsLocating(true);
+                        setLocError(null);
+                        const res = await captureCurrentLocation();
+                        setIsLocating(false);
+                        if (res.success && res.data) {
+                          const formatted = `${res.data.city}, ${res.data.country}`;
+                          setLocation(formatted);
+                          setLocationSource('gps_verified');
+                          setLocationVerifiedAt(new Date().toISOString());
+                        } else if (res.error) {
+                          setLocError(res.error);
+                        }
+                      }}
+                      className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#C9A4E8] hover:text-white transition disabled:opacity-50"
+                    >
+                      {isLocating ? (
+                        <>
+                          <Loader2 className="w-3 h-3 animate-spin text-[#C9A4E8]" />
+                          <span>Detecting GPS...</span>
+                        </>
+                      ) : (
+                        <>
+                          <Navigation className="w-3 h-3 text-[#C9A4E8]" />
+                          <span>Detect Current Location</span>
+                        </>
+                      )}
+                    </button>
+                  </div>
                   <input
                     type="text"
                     value={location}
-                    onChange={(e) => setLocation(e.target.value)}
-                    className="w-full mt-1 px-3 py-1.5 rounded-xl bg-[#181222] border border-[#9A79BA]/40 text-xs text-white focus:outline-none focus:border-[#9A79BA]"
+                    onChange={(e) => {
+                      setLocation(e.target.value);
+                      setLocationSource('self_reported');
+                      setLocationVerifiedAt(null);
+                    }}
+                    placeholder="City, Country"
+                    className="w-full mt-1.5 px-3 py-1.5 rounded-xl bg-[#181222] border border-[#9A79BA]/40 text-xs text-white focus:outline-none focus:border-[#C9A4E8]"
                   />
+                  {locError && <p className="text-[10px] text-red-400 mt-1">{locError}</p>}
                 </div>
               </div>
             ) : (
@@ -259,10 +335,22 @@ export default function MyProfilePage() {
                   <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-1.5">
                     {name}, {age}
                   </h1>
-                  <p className="text-xs text-[#9A79BA] flex items-center gap-1 mt-0.5">
-                    <MapPin className="w-3.5 h-3.5 text-[#C9A4E8]" />
-                    <span>{location}</span>
-                  </p>
+                  <div className="flex flex-wrap items-center gap-2 mt-1">
+                    <p className="text-xs text-[#E6D7FA] flex items-center gap-1.5">
+                      <MapPin className={`w-3.5 h-3.5 ${locationSource === 'gps_verified' ? 'text-emerald-400' : 'text-[#9A79BA]'}`} />
+                      <span className="font-medium text-white">{location}</span>
+                    </p>
+                    {locationSource === 'gps_verified' ? (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/35 text-[10px] font-semibold text-emerald-300">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                        GPS Verified {locationVerifiedAt ? `ï¿½ ${formatVerifiedDate(locationVerifiedAt)}` : ''}
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-[#181222] border border-[#9A79BA]/25 text-[10px] font-medium text-[#A8A2AB]">
+                        Self-Reported
+                      </span>
+                    )}
+                  </div>
                 </div>
                 <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#181222] border border-[#9A79BA]/40 text-[11px] font-medium text-[#E6D7FA] shrink-0">
                   <ShieldCheck className="w-3.5 h-3.5 text-[#C9A4E8]" />
@@ -395,174 +483,114 @@ export default function MyProfilePage() {
               )}
             </div>
 
-            {/* CLEAN BORDERLESS VITALS */}
-            <div className="p-5 sm:p-6 rounded-3xl bg-[#261F33] border border-[#9A79BA]/35 shadow-xl space-y-4">
-              <h3 className="text-xs font-bold text-white uppercase tracking-wider">VITALS</h3>
-              
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8 text-sm">
+            {/* SLEEK COMPACT VITALS */}
+            <div className="p-5 sm:p-6 rounded-3xl bg-[#261F33] border border-[#9A79BA]/35 shadow-xl space-y-3.5">
+              <div className="flex items-center justify-between">
+                <h3 className="text-xs font-bold text-white uppercase tracking-wider">VITALS & TRAITS</h3>
                 
-                {/* Profession */}
-                <div className="flex items-center gap-3">
-                  <div className="w-5 flex items-center justify-center shrink-0">
-                    <Briefcase className="w-4 h-4 text-[#9A79BA]" />
-                  </div>
-                  <span className="text-[#9A79BA] font-medium w-28 shrink-0">Profession</span>
-                  {isEditing ? (
+              </div>
+
+              {isEditing ? (
+                /* Edit Mode: Compact Wrapped Pill Triggers */
+                <div className="flex flex-wrap items-center gap-2">
+                  {/* Profession Input */}
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#181222] border border-[#9A79BA]/40 text-xs">
+                    <Briefcase className="w-3.5 h-3.5 text-[#9A79BA] shrink-0" />
+                    <span className="text-[#D5CEE5]/70">Work:</span>
                     <input
                       type="text"
                       value={profession}
                       onChange={(e) => setProfession(e.target.value)}
-                      className="flex-1 px-2.5 py-1 rounded-lg bg-[#181222] border border-[#9A79BA]/40 text-xs text-white focus:outline-none"
+                      placeholder="Profession"
+                      className="bg-transparent text-white font-semibold text-xs focus:outline-none w-28"
                     />
-                  ) : (
-                    <span className="font-semibold text-white truncate">{profession}</span>
-                  )}
-                </div>
-
-                {/* Intent */}
-                <div className="flex items-center gap-3">
-                  <div className="w-5 flex items-center justify-center shrink-0">
-                    <Heart className="w-4 h-4 text-[#C9A4E8]" />
                   </div>
-                  <span className="text-[#9A79BA] font-medium w-28 shrink-0">Intent</span>
-                  {isEditing ? (
-                    renderDropdownPill(intent, INTENT_OPTIONS, setIntent, 'intent')
-                  ) : (
-                    <span className="font-semibold text-white truncate">{intent}</span>
-                  )}
-                </div>
 
-                {/* Religion */}
-                <div className="flex items-center gap-3">
-                  <div className="w-5 flex items-center justify-center shrink-0">
-                    <Sparkles className="w-4 h-4 text-[#9A79BA]" />
-                  </div>
-                  <span className="text-[#9A79BA] font-medium w-28 shrink-0">Religion</span>
-                  {isEditing ? (
-                    renderDropdownPill(religion, RELIGION_OPTIONS, setReligion, 'religion')
-                  ) : (
-                    <span className="font-semibold text-white truncate">{religion}</span>
-                  )}
-                </div>
+                  {renderDropdownPill('Intent', intent, INTENT_OPTIONS, setIntent, 'intent', Heart)}
+                  {renderDropdownPill('Faith', religion, RELIGION_OPTIONS, setReligion, 'religion', Flower2)}
+                  {renderDropdownPill('Relocation', relocation, RELOCATION_OPTIONS, setRelocation, 'relocation', Globe)}
+                  {renderDropdownPill('Status', maritalStatus, MARITAL_OPTIONS, setMaritalStatus, 'maritalStatus', HeartHandshake)}
+                  {renderDropdownPill('Kids', hasKids, HAS_KIDS_OPTIONS, setHasKids, 'hasKids', Baby)}
+                  {renderDropdownPill('Wants Kids', wantsKids, WANTS_KIDS_OPTIONS, setWantsKids, 'wantsKids', Baby)}
+                  {renderDropdownPill('Height', height, HEIGHT_OPTIONS, setHeight, 'height', Ruler, true)}
+                  {renderDropdownPill('Drinks', drinking, DRINKING_OPTIONS, setDrinking, 'drinking', Wine)}
+                  {renderDropdownPill('Smokes', smoking, SMOKING_OPTIONS, setSmoking, 'smoking', Cigarette)}
 
-                {/* Relocation */}
-                <div className="flex items-center gap-3">
-                  <div className="w-5 flex items-center justify-center shrink-0">
-                    <Globe className="w-4 h-4 text-[#9A79BA]" />
-                  </div>
-                  <span className="text-[#9A79BA] font-medium w-28 shrink-0">Relocation</span>
-                  {isEditing ? (
-                    renderDropdownPill(relocation, RELOCATION_OPTIONS, setRelocation, 'relocation')
-                  ) : (
-                    <span className="font-semibold text-white truncate">{relocation}</span>
-                  )}
-                </div>
-
-                {/* Marital Status */}
-                <div className="flex items-center gap-3">
-                  <div className="w-5 flex items-center justify-center shrink-0">
-                    <HeartHandshake className="w-4 h-4 text-[#9A79BA]" />
-                  </div>
-                  <span className="text-[#9A79BA] font-medium w-28 shrink-0">Status</span>
-                  {isEditing ? (
-                    renderDropdownPill(maritalStatus, MARITAL_OPTIONS, setMaritalStatus, 'maritalStatus')
-                  ) : (
-                    <span className="font-semibold text-white truncate">{maritalStatus}</span>
-                  )}
-                </div>
-
-                {/* Has Kids */}
-                <div className="flex items-center gap-3">
-                  <div className="w-5 flex items-center justify-center shrink-0">
-                    <Baby className="w-4 h-4 text-[#9A79BA]" />
-                  </div>
-                  <span className="text-[#9A79BA] font-medium w-28 shrink-0">Has Kids?</span>
-                  {isEditing ? (
-                    renderDropdownPill(hasKids, HAS_KIDS_OPTIONS, setHasKids, 'hasKids')
-                  ) : (
-                    <span className="font-semibold text-white truncate">{hasKids}</span>
-                  )}
-                </div>
-
-                {/* Wants Kids */}
-                <div className="flex items-center gap-3">
-                  <div className="w-5 flex items-center justify-center shrink-0">
-                    <Baby className="w-4 h-4 text-[#9A79BA]" />
-                  </div>
-                  <span className="text-[#9A79BA] font-medium w-28 shrink-0">Wants Kids?</span>
-                  {isEditing ? (
-                    renderDropdownPill(wantsKids, WANTS_KIDS_OPTIONS, setWantsKids, 'wantsKids')
-                  ) : (
-                    <span className="font-semibold text-white truncate">{wantsKids}</span>
-                  )}
-                </div>
-
-                {/* Languages */}
-                <div className="flex items-center gap-3">
-                  <div className="w-5 flex items-center justify-center shrink-0">
-                    <Languages className="w-4 h-4 text-[#9A79BA]" />
-                  </div>
-                  <span className="text-[#9A79BA] font-medium w-28 shrink-0">Languages</span>
-                  {isEditing ? (
+                  {/* Languages Input */}
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#181222] border border-[#9A79BA]/40 text-xs">
+                    <Languages className="w-3.5 h-3.5 text-[#9A79BA] shrink-0" />
+                    <span className="text-[#D5CEE5]/70">Languages:</span>
                     <input
                       type="text"
                       value={userLanguages}
                       onChange={(e) => setUserLanguages(e.target.value)}
-                      className="flex-1 px-2.5 py-1 rounded-lg bg-[#181222] border border-[#9A79BA]/40 text-xs text-white focus:outline-none"
+                      placeholder="e.g. English, Tagalog"
+                      className="bg-transparent text-white font-semibold text-xs focus:outline-none w-32"
                     />
-                  ) : (
-                    <span className="font-semibold text-white truncate">{userLanguages}</span>
-                  )}
+                  </div>
                 </div>
-
-              </div>
-
-              {/* Lifestyle Line with Height Dropdown */}
-              <div className="pt-3 border-t border-[#9A79BA]/25">
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-y-3.5 gap-x-6 text-sm">
-                  
-                  {/* Height Dropdown */}
-                  <div className="flex items-center gap-2.5">
-                    <Ruler className="w-4 h-4 text-[#9A79BA] shrink-0" />
-                    <span className="text-[#9A79BA] font-medium w-16 shrink-0">Height:</span>
-                    {isEditing ? (
-                      renderDropdownPill(height, HEIGHT_OPTIONS, setHeight, 'height', true)
-                    ) : (
-                      <span className="font-medium text-white truncate">{height}</span>
-                    )}
+              ) : (
+                /* View Mode: Clean Badge Chips */
+                <div className="flex flex-wrap items-center gap-2">
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#1F1829] border border-[#9A79BA]/25 text-xs text-[#E6D7FA]">
+                    <Briefcase className="w-3.5 h-3.5 text-[#9A79BA]" />
+                    <span className="font-medium text-white">{profession}</span>
                   </div>
 
-                  {/* Drinks Dropdown */}
-                  <div className="flex items-center gap-2.5">
-                    <Wine className="w-4 h-4 text-[#9A79BA] shrink-0" />
-                    <span className="text-[#9A79BA] font-medium w-16 shrink-0">Drinks:</span>
-                    {isEditing ? (
-                      renderDropdownPill(drinking, DRINKING_OPTIONS, setDrinking, 'drinking')
-                    ) : (
-                      <span className="font-medium text-white truncate">{drinking}</span>
-                    )}
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#1F1829] border border-[#9A79BA]/25 text-xs text-[#E6D7FA]">
+                    <Heart className="w-3.5 h-3.5 text-[#C9A4E8]" />
+                    <span className="font-medium text-white">{intent}</span>
                   </div>
 
-                  {/* Smokes Dropdown */}
-                  <div className="flex items-center gap-2.5">
-                    <Cigarette className="w-4 h-4 text-[#9A79BA] shrink-0" />
-                    <span className="text-[#9A79BA] font-medium w-16 shrink-0">Smokes:</span>
-                    {isEditing ? (
-                      renderDropdownPill(smoking, SMOKING_OPTIONS, setSmoking, 'smoking')
-                    ) : (
-                      <span className="font-medium text-white truncate">{smoking}</span>
-                    )}
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#1F1829] border border-[#9A79BA]/25 text-xs text-[#E6D7FA]">
+                    <Globe className="w-3.5 h-3.5 text-[#9A79BA]" />
+                    <span className="font-medium text-white">{relocation}</span>
                   </div>
 
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#1F1829] border border-[#9A79BA]/25 text-xs text-[#E6D7FA]">
+                    <HeartHandshake className="w-3.5 h-3.5 text-[#9A79BA]" />
+                    <span className="font-medium text-white">{maritalStatus}</span>
+                  </div>
+
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#1F1829] border border-[#9A79BA]/25 text-xs text-[#E6D7FA]">
+                    <Baby className="w-3.5 h-3.5 text-[#9A79BA]" />
+                    <span className="font-medium text-white">Has Kids: {hasKids}</span>
+                  </div>
+
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#1F1829] border border-[#9A79BA]/25 text-xs text-[#E6D7FA]">
+                    <Baby className="w-3.5 h-3.5 text-[#9A79BA]" />
+                    <span className="font-medium text-white">Wants Kids: {wantsKids}</span>
+                  </div>
+
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#1F1829] border border-[#9A79BA]/25 text-xs text-[#E6D7FA]">
+                    <Flower2 className="w-3.5 h-3.5 text-[#9A79BA]" />
+                    <span className="font-medium text-white">Faith: {religion}</span>
+                  </div>
+
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#1F1829] border border-[#9A79BA]/25 text-xs text-[#E6D7FA]">
+                    <Ruler className="w-3.5 h-3.5 text-[#9A79BA]" />
+                    <span className="font-medium text-white">{height}</span>
+                  </div>
+
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#1F1829] border border-[#9A79BA]/25 text-xs text-[#E6D7FA]">
+                    <Wine className="w-3.5 h-3.5 text-[#9A79BA]" />
+                    <span className="font-medium text-white">Drinks: {drinking}</span>
+                  </div>
+
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#1F1829] border border-[#9A79BA]/25 text-xs text-[#E6D7FA]">
+                    <Cigarette className="w-3.5 h-3.5 text-[#9A79BA]" />
+                    <span className="font-medium text-white">Smokes: {smoking}</span>
+                  </div>
+
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#1F1829] border border-[#9A79BA]/25 text-xs text-[#E6D7FA]">
+                    <Languages className="w-3.5 h-3.5 text-[#9A79BA]" />
+                    <span className="font-medium text-white">{userLanguages}</span>
+                  </div>
                 </div>
-              </div>
-
+              )}
             </div>
-
           </div>
-
         </div>
-
       </main>
 
       <Footer />

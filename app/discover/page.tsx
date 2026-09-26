@@ -1,13 +1,13 @@
 ﻿'use client';
 
-import React, { useState, useEffect, useMemo, Suspense } from 'react';
+import React, { useState, useEffect, useMemo, useRef, Suspense } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { 
   Search, Heart, X as XIcon, Star, MessageCircle, 
   MapPin, ShieldCheck, CheckCircle, SlidersHorizontal, 
-  RotateCcw, Check
+  RotateCcw, Loader2, Check
 } from 'lucide-react';
 import { Footer } from '@/components/Footer';
 import { createClient } from '@/lib/supabase/client';
@@ -206,6 +206,13 @@ function DiscoverContent() {
   const [cardActions, setCardActions] = useState<Record<string, ActionType>>({});
   const [lastPassed, setLastPassed] = useState<{ id: string; name: string } | null>(null);
 
+  // Hybrid Infinite Scroll State
+  const BATCH_SIZE = 16;
+  const [visibleLimit, setVisibleLimit] = useState(BATCH_SIZE);
+  const [autoLoadsCount, setAutoLoadsCount] = useState(0);
+  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
+
   useEffect(() => {
     const params = new URLSearchParams();
 
@@ -305,6 +312,34 @@ function DiscoverContent() {
     persistCardAction(supabase, id, action, isCurrentlyActive);
   };
 
+
+  // Reset pagination when active filter criteria change
+  useEffect(() => {
+    setVisibleLimit(BATCH_SIZE);
+    setAutoLoadsCount(0);
+  }, [searchQuery, selectedCountry, selectedGender, minAge, maxAge, selectedIntent, verifiedOnly, activeNowOnly]);
+
+  // IntersectionObserver for auto-loading batches
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver((entries) => {
+      const first = entries[0];
+      if (first.isIntersecting && autoLoadsCount < 3 && !isLoadingMore) {
+        setIsLoadingMore(true);
+        setTimeout(() => {
+          setVisibleLimit((prev) => prev + BATCH_SIZE);
+          setAutoLoadsCount((prev) => prev + 1);
+          setIsLoadingMore(false);
+        }, 350);
+      }
+    }, { rootMargin: '400px' });
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [autoLoadsCount, isLoadingMore]);
+
   const undoLastPass = () => {
     if (!lastPassed) return;
     const targetId = lastPassed.id;
@@ -322,7 +357,7 @@ function DiscoverContent() {
       try {
         const { data, error } = await supabase
           .from('profiles')
-          .select('id, display_name, full_name, username, age, gender, city, country, avatar_url, is_verified, reputation_score, last_active, relationship_intent, occupation, bio')
+          .select('id, display_name, full_name, username, age, gender, city, country, avatar_url, is_verified, reputation_score, last_active, intent, occupation, bio')
           .order('created_at', { ascending: false })
           .limit(40);
 
@@ -347,7 +382,7 @@ function DiscoverContent() {
               repScore: row.reputation_score || 98,
               verified: Boolean(row.is_verified),
               online: row.last_active ? (Date.now() - new Date(row.last_active).getTime() < 1000 * 60 * 15) : true,
-              intent: row.relationship_intent || 'Marriage',
+              intent: row.intent || 'Marriage',
               bio: row.bio,
               occupation: row.occupation,
             };
@@ -390,6 +425,9 @@ function DiscoverContent() {
     const isPassed = cardActions[profile.id] === 'pass';
     return !isPassed && matchesCountry && matchesGender && matchesQuery && matchesAge && matchesIntent && matchesVerified && matchesOnline;
   });
+
+  const visibleProfiles = filteredProfiles.slice(0, visibleLimit);
+  const hasMore = visibleLimit < filteredProfiles.length;
 
   return (
     <div className="min-h-screen flex flex-col bg-[#130f18] text-[#E6D7FA]">
@@ -482,7 +520,7 @@ function DiscoverContent() {
 
         {/* Discovery Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4.5 pt-1">
-          {filteredProfiles.map((profile) => {
+          {visibleProfiles.map((profile) => {
             const state = cardActions[profile.id];
             const isLiked = state === 'like';
             const isStarred = state === 'star';
@@ -592,6 +630,69 @@ function DiscoverContent() {
             );
           })}
         </div>
+
+
+        {/* Empty State */}
+        {filteredProfiles.length === 0 && (
+          <div className="py-16 text-center space-y-3">
+            <p className="text-sm text-[#D5CEE5]">No members match your current filter settings.</p>
+            <button
+              type="button"
+              onClick={resetFilters}
+              className="px-5 py-2 rounded-full bg-[#653C87] text-white text-xs font-semibold hover:bg-[#7D4B9F] transition"
+            >
+              Reset Filters
+            </button>
+          </div>
+        )}
+
+        {/* Scroll Sentinel for auto-fetch */}
+        <div ref={sentinelRef} className="h-4 w-full pointer-events-none" />
+
+        {/* Manual Load More Gate (after 3 auto-loads) */}
+        {hasMore && autoLoadsCount >= 3 && (
+          <div className="pt-4 pb-2 flex justify-center">
+            <button
+              type="button"
+              onClick={() => {
+                setIsLoadingMore(true);
+                setTimeout(() => {
+                  setVisibleLimit((prev) => prev + BATCH_SIZE);
+                  setAutoLoadsCount(0); // Reset auto-loads so user can scroll again
+                  setIsLoadingMore(false);
+                }, 300);
+              }}
+              disabled={isLoadingMore}
+              className="px-6 py-2.5 rounded-full bg-[#1D1726] border border-[#9A79BA]/40 text-[#E6D7FA] hover:text-white hover:border-[#9A79BA] text-xs font-semibold transition flex items-center gap-2 shadow-lg"
+            >
+              {isLoadingMore ? (
+                <>
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-[#9A79BA]" />
+                  <span>Loading profiles...</span>
+                </>
+              ) : (
+                <span>Load More Profiles ({filteredProfiles.length - visibleLimit} remaining)</span>
+              )}
+            </button>
+          </div>
+        )}
+
+        {/* Loading Spinner during auto-loads */}
+        {isLoadingMore && autoLoadsCount < 3 && (
+          <div className="py-6 flex justify-center items-center gap-2 text-xs text-[#9A79BA]">
+            <Loader2 className="w-4 h-4 animate-spin" />
+            <span>Discovering more matches...</span>
+          </div>
+        )}
+
+        {/* End of Feed State */}
+        {!hasMore && filteredProfiles.length > 0 && (
+          <div className="pt-8 pb-4 text-center">
+            <p className="text-xs text-[#A8A2AB]/70">
+              You've viewed all {filteredProfiles.length} matches for your current criteria.
+            </p>
+          </div>
+        )}
 
         {/* Undo Dismissal Snackbar */}
         {lastPassed && (

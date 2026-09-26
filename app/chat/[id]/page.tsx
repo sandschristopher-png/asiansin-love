@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { ArrowLeft, Send, Zap, ShieldAlert, CheckCheck, Clock } from 'lucide-react';
 import UpgradeModal from '@/components/UpgradeModal';
+import ReputationModal from '@/components/ReputationModal';
 import { createClient } from '@/lib/supabase/client';
 
 interface Persona {
@@ -191,6 +192,7 @@ export default function ChatConversationPage({ params }: { params: { id: string 
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
   const [showSafetyNotice, setShowSafetyNotice] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [showRepModal, setShowRepModal] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -363,9 +365,14 @@ export default function ChatConversationPage({ params }: { params: { id: string 
           </div>
         </div>
 
-        <span className="px-2.5 py-1 rounded-full bg-[#241E2F] border border-[#9A79BA]/30 text-[10px] font-semibold text-[#E6D7FA]">
+        <button
+          type="button"
+          onClick={() => setShowRepModal(true)}
+          className="px-2.5 py-1 rounded-full bg-[#241E2F] hover:bg-[#2F273E] border border-[#9A79BA]/30 hover:border-[#9A79BA]/60 text-[10px] font-semibold text-[#E6D7FA] transition active:scale-95 cursor-pointer"
+          title="View Conduct and Behavior Breakdown"
+        >
           {targetInfo.rep}% Rep
-        </span>
+        </button>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-3 max-w-md mx-auto w-full">
@@ -443,6 +450,12 @@ export default function ChatConversationPage({ params }: { params: { id: string 
         isOpen={showUpgradeModal}
         onClose={() => setShowUpgradeModal(false)}
         onSelectPlan={(p) => alert('Plan selected: ' + p)}
+      />
+      <ReputationModal
+        isOpen={showRepModal}
+        onClose={() => setShowRepModal(false)}
+        name={targetInfo.name}
+        score={targetInfo.rep}
       />
     </main>
   );
