@@ -1,20 +1,28 @@
-import type { MetadataRoute } from 'next'
+﻿import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'asiansin.love - Southeast Asian Dating',
+    id: '/',
+    name: 'asiansin.love',
     short_name: 'asiansin.love',
-    description: 'Modern, high-trust dating platform across Southeast Asia.',
-    start_url: '/browse',
+    description: 'Verified, intentional relationships connecting Southeast Asian singles with international gentlemen.',
+    start_url: '/',
     display: 'standalone',
-    background_color: '#fafaf9',
-    theme_color: '#e11d48',
+    background_color: '#17131F',
+    theme_color: '#17131F',
     icons: [
       {
-        src: '/icon',
-        sizes: '48x48 96x96 192x192 512x512',
+        src: '/icon-192.png',
+        sizes: '192x192',
         type: 'image/png',
+        purpose: 'any',
+      },
+      {
+        src: '/icon-512.png',
+        sizes: '512x512',
+        type: 'image/png',
+        purpose: 'maskable',
       },
     ],
-  }
+  };
 }

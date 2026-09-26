@@ -4,8 +4,10 @@ import { Navbar } from '@/components/Navbar';
 import { BottomNav } from '@/components/BottomNav';
 import { OnboardingGuard } from '@/components/OnboardingGuard';
 import { FavoritesProvider } from '@/lib/favoritesContext';
+import { PwaRegister } from '@/components/PwaRegister';
 
 export const metadata = {
+  manifest: '/manifest.webmanifest',
   icons: {
     icon: '/favicon.png',
     apple: '/icon-192.png',
@@ -22,6 +24,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="h-full">
       <body className="bg-[#17131F] text-white min-h-full overflow-y-auto selection:bg-[#653C87] selection:text-white pb-24 sm:pb-0">
+        <PwaRegister />
         <FavoritesProvider>
           <OnboardingGuard>
             <Navbar />
