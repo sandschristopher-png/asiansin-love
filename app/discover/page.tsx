@@ -205,7 +205,7 @@ function DiscoverCardPhotoCarousel({
 }: DiscoverCardPhotoCarouselProps) {
   const [currentIdx, setCurrentIdx] = useState(0);
 
-  const displayPhotos = (photos && photos.filter(Boolean).length > 0) ? photos.filter(Boolean) : [avatarUrl || '/jennalyn.png'];
+  const displayPhotos = (photos && photos.filter(Boolean).length > 0) ? photos.filter(Boolean) : [avatarUrl || '/placeholder-avatar.svg'];
   const hasMultiple = displayPhotos.length > 1;
 
   const handlePrev = (e: React.MouseEvent) => {
@@ -379,6 +379,9 @@ function DiscoverContent() {
   }, [minAge, maxAge, selectedIntent, verifiedOnly, activeNowOnly]);
 
   const resetFilters = () => {
+    setSelectedGender('all');
+    setSelectedCountry('all');
+    setSearchQuery('');
     setMinAge(18);
     setMaxAge(65);
     setSelectedIntent('All');
@@ -456,7 +459,7 @@ function DiscoverContent() {
 
     const observer = new IntersectionObserver((entries) => {
       const first = entries[0];
-      if (first.isIntersecting && autoLoadsCount < 3 && !isLoadingMore) {
+      if (first.isIntersecting && hasMore && autoLoadsCount < 3 && !isLoadingMore) {
         setIsLoadingMore(true);
         setTimeout(() => {
           setVisibleLimit((prev) => prev + BATCH_SIZE);
@@ -504,7 +507,7 @@ function DiscoverContent() {
           .from('profiles')
           .select('id, display_name, full_name, username, age, gender, city, country, avatar_url, photos, is_verified, reputation_score, last_active, intent:relationship_intent, occupation, bio, latitude, longitude, location_source')
           .order('created_at', { ascending: false })
-          .limit(40);
+          .limit(120);
 
         if (error) {
           console.error('Error fetching live profiles:', error);
@@ -523,8 +526,8 @@ function DiscoverContent() {
               gender: ['woman', 'man', 'trans'].includes(normGender) ? normGender : 'woman',
               location: cityVal,
               country: countryVal,
-              avatarUrl: row.avatar_url || '/jennalyn.png',
-              photos: Array.isArray(row.photos) && row.photos.length > 0 ? row.photos : [row.avatar_url || '/jennalyn.png'],
+              avatarUrl: row.avatar_url || '/placeholder-avatar.svg',
+              photos: Array.isArray(row.photos) && row.photos.length > 0 ? row.photos : [row.avatar_url || '/placeholder-avatar.svg'],
               repScore: row.reputation_score || 98,
               verified: Boolean(row.is_verified),
                 latitude: row.latitude,
