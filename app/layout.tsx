@@ -20,7 +20,7 @@ export const metadata: Metadata = {
     statusBarStyle: 'black-translucent',
     title: 'asiansin.love',
   },
-  title: 'asiansin.love | Sincere Cross-Border Courtship',
+  title: 'asiansin.love',
   description: 'Verified, intentional relationships connecting Southeast Asian singles with international gentlemen.',
 };
 

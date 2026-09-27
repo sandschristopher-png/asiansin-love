@@ -35,6 +35,8 @@ export interface ProfileItem {
   location_source?: 'gps_verified' | 'self_reported' | null;
   country: string;
   avatarUrl: string;
+  photos?: string[];
+  recentlyActive?: boolean;
   repScore: number;
   verified: boolean;
   online: boolean;
@@ -720,9 +722,7 @@ function DiscoverContent() {
                             />
                             <span className="truncate">{profile.location}</span>
                             {isVerified && distance && (
-                              <span className="text-[10px] text-emerald-300 font-normal shrink-0">
-                                � {distance}
-                              </span>
+                              <span className="text-[10px] text-emerald-300 font-normal shrink-0">• {distance}</span>
                             )}
                           </p>
                         );

@@ -43,12 +43,14 @@ export function getDistanceLabel(
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
   const km = Math.round((R * c) / 10) * 10;
 
-  if (km < 25) return 'Nearby (Same area)';
-  if (km > 1000) {
-    const miles = Math.round(km * 0.621371);
-    return `~${miles.toLocaleString()} mi away`;
+  const rawKm = R * c;
+  if (rawKm < 1) return '< 1 km away';
+  if (rawKm < 10) return `${rawKm.toFixed(1)} km away`;
+  if (rawKm > 1000) {
+    const miles = Math.round(rawKm * 0.621371);
+    return `${miles.toLocaleString()} mi away`;
   }
-  return `~${km} km away`;
+  return `${Math.round(rawKm)} km away`;
 }
 
 // Capture GPS & reverse-geocode via Nominatim
