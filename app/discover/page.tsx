@@ -455,7 +455,7 @@ function DiscoverContent() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#130f18] text-[#E6D7FA]">
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 pt-5 pb-16 space-y-4">
+      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 pt-8 pb-16 space-y-6">
         
         {/* Top Control Bar */}
         <div className="space-y-2.5 sm:space-y-0">
@@ -543,7 +543,7 @@ function DiscoverContent() {
         </div>
 
         {/* Discovery Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5 pt-1">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
           {visibleProfiles.map((profile) => {
             const state = cardActions[profile.id];
             const isLiked = state === 'like';
@@ -552,7 +552,7 @@ function DiscoverContent() {
             return (
               <div
                 key={profile.id}
-                className={'group relative rounded-2xl overflow-hidden bg-[#1E1727] border transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-[#653C87]/15 flex flex-col justify-between ' + (
+                className={'group relative rounded-2xl overflow-hidden bg-[#1E1727] border transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-[#653C87]/15 flex flex-col h-full ' + (
                   isLiked
                     ? 'border-rose-500/60 shadow-[0_0_20px_rgba(244,63,94,0.18)]'
                     : isStarred
@@ -560,7 +560,7 @@ function DiscoverContent() {
                     : 'border-[#7D7E92]/25 hover:border-[#9A79BA]/50'
                 )}
               >
-                <Link href={'/profile/' + profile.id} className="relative block aspect-[3/4] w-full overflow-hidden bg-[#261F33]">
+                <Link href={'/profile/' + profile.id} className="relative block flex-1 w-full overflow-hidden bg-[#261F33]">
                   <Image
                     src={profile.avatarUrl}
                     alt={profile.name}
@@ -591,7 +591,7 @@ function DiscoverContent() {
 
                 <div className="p-3 sm:p-3.5 space-y-2 bg-[#261F33]">
                   <Link href={'/profile/' + profile.id} className="block group-hover:opacity-95">
-                    <div className="flex items-center justify-between gap-1.5 mb-1">
+                    <div className="flex items-center justify-between gap-1.5 h-7">
                       <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-1.5 truncate">
                         {profile.name}, {profile.age}
                         {profile.verified && <CheckCircle className="w-3.5 h-3.5 text-[#9A79BA] shrink-0" />}
@@ -608,7 +608,7 @@ function DiscoverContent() {
                           ? getDistanceLabel(currentUserCoords.lat, currentUserCoords.lon, profile.latitude, profile.longitude)
                           : null;
                         return (
-                          <p className="text-[11px] sm:text-xs font-medium text-[#E6D7FA]/80 flex items-center gap-1.5 truncate mt-0.5">
+                          <p className="text-[11px] sm:text-xs font-medium text-[#E6D7FA]/80 flex items-center gap-1.5 truncate h-5 mt-0">
                             <MapPin
                               className={`w-3 h-3 shrink-0 ${
                                 isVerified ? 'text-emerald-400' : 'text-[#9A79BA]'
