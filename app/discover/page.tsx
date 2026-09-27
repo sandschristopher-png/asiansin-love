@@ -378,7 +378,7 @@ function DiscoverContent() {
       try {
         const { data, error } = await supabase
           .from('profiles')
-          .select('id, display_name, full_name, username, age, gender, city, country, avatar_url, is_verified, reputation_score, last_active, intent, occupation, bio, latitude, longitude, location_source')
+          .select('id, display_name, full_name, username, age, gender, city, country, avatar_url, is_verified, reputation_score, last_active, intent:relationship_intent, occupation, bio, latitude, longitude, location_source')
           .order('created_at', { ascending: false })
           .limit(40);
 
@@ -468,7 +468,7 @@ function DiscoverContent() {
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search by name, city, or interests..."
+                  placeholder="Find someone in Manila, Bangkok, or Cebu..."
                   className="w-full bg-[#1D1726] border border-[#7D7E92]/30 rounded-full pl-11 pr-4 py-2.5 text-xs sm:text-sm text-white placeholder-[#7D7E92] focus:outline-none focus:border-[#9A79BA] focus:ring-1 focus:ring-[#9A79BA] transition"
                 />
               </div>
@@ -543,7 +543,7 @@ function DiscoverContent() {
         </div>
 
         {/* Discovery Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4.5 pt-1">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5 pt-1">
           {visibleProfiles.map((profile) => {
             const state = cardActions[profile.id];
             const isLiked = state === 'like';
@@ -552,7 +552,7 @@ function DiscoverContent() {
             return (
               <div
                 key={profile.id}
-                className={'group relative rounded-2xl overflow-hidden bg-[#1E1727] border transition-all duration-300 flex flex-col justify-between ' + (
+                className={'group relative rounded-2xl overflow-hidden bg-[#1E1727] border transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-[#653C87]/15 flex flex-col justify-between ' + (
                   isLiked
                     ? 'border-rose-500/60 shadow-[0_0_20px_rgba(244,63,94,0.18)]'
                     : isStarred
@@ -560,7 +560,7 @@ function DiscoverContent() {
                     : 'border-[#7D7E92]/25 hover:border-[#9A79BA]/50'
                 )}
               >
-                <Link href={'/profile/' + profile.id} className="relative block aspect-[4/5] w-full overflow-hidden bg-[#261F33]">
+                <Link href={'/profile/' + profile.id} className="relative block aspect-[3/4] w-full overflow-hidden bg-[#261F33]">
                   <Image
                     src={profile.avatarUrl}
                     alt={profile.name}
@@ -584,21 +584,24 @@ function DiscoverContent() {
                     )}
                   </div>
 
-                  <div className="absolute bottom-2.5 left-2 z-10">
-                    <span className="px-2 py-0.5 rounded-md bg-[#653C87]/80 backdrop-blur-md text-[10px] font-semibold text-white tracking-wide border border-white/10">
-                      {profile.intent}
-                    </span>
-                  </div>
+                  
 
                   <div className="absolute inset-0 bg-gradient-to-t from-[#1D1726] via-transparent to-transparent opacity-80" />
                 </Link>
 
-                <div className="p-3 sm:p-3.5 space-y-2.5 bg-[#261F33]">
-                  <Link href={'/profile/' + profile.id} className="block">
-                    <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-1.5 truncate">
-                      {profile.name}, {profile.age}
-                      {profile.verified && <CheckCircle className="w-3.5 h-3.5 text-[#9A79BA] shrink-0" />}
-                    </h3>
+                <div className="p-3 sm:p-3.5 space-y-2 bg-[#261F33]">
+                  <Link href={'/profile/' + profile.id} className="block group-hover:opacity-95">
+                    <div className="flex items-center justify-between gap-1.5 mb-1">
+                      <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-1.5 truncate">
+                        {profile.name}, {profile.age}
+                        {profile.verified && <CheckCircle className="w-3.5 h-3.5 text-[#9A79BA] shrink-0" />}
+                      </h3>
+                      {profile.intent && (
+                        <span className="shrink-0 px-2 py-0.5 rounded-full bg-[#653C87]/40 border border-[#9A79BA]/40 text-[10px] font-semibold text-[#E6D7FA]">
+                          {profile.intent}
+                        </span>
+                      )}
+                    </div>
                     {(() => {
                         const isVerified = profile.location_source === 'gps_verified';
                         const distance = currentUserCoords

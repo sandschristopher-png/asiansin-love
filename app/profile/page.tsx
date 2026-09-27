@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { captureCurrentLocation, formatVerifiedDate } from '@/lib/location';
 
@@ -10,6 +10,8 @@ import {
 import { supabase } from '@/lib/supabaseClient';
 import { Footer } from '@/components/Footer';
 
+
+export const QUICK_LANGUAGES = ['English', 'Tagalog', 'Thai', 'Japanese', 'Vietnamese', 'Mandarin', 'Spanish', 'Korean'];
 
 export const NATIONALITY_OPTIONS = [
   'Philippines',
@@ -144,12 +146,40 @@ export default function MyProfilePage() {
     loadUserData();
   }, [router]);
 
+    const [langInput, setLangInput] = useState('');
+
+  const currentLanguages = userLanguages
+    ? userLanguages.split(',').map((s: string) => s.trim()).filter(Boolean)
+    : [];
+
+  const handleAddLanguage = (lang: string) => {
+    const trimmed = lang.trim();
+    if (!trimmed) return;
+    if (!currentLanguages.some((l: string) => l.toLowerCase() === trimmed.toLowerCase())) {
+      const updated = [...currentLanguages, trimmed].join(', ');
+      setUserLanguages(updated);
+    }
+    setLangInput('');
+  };
+
+  const handleRemoveLanguage = (langToRemove: string) => {
+    const updated = currentLanguages.filter((l: string) => l.toLowerCase() !== langToRemove.toLowerCase()).join(', ');
+    setUserLanguages(updated);
+  };
+
+  const handleLangKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter' || e.key === ',') {
+      e.preventDefault();
+      handleAddLanguage(langInput);
+    }
+  };
+
   const handleSave = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (user) {
       const payload: any = {
         id: user.id,
-        name,
+        name, display_name: name,
         age: Number(age),
         location,
         location_source: locationSource,
@@ -348,22 +378,21 @@ export default function MyProfilePage() {
                     {name}, {age}
                   </h1>
                   <div className="flex flex-wrap items-center gap-2 mt-1">
-                    <p className="text-xs text-[#E6D7FA] flex items-center gap-1.5">
-                      <MapPin className={`w-3.5 h-3.5 ${locationSource === 'gps_verified' ? 'text-emerald-400' : 'text-[#9A79BA]'}`} />
-                      <span className="font-medium text-white">{location}</span>
-                    </p>
-                    {locationSource === 'gps_verified' ? (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/35 text-[10px] font-semibold text-emerald-300">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                        GPS Verified {locationVerifiedAt ? `ï¿½ ${formatVerifiedDate(locationVerifiedAt)}` : ''}
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-[#181222] border border-[#9A79BA]/25 text-[10px] font-medium text-[#A8A2AB]">
-                        Self-Reported
-                      </span>
-                    )}
+                      <p className="text-xs font-medium text-white">
+                        {location}
+                      </p>
+                      {locationSource === 'gps_verified' ? (
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/35 text-[11px] font-medium text-emerald-300">
+                          <MapPin className="w-3 h-3 text-emerald-400 shrink-0" />
+                          <span>Verified {locationVerifiedAt ? formatVerifiedDate(locationVerifiedAt) : ''}</span>
+                        </span>
+                      ) : (
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#181222] border border-[#9A79BA]/25 text-[10px] font-medium text-[#A8A2AB]">
+                          Self-Reported
+                        </span>
+                      )}
+                    </div>
                   </div>
-                </div>
                 <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#181222] border border-[#9A79BA]/40 text-[11px] font-medium text-[#E6D7FA] shrink-0">
                   <ShieldCheck className="w-3.5 h-3.5 text-[#C9A4E8]" />
                   <span>100% Rep</span>
@@ -495,125 +524,194 @@ export default function MyProfilePage() {
               )}
             </div>
 
-            {/* SLEEK COMPACT VITALS */}
-            <div className="p-5 sm:p-6 rounded-3xl bg-[#261F33] border border-[#9A79BA]/35 shadow-xl space-y-3.5">
-              <div className="flex items-center justify-between">
-                <h3 className="text-xs font-bold text-white uppercase tracking-wider">VITALS & TRAITS</h3>
-                
+{/* SLEEK COMPACT VITALS */}
+              <div className="p-5 sm:p-6 rounded-3xl bg-[#261F33] border border-[#9A79BA]/35 shadow-xl space-y-5">
+                <div className="flex items-center justify-between border-b border-[#9A79BA]/20 pb-3">
+                  <h3 className="text-xs font-bold text-white uppercase tracking-wider">VITALS & TRAITS</h3>
+                  <span className="text-[11px] text-[#A8A2AB]">Pairs-style verified attributes</span>
+                </div>
+
+                {isEditing ? (
+                  /* Edit Mode */
+                  <div className="space-y-4">
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-[#C9A4E8] mb-2">Basics</p>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#181222] border border-[#9A79BA]/40 text-xs">
+                          <Briefcase className="w-3.5 h-3.5 text-[#9A79BA] shrink-0" />
+                          <span className="text-[#9A79BA] font-medium">Work:</span>
+                          <input
+                            type="text"
+                            value={profession}
+                            onChange={(e) => setProfession(e.target.value)}
+                            placeholder="Profession"
+                            className="bg-transparent text-white font-semibold text-xs focus:outline-none w-28"
+                          />
+                        </div>
+                        {renderDropdownPill('Height', height, HEIGHT_OPTIONS, setHeight, 'height', Ruler, true)}
+                        <div className="w-full space-y-2 pt-1">
+                        <div className="flex items-center gap-1.5 text-xs text-[#9A79BA]">
+                          <Languages className="w-3.5 h-3.5 shrink-0" />
+                          <span className="font-semibold text-white">Languages Spoken</span>
+                          <span className="text-[10px] text-[#A8A2AB]">(Type & press Enter or tap suggestions)</span>
+                        </div>
+                        <div className="flex flex-wrap items-center gap-1.5 p-2 rounded-2xl bg-[#181222] border border-[#9A79BA]/35 min-h-[42px]">
+                          {currentLanguages.map((lang: string) => (
+                            <span
+                              key={lang}
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#653C87]/40 border border-[#9A79BA]/50 text-xs font-medium text-white shadow-sm"
+                            >
+                              {lang}
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveLanguage(lang)}
+                                className="text-[#C9A4E8] hover:text-white transition"
+                              >
+                                <X className="w-3 h-3" />
+                              </button>
+                            </span>
+                          ))}
+                          <input
+                            type="text"
+                            value={langInput}
+                            onChange={(e) => setLangInput(e.target.value)}
+                            onKeyDown={handleLangKeyDown}
+                            placeholder={currentLanguages.length === 0 ? "e.g. English, Tagalog..." : "Add more..."}
+                            className="bg-transparent text-xs text-white placeholder-[#7A6B8A] focus:outline-none flex-1 min-w-[110px] px-1 py-0.5"
+                          />
+                        </div>
+                        <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
+                          <span className="text-[10px] text-[#7A6B8A] font-semibold uppercase">Popular:</span>
+                          {QUICK_LANGUAGES.filter((ql: string) => !currentLanguages.some((cl: string) => cl.toLowerCase() === ql.toLowerCase())).slice(0, 5).map((ql: string) => (
+                            <button
+                              key={ql}
+                              type="button"
+                              onClick={() => handleAddLanguage(ql)}
+                              className="text-[11px] px-2 py-0.5 rounded-full bg-[#20172C] hover:bg-[#2F2142] border border-[#9A79BA]/25 text-[#C9A4E8] transition"
+                            >
+                              + {ql}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-[#C9A4E8] mb-2">Relationship Goals</p>
+                      <div className="flex flex-wrap items-center gap-2">
+                        {renderDropdownPill('Intent', intent, INTENT_OPTIONS, setIntent, 'intent', Heart)}
+                        {renderDropdownPill('Relocation', relocation, RELOCATION_OPTIONS, setRelocation, 'relocation', Globe)}
+                        {renderDropdownPill('Status', maritalStatus, MARITAL_OPTIONS, setMaritalStatus, 'maritalStatus', HeartHandshake)}
+                        {renderDropdownPill('Has Kids', hasKids, HAS_KIDS_OPTIONS, setHasKids, 'hasKids', Baby)}
+                        {renderDropdownPill('Wants Kids', wantsKids, WANTS_KIDS_OPTIONS, setWantsKids, 'wantsKids', Baby)}
+                      </div>
+                    </div>
+
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-[#C9A4E8] mb-2">Lifestyle</p>
+                      <div className="flex flex-wrap items-center gap-2">
+                        {renderDropdownPill('Faith', religion, RELIGION_OPTIONS, setReligion, 'religion', Flower2)}
+                        {renderDropdownPill('Drinks', drinking, DRINKING_OPTIONS, setDrinking, 'drinking', Wine)}
+                        {renderDropdownPill('Smokes', smoking, SMOKING_OPTIONS, setSmoking, 'smoking', Cigarette)}
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  /* View Mode: Clean inline items without pill borders */
+                  <div className="space-y-4">
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-[#C9A4E8] mb-2.5">Basics</p>
+                      <div className="flex flex-wrap items-center gap-x-6 gap-y-2.5 text-xs">
+                        <div className="flex items-center gap-1.5">
+                          <Briefcase className="w-3.5 h-3.5 text-[#9A79BA] shrink-0" />
+                          <span className="text-[#9A79BA] font-medium">Work:</span>
+                          <span className="text-white font-medium">{profession || 'Not set'}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <Ruler className="w-3.5 h-3.5 text-[#9A79BA] shrink-0" />
+                          <span className="text-[#9A79BA] font-medium">Height:</span>
+                          <span className="text-white font-medium">{height || 'Not set'}</span>
+                        </div>
+                        <div className="flex items-center gap-2 flex-wrap">
+                          <div className="flex items-center gap-1.5 text-[#9A79BA] font-medium">
+                            <Languages className="w-3.5 h-3.5 shrink-0" />
+                            <span>Languages:</span>
+                          </div>
+                          {currentLanguages.length > 0 ? (
+                            <div className="flex flex-wrap items-center gap-1.5">
+                              {currentLanguages.map((l: string) => (
+                                <span key={l} className="px-2.5 py-0.5 rounded-full bg-[#181222] border border-[#9A79BA]/30 text-xs font-semibold text-white">
+                                  {l}
+                                </span>
+                              ))}
+                            </div>
+                          ) : (
+                            <span className="text-[#7A6B8A]">Not set</span>
+                          )}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-[#C9A4E8] mb-2.5">Relationship Goals</p>
+                      <div className="flex flex-wrap items-center gap-x-6 gap-y-2.5 text-xs">
+                        <div className="flex items-center gap-1.5">
+                          <Heart className="w-3.5 h-3.5 text-[#C9A4E8] shrink-0" />
+                          <span className="text-[#9A79BA] font-medium">Intent:</span>
+                          <span className="text-white font-medium">{intent || 'Not set'}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <Globe className="w-3.5 h-3.5 text-[#9A79BA] shrink-0" />
+                          <span className="text-[#9A79BA] font-medium">Relocation:</span>
+                          <span className="text-white font-medium">{relocation || 'Not set'}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <HeartHandshake className="w-3.5 h-3.5 text-[#9A79BA] shrink-0" />
+                          <span className="text-[#9A79BA] font-medium">Status:</span>
+                          <span className="text-white font-medium">{maritalStatus || 'Not set'}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <Baby className="w-3.5 h-3.5 text-[#9A79BA] shrink-0" />
+                          <span className="text-[#9A79BA] font-medium">Has Kids:</span>
+                          <span className="text-white font-medium">{hasKids || 'Not set'}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <Baby className="w-3.5 h-3.5 text-[#9A79BA] shrink-0" />
+                          <span className="text-[#9A79BA] font-medium">Wants Kids:</span>
+                          <span className="text-white font-medium">{wantsKids || 'Not set'}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-[#C9A4E8] mb-2.5">Lifestyle</p>
+                      <div className="flex flex-wrap items-center gap-x-6 gap-y-2.5 text-xs">
+                        <div className="flex items-center gap-1.5">
+                          <Flower2 className="w-3.5 h-3.5 text-[#9A79BA] shrink-0" />
+                          <span className="text-[#9A79BA] font-medium">Faith:</span>
+                          <span className="text-white font-medium">{religion || 'Not set'}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <Wine className="w-3.5 h-3.5 text-[#9A79BA] shrink-0" />
+                          <span className="text-[#9A79BA] font-medium">Drinks:</span>
+                          <span className="text-white font-medium">{drinking || 'Not set'}</span>
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <Cigarette className="w-3.5 h-3.5 text-[#9A79BA] shrink-0" />
+                          <span className="text-[#9A79BA] font-medium">Smokes:</span>
+                          <span className="text-white font-medium">{smoking || 'Not set'}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
-
-              {isEditing ? (
-                /* Edit Mode: Compact Wrapped Pill Triggers */
-                <div className="flex flex-wrap items-center gap-2">
-                                    <p className="w-full text-[10px] font-bold uppercase tracking-widest text-[#9A79BA] mt-1">BASICS</p>
-{/* Profession Input */}
-                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#181222] border border-[#9A79BA]/40 text-xs">
-                    <Briefcase className="w-3.5 h-3.5 text-[#9A79BA] shrink-0" />
-                    <span className="text-[#D5CEE5]/70">Work:</span>
-                    <input
-                      type="text"
-                      value={profession}
-                      onChange={(e) => setProfession(e.target.value)}
-                      placeholder="Profession"
-                      className="bg-transparent text-white font-semibold text-xs focus:outline-none w-28"
-                    />
-                  </div>
-
-                                    <p className="w-full text-[10px] font-bold uppercase tracking-widest text-[#9A79BA] mt-1">RELATIONSHIP GOALS</p>
-{renderDropdownPill('Intent', intent, INTENT_OPTIONS, setIntent, 'intent', Heart)}
-                  {renderDropdownPill('Faith', religion, RELIGION_OPTIONS, setReligion, 'religion', Flower2)}
-                  {renderDropdownPill('Relocation', relocation, RELOCATION_OPTIONS, setRelocation, 'relocation', Globe)}
-                  {renderDropdownPill('Status', maritalStatus, MARITAL_OPTIONS, setMaritalStatus, 'maritalStatus', HeartHandshake)}
-                  {renderDropdownPill('Kids', hasKids, HAS_KIDS_OPTIONS, setHasKids, 'hasKids', Baby)}
-                  {renderDropdownPill('Wants Kids', wantsKids, WANTS_KIDS_OPTIONS, setWantsKids, 'wantsKids', Baby)}
-                  {renderDropdownPill('Height', height, HEIGHT_OPTIONS, setHeight, 'height', Ruler, true)}
-                                    <p className="w-full text-[10px] font-bold uppercase tracking-widest text-[#9A79BA] mt-1">LIFESTYLE</p>
-{renderDropdownPill('Drinks', drinking, DRINKING_OPTIONS, setDrinking, 'drinking', Wine)}
-                  {renderDropdownPill('Smokes', smoking, SMOKING_OPTIONS, setSmoking, 'smoking', Cigarette)}
-
-                  {/* Languages Input */}
-                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#181222] border border-[#9A79BA]/40 text-xs">
-                    <Languages className="w-3.5 h-3.5 text-[#9A79BA] shrink-0" />
-                    <span className="text-[#D5CEE5]/70">Languages:</span>
-                    <input
-                      type="text"
-                      value={userLanguages}
-                      onChange={(e) => setUserLanguages(e.target.value)}
-                      placeholder="e.g. English, Tagalog"
-                      className="bg-transparent text-white font-semibold text-xs focus:outline-none w-32"
-                    />
-                  </div>
-                </div>
-              ) : (
-                /* View Mode: Clean Badge Chips */
-                <div className="flex flex-wrap items-center gap-2">
-                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#1F1829] border border-[#9A79BA]/25 text-xs text-[#E6D7FA]">
-                    <Briefcase className="w-3.5 h-3.5 text-[#9A79BA]" />
-                    <span className="font-medium text-white">{profession}</span>
-                  </div>
-
-                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#1F1829] border border-[#9A79BA]/25 text-xs text-[#E6D7FA]">
-                    <Heart className="w-3.5 h-3.5 text-[#C9A4E8]" />
-                    <span className="font-medium text-white">{intent}</span>
-                  </div>
-
-                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#1F1829] border border-[#9A79BA]/25 text-xs text-[#E6D7FA]">
-                    <Globe className="w-3.5 h-3.5 text-[#9A79BA]" />
-                    <span className="font-medium text-white">{relocation}</span>
-                  </div>
-
-                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#1F1829] border border-[#9A79BA]/25 text-xs text-[#E6D7FA]">
-                    <HeartHandshake className="w-3.5 h-3.5 text-[#9A79BA]" />
-                    <span className="font-medium text-white">{maritalStatus}</span>
-                  </div>
-
-                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#1F1829] border border-[#9A79BA]/25 text-xs text-[#E6D7FA]">
-                    <Baby className="w-3.5 h-3.5 text-[#9A79BA]" />
-                    <span className="font-medium text-white">Has Kids: {hasKids}</span>
-                  </div>
-
-                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#1F1829] border border-[#9A79BA]/25 text-xs text-[#E6D7FA]">
-                    <Baby className="w-3.5 h-3.5 text-[#9A79BA]" />
-                    <span className="font-medium text-white">Wants Kids: {wantsKids}</span>
-                  </div>
-
-                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#1F1829] border border-[#9A79BA]/25 text-xs text-[#E6D7FA]">
-                    <Flower2 className="w-3.5 h-3.5 text-[#9A79BA]" />
-                    <span className="font-medium text-white">Faith: {religion}</span>
-                  </div>
-
-                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#1F1829] border border-[#9A79BA]/25 text-xs text-[#E6D7FA]">
-                    <Ruler className="w-3.5 h-3.5 text-[#9A79BA]" />
-                    <span className="font-medium text-white">{height}</span>
-                  </div>
-
-                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#1F1829] border border-[#9A79BA]/25 text-xs text-[#E6D7FA]">
-                    <Wine className="w-3.5 h-3.5 text-[#9A79BA]" />
-                    <span className="font-medium text-white">Drinks: {drinking}</span>
-                  </div>
-
-                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#1F1829] border border-[#9A79BA]/25 text-xs text-[#E6D7FA]">
-                    <Cigarette className="w-3.5 h-3.5 text-[#9A79BA]" />
-                    <span className="font-medium text-white">Smokes: {smoking}</span>
-                  </div>
-
-                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#1F1829] border border-[#9A79BA]/25 text-xs text-[#E6D7FA]">
-                    <Languages className="w-3.5 h-3.5 text-[#9A79BA]" />
-                    <span className="font-medium text-white">{userLanguages}</span>
-                  </div>
-                </div>
-              )}
             </div>
           </div>
-        </div>
       </main>
 
       <Footer />
     </div>
   );
 }
-
-
-
-
-
