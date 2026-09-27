@@ -221,7 +221,7 @@ function DiscoverCardPhotoCarousel({
   };
 
   return (
-    <div className="relative block aspect-[4/5] w-full overflow-hidden bg-[#261F33] select-none">
+    <div className="relative block aspect-[3/4] w-full overflow-hidden bg-[#261F33] select-none">
       <Link href={'/profile/' + profileId} className="absolute inset-0 z-0">
         <img
           src={displayPhotos[currentIdx]}
@@ -677,7 +677,7 @@ function DiscoverContent() {
             return (
               <div
                 key={profile.id}
-                className={'group relative rounded-2xl overflow-hidden bg-[#1E1727] border transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-[#653C87]/15 flex flex-col h-full ' + (
+                className={'group relative rounded-2xl overflow-hidden bg-[#1E1727] border transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-[#653C87]/15 flex flex-col justify-between ' + (
                   isLiked
                     ? 'border-rose-500/60 shadow-[0_0_20px_rgba(244,63,94,0.18)]'
                     : isStarred
@@ -697,7 +697,7 @@ function DiscoverContent() {
 
                 <div className="p-3 sm:p-3.5 space-y-2 bg-[#261F33]">
                   <Link href={'/profile/' + profile.id} className="block group-hover:opacity-95">
-                    <div className="flex items-center justify-between gap-1.5 h-7">
+                    <div className="flex items-center justify-between gap-1.5 mb-1">
                       <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-1.5 truncate">
                         {profile.name}, {profile.age}
                         {profile.verified && <CheckCircle className="w-3.5 h-3.5 text-[#9A79BA] shrink-0" />}
@@ -714,7 +714,7 @@ function DiscoverContent() {
                           ? getDistanceLabel(currentUserCoords.lat, currentUserCoords.lon, profile.latitude, profile.longitude)
                           : null;
                         return (
-                          <p className="text-[11px] sm:text-xs font-medium text-[#E6D7FA]/80 flex items-center gap-1.5 truncate h-5 mt-0">
+                          <p className="text-[11px] sm:text-xs font-medium text-[#E6D7FA]/80 flex items-center gap-1.5 truncate mt-0.5">
                             <MapPin
                               className={`w-3 h-3 shrink-0 ${
                                 isVerified ? 'text-emerald-400' : 'text-[#9A79BA]'
