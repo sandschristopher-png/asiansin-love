@@ -116,23 +116,53 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Failed to generate public photo URL' }, { status: 500 });
     }
 
-    // 7. Update profile row
-    if (isPrimaryAvatar) {
-      const { error: profileUpdateError } = await authenticatedClient
-        .from('profiles')
-        .update({
-          avatar_url: photoUrl,
-          avatar_status: 'pending_review',
-        })
-        .eq('id', userId);
+    // 7. Update profile row and sync photos array
+    const { data: currentProfile } = await authenticatedClient
+      .from('profiles')
+      .select('photos, avatar_url')
+      .eq('id', userId)
+      .maybeSingle();
 
-      if (profileUpdateError) {
-        console.error('Profile update failed:', profileUpdateError);
-        return NextResponse.json(
-          { error: `Failed updating profile avatar: ${profileUpdateError.message}` },
-          { status: 500 }
-        );
-      }
+    const existingPhotos: string[] = Array.isArray(currentProfile?.photos)
+      ? currentProfile.photos.filter(Boolean)
+      : (currentProfile?.avatar_url ? [currentProfile.avatar_url] : []);
+
+    if (!isPrimaryAvatar && existingPhotos.length >= 6) {
+      return NextResponse.json(
+        { error: 'Maximum limit of 6 photos reached. Delete a photo to upload a new one.' },
+        { status: 400 }
+      );
+    }
+
+    let updatedPhotos: string[];
+    if (isPrimaryAvatar) {
+      updatedPhotos = [photoUrl, ...existingPhotos.filter((p: string) => p !== photoUrl)];
+    } else {
+      updatedPhotos = existingPhotos.includes(photoUrl)
+        ? existingPhotos
+        : [...existingPhotos, photoUrl];
+    }
+
+    const updatePayload: Record<string, any> = {
+      photos: updatedPhotos,
+    };
+
+    if (isPrimaryAvatar) {
+      updatePayload.avatar_url = photoUrl;
+      updatePayload.avatar_status = 'pending_review';
+    }
+
+    const { error: profileUpdateError } = await authenticatedClient
+      .from('profiles')
+      .update(updatePayload)
+      .eq('id', userId);
+
+    if (profileUpdateError) {
+      console.error('Profile update failed:', profileUpdateError);
+      return NextResponse.json(
+        { error: `Failed updating profile photos: ${profileUpdateError.message}` },
+        { status: 500 }
+      );
     }
 
     // 8. Telegram review alert
@@ -155,6 +185,7 @@ export async function POST(req: Request) {
     return NextResponse.json({
       success: true,
       photoUrl,
+      photos: updatedPhotos,
       status: 'pending_review',
     });
   } catch (err: any) {

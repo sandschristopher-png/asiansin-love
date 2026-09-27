@@ -4,7 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import { 
-  ArrowLeft, ShieldCheck, MapPin, Briefcase, 
+  ArrowLeft, ShieldCheck, MapPin, Briefcase, ChevronLeft, ChevronRight, 
   Heart, Languages, Globe, Send, MessageCircle, 
   Bookmark, User, Sparkles, HeartHandshake, Baby, Ruler, Wine, Cigarette
 } from 'lucide-react';
@@ -24,6 +24,7 @@ export default function PublicProfilePage() {
   const [sentSuccess, setSentSuccess] = useState(false);
   const [isSaved, setIsSaved] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
+  const [currentPhotoIdx, setCurrentPhotoIdx] = useState(0);
 
   useEffect(() => {
     async function loadData() {
@@ -54,6 +55,7 @@ export default function PublicProfilePage() {
           drinking: 'Socially',
           smoking: 'Non-smoker',
           avatar_url: foundSeed.avatarUrl,
+          photos: Array.isArray(foundSeed.photos) && foundSeed.photos.length > 0 ? foundSeed.photos : (foundSeed.avatarUrl ? [foundSeed.avatarUrl] : []),
           rep_score: foundSeed.repScore || 98,
           is_verified: foundSeed.verified,
           online: foundSeed.online
@@ -84,6 +86,7 @@ export default function PublicProfilePage() {
             drinking: 'Socially',
             smoking: 'No',
             avatar_url: '/jennalyn.png',
+            photos: ['/jennalyn.png'],
             rep_score: 100,
             online: true
           }
@@ -197,27 +200,105 @@ export default function PublicProfilePage() {
             </div>
 
             {/* Framed Photo Container */}
-            <div className="relative aspect-[4/5] w-full rounded-2xl overflow-hidden bg-gradient-to-b from-[#241E2F] to-[#130F18] border border-[#9A79BA]/20 flex items-center justify-center">
-              {profile.avatar_url ? (
-                <img
-                  src={profile.avatar_url}
-                  alt={profile.name}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="flex flex-col items-center justify-center gap-2.5 text-[#9A79BA]/70 p-6 text-center">
-                  <div className="w-20 h-20 rounded-3xl bg-[#130F18] border border-[#9A79BA]/45 flex items-center justify-center shadow-inner">
-                    <User className="w-10 h-10 stroke-[1.5] text-[#9A79BA]" />
+            {(() => {
+              const photoList: string[] = Array.isArray(profile.photos) && profile.photos.length > 0
+                ? profile.photos.filter(Boolean)
+                : (profile.avatar_url ? [profile.avatar_url] : []);
+              const currentImg = photoList[currentPhotoIdx] || profile.avatar_url;
+              const hasMultiple = photoList.length > 1;
+
+              return (
+                <div className="relative aspect-[4/5] w-full rounded-2xl overflow-hidden bg-gradient-to-b from-[#241E2F] to-[#130F18] border border-[#9A79BA]/20 flex items-center justify-center select-none group">
+                  {currentImg ? (
+                    <img
+                      src={currentImg}
+                      alt={profile.name}
+                      className="w-full h-full object-cover transition-opacity duration-200"
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center justify-center gap-2.5 text-[#9A79BA]/70 p-6 text-center">
+                      <div className="w-20 h-20 rounded-3xl bg-[#130F18] border border-[#9A79BA]/45 flex items-center justify-center shadow-inner">
+                        <User className="w-10 h-10 stroke-[1.5] text-[#9A79BA]" />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Story Dashes */}
+                  {hasMultiple && (
+                    <div className="absolute top-2.5 left-3 right-3 flex items-center gap-1.5 z-20 pointer-events-none">
+                      {photoList.map((_, idx) => (
+                        <div
+                          key={idx}
+                          className={'h-1 flex-1 rounded-full transition-all duration-300 ' + (
+                            idx === currentPhotoIdx
+                              ? 'bg-white shadow-[0_0_6px_rgba(255,255,255,0.7)]'
+                              : 'bg-white/30 backdrop-blur-sm'
+                          )}
+                        />
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Touch / Click zones for cycling photos */}
+                  {hasMultiple && (
+                    <>
+                      <button
+                        type="button"
+                        aria-label="Previous photo"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setCurrentPhotoIdx((prev) => (prev > 0 ? prev - 1 : photoList.length - 1));
+                        }}
+                        className="absolute inset-y-0 left-0 w-1/2 z-10 cursor-pointer focus:outline-none"
+                      />
+                      <button
+                        type="button"
+                        aria-label="Next photo"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setCurrentPhotoIdx((prev) => (prev < photoList.length - 1 ? prev + 1 : 0));
+                        }}
+                        className="absolute inset-y-0 right-0 w-1/2 z-10 cursor-pointer focus:outline-none"
+                      />
+
+                      {/* Desktop Hover Chevrons */}
+                      <div className="hidden sm:flex items-center justify-between absolute inset-x-2 top-1/2 -translate-y-1/2 z-20 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button
+                          type="button"
+                          aria-label="Previous photo button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setCurrentPhotoIdx((prev) => (prev > 0 ? prev - 1 : photoList.length - 1));
+                          }}
+                          className="pointer-events-auto p-1.5 rounded-full bg-black/60 hover:bg-black/80 text-white backdrop-blur-sm transition shadow"
+                        >
+                          <ChevronLeft className="w-4 h-4" />
+                        </button>
+                        <button
+                          type="button"
+                          aria-label="Next photo button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setCurrentPhotoIdx((prev) => (prev < photoList.length - 1 ? prev + 1 : 0));
+                          }}
+                          className="pointer-events-auto p-1.5 rounded-full bg-black/60 hover:bg-black/80 text-white backdrop-blur-sm transition shadow"
+                        >
+                          <ChevronRight className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </>
+                  )}
+
+                  {/* Online Badge */}
+                  <div className={'absolute left-3 flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/70 backdrop-blur-md text-xs font-semibold text-emerald-400 border border-emerald-500/30 z-20 pointer-events-none ' + (
+                    hasMultiple ? 'top-6' : 'top-3'
+                  )}>
+                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
+                    <span>Online</span>
                   </div>
                 </div>
-              )}
-
-              {/* Online Badge */}
-              <div className="absolute top-3 left-3 flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/70 backdrop-blur-md text-xs font-semibold text-emerald-400 border border-emerald-500/30">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                <span>Online</span>
-              </div>
-            </div>
+              );
+            })()}
 
             {/* Quick Actions at Base */}
             <div className="flex items-center gap-2.5 pt-1">

@@ -6,11 +6,9 @@ import React, { useState, useEffect, useMemo, useRef, Suspense } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { 
-  Search, Heart, X as XIcon, Star, MessageCircle, 
+import { ChevronLeft, ChevronRight, Search, Heart, X as XIcon, Star, MessageCircle, 
   MapPin, ShieldCheck, CheckCircle, SlidersHorizontal, 
-  RotateCcw, Loader2, Check
-} from 'lucide-react';
+  RotateCcw, Loader2, Check } from 'lucide-react';
 import { Footer } from '@/components/Footer';
 import { createClient } from '@/lib/supabase/client';
 import { ActionType, getLocalCardActions, persistCardAction } from '@/lib/interactions';
@@ -182,6 +180,130 @@ export const SEED_PROFILES: ProfileItem[] = [
     bio: 'Sabaidee from Vientiane, Laos! I work at local shop selling silk clothes and handicraft. Life here is slow and quiet. I dont speak english very fast so please be patient with me haha. Looking for sincere man, good heart, who will treat me well and not break my heart.',
   },
 ];
+
+
+interface DiscoverCardPhotoCarouselProps {
+  profileId: string;
+  photos?: string[];
+  avatarUrl: string;
+  name: string;
+  repScore: number;
+  online: boolean;
+  recentlyActive?: boolean;
+}
+
+function DiscoverCardPhotoCarousel({
+  profileId,
+  photos,
+  avatarUrl,
+  name,
+  repScore,
+  online,
+  recentlyActive,
+}: DiscoverCardPhotoCarouselProps) {
+  const [currentIdx, setCurrentIdx] = useState(0);
+
+  const displayPhotos = photos && photos.length > 0 ? photos : [avatarUrl || '/jennalyn.png'];
+  const hasMultiple = displayPhotos.length > 1;
+
+  const handlePrev = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setCurrentIdx((prev) => (prev === 0 ? displayPhotos.length - 1 : prev - 1));
+  };
+
+  const handleNext = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setCurrentIdx((prev) => (prev === displayPhotos.length - 1 ? 0 : prev + 1));
+  };
+
+  return (
+    <div className="relative block aspect-[4/5] w-full overflow-hidden bg-[#261F33] select-none">
+      <Link href={'/profile/' + profileId} className="absolute inset-0 z-0">
+        <img
+          src={displayPhotos[currentIdx]}
+          alt={name}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          loading="lazy"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#1D1726] via-transparent to-transparent opacity-80" />
+      </Link>
+
+      {/* Top Badges */}
+      <div className="absolute top-2 left-2 right-2 flex items-center justify-between z-20 pointer-events-none">
+        <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-[10px] font-bold text-emerald-400">
+          <ShieldCheck className="w-3 h-3 text-emerald-400" />
+          <span>{repScore}%</span>
+        </div>
+
+        {online ? (
+          <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-[9px] font-medium text-emerald-400">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="hidden sm:inline">Active</span>
+          </div>
+        ) : recentlyActive ? (
+          <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-[9px] font-medium text-amber-300">
+            <span className="w-1.5 h-1.5 rounded-full border border-amber-400" />
+            <span className="hidden sm:inline">Recent</span>
+          </div>
+        ) : null}
+      </div>
+
+      {/* Story Progress Dashes */}
+      {hasMultiple && (
+        <div className="absolute top-8 inset-x-3 z-20 flex gap-1 pointer-events-none">
+          {displayPhotos.map((_, i) => (
+            <div
+              key={i}
+              className={'h-1 flex-1 rounded-full transition-all duration-200 ' + (
+                i === currentIdx ? 'bg-white shadow-sm' : 'bg-white/30 backdrop-blur-sm'
+              )}
+            />
+          ))}
+        </div>
+      )}
+
+      {/* Mobile 50/50 Tap Zones */}
+      {hasMultiple && (
+        <>
+          <div
+            onClick={handlePrev}
+            className="absolute inset-y-12 left-0 w-1/2 z-10 cursor-pointer"
+            aria-label="Previous photo"
+          />
+          <div
+            onClick={handleNext}
+            className="absolute inset-y-12 right-0 w-1/2 z-10 cursor-pointer"
+            aria-label="Next photo"
+          />
+        </>
+      )}
+
+      {/* Desktop Chevrons on Hover */}
+      {hasMultiple && (
+        <div className="hidden sm:flex items-center justify-between absolute inset-x-2 top-1/2 -translate-y-1/2 z-20 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
+          <button
+            type="button"
+            onClick={handlePrev}
+            className="pointer-events-auto p-1.5 rounded-full bg-black/50 hover:bg-black/80 text-white backdrop-blur-sm transition"
+            aria-label="Previous photo"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
+            onClick={handleNext}
+            className="pointer-events-auto p-1.5 rounded-full bg-black/50 hover:bg-black/80 text-white backdrop-blur-sm transition"
+            aria-label="Next photo"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
 
 function DiscoverContent() {
   const searchParams = useSearchParams();
@@ -400,6 +522,7 @@ function DiscoverContent() {
               location: cityVal,
               country: countryVal,
               avatarUrl: row.avatar_url || '/jennalyn.png',
+              photos: Array.isArray(row.photos) && row.photos.length > 0 ? row.photos : [row.avatar_url || '/jennalyn.png'],
               repScore: row.reputation_score || 98,
               verified: Boolean(row.is_verified),
                 latitude: row.latitude,
@@ -560,34 +683,15 @@ function DiscoverContent() {
                     : 'border-[#7D7E92]/25 hover:border-[#9A79BA]/50'
                 )}
               >
-                <Link href={'/profile/' + profile.id} className="relative block flex-1 w-full overflow-hidden bg-[#261F33]">
-                  <Image
-                    src={profile.avatarUrl}
-                    alt={profile.name}
-                    fill
-                    sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
-                    className="object-cover group-hover:scale-105 transition-transform duration-300"
-                    priority={false}
-                  />
-
-                  <div className="absolute top-2 left-2 right-2 flex items-center justify-between z-10">
-                    <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-[10px] font-bold text-emerald-400">
-                      <ShieldCheck className="w-3 h-3 text-emerald-400" />
-                      <span>{profile.repScore}%</span>
-                    </div>
-
-                    {profile.online && (
-                      <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-[9px] font-medium text-emerald-400">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                        <span className="hidden sm:inline">Active</span>
-                      </div>
-                    )}
-                  </div>
-
-                  
-
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#1D1726] via-transparent to-transparent opacity-80" />
-                </Link>
+                <DiscoverCardPhotoCarousel
+                  profileId={profile.id}
+                  photos={profile.photos}
+                  avatarUrl={profile.avatarUrl}
+                  name={profile.name}
+                  repScore={profile.repScore}
+                  online={profile.online}
+                  recentlyActive={profile.recentlyActive}
+                />
 
                 <div className="p-3 sm:p-3.5 space-y-2 bg-[#261F33]">
                   <Link href={'/profile/' + profile.id} className="block group-hover:opacity-95">

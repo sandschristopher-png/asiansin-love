@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Save, UserCheck, ShieldCheck } from 'lucide-react';
+import { ArrowLeft, Save, UserCheck, ShieldCheck, Camera, Trash2, Loader2, Plus } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 
 export default function EditProfilePage() {
@@ -11,6 +11,8 @@ export default function EditProfilePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [photos, setPhotos] = useState<string[]>([]);
+  const [uploadingIdx, setUploadingIdx] = useState<number | null>(null);
 
   const [initialHasUsername, setInitialHasUsername] = useState(false);
   const [username, setUsername] = useState('');
@@ -55,6 +57,11 @@ export default function EditProfilePage() {
           setUsername(data.username);
           setInitialHasUsername(true);
         }
+
+        const loadedPhotos: string[] = Array.isArray(data.photos) && data.photos.length > 0
+          ? data.photos.filter(Boolean)
+          : (data.avatar_url ? [data.avatar_url] : []);
+        setPhotos(loadedPhotos);
       }
       setLoading(false);
     }
@@ -77,6 +84,111 @@ export default function EditProfilePage() {
       setUsernameStatus(data.available ? 'available' : 'taken');
     } catch {
       setUsernameStatus('idle');
+    }
+  };
+
+  const handleUploadPhoto = async (e: React.ChangeEvent<HTMLInputElement>, slotIdx: number) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (photos.length >= 6 && slotIdx >= photos.length) {
+      setStatusMsg({ type: 'error', text: 'Maximum limit of 6 photos reached.' });
+      return;
+    }
+
+    setUploadingIdx(slotIdx);
+    setStatusMsg(null);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      const isPrimary = slotIdx === 0;
+      formData.append('isPrimaryAvatar', isPrimary ? 'true' : 'false');
+
+      const res = await fetch('/api/photos/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const result = await res.json();
+      if (!res.ok) throw new Error(result.error || 'Upload failed');
+
+      if (result.photos && Array.isArray(result.photos)) {
+        setPhotos(result.photos);
+      } else if (result.photoUrl) {
+        if (isPrimary) {
+          setPhotos((prev) => [result.photoUrl, ...prev.filter((p) => p !== result.photoUrl)]);
+        } else {
+          setPhotos((prev) => [...prev, result.photoUrl]);
+        }
+      }
+      setStatusMsg({ type: 'success', text: 'Photo uploaded successfully!' });
+    } catch (err: any) {
+      setStatusMsg({ type: 'error', text: err.message || 'Photo upload failed.' });
+    } finally {
+      setUploadingIdx(null);
+      e.target.value = '';
+    }
+  };
+
+  const handleSetPrimary = async (targetIdx: number) => {
+    if (targetIdx === 0 || targetIdx >= photos.length) return;
+    const targetUrl = photos[targetIdx];
+    const previousPhotos = [...photos];
+    const newPhotos = [targetUrl, ...photos.filter((_, idx) => idx !== targetIdx)];
+
+    setPhotos(newPhotos);
+    setStatusMsg(null);
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const { error } = await supabase
+        .from('profiles')
+        .update({
+          avatar_url: targetUrl,
+          photos: newPhotos,
+        })
+        .eq('id', user.id);
+
+      if (error) throw error;
+      setStatusMsg({ type: 'success', text: 'Primary avatar updated!' });
+    } catch (err: any) {
+      setPhotos(previousPhotos);
+      setStatusMsg({ type: 'error', text: err.message || 'Failed to set avatar.' });
+    }
+  };
+
+  const handleDeletePhoto = async (targetIdx: number) => {
+    const previousPhotos = [...photos];
+    const newPhotos = photos.filter((_, idx) => idx !== targetIdx);
+
+    setPhotos(newPhotos);
+    setStatusMsg(null);
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Not authenticated');
+
+      const updates: Record<string, any> = {
+        photos: newPhotos,
+      };
+
+      if (targetIdx === 0) {
+        updates.avatar_url = newPhotos[0] || null;
+      }
+
+      const { error } = await supabase
+        .from('profiles')
+        .update(updates)
+        .eq('id', user.id);
+
+      if (error) throw error;
+      setStatusMsg({ type: 'success', text: 'Photo removed.' });
+    } catch (err: any) {
+      setPhotos(previousPhotos);
+      setStatusMsg({ type: 'error', text: err.message || 'Failed to remove photo.' });
     }
   };
 
@@ -170,6 +282,94 @@ export default function EditProfilePage() {
             {statusMsg.text}
           </div>
         )}
+
+        {/* Photo Management Section */}
+        <div className="bg-[#1D1726] border border-[#7D7E92]/25 rounded-2xl p-4 sm:p-5 space-y-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-sm font-bold text-white flex items-center gap-2">
+                <Camera className="w-4 h-4 text-[#C9A4E8]" />
+                Profile Photos ({photos.length}/6)
+              </h2>
+              <p className="text-[11px] text-[#D5CEE5]">
+                Upload up to 6 photos. Slot 1 is your primary avatar shown across the app.
+              </p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-3 gap-2.5 sm:gap-3 pt-1">
+            {Array.from({ length: 6 }).map((_, slotIdx) => {
+              const photo = photos[slotIdx];
+              const isPrimary = slotIdx === 0 && Boolean(photo);
+              const isUploading = uploadingIdx === slotIdx;
+
+              if (photo) {
+                return (
+                  <div
+                    key={slotIdx}
+                    className="relative aspect-[3/4] rounded-xl overflow-hidden bg-[#261F33] border border-[#7D7E92]/30 group"
+                  >
+                    <img
+                      src={photo}
+                      alt={`Photo ${slotIdx + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+
+                    {isPrimary ? (
+                      <div className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full bg-[#653C87]/90 text-white text-[9px] font-bold shadow-sm">
+                        Primary
+                      </div>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => handleSetPrimary(slotIdx)}
+                        className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full bg-black/60 text-[#E6D7FA] hover:text-white hover:bg-[#653C87] text-[9px] font-semibold transition"
+                      >
+                        Make Primary
+                      </button>
+                    )}
+
+                    <button
+                      type="button"
+                      onClick={() => handleDeletePhoto(slotIdx)}
+                      className="absolute top-1.5 right-1.5 p-1 rounded-full bg-black/60 text-rose-300 hover:text-rose-100 hover:bg-rose-950/80 transition"
+                      aria-label="Delete photo"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                );
+              }
+
+              return (
+                <label
+                  key={slotIdx}
+                  className="relative aspect-[3/4] rounded-xl border border-dashed border-[#7D7E92]/40 hover:border-[#C9A4E8] bg-[#261F33]/50 hover:bg-[#261F33] flex flex-col items-center justify-center cursor-pointer transition p-2 text-center group"
+                >
+                  <input
+                    type="file"
+                    accept="image/*"
+                    disabled={isUploading}
+                    onChange={(e) => handleUploadPhoto(e, slotIdx)}
+                    className="hidden"
+                  />
+                  {isUploading ? (
+                    <Loader2 className="w-5 h-5 text-[#C9A4E8] animate-spin" />
+                  ) : (
+                    <>
+                      <div className="w-8 h-8 rounded-full bg-[#1D1726] border border-[#7D7E92]/30 flex items-center justify-center text-[#D5CEE5] group-hover:text-white group-hover:border-[#C9A4E8] mb-1.5 transition">
+                        <Plus className="w-4 h-4" />
+                      </div>
+                      <span className="text-[10px] font-medium text-[#D5CEE5] group-hover:text-white">
+                        {slotIdx === 0 ? 'Add Primary' : 'Add Photo'}
+                      </span>
+                    </>
+                  )}
+                </label>
+              );
+            })}
+          </div>
+        </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Handle Claim */}

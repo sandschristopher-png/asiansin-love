@@ -68,6 +68,7 @@ export default function MyProfilePage() {
 
   // Profile data
   const [name, setName] = useState('Christopher');
+  const [currentPhotoIdx, setCurrentPhotoIdx] = useState(0);
   const [age, setAge] = useState(30);
   const [location, setLocation] = useState('Las Vegas, NV');
   const [locationSource, setLocationSource] = useState<'gps_verified' | 'self_reported'>('self_reported');
@@ -93,6 +94,7 @@ export default function MyProfilePage() {
   const [smoking, setSmoking] = useState('No');
   
   const [avatarUrl, setAvatarUrl] = useState('');
+  const [photos, setPhotos] = useState<string[]>([]);
 
   useEffect(() => {
     function handleClickOutside(e: MouseEvent) {
@@ -140,6 +142,11 @@ export default function MyProfilePage() {
         if (data.drinking) setDrinking(data.drinking);
         if (data.smoking) setSmoking(data.smoking);
         if (data.avatar_url) setAvatarUrl(data.avatar_url);
+        if (Array.isArray(data.photos) && data.photos.length > 0) {
+          setPhotos(data.photos.filter(Boolean));
+        } else if (data.avatar_url) {
+          setPhotos([data.avatar_url]);
+        }
       }
       setLoading(false);
     }
@@ -372,7 +379,7 @@ export default function MyProfilePage() {
                 </div>
               </div>
             ) : (
-              <div className="flex items-start justify-between gap-2 pb-1 border-b border-[#9A79BA]/25">
+              <div className="flex items-start justify-between gap-2 pb-1">
                 <div>
                   <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-1.5">
                     {name}, {age}
@@ -401,31 +408,84 @@ export default function MyProfilePage() {
             )}
 
             {/* Framed Photo Container */}
-            <div className="relative aspect-[4/5] w-full rounded-2xl overflow-hidden bg-gradient-to-b from-[#241E2F] to-[#17131F] border border-[#9A79BA]/30 flex items-center justify-center">
-              {avatarUrl ? (
-                <img
-                  src={avatarUrl}
-                  alt={name}
-                  className="w-full h-full object-cover"
-                />
-              ) : (
-                <div className="flex flex-col items-center justify-center gap-3 text-[#9A79BA]/60 p-6 text-center">
-                  <div className="w-20 h-20 rounded-3xl bg-[#17131F] border border-[#9A79BA]/35 flex items-center justify-center shadow-inner">
-                    <User className="w-10 h-10 stroke-[1.5] text-[#9A79BA]" />
-                  </div>
-                  <label className="inline-flex items-center gap-1.5 text-xs font-medium text-[#C9A4E8] hover:underline cursor-pointer">
-                    <Camera className="w-3.5 h-3.5" />
-                    <span>Upload Profile Photo</span>
-                    <input type="file" accept="image/*" className="hidden" onChange={() => alert('Photo upload bucket integration next')} />
-                  </label>
-                </div>
-              )}
+            {(() => {
+              const photoList = (typeof photos !== 'undefined' && Array.isArray(photos) && photos.length > 0)
+                ? photos
+                : (avatarUrl ? [avatarUrl] : []);
+              const currentImg = photoList[currentPhotoIdx] || avatarUrl;
+              const hasMultiple = photoList.length > 1;
 
-              <div className="absolute top-3 left-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-[11px] font-medium text-emerald-400 border border-white/10">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span>Online</span>
-              </div>
-            </div>
+              return (
+                <div className="relative aspect-[4/5] w-full rounded-2xl overflow-hidden bg-gradient-to-b from-[#241E2F] to-[#17131F] border border-[#9A79BA]/30 flex items-center justify-center select-none group">
+                  {currentImg ? (
+                    <img
+                      src={currentImg}
+                      alt={name}
+                      className="w-full h-full object-cover transition-opacity duration-200"
+                    />
+                  ) : (
+                    <div className="flex flex-col items-center justify-center gap-3 text-[#9A79BA]/60 p-6 text-center">
+                      <div className="w-20 h-20 rounded-3xl bg-[#17131F] border border-[#9A79BA]/35 flex items-center justify-center shadow-inner">
+                        <User className="w-10 h-10 stroke-[1.5] text-[#9A79BA]" />
+                      </div>
+                      <label className="inline-flex items-center gap-1.5 text-xs font-medium text-[#C9A4E8] hover:underline cursor-pointer">
+                        <Camera className="w-3.5 h-3.5" />
+                        <span>Upload Profile Photo</span>
+                        <input type="file" accept="image/*" className="hidden" onChange={() => alert('Photo upload bucket integration next')} />
+                      </label>
+                    </div>
+                  )}
+
+                  {/* Story Dashes - only visible when more than 1 photo exists */}
+                  {hasMultiple && (
+                    <div className="absolute top-2.5 left-3 right-3 flex items-center gap-1.5 z-20 pointer-events-none">
+                      {photoList.map((_, idx) => (
+                        <div
+                          key={idx}
+                          className={'h-1 flex-1 rounded-full transition-all duration-300 ' + (
+                            idx === currentPhotoIdx
+                              ? 'bg-white shadow-[0_0_6px_rgba(255,255,255,0.7)]'
+                              : 'bg-white/30 backdrop-blur-sm'
+                          )}
+                        />
+                      ))}
+                    </div>
+                  )}
+
+                  {/* Touch / Click zones for cycling photos */}
+                  {hasMultiple && (
+                    <>
+                      <button
+                        type="button"
+                        aria-label="Previous photo"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setCurrentPhotoIdx((prev) => (prev > 0 ? prev - 1 : photoList.length - 1));
+                        }}
+                        className="absolute inset-y-0 left-0 w-1/2 z-10 cursor-pointer focus:outline-none"
+                      />
+                      <button
+                        type="button"
+                        aria-label="Next photo"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setCurrentPhotoIdx((prev) => (prev < photoList.length - 1 ? prev + 1 : 0));
+                        }}
+                        className="absolute inset-y-0 right-0 w-1/2 z-10 cursor-pointer focus:outline-none"
+                      />
+                    </>
+                  )}
+
+                  {/* Online Presence Badge */}
+                  <div className={'absolute left-3 z-20 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-[11px] font-medium text-emerald-400 border border-white/10 pointer-events-none ' + (
+                    hasMultiple ? 'top-6' : 'top-3'
+                  )}>
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                    <span>Online</span>
+                  </div>
+                </div>
+              );
+            })()}
 
             {/* Actions at Base */}
             <div className="flex items-center gap-2 pt-1">
@@ -492,7 +552,7 @@ export default function MyProfilePage() {
 
             {/* ABOUT ME */}
             <div className="p-5 sm:p-6 rounded-3xl bg-[#261F33] border border-[#9A79BA]/35 shadow-xl space-y-2">
-              <h3 className="text-xs font-bold text-white uppercase tracking-wider">ABOUT ME</h3>
+              <h3 className="text-xs font-bold text-[#C9A4E8] uppercase tracking-wider">ABOUT ME</h3>
               {isEditing ? (
                 <textarea
                   value={bio}
@@ -501,7 +561,7 @@ export default function MyProfilePage() {
                   className="w-full p-3 rounded-2xl bg-[#181222] border border-[#9A79BA]/40 text-xs text-white focus:outline-none focus:border-[#9A79BA]"
                 />
               ) : (
-                <p className="text-sm text-[#E6D7FA] leading-relaxed">
+                <p className="text-sm text-white leading-relaxed">
                   {bio}
                 </p>
               )}
@@ -509,7 +569,7 @@ export default function MyProfilePage() {
 
             {/* WHAT I'M LOOKING FOR */}
             <div className="p-5 sm:p-6 rounded-3xl bg-[#261F33] border border-[#9A79BA]/35 shadow-xl space-y-2">
-              <h3 className="text-xs font-bold text-white uppercase tracking-wider">WHAT I'M LOOKING FOR</h3>
+              <h3 className="text-xs font-bold text-[#C9A4E8] uppercase tracking-wider">WHAT I'M LOOKING FOR</h3>
               {isEditing ? (
                 <textarea
                   value={lookingFor}
@@ -518,7 +578,7 @@ export default function MyProfilePage() {
                   className="w-full p-3 rounded-2xl bg-[#181222] border border-[#9A79BA]/40 text-xs text-white focus:outline-none focus:border-[#9A79BA]"
                 />
               ) : (
-                <p className="text-sm text-[#E6D7FA] leading-relaxed">
+                <p className="text-sm text-white leading-relaxed">
                   {lookingFor}
                 </p>
               )}
@@ -527,8 +587,8 @@ export default function MyProfilePage() {
 {/* SLEEK COMPACT VITALS */}
               <div className="p-5 sm:p-6 rounded-3xl bg-[#261F33] border border-[#9A79BA]/35 shadow-xl space-y-5">
                 <div className="flex items-center justify-between border-b border-[#9A79BA]/20 pb-3">
-                  <h3 className="text-xs font-bold text-white uppercase tracking-wider">VITALS & TRAITS</h3>
-                  <span className="text-[11px] text-[#A8A2AB]">Pairs-style verified attributes</span>
+                  <h3 className="text-xs font-bold text-[#C9A4E8] uppercase tracking-wider">VITALS & TRAITS</h3>
+                  
                 </div>
 
                 {isEditing ? (
@@ -641,7 +701,7 @@ export default function MyProfilePage() {
                           {currentLanguages.length > 0 ? (
                             <div className="flex flex-wrap items-center gap-1.5">
                               {currentLanguages.map((l: string) => (
-                                <span key={l} className="px-2.5 py-0.5 rounded-full bg-[#181222] border border-[#9A79BA]/30 text-xs font-semibold text-white">
+                                <span key={l} className="px-2.5 py-0.5 rounded-md bg-white/[0.05] border border-[#9A79BA]/40 text-xs font-normal text-[#E6D7FA]">
                                   {l}
                                 </span>
                               ))}
