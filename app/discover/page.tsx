@@ -379,7 +379,7 @@ function DiscoverContent() {
   }, [minAge, maxAge, selectedIntent, verifiedOnly, activeNowOnly]);
 
   const resetFilters = () => {
-    setSelectedGender('all');
+    setSelectedGender('All');
     setSelectedCountry('all');
     setSearchQuery('');
     setMinAge(18);
