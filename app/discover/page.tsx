@@ -205,7 +205,7 @@ function DiscoverCardPhotoCarousel({
 }: DiscoverCardPhotoCarouselProps) {
   const [currentIdx, setCurrentIdx] = useState(0);
 
-  const displayPhotos = photos && photos.length > 0 ? photos : [avatarUrl || '/jennalyn.png'];
+  const displayPhotos = (photos && photos.filter(Boolean).length > 0) ? photos.filter(Boolean) : [avatarUrl || '/jennalyn.png'];
   const hasMultiple = displayPhotos.length > 1;
 
   const handlePrev = (e: React.MouseEvent) => {
@@ -502,7 +502,7 @@ function DiscoverContent() {
       try {
         const { data, error } = await supabase
           .from('profiles')
-          .select('id, display_name, full_name, username, age, gender, city, country, avatar_url, is_verified, reputation_score, last_active, intent:relationship_intent, occupation, bio, latitude, longitude, location_source')
+          .select('id, display_name, full_name, username, age, gender, city, country, avatar_url, photos, is_verified, reputation_score, last_active, intent:relationship_intent, occupation, bio, latitude, longitude, location_source')
           .order('created_at', { ascending: false })
           .limit(40);
 
