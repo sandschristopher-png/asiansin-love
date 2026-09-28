@@ -521,7 +521,7 @@ function DiscoverContent() {
             const normGender = (row.gender?.toLowerCase() || 'woman') as 'woman' | 'man' | 'trans';
             return {
               id: row.id,
-              name: row.display_name || row.full_name || row.username || 'Member',
+              name: row.username || row.display_name || row.full_name || 'Member',
               age: row.age || 25,
               gender: ['woman', 'man', 'trans'].includes(normGender) ? normGender : 'woman',
               location: cityVal,
@@ -542,8 +542,9 @@ function DiscoverContent() {
 
           // Avoid duplicating profiles that exist in remote DB
           const liveIds = new Set(liveItems.map(p => p.id));
+          const filteredLiveItems = user ? liveItems.filter(p => p.id !== user.id) : liveItems;
           const uniqueSeeds = SEED_PROFILES.filter(p => !liveIds.has(p.id));
-          setProfiles([...liveItems, ...uniqueSeeds]);
+          setProfiles([...filteredLiveItems, ...uniqueSeeds]);
         }
       } catch (err) {
         console.error('Failed to load discovery profiles:', err);

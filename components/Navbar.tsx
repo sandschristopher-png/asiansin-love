@@ -13,7 +13,7 @@ export function Navbar() {
   const router = useRouter();
   const [supabase] = useState(() => createClient());
   const [user, setUser] = useState<any>(null);
-  const [profile, setProfile] = useState<{ display_name?: string; avatar_url?: string } | null>(null);
+  const [profile, setProfile] = useState<{ username?: string; display_name?: string; avatar_url?: string } | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -25,7 +25,7 @@ export function Navbar() {
       if (user) {
         const { data } = await supabase
           .from('profiles')
-          .select('display_name, avatar_url')
+          .select('username, display_name, avatar_url')
           .eq('id', user.id)
           .single();
         if (data) setProfile(data);
@@ -39,7 +39,7 @@ export function Navbar() {
       if (currentUser) {
         const { data } = await supabase
           .from('profiles')
-          .select('display_name, avatar_url')
+          .select('username, display_name, avatar_url')
           .eq('id', currentUser.id)
           .single();
         if (data) setProfile(data);
@@ -73,7 +73,7 @@ export function Navbar() {
     router.refresh();
   };
 
-  const displayName = profile?.display_name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Member';
+  const displayName = profile?.username || profile?.display_name || user?.user_metadata?.user_name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Member';
   const avatarUrl = profile?.avatar_url || user?.user_metadata?.avatar_url || null;
 
   return (
