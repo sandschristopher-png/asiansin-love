@@ -1,13 +1,23 @@
+import { createClient } from '@/utils/supabase/client';
+import UpgradeModal from '@/components/UpgradeModal';
 ﻿'use client';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, ArrowRight, ShieldCheck, Bell, Smartphone, UserX, ShieldAlert } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ShieldCheck, Bell, Smartphone, UserX, ShieldAlert } , User, Lock, CheckCircle2, Clock } from 'lucide-react';
 
 export default function SettingsPage() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<'app' | 'notifications' | 'privacy' | 'reports'>('app');
+  const [activeTab, setActiveTab] = useState<'account' | 'app' | 'notifications' | 'privacy' | 'reports'>('account');
+  const supabase = createClient();
+  const [profile, setProfile] = useState<any>(null);
+  const [usernameInput, setUsernameInput] = useState('');
+  const [isEditingUsername, setIsEditingUsername] = useState(false);
+  const [usernameError, setUsernameError] = useState<string | null>(null);
+  const [usernameSuccess, setUsernameSuccess] = useState(false);
+  const [isSavingUsername, setIsSavingUsername] = useState(false);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   const [imperialUnits, setImperialUnits] = useState(true);
   const [vibrations, setVibrations] = useState(true);
@@ -18,6 +28,119 @@ export default function SettingsPage() {
   const [blockedUsers, setBlockedUsers] = useState([
     { id: '1', name: 'Member_489', date: 'Blocked Sep 12, 2026' },
   ]);
+
+  
+  React.useEffect(() => {
+    async function loadProfile() {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+      const { data } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle();
+      if (data) {
+        setProfile(data);
+        setUsernameInput(data.username || '');
+      }
+    }
+    loadProfile();
+  }, [supabase]);
+
+  // Determine user category
+  const isForeignMan = Boolean(
+    profile &&
+    !profile.is_sea_local &&
+    (profile.gender?.toLowerCase().includes('man') || profile.gender?.toLowerCase().includes('male'))
+  );
+
+  // Check 30-day cooldown for SEA / non-premium members
+  const getCooldownStatus = () => {
+    if (!profile?.username_changed_at) return { allowed: true, daysRemaining: 0 };
+    const lastChanged = new Date(profile.username_changed_at).getTime();
+    const now = Date.now();
+    const daysSince = (now - lastChanged) / (1000 * 60 * 60 * 24);
+    if (daysSince < 30) {
+      return {
+        allowed: false,
+        daysRemaining: Math.ceil(30 - daysSince),
+        canChangeDate: new Date(lastChanged + 30 * 24 * 60 * 60 * 1000).toLocaleDateString(),
+      };
+    }
+    return { allowed: true, daysRemaining: 0 };
+  };
+
+  const cooldown = getCooldownStatus();
+  const isForeignBlocked = isForeignMan && !profile?.is_premium;
+  const canEdit = !isForeignBlocked && (profile?.is_premium || cooldown.allowed);
+
+  const handleSaveUsername = async () => {
+    if (isForeignBlocked) {
+      setShowUpgradeModal(true);
+      return;
+    }
+    if (!cooldown.allowed && !profile?.is_premium) {
+      setUsernameError(`Usernames can only be updated once every 30 days. Next available change: ${cooldown.canChangeDate}.`);
+      return;
+    }
+
+    const clean = usernameInput.trim().replace(/[^a-zA-Z0-9_.]/g, '');
+    if (clean.length < 3) {
+      setUsernameError('Username must be at least 3 characters long.');
+      return;
+    }
+    if (clean.toLowerCase() === (profile.username || '').toLowerCase()) {
+      setIsEditingUsername(false);
+      return;
+    }
+
+    setIsSavingUsername(true);
+    setUsernameError(null);
+
+    // Case-insensitive collision check
+    const { data: existing } = await supabase
+      .from('profiles')
+      .select('id')
+      .ilike('username', clean)
+      .neq('id', profile.id)
+      .maybeSingle();
+
+    if (existing) {
+      setUsernameError('This username is already claimed. Please try another.');
+      setIsSavingUsername(false);
+      return;
+    }
+
+    const updatePayload: any = { username: clean };
+    // Track change date
+    updatePayload.username_changed_at = new Date().toISOString();
+
+    const { error } = await supabase
+      .from('profiles')
+      .update(updatePayload)
+      .eq('id', profile.id);
+
+    if (error) {
+      // Fallback if column not yet in DB schema
+      if (error.message.includes('username_changed_at')) {
+        const { error: retryError } = await supabase
+          .from('profiles')
+          .update({ username: clean })
+          .eq('id', profile.id);
+        if (retryError) {
+          setUsernameError(retryError.message);
+          setIsSavingUsername(false);
+          return;
+        }
+      } else {
+        setUsernameError(error.message);
+        setIsSavingUsername(false);
+        return;
+      }
+    }
+
+    setProfile((prev: any) => ({ ...prev, username: clean, username_changed_at: new Date().toISOString() }));
+    setUsernameSuccess(true);
+    setIsEditingUsername(false);
+    setTimeout(() => setUsernameSuccess(false), 3000);
+    setIsSavingUsername(false);
+  };
 
   const handleUnblock = (id: string) => {
     setBlockedUsers((prev) => prev.filter((u) => u.id !== id));
@@ -99,7 +222,130 @@ export default function SettingsPage() {
           </button>
         </div>
 
-        {/* Tab 1: App */}
+        
+          {/* Tab 0: Account */}
+          {activeTab === 'account' && (
+            <div className="rounded-3xl bg-[#261F33] border border-[#9A79BA]/35 p-6 space-y-6 shadow-2xl">
+              <div>
+                <h2 className="text-xs font-bold uppercase tracking-wider text-[#9A79BA] flex items-center gap-2">
+                  <User className="w-4 h-4 text-[#C9A4E8]" />
+                  Handle & Account Identity
+                </h2>
+                <p className="mt-1 text-xs text-[#E6D7FA]/70">
+                  Your distinct identifier used in profile links and direct messages.
+                </p>
+              </div>
+
+              {usernameSuccess && (
+                <div className="rounded-2xl bg-emerald-950/50 border border-emerald-500/40 p-3 text-xs text-emerald-300 flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400" />
+                  Username updated successfully!
+                </div>
+              )}
+
+              {usernameError && (
+                <div className="rounded-2xl bg-rose-950/50 border border-rose-500/40 p-3 text-xs text-rose-300">
+                  {usernameError}
+                </div>
+              )}
+
+              <div className="space-y-3">
+                <label className="text-xs font-semibold text-[#E6D7FA]">Username Handle</label>
+
+                <div className="flex items-center gap-2">
+                  <div className="relative flex-1">
+                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-semibold text-[#9A79BA]">@</span>
+                    <input
+                      type="text"
+                      disabled={!isEditingUsername}
+                      value={usernameInput}
+                      onChange={(e) => setUsernameInput(e.target.value.replace(/[^a-zA-Z0-9_.]/g, ''))}
+                      className="w-full pl-8 pr-4 py-2.5 rounded-xl bg-[#181222] border border-[#9A79BA]/30 text-sm font-semibold text-white focus:outline-none focus:border-[#C9A4E8] disabled:opacity-75 disabled:cursor-not-allowed"
+                      placeholder="Username"
+                    />
+                  </div>
+
+                  {!isEditingUsername ? (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (isForeignBlocked) {
+                          setShowUpgradeModal(true);
+                        } else if (!cooldown.allowed && !profile?.is_premium) {
+                          setUsernameError(`Usernames can only be updated once every 30 days. Available on ${cooldown.canChangeDate}.`);
+                        } else {
+                          setIsEditingUsername(true);
+                          setUsernameError(null);
+                        }
+                      }}
+                      className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#653C87] hover:bg-[#7D49A8] text-white text-xs font-bold transition shadow-md shadow-[#653C87]/30"
+                    >
+                      {isForeignBlocked && <Lock className="w-3.5 h-3.5 text-amber-300" />}
+                      <span>Edit</span>
+                    </button>
+                  ) : (
+                    <div className="flex items-center gap-1.5">
+                      <button
+                        type="button"
+                        onClick={handleSaveUsername}
+                        disabled={isSavingUsername}
+                        className="px-4 py-2.5 rounded-xl bg-[#653C87] hover:bg-[#7D49A8] text-white text-xs font-bold transition disabled:opacity-50"
+                      >
+                        {isSavingUsername ? 'Saving...' : 'Save'}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsEditingUsername(false);
+                          setUsernameInput(profile?.username || '');
+                          setUsernameError(null);
+                        }}
+                        className="px-3 py-2.5 rounded-xl bg-[#181222] border border-[#9A79BA]/30 text-[#9A79BA] hover:text-white text-xs font-bold transition"
+                      >
+                        Cancel
+                      </button>
+                    </div>
+                  )}
+                </div>
+
+                {/* State Guidance Banners */}
+                {isForeignBlocked ? (
+                  <div className="mt-2 rounded-2xl bg-amber-950/30 border border-amber-500/30 p-3.5 flex items-start gap-2.5">
+                    <Lock className="w-4 h-4 text-amber-400 mt-0.5 shrink-0" />
+                    <div className="text-xs space-y-1">
+                      <p className="font-semibold text-amber-200">Premium Suitor Feature</p>
+                      <p className="text-amber-300/80 leading-relaxed">
+                        Custom username modification for foreign gentlemen is reserved for Premium members to preserve authentic identity and safety.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => setShowUpgradeModal(true)}
+                        className="inline-block mt-1 font-bold text-[#E6D7FA] underline hover:text-white"
+                      >
+                        Upgrade to Premium →
+                      </button>
+                    </div>
+                  </div>
+                ) : !cooldown.allowed && !profile?.is_premium ? (
+                  <div className="mt-2 rounded-2xl bg-sky-950/30 border border-sky-500/30 p-3.5 flex items-start gap-2.5">
+                    <Clock className="w-4 h-4 text-sky-400 mt-0.5 shrink-0" />
+                    <div className="text-xs space-y-1">
+                      <p className="font-semibold text-sky-200">30-Day Anti-Abuse Cooldown Active</p>
+                      <p className="text-sky-300/80 leading-relaxed">
+                        To protect members against impersonation and handle flipping, handles can only be changed once every 30 days. You can change yours again on <strong>{cooldown.canChangeDate}</strong>.
+                      </p>
+                    </div>
+                  </div>
+                ) : (
+                  <p className="text-[11px] text-[#9A79BA]">
+                    Letters (uppercase and lowercase), numbers, underscores, and periods are permitted.
+                  </p>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* Tab 1: App */}
         {activeTab === 'app' && (
           <div className="rounded-3xl bg-[#261F33] border border-[#9A79BA]/35 p-6 space-y-5 shadow-2xl">
             <h2 className="text-xs font-bold uppercase tracking-wider text-[#9A79BA] flex items-center gap-2">
@@ -266,6 +512,7 @@ export default function SettingsPage() {
           </div>
         )}
 
+        <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} onSelectPlan={() => setShowUpgradeModal(false)} />
       </main>
     </div>
   );
