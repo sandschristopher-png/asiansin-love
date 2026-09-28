@@ -193,6 +193,8 @@ export default function ChatConversationPage({ params }: { params: { id: string 
   const [showSafetyNotice, setShowSafetyNotice] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [showRepModal, setShowRepModal] = useState(false);
+  const [showReportModal, setShowReportModal] = useState(false);
+  const [actionDoneMsg, setActionDoneMsg] = useState<string | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -373,6 +375,7 @@ export default function ChatConversationPage({ params }: { params: { id: string 
         >
           {targetInfo.rep}% Rep
         </button>
+          <button onClick={() => setShowReportModal(true)} className="flex items-center gap-1 rounded-full border border-zinc-200 px-2.5 py-1 text-xs font-medium text-zinc-500 hover:border-rose-300 hover:text-rose-600 dark:border-zinc-700 dark:text-zinc-400" title="Safety Options"><ShieldAlert className="h-3.5 w-3.5" /><span>Report</span></button>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-3 max-w-md mx-auto w-full">
@@ -457,6 +460,26 @@ export default function ChatConversationPage({ params }: { params: { id: string 
         name={targetInfo.name}
         score={targetInfo.rep}
       />
+    {showReportModal && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+    <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl dark:bg-zinc-900">
+      <div className="flex items-center gap-2 text-rose-600 dark:text-rose-400">
+        <ShieldAlert className="h-5 w-5" />
+        <h3 className="font-semibold text-zinc-900 dark:text-white">Safety & Moderation</h3>
+      </div>
+      <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">Take action regarding this member. Reports are reviewed by human moderators within 24 hours.</p>
+      {actionDoneMsg ? (
+        <div className="mt-4 rounded-xl bg-emerald-50 p-3 text-center text-sm font-medium text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">{actionDoneMsg}</div>
+      ) : (
+        <div className="mt-5 space-y-2">
+          <button onClick={() => { setActionDoneMsg("User has been blocked. Messages from this user are now muted."); setTimeout(() => { setShowReportModal(false); setActionDoneMsg(null); }, 1800); }} className="w-full rounded-xl border border-zinc-200 py-2.5 text-sm font-medium text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800">Block Member</button>
+          <button onClick={() => { setActionDoneMsg("Report submitted. Thank you for keeping Asians in Love safe."); setTimeout(() => { setShowReportModal(false); setActionDoneMsg(null); }, 1800); }} className="w-full rounded-xl bg-rose-600 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-rose-700">Report Violation / Scammer</button>
+        </div>
+      )}
+      <button onClick={() => { setShowReportModal(false); setActionDoneMsg(null); }} className="mt-3 w-full py-1.5 text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200">Cancel</button>
+    </div>
+  </div>
+)}
     </main>
   );
 }

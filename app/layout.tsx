@@ -1,3 +1,4 @@
+import MobileNav from '@/components/MobileNav';
 import { Plus_Jakarta_Sans } from 'next/font/google';
 ﻿import InAppToast from '@/components/InAppToast';
 import './globals.css';
@@ -47,6 +48,7 @@ export default function RootLayout({
             <main className="w-full">
               <InAppToast />
               {children}
+        <MobileNav />
             </main>
             <BottomNav />
           </OnboardingGuard>
