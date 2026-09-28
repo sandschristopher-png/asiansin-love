@@ -9,7 +9,7 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Username is required' }, { status: 400 });
     }
 
-    const cleanUsername = username.trim().toLowerCase().replace(/[^a-z0-9_.]/g, '');
+    const cleanUsername = username.trim().replace(/[^a-zA-Z0-9_.]/g, '');
 
     if (cleanUsername.length < 3) {
       return NextResponse.json({
@@ -29,7 +29,7 @@ export async function POST(req: Request) {
     const { data: existingUser, error } = await supabase
       .from('profiles')
       .select('username')
-      .eq('username', cleanUsername)
+      .ilike('username', cleanUsername)
       .maybeSingle();
 
     if (error) {

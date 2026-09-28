@@ -73,8 +73,7 @@ export function Navbar() {
     router.refresh();
   };
 
-  const rawName = profile?.username || profile?.display_name || user?.user_metadata?.user_name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Member';
-  const displayName = rawName.toLowerCase() === 'cos' ? 'COS' : rawName;
+  const displayName = profile?.username || profile?.display_name || user?.user_metadata?.user_name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Member';
   const avatarUrl = profile?.avatar_url || user?.user_metadata?.avatar_url || null;
 
   return (

@@ -68,7 +68,7 @@ export default function LoginPage() {
         const { data: existingUser } = await supabase
           .from('profiles')
           .select('username')
-          .eq('username', cleanedUsername)
+          .ilike('username', cleanedUsername)
           .maybeSingle();
 
         if (existingUser) {

@@ -184,7 +184,7 @@ export default function OnboardingPage() {
       const { error } = await supabase
         .from('profiles')
         .update({
-          username: username.toLowerCase().trim(),
+          username: username.trim(),
           full_name: displayName.trim(),
           gender: gender,
           birthdate: birthdate || null,
@@ -272,7 +272,7 @@ export default function OnboardingPage() {
                   <input
                     type="text"
                     value={username}
-                    onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_.]/g, ''))}
+                    onChange={(e) => setUsername(e.target.value.replace(/[^a-zA-Z0-9_.]/g, ''))}
                     placeholder="yourname"
                     maxLength={20}
                     className="w-full pl-8 pr-10 py-3 rounded-2xl bg-[#181222] border border-[#9A79BA]/40 text-white placeholder-[#9A79BA]/60 focus:outline-none focus:border-[#9A79BA] text-base sm:text-sm font-semibold transition"
