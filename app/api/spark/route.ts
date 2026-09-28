@@ -1,4 +1,4 @@
-import { createClient } from '@/utils/supabase/server'
+﻿import { createClient } from '@/utils/supabase/server'
 import { NextResponse } from 'next/server'
 
 export async function POST(req: Request) {
@@ -40,11 +40,7 @@ export async function POST(req: Request) {
     }
 
     // Log notification for recipient
-    await supabase.from('notifications').insert({
-      user_id: targetUserId,
-      actor_id: user.id,
-      type: 'spark',
-    })
+    await supabase.from('notifications').insert({ user_id: targetUserId, type: 'favorite', title: 'New Spark Received', description: 'Someone sent you a spark! Check out who liked your profile.', link_url: '/favorites' })
 
     // Check if mutual spark exists
     const { data: mutual } = await supabase
@@ -59,3 +55,4 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: err.message }, { status: 500 })
   }
 }
+

@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+﻿import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabaseClient';
 import { detectFinancialSolicitation } from '@/lib/moderation';
 
@@ -77,8 +77,19 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: insertError.message }, { status: 500 });
     }
 
+    if (isUUID(targetReceiverId) && targetReceiverId !== DEMO_TARGET_UUID) {
+      await supabase.from('notifications').insert({
+        user_id: targetReceiverId,
+        type: 'message',
+        title: 'New Message',
+        description: 'You received a new message.',
+        link_url: '/messages',
+      });
+    }
+
     return NextResponse.json({ success: true, message });
   } catch (err: any) {
     return NextResponse.json({ error: err.message || 'Internal Server Error' }, { status: 500 });
   }
 }
+
