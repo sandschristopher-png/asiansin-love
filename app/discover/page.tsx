@@ -323,6 +323,7 @@ function DiscoverContent() {
     const c = searchParams.get('country');
     return c && c.toLowerCase() !== 'all' ? c : 'All';
   });
+  const userSelectedGenderManually = useRef(Boolean(searchParams.get('gender')));
   const [selectedGender, setSelectedGender] = useState<'All' | 'woman' | 'man' | 'trans'>(() => {
     const g = searchParams.get('gender');
     return g && ['All', 'woman', 'man', 'trans'].includes(g) ? (g as any) : 'All';
@@ -404,6 +405,13 @@ function DiscoverContent() {
     async function hydrateRemoteFavorites() {
       try {
         const { data: { user } } = await supabase.auth.getUser();
+      if (user && !searchParams.get('gender') && !userSelectedGenderManually.current) {
+        const { data: p } = await supabase.from('profiles').select('interested_in, seeking_gender').eq('id', user.id).single();
+        const seeking = (p?.interested_in || p?.seeking_gender || '').toLowerCase().trim();
+        if (seeking === 'men' || seeking === 'man') setSelectedGender('man');
+        else if (seeking === 'women' || seeking === 'woman') setSelectedGender('woman');
+        else if (seeking === 'trans') setSelectedGender('trans');
+      }
         if (!user) return;
 
         const { data: remoteFavorites, error } = await supabase
@@ -647,7 +655,7 @@ function DiscoverContent() {
                   <button
                     key={gender}
                     type="button"
-                    onClick={() => setSelectedGender(gender as any)}
+                    onClick={() => { userSelectedGenderManually.current = true; setSelectedGender(gender as any); }}
                     className={'px-3 py-1 text-[11px] font-medium rounded-full transition-all ' + (active ? 'bg-[#653C87] text-white shadow-sm' : 'text-[#D5CEE5] hover:text-white')}
                   >
                     {label}
