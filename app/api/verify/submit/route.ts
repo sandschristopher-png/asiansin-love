@@ -34,6 +34,15 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: updateErr.message }, { status: 500 });
     }
 
+    // Insert user notification that verification is pending review
+    await supabase.from('notifications').insert({
+      user_id: userId,
+      type: 'verification',
+      title: 'Verification Submitted',
+      description: 'Your selfie gesture is currently under review by our moderation team.',
+      link_url: '/profile',
+    });
+
     await sendTelegramVerificationAlert({
       userId,
       poseRequested,
