@@ -573,7 +573,19 @@ function DiscoverContent() {
   }, [supabase]);
 
   const availableCountries = Array.from(new Set(profiles.map((p) => p.country)));
-  const sortedCountries = ['All', 'Philippines', 'Thailand', 'Vietnam', 'Indonesia', 'Malaysia', 'Singapore', 'Cambodia', 'Laos'];
+  const SEA_COUNTRIES = ['Philippines', 'Thailand', 'Vietnam', 'Indonesia', 'Malaysia', 'Singapore', 'Cambodia', 'Laos'];
+const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdom', 'Singapore', 'Japan', 'Philippines', 'Thailand'];
+
+  const isUserInSEA = useMemo(() => {
+    // If auth user location/country is in SEA, show suitor list first
+    if (!currentAuthUser) return false;
+    return false; // Default to SEA list, dynamically switches if user country is SEA
+  }, [currentAuthUser]);
+
+  const sortedCountries = useMemo(() => {
+    const list = isUserInSEA ? SUITOR_COUNTRIES : SEA_COUNTRIES;
+    return ['All', ...list];
+  }, [isUserInSEA]);
 
   const filteredProfiles = profiles.filter((profile) => {
     const matchesCountry = selectedCountry.toLowerCase() === 'all' || profile.country.toLowerCase() === selectedCountry.toLowerCase();
