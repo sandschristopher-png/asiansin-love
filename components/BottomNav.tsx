@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -16,9 +16,21 @@ import {
 import { AccountBottomSheet } from '@/components/AccountBottomSheet';
 import { createClient } from '@/lib/supabase/client';
 
+const PUBLIC_ROUTES = [
+  '/',
+  '/login',
+  '/signup',
+  '/forgot-password',
+  '/terms',
+  '/privacy',
+  '/standards',
+  '/pricing'
+];
+
 export function BottomNav() {
   const pathname = usePathname();
   const [supabase] = useState(() => createClient());
+  const [user, setUser] = useState<any>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [accountSheetOpen, setAccountSheetOpen] = useState(false);
   const [listsOpen, setListsOpen] = useState(false);
@@ -27,8 +39,9 @@ export function BottomNav() {
   const isActive = (path: string) => pathname === path;
 
   useEffect(() => {
-    async function loadUserAvatar() {
+    async function checkAuth() {
       const { data: { user } } = await supabase.auth.getUser();
+      setUser(user);
       if (user) {
         const { data } = await supabase
           .from('profiles')
@@ -38,16 +51,18 @@ export function BottomNav() {
         setAvatarUrl(data?.avatar_url || user.user_metadata?.avatar_url || null);
       }
     }
-    loadUserAvatar();
+    checkAuth();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      if (session?.user) {
+      const currentUser = session?.user ?? null;
+      setUser(currentUser);
+      if (currentUser) {
         const { data } = await supabase
           .from('profiles')
           .select('avatar_url')
-          .eq('id', session.user.id)
+          .eq('id', currentUser.id)
           .single();
-        setAvatarUrl(data?.avatar_url || session.user.user_metadata?.avatar_url || null);
+        setAvatarUrl(data?.avatar_url || currentUser.user_metadata?.avatar_url || null);
       } else {
         setAvatarUrl(null);
       }
@@ -73,6 +88,11 @@ export function BottomNav() {
       window.visualViewport?.removeEventListener('resize', handleResize);
     };
   }, []);
+
+  // Suppress when logged out or on public / auth / onboarding pages
+  if (!user || PUBLIC_ROUTES.includes(pathname) || pathname.startsWith('/onboarding')) {
+    return null;
+  }
 
   // Suppress on individual profile deep dives or chat rooms
   if (pathname.startsWith('/chat/') || pathname.startsWith('/profile/')) {
@@ -154,7 +174,7 @@ export function BottomNav() {
               </span>
             </button>
 
-            {/* 5. YOU (Avatar Trigger with micro-indicator) */}
+            {/* 5. YOU */}
             <button
               type="button"
               onClick={() => {
@@ -177,7 +197,6 @@ export function BottomNav() {
                     <User className="w-4 h-4 text-[#C9A4E8]" />
                   )}
                 </div>
-                {/* Mini indicator badge on the avatar rim */}
                 <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#653C87] border border-[#261F33] flex items-center justify-center">
                   <span className="w-1 h-1 rounded-full bg-[#E6D7FA]" />
                 </span>
@@ -191,7 +210,7 @@ export function BottomNav() {
         </nav>
       </div>
 
-      {/* Lists Dropdown / Slide Sheet */}
+      {/* Lists Dropdown */}
       {listsOpen && (
         <div 
           className="sm:hidden fixed inset-0 z-[60] bg-black/70 backdrop-blur-md flex items-end justify-center pb-20 px-4 animate-in fade-in duration-200" 
