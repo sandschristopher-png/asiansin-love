@@ -565,14 +565,7 @@ function DiscoverContent() {
   }, [supabase]);
 
   const availableCountries = Array.from(new Set(profiles.map((p) => p.country)));
-  const sortedCountries = ['All', ...availableCountries.sort((a, b) => {
-    const idxA = PRIORITY_ORDER.indexOf(a);
-    const idxB = PRIORITY_ORDER.indexOf(b);
-    if (idxA !== -1 && idxB !== -1) return idxA - idxB;
-    if (idxA !== -1) return -1;
-    if (idxB !== -1) return 1;
-    return a.localeCompare(b);
-  })];
+  const sortedCountries = ['All', 'Philippines', 'Thailand', 'Vietnam', 'Indonesia', 'Malaysia', 'Singapore', 'Cambodia', 'Laos'];
 
   const filteredProfiles = profiles.filter((profile) => {
     const matchesCountry = selectedCountry.toLowerCase() === 'all' || profile.country.toLowerCase() === selectedCountry.toLowerCase();
