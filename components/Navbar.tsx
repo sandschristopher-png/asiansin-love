@@ -1,11 +1,11 @@
-'use client';
+﻿'use client';
 
 import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { 
   User, Settings, LogOut, Bell, Heart, 
-  EyeOff, ChevronDown 
+  ChevronDown 
 } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 
@@ -78,19 +78,22 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-40 w-full bg-[#17131F] relative">
-      {/* Seamless downward dissolve into content */}
       <div className="absolute top-full left-0 right-0 h-10 bg-gradient-to-b from-[#17131F] to-transparent pointer-events-none" />
       <div className="max-w-7xl mx-auto px-4 h-16 relative flex items-center justify-between">
         
-        {/* Left: Squircle Bell Icon */}
-        <div className="flex items-center">
-          <button
-            type="button"
-            className="h-9 w-9 rounded-2xl bg-[#241E2F] border border-[#7D7E92]/30 flex items-center justify-center text-[#B6AEC7] hover:text-white hover:border-[#9A79BA]/50 transition-colors shadow-sm"
-            title="Notifications"
-          >
-            <Bell className="w-4 h-4" />
-          </button>
+        {/* Left: Notifications Bell (Authenticated Only) */}
+        <div className="flex items-center min-w-[36px]">
+          {user ? (
+            <Link
+              href="/notifications"
+              className="h-9 w-9 rounded-2xl bg-[#241E2F] border border-[#7D7E92]/30 flex items-center justify-center text-[#B6AEC7] hover:text-white hover:border-[#9A79BA]/50 transition-colors shadow-sm"
+              title="Notifications"
+            >
+              <Bell className="w-4 h-4" />
+            </Link>
+          ) : (
+            <div className="w-9 h-9" />
+          )}
         </div>
 
         {/* Center: Brand Logo */}
@@ -154,16 +157,7 @@ export function Navbar() {
                       className="flex items-center gap-3 px-4 py-2.5 text-[#E6D7FA] hover:bg-[#241E2F] hover:text-white transition-colors"
                     >
                       <Heart className="w-4 h-4 text-[#9A79BA]" />
-                      <span>Favorites</span>
-                    </Link>
-
-                    <Link
-                      href="/discover?filter=passed"
-                      onClick={() => setMenuOpen(false)}
-                      className="flex items-center gap-3 px-4 py-2.5 text-[#E6D7FA] hover:bg-[#241E2F] hover:text-white transition-colors"
-                    >
-                      <EyeOff className="w-4 h-4 text-[#9A79BA]" />
-                      <span>Passed Profiles</span>
+                      <span>My Favorites</span>
                     </Link>
 
                     <Link
@@ -172,20 +166,18 @@ export function Navbar() {
                       className="flex items-center gap-3 px-4 py-2.5 text-[#E6D7FA] hover:bg-[#241E2F] hover:text-white transition-colors"
                     >
                       <Settings className="w-4 h-4 text-[#9A79BA]" />
-                      <span>Account Settings</span>
+                      <span>Settings</span>
                     </Link>
                   </div>
 
-                  <div className="border-t border-[#241E2F] my-1" />
-
-                  <div className="pt-1">
+                  <div className="pt-1 border-t border-[#241E2F]">
                     <button
                       type="button"
                       onClick={handleSignOut}
-                      className="w-full flex items-center gap-3 px-4 py-2 text-rose-400 hover:bg-rose-500/10 transition-colors"
+                      className="w-full flex items-center gap-3 px-4 py-2.5 text-rose-400 hover:bg-[#241E2F] transition-colors"
                     >
                       <LogOut className="w-4 h-4" />
-                      <span>Log Out</span>
+                      <span>Sign Out</span>
                     </button>
                   </div>
                 </div>
@@ -194,16 +186,13 @@ export function Navbar() {
           ) : (
             <Link
               href="/login"
-              className="px-4 py-1.5 rounded-full text-xs font-semibold bg-[#653C87] text-white hover:bg-[#7b49a5] transition shadow-md"
+              className="px-4 py-1.5 rounded-full bg-[#653C87] hover:bg-[#78469f] text-white text-xs font-bold transition shadow-sm"
             >
               Sign In
             </Link>
           )}
         </div>
-
       </div>
     </header>
   );
 }
-
-
