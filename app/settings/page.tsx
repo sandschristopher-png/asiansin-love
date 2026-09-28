@@ -112,7 +112,9 @@ export default function SettingsPage() {
       setUsernameError('Username must be at least 3 characters long.');
       return;
     }
-    if (clean.toLowerCase() === (profile.username || '').toLowerCase()) {
+    
+    // Only skip if the exact casing is already identical
+    if (clean === profile?.username) {
       setIsEditingUsername(false);
       return;
     }
@@ -120,53 +122,79 @@ export default function SettingsPage() {
     setIsSavingUsername(true);
     setUsernameError(null);
 
-    // Case-insensitive collision check
-    const { data: existing } = await supabase
-      .from('profiles')
-      .select('id')
-      .ilike('username', clean)
-      .neq('id', profile.id)
-      .maybeSingle();
+    try {
+      // Get active user ID dynamically
+      const { data: { user } } = await supabase.auth.getUser();
+      const targetId = profile?.id || user?.id;
 
-    if (existing) {
-      setUsernameError('This username is already claimed. Please try another.');
-      setIsSavingUsername(false);
-      return;
-    }
-
-    const updatePayload: any = { username: clean };
-    // Track change date
-    updatePayload.username_changed_at = new Date().toISOString();
-
-    const { error } = await supabase
-      .from('profiles')
-      .update(updatePayload)
-      .eq('id', profile.id);
-
-    if (error) {
-      // Fallback if column not yet in DB schema
-      if (error.message.includes('username_changed_at')) {
-        const { error: retryError } = await supabase
-          .from('profiles')
-          .update({ username: clean })
-          .eq('id', profile.id);
-        if (retryError) {
-          setUsernameError(retryError.message);
-          setIsSavingUsername(false);
-          return;
-        }
-      } else {
-        setUsernameError(error.message);
+      if (!targetId) {
+        setUsernameError('Could not verify authenticated user session.');
         setIsSavingUsername(false);
         return;
       }
-    }
 
-    setProfile((prev: any) => ({ ...prev, username: clean, username_changed_at: new Date().toISOString() }));
-    setUsernameSuccess(true);
-    setIsEditingUsername(false);
-    setTimeout(() => setUsernameSuccess(false), 3000);
-    setIsSavingUsername(false);
+      // Check collision with other users (case-insensitive)
+      const { data: existing, error: checkError } = await supabase
+        .from('profiles')
+        .select('id')
+        .ilike('username', clean)
+        .neq('id', targetId)
+        .maybeSingle();
+
+      if (checkError) {
+        console.warn('Username collision check error:', checkError);
+      }
+
+      if (existing) {
+        setUsernameError('This username is already taken. Please try another.');
+        setIsSavingUsername(false);
+        return;
+      }
+
+      // Perform update with exact casing
+      const { error: updateError } = await supabase
+        .from('profiles')
+        .update({ 
+          username: clean,
+          username_changed_at: new Date().toISOString()
+        })
+        .eq('id', targetId);
+
+      if (updateError) {
+        // Fallback if username_changed_at is not a column
+        if (updateError.message.includes('username_changed_at')) {
+          const { error: retryError } = await supabase
+            .from('profiles')
+            .update({ username: clean })
+            .eq('id', targetId);
+
+          if (retryError) {
+            setUsernameError(retryError.message);
+            setIsSavingUsername(false);
+            return;
+          }
+        } else {
+          setUsernameError(updateError.message);
+          setIsSavingUsername(false);
+          return;
+        }
+      }
+
+      setProfile((prev: any) => ({ 
+        ...(prev || {}), 
+        id: targetId,
+        username: clean, 
+        username_changed_at: new Date().toISOString() 
+      }));
+      setUsernameInput(clean);
+      setUsernameSuccess(true);
+      setIsEditingUsername(false);
+      setTimeout(() => setUsernameSuccess(false), 3000);
+    } catch (err: any) {
+      setUsernameError(err?.message || 'Failed to save username.');
+    } finally {
+      setIsSavingUsername(false);
+    }
   };
 
   const handleUnblock = (id: string) => {
