@@ -1,11 +1,23 @@
-import { createClient } from '@/utils/supabase/client';
-import UpgradeModal from '@/components/UpgradeModal';
-﻿'use client';
+'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, ArrowRight, ShieldCheck, Bell, Smartphone, UserX, ShieldAlert } , User, Lock, CheckCircle2, Clock } from 'lucide-react';
+import {
+  ArrowLeft,
+  ArrowRight,
+  ShieldCheck,
+  Bell,
+  Smartphone,
+  UserX,
+  ShieldAlert,
+  User,
+  Lock,
+  CheckCircle2,
+  Clock
+} from 'lucide-react';
+import { createClient } from '@/utils/supabase/client';
+import UpgradeModal from '@/components/UpgradeModal';
 
 export default function SettingsPage() {
   const router = useRouter();
