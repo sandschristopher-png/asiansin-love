@@ -218,7 +218,7 @@ export default function ChatConversationPage({ params }: { params: { id: string 
       if (isUuid) {
         const { data: prof } = await supabase
           .from('profiles')
-          .select('display_name, full_name, avatar_url, reputation_score')
+          .select('username, display_name, full_name, avatar_url, reputation_score')
           .eq('id', targetId)
           .maybeSingle();
 
@@ -233,8 +233,8 @@ export default function ChatConversationPage({ params }: { params: { id: string 
         if (user) {
           const { data: remoteMsgs } = await supabase
             .from('messages')
-            .select('id, sender_id, recipient_id, content, created_at')
-            .or(`and(sender_id.eq.${user.id},recipient_id.eq.${targetId}),and(sender_id.eq.${targetId},recipient_id.eq.${user.id})`)
+            .select('id, sender_id, receiver_id, content, created_at')
+            .or(`and(sender_id.eq.${user.id},receiver_id.eq.${targetId}),and(sender_id.eq.${targetId},receiver_id.eq.${user.id})`)
             .order('created_at', { ascending: true });
 
           if (remoteMsgs && remoteMsgs.length > 0) {
@@ -319,7 +319,7 @@ export default function ChatConversationPage({ params }: { params: { id: string 
       try {
         await supabase.from('messages').insert({
           sender_id: currentUserId,
-          recipient_id: targetId,
+          receiver_id: targetId,
           content: sanitized,
         });
       } catch (err) {

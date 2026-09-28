@@ -314,7 +314,10 @@ function DiscoverContent() {
   const [profiles, setProfiles] = useState<ProfileItem[]>(SEED_PROFILES);
 
   const [searchQuery, setSearchQuery] = useState(() => searchParams.get('q') || '');
-  const [selectedCountry, setSelectedCountry] = useState(() => searchParams.get('country') || 'All');
+  const [selectedCountry, setSelectedCountry] = useState(() => {
+    const c = searchParams.get('country');
+    return c && c.toLowerCase() !== 'all' ? c : 'All';
+  });
   const [selectedGender, setSelectedGender] = useState<'All' | 'woman' | 'man' | 'trans'>(() => {
     const g = searchParams.get('gender');
     return g && ['All', 'woman', 'man', 'trans'].includes(g) ? (g as any) : 'All';
@@ -347,7 +350,7 @@ function DiscoverContent() {
     const params = new URLSearchParams();
 
     if (searchQuery.trim()) params.set('q', searchQuery.trim());
-    if (selectedCountry !== 'All') params.set('country', selectedCountry);
+    if (selectedCountry.toLowerCase() !== 'all') params.set('country', selectedCountry);
     if (selectedGender !== 'All') params.set('gender', selectedGender);
     if (minAge > 18) params.set('minAge', minAge.toString());
     if (maxAge < 65) params.set('maxAge', maxAge.toString());
@@ -380,7 +383,7 @@ function DiscoverContent() {
 
   const resetFilters = () => {
     setSelectedGender('All');
-    setSelectedCountry('all');
+    setSelectedCountry('All');
     setSearchQuery('');
     setMinAge(18);
     setMaxAge(65);
@@ -567,7 +570,7 @@ function DiscoverContent() {
   })];
 
   const filteredProfiles = profiles.filter((profile) => {
-    const matchesCountry = selectedCountry === 'All' || profile.country.toLowerCase() === selectedCountry.toLowerCase();
+    const matchesCountry = selectedCountry.toLowerCase() === 'all' || profile.country.toLowerCase() === selectedCountry.toLowerCase();
     const matchesGender = selectedGender === 'All' || profile.gender.toLowerCase() === selectedGender.toLowerCase();
     const matchesQuery = 
       profile.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
