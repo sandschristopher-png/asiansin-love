@@ -44,15 +44,30 @@ export default function SettingsPage() {
   
   React.useEffect(() => {
     async function loadProfile() {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
-      const { data } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle();
+      const { data: { session } } = await supabase.auth.getSession();
+      const userId = session?.user?.id;
+      if (!userId) return;
+      const { data } = await supabase.from('profiles').select('*').eq('id', userId).maybeSingle();
       if (data) {
         setProfile(data);
         setUsernameInput(data.username || '');
       }
     }
     loadProfile();
+
+    const { data: authListener } = supabase.auth.onAuthStateChange(async (_event, session) => {
+      if (session?.user?.id) {
+        const { data } = await supabase.from('profiles').select('*').eq('id', session.user.id).maybeSingle();
+        if (data) {
+          setProfile(data);
+          setUsernameInput(data.username || '');
+        }
+      }
+    });
+
+    return () => {
+      authListener?.subscription?.unsubscribe();
+    };
   }, [supabase]);
 
   // Determine user category
@@ -187,7 +202,18 @@ export default function SettingsPage() {
         </div>
 
         {/* Segmented Tab Bar */}
-        <div className="p-1.5 rounded-2xl bg-[#261F33] border border-[#9A79BA]/35 grid grid-cols-4 gap-1 shadow-lg">
+          <div className="p-1.5 rounded-2xl bg-[#261F33] border border-[#9A79BA]/35 grid grid-cols-5 gap-1 shadow-lg">
+            <button
+              type="button"
+              onClick={() => setActiveTab('account')}
+              className={`py-2 rounded-xl text-xs font-bold transition ${
+                activeTab === 'account'
+                  ? 'bg-[#653C87] text-white shadow-md shadow-[#653C87]/40'
+                  : 'text-[#9A79BA] hover:text-white hover:bg-[#181222]/50'
+              }`}
+            >
+              Account
+            </button>
           <button
             type="button"
             onClick={() => setActiveTab('app')}
