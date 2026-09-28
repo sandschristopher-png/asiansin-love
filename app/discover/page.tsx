@@ -246,10 +246,15 @@ function DiscoverCardPhotoCarousel({
           </div>
         ) : recentlyActive ? (
           <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-[9px] font-medium text-amber-300">
-            <span className="w-1.5 h-1.5 rounded-full border border-amber-400" />
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
             <span className="hidden sm:inline">Recent</span>
           </div>
-        ) : null}
+        ) : (
+          <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-[9px] font-medium text-zinc-400">
+            <span className="w-1.5 h-1.5 rounded-full bg-zinc-500" />
+            <span className="hidden sm:inline">Offline</span>
+          </div>
+        )}
       </div>
 
       {/* Story Progress Dashes */}
