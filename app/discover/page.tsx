@@ -578,9 +578,9 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
 
   const isUserInSEA = useMemo(() => {
     // If auth user location/country is in SEA, show suitor list first
-    if (!currentAuthUser) return false;
+    return false;
     return false; // Default to SEA list, dynamically switches if user country is SEA
-  }, [currentAuthUser]);
+  }, []);
 
   const sortedCountries = useMemo(() => {
     const list = isUserInSEA ? SUITOR_COUNTRIES : SEA_COUNTRIES;
