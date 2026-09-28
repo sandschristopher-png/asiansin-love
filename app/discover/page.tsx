@@ -487,8 +487,10 @@ function DiscoverContent() {
 
   useEffect(() => {
     async function loadLiveProfiles() {
+        let currentAuthUser: any = null;
         try {
           const { data: { user } } = await supabase.auth.getUser();
+          currentAuthUser = user;
           if (user) {
             const { data: userProfile } = await supabase
               .from('profiles')
@@ -542,7 +544,7 @@ function DiscoverContent() {
 
           // Avoid duplicating profiles that exist in remote DB
           const liveIds = new Set(liveItems.map(p => p.id));
-          const filteredLiveItems = user ? liveItems.filter(p => p.id !== user.id) : liveItems;
+          const filteredLiveItems = currentAuthUser ? liveItems.filter(p => p.id !== currentAuthUser.id) : liveItems;
           const uniqueSeeds = SEED_PROFILES.filter(p => !liveIds.has(p.id));
           setProfiles([...filteredLiveItems, ...uniqueSeeds]);
         }
