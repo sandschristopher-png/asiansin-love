@@ -1,6 +1,5 @@
-import MobileNav from '@/components/MobileNav';
 import { Plus_Jakarta_Sans } from 'next/font/google';
-﻿import InAppToast from '@/components/InAppToast';
+import InAppToast from '@/components/InAppToast';
 import './globals.css';
 import { Navbar } from '@/components/Navbar';
 import { BottomNav } from '@/components/BottomNav';
@@ -25,13 +24,13 @@ export const metadata: Metadata = {
   description: 'Verified, intentional relationships connecting Southeast Asian singles with international gentlemen.',
 };
 
-
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
   weight: ['400', '500', '600', '700'],
   variable: '--font-sans',
   display: 'swap',
 });
+
 export default function RootLayout({
   children,
 }: {
@@ -48,7 +47,6 @@ export default function RootLayout({
             <main className="w-full">
               <InAppToast />
               {children}
-        <MobileNav />
             </main>
             <BottomNav />
           </OnboardingGuard>
