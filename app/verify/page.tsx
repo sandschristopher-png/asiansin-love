@@ -54,10 +54,16 @@ export default function VerifyPage() {
         throw uploadError;
       }
 
-      // Get public URL for Telegram bot
-      const { data: { publicUrl } } = supabase.storage
+      // Generate a private, 48-hour signed URL for Telegram alert
+      const { data: signedData, error: signedErr } = await supabase.storage
         .from('verifications')
-        .getPublicUrl(filePath);
+        .createSignedUrl(filePath, 172800); // 48 hours
+
+      if (signedErr || !signedData?.signedUrl) {
+        throw new Error(signedErr?.message || 'Failed to generate secure verification link');
+      }
+
+      const selfieUrl = signedData.signedUrl;
 
       // Submit to backend to trigger Telegram alert and pending status
       const response = await fetch('/api/verify/submit', {
@@ -66,7 +72,7 @@ export default function VerifyPage() {
         body: JSON.stringify({
           userId: user.id,
           poseRequested: '3 fingers (index, middle, ring)',
-          selfieUrl: publicUrl,
+          selfieUrl,
         }),
       });
 
