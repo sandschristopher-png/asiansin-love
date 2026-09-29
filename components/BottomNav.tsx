@@ -193,5 +193,10 @@ export function BottomNav() {
           </div>
         </nav>
       </div>
-
-      
+      <AccountBottomSheet
+        isOpen={accountSheetOpen}
+        onClose={() => setAccountSheetOpen(false)}
+      />
+    </>
+  );
+}
