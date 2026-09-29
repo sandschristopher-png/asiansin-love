@@ -9,7 +9,7 @@ import {
   XCircle, 
   UserCircle2, 
   Search, 
-  MessageSquare, 
+  MessageCircle, 
   Layers, 
   User 
 } from 'lucide-react';
@@ -150,7 +150,7 @@ export function BottomNav() {
               }`}
             >
               <div className={`p-1.5 rounded-full transition-all duration-200 relative ${isActive('/messages') ? 'bg-[#653C87] text-[#E6D7FA] shadow-md shadow-[#653C87]/40' : ''}`}>
-                <MessageSquare className="w-5 h-5" strokeWidth={isActive('/messages') ? 2.5 : 2} />
+                <MessageCircle className="w-5 h-5" strokeWidth={isActive('/messages') ? 2.5 : 2} />
               </div>
               <span className={`text-[10px] tracking-wide font-extrabold mt-0.5 ${isActive('/messages') ? 'text-[#E6D7FA]' : 'text-[#9A79BA]'}`}>
                 Inbox
