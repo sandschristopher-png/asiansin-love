@@ -116,6 +116,19 @@ export function Navbar() {
         
         {/* Left: Notifications Bell (Authenticated Only) */}
         <div className="flex items-center min-w-[36px] sm:ml-auto">
+          {user && (
+            <Link
+              href="/messages"
+              className="relative h-9 w-9 rounded-2xl bg-[#241E2F] border border-[#7D7E92]/30 flex items-center justify-center text-[#B6AEC7] hover:text-white hover:border-[#9A79BA]/50 transition-colors shadow-sm"
+              title="Messages"
+            >
+              <MessageCircle className="w-4 h-4" />
+              {hasUnread && (
+                <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-emerald-400 ring-2 ring-[#241E2F]" />
+              )}
+            </Link>
+          )}
+
           {user ? (
             <Link
               href="/notifications"
