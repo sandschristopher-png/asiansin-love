@@ -520,6 +520,18 @@ function DiscoverContent() {
           console.warn('Could not load user location for distance calculation', e);
         }
       try {
+        // Fetch mutual blocks
+        const { data: blocks } = await supabase
+          .from('user_blocks')
+          .select('blocker_id, blocked_id')
+          .or(`blocker_id.eq.${user.id},blocked_id.eq.${user.id}`);
+
+        const blockedUserIds = new Set<string>();
+        blocks?.forEach((b: any) => {
+          if (b.blocker_id === user.id) blockedUserIds.add(b.blocked_id);
+          if (b.blocked_id === user.id) blockedUserIds.add(b.blocker_id);
+        });
+
         const { data, error } = await supabase
           .from('profiles')
           .select('id, display_name, full_name, username, age, gender, city, country, avatar_url, photos, is_verified, reputation_score, last_active, intent:relationship_intent, occupation, bio, latitude, longitude, location_source')
@@ -532,7 +544,9 @@ function DiscoverContent() {
         }
 
         if (data && data.length > 0) {
-          const liveItems: ProfileItem[] = data.map((row: any) => {
+          const liveItems: ProfileItem[] = data
+            .filter((row: any) => !blockedUserIds.has(row.id))
+            .map((row: any) => {
             const countryVal = row.country || 'Philippines';
             const cityVal = row.city ? `${row.city}, ${countryVal}` : countryVal;
             const normGender = (row.gender?.toLowerCase() || 'woman') as 'woman' | 'man' | 'trans';

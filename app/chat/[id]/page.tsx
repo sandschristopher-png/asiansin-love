@@ -194,6 +194,7 @@ export default function ChatConversationPage({ params }: { params: { id: string 
   const [showRepModal, setShowRepModal] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
   const [actionDoneMsg, setActionDoneMsg] = useState<string | null>(null);
+  const [resolvedTargetUuid, setResolvedTargetUuid] = useState<string | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -215,112 +216,11 @@ export default function ChatConversationPage({ params }: { params: { id: string 
         setCurrentUserId(user.id);
       }
 
-      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(targetId);
-      if (isUuid) {
-        const { data: prof } = await supabase
-          .from('profiles')
-          .select('username, display_name, full_name, avatar_url, reputation_score')
-          .eq('id', targetId)
-          .maybeSingle();
-
-        if (prof) {
-          setTargetInfo({
-            name: prof.display_name || prof.full_name || 'Member',
-            avatar: prof.avatar_url || '/jennalyn.png',
-            rep: prof.reputation_score || 98,
-          });
-        }
-
-        if (user) {
-          const { data: remoteMsgs } = await supabase
-            .from('messages')
-            .select('id, sender_id, receiver_id, content, created_at')
-            .or(`and(sender_id.eq.${user.id},receiver_id.eq.${targetId}),and(sender_id.eq.${targetId},receiver_id.eq.${user.id})`)
-            .order('created_at', { ascending: true });
-
-          if (remoteMsgs && remoteMsgs.length > 0) {
-            setMessages(remoteMsgs.map((m: any) => ({
-              id: m.id,
-              sender: m.sender_id === user.id ? 'me' : 'them',
-              text: m.content,
-              time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-            })));
-          }
-        }
-      }
-    }
-
-    initUserAndTarget();
-  }, [supabase, targetId]);
-
-  useEffect(() => {
-    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(targetId);
-    if (!isUuid || currentUserId === 'guest-user') return;
-
-    const channel = supabase
-      .channel(`chat_page_${targetId}_${currentUserId}`)
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'messages' },
-        (payload) => {
-          const newRow = payload.new as any;
-          const recId = newRow.recipient_id || newRow.receiver_id;
-          const isFromTarget = newRow.sender_id === targetId && recId === currentUserId;
-
-          if (isFromTarget) {
-            setMessages((prev) => {
-              if (prev.some((m) => m.id === newRow.id)) return prev;
-              return [
-                ...prev,
-                {
-                  id: newRow.id,
-                  sender: 'them',
-                  text: newRow.content,
-                  time: new Date(newRow.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                },
-              ];
-            });
-          }
-        }
-      )
-      .subscribe();
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [supabase, targetId, currentUserId]);
-
-  const handleSendMessage = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const clean = inputText.trim();
-    if (!clean || cooldownSeconds > 0) return;
-
-    const { sanitized, wasMasked } = sanitizeMessage(clean);
-    if (wasMasked) setShowSafetyNotice(true);
-
-    const tempId = `temp-${Date.now()}`;
-    const myNewMsg: ChatMessage = {
-      id: tempId,
-      sender: 'me',
-      text: sanitized,
-      time: 'Just now',
-    };
-
-    setMessages((prev) => [...prev, myNewMsg]);
-    setInputText('');
-
-    const nextCount = sentCount + 1;
-    setSentCount(nextCount);
-    if (nextCount >= 5) {
-      setCooldownSeconds(300);
-    }
-
-    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(targetId);
-    if (isUuid && currentUserId !== 'guest-user') {
+      if (resolvedTargetUuid && currentUserId !== 'guest-user') {
       try {
         await supabase.from('messages').insert({
           sender_id: currentUserId,
-          receiver_id: targetId,
+          receiver_id: resolvedTargetUuid,
           content: sanitized,
         });
       } catch (err) {

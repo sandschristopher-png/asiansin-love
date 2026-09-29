@@ -64,6 +64,18 @@ export default function MessagesInboxPage() {
         return;
       }
 
+      // Fetch mutual blocks
+      const { data: blocks } = await supabase
+        .from('user_blocks')
+        .select('blocker_id, blocked_id')
+        .or(`blocker_id.eq.${user.id},blocked_id.eq.${user.id}`);
+
+      const blockedUserIds = new Set<string>();
+      blocks?.forEach((b: any) => {
+        if (b.blocker_id === user.id) blockedUserIds.add(b.blocked_id);
+        if (b.blocked_id === user.id) blockedUserIds.add(b.blocker_id);
+      });
+
       // Fetch user messages
       const { data: dbMessages } = await supabase
         .from('messages')
@@ -78,7 +90,7 @@ export default function MessagesInboxPage() {
 
         for (const msg of dbMessages) {
           const partnerId = msg.sender_id === user.id ? msg.receiver_id : msg.sender_id;
-          if (!partnerId) continue;
+          if (!partnerId || blockedUserIds.has(partnerId)) continue;
 
           if (!partnersMap.has(partnerId)) {
             partnersMap.set(partnerId, {
