@@ -40,7 +40,6 @@ const DEFAULT_DEMO_CONVERSATIONS: ConversationPreview[] = [
   {
     partnerId: 'mai',
     partnerName: 'Mai',
-    partnerId: 'mai',
     partnerAvatar: '/nguyen%20thi%20mai.png',
     partnerCity: 'Da Nang, Vietnam',
     partnerReputation: 98,
