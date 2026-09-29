@@ -54,21 +54,25 @@ export default function VerifyPage() {
         throw uploadError;
       }
 
-      // Update profile record with verified status and trust boost for testing
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update({
-          is_verified: true,
-          verification_status: 'verified',
-          reputation_score: 100,
-          reputation_tier: 'Trusted',
-          verification_image_path: filePath,
-          verification_submitted_at: new Date().toISOString(),
-        })
-        .eq('id', user.id);
+      // Get public URL for Telegram bot
+      const { data: { publicUrl } } = supabase.storage
+        .from('verifications')
+        .getPublicUrl(filePath);
 
-      if (updateError) {
-        throw updateError;
+      // Submit to backend to trigger Telegram alert and pending status
+      const response = await fetch('/api/verify/submit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          userId: user.id,
+          poseRequested: '3 fingers (index, middle, ring)',
+          selfieUrl: publicUrl,
+        }),
+      });
+
+      if (!response.ok) {
+        const errData = await response.json();
+        throw new Error(errData.error || 'Failed to submit verification');
       }
 
       setSuccess(true);
