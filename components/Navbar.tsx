@@ -115,7 +115,7 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-4 h-16 relative flex items-center justify-between">
         
         {/* Left: Notifications Bell (Authenticated Only) */}
-        <div className="flex items-center min-w-[36px]">
+        <div className="flex items-center min-w-[36px] sm:ml-auto">
           {user ? (
             <Link
               href="/notifications"
@@ -133,7 +133,7 @@ export function Navbar() {
         </div>
 
         {/* Center: Brand Logo */}
-        <div className="absolute left-1/2 -translate-x-1/2 flex items-center justify-center">
+        <div className="absolute left-1/2 -translate-x-1/2 sm:static sm:translate-x-0 sm:order-first flex items-center justify-center">
           <Link href={user ? "/discover" : "/"} className="flex items-center active:scale-95 transition-transform">
             <img
               src="/ail-logo.png"
