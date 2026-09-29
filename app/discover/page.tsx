@@ -1,7 +1,7 @@
 'use client';
 
 import { getDistanceLabel } from '@/lib/location';
-ï»¿
+
 import React, { useState, useEffect, useMemo, useRef, Suspense } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
