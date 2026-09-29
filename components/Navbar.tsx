@@ -115,7 +115,7 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-4 h-16 relative flex items-center justify-between">
         
         {/* Left: Notifications Bell (Authenticated Only) */}
-        <div className="flex items-center min-w-[36px] sm:ml-auto">
+        <div className="flex items-center gap-2.5 min-w-[36px] sm:ml-auto">
           {user && (
             <Link
               href="/messages"
