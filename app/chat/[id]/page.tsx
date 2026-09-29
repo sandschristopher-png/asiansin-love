@@ -8,125 +8,6 @@ import UpgradeModal from '@/components/UpgradeModal';
 import ReputationModal from '@/components/ReputationModal';
 import { supabase } from '@/lib/supabaseClient';
 
-interface Persona {
-  name: string;
-  avatar: string;
-  location: string;
-  rep: number;
-  initialReply: string;
-  followups: string[];
-}
-
-const PLACEHOLDER_USERS: Record<string, Persona> = {
-  'jennalyn': {
-    name: 'Jennalyn',
-    avatar: '/jennalyn.png',
-    location: 'Cebu City, Philippines',
-    rep: 99,
-    initialReply: 'Hello po! Thank you for the message. Im just drinking coffee before my shift starts. How is your day there?',
-    followups: [
-      'Yes, hospitality work is tiring sometimes but i enjoy meeting polite guests. Are you having busy day today?',
-      'Aww thank you! My mother always told me to be honest and work hard. What kind of work do you do?',
-      'Cebu has nice beaches if you go south to Moalboal. Have you visited Philippines before?'
-    ]
-  },
-  'jhoanna': {
-    name: 'Jhoanna',
-    avatar: '/jhoanna.png',
-    location: 'Quezon City, Philippines',
-    rep: 98,
-    initialReply: 'Good day! Thanks for dropping by my profile. Glad to meet you. Where are you from po?',
-    followups: [
-      'Haha yes, traffic here in Manila is crazy every day! How is life over there?',
-      'I appreciate sincere people. Hard to find gentlemen online now. What made you message me?',
-      'Sounds nice! When I have day off, I usually just bake or watch movies with my sister.'
-    ]
-  },
-  'anong': {
-    name: 'Anong',
-    avatar: '/anong.png',
-    location: 'Chiang Mai, Thailand',
-    rep: 99,
-    initialReply: 'Sawasdee kha! Thank you for say hi to me. Today Chiang Mai is nice weather. Have you ever come to Thailand before?',
-    followups: [
-      'Chiang Mai is very calm not like Bangkok. Many mountains and fresh air. Do you like city or quiet place?',
-      'Thank you na ka. I try practice english every day so we can understand each other.',
-      'That is so kind of you! Sincerity is what I want most in life.'
-    ]
-  },
-  'ploy': {
-    name: 'Ploy',
-    avatar: '/ploy%20chaiyaphon.png',
-    location: 'Bangkok, Thailand',
-    rep: 97,
-    initialReply: 'Hey there! Thanks for reaching out. Always nice to chat with someone genuine. What kind of food do you like?',
-    followups: [
-      'Street food here is top tier, especially spicy papaya salad! Can you handle spicy food haha?',
-      'Freelance design keeps me busy but gives me freedom. What about you, what keeps you busy?',
-      'I like that you are straightforward. No time for mind games on here.'
-    ]
-  },
-  'suwannarat': {
-    name: 'Suwannarat',
-    avatar: '/suwannarat.png',
-    location: 'Khon Kaen, Thailand',
-    rep: 100,
-    initialReply: 'Sawasdee kha. Nice to meet you na ka. I hope you having good day. What are you looking for on here?',
-    followups: [
-      'Teaching small children takes patience, but I love them very much. Do you like kids?',
-      'Isan countryside is very simple. We grow our own herbs and cook together as family.',
-      'Thank you for your respect. Good values and loyalty are the most important things for a future husband.'
-    ]
-  },
-  'mai': {
-    name: 'Mai',
-    avatar: '/nguyen%20thi%20mai.png',
-    location: 'Da Nang, Vietnam',
-    rep: 98,
-    initialReply: 'Xin chao! Very happy to receive your message. Da Nang is windy tonight. How was your work today?',
-    followups: [
-      'My students were very energetic today haha. What time is it over where you are?',
-      'Walking by My Khe beach in the morning gives me peaceful energy. Do you like the ocean?',
-      'I am glad you are looking for serious relationship too. Life is better when shared with good person.'
-    ]
-  },
-  'linh-pham': {
-    name: 'Linh Pham',
-    avatar: '/pham.png',
-    location: 'Ho Chi Minh City, Vietnam',
-    rep: 96,
-    initialReply: 'Chao anh! Thank you for text me. Im just finishing my dinner here. What do you usually do on weekend?',
-    followups: [
-      'Saigon is fast and lively, lots of motorbikes! But at night I prefer quiet iced coffee.',
-      'I like a man who is honest and has clear goals. Talk is easy, action is what matters.',
-      'That sounds really interesting! Tell me more about your life.'
-    ]
-  },
-  'thu-trang': {
-    name: 'Thu Trang',
-    avatar: '/trang.png',
-    location: 'Hanoi, Vietnam',
-    rep: 99,
-    initialReply: 'Xin chao anh. Thank you for your nice message. It is rare to meet polite person online. What season you like most?',
-    followups: [
-      'Autumn in Hanoi is the most beautiful when the leaves turn and the air is cool. Have you visited Vietnam?',
-      'Working at the pharmacy teaches me to care for people carefully. Health and family come first.',
-      'Thank you anh. It is pleasant to have a gentle conversation with someone mature.'
-    ]
-  },
-  'khamla': {
-    name: 'Khamla',
-    avatar: '/khamla%20sithirath.png',
-    location: 'Vientiane, Laos',
-    rep: 98,
-    initialReply: 'Sabaidee! Very nice to see your message. Greetings from Laos. Do you know where Laos country is?',
-    followups: [
-      'Haha yes, many people donâ€™t know Laos, it is small and quiet next to Thailand and Vietnam.',
-      'We weave silk patterns by hand here. It takes weeks for one scarf. Patience is everything.',
-      'Thank you for being so polite to me. Please bear with my english, I try my best!'
-    ]
-  }
-};
 
 interface ChatMessage {
   id: string;
@@ -163,28 +44,15 @@ function sanitizeMessage(text: string): { sanitized: string; wasMasked: boolean 
 
 export default function ChatConversationPage({ params }: { params: { id: string } }) {
   const targetId = params.id;
-  const botPersona = PLACEHOLDER_USERS[targetId];
 
   const [currentUserId, setCurrentUserId] = useState<string>('guest-user');
   const [targetInfo, setTargetInfo] = useState({
-    name: botPersona?.name || 'Member',
-    avatar: botPersona?.avatar || '/jennalyn.png',
-    rep: botPersona?.rep || 98,
+    name: 'Member',
+    avatar: '/placeholder-avatar.svg',
+    rep: 98,
   });
 
-  const [messages, setMessages] = useState<ChatMessage[]>(() => {
-    if (botPersona) {
-      return [
-        {
-          id: 'welcome-bot-msg',
-          sender: 'them',
-          text: botPersona.initialReply,
-          time: 'Just now'
-        }
-      ];
-    }
-    return [];
-  });
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
 
   const [inputText, setInputText] = useState('');
   const [sentCount, setSentCount] = useState(0);
@@ -233,7 +101,7 @@ export default function ChatConversationPage({ params }: { params: { id: string 
         setResolvedTargetUuid(prof.id);
         setTargetInfo({
           name: prof.display_name || prof.full_name || prof.username || 'Member',
-          avatar: prof.avatar_url || '/jennalyn.png',
+          avatar: prof.avatar_url || '/placeholder-avatar.svg',
           rep: prof.reputation_score || 98,
         });
       } else if (isUuid) {
@@ -345,21 +213,6 @@ export default function ChatConversationPage({ params }: { params: { id: string 
       } catch (err) {
         console.error('Failed to save message to Supabase:', err);
       }
-    } else if (botPersona) {
-      setTimeout(() => {
-        const pool = botPersona.followups;
-        const randomAnswer = pool[Math.floor(Math.random() * pool.length)];
-
-        setMessages((prev) => [
-          ...prev,
-          {
-            id: `bot-reply-${Date.now()}`,
-            sender: 'them',
-            text: randomAnswer,
-            time: 'Just now',
-          },
-        ]);
-      }, 1600);
     }
   };
 
@@ -410,7 +263,7 @@ export default function ChatConversationPage({ params }: { params: { id: string 
     <main className="min-h-screen bg-[#130F18] text-[#E6D7FA] flex flex-col justify-between">
       <div className="sticky top-0 z-30 flex items-center justify-between px-4 py-3 bg-[#181222]/95 backdrop-blur-md border-b border-[#9A79BA]/30">
         <div className="flex items-center gap-3">
-          <Link href="/discover" className="text-[#9A79BA] hover:text-[#E6D7FA] transition">
+          <Link href="/messages" className="text-[#9A79BA] hover:text-[#E6D7FA] transition">
             <ArrowLeft className="w-5 h-5" />
           </Link>
           <div className="relative w-9 h-9 rounded-full overflow-hidden border border-[#9A79BA]/50">
