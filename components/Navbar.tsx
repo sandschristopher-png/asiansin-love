@@ -14,21 +14,51 @@ export function Navbar() {
   const [supabase] = useState(() => createClient());
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<{ username?: string; display_name?: string; avatar_url?: string } | null>(null);
+  const [hasUnread, setHasUnread] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    let channel: any = null;
+
+    async function checkUnread(userId: string) {
+      const { count } = await supabase
+        .from('notifications')
+        .select('*', { count: 'exact', head: true })
+        .eq('user_id', userId)
+        .eq('is_read', false);
+      setHasUnread((count ?? 0) > 0);
+    }
+
     async function loadUser() {
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
 
       if (user) {
+        checkUnread(user.id);
         const { data } = await supabase
           .from('profiles')
           .select('username, display_name, avatar_url')
           .eq('id', user.id)
           .single();
         if (data) setProfile(data);
+
+        // Realtime listener for incoming/read notifications
+        channel = supabase
+          .channel(`user-notifications-${user.id}`)
+          .on(
+            'postgres_changes',
+            {
+              event: '*',
+              schema: 'public',
+              table: 'notifications',
+              filter: `user_id=eq.${user.id}`,
+            },
+            () => {
+              checkUnread(user.id);
+            }
+          )
+          .subscribe();
       }
     }
     loadUser();
@@ -37,6 +67,7 @@ export function Navbar() {
       const currentUser = session?.user ?? null;
       setUser(currentUser);
       if (currentUser) {
+        checkUnread(currentUser.id);
         const { data } = await supabase
           .from('profiles')
           .select('username, display_name, avatar_url')
@@ -45,11 +76,13 @@ export function Navbar() {
         if (data) setProfile(data);
       } else {
         setProfile(null);
+        setHasUnread(false);
       }
     });
 
     return () => {
       subscription.unsubscribe();
+      if (channel) supabase.removeChannel(channel);
     };
   }, [supabase]);
 
@@ -69,6 +102,7 @@ export function Navbar() {
     await supabase.auth.signOut();
     setUser(null);
     setProfile(null);
+    setHasUnread(false);
     router.push('/login');
     router.refresh();
   };
@@ -86,10 +120,13 @@ export function Navbar() {
           {user ? (
             <Link
               href="/notifications"
-              className="h-9 w-9 rounded-2xl bg-[#241E2F] border border-[#7D7E92]/30 flex items-center justify-center text-[#B6AEC7] hover:text-white hover:border-[#9A79BA]/50 transition-colors shadow-sm"
+              className="relative h-9 w-9 rounded-2xl bg-[#241E2F] border border-[#7D7E92]/30 flex items-center justify-center text-[#B6AEC7] hover:text-white hover:border-[#9A79BA]/50 transition-colors shadow-sm"
               title="Notifications"
             >
               <Bell className="w-4 h-4" />
+              {hasUnread && (
+                <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-[#9A79BA] ring-2 ring-[#241E2F] shadow-sm shadow-[#9A79BA]/60" />
+              )}
             </Link>
           ) : (
             <div className="w-9 h-9" />

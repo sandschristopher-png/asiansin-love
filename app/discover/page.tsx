@@ -1,7 +1,7 @@
-'use client';
+﻿'use client';
 
 import { getDistanceLabel } from '@/lib/location';
-﻿
+ï»¿
 import React, { useState, useEffect, useMemo, useRef, Suspense } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -695,7 +695,7 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
         </div>
 
         {/* Discovery Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-5">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-5">
           {visibleProfiles.map((profile) => {
             const state = cardActions[profile.id];
             const isLiked = state === 'like';
@@ -749,7 +749,7 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
                             />
                             <span className="truncate">{profile.location}</span>
                             {isVerified && distance && (
-                              <span className="text-[10px] text-emerald-300 font-normal shrink-0">• {distance}</span>
+                              <span className="text-[10px] text-emerald-300 font-normal shrink-0">â€¢ {distance}</span>
                             )}
                           </p>
                         );
@@ -917,7 +917,7 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
             <div className="space-y-3">
               <div className="flex justify-between items-center text-xs font-semibold text-[#D5CEE5]">
                 <span>Age Range</span>
-                <span className="text-white font-mono">{minAge} � {maxAge} yrs</span>
+                <span className="text-white font-mono">{minAge} ï¿½ {maxAge} yrs</span>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -1032,3 +1032,4 @@ export default function DiscoverPage() {
     </Suspense>
   );
 }
+
