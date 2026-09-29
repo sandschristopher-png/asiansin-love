@@ -5,12 +5,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { 
   Heart as LucideHeart, 
-  ChevronRight, 
-  XCircle, 
-  UserCircle2, 
   Search, 
   MessageCircle, 
-  Layers, 
   User 
 } from 'lucide-react';
 import { AccountBottomSheet } from '@/components/AccountBottomSheet';
@@ -32,7 +28,7 @@ export function BottomNav() {
   const [user, setUser] = useState<any>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [accountSheetOpen, setAccountSheetOpen] = useState(false);
-  const [listsOpen, setListsOpen] = useState(false);
+  const [hasNotifications, setHasNotifications] = useState(false);
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
 
   const isActive = (path: string) => pathname === path;
@@ -48,6 +44,13 @@ export function BottomNav() {
           .eq('id', user.id)
           .single();
         setAvatarUrl(data?.avatar_url || user.user_metadata?.avatar_url || null);
+
+        const { count } = await supabase
+          .from('notifications')
+          .select('*', { count: 'exact', head: true })
+          .eq('user_id', user.id)
+          .eq('is_read', false);
+        setHasNotifications((count ?? 0) > 0);
       }
     }
     checkAuth();
@@ -107,12 +110,11 @@ export function BottomNav() {
         }`}
       >
         <nav className="pointer-events-auto bg-[#261F33]/95 backdrop-blur-xl border border-[#9A79BA]/35 rounded-[28px] px-3 py-1.5 shadow-2xl shadow-black/80 w-full max-w-sm transition-transform">
-          <div className="grid grid-cols-5 items-center">
+          <div className="grid grid-cols-4 items-center">
             
             {/* 1. DISCOVER */}
             <Link
               href="/discover"
-              onClick={() => setListsOpen(false)}
               className={`flex flex-col items-center justify-center py-1 transition-transform active:scale-[0.88] ${
                 isActive('/discover') ? 'text-[#E6D7FA]' : 'text-[#9A79BA] hover:text-[#E6D7FA]'
               }`}
@@ -128,7 +130,6 @@ export function BottomNav() {
             {/* 2. SAVED */}
             <Link
               href="/favorites"
-              onClick={() => setListsOpen(false)}
               className={`flex flex-col items-center justify-center py-1 transition-transform active:scale-[0.88] ${
                 isActive('/favorites') ? 'text-[#E6D7FA]' : 'text-[#9A79BA] hover:text-[#E6D7FA]'
               }`}
@@ -144,7 +145,6 @@ export function BottomNav() {
             {/* 3. INBOX */}
             <Link
               href="/messages"
-              onClick={() => setListsOpen(false)}
               className={`flex flex-col items-center justify-center py-1 transition-transform active:scale-[0.88] ${
                 isActive('/messages') ? 'text-[#E6D7FA]' : 'text-[#9A79BA] hover:text-[#E6D7FA]'
               }`}
@@ -157,29 +157,12 @@ export function BottomNav() {
               </span>
             </Link>
 
-            {/* 4. LISTS */}
-            <button
-              type="button"
-              onClick={() => setListsOpen(!listsOpen)}
-              className={`flex flex-col items-center justify-center py-1 transition-transform active:scale-[0.88] ${
-                listsOpen ? 'text-[#E6D7FA]' : 'text-[#9A79BA] hover:text-[#E6D7FA]'
-              }`}
-            >
-              <div className={`p-1.5 rounded-full transition-all duration-200 ${listsOpen ? 'bg-[#653C87] text-[#E6D7FA] shadow-md shadow-[#653C87]/40' : ''}`}>
-                <Layers className="w-5 h-5" strokeWidth={2} />
-              </div>
-              <span className={`text-[10px] tracking-wide font-extrabold mt-0.5 ${listsOpen ? 'text-[#E6D7FA]' : 'text-[#9A79BA]'}`}>
-                Lists
-              </span>
-            </button>
+            
 
             {/* 5. YOU */}
             <button
               type="button"
-              onClick={() => {
-                setListsOpen(false);
-                setAccountSheetOpen(true);
-              }}
+              onClick={() => setAccountSheetOpen(true)}
               className={`flex flex-col items-center justify-center py-1 transition-transform active:scale-[0.88] ${
                 accountSheetOpen ? 'text-[#E6D7FA]' : 'text-[#9A79BA] hover:text-[#E6D7FA]'
               }`}
@@ -196,9 +179,11 @@ export function BottomNav() {
                     <User className="w-4 h-4 text-[#C9A4E8]" />
                   )}
                 </div>
-                <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#653C87] border border-[#261F33] flex items-center justify-center">
-                  <span className="w-1 h-1 rounded-full bg-[#E6D7FA]" />
-                </span>
+                {hasNotifications && (
+                  <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#9A79BA] border border-[#261F33] flex items-center justify-center">
+                    <span className="w-1 h-1 rounded-full bg-[#E6D7FA]" />
+                  </span>
+                )}
               </div>
               <span className={`text-[10px] tracking-wide font-extrabold mt-0.5 ${accountSheetOpen ? 'text-[#E6D7FA]' : 'text-[#9A79BA]'}`}>
                 You
@@ -209,60 +194,4 @@ export function BottomNav() {
         </nav>
       </div>
 
-      {/* Lists Dropdown */}
-      {listsOpen && (
-        <div 
-          className="sm:hidden fixed inset-0 z-[60] bg-black/70 backdrop-blur-md flex items-end justify-center pb-20 px-4 animate-in fade-in duration-200" 
-          onClick={() => setListsOpen(false)}
-        >
-          <div 
-            className="w-full max-w-sm rounded-3xl bg-[#261F33] border border-[#9A79BA]/35 p-4 space-y-2 shadow-2xl animate-in slide-in-from-bottom-6 duration-200" 
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="text-xs font-bold uppercase tracking-wider text-[#9A79BA] px-2 pb-1">
-              Member Lists
-            </div>
-            
-            <Link
-              href="/favorites"
-              onClick={() => setListsOpen(false)}
-              className="flex items-center justify-between p-3 rounded-2xl bg-[#130F18] hover:bg-[#653C87]/30 text-white font-semibold text-sm transition-colors"
-            >
-              <span className="flex items-center gap-2.5">
-                <LucideHeart className="w-4 h-4 text-[#9A79BA]" /> <span>My Favorites</span>
-              </span>
-              <ChevronRight className="w-4 h-4 text-[#9A79BA]" />
-            </Link>
-
-            <Link
-              href="/discover?filter=passed"
-              onClick={() => setListsOpen(false)}
-              className="flex items-center justify-between p-3 rounded-2xl bg-[#130F18] hover:bg-[#653C87]/30 text-white font-semibold text-sm transition-colors"
-            >
-              <span className="flex items-center gap-2.5">
-                <XCircle className="w-4 h-4 text-[#9A79BA]" /> <span>Disliked / Passed</span>
-              </span>
-              <ChevronRight className="w-4 h-4 text-[#9A79BA]" />
-            </Link>
-
-            <Link
-              href="/profile"
-              onClick={() => setListsOpen(false)}
-              className="flex items-center justify-between p-3 rounded-2xl bg-[#130F18] hover:bg-[#653C87]/30 text-white font-semibold text-sm transition-colors"
-            >
-              <span className="flex items-center gap-2.5">
-                <UserCircle2 className="w-4 h-4 text-[#9A79BA]" /> <span>My Bio</span>
-              </span>
-              <ChevronRight className="w-4 h-4 text-[#9A79BA]" />
-            </Link>
-          </div>
-        </div>
-      )}
-
-      <AccountBottomSheet
-        isOpen={accountSheetOpen}
-        onClose={() => setAccountSheetOpen(false)}
-      />
-    </>
-  );
-}
+      

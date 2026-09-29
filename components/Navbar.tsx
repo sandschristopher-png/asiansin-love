@@ -114,8 +114,8 @@ export function Navbar() {
       <div className="absolute top-full left-0 right-0 h-10 bg-gradient-to-b from-[#17131F] to-transparent pointer-events-none" />
       <div className="max-w-7xl mx-auto px-4 h-16 relative flex items-center justify-between">
         
-        {/* Left: Notifications Bell (Authenticated Only) */}
-        <div className="flex items-center gap-2.5 min-w-[36px] sm:ml-auto">
+        {/* Left: Notifications Bell (Authenticated Only, Desktop Only) */}
+        <div className="hidden sm:flex items-center gap-2.5 min-w-[36px] sm:ml-auto">
           {user && (
             <Link
               href="/messages"
@@ -156,8 +156,8 @@ export function Navbar() {
           </Link>
         </div>
 
-        {/* Right: User Pill Dropdown or Sign In */}
-        <div className="flex items-center">
+        {/* Right: User Pill Dropdown or Sign In (Desktop Only) */}
+        <div className="hidden sm:flex items-center">
           {user ? (
             <div className="relative" ref={menuRef}>
               <button
