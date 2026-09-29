@@ -4,7 +4,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { 
-  User, Settings, LogOut, Bell, Heart, 
+  User, Settings, LogOut, Bell, Heart, MessageCircle, 
   ChevronDown 
 } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
