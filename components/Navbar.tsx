@@ -170,16 +170,14 @@ export function Navbar() {
                 }`}
                 title="Account Menu"
               >
-                <div className="w-7 h-7 rounded-full overflow-hidden bg-[#653C87]/40 border border-[#9A79BA]/40 flex items-center justify-center shrink-0">
+                <div className="w-8 h-8 rounded-full overflow-hidden bg-[#653C87]/40 border border-[#9A79BA]/40 flex items-center justify-center shrink-0">
                   {avatarUrl ? (
                     <img src={avatarUrl} alt={displayName} className="w-full h-full object-cover" />
                   ) : (
                     <User className="w-4 h-4 text-[#C9A4E8]" />
                   )}
                 </div>
-                <span className="hidden sm:inline-block text-xs font-semibold max-w-[100px] truncate">
-                  {displayName}
-                </span>
+                
                 <ChevronDown className={`w-3.5 h-3.5 text-[#9A79BA] transition-transform duration-200 ${menuOpen ? 'rotate-180' : ''}`} />
               </button>
 
@@ -187,7 +185,7 @@ export function Navbar() {
                 <div className="absolute right-0 mt-2.5 w-56 rounded-2xl bg-[#1D1726] border border-[#7D7E92]/30 shadow-2xl py-2 z-50 text-xs backdrop-blur-xl animate-in fade-in zoom-in-95 duration-100">
                   <div className="px-4 py-2 border-b border-[#241E2F]">
                     <p className="text-[10px] uppercase font-bold tracking-wider text-[#7D7E92]">Signed In As</p>
-                    <p className="text-xs font-semibold text-[#E6D7FA] truncate mt-0.5">{user.email}</p>
+                    <p className="text-xs font-semibold text-[#E6D7FA] truncate mt-0.5">@{profile?.username || displayName}</p>
                   </div>
 
                   <div className="py-1">
