@@ -110,8 +110,8 @@ export function Navbar() {
   const avatarUrl = profile?.avatar_url || user?.user_metadata?.avatar_url || null;
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-[#17131F] relative">
-      <div className="absolute top-full left-0 right-0 h-10 bg-gradient-to-b from-[#17131F] to-transparent pointer-events-none" />
+    <header className="sticky top-0 z-40 w-full bg-[#17131F] border-b border-[#2D243A]/40 relative">
+      <div className="absolute top-full left-0 right-0 h-6 bg-gradient-to-b from-[#17131F]/80 to-transparent pointer-events-none" />
       <div className="max-w-7xl mx-auto px-4 h-16 relative flex items-center justify-between">
         
         {/* Left: Notifications Bell (Authenticated Only, Desktop Only) */}
