@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { getDistanceLabel } from '@/lib/location';
 ï»¿
