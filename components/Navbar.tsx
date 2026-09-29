@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
@@ -7,7 +7,7 @@ import {
   User, Settings, LogOut, Bell, Heart, 
   ChevronDown 
 } from 'lucide-react';
-import { createClient } from '@/lib/supabase/client';
+import { supabase } from '@/lib/supabaseClient';
 
 export function Navbar() {
   const router = useRouter();

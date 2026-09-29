@@ -10,7 +10,7 @@ import { ChevronLeft, ChevronRight, Search, Heart, X as XIcon, Star, MessageCirc
   MapPin, ShieldCheck, CheckCircle, SlidersHorizontal, 
   RotateCcw, Loader2, Check } from 'lucide-react';
 import { Footer } from '@/components/Footer';
-import { createClient } from '@/lib/supabase/client';
+import { supabase } from '@/lib/supabaseClient';
 import { ActionType, getLocalCardActions, persistCardAction } from '@/lib/interactions';
 
 const PRIORITY_ORDER = ['Philippines', 'Thailand', 'Vietnam', 'Laos', 'Cambodia', 'Indonesia'];
@@ -314,7 +314,6 @@ function DiscoverCardPhotoCarousel({
 
 function DiscoverContent() {
   const searchParams = useSearchParams();
-  const [supabase] = useState(() => createClient());
   const [currentUserCoords, setCurrentUserCoords] = useState<{ lat: number; lon: number } | null>(null);
   const [profiles, setProfiles] = useState<ProfileItem[]>(SEED_PROFILES);
 
@@ -749,7 +748,7 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
                             />
                             <span className="truncate">{profile.location}</span>
                             {isVerified && distance && (
-                              <span className="text-[10px] text-emerald-300 font-normal shrink-0">â€¢ {distance}</span>
+                              <span className="text-[10px] text-emerald-300 font-normal shrink-0">Ã¢â‚¬Â¢ {distance}</span>
                             )}
                           </p>
                         );
@@ -917,7 +916,7 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
             <div className="space-y-3">
               <div className="flex justify-between items-center text-xs font-semibold text-[#D5CEE5]">
                 <span>Age Range</span>
-                <span className="text-white font-mono">{minAge} ï¿½ {maxAge} yrs</span>
+                <span className="text-white font-mono">{minAge} Ã¯Â¿Â½ {maxAge} yrs</span>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>

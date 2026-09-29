@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -14,7 +14,7 @@ import {
   User 
 } from 'lucide-react';
 import { AccountBottomSheet } from '@/components/AccountBottomSheet';
-import { createClient } from '@/lib/supabase/client';
+import { supabase } from '@/lib/supabaseClient';
 
 const PUBLIC_ROUTES = [
   '/',
@@ -29,7 +29,6 @@ const PUBLIC_ROUTES = [
 
 export function BottomNav() {
   const pathname = usePathname();
-  const [supabase] = useState(() => createClient());
   const [user, setUser] = useState<any>(null);
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [accountSheetOpen, setAccountSheetOpen] = useState(false);

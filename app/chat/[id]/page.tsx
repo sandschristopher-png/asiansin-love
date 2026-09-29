@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
@@ -6,7 +6,7 @@ import Image from 'next/image';
 import { ArrowLeft, Send, Zap, ShieldAlert, CheckCheck, Clock } from 'lucide-react';
 import UpgradeModal from '@/components/UpgradeModal';
 import ReputationModal from '@/components/ReputationModal';
-import { createClient } from '@/lib/supabase/client';
+import { supabase } from '@/lib/supabaseClient';
 
 interface Persona {
   name: string;
@@ -121,7 +121,7 @@ const PLACEHOLDER_USERS: Record<string, Persona> = {
     rep: 98,
     initialReply: 'Sabaidee! Very nice to see your message. Greetings from Laos. Do you know where Laos country is?',
     followups: [
-      'Haha yes, many people don’t know Laos, it is small and quiet next to Thailand and Vietnam.',
+      'Haha yes, many people donâ€™t know Laos, it is small and quiet next to Thailand and Vietnam.',
       'We weave silk patterns by hand here. It takes weeks for one scarf. Patience is everything.',
       'Thank you for being so polite to me. Please bear with my english, I try my best!'
     ]
@@ -162,7 +162,6 @@ function sanitizeMessage(text: string): { sanitized: string; wasMasked: boolean 
 }
 
 export default function ChatConversationPage({ params }: { params: { id: string } }) {
-  const [supabase] = useState(() => createClient());
   const targetId = params.id;
   const botPersona = PLACEHOLDER_USERS[targetId];
 
@@ -426,7 +425,7 @@ export default function ChatConversationPage({ params }: { params: { id: string 
               className="w-full flex items-center justify-center gap-2 py-2.5 rounded-full bg-[#653C87] hover:bg-[#7D49A8] text-white font-bold text-xs shadow-lg shadow-[#653C87]/40 active:scale-95 transition"
             >
               <Zap className="w-4 h-4 fill-current" />
-              Skip the Wait — Unlock Instant Chat
+              Skip the Wait â€” Unlock Instant Chat
             </button>
           </div>
         ) : (
