@@ -16,9 +16,41 @@ interface ConversationPreview {
   unreadCount: number;
 }
 
+const DEFAULT_DEMO_CONVERSATIONS: ConversationPreview[] = [
+  {
+    partnerId: 'jennalyn',
+    partnerName: 'jennalyn',
+    partnerAvatar: '/jennalyn.png',
+    partnerCity: 'Cebu City, Philippines',
+    partnerReputation: 99,
+    lastMessage: 'Hello po! Thank you for the message. Im just drinking coffee before my shift starts.',
+    lastMessageAt: 'Just now',
+    unreadCount: 1,
+  },
+  {
+    partnerId: 'anong',
+    partnerName: 'Anong',
+    partnerAvatar: '/anong.png',
+    partnerCity: 'Chiang Mai, Thailand',
+    partnerReputation: 99,
+    lastMessage: 'Sawasdee kha! Thank you for say hi to me.',
+    lastMessageAt: 'Yesterday',
+    unreadCount: 0,
+  },
+  {
+    partnerId: 'mai',
+    partnerName: 'Mai',
+    partnerAvatar: '/nguyen%20thi%20mai.png',
+    partnerCity: 'Da Nang, Vietnam',
+    partnerReputation: 98,
+    lastMessage: 'Xin chao! Very happy to receive your message.',
+    lastMessageAt: 'Tuesday',
+    unreadCount: 0,
+  },
+];
 
 export default function MessagesInboxPage() {
-  const [conversations, setConversations] = useState<ConversationPreview[]>([]);
+  const [conversations, setConversations] = useState<ConversationPreview[]>(DEFAULT_DEMO_CONVERSATIONS);
   const [filter, setFilter] = useState<'all' | 'unread'>('all');
   const [loading, setLoading] = useState(true);
 
@@ -89,7 +121,7 @@ export default function MessagesInboxPage() {
           return {
             partnerId: pid,
             partnerName: prof?.display_name || prof?.full_name || prof?.username || 'Member',
-            partnerAvatar: prof?.avatar_url || undefined,
+            partnerAvatar: prof?.avatar_url || '/jennalyn.png',
             partnerCity: prof?.city || undefined,
             partnerReputation: prof?.reputation_score || 98,
             lastMessage: (meta.lastMsg.sender_id === user.id ? 'You: ' : '') + meta.lastMsg.content,
@@ -99,7 +131,7 @@ export default function MessagesInboxPage() {
         });
 
         // Prepend real conversations before demo contacts
-        setConversations(realConversations);
+        setConversations([...realConversations, ...DEFAULT_DEMO_CONVERSATIONS]);
       }
       setLoading(false);
 
@@ -176,7 +208,7 @@ export default function MessagesInboxPage() {
       <div className="space-y-2.5">
         {displayedConversations.length === 0 ? (
           <div className="text-center py-12 rounded-2xl bg-[#261F33]/50 border border-[#9A79BA]/20 text-[#C9A4E8] text-sm">
-            {filter === 'unread' ? 'No unread messages.' : 'No conversations yet. Explore matches to start chatting!'}
+            No unread messages.
           </div>
         ) : (
           displayedConversations.map((c) => (

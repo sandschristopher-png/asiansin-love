@@ -315,7 +315,7 @@ function DiscoverCardPhotoCarousel({
 function DiscoverContent() {
   const searchParams = useSearchParams();
   const [currentUserCoords, setCurrentUserCoords] = useState<{ lat: number; lon: number } | null>(null);
-  const [profiles, setProfiles] = useState<ProfileItem[]>(SEED_PROFILES);
+  const [profiles, setProfiles] = useState<ProfileItem[]>([]);
 
   const [searchQuery, setSearchQuery] = useState(() => searchParams.get('q') || '');
   const [selectedCountry, setSelectedCountry] = useState(() => {
@@ -577,7 +577,7 @@ function DiscoverContent() {
           const liveIds = new Set(liveItems.map(p => p.id));
           const filteredLiveItems = currentAuthUser ? liveItems.filter(p => p.id !== currentAuthUser.id) : liveItems;
           const uniqueSeeds = SEED_PROFILES.filter(p => !liveIds.has(p.id));
-          setProfiles([...filteredLiveItems, ...uniqueSeeds]);
+          setProfiles(filteredLiveItems);
         }
       } catch (err) {
         console.error('Failed to load discovery profiles:', err);
@@ -622,7 +622,7 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
 
   return (
     <div className="min-h-screen flex flex-col bg-[#130f18] text-[#E6D7FA]">
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 pt-8 pb-16 space-y-6">
+      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 pt-8 pb-32 space-y-6">
         
         {/* Top Control Bar */}
         <div className="space-y-2.5 sm:space-y-0">
@@ -741,14 +741,10 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
                   <Link href={'/profile/' + profile.id} className="block group-hover:opacity-95">
                     <div className="flex items-center justify-between gap-1.5 mb-1">
                       <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-1.5 truncate">
-                        {profile.name}, {profile.age}
+                        {profile.name}{profile.age ? `, ${profile.age}` : ''}
                         {profile.verified && <CheckCircle className="w-3.5 h-3.5 text-[#9A79BA] shrink-0" />}
                       </h3>
-                      {profile.intent && (
-                        <span className="shrink-0 px-2 py-0.5 rounded-full bg-[#653C87]/40 border border-[#9A79BA]/40 text-[10px] font-semibold text-[#E6D7FA]">
-                          {profile.intent}
-                        </span>
-                      )}
+                      
                     </div>
                     {(() => {
                         const isVerified = profile.location_source === 'gps_verified';
@@ -764,7 +760,7 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
                             />
                             <span className="truncate">{profile.location}</span>
                             {isVerified && distance && (
-                              <span className="text-[10px] text-emerald-300 font-normal shrink-0">Ã¢â‚¬Â¢ {distance}</span>
+                              <span className="text-[10px] text-emerald-300 font-normal shrink-0">• {distance}</span>
                             )}
                           </p>
                         );
@@ -932,7 +928,7 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
             <div className="space-y-3">
               <div className="flex justify-between items-center text-xs font-semibold text-[#D5CEE5]">
                 <span>Age Range</span>
-                <span className="text-white font-mono">{minAge} Ã¯Â¿Â½ {maxAge} yrs</span>
+                <span className="text-white font-mono">{minAge} • {maxAge} yrs</span>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
