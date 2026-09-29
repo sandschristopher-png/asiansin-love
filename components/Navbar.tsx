@@ -11,7 +11,6 @@ import { supabase } from '@/lib/supabaseClient';
 
 export function Navbar() {
   const router = useRouter();
-  const [supabase] = useState(() => createClient());
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<{ username?: string; display_name?: string; avatar_url?: string } | null>(null);
   const [hasUnread, setHasUnread] = useState(false);
