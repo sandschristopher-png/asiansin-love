@@ -204,7 +204,7 @@ export default function ChatConversationPage({ params }: { params: { id: string 
   useEffect(() => {
     if (cooldownSeconds <= 0) return;
     const interval = setInterval(() => {
-      setCooldownSeconds(prev => (prev > 0 ? prev - 1 : 0));
+      setCooldownSeconds((prev) => (prev > 0 ? prev - 1 : 0));
     }, 1000);
     return () => clearInterval(interval);
   }, [cooldownSeconds]);
@@ -216,7 +216,126 @@ export default function ChatConversationPage({ params }: { params: { id: string 
         setCurrentUserId(user.id);
       }
 
-      if (resolvedTargetUuid && currentUserId !== 'guest-user') {
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(targetId);
+      let targetUuid = isUuid ? targetId : null;
+
+      let query = supabase.from('profiles').select('id, username, display_name, full_name, avatar_url, reputation_score');
+      if (isUuid) {
+        query = query.eq('id', targetId);
+      } else {
+        query = query.ilike('username', targetId);
+      }
+
+      const { data: prof } = await query.maybeSingle();
+
+      if (prof) {
+        targetUuid = prof.id;
+        setResolvedTargetUuid(prof.id);
+        setTargetInfo({
+          name: prof.display_name || prof.full_name || prof.username || 'Member',
+          avatar: prof.avatar_url || '/jennalyn.png',
+          rep: prof.reputation_score || 98,
+        });
+      } else if (isUuid) {
+        setResolvedTargetUuid(targetId);
+      }
+
+      if (user && targetUuid) {
+        const { data: existingBlock } = await supabase
+          .from('user_blocks')
+          .select('id')
+          .or(`and(blocker_id.eq.${user.id},blocked_id.eq.${targetUuid}),and(blocker_id.eq.${targetUuid},blocked_id.eq.${user.id})`)
+          .maybeSingle();
+
+        if (existingBlock) {
+          window.location.href = '/messages';
+          return;
+        }
+
+        const { data: remoteMsgs } = await supabase
+          .from('messages')
+          .select('id, sender_id, receiver_id, content, created_at')
+          .or(`and(sender_id.eq.${user.id},receiver_id.eq.${targetUuid}),and(sender_id.eq.${targetUuid},receiver_id.eq.${user.id})`)
+          .order('created_at', { ascending: true });
+
+        if (remoteMsgs && remoteMsgs.length > 0) {
+          setMessages(
+            remoteMsgs.map((m) => ({
+              id: m.id,
+              sender: m.sender_id === user.id ? 'me' : 'them',
+              text: m.content,
+              time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            }))
+          );
+        }
+      }
+    }
+
+    initUserAndTarget();
+  }, [supabase, targetId]);
+
+  useEffect(() => {
+    if (!resolvedTargetUuid || currentUserId === 'guest-user') return;
+
+    const channel = supabase
+      .channel(`chat_page_${resolvedTargetUuid}_${currentUserId}`)
+      .on(
+        'postgres_changes',
+        { event: 'INSERT', schema: 'public', table: 'messages' },
+        (payload) => {
+          const newRow = payload.new;
+          const recId = newRow.recipient_id || newRow.receiver_id;
+          const isFromTarget = newRow.sender_id === resolvedTargetUuid && recId === currentUserId;
+
+          if (isFromTarget) {
+            setMessages((prev) => {
+              if (prev.some((m) => m.id === newRow.id)) return prev;
+              return [
+                ...prev,
+                {
+                  id: newRow.id,
+                  sender: 'them',
+                  text: newRow.content,
+                  time: new Date(newRow.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                },
+              ];
+            });
+          }
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [supabase, resolvedTargetUuid, currentUserId]);
+
+  const handleSendMessage = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const clean = inputText.trim();
+    if (!clean || cooldownSeconds > 0) return;
+
+    const { sanitized, wasMasked } = sanitizeMessage(clean);
+    if (wasMasked) setShowSafetyNotice(true);
+
+    const tempId = `temp-${Date.now()}`;
+    const myNewMsg: ChatMessage = {
+      id: tempId,
+      sender: 'me',
+      text: sanitized,
+      time: 'Just now',
+    };
+
+    setMessages((prev) => [...prev, myNewMsg]);
+    setInputText('');
+
+    const nextCount = sentCount + 1;
+    setSentCount(nextCount);
+    if (nextCount >= 5) {
+      setCooldownSeconds(300);
+    }
+
+    if (resolvedTargetUuid && currentUserId !== 'guest-user') {
       try {
         await supabase.from('messages').insert({
           sender_id: currentUserId,
@@ -241,6 +360,43 @@ export default function ChatConversationPage({ params }: { params: { id: string 
           },
         ]);
       }, 1600);
+    }
+  };
+
+  const handleBlockUser = async () => {
+    const target = resolvedTargetUuid || targetId;
+    try {
+      await fetch('/api/users/block', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ blockedId: target }),
+      });
+      setActionDoneMsg('User has been blocked. Messages from this user are now muted.');
+      setTimeout(() => {
+        setShowReportModal(false);
+        setActionDoneMsg(null);
+        window.location.href = '/messages';
+      }, 1500);
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  const handleReportUser = async (reason: string = 'Violation / Scammer') => {
+    const target = resolvedTargetUuid || targetId;
+    try {
+      await fetch('/api/users/report', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reportedId: target, reason }),
+      });
+      setActionDoneMsg('Report submitted. Thank you for keeping Asians in Love safe.');
+      setTimeout(() => {
+        setShowReportModal(false);
+        setActionDoneMsg(null);
+      }, 1500);
+    } catch (err) {
+      console.error(err);
     }
   };
 

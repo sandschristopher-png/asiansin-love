@@ -521,16 +521,18 @@ function DiscoverContent() {
         }
       try {
         // Fetch mutual blocks
-        const { data: blocks } = await supabase
-          .from('user_blocks')
-          .select('blocker_id, blocked_id')
-          .or(`blocker_id.eq.${user.id},blocked_id.eq.${user.id}`);
-
+        const { data: { user: authUser } } = await supabase.auth.getUser();
         const blockedUserIds = new Set<string>();
-        blocks?.forEach((b: any) => {
-          if (b.blocker_id === user.id) blockedUserIds.add(b.blocked_id);
-          if (b.blocked_id === user.id) blockedUserIds.add(b.blocker_id);
-        });
+        if (authUser) {
+          const { data: blocks } = await supabase
+            .from('user_blocks')
+            .select('blocker_id, blocked_id')
+            .or(`blocker_id.eq.${authUser.id},blocked_id.eq.${authUser.id}`);
+          blocks?.forEach((b: any) => {
+            if (b.blocker_id === authUser.id) blockedUserIds.add(b.blocked_id);
+            if (b.blocked_id === authUser.id) blockedUserIds.add(b.blocker_id);
+          });
+        }
 
         const { data, error } = await supabase
           .from('profiles')
