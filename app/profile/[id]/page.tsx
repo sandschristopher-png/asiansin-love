@@ -10,7 +10,6 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 import { Footer } from '@/components/Footer';
-import { SEED_PROFILES } from '@/app/discover/page';
 
 export default function PublicProfilePage() {
   const params = useParams();
@@ -30,93 +29,33 @@ export default function PublicProfilePage() {
     async function loadData() {
       if (!id) return;
 
-      // 1. Check SEED_PROFILES first (jennalyn, jhoanna, etc.)
-      const foundSeed = SEED_PROFILES.find((p) => p.id === id);
-      if (foundSeed) {
-        setProfile({
-          id: foundSeed.id,
-          name: foundSeed.name,
-          username: foundSeed.id,
-          age: foundSeed.age,
-          gender: foundSeed.gender,
-          location: foundSeed.location,
-          country: foundSeed.country,
-          bio: foundSeed.bio || 'Looking for an honest, serious partner to build a life with.',
-          looking_for: 'A sincere, patient gentleman who values family, communicates openly, and is ready for intentional courtship.',
-          occupation: foundSeed.occupation || 'Professional',
-          intentions: foundSeed.intent || 'Marriage & Family',
-          religion: 'Christian',
-          marital_status: 'Never Married',
-          has_kids: 'No',
-          wants_kids: 'Yes',
-          relocation: 'Open to Relocation',
-          languages: foundSeed.country === 'Philippines' ? 'English, Tagalog, Bisaya' : 'English, Thai',
-          height: `5'3" (160 cm)`,
-          drinking: 'Socially',
-          smoking: 'Non-smoker',
-          avatar_url: foundSeed.avatarUrl,
-          photos: Array.isArray(foundSeed.photos) && foundSeed.photos.length > 0 ? foundSeed.photos : (foundSeed.avatarUrl ? [foundSeed.avatarUrl] : []),
-          rep_score: foundSeed.repScore || 98,
-          is_verified: foundSeed.verified,
-          online: foundSeed.online
-        });
-        setLoading(false);
-        return;
-      }
+      try {
+        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
+        let query = supabase.from('profiles').select('*');
 
-      // 2. Check legacy dummy profiles
-      if (id.startsWith('dummy-')) {
-        const dummyProfiles: Record<string, any> = {
-          'dummy-1': {
-            name: 'Camille',
-            username: 'camille',
-            age: 26,
-            location: 'Makati, Philippines',
-            bio: 'Working in corporate Makati on weekdays, spending time with church and cooking adobo for my nieces on weekends. Not here for games or flings�seeking a God-fearing, mature gentleman ready for something real.',
-            looking_for: 'A sincere, patient, and grounded partner who values family, communicates openly, and is ready for an intentional cross-border commitment.',
-            occupation: 'Customer Support Lead',
-            intentions: 'Marriage & Kids',
-            religion: 'Catholic',
-            marital_status: 'Never Married',
-            has_kids: 'No',
-            wants_kids: 'Yes',
-            relocation: 'Can Relocate',
-            languages: 'English, Tagalog',
-            height: `5'3" (160 cm)`,
-            drinking: 'Socially',
-            smoking: 'No',
-            avatar_url: '/jennalyn.png',
-            photos: ['/jennalyn.png'],
-            rep_score: 100,
-            online: true
-          }
-        };
-
-        setProfile(dummyProfiles[id] || dummyProfiles['dummy-1']);
-        setLoading(false);
-        return;
-      }
-
-      // 3. Database lookup for UUIDs
-      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
-      if (isUuid) {
-        try {
-          const { data, error } = await supabase
-            .from('profiles')
-            .select('*')
-            .eq('id', id)
-            .maybeSingle();
-
-          if (error) throw error;
-          if (data) {
-            setProfile(data);
-          }
-        } catch (err) {
-          console.error('Failed to load profile:', err);
-        } finally {
-          setLoading(false);
+        if (isUuid) {
+          query = query.eq('id', id);
+        } else {
+          query = query.ilike('username', id);
         }
-      } else {
+
+        const { data, error } = await query.maybeSingle();
+        if (error) throw error;
+
+        if (data) {
+          setProfile({
+            ...data,
+            name: data.display_name || data.full_name || data.username || 'Member',
+            avatar_url: data.avatar_url || '/placeholder-avatar.svg',
+            photos: Array.isArray(data.photos) && data.photos.length > 0 
+              ? data.photos 
+              : [data.avatar_url || '/placeholder-avatar.svg'],
+            rep_score: data.reputation_score || 98,
+          });
+        }
+      } catch (err) {
+        console.error('Failed to load profile:', err);
+      } finally {
         setLoading(false);
       }
     }
@@ -126,17 +65,9 @@ export default function PublicProfilePage() {
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!message.trim()) return;
-
-    setSending(true);
-    setTimeout(() => {
-      setSending(false);
-      setSentSuccess(true);
-      setMessage('');
-      setTimeout(() => setSentSuccess(false), 3000);
-    }, 600);
+    if (!profile?.id) return;
+    router.push(`/chat/${profile.id}`);
   };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-[#130F18] flex items-center justify-center text-[#E6D7FA] text-sm">
