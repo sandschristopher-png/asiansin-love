@@ -50,7 +50,7 @@ export function ProfileActions({ targetUserId, targetUserName, currentUserId, is
       router.push('/login?mode=signup')
       return
     }
-    router.push(`/messages?user=${targetUserId}`)
+    router.push(`/chat/${targetUserId}`)
   }
 
   const submitReport = async (e: React.FormEvent) => {
