@@ -13,6 +13,8 @@ import { Footer } from '@/components/Footer';
 import { supabase } from '@/lib/supabaseClient';
 import { ActionType, getLocalCardActions, persistCardAction } from '@/lib/interactions';
 
+const TARGET_COUNTRIES = ['All', 'Philippines', 'Thailand', 'Vietnam', 'Indonesia', 'Malaysia', 'Singapore', 'Cambodia', 'Laos'];
+
 const PRIORITY_ORDER = ['Philippines', 'Thailand', 'Vietnam', 'Laos', 'Cambodia', 'Indonesia'];
 
 const RELATIONSHIP_INTENTS = [
@@ -97,29 +99,20 @@ function DiscoverCardPhotoCarousel({
 
       {/* Top Badges */}
       <div className="absolute top-2.5 inset-x-2.5 flex items-center justify-between z-20 pointer-events-none">
-        {/* Subtle Rep Score */}
-        {repScore ? (
-          <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/40 backdrop-blur-md border border-white/15 text-[10px] font-semibold text-emerald-300">
-            <ShieldCheck className="w-3 h-3 text-emerald-400 shrink-0" />
-            <span>{repScore}%</span>
-          </div>
-        ) : <div />}
+        {/* Rep Score Badge on Upper Left */}
+        <div className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-black/45 backdrop-blur-md border border-white/20 text-[10px] font-semibold text-emerald-300 shadow-xs">
+          <ShieldCheck className="w-3 h-3 text-emerald-400 shrink-0" />
+          <span>{repScore || 100}%</span>
+        </div>
 
-        {/* Dynamic Online Indicator (No dark Offline pill) */}
-        {online ? (
-          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-black/40 backdrop-blur-md border border-white/15 text-[10px] font-medium text-white shadow-xs">
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-            </span>
-            <span className="text-[10px] text-emerald-300 font-medium">Online</span>
-          </div>
-        ) : recentlyActive ? (
-          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-black/40 backdrop-blur-md border border-white/15 text-[10px] font-medium text-amber-200 shadow-xs">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-            <span className="text-[10px] text-amber-200">Recent</span>
-          </div>
-        ) : null}
+        {/* Pulsing Online Status on Upper Right */}
+        <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-black/45 backdrop-blur-md border border-white/20 text-[10px] font-medium text-white shadow-xs">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+          </span>
+          <span className="text-[10px] text-emerald-300 font-medium">Online</span>
+        </div>
       </div>
 
       {/* Story Progress Dashes */}
@@ -486,68 +479,58 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
 
   return (
     <div className="min-h-screen flex flex-col bg-[#FAFAFD] text-[#1C1924]">
-      <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 pt-8 pb-32 space-y-6">
+      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-6 pb-28 md:pb-20 space-y-5">
         
         {/* Top Control Bar */}
-        <div className="space-y-2.5 sm:space-y-0">
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 sm:gap-3">
-            
-            <div className="flex items-center gap-2 flex-1">
-              <div className="relative flex-1">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A8A2AB] pointer-events-none" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Find someone in Manila, Bangkok, or Cebu..."
-                  className="w-full bg-white border border-[#DDD7E5] rounded-full pl-11 pr-4 py-2.5 text-xs sm:text-sm text-[#1C1924] placeholder-[#8C849B] focus:outline-none focus:border-[#9a8cc3] focus:ring-1 focus:ring-[#9a8cc3] transition"
-                />
-              </div>
-
-              <button
-                type="button"
-                onClick={() => setFiltersOpen(true)}
-                className="relative sm:hidden flex items-center justify-center p-2.5 rounded-full bg-white border border-[#DDD7E5] text-[#524B5E] active:bg-[#F3EFFC] transition shrink-0"
-                aria-label="Open Filters"
-              >
-                <SlidersHorizontal className="w-4 h-4 text-[#b2a4d7]" />
-                {activeFiltersCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#6555b8] text-white text-[9px] font-bold rounded-full flex items-center justify-center border-2 border-white">
-                    {activeFiltersCount}
-                  </span>
-                )}
-              </button>
-            </div>
-
-            <div className="hidden sm:flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setFiltersOpen(true)}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-white border border-[#DDD7E5] text-xs font-semibold text-[#1C1924] hover:border-[#9a8cc3]/60 hover:text-white transition"
-              >
-                <SlidersHorizontal className="w-3.5 h-3.5 text-[#b2a4d7]" />
-                <span>Filters</span>
-                {activeFiltersCount > 0 && (
-                  <span className="px-1.5 py-0.2 bg-[#6555b8] text-white text-[10px] rounded-full font-bold ml-0.5">
-                    {activeFiltersCount}
-                  </span>
-                )}
-              </button>
-            </div>
+        <section aria-label="Search and Filters" className="w-full space-y-4">
+          {/* Integrated Search Bar with Embedded Filter Button */}
+          <div className="w-full bg-white border border-[#DDD7E5] hover:border-[#6555b8]/50 focus-within:border-[#6555b8] focus-within:ring-2 focus-within:ring-[#6555b8]/15 rounded-full shadow-xs transition-all flex items-center pl-4 pr-1.5 py-1.5 sm:py-2">
+            <Search className="w-5 h-5 text-[#8C849B] shrink-0 pointer-events-none" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Find someone in Manila, Bangkok, or Cebu..."
+              className="w-full bg-transparent px-3 text-sm sm:text-base text-[#1C1924] placeholder-[#8C849B] focus:outline-none min-w-0"
+            />
+            {/* Embedded Filter Trigger on Far Right */}
+            <div className="h-6 w-[1px] bg-[#DDD7E5] shrink-0 mx-1.5" />
+            <button
+              type="button"
+              onClick={() => setFiltersOpen(true)}
+              aria-label="Open Filters"
+              className="flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-semibold text-[#524B5E] hover:text-[#1C1924] hover:bg-[#F3EFFC] transition shrink-0"
+            >
+              <SlidersHorizontal className="w-4 h-4 text-[#6555b8]" />
+              <span className="font-semibold">Filters</span>
+              {activeFiltersCount > 0 && (
+                <span className="w-4.5 h-4.5 bg-[#6555b8] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                  {activeFiltersCount}
+                </span>
+              )}
+            </button>
           </div>
 
-          {/* Quick Filter Horizontal Scrollbar */}
-          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 pt-2 sm:pt-2.5 scrollbar-none no-scrollbar">
-            <div className="flex items-center bg-white p-0.5 rounded-full border border-[#DDD7E5] shrink-0 mr-1.5">
-              {(['All', 'woman', 'trans', 'man']).map((gender) => {
-                const label = gender === 'All' ? 'All' : gender === 'woman' ? 'Women' : gender === 'trans' ? 'Trans' : 'Men';
+          {/* Unified Filter Pills: Scaled & Flush Left */}
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar w-full py-0.5">
+            {/* Gender Filters */}
+            <div className="flex items-center gap-1 p-1 bg-white border border-[#DDD7E5] rounded-full shadow-xs shrink-0">
+              {['all', 'women', 'trans', 'men'].map((gender) => {
+                const label = gender === 'all' ? 'All' : gender === 'women' ? 'Women' : gender === 'trans' ? 'Trans' : 'Men';
                 const active = selectedGender === gender;
                 return (
                   <button
                     key={gender}
                     type="button"
-                    onClick={() => { userSelectedGenderManually.current = true; setSelectedGender(gender as any); }}
-                    className={'px-3 py-1 text-[11px] font-medium rounded-full transition-all ' + (active ? 'bg-[#6555b8] text-white shadow-sm' : 'text-[#D5CEE5] hover:text-white')}
+                    onClick={() => {
+                      userSelectedGenderManually.current = true;
+                      setSelectedGender(gender as any);
+                    }}
+                    className={'px-4 py-1.5 text-xs sm:text-sm font-semibold rounded-full transition-all shrink-0 ' + (
+                      active
+                        ? 'bg-[#6555b8] text-white shadow-xs'
+                        : 'text-[#6C637B] hover:text-[#1C1924] hover:bg-[#F3EFFC]'
+                    )}
                   >
                     {label}
                   </button>
@@ -555,137 +538,130 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
               })}
             </div>
 
-            <div className="h-4 w-[1px] bg-[#7D7E92]/30 shrink-0 mx-0.5" />
+            {/* Subtle Vertical Divider */}
+            <div className="h-6 w-[1px] bg-[#D5CEE5] shrink-0 mx-1" />
 
-            {sortedCountries.map((c) => {
-              const active = selectedCountry.toLowerCase() === c.toLowerCase();
-              return (
-                <button
-                  key={c}
-                  type="button"
-                  onClick={() => setSelectedCountry(c)}
-                  className={'px-3.5 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all shrink-0 border ' + (active ? 'bg-[#6555b8] text-white border-[#9a8cc3] shadow-sm' : 'bg-white text-[#D5CEE5] border-[#7D7E92]/25 hover:border-[#9a8cc3]/40 hover:text-white')}
-                >
-                  {c}
-                </button>
-              );
-            })}
+            {/* Country Filters */}
+            <div className="flex items-center gap-1 p-1 bg-white border border-[#DDD7E5] rounded-full shadow-xs shrink-0">
+              {TARGET_COUNTRIES.map((c) => {
+                const active = selectedCountry === c;
+                return (
+                  <button
+                    key={c}
+                    type="button"
+                    onClick={() => setSelectedCountry(c)}
+                    className={'px-4 py-1.5 text-xs sm:text-sm font-semibold rounded-full transition-all shrink-0 ' + (
+                      active
+                        ? 'bg-[#6555b8] text-white shadow-xs'
+                        : 'text-[#6C637B] hover:text-[#1C1924] hover:bg-[#F3EFFC]'
+                    )}
+                  >
+                    {c}
+                  </button>
+                );
+              })}
+            </div>
           </div>
-        </div>
+        </section>
 
         {/* Discovery Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-5">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3.5 sm:gap-4 lg:gap-5 w-full">
           {visibleProfiles.map((profile) => {
             const state = cardActions[profile.id];
             const isLiked = state === 'like';
-            const isStarred = state === 'star';
 
             return (
               <div
                 key={profile.id}
-                className={'group relative rounded-2xl overflow-hidden bg-white border border-[#DDD7E5]/70 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-[#6555b8]/15 flex flex-col justify-between ' + (
-                  isLiked
-                    ? 'border-rose-500/60 shadow-[0_0_20px_rgba(244,63,94,0.18)]'
-                    : isStarred
-                    ? 'border-amber-400/60 shadow-[0_0_20px_rgba(251,191,36,0.18)]'
-                    : 'border-[#7D7E92]/25 hover:border-[#9a8cc3]/50'
-                )}
+                className="group relative rounded-2xl sm:rounded-3xl overflow-hidden bg-white border border-[#E5E1EC] hover:border-[#6555b8]/35 shadow-xs hover:shadow-lg transition-all duration-200 flex flex-col justify-between"
               >
-                <DiscoverCardPhotoCarousel
-                  profileId={profile.id}
-                  photos={profile.photos}
-                  avatarUrl={profile.avatarUrl}
-                  name={profile.name}
-                  repScore={profile.repScore}
-                  online={profile.online}
-                  recentlyActive={profile.recentlyActive}
-                />
+                {/* Photo Carousel Container */}
+                <div className="relative w-full aspect-[4/5] overflow-hidden bg-[#F2EEF7]">
+                  <DiscoverCardPhotoCarousel
+                    profileId={profile.id}
+                    photos={profile.photos}
+                    avatarUrl={profile.avatarUrl}
+                    name={profile.name}
+                    repScore={profile.repScore}
+                    online={profile.online}
+                    recentlyActive={profile.recentlyActive}
+                  />
 
-                <div className="p-3 sm:p-3.5 space-y-2 bg-[#F2EEF7]">
-                  <Link href={'/profile/' + profile.id} className="block group-hover:opacity-95">
-                    <div className="flex items-center justify-between gap-1.5 mb-1">
-                      <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-1.5 truncate">
-                        {profile.name}{profile.age ? `, ${profile.age}` : ''}
-                        {profile.verified && <CheckCircle className="w-3.5 h-3.5 text-[#9a8cc3] shrink-0" />}
-                      </h3>
-                      
-                    </div>
-                    {(() => {
-                        const isVerified = profile.location_source === 'gps_verified';
-                        const distance = currentUserCoords
-                          ? getDistanceLabel(currentUserCoords.lat, currentUserCoords.lon, profile.latitude, profile.longitude)
-                          : null;
-                        return (
-                          <p className="text-[11px] sm:text-xs font-medium text-[#1C1924]/80 flex items-center gap-1.5 truncate mt-0.5">
-                            <MapPin
-                              className={`w-3 h-3 shrink-0 ${
-                                isVerified ? 'text-emerald-400' : 'text-[#9a8cc3]'
-                              }`}
-                            />
-                            <span className="truncate">{profile.location}</span>
-                            {isVerified && distance && (
-                              <span className="text-[10px] text-emerald-300 font-normal shrink-0">â€¢ {distance}</span>
-                            )}
-                          </p>
-                        );
-                      })()}
-                  </Link>
+                  {/* Contrast Gradient for Controls */}
+                  <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/65 via-black/25 to-transparent pointer-events-none" />
 
-                  <div className="flex items-center justify-between pt-2 border-t border-[#7D7E92]/20">
-                    <button 
+                  {/* Pairs-Style Action Buttons: Pass (X) & Heart (Like) */}
+                  <div className="absolute bottom-3 inset-x-3 flex items-center justify-between z-20 pointer-events-auto">
+                    <button
                       type="button"
                       aria-label="Pass"
-                      onClick={() => triggerAction(profile.id, 'pass', profile.name)}
-                      className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border transition-all duration-150 active:scale-90 bg-white border-[#DDD7E5] text-[#1C1924]/70 hover:text-white hover:border-zinc-500 hover:bg-zinc-800/80"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        triggerAction(profile.id, 'pass', profile.name);
+                      }}
+                      className="w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center bg-black/45 hover:bg-black/65 text-white backdrop-blur-md border border-white/25 shadow-md transition-all active:scale-90"
                     >
-                      <XIcon className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
+                      <XIcon className="w-5 h-5" />
                     </button>
 
-                    <button 
-                      type="button"
-                      aria-label="Favorite"
-                      onClick={() => triggerAction(profile.id, 'star')}
-                      className={'w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border transition-all duration-200 active:scale-95 ' + (
-                        isStarred 
-                          ? 'text-amber-400 bg-amber-400/20 border-amber-400/60 shadow-[0_0_12px_rgba(251,191,36,0.35)] scale-105' 
-                          : 'bg-white border-[#DDD7E5] text-[#1C1924]/70 hover:text-amber-400 hover:border-amber-400/40 hover:bg-white/80'
-                      )}
-                    >
-                      <Star className={'w-4 h-4 sm:w-4.5 sm:h-4.5 ' + (isStarred ? 'fill-amber-400' : '')} />
-                    </button>
-
-                    <Link 
-                      href={'/chat/' + profile.id}
-                      aria-label="Message" 
-                      className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center bg-white border border-[#DDD7E5] text-[#1C1924]/70 hover:text-[#b2a4d7] hover:border-[#9a8cc3]/60 hover:bg-[#6555b8]/30 transition active:scale-90"
-                    >
-                      <MessageCircle className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
-                    </Link>
-
-                    <button 
+                    <button
                       type="button"
                       aria-label="Like"
-                      onClick={() => triggerAction(profile.id, 'like')}
-                      className={'w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border transition-all duration-200 active:scale-95 ' + (
-                        isLiked 
-                          ? 'text-rose-400 bg-rose-500/20 border-rose-500/60 shadow-[0_0_12px_rgba(244,63,94,0.35)] scale-105' 
-                          : 'bg-white border-[#DDD7E5] text-[#1C1924]/70 hover:text-rose-400 hover:border-rose-400/40 hover:bg-white/80'
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        triggerAction(profile.id, 'like');
+                      }}
+                      className={'w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center border transition-all duration-200 active:scale-95 shadow-md backdrop-blur-md ' + (
+                        isLiked
+                          ? 'bg-rose-500 border-rose-400 text-white shadow-rose-500/40 scale-105'
+                          : 'bg-[#6555b8]/90 hover:bg-[#6555b8] border-white/30 text-white hover:shadow-[#6555b8]/40'
                       )}
                     >
-                      <Heart className={'w-4 h-4 sm:w-4.5 sm:h-4.5 ' + (isLiked ? 'fill-rose-500' : '')} />
+                      <Heart className={'w-5 h-5 ' + (isLiked ? 'fill-white' : '')} />
                     </button>
                   </div>
+                </div>
+
+                {/* High Contrast Clean Details */}
+                <div className="p-3.5 sm:p-4 bg-white">
+                  <Link href={'/profile/' + profile.id} className="block group-hover:opacity-95">
+                    <div className="flex items-center gap-1.5 mb-1">
+                      <h3 className="text-base sm:text-lg font-bold text-[#1C1924] flex items-center gap-1.5 truncate">
+                        {profile.name}{profile.age ? `, ${profile.age}` : ''}
+                        {profile.verified && <CheckCircle className="w-4 h-4 text-[#6555b8] shrink-0" />}
+                      </h3>
+                    </div>
+                    {(() => {
+                      const isVerified = profile.location_source === 'gps_verified';
+                      const distance = currentUserCoords
+                        ? getDistanceLabel(currentUserCoords.lat, currentUserCoords.lon, profile.latitude, profile.longitude)
+                        : null;
+                      return (
+                        <p className="text-xs sm:text-sm font-medium text-[#756D82] flex items-center gap-1.5 truncate">
+                          <MapPin
+                            className={'w-3.5 h-3.5 shrink-0 ' + (
+                              isVerified ? 'text-emerald-500' : 'text-[#8C849B]'
+                            )}
+                          />
+                          <span className="truncate">{profile.location ? profile.location.split(',')[0] : 'Unknown'}</span>
+                          {distance && (
+                            <span className="text-xs text-emerald-600 font-semibold shrink-0"> &middot; {distance}</span>
+                          )}
+                        </p>
+                      );
+                    })()}
+                  </Link>
                 </div>
               </div>
             );
           })}
         </div>
 
-
-        {/* Empty State */}
         {filteredProfiles.length === 0 && (
           <div className="py-16 text-center space-y-3">
-            <p className="text-sm text-[#D5CEE5]">No members match your current filter settings.</p>
+            <p className="text-sm text-[#524B5E]">No members match your current filter settings.</p>
             <button
               type="button"
               onClick={resetFilters}
@@ -738,7 +714,7 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
         {/* End of Feed State */}
         {!hasMore && filteredProfiles.length > 0 && (
           <div className="pt-8 pb-4 text-center">
-            <p className="text-xs text-[#A8A2AB]/70">
+            <p className="text-xs text-[#756D82]/70">
               You've viewed all {filteredProfiles.length} matches for your current criteria.
             </p>
           </div>
@@ -769,7 +745,7 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
         onClick={() => setFiltersOpen(false)}
       >
         <div 
-          className={'w-full max-w-sm sm:max-w-md bg-[#1B1524] h-full border-l border-[#DDD7E5] p-5 sm:p-6 overflow-y-auto flex flex-col justify-between transform transition-transform duration-300 ease-out ' + (
+          className={'w-full max-w-sm sm:max-w-md bg-white h-full border-l border-[#DDD7E5] p-5 sm:p-6 overflow-y-auto flex flex-col justify-between transform transition-transform duration-300 ease-out ' + (
             filtersOpen ? 'translate-x-0' : 'translate-x-full'
           )}
           onClick={(e) => e.stopPropagation()}
@@ -778,25 +754,25 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
             <div className="flex items-center justify-between pb-4 border-b border-[#7D7E92]/20">
               <div className="flex items-center gap-2">
                 <SlidersHorizontal className="w-5 h-5 text-[#b2a4d7]" />
-                <h2 className="text-base font-bold text-white">Refine Discover Feed</h2>
+                <h2 className="text-base font-bold text-[#1C1924]">Refine Discover Feed</h2>
               </div>
               <button 
                 type="button" 
                 onClick={() => setFiltersOpen(false)}
-                className="p-1.5 rounded-full text-[#D5CEE5] hover:text-white hover:bg-[#2B2338] transition"
+                className="p-1.5 rounded-full text-[#524B5E] hover:text-white hover:bg-[#E5E1EC] transition"
               >
                 <XIcon className="w-5 h-5" />
               </button>
             </div>
 
             <div className="space-y-3">
-              <div className="flex justify-between items-center text-xs font-semibold text-[#D5CEE5]">
+              <div className="flex justify-between items-center text-xs font-semibold text-[#524B5E]">
                 <span>Age Range</span>
-                <span className="text-white font-mono">{minAge} â€¢ {maxAge} yrs</span>
+                <span className="text-white font-mono">{minAge} · {maxAge} yrs</span>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[10px] text-[#A8A2AB] uppercase font-bold">Min Age</label>
+                  <label className="text-[10px] text-[#756D82] uppercase font-bold">Min Age</label>
                   <input 
                     type="range" 
                     min="18" 
@@ -807,7 +783,7 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] text-[#A8A2AB] uppercase font-bold">Max Age</label>
+                  <label className="text-[10px] text-[#756D82] uppercase font-bold">Max Age</label>
                   <input 
                     type="range" 
                     min="18" 
@@ -821,7 +797,7 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
             </div>
 
             <div className="space-y-2">
-              <span className="text-xs font-semibold text-[#D5CEE5]">Relationship Intent</span>
+              <span className="text-xs font-semibold text-[#524B5E]">Relationship Intent</span>
               <div className="grid grid-cols-2 gap-2">
                 {RELATIONSHIP_INTENTS.map((intent) => {
                   const active = selectedIntent === intent;
@@ -830,10 +806,10 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
                       key={intent}
                       type="button"
                       onClick={() => setSelectedIntent(intent)}
-                      className={'text-left text-xs px-3 py-2 rounded-xl border transition ' + (
+                      className={'text-left text-xs px-3.5 py-2.5 rounded-xl border font-medium transition-all ' + (
                         active
-                          ? 'bg-[#6555b8] border-[#9a8cc3] text-white font-semibold shadow-sm'
-                          : 'bg-[#221B2E] border-[#7D7E92]/20 text-[#D5CEE5] hover:border-[#9a8cc3]/40'
+                          ? 'bg-[#6555b8] border-[#6555b8] text-white shadow-xs'
+                          : 'bg-white border-[#E5E1EC] text-[#524B5E] hover:bg-[#F3EFFC] hover:text-[#1C1924] hover:border-[#D0C7DF]'
                       )}
                     >
                       {intent}
@@ -844,12 +820,12 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
             </div>
 
             <div className="flex items-center justify-between sm:justify-start sm:gap-3 pt-2 sm:pt-6">
-              <span className="text-xs font-semibold text-[#D5CEE5]">Verified Members Only</span>
+              <span className="text-xs font-semibold text-[#524B5E]">Verified Members Only</span>
               <button
                 type="button"
                 onClick={() => setVerifiedOnly(!verifiedOnly)}
                 className={'w-11 h-6 rounded-full transition-colors flex items-center px-0.5 ' + (
-                  verifiedOnly ? 'bg-[#6555b8]' : 'bg-[#2B2338]'
+                  verifiedOnly ? 'bg-[#6555b8]' : 'bg-[#E5E1EC]'
                 )}
               >
                 <div className={'w-5 h-5 rounded-full bg-white transition-transform ' + (
@@ -859,12 +835,12 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
             </div>
 
             <div className="flex items-center justify-between sm:justify-start sm:gap-3 pt-2 sm:pt-6">
-              <span className="text-xs font-semibold text-[#D5CEE5]">Active Now / Today</span>
+              <span className="text-xs font-semibold text-[#524B5E]">Active Now / Today</span>
               <button
                 type="button"
                 onClick={() => setActiveNowOnly(!activeNowOnly)}
                 className={'w-11 h-6 rounded-full transition-colors flex items-center px-0.5 ' + (
-                  activeNowOnly ? 'bg-[#6555b8]' : 'bg-[#2B2338]'
+                  activeNowOnly ? 'bg-[#6555b8]' : 'bg-[#E5E1EC]'
                 )}
               >
                 <div className={'w-5 h-5 rounded-full bg-white transition-transform ' + (
@@ -878,7 +854,7 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
             <button
               type="button"
               onClick={resetFilters}
-              className="flex-1 py-2.5 rounded-full border border-[#DDD7E5] text-xs font-semibold text-[#D5CEE5] hover:text-white hover:bg-[#2B2338] transition flex items-center justify-center gap-1.5"
+              className="flex-1 py-2.5 rounded-full border border-[#DDD7E5] text-xs font-semibold text-[#524B5E] hover:text-white hover:bg-[#E5E1EC] transition flex items-center justify-center gap-1.5"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               Reset

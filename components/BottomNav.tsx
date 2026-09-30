@@ -109,7 +109,7 @@ export function BottomNav() {
           isKeyboardOpen ? 'translate-y-24 opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'
         }`}
       >
-        <nav className="pointer-events-auto bg-[#2D2F4C]/95 backdrop-blur-xl border border-[#9A8CC3]/35 rounded-[28px] px-3 py-1.5 shadow-2xl shadow-black/80 w-full max-w-sm transition-transform">
+        <nav className="pointer-events-auto bg-[#1E1926]/95/95/95 backdrop-blur-xl border border-[#9A8CC3]/35 rounded-[28px] px-3 py-1.5 shadow-2xl shadow-black/80 w-full max-w-sm transition-transform">
           <div className="grid grid-cols-4 items-center">
             
             {/* 1. DISCOVER */}
@@ -171,7 +171,7 @@ export function BottomNav() {
                 <div className={`w-8 h-8 rounded-full overflow-hidden flex items-center justify-center transition-all duration-200 ${
                   accountSheetOpen 
                     ? 'ring-2 ring-[#E6D7FA] bg-[#6555B8]' 
-                    : 'border border-[#9A8CC3]/50 bg-[#2D2F4C]'
+                    : 'border border-[#9A8CC3]/50 bg-[#1E1926]/95/95'
                 }`}>
                   {avatarUrl ? (
                     <img src={avatarUrl} alt="You" className="w-full h-full object-cover" />
