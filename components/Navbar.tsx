@@ -110,7 +110,7 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 w-full bg-[#F3F2F7]/90 backdrop-blur-md border-b border-[#DDD7E5] shadow-[0_1px_4px_rgba(28,25,36,0.03)] transition-all">
-      <div className="max-w-5xl mx-auto px-4 h-16 flex items-center justify-between">
+      <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
         
         {/* Brand Logo */}
         <Link 

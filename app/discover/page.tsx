@@ -486,7 +486,7 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
 
   return (
     <div className="min-h-screen flex flex-col bg-[#FAFAFD] text-[#1C1924]">
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 pt-8 pb-32 space-y-6">
+      <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 pt-8 pb-32 space-y-6">
         
         {/* Top Control Bar */}
         <div className="space-y-2.5 sm:space-y-0">
