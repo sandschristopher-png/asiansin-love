@@ -27,6 +27,7 @@ const RELATIONSHIP_INTENTS = [
 ];
 
 export interface ProfileItem {
+  username?: string;
   id: string;
   name: string;
   age: number;
@@ -629,7 +630,7 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
                   <Link href={'/profile/' + profile.id} className="block group-hover:opacity-95">
                     <div className="flex items-center gap-1.5 mb-1">
                       <h3 className="text-base sm:text-lg font-bold text-[#1C1924] flex items-center gap-1.5 truncate">
-                        {profile.name}{profile.age ? `, ${profile.age}` : ''}
+                        {((profile.username || profile.name || 'Member').startsWith('user_') ? 'Member' : (profile.username || profile.name || 'Member'))}{profile.age ? `, ${profile.age}` : ''}
                         {profile.verified && <CheckCircle className="w-4 h-4 text-[#6555b8] shrink-0" />}
                       </h3>
                     </div>
