@@ -108,13 +108,15 @@ function DiscoverCardPhotoCarousel({
         </div>
 
         {/* Pulsing Online Status on Upper Right */}
-        <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-black/45 backdrop-blur-md border border-white/20 text-[10px] font-medium text-white shadow-xs">
-          <span className="relative flex h-2 w-2">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-          </span>
-          
-        </div>
+        {online && (
+          <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-black/45 backdrop-blur-md border border-white/20 text-[10px] font-medium text-white shadow-xs">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            <span className="text-[10px] font-medium text-white">Online</span>
+          </div>
+        )}
       </div>
 
       {/* Story Progress Dashes */}
@@ -430,7 +432,7 @@ function DiscoverContent() {
                 latitude: row.latitude,
                 longitude: row.longitude,
                 location_source: row.location_source,
-              online: row.last_active ? (Date.now() - new Date(row.last_active).getTime() < 1000 * 60 * 15) : true,
+              online: !!(row.last_active && (Date.now() - new Date(row.last_active).getTime() < 1000 * 60 * 15)),
               intent: row.intent || 'Marriage',
               bio: row.bio,
               occupation: row.occupation,
