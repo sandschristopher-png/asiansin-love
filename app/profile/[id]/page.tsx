@@ -89,7 +89,7 @@ export default function PublicProfilePage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F8F7FA] text-[#1C1924]">
-      <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 py-5 sm:py-7 space-y-5 pb-28 md:pb-12">
+      <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 py-5 sm:py-7 space-y-5 pb-28 md:pb-32">
         
         {/* Navigation Breadcrumb */}
         <div className="flex items-center justify-between">
