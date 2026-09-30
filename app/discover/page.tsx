@@ -111,7 +111,7 @@ function DiscoverCardPhotoCarousel({
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
             <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
           </span>
-          <span className="text-[10px] text-emerald-300 font-medium">Online</span>
+          
         </div>
       </div>
 
@@ -633,25 +633,14 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
                         {profile.verified && <CheckCircle className="w-4 h-4 text-[#6555b8] shrink-0" />}
                       </h3>
                     </div>
-                    {(() => {
-                      const isVerified = profile.location_source === 'gps_verified';
-                      const distance = currentUserCoords
-                        ? getDistanceLabel(currentUserCoords.lat, currentUserCoords.lon, profile.latitude, profile.longitude)
-                        : null;
-                      return (
-                        <p className="text-xs sm:text-sm font-medium text-[#756D82] flex items-center gap-1.5 truncate">
-                          <MapPin
-                            className={'w-3.5 h-3.5 shrink-0 ' + (
-                              isVerified ? 'text-emerald-500' : 'text-[#8C849B]'
-                            )}
-                          />
-                          <span className="truncate">{profile.location ? profile.location.split(',')[0] : 'Unknown'}</span>
-                          {distance && (
-                            <span className="text-xs text-emerald-600 font-semibold shrink-0"> &middot; {distance}</span>
+                    <p className="text-xs sm:text-sm font-medium text-[#756D82] flex items-center gap-1.5 truncate">
+                        <MapPin
+                          className={'w-3.5 h-3.5 shrink-0 ' + (
+                            profile.location_source === 'gps_verified' ? 'text-emerald-500' : 'text-[#8C849B]'
                           )}
-                        </p>
-                      );
-                    })()}
+                        />
+                        <span className="truncate">{profile.location ? profile.location.split(',')[0] : 'Unknown'}</span>
+                      </p>
                   </Link>
                 </div>
               </div>
