@@ -102,8 +102,8 @@ function DiscoverCardPhotoCarousel({
       {/* Top Badges */}
       <div className="absolute top-2.5 inset-x-2.5 flex items-center justify-between z-20 pointer-events-none">
         {/* Rep Score Badge on Upper Left */}
-        <div className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-black/45 backdrop-blur-md border border-white/20 text-[10px] font-semibold text-emerald-300 shadow-xs">
-          <ShieldCheck className="w-3 h-3 text-emerald-400 shrink-0" />
+        <div className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-black/45 backdrop-blur-md border border-white/20 text-[10px] font-semibold text-[#E5DEFF] shadow-xs">
+          <ShieldCheck className="w-3 h-3 text-[#A78BFA] shrink-0" />
           <span>{repScore || 100}%</span>
         </div>
 
@@ -494,7 +494,7 @@ function DiscoverContent() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#FAFAFD] text-[#1C1924]">
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-6 pb-28 md:pb-20 space-y-5">
+      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-6 pb-32 md:pb-24 space-y-5">
         
         {/* Top Control Bar */}
         <section aria-label="Search and Filters" className="w-full space-y-4">
@@ -553,30 +553,7 @@ function DiscoverContent() {
               })}
             </div>
 
-            {/* Subtle Vertical Divider */}
-            <div className="h-6 w-[1px] bg-[#D5CEE5] shrink-0 mx-1" />
-
-            {/* Country Filters */}
-            <div className="flex items-center gap-1 p-1 bg-white border border-[#DDD7E5] rounded-full shadow-xs shrink-0">
-              {sortedCountries.map((c) => {
-                const active = selectedCountry === c;
-                return (
-                  <button
-                    key={c}
-                    type="button"
-                    onClick={() => setSelectedCountry(c)}
-                    className={'px-4 py-1.5 text-xs sm:text-sm font-semibold rounded-full transition-all shrink-0 ' + (
-                      active
-                        ? 'bg-[#6555b8] text-white shadow-xs'
-                        : 'text-[#6C637B] hover:text-[#1C1924] hover:bg-[#F3EFFC]'
-                    )}
-                  >
-                    {c}
-                  </button>
-                );
-              })}
             </div>
-          </div>
         </section>
 
         {/* Discovery Grid */}

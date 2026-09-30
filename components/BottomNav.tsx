@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -103,96 +103,89 @@ export function BottomNav() {
 
   return (
     <>
-      {/* Floating Bottom Navigation Bar */}
-      <div 
-        className={`sm:hidden fixed bottom-[calc(0.75rem+env(safe-area-inset-bottom))] left-0 right-0 z-50 px-4 pointer-events-none flex justify-center transition-all duration-300 ease-out ${
-          isKeyboardOpen ? 'translate-y-24 opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'
+      <nav 
+        className={`sm:hidden fixed bottom-0 inset-x-0 w-full z-50 bg-white/95 backdrop-blur-md border-t border-[#E5E1EC] pb-[env(safe-area-inset-bottom)] transition-all duration-300 ease-out ${
+          isKeyboardOpen ? 'translate-y-full opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'
         }`}
       >
-        <nav className="pointer-events-auto bg-[#1E1926]/95 backdrop-blur-xl border border-[#9A8CC3]/35 rounded-[28px] px-3 py-1.5 shadow-2xl shadow-black/80 w-full max-w-sm transition-transform">
-          <div className="grid grid-cols-4 items-center">
-            
-            {/* 1. DISCOVER */}
-            <Link
-              href="/discover"
-              className={`flex flex-col items-center justify-center py-1 transition-transform active:scale-[0.88] ${
-                isActive('/discover') ? 'text-white' : 'text-[#B2A4D7] hover:text-white'
-              }`}
-            >
-              <div className={`p-1.5 rounded-full transition-all duration-200 ${isActive('/discover') ? 'bg-[#6555B8] text-white shadow-md shadow-[#6555B8]/40' : ''}`}>
-                <Search className="w-5 h-5" strokeWidth={isActive('/discover') ? 2.5 : 2} />
-              </div>
-              <span className={`text-[10px] tracking-wide font-extrabold mt-0.5 ${isActive('/discover') ? 'text-white font-bold' : 'text-[#B2A4D7]'}`}>
-                Discover
-              </span>
-            </Link>
+        <div className="max-w-md mx-auto grid grid-cols-4 items-center h-14 px-2">
+          
+          {/* 1. DISCOVER */}
+          <Link
+            href="/discover"
+            className={`flex flex-col items-center justify-center py-1 transition-colors active:scale-95 ${
+              isActive('/discover') ? 'text-[#6555B8]' : 'text-[#756D82] hover:text-[#1C1924]'
+            }`}
+          >
+            <div className={`p-1 rounded-full transition-colors ${isActive('/discover') ? 'bg-[#F3EFFC]' : ''}`}>
+              <Search className="w-5 h-5" strokeWidth={isActive('/discover') ? 2.3 : 1.9} />
+            </div>
+            <span className={`text-[10px] mt-0.5 ${isActive('/discover') ? 'font-bold' : 'font-medium'}`}>
+              Discover
+            </span>
+          </Link>
 
-            {/* 2. SAVED */}
-            <Link
-              href="/favorites"
-              className={`flex flex-col items-center justify-center py-1 transition-transform active:scale-[0.88] ${
-                isActive('/favorites') ? 'text-white' : 'text-[#B2A4D7] hover:text-white'
-              }`}
-            >
-              <div className={`p-1.5 rounded-full transition-all duration-200 ${isActive('/favorites') ? 'bg-[#6555B8] text-white shadow-md shadow-[#6555B8]/40' : ''}`}>
-                <LucideHeart className="w-5 h-5" fill={isActive('/favorites') ? 'currentColor' : 'none'} strokeWidth={2} />
-              </div>
-              <span className={`text-[10px] tracking-wide font-extrabold mt-0.5 ${isActive('/favorites') ? 'text-white font-bold' : 'text-[#B2A4D7]'}`}>
-                Saved
-              </span>
-            </Link>
+          {/* 2. SAVED */}
+          <Link
+            href="/favorites"
+            className={`flex flex-col items-center justify-center py-1 transition-colors active:scale-95 ${
+              isActive('/favorites') ? 'text-[#6555B8]' : 'text-[#756D82] hover:text-[#1C1924]'
+            }`}
+          >
+            <div className={`p-1 rounded-full transition-colors ${isActive('/favorites') ? 'bg-[#F3EFFC]' : ''}`}>
+              <LucideHeart className="w-5 h-5" fill={isActive('/favorites') ? 'currentColor' : 'none'} strokeWidth={1.9} />
+            </div>
+            <span className={`text-[10px] mt-0.5 ${isActive('/favorites') ? 'font-bold' : 'font-medium'}`}>
+              Saved
+            </span>
+          </Link>
 
-            {/* 3. INBOX */}
-            <Link
-              href="/messages"
-              className={`flex flex-col items-center justify-center py-1 transition-transform active:scale-[0.88] ${
-                isActive('/messages') ? 'text-white' : 'text-[#B2A4D7] hover:text-white'
-              }`}
-            >
-              <div className={`p-1.5 rounded-full transition-all duration-200 relative ${isActive('/messages') ? 'bg-[#6555B8] text-white shadow-md shadow-[#6555B8]/40' : ''}`}>
-                <MessageCircle className="w-5 h-5" strokeWidth={isActive('/messages') ? 2.5 : 2} />
-              </div>
-              <span className={`text-[10px] tracking-wide font-extrabold mt-0.5 ${isActive('/messages') ? 'text-white font-bold' : 'text-[#B2A4D7]'}`}>
-                Inbox
-              </span>
-            </Link>
+          {/* 3. INBOX */}
+          <Link
+            href="/messages"
+            className={`flex flex-col items-center justify-center py-1 transition-colors active:scale-95 ${
+              isActive('/messages') ? 'text-[#6555B8]' : 'text-[#756D82] hover:text-[#1C1924]'
+            }`}
+          >
+            <div className={`p-1 rounded-full transition-colors relative ${isActive('/messages') ? 'bg-[#F3EFFC]' : ''}`}>
+              <MessageCircle className="w-5 h-5" strokeWidth={isActive('/messages') ? 2.3 : 1.9} />
+            </div>
+            <span className={`text-[10px] mt-0.5 ${isActive('/messages') ? 'font-bold' : 'font-medium'}`}>
+              Inbox
+            </span>
+          </Link>
 
-            
-
-            {/* 5. YOU */}
-            <button
-              type="button"
-              onClick={() => setAccountSheetOpen(true)}
-              className={`flex flex-col items-center justify-center py-1 transition-transform active:scale-[0.88] ${
-                accountSheetOpen ? 'text-white' : 'text-[#B2A4D7] hover:text-white'
-              }`}
-            >
-              <div className="relative">
-                <div className={`w-8 h-8 rounded-full overflow-hidden flex items-center justify-center transition-all duration-200 ${
-                  accountSheetOpen 
-                    ? 'ring-2 ring-[#E6D7FA] bg-[#6555B8]' 
-                    : 'border border-[#9A8CC3]/50 bg-[#1E1926]'
-                }`}>
-                  {avatarUrl ? (
-                    <img src={avatarUrl} alt="You" className="w-full h-full object-cover" />
-                  ) : (
-                    <User className="w-4 h-4 text-[#B2A4D7]" />
-                  )}
-                </div>
-                {hasNotifications && (
-                  <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#9A8CC3] border border-[#2D2F4C] flex items-center justify-center">
-                    <span className="w-1 h-1 rounded-full bg-[#E6D7FA]" />
-                  </span>
+          {/* 4. YOU */}
+          <button
+            type="button"
+            onClick={() => setAccountSheetOpen(true)}
+            className={`flex flex-col items-center justify-center py-1 transition-colors active:scale-95 ${
+              accountSheetOpen ? 'text-[#6555B8]' : 'text-[#756D82] hover:text-[#1C1924]'
+            }`}
+          >
+            <div className="relative">
+              <div className={`w-7 h-7 rounded-full overflow-hidden flex items-center justify-center transition-all ${
+                accountSheetOpen 
+                  ? 'ring-2 ring-[#6555B8] bg-[#F3EFFC]' 
+                  : 'border border-[#E5E1EC] bg-[#FAFAFC]'
+              }`}>
+                {avatarUrl ? (
+                  <img src={avatarUrl} alt="You" className="w-full h-full object-cover" />
+                ) : (
+                  <User className="w-4 h-4 text-[#756D82]" />
                 )}
               </div>
-              <span className={`text-[10px] tracking-wide font-extrabold mt-0.5 ${accountSheetOpen ? 'text-white font-bold' : 'text-[#B2A4D7]'}`}>
-                You
-              </span>
-            </button>
+              {hasNotifications && (
+                <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-[#6555B8] border border-white" />
+              )}
+            </div>
+            <span className={`text-[10px] mt-0.5 ${accountSheetOpen ? 'font-bold' : 'font-medium'}`}>
+              You
+            </span>
+          </button>
 
-          </div>
-        </nav>
-      </div>
+        </div>
+      </nav>
       <AccountBottomSheet
         isOpen={accountSheetOpen}
         onClose={() => setAccountSheetOpen(false)}

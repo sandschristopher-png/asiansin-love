@@ -306,7 +306,7 @@ export default function MyProfilePage() {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
           
           {/* Left Column: Top Masthead with Framed Photo */}
-          <div className="md:col-span-5 rounded-3xl bg-[#F3EFFC] border border-[#E2DAEF] shadow-sm p-4 sm:p-5 space-y-4">
+          <div className="md:col-span-5 rounded-3xl bg-white border border-[#E5E1EC] shadow-sm p-4 sm:p-5 space-y-4">
             
             {/* Header Up Top */}
             {isEditing ? (
@@ -318,7 +318,7 @@ export default function MyProfilePage() {
                       type="text"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="w-full mt-1 px-3 py-1.5 rounded-xl bg-[#F3EFFC] border border-[#E2DAEF] text-xs text-[#1C1924] focus:outline-none focus:border-[#9A8CC3] [appearance:text-field] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                      className="w-full mt-1 px-3 py-1.5 rounded-xl bg-[#FAFAFC] border border-[#E5E1EC] text-xs text-[#1C1924] focus:outline-none focus:border-[#6555B8] focus:bg-white transition-colors [appearance:text-field] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                     />
                   </div>
                   <div>
@@ -327,7 +327,7 @@ export default function MyProfilePage() {
                       type="number"
                       value={age}
                       onChange={(e) => setAge(Number(e.target.value))}
-                      className="w-full mt-1 px-3 py-1.5 rounded-xl bg-[#F3EFFC] border border-[#E2DAEF] text-xs text-[#1C1924] focus:outline-none focus:border-[#9A8CC3] [appearance:text-field] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                      className="w-full mt-1 px-3 py-1.5 rounded-xl bg-[#FAFAFC] border border-[#E5E1EC] text-xs text-[#1C1924] focus:outline-none focus:border-[#6555B8] focus:bg-white transition-colors [appearance:text-field] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                     />
                   </div>
                 </div>
@@ -389,7 +389,7 @@ export default function MyProfilePage() {
                         {location}
                       </p>
                       {locationSource === 'gps_verified' ? (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/35 text-[11px] font-medium text-emerald-300">
+                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#F3EFFC] border border-[#DDD7E5] text-[11px] font-medium text-[#6555B8]">
                           <MapPin className="w-3 h-3 text-emerald-400 shrink-0" />
                           <span>Verified {locationVerifiedAt ? formatVerifiedDate(locationVerifiedAt) : ''}</span>
                         </span>
@@ -533,7 +533,7 @@ export default function MyProfilePage() {
           <div className="md:col-span-7 space-y-4">
             
             {/* Top Preview/Edit Status Banner */}
-            <div className="p-4 sm:p-5 rounded-3xl bg-[#F3EFFC] border border-[#E2DAEF] shadow-sm space-y-1">
+            <div className="p-4 sm:p-5 rounded-3xl bg-white border border-[#E5E1EC] shadow-sm space-y-1">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-[#1C1924] uppercase tracking-wider flex items-center gap-2">
                   <Edit3 className="w-4 h-4 text-[#9A8CC3]" />
@@ -551,14 +551,14 @@ export default function MyProfilePage() {
             </div>
 
             {/* ABOUT ME */}
-            <div className="p-5 sm:p-6 rounded-3xl bg-[#F3EFFC] border border-[#E2DAEF] shadow-sm space-y-2">
+            <div className="p-5 sm:p-6 rounded-3xl bg-white border border-[#E5E1EC] shadow-sm space-y-2">
               <h3 className="text-xs font-bold text-[#6555B8] uppercase tracking-wider font-bold">ABOUT ME</h3>
               {isEditing ? (
                 <textarea
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
                   rows={3}
-                  className="w-full p-3 rounded-2xl bg-[#F3EFFC] border border-[#E2DAEF] text-xs text-[#1C1924] focus:outline-none focus:border-[#9A8CC3]"
+                  className="w-full p-3 rounded-2xl bg-[#FAFAFC] border border-[#E5E1EC] text-xs text-[#1C1924] focus:outline-none focus:border-[#6555B8] focus:bg-white transition-colors"
                 />
               ) : (
                 <p className="text-sm text-[#1C1924] leading-relaxed">
@@ -568,14 +568,14 @@ export default function MyProfilePage() {
             </div>
 
             {/* WHAT I'M LOOKING FOR */}
-            <div className="p-5 sm:p-6 rounded-3xl bg-[#F3EFFC] border border-[#E2DAEF] shadow-sm space-y-2">
+            <div className="p-5 sm:p-6 rounded-3xl bg-white border border-[#E5E1EC] shadow-sm space-y-2">
               <h3 className="text-xs font-bold text-[#6555B8] uppercase tracking-wider font-bold">WHAT I'M LOOKING FOR</h3>
               {isEditing ? (
                 <textarea
                   value={lookingFor}
                   onChange={(e) => setLookingFor(e.target.value)}
                   rows={3}
-                  className="w-full p-3 rounded-2xl bg-[#F3EFFC] border border-[#E2DAEF] text-xs text-[#1C1924] focus:outline-none focus:border-[#9A8CC3]"
+                  className="w-full p-3 rounded-2xl bg-[#FAFAFC] border border-[#E5E1EC] text-xs text-[#1C1924] focus:outline-none focus:border-[#6555B8] focus:bg-white transition-colors"
                 />
               ) : (
                 <p className="text-sm text-[#1C1924] leading-relaxed">
@@ -585,7 +585,7 @@ export default function MyProfilePage() {
             </div>
 
 {/* SLEEK COMPACT VITALS */}
-              <div className="p-5 sm:p-6 rounded-3xl bg-[#F3EFFC] border border-[#E2DAEF] shadow-sm space-y-5">
+              <div className="p-5 sm:p-6 rounded-3xl bg-white border border-[#E5E1EC] shadow-sm space-y-5">
                 <div className="flex items-center justify-between border-b border-[#9A8CC3]/20 pb-3">
                   <h3 className="text-xs font-bold text-[#6555B8] uppercase tracking-wider font-bold">VITALS & TRAITS</h3>
                   

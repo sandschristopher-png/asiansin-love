@@ -124,17 +124,7 @@ export function Navbar() {
         <div className="flex items-center gap-2.5 sm:gap-3">
           {user ? (
             <>
-              {/* Messages */}
-              <Link
-                href="/messages"
-                className="relative h-10 w-10 sm:h-11 sm:w-11 rounded-xl bg-white hover:bg-[#EAE6F2] border border-[#DDD7E5] flex items-center justify-center text-[#524B5E] hover:text-[#1C1924] transition-all shadow-sm active:scale-95"
-                title="Messages"
-              >
-                <MessageCircle className="w-5 h-5" />
-                {hasUnread && (
-                  <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-emerald-500 ring-2 ring-white" />
-                )}
-              </Link>
+
 
               {/* Notifications */}
               <Link
