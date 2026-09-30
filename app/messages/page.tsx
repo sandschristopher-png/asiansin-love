@@ -7,7 +7,6 @@ import { supabase } from '@/lib/supabaseClient';
 
 interface ConversationItem {
   id: string;
-  matchId?: string;
   recipientId: string;
   name: string;
   avatarUrl?: string;
@@ -18,14 +17,15 @@ interface ConversationItem {
 }
 
 export default function MessagesPage() {
-  const [activeTab, setActiveTab] = useState<'all' | 'unread'>('all');
   const [conversations, setConversations] = useState<ConversationItem[]>([]);
-  const [searchQuery, setSearchQuery] = useState('');
   const [loading, setLoading] = useState(true);
+  const [activeTab, setActiveTab] = useState<'all' | 'unread'>('all');
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
-    async function fetchConversations() {
-      setLoading(true);
+    let channel: any = null;
+
+    async function loadConversations() {
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
@@ -33,7 +33,6 @@ export default function MessagesPage() {
           return;
         }
 
-        // Fetch conversations/matches
         const { data, error } = await supabase
           .from('conversations')
           .select(`
@@ -46,23 +45,65 @@ export default function MessagesPage() {
           .or(`participant_1.eq.${user.id},participant_2.eq.${user.id}`)
           .order('updated_at', { ascending: false });
 
-        if (error || !data) {
+        if (error || !data || data.length === 0) {
           setConversations([]);
-        } else {
-          // Format conversation items
-          const items: ConversationItem[] = data.map((c: any) => {
-            const partnerId = c.participant_1 === user.id ? c.participant_2 : c.participant_1;
-            return {
-              id: c.id,
-              recipientId: partnerId,
-              name: 'Member',
-              lastMessage: c.last_message || 'Started a conversation',
-              lastMessageAt: new Date(c.updated_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-              unreadCount: 0,
-            };
-          });
-          setConversations(items);
+          setLoading(false);
+          return;
         }
+
+        // Collect unique partner IDs
+        const partnerIds = Array.from(
+          new Set(
+            data.map((c: any) =>
+              c.participant_1 === user.id ? c.participant_2 : c.participant_1
+            )
+          )
+        );
+
+        // Fetch profile vitals for all conversation partners
+        const { data: partnerProfiles } = await supabase
+          .from('profiles')
+          .select('id, username, display_name, full_name, avatar_url, reputation_score')
+          .in('id', partnerIds);
+
+        const profileMap = new Map<string, { username?: string; display_name?: string; full_name?: string; avatar_url?: string; reputation_score?: number }>();
+        partnerProfiles?.forEach((p: any) => {
+          profileMap.set(p.id, p);
+        });
+
+        const items: ConversationItem[] = data.map((c: any) => {
+          const partnerId = c.participant_1 === user.id ? c.participant_2 : c.participant_1;
+          const partner = profileMap.get(partnerId);
+
+          return {
+            id: c.id,
+            recipientId: partnerId,
+            name: partner?.username || partner?.display_name || 'Member',
+            avatarUrl: partner?.avatar_url,
+            repScore: partner?.reputation_score ?? 100,
+            lastMessage: c.last_message || 'Started a conversation',
+            lastMessageAt: new Date(c.updated_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+            unreadCount: 0,
+          };
+        });
+
+        setConversations(items);
+
+        // Subscribe to real-time conversation updates
+        channel = supabase
+          .channel(`user_inbox_${user.id}`)
+          .on(
+            'postgres_changes',
+            {
+              event: '*',
+              schema: 'public',
+              table: 'conversations',
+            },
+            () => {
+              loadConversations();
+            }
+          )
+          .subscribe();
       } catch (err) {
         console.error(err);
       } finally {
@@ -70,7 +111,13 @@ export default function MessagesPage() {
       }
     }
 
-    fetchConversations();
+    loadConversations();
+
+    return () => {
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
+    };
   }, []);
 
   const filteredConversations = conversations.filter((c) => {
@@ -81,7 +128,6 @@ export default function MessagesPage() {
 
   return (
     <main className="flex-1 max-w-4xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-6 pb-32 space-y-6">
-      {/* Header & Subtitle */}
       <div className="space-y-1">
         <h1 className="text-2xl sm:text-3xl font-bold text-[#1C1924]">Direct Messages</h1>
         <p className="text-xs sm:text-sm text-[#756D82]">
@@ -89,9 +135,7 @@ export default function MessagesPage() {
         </p>
       </div>
 
-      {/* Control Row: Search & Tabs */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        {/* Filter Pills */}
         <div className="flex items-center gap-1.5 p-1 bg-white border border-[#DDD7E5] rounded-full shadow-xs w-fit">
           <button
             type="button"
@@ -117,7 +161,6 @@ export default function MessagesPage() {
           </button>
         </div>
 
-        {/* Quick Search */}
         <div className="relative w-full sm:w-64">
           <Search className="w-4 h-4 text-[#8C849B] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
@@ -130,7 +173,6 @@ export default function MessagesPage() {
         </div>
       </div>
 
-      {/* Conversations Container */}
       <div className="bg-white rounded-3xl border border-[#DDD7E5] shadow-xs overflow-hidden divide-y divide-[#E5E1EC]">
         {loading ? (
           <div className="py-16 text-center text-xs sm:text-sm text-[#756D82]">
@@ -158,11 +200,10 @@ export default function MessagesPage() {
           filteredConversations.map((c) => (
             <Link
               key={c.id}
-              href={`/messages/${c.id}`}
+              href={`/chat/${c.recipientId}`}
               className="flex items-center justify-between p-4 sm:p-5 hover:bg-[#FAF8FD] transition group"
             >
               <div className="flex items-center gap-3.5 sm:gap-4 min-w-0">
-                {/* Avatar with Rep Indicator */}
                 <div className="relative w-12 h-12 sm:w-14 sm:h-14 rounded-full overflow-hidden bg-[#EAE6F2] shrink-0 border border-[#DDD7E5]">
                   {c.avatarUrl ? (
                     <img src={c.avatarUrl} alt={c.name} className="w-full h-full object-cover" />
@@ -173,7 +214,6 @@ export default function MessagesPage() {
                   )}
                 </div>
 
-                {/* Details */}
                 <div className="min-w-0 space-y-1">
                   <div className="flex items-center gap-2">
                     <h2 className="text-sm sm:text-base font-bold text-[#1C1924] truncate group-hover:text-[#6555b8] transition">
@@ -181,7 +221,7 @@ export default function MessagesPage() {
                     </h2>
                     <span className="flex items-center gap-0.5 text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
                       <ShieldCheck className="w-3 h-3 text-emerald-600" />
-                      {c.repScore || 100}% Rep
+                      {c.repScore}% Rep
                     </span>
                   </div>
                   <p className="text-xs sm:text-sm text-[#524B5E] truncate">
@@ -190,13 +230,12 @@ export default function MessagesPage() {
                 </div>
               </div>
 
-              {/* Timestamp & Chevron */}
               <div className="flex items-center gap-2 sm:gap-3 shrink-0 ml-3">
                 <span className="text-[11px] sm:text-xs text-[#8C849B] flex items-center gap-1">
                   <Clock className="w-3 h-3" />
                   {c.lastMessageAt}
                 </span>
-                <ChevronRight className="w-4 h-4 text-[#8C849B] group-hover:text-[#6555b8] group-hover:translate-x-0.5 transition" />
+                <ChevronRight className="w-4 h-4 text-[#8C849B] group-hover:text-[#1C1924] group-hover:translate-x-0.5 transition-all" />
               </div>
             </Link>
           ))
