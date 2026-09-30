@@ -110,7 +110,7 @@ export function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 w-full bg-[#F3F2F7]/90 backdrop-blur-md border-b border-[#DDD7E5] shadow-[0_1px_4px_rgba(28,25,36,0.03)] transition-all">
-      <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         
         {/* Brand Logo */}
         <Link 
@@ -127,10 +127,10 @@ export function Navbar() {
               {/* Messages */}
               <Link
                 href="/messages"
-                className="relative h-9 w-9 rounded-xl bg-white hover:bg-[#EAE6F2] border border-[#DDD7E5] flex items-center justify-center text-[#524B5E] hover:text-[#1C1924] transition-all shadow-sm"
+                className="relative h-10 w-10 sm:h-11 sm:w-11 rounded-xl bg-white hover:bg-[#EAE6F2] border border-[#DDD7E5] flex items-center justify-center text-[#524B5E] hover:text-[#1C1924] transition-all shadow-sm active:scale-95"
                 title="Messages"
               >
-                <MessageCircle className="w-4 h-4" />
+                <MessageCircle className="w-5 h-5" />
                 {hasUnread && (
                   <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-emerald-500 ring-2 ring-white" />
                 )}
@@ -139,10 +139,10 @@ export function Navbar() {
               {/* Notifications */}
               <Link
                 href="/notifications"
-                className="relative h-9 w-9 rounded-xl bg-white hover:bg-[#EAE6F2] border border-[#DDD7E5] flex items-center justify-center text-[#524B5E] hover:text-[#1C1924] transition-all shadow-sm"
+                className="relative h-10 w-10 sm:h-11 sm:w-11 rounded-xl bg-white hover:bg-[#EAE6F2] border border-[#DDD7E5] flex items-center justify-center text-[#524B5E] hover:text-[#1C1924] transition-all shadow-sm active:scale-95"
                 title="Notifications"
               >
-                <Bell className="w-4 h-4" />
+                <Bell className="w-5 h-5" />
                 {hasUnread && (
                   <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-[#6555B8] ring-2 ring-white" />
                 )}
@@ -153,21 +153,21 @@ export function Navbar() {
                 <button
                   type="button"
                   onClick={() => setMenuOpen(!menuOpen)}
-                  className={`h-9 flex items-center gap-2 pl-1 pr-2.5 rounded-full bg-white border transition-all shadow-sm focus:outline-none ${
+                  className={`h-10 sm:h-11 flex items-center gap-2 pl-1.5 pr-3 rounded-full bg-white border transition-all shadow-sm focus:outline-none ${
                     menuOpen 
                       ? 'border-[#6555B8] ring-2 ring-[#6555B8]/20 text-[#1C1924]' 
                       : 'border-[#DDD7E5] text-[#524B5E] hover:border-[#6555B8]/50 hover:text-[#1C1924]'
                   }`}
                   title="Account Menu"
                 >
-                  <div className="w-7 h-7 rounded-full overflow-hidden bg-[#EDE7F6] border border-[#DDD7E5] flex items-center justify-center shrink-0">
+                  <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full overflow-hidden bg-[#EDE7F6] border border-[#DDD7E5] flex items-center justify-center shrink-0">
                     {avatarUrl ? (
                       <img src={avatarUrl} alt={displayName} className="w-full h-full object-cover" />
                     ) : (
-                      <User className="w-3.5 h-3.5 text-[#6555B8]" />
+                      <User className="w-4 h-4 text-[#6555B8]" />
                     )}
                   </div>
-                  <ChevronDown className={`w-3.5 h-3.5 text-[#6B627A] transition-transform duration-200 ${menuOpen ? 'rotate-180' : ''}`} />
+                  <ChevronDown className={`w-4 h-4 text-[#6B627A] transition-transform duration-200 ${menuOpen ? 'rotate-180' : ''}`} />
                 </button>
 
                 {menuOpen && (
