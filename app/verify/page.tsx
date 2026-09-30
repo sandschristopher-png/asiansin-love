@@ -94,21 +94,21 @@ export default function VerifyPage() {
   };
 
   return (
-    <main className="min-h-screen bg-[#130F18] text-[#E6D7FA] flex flex-col justify-start">
+    <main className="min-h-screen bg-[#F8F7FA] text-[#1C1924] flex flex-col justify-start">
       <div className="max-w-md mx-auto w-full px-4 py-8 pb-28 space-y-6">
         
         {/* Top Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-[#9A79BA]/25">
+        <div className="flex items-center justify-between pb-4 border-b border-[#9A8CC3]/25">
           <button
             type="button"
             onClick={() => router.back()}
-            className="h-10 w-10 rounded-2xl bg-[#261F33] border border-[#9A79BA]/35 text-[#E6D7FA] hover:text-white flex items-center justify-center text-sm active:scale-90 transition"
+            className="h-10 w-10 rounded-2xl bg-[#FFFFFF] border border-[#9A8CC3]/35 text-[#1C1924] hover:text-[#1C1924] flex items-center justify-center text-sm active:scale-90 transition"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
           <div className="flex items-center gap-2">
-            <ShieldCheck className="w-5 h-5 text-[#9A79BA]" />
-            <h1 className="text-xl font-bold text-white tracking-tight">
+            <ShieldCheck className="w-5 h-5 text-[#9A8CC3]" />
+            <h1 className="text-xl font-bold text-[#1C1924] tracking-tight">
               Identity Verification
             </h1>
           </div>
@@ -116,12 +116,12 @@ export default function VerifyPage() {
         </div>
 
         {success ? (
-          <div className="rounded-3xl bg-[#261F33] border border-[#9A79BA]/40 p-8 text-center space-y-4 shadow-2xl">
+          <div className="rounded-3xl bg-[#FFFFFF] border border-[#9A8CC3]/40 p-8 text-center space-y-4 shadow-2xl">
             <div className="h-16 w-16 mx-auto rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 flex items-center justify-center">
               <CheckCircle2 className="w-8 h-8" />
             </div>
-            <h2 className="text-xl font-bold text-white">Photo Submitted</h2>
-            <p className="text-sm text-[#E6D7FA] leading-relaxed">
+            <h2 className="text-xl font-bold text-[#1C1924]">Photo Submitted</h2>
+            <p className="text-sm text-[#1C1924] leading-relaxed">
               Your gesture selfie has been uploaded securely. Our team verifies submissions within a few hours to grant your profile the verified badge.
             </p>
           </div>
@@ -129,22 +129,22 @@ export default function VerifyPage() {
           <div className="space-y-6">
             
             {/* Instructions & Reference Card */}
-            <div className="p-5 rounded-3xl bg-[#261F33] border border-[#9A79BA]/35 space-y-4 shadow-xl">
+            <div className="p-5 rounded-3xl bg-[#FFFFFF] border border-[#9A8CC3]/35 space-y-4 shadow-xl">
               <div className="space-y-1">
-                <span className="text-xs font-bold uppercase tracking-wider text-[#9A79BA] block">
+                <span className="text-xs font-bold uppercase tracking-wider text-[#9A8CC3] block">
                   Gesture Match Pose
                 </span>
-                <p className="text-xs sm:text-sm text-[#E6D7FA] leading-relaxed">
+                <p className="text-xs sm:text-sm text-[#1C1924] leading-relaxed">
                   Hold up exactly three fingers (index, middle, and ring) beside your cheek in bright lighting, exactly as shown below. This confirms you are the actual person in your profile photos.
                 </p>
               </div>
 
               {/* Reference Asset Display */}
               <div className="flex flex-col items-center justify-center pt-2">
-                <div className="w-36 h-48 rounded-2xl overflow-hidden border-2 border-[#9A79BA]/50 shadow-xl bg-[#130F18]">
+                <div className="w-36 h-48 rounded-2xl overflow-hidden border-2 border-[#9A8CC3]/50 shadow-xl bg-[#F8F7FA]">
                   <img src="/three-fingers.jpg" alt="Three Fingers Verification Pose Reference" className="w-full h-full object-cover" />
                 </div>
-                <span className="text-[11px] font-semibold text-[#9A79BA] mt-2 tracking-wide">
+                <span className="text-[11px] font-semibold text-[#9A8CC3] mt-2 tracking-wide">
                   Match this exact pose
                 </span>
               </div>
@@ -163,7 +163,7 @@ export default function VerifyPage() {
             {/* Photo Capture / Preview Box */}
             <div
               onClick={() => fileInputRef.current?.click()}
-              className="relative aspect-[3/4] w-full rounded-3xl bg-[#181222] border-2 border-dashed border-[#9A79BA]/50 hover:border-[#9A79BA] flex flex-col items-center justify-center overflow-hidden cursor-pointer active:scale-[0.99] transition shadow-inner"
+              className="relative aspect-[3/4] w-full rounded-3xl bg-[#FFFFFF] border-2 border-dashed border-[#9A8CC3]/50 hover:border-[#9A8CC3] flex flex-col items-center justify-center overflow-hidden cursor-pointer active:scale-[0.99] transition shadow-inner"
             >
               {previewUrl ? (
                 <>
@@ -173,21 +173,21 @@ export default function VerifyPage() {
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-                    <span className="px-4 py-2 rounded-2xl bg-[#261F33] border border-[#9A79BA]/40 text-xs font-bold text-white shadow-lg">
+                    <span className="px-4 py-2 rounded-2xl bg-[#FFFFFF] border border-[#9A8CC3]/40 text-xs font-bold text-[#1C1924] shadow-lg">
                       Tap to retake
                     </span>
                   </div>
                 </>
               ) : (
                 <div className="p-6 text-center space-y-3 pointer-events-none">
-                  <div className="h-16 w-16 mx-auto rounded-2xl bg-[#261F33] border border-[#9A79BA]/40 flex items-center justify-center text-[#9A79BA] shadow-lg">
-                    <Camera className="w-8 h-8 text-[#C9A4E8]" />
+                  <div className="h-16 w-16 mx-auto rounded-2xl bg-[#FFFFFF] border border-[#9A8CC3]/40 flex items-center justify-center text-[#9A8CC3] shadow-lg">
+                    <Camera className="w-8 h-8 text-[#B2A4D7]" />
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-white">
+                    <p className="text-sm font-bold text-[#1C1924]">
                       Tap to Open Camera
                     </p>
-                    <p className="text-xs text-[#E6D7FA] mt-0.5">
+                    <p className="text-xs text-[#1C1924] mt-0.5">
                       Selfie with peace sign pose
                     </p>
                   </div>
@@ -208,8 +208,8 @@ export default function VerifyPage() {
               onClick={handleUpload}
               className={`w-full py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider shadow-lg transition active:scale-95 ${
                 selectedFile && !uploading
-                  ? 'bg-[#653C87] hover:bg-[#7D49A8] text-white shadow-[#653C87]/40'
-                  : 'bg-[#261F33] text-[#9A79BA]/50 cursor-not-allowed border border-[#9A79BA]/25'
+                  ? 'bg-[#6555B8] hover:bg-[#7D4B9F] text-white shadow-[#6555B8]/40'
+                  : 'bg-[#FFFFFF] text-[#9A8CC3]/50 cursor-not-allowed border border-[#9A8CC3]/25'
               }`}
             >
               {uploading ? 'Encrypting & Uploading...' : 'Submit Verification Photo'}

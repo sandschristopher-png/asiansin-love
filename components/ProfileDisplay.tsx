@@ -57,7 +57,7 @@ export function ProfileDisplay({ profile, currentUserId, onInitiateChat }: Profi
             <span className="px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 text-[10px] font-bold uppercase tracking-wider">
               {profile.trustPill}
             </span>
-            <span className="text-xs text-[#E6D7FA]">
+            <span className="text-xs text-[#1C1924]">
               {profile.trustAdvisory}
             </span>
           </div>
@@ -68,11 +68,11 @@ export function ProfileDisplay({ profile, currentUserId, onInitiateChat }: Profi
       )}
 
       {/* Main Architecture Frame */}
-      <div className="relative rounded-3xl bg-[#241e2f] border border-[#725A7A]/25 shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-12 gap-0">
+      <div className="relative rounded-3xl bg-[#2D2F4C] border border-[#9A8CC3]/25 shadow-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-12 gap-0">
         
         {/* Left Column: Visual Showcase (7 cols) */}
-        <div className="lg:col-span-7 p-6 sm:p-8 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-[#725A7A]/25">
-          <div className="relative aspect-[4/5] w-full rounded-2xl overflow-hidden bg-[#1d1827]">
+        <div className="lg:col-span-7 p-6 sm:p-8 flex flex-col justify-between border-b lg:border-b-0 lg:border-r border-[#9A8CC3]/25">
+          <div className="relative aspect-[4/5] w-full rounded-2xl overflow-hidden bg-[#2D2F4C]">
             <img
               src={activePhoto}
               alt={profile.fullName}
@@ -82,22 +82,22 @@ export function ProfileDisplay({ profile, currentUserId, onInitiateChat }: Profi
             />
 
             {isPendingReview && (
-              <div className="absolute inset-0 bg-[#17131f]/80 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center">
+              <div className="absolute inset-0 bg-[#2D2F4C]/80 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center">
                 <span className="px-2.5 py-1 rounded bg-amber-500/20 text-amber-300 text-[10px] font-semibold uppercase tracking-wider mb-2">
                   Review Queued
                 </span>
-                <p className="text-xs text-[#A8A2AB]">Avatar undergoing identity approval.</p>
+                <p className="text-xs text-[#B2A4D7]">Avatar undergoing identity approval.</p>
               </div>
             )}
 
             {/* Badges */}
             <div className="absolute top-4 left-4">
               {profile.isVerified ? (
-                <span className="px-3 py-1 rounded-full bg-[#653C87]/80 border border-[#9A79BA]/50 backdrop-blur-md text-xs font-semibold text-[#E6D7FA] shadow-md">
+                <span className="px-3 py-1 rounded-full bg-[#6555B8]/80 border border-[#9A8CC3]/50 backdrop-blur-md text-xs font-semibold text-white shadow-md">
                   Verified Identity
                 </span>
               ) : (
-                <span className="px-3 py-1 rounded-full bg-[#17131f]/80 border border-[#725A7A]/40 backdrop-blur-md text-xs font-medium text-[#A8A2AB]">
+                <span className="px-3 py-1 rounded-full bg-[#2D2F4C]/80 border border-[#9A8CC3]/40 backdrop-blur-md text-xs font-medium text-[#B2A4D7]">
                   Unverified
                 </span>
               )}
@@ -110,7 +110,7 @@ export function ProfileDisplay({ profile, currentUserId, onInitiateChat }: Profi
               <button
                 onClick={() => setActivePhoto(profile.avatarUrl)}
                 className={`relative h-16 w-16 rounded-xl overflow-hidden border transition-all ${
-                  activePhoto === profile.avatarUrl ? 'border-[#9A79BA] ring-2 ring-[#9A79BA]/30' : 'border-transparent opacity-50 hover:opacity-100'
+                  activePhoto === profile.avatarUrl ? 'border-[#9A8CC3] ring-2 ring-[#9A8CC3]/30' : 'border-[#DDD7E5]/60 opacity-50 hover:opacity-100'
                 }`}
               >
                 <img src={profile.avatarUrl} alt="Thumb" className="h-full w-full object-cover" />
@@ -120,7 +120,7 @@ export function ProfileDisplay({ profile, currentUserId, onInitiateChat }: Profi
                   key={idx}
                   onClick={() => setActivePhoto(url)}
                   className={`relative h-16 w-16 rounded-xl overflow-hidden border transition-all ${
-                    activePhoto === url ? 'border-[#9A79BA] ring-2 ring-[#9A79BA]/30' : 'border-transparent opacity-50 hover:opacity-100'
+                    activePhoto === url ? 'border-[#9A8CC3] ring-2 ring-[#9A8CC3]/30' : 'border-[#DDD7E5]/60 opacity-50 hover:opacity-100'
                   }`}
                 >
                   <img src={url} alt="Thumb" className="h-full w-full object-cover" />
@@ -137,32 +137,32 @@ export function ProfileDisplay({ profile, currentUserId, onInitiateChat }: Profi
             {/* Header */}
             <div>
               <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-white">
-                {profile.fullName}, <span className="text-[#A8A2AB] font-normal">{profile.age}</span>
+                {profile.fullName}, <span className="text-[#B2A4D7] font-normal">{profile.age}</span>
               </h1>
-              <p className="text-xs text-[#A8A2AB] font-medium mt-1">
+              <p className="text-xs text-[#B2A4D7] font-medium mt-1">
                 {profile.city}, {profile.country}
               </p>
               {profile.jobTitle && (
-                <p className="text-xs text-[#B8AAC3] font-mono mt-1">{profile.jobTitle}</p>
+                <p className="text-xs text-[#9A8CC3] font-mono mt-1">{profile.jobTitle}</p>
               )}
             </div>
 
             {/* Seeking */}
-            <div className="pt-4 border-t border-[#725A7A]/25">
-              <span className="text-[10px] font-mono uppercase tracking-widest text-[#B8AAC3] block mb-1">
+            <div className="pt-4 border-t border-[#9A8CC3]/25">
+              <span className="text-[10px] font-mono uppercase tracking-widest text-[#9A8CC3] block mb-1">
                 Seeking
               </span>
-              <p className="text-xs font-medium text-[#E6D7FA]">{profile.relationshipIntent}</p>
+              <p className="text-xs font-medium text-[#1C1924]">{profile.relationshipIntent}</p>
             </div>
 
             {/* Languages */}
-            <div className="pt-4 border-t border-[#725A7A]/25">
-              <span className="text-[10px] font-mono uppercase tracking-widest text-[#B8AAC3] block mb-2">
+            <div className="pt-4 border-t border-[#9A8CC3]/25">
+              <span className="text-[10px] font-mono uppercase tracking-widest text-[#9A8CC3] block mb-2">
                 Languages
               </span>
               <div className="flex flex-wrap gap-1.5">
                 {profile.languages?.map((lang) => (
-                  <span key={lang} className="px-2 py-0.5 bg-[#1d1827] border border-[#725A7A]/20 rounded text-[11px] text-[#C6CBD1]">
+                  <span key={lang} className="px-2 py-0.5 bg-[#2D2F4C] border border-[#9A8CC3]/20 rounded text-[11px] text-[#C6CBD1]">
                     {lang}
                   </span>
                 ))}
@@ -170,29 +170,29 @@ export function ProfileDisplay({ profile, currentUserId, onInitiateChat }: Profi
             </div>
 
             {/* Bio */}
-            <div className="pt-4 border-t border-[#725A7A]/25">
-              <span className="text-[10px] font-mono uppercase tracking-widest text-[#B8AAC3] block mb-2">
+            <div className="pt-4 border-t border-[#9A8CC3]/25">
+              <span className="text-[10px] font-mono uppercase tracking-widest text-[#9A8CC3] block mb-2">
                 Statement
               </span>
-              <p className="text-xs sm:text-sm text-[#A8A2AB] leading-relaxed font-normal whitespace-pre-line">
+              <p className="text-xs sm:text-sm text-[#B2A4D7] leading-relaxed font-normal whitespace-pre-line">
                 {profile.bio || "No personal introduction written yet."}
               </p>
             </div>
           </div>
 
           {/* Action Module */}
-          <div className="mt-8 pt-6 border-t border-[#725A7A]/25 space-y-2.5">
+          <div className="mt-8 pt-6 border-t border-[#9A8CC3]/25 space-y-2.5">
             <button
               onClick={handleStartConversation}
               disabled={profile.trustStatus === 'under_review'}
-              className="w-full py-3 rounded-xl bg-[#653C87] hover:bg-[#7a49a2] text-[#F3EBF9] shadow-lg shadow-[#41384E]/50 disabled:opacity-40 disabled:cursor-not-allowed transition-all font-semibold text-xs tracking-tight"
+              className="w-full py-3 rounded-xl bg-[#6555B8] hover:bg-[#7D4B9F] text-[#F3EBF9] shadow-lg shadow-[#3B3D60]/50 disabled:opacity-40 disabled:cursor-not-allowed transition-all font-semibold text-xs tracking-tight"
             >
               Direct Message
             </button>
 
             <button
               onClick={() => setShowReviewModal(true)}
-              className="w-full py-2.5 rounded-xl bg-[#1d1827] hover:bg-[#282136] border border-[#725A7A]/25 text-[11px] font-medium text-[#C6CBD1] transition-colors"
+              className="w-full py-2.5 rounded-xl bg-[#2D2F4C] hover:bg-[#2D2F4C] border border-[#9A8CC3]/25 text-[11px] font-medium text-[#C6CBD1] transition-colors"
             >
               Feedback on This Member
             </button>

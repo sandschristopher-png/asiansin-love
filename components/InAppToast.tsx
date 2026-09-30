@@ -95,13 +95,13 @@ export default function InAppToast() {
         isDismissing ? 'opacity-0 -translate-y-6 pointer-events-none' : 'opacity-100 animate-slide-down'
       }`}
     >
-      <div className="flex items-center gap-3 p-3 rounded-2xl bg-[#241E2F]/95 backdrop-blur-xl border border-[#653C87]/70 shadow-2xl shadow-black/60">
+      <div className="flex items-center gap-3 p-3 rounded-2xl bg-[#2D2F4C]/95 backdrop-blur-xl border border-[#6555B8]/70 shadow-2xl shadow-black/60">
         <Link
           href={toast.chatUrl}
           onClick={dismissToast}
           className="flex items-center gap-3 flex-1 min-w-0"
         >
-          <div className="relative w-10 h-10 rounded-full overflow-hidden border border-[#9A79BA] shrink-0 bg-[#17131F]">
+          <div className="relative w-10 h-10 rounded-full overflow-hidden border border-[#9A8CC3] shrink-0 bg-[#2D2F4C]">
             <Image
               src={toast.avatarUrl}
               alt={toast.senderName}
@@ -110,8 +110,8 @@ export default function InAppToast() {
             />
           </div>
           <div className="flex flex-col min-w-0">
-            <span className="text-xs font-bold text-[#E6D7FA] flex items-center gap-1.5 leading-tight">
-              <MessageSquareHeart className="w-3.5 h-3.5 text-[#9A79BA] shrink-0" />
+            <span className="text-xs font-bold text-[#1C1924] flex items-center gap-1.5 leading-tight">
+              <MessageSquareHeart className="w-3.5 h-3.5 text-[#9A8CC3] shrink-0" />
               {toast.senderName}
             </span>
             <p className="text-[11px] text-[#8e849c] truncate mt-0.5">
@@ -122,7 +122,7 @@ export default function InAppToast() {
 
         <button
           onClick={dismissToast}
-          className="p-1.5 rounded-full text-[#8e849c] hover:text-[#E6D7FA] transition shrink-0"
+          className="p-1.5 rounded-full text-[#8e849c] hover:text-[#1C1924] transition shrink-0"
           aria-label="Dismiss notification"
         >
           <X className="w-4 h-4" />
@@ -130,7 +130,7 @@ export default function InAppToast() {
       </div>
 
       {/* Subtle indicator bar for swipe affordance */}
-      <div className="w-8 h-1 bg-[#653C87]/40 rounded-full mx-auto mt-1.5" />
+      <div className="w-8 h-1 bg-[#6555B8]/40 rounded-full mx-auto mt-1.5" />
     </div>
   );
 }

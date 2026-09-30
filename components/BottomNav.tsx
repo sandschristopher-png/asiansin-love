@@ -109,20 +109,20 @@ export function BottomNav() {
           isKeyboardOpen ? 'translate-y-24 opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'
         }`}
       >
-        <nav className="pointer-events-auto bg-[#261F33]/95 backdrop-blur-xl border border-[#9A79BA]/35 rounded-[28px] px-3 py-1.5 shadow-2xl shadow-black/80 w-full max-w-sm transition-transform">
+        <nav className="pointer-events-auto bg-[#2D2F4C]/95 backdrop-blur-xl border border-[#9A8CC3]/35 rounded-[28px] px-3 py-1.5 shadow-2xl shadow-black/80 w-full max-w-sm transition-transform">
           <div className="grid grid-cols-4 items-center">
             
             {/* 1. DISCOVER */}
             <Link
               href="/discover"
               className={`flex flex-col items-center justify-center py-1 transition-transform active:scale-[0.88] ${
-                isActive('/discover') ? 'text-[#E6D7FA]' : 'text-[#9A79BA] hover:text-[#E6D7FA]'
+                isActive('/discover') ? 'text-[#1C1924]' : 'text-[#9A8CC3] hover:text-[#1C1924]'
               }`}
             >
-              <div className={`p-1.5 rounded-full transition-all duration-200 ${isActive('/discover') ? 'bg-[#653C87] text-[#E6D7FA] shadow-md shadow-[#653C87]/40' : ''}`}>
+              <div className={`p-1.5 rounded-full transition-all duration-200 ${isActive('/discover') ? 'bg-[#6555B8] text-white shadow-md shadow-[#6555B8]/40' : ''}`}>
                 <Search className="w-5 h-5" strokeWidth={isActive('/discover') ? 2.5 : 2} />
               </div>
-              <span className={`text-[10px] tracking-wide font-extrabold mt-0.5 ${isActive('/discover') ? 'text-[#E6D7FA]' : 'text-[#9A79BA]'}`}>
+              <span className={`text-[10px] tracking-wide font-extrabold mt-0.5 ${isActive('/discover') ? 'text-[#1C1924]' : 'text-[#9A8CC3]'}`}>
                 Discover
               </span>
             </Link>
@@ -131,13 +131,13 @@ export function BottomNav() {
             <Link
               href="/favorites"
               className={`flex flex-col items-center justify-center py-1 transition-transform active:scale-[0.88] ${
-                isActive('/favorites') ? 'text-[#E6D7FA]' : 'text-[#9A79BA] hover:text-[#E6D7FA]'
+                isActive('/favorites') ? 'text-[#1C1924]' : 'text-[#9A8CC3] hover:text-[#1C1924]'
               }`}
             >
-              <div className={`p-1.5 rounded-full transition-all duration-200 ${isActive('/favorites') ? 'bg-[#653C87] text-[#E6D7FA] shadow-md shadow-[#653C87]/40' : ''}`}>
+              <div className={`p-1.5 rounded-full transition-all duration-200 ${isActive('/favorites') ? 'bg-[#6555B8] text-white shadow-md shadow-[#6555B8]/40' : ''}`}>
                 <LucideHeart className="w-5 h-5" fill={isActive('/favorites') ? 'currentColor' : 'none'} strokeWidth={2} />
               </div>
-              <span className={`text-[10px] tracking-wide font-extrabold mt-0.5 ${isActive('/favorites') ? 'text-[#E6D7FA]' : 'text-[#9A79BA]'}`}>
+              <span className={`text-[10px] tracking-wide font-extrabold mt-0.5 ${isActive('/favorites') ? 'text-[#1C1924]' : 'text-[#9A8CC3]'}`}>
                 Saved
               </span>
             </Link>
@@ -146,13 +146,13 @@ export function BottomNav() {
             <Link
               href="/messages"
               className={`flex flex-col items-center justify-center py-1 transition-transform active:scale-[0.88] ${
-                isActive('/messages') ? 'text-[#E6D7FA]' : 'text-[#9A79BA] hover:text-[#E6D7FA]'
+                isActive('/messages') ? 'text-[#1C1924]' : 'text-[#9A8CC3] hover:text-[#1C1924]'
               }`}
             >
-              <div className={`p-1.5 rounded-full transition-all duration-200 relative ${isActive('/messages') ? 'bg-[#653C87] text-[#E6D7FA] shadow-md shadow-[#653C87]/40' : ''}`}>
+              <div className={`p-1.5 rounded-full transition-all duration-200 relative ${isActive('/messages') ? 'bg-[#6555B8] text-white shadow-md shadow-[#6555B8]/40' : ''}`}>
                 <MessageCircle className="w-5 h-5" strokeWidth={isActive('/messages') ? 2.5 : 2} />
               </div>
-              <span className={`text-[10px] tracking-wide font-extrabold mt-0.5 ${isActive('/messages') ? 'text-[#E6D7FA]' : 'text-[#9A79BA]'}`}>
+              <span className={`text-[10px] tracking-wide font-extrabold mt-0.5 ${isActive('/messages') ? 'text-[#1C1924]' : 'text-[#9A8CC3]'}`}>
                 Inbox
               </span>
             </Link>
@@ -164,28 +164,28 @@ export function BottomNav() {
               type="button"
               onClick={() => setAccountSheetOpen(true)}
               className={`flex flex-col items-center justify-center py-1 transition-transform active:scale-[0.88] ${
-                accountSheetOpen ? 'text-[#E6D7FA]' : 'text-[#9A79BA] hover:text-[#E6D7FA]'
+                accountSheetOpen ? 'text-[#1C1924]' : 'text-[#9A8CC3] hover:text-[#1C1924]'
               }`}
             >
               <div className="relative">
                 <div className={`w-8 h-8 rounded-full overflow-hidden flex items-center justify-center transition-all duration-200 ${
                   accountSheetOpen 
-                    ? 'ring-2 ring-[#E6D7FA] bg-[#653C87]' 
-                    : 'border border-[#9A79BA]/50 bg-[#1D1726]'
+                    ? 'ring-2 ring-[#E6D7FA] bg-[#6555B8]' 
+                    : 'border border-[#9A8CC3]/50 bg-[#2D2F4C]'
                 }`}>
                   {avatarUrl ? (
                     <img src={avatarUrl} alt="You" className="w-full h-full object-cover" />
                   ) : (
-                    <User className="w-4 h-4 text-[#C9A4E8]" />
+                    <User className="w-4 h-4 text-[#B2A4D7]" />
                   )}
                 </div>
                 {hasNotifications && (
-                  <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#9A79BA] border border-[#261F33] flex items-center justify-center">
+                  <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#9A8CC3] border border-[#2D2F4C] flex items-center justify-center">
                     <span className="w-1 h-1 rounded-full bg-[#E6D7FA]" />
                   </span>
                 )}
               </div>
-              <span className={`text-[10px] tracking-wide font-extrabold mt-0.5 ${accountSheetOpen ? 'text-[#E6D7FA]' : 'text-[#9A79BA]'}`}>
+              <span className={`text-[10px] tracking-wide font-extrabold mt-0.5 ${accountSheetOpen ? 'text-[#1C1924]' : 'text-[#9A8CC3]'}`}>
                 You
               </span>
             </button>

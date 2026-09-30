@@ -38,7 +38,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`h-full ${plusJakarta.variable}`}>
-      <body className="font-sans bg-[#17131F] text-white min-h-full overflow-y-auto selection:bg-[#653C87] selection:text-white pb-24 sm:pb-0">
+      <body className="font-sans bg-[#FFFFFF] text-[#1C1924] min-h-full overflow-y-auto selection:bg-[#6555B8] selection:text-white pb-24 sm:pb-0">
         <PwaRegister />
         <IosInstallBanner />
         <FavoritesProvider>

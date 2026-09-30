@@ -17,13 +17,13 @@ export function BottomDock() {
   return (
     <>
       <div className="md:hidden fixed bottom-[max(0.75rem,env(safe-area-inset-bottom))] inset-x-0 z-40 flex justify-center px-4 pointer-events-none">
-        <nav className="pointer-events-auto bg-[#17131F]/90 backdrop-blur-xl border border-[#725A7A]/40 rounded-full px-5 py-2.5 shadow-2xl shadow-black/80 flex items-center gap-6">
+        <nav className="pointer-events-auto bg-[#2D2F4C]/90 backdrop-blur-xl border border-[#9A8CC3]/40 rounded-full px-5 py-2.5 shadow-2xl shadow-black/80 flex items-center gap-6">
           
           {/* Discover */}
           <Link
             href="/discover"
             className={`flex flex-col items-center transition-transform active:scale-90 ${
-              isActive('/discover') ? 'text-white' : 'text-[#725A7A]'
+              isActive('/discover') ? 'text-white' : 'text-[#9A8CC3]'
             }`}
             aria-label="Discover"
           >
@@ -39,7 +39,7 @@ export function BottomDock() {
           <Link
             href="/favorites"
             className={`flex flex-col items-center transition-transform active:scale-90 ${
-              isActive('/favorites') ? 'text-white' : 'text-[#725A7A]'
+              isActive('/favorites') ? 'text-white' : 'text-[#9A8CC3]'
             }`}
             aria-label="Saved"
           >
@@ -55,7 +55,7 @@ export function BottomDock() {
           <Link
             href="/messages"
             className={`flex flex-col items-center relative transition-transform active:scale-90 ${
-              isActive('/messages') ? 'text-white' : 'text-[#725A7A]'
+              isActive('/messages') ? 'text-white' : 'text-[#9A8CC3]'
             }`}
             aria-label="Messages"
           >
@@ -63,7 +63,7 @@ export function BottomDock() {
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
               </svg>
-              <span className="absolute -top-1 -right-2 px-1 py-0.2 bg-[#653C87] text-white text-[8px] font-black rounded-full shadow-md">
+              <span className="absolute -top-1 -right-2 px-1 py-0.2 bg-[#6555B8] text-white text-[8px] font-black rounded-full shadow-md">
                 1
               </span>
             </div>
@@ -76,7 +76,7 @@ export function BottomDock() {
           <button
             type="button"
             onClick={() => setAccountSheetOpen(true)}
-            className="flex flex-col items-center text-[#725A7A] hover:text-white transition-transform active:scale-90"
+            className="flex flex-col items-center text-[#9A8CC3] hover:text-white transition-transform active:scale-90"
             aria-label="Account Menu"
           >
             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">

@@ -60,15 +60,15 @@ export default function SignUpPage() {
   return (
     <main className="max-w-md mx-auto w-full px-4 py-12 flex-1 flex flex-col justify-center">
       <div className="text-center mb-6">
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight font-[family-name:var(--font-nunito)]">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1C1924] tracking-tight font-[family-name:var(--font-nunito)]">
           Join asiansin.love
         </h1>
-        <p className="text-sm text-[#E6D7FA] mt-1">
+        <p className="text-sm text-[#1C1924] mt-1">
           A welcoming, verified community for sincere relationships.
         </p>
       </div>
 
-      <div className="rounded-3xl bg-[#261F33] border border-[#9A79BA]/35 p-6 sm:p-8 shadow-2xl space-y-5">
+      <div className="rounded-3xl bg-[#FFFFFF] border border-[#9A8CC3]/35 p-6 sm:p-8 shadow-2xl space-y-5">
         {errorMsg && (
           <div className="p-3 rounded-xl bg-rose-950/80 border border-rose-500/50 text-rose-200 text-xs font-semibold animate-in fade-in">
             {errorMsg}
@@ -77,7 +77,7 @@ export default function SignUpPage() {
 
         <form onSubmit={handleSignUp} className="space-y-4">
           <div>
-            <label className="text-xs font-bold uppercase tracking-wider text-[#9A79BA] block mb-1">
+            <label className="text-xs font-bold uppercase tracking-wider text-[#9A8CC3] block mb-1">
               Your Name / Display Name
             </label>
             <input
@@ -86,12 +86,12 @@ export default function SignUpPage() {
               value={fullName}
               onChange={(e) => setFullName(e.target.value)}
               placeholder="e.g. Christopher"
-              className="w-full px-4 py-2.5 rounded-2xl bg-[#181222] border border-[#9A79BA]/40 text-white text-sm focus:outline-none focus:border-[#9A79BA] placeholder-[#9A79BA]/60 transition"
+              className="w-full px-4 py-2.5 rounded-2xl bg-[#FFFFFF] border border-[#9A8CC3]/40 text-[#1C1924] text-sm focus:outline-none focus:border-[#9A8CC3] placeholder-[#756D82]/60 transition"
             />
           </div>
 
           <div>
-            <label className="text-xs font-bold uppercase tracking-wider text-[#9A79BA] block mb-1">
+            <label className="text-xs font-bold uppercase tracking-wider text-[#9A8CC3] block mb-1">
               Email Address
             </label>
             <input
@@ -100,12 +100,12 @@ export default function SignUpPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="name@example.com"
-              className="w-full px-4 py-2.5 rounded-2xl bg-[#181222] border border-[#9A79BA]/40 text-white text-sm focus:outline-none focus:border-[#9A79BA] placeholder-[#9A79BA]/60 transition"
+              className="w-full px-4 py-2.5 rounded-2xl bg-[#FFFFFF] border border-[#9A8CC3]/40 text-[#1C1924] text-sm focus:outline-none focus:border-[#9A8CC3] placeholder-[#756D82]/60 transition"
             />
           </div>
 
           <div>
-            <label className="text-xs font-bold uppercase tracking-wider text-[#9A79BA] block mb-1">
+            <label className="text-xs font-bold uppercase tracking-wider text-[#9A8CC3] block mb-1">
               Password
             </label>
             <input
@@ -115,22 +115,22 @@ export default function SignUpPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Minimum 6 characters"
-              className="w-full px-4 py-2.5 rounded-2xl bg-[#181222] border border-[#9A79BA]/40 text-white text-sm focus:outline-none focus:border-[#9A79BA] placeholder-[#9A79BA]/60 transition"
+              className="w-full px-4 py-2.5 rounded-2xl bg-[#FFFFFF] border border-[#9A8CC3]/40 text-[#1C1924] text-sm focus:outline-none focus:border-[#9A8CC3] placeholder-[#756D82]/60 transition"
             />
           </div>
 
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 rounded-2xl bg-[#653C87] hover:bg-[#7D49A8] disabled:opacity-50 text-white font-bold text-sm shadow-lg shadow-[#653C87]/40 transition active:scale-95 mt-2"
+            className="w-full py-3.5 rounded-2xl bg-[#6555B8] hover:bg-[#7D4B9F] disabled:opacity-50 text-white font-bold text-sm shadow-lg shadow-[#6555B8]/40 transition active:scale-95 mt-2"
           >
             {loading ? 'Creating Account...' : 'Create Account'}
           </button>
         </form>
 
-        <div className="pt-2 border-t border-[#9A79BA]/20 text-center text-xs text-[#E6D7FA]">
+        <div className="pt-2 border-t border-[#9A8CC3]/20 text-center text-xs text-[#1C1924]">
           Already have an account?{' '}
-          <Link href="/login" className="text-[#C9A4E8] font-bold hover:underline">
+          <Link href="/login" className="text-[#B2A4D7] font-bold hover:underline">
             Sign In
           </Link>
         </div>

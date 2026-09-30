@@ -140,10 +140,10 @@ export default function MessagesInboxPage() {
   return (
     <div className="w-full max-w-4xl mx-auto px-4 py-6 sm:py-8 space-y-6">
       {/* Title & Filter Tabs */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#9A79BA]/30 pb-4">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#9A8CC3]/30 pb-4">
         <div>
-          <h1 className="text-2xl font-bold tracking-tight text-white">Direct Messages</h1>
-          <p className="text-sm text-[#E6D7FA] mt-0.5">
+          <h1 className="text-2xl font-bold tracking-tight text-[#1C1924]">Direct Messages</h1>
+          <p className="text-sm text-[#1C1924] mt-0.5">
             Private, authentic courtship conversations with verified members.
           </p>
         </div>
@@ -153,8 +153,8 @@ export default function MessagesInboxPage() {
             onClick={() => setFilter('all')}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
               filter === 'all'
-                ? 'bg-[#653C87] text-white shadow-md shadow-[#653C87]/40'
-                : 'bg-[#261F33] border border-[#9A79BA]/35 text-[#E6D7FA] hover:bg-[#653C87]/20 hover:text-white'
+                ? 'bg-[#6555B8] text-white shadow-md shadow-[#6555B8]/40'
+                : 'bg-[#FFFFFF] border border-[#9A8CC3]/35 text-white hover:bg-[#6555B8]/20 hover:text-white'
             }`}
           >
             All Messages
@@ -163,8 +163,8 @@ export default function MessagesInboxPage() {
             onClick={() => setFilter('unread')}
             className={`px-3.5 py-1.5 rounded-xl text-xs font-bold transition-all ${
               filter === 'unread'
-                ? 'bg-[#653C87] text-white shadow-md shadow-[#653C87]/40'
-                : 'bg-[#261F33] border border-[#9A79BA]/35 text-[#E6D7FA] hover:bg-[#653C87]/20 hover:text-white'
+                ? 'bg-[#6555B8] text-white shadow-md shadow-[#6555B8]/40'
+                : 'bg-[#FFFFFF] border border-[#9A8CC3]/35 text-white hover:bg-[#6555B8]/20 hover:text-white'
             }`}
           >
             Unread
@@ -175,7 +175,7 @@ export default function MessagesInboxPage() {
       {/* Conversation Thread List */}
       <div className="space-y-2.5">
         {displayedConversations.length === 0 ? (
-          <div className="text-center py-12 rounded-2xl bg-[#261F33]/50 border border-[#9A79BA]/20 text-[#C9A4E8] text-sm">
+          <div className="text-center py-12 rounded-2xl bg-[#FFFFFF]/50 border border-[#9A8CC3]/20 text-[#B2A4D7] text-sm">
             {filter === 'unread' ? 'No unread messages.' : 'No conversations yet. Explore matches to start chatting!'}
           </div>
         ) : (
@@ -183,11 +183,11 @@ export default function MessagesInboxPage() {
             <Link
               key={c.partnerId}
               href={`/chat/${c.partnerId}`}
-              className="flex items-center justify-between p-3.5 sm:p-4 rounded-2xl bg-[#261F33] border border-[#9A79BA]/35 hover:border-[#9A79BA]/70 hover:bg-[#2D243D] transition-all group shadow-xl"
+              className="flex items-center justify-between p-3.5 sm:p-4 rounded-2xl bg-[#FFFFFF] border border-[#9A8CC3]/35 hover:border-[#9A8CC3]/70 hover:bg-[#2D243D] transition-all group shadow-xl"
             >
               <div className="flex items-center gap-3.5 sm:gap-4 min-w-0">
                 {/* Unified Squircle Avatar (48x48) */}
-                <div className="relative h-12 w-12 rounded-2xl overflow-hidden bg-[#181222] border border-[#9A79BA]/50 shrink-0 flex items-center justify-center shadow-inner group-hover:scale-[1.02] transition-transform">
+                <div className="relative h-12 w-12 rounded-2xl overflow-hidden bg-[#FFFFFF] border border-[#9A8CC3]/50 shrink-0 flex items-center justify-center shadow-inner group-hover:scale-[1.02] transition-transform">
                   {c.partnerAvatar ? (
                     <img
                       src={c.partnerAvatar}
@@ -200,27 +200,27 @@ export default function MessagesInboxPage() {
                     </span>
                   )}
                   {c.unreadCount > 0 && (
-                    <span className="absolute top-1 right-1 h-2.5 w-2.5 rounded-full bg-emerald-400 ring-2 ring-[#261F33]" />
+                    <span className="absolute top-1 right-1 h-2.5 w-2.5 rounded-full bg-emerald-400 ring-2 ring-[#FFFFFF]" />
                   )}
                 </div>
 
                 {/* Text Context */}
                 <div className="min-w-0 space-y-0.5">
                   <div className="flex items-center gap-2">
-                    <h2 className="font-bold text-sm sm:text-base text-white truncate">
+                    <h2 className="font-bold text-sm sm:text-base text-[#1C1924] truncate">
                       {c.partnerName}
                     </h2>
                     {c.partnerReputation !== undefined && (
-                      <span className="text-[10px] px-2 py-0.5 rounded-lg bg-[#181222] text-[#E6D7FA] border border-[#9A79BA]/40 font-semibold shrink-0">
+                      <span className="text-[10px] px-2 py-0.5 rounded-lg bg-[#FFFFFF] text-[#1C1924] border border-[#9A8CC3]/40 font-semibold shrink-0">
                         {c.partnerReputation}% Rep
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-[#E6D7FA] truncate max-w-xs sm:max-w-md">
+                  <p className="text-xs text-[#1C1924] truncate max-w-xs sm:max-w-md">
                     {c.lastMessage}
                   </p>
                   {c.partnerCity && (
-                    <p className="text-[11px] text-[#C9A4E8] font-medium">
+                    <p className="text-[11px] text-[#B2A4D7] font-medium">
                       {c.partnerCity}
                     </p>
                   )}
@@ -229,15 +229,15 @@ export default function MessagesInboxPage() {
 
               {/* Right Side: Timestamp & Unread Badge */}
               <div className="flex flex-col items-end gap-1.5 shrink-0 pl-2">
-                <span className="text-[11px] font-medium text-[#C9A4E8]">
+                <span className="text-[11px] font-medium text-[#B2A4D7]">
                   {c.lastMessageAt}
                 </span>
                 {c.unreadCount > 0 ? (
-                  <span className="px-2 py-0.5 rounded-full bg-[#653C87] text-white text-[10px] font-bold shadow-md shadow-[#653C87]/40">
+                  <span className="px-2 py-0.5 rounded-full bg-[#6555B8] text-white text-[10px] font-bold shadow-md shadow-[#6555B8]/40">
                     New
                   </span>
                 ) : (
-                  <span className="text-base text-[#9A79BA]">&rsaquo;</span>
+                  <span className="text-base text-[#9A8CC3]">&rsaquo;</span>
                 )}
               </div>
             </Link>

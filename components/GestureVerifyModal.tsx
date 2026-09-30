@@ -76,24 +76,24 @@ export function GestureVerifyModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
-      <div className="relative w-full max-w-md rounded-3xl bg-[#241e2f] border border-[#725A7A]/30 p-6 sm:p-8 shadow-2xl text-[#E6D7FA]">
+      <div className="relative w-full max-w-md rounded-3xl bg-[#2D2F4C] border border-[#9A8CC3]/30 p-6 sm:p-8 shadow-2xl text-[#1C1924]">
         
         {/* Header */}
         <div className="mb-6">
-          <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#B8AAC3] block mb-1">
+          <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#9A8CC3] block mb-1">
             Live Verification
           </span>
           <h2 className="text-xl font-bold text-white tracking-tight">
             Confirm Your Identity
           </h2>
-          <p className="text-xs text-[#A8A2AB] mt-1 leading-relaxed">
+          <p className="text-xs text-[#B2A4D7] mt-1 leading-relaxed">
             Take a quick selfie doing the pose below so we can confirm you are the person in your photos.
           </p>
         </div>
 
         {/* Gesture Prompt Box */}
-        <div className="p-4 rounded-2xl bg-[#1d1827] border border-[#725A7A]/25 mb-6 text-center">
-          <span className="text-[10px] font-mono uppercase tracking-wider text-[#9A79BA] block mb-1">
+        <div className="p-4 rounded-2xl bg-[#2D2F4C] border border-[#9A8CC3]/25 mb-6 text-center">
+          <span className="text-[10px] font-mono uppercase tracking-wider text-[#9A8CC3] block mb-1">
             Required Pose
           </span>
           <p className="text-sm font-bold text-white">
@@ -102,13 +102,13 @@ export function GestureVerifyModal({
         </div>
 
         {/* Upload Frame */}
-        <div className="relative aspect-[4/3] w-full rounded-2xl bg-[#17131f] border border-[#725A7A]/20 flex flex-col items-center justify-center overflow-hidden mb-6">
+        <div className="relative aspect-[4/3] w-full rounded-2xl bg-[#2D2F4C] border border-[#9A8CC3]/20 flex flex-col items-center justify-center overflow-hidden mb-6">
           {preview ? (
             <img src={preview} alt="Pose preview" className="w-full h-full object-cover" />
           ) : (
             <div className="text-center p-4">
-              <span className="text-xs text-[#A8A2AB] block mb-2">No photo selected</span>
-              <label className="cursor-pointer px-4 py-2 rounded-xl bg-[#653C87] hover:bg-[#7a49a2] text-xs font-semibold text-white transition-colors inline-block">
+              <span className="text-xs text-[#B2A4D7] block mb-2">No photo selected</span>
+              <label className="cursor-pointer px-4 py-2 rounded-xl bg-[#6555B8] hover:bg-[#7D4B9F] text-xs font-semibold text-white transition-colors inline-block">
                 Take Photo / Upload
                 <input
                   type="file"
@@ -127,13 +127,13 @@ export function GestureVerifyModal({
           <button
             onClick={handleUpload}
             disabled={!file || isSubmitting}
-            className="w-full py-3 rounded-xl bg-[#653C87] hover:bg-[#7a49a2] disabled:opacity-50 text-[#F3EBF9] font-semibold text-xs transition-all shadow-lg shadow-[#41384E]/50"
+            className="w-full py-3 rounded-xl bg-[#6555B8] hover:bg-[#7D4B9F] disabled:opacity-50 text-[#F3EBF9] font-semibold text-xs transition-all shadow-lg shadow-[#3B3D60]/50"
           >
             {isSubmitting ? 'Sending for Review...' : 'Submit Verification'}
           </button>
           <button
             onClick={onClose}
-            className="w-full sm:w-auto px-5 py-3 rounded-xl bg-[#1d1827] hover:bg-[#282136] text-[#A8A2AB] text-xs font-medium transition-colors"
+            className="w-full sm:w-auto px-5 py-3 rounded-xl bg-[#2D2F4C] hover:bg-[#2D2F4C] text-[#B2A4D7] text-xs font-medium transition-colors"
           >
             Cancel
           </button>

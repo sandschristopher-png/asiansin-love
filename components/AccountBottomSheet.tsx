@@ -128,7 +128,7 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
           transform: `translate3d(0, ${dragY}px, 0)`,
           transition: isDragging ? 'none' : 'transform 0.26s cubic-bezier(0.16, 1, 0.3, 1)',
         }}
-        className="relative w-full max-w-lg bg-[#261F33] border-t border-[#725A7A]/40 rounded-t-[28px] p-5 pb-8 shadow-2xl z-10 max-h-[85dvh] flex flex-col justify-between overflow-y-auto select-none will-change-transform"
+        className="relative w-full max-w-lg bg-[#2D2F4C] border-t border-[#9A8CC3]/40 rounded-t-[28px] p-5 pb-8 shadow-2xl z-10 max-h-[85dvh] flex flex-col justify-between overflow-y-auto select-none will-change-transform"
       >
         <div className="space-y-4">
           
@@ -139,33 +139,33 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
             onTouchEnd={handleTouchEnd}
             className="w-full pt-1 pb-4 flex flex-col items-center justify-center cursor-grab active:cursor-grabbing touch-none"
           >
-            <div className="w-14 h-1.5 bg-[#9A79BA]/60 rounded-full" />
+            <div className="w-14 h-1.5 bg-[#9A8CC3]/60 rounded-full" />
           </div>
 
           <div
             onTouchStart={handleTouchStart}
             onTouchMove={handleTouchMove}
             onTouchEnd={handleTouchEnd}
-            className="pb-2 border-b border-[#9A79BA]/25 touch-none"
+            className="pb-2 border-b border-[#9A8CC3]/25 touch-none"
           >
-            <h2 className="text-xl font-black text-[#E6D7FA] tracking-tight">
+            <h2 className="text-xl font-black text-[#1C1924] tracking-tight">
               Your Account
             </h2>
           </div>
 
           {/* User Profile Summary: Circular rounded-full avatar matching chat rows */}
-          <div className="p-4 rounded-2xl bg-[#130F18] border border-[#725A7A]/30 flex items-center justify-between gap-3 shadow-md">
+          <div className="p-4 rounded-2xl bg-[#1E1F30] border border-[#9A8CC3]/30 flex items-center justify-between gap-3 shadow-md">
             <div className="flex items-center gap-3">
-              <div className="h-12 w-12 rounded-full bg-[#653C87] text-[#E6D7FA] flex items-center justify-center font-black text-base border border-[#9A79BA]/50 shadow-inner flex-shrink-0">
+              <div className="h-12 w-12 rounded-full bg-[#6555B8] text-white flex items-center justify-center font-black text-base border border-[#9A8CC3]/50 shadow-inner flex-shrink-0">
                 {initials}
               </div>
               <div>
-                <h3 className="text-base font-extrabold text-[#E6D7FA]">
+                <h3 className="text-base font-extrabold text-[#1C1924]">
                   {profile?.full_name || 'Your Profile'}
                   {profile?.age ? `, ${profile.age}` : ''}
                 </h3>
-                <p className="text-xs text-[#A8A2AB] flex items-center gap-1.5 mt-0.5">
-                  <svg className="w-3.5 h-3.5 text-[#9A79BA]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <p className="text-xs text-[#B2A4D7] flex items-center gap-1.5 mt-0.5">
+                  <svg className="w-3.5 h-3.5 text-[#9A8CC3]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
                   </svg>
@@ -177,24 +177,24 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
             <Link
               href="/profile"
               onClick={closeWithAnimation}
-              className="px-3.5 py-1.5 rounded-xl bg-[#261F33] hover:bg-[#653C87]/30 border border-[#725A7A]/40 text-[#E6D7FA] hover:text-white text-xs font-bold transition-all active:scale-95"
+              className="px-3.5 py-1.5 rounded-xl bg-[#2D2F4C] hover:bg-[#6555B8]/30 border border-[#9A8CC3]/40 text-white hover:text-white text-xs font-bold transition-all active:scale-95"
             >
               Edit
             </Link>
           </div>
 
           {/* Verification Status Card */}
-          <div className="p-4 rounded-2xl bg-[#130F18] border border-[#9A79BA]/35 flex items-center justify-between gap-3 shadow-md">
+          <div className="p-4 rounded-2xl bg-[#1E1F30] border border-[#9A8CC3]/35 flex items-center justify-between gap-3 shadow-md">
             <div className="space-y-1">
               <div className="flex items-center gap-1.5">
-                <svg className="w-4 h-4 text-[#9A79BA]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-4 h-4 text-[#9A8CC3]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                 </svg>
-                <span className="text-[11px] font-black uppercase tracking-wider text-[#E6D7FA]">
+                <span className="text-[11px] font-black uppercase tracking-wider text-[#1C1924]">
                   {profile?.is_verified ? 'Identity Verified' : 'Pose Unverified'}
                 </span>
               </div>
-              <p className="text-xs text-[#A8A2AB] leading-relaxed">
+              <p className="text-xs text-[#B2A4D7] leading-relaxed">
                 {profile?.is_verified
                   ? 'Your profile carries the verified courtship badge.'
                   : 'Earn your verified badge with a 10-second selfie pose.'}
@@ -205,7 +205,7 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
               <Link
                 href="/verify"
                 onClick={closeWithAnimation}
-                className="px-3.5 py-2 rounded-xl bg-[#653C87] hover:bg-[#9A79BA] text-white text-xs font-black shadow-md flex-shrink-0 active:scale-95 transition-all"
+                className="px-3.5 py-2 rounded-xl bg-[#6555B8] hover:bg-[#9A8CC3] text-white text-xs font-black shadow-md flex-shrink-0 active:scale-95 transition-all"
               >
                 Verify
               </Link>
@@ -217,53 +217,53 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
             <Link
               href="/profile"
               onClick={closeWithAnimation}
-              className="flex items-center justify-between p-3.5 rounded-2xl bg-[#130F18]/90 hover:bg-[#130F18] border border-[#725A7A]/30 text-white font-bold text-sm transition-all active:scale-[0.985]"
+              className="flex items-center justify-between p-3.5 rounded-2xl bg-[#1E1F30]/90 hover:bg-[#1E1F30] border border-[#9A8CC3]/30 text-white font-bold text-sm transition-all active:scale-[0.985]"
             >
               <div className="flex items-center gap-3">
-                <svg className="w-4 h-4 text-[#9A79BA]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-4 h-4 text-[#9A8CC3]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                 </svg>
-                <span className="text-[#E6D7FA]">Edit Profile & Photos</span>
+                <span className="text-[#1C1924]">Edit Profile & Photos</span>
               </div>
-              <span className="text-xs text-[#9A79BA]">→</span>
+              <span className="text-xs text-[#9A8CC3]">→</span>
             </Link>
 
             <Link
               href="/favorites"
               onClick={closeWithAnimation}
-              className="flex items-center justify-between p-3.5 rounded-2xl bg-[#130F18]/90 hover:bg-[#130F18] border border-[#725A7A]/30 text-white font-bold text-sm transition-all active:scale-[0.985]"
+              className="flex items-center justify-between p-3.5 rounded-2xl bg-[#1E1F30]/90 hover:bg-[#1E1F30] border border-[#9A8CC3]/30 text-white font-bold text-sm transition-all active:scale-[0.985]"
             >
               <div className="flex items-center gap-3">
-                <svg className="w-4 h-4 text-[#9A79BA]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-4 h-4 text-[#9A8CC3]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
                 </svg>
-                <span className="text-[#E6D7FA]">Saved Profiles</span>
+                <span className="text-[#1C1924]">Saved Profiles</span>
               </div>
-              <span className="text-xs text-[#9A79BA]">→</span>
+              <span className="text-xs text-[#9A8CC3]">→</span>
             </Link>
 
             <Link
               href="/settings"
               onClick={closeWithAnimation}
-              className="flex items-center justify-between p-3.5 rounded-2xl bg-[#130F18]/90 hover:bg-[#130F18] border border-[#725A7A]/30 text-white font-bold text-sm transition-all active:scale-[0.985]"
+              className="flex items-center justify-between p-3.5 rounded-2xl bg-[#1E1F30]/90 hover:bg-[#1E1F30] border border-[#9A8CC3]/30 text-white font-bold text-sm transition-all active:scale-[0.985]"
             >
               <div className="flex items-center gap-3">
-                <svg className="w-4 h-4 text-[#9A79BA]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <svg className="w-4 h-4 text-[#9A8CC3]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                 </svg>
-                <span className="text-[#E6D7FA]">Settings & Preferences</span>
+                <span className="text-[#1C1924]">Settings & Preferences</span>
               </div>
-              <span className="text-xs text-[#9A79BA]">→</span>
+              <span className="text-xs text-[#9A8CC3]">→</span>
             </Link>
           </div>
         </div>
 
-        <div className="pt-4 mt-3 border-t border-[#9A79BA]/25">
+        <div className="pt-4 mt-3 border-t border-[#9A8CC3]/25">
           <button
             type="button"
             onClick={handleSignOut}
-            className="w-full py-3 rounded-2xl bg-[#130F18] hover:bg-[#201A2B] border border-rose-500/30 text-rose-300 font-extrabold text-xs tracking-wider uppercase active:scale-[0.985] transition-transform"
+            className="w-full py-3 rounded-2xl bg-[#1E1F30] hover:bg-[#2D2F4C] border border-rose-500/30 text-rose-300 font-extrabold text-xs tracking-wider uppercase active:scale-[0.985] transition-transform"
           >
             Sign Out / Switch Account
           </button>

@@ -92,7 +92,7 @@ export function ProfileActions({ targetUserId, targetUserName, currentUserId, is
         <button
           onClick={handleSpark}
           disabled={loadingSpark || sparkSent}
-          className="flex items-center justify-center gap-2 rounded-xl bg-rose-600 py-3 text-xs font-bold text-white hover:bg-rose-500 transition shadow-xs disabled:opacity-75"
+          className="flex items-center justify-center gap-2 rounded-xl bg-rose-600 py-3 text-xs font-bold text-[#1C1924] hover:bg-rose-500 transition shadow-xs disabled:opacity-75"
         >
           {loadingSpark ? (
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -180,7 +180,7 @@ export function ProfileActions({ targetUserId, targetUserName, currentUserId, is
                   <button
                     type="submit"
                     disabled={reporting}
-                    className="rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-bold text-white hover:bg-rose-500 transition disabled:opacity-50"
+                    className="rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-bold text-[#1C1924] hover:bg-rose-500 transition disabled:opacity-50"
                   >
                     {reporting ? 'Submitting...' : 'Submit Report'}
                   </button>

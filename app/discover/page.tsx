@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { getDistanceLabel } from '@/lib/location';
 
@@ -84,7 +84,7 @@ function DiscoverCardPhotoCarousel({
   };
 
   return (
-    <div className="relative block aspect-[3/4] w-full overflow-hidden bg-[#3b3d60] select-none">
+    <div className="relative block aspect-[3/4] w-full overflow-hidden bg-[#F2EEF7] select-none">
       <Link href={'/profile/' + profileId} className="absolute inset-0 z-0">
         <img
           src={displayPhotos[currentIdx]}
@@ -96,28 +96,30 @@ function DiscoverCardPhotoCarousel({
       </Link>
 
       {/* Top Badges */}
-      <div className="absolute top-2 left-2 right-2 flex items-center justify-between z-20 pointer-events-none">
-        <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-[10px] font-bold text-emerald-400">
-          <ShieldCheck className="w-3 h-3 text-emerald-400" />
-          <span>{repScore}%</span>
-        </div>
+      <div className="absolute top-2.5 inset-x-2.5 flex items-center justify-between z-20 pointer-events-none">
+        {/* Subtle Rep Score */}
+        {repScore ? (
+          <div className="flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/40 backdrop-blur-md border border-white/15 text-[10px] font-semibold text-emerald-300">
+            <ShieldCheck className="w-3 h-3 text-emerald-400 shrink-0" />
+            <span>{repScore}%</span>
+          </div>
+        ) : <div />}
 
+        {/* Dynamic Online Indicator (No dark Offline pill) */}
         {online ? (
-          <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-[9px] font-medium text-emerald-400">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="hidden sm:inline">Active</span>
+          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-black/40 backdrop-blur-md border border-white/15 text-[10px] font-medium text-white shadow-xs">
+            <span className="relative flex h-2 w-2">
+              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+            </span>
+            <span className="text-[10px] text-emerald-300 font-medium">Online</span>
           </div>
         ) : recentlyActive ? (
-          <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-[9px] font-medium text-amber-300">
+          <div className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-black/40 backdrop-blur-md border border-white/15 text-[10px] font-medium text-amber-200 shadow-xs">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-            <span className="hidden sm:inline">Recent</span>
+            <span className="text-[10px] text-amber-200">Recent</span>
           </div>
-        ) : (
-          <div className="flex items-center gap-1 px-1.5 py-0.5 rounded-full bg-black/60 backdrop-blur-md border border-white/10 text-[9px] font-medium text-zinc-400">
-            <span className="w-1.5 h-1.5 rounded-full bg-zinc-500" />
-            <span className="hidden sm:inline">Offline</span>
-          </div>
-        )}
+        ) : null}
       </div>
 
       {/* Story Progress Dashes */}
@@ -483,7 +485,7 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
   const hasMore = visibleLimit < filteredProfiles.length;
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#1e1f30] text-[#E6D7FA]">
+    <div className="min-h-screen flex flex-col bg-[#FAFAFD] text-[#1C1924]">
       <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 pt-8 pb-32 space-y-6">
         
         {/* Top Control Bar */}
@@ -498,19 +500,19 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Find someone in Manila, Bangkok, or Cebu..."
-                  className="w-full bg-[#2d2f4c] border border-[#7D7E92]/30 rounded-full pl-11 pr-4 py-2.5 text-xs sm:text-sm text-white placeholder-[#7D7E92] focus:outline-none focus:border-[#9a8cc3] focus:ring-1 focus:ring-[#9a8cc3] transition"
+                  className="w-full bg-white border border-[#DDD7E5] rounded-full pl-11 pr-4 py-2.5 text-xs sm:text-sm text-[#1C1924] placeholder-[#8C849B] focus:outline-none focus:border-[#9a8cc3] focus:ring-1 focus:ring-[#9a8cc3] transition"
                 />
               </div>
 
               <button
                 type="button"
                 onClick={() => setFiltersOpen(true)}
-                className="relative sm:hidden flex items-center justify-center p-2.5 rounded-full bg-[#2d2f4c] border border-[#7D7E92]/30 text-[#E6D7FA] active:bg-[#2B2338] transition shrink-0"
+                className="relative sm:hidden flex items-center justify-center p-2.5 rounded-full bg-white border border-[#DDD7E5] text-[#524B5E] active:bg-[#F3EFFC] transition shrink-0"
                 aria-label="Open Filters"
               >
                 <SlidersHorizontal className="w-4 h-4 text-[#b2a4d7]" />
                 {activeFiltersCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#6555b8] text-white text-[9px] font-bold rounded-full flex items-center justify-center border-2 border-[#1e1f30]">
+                  <span className="absolute -top-1 -right-1 w-4 h-4 bg-[#6555b8] text-white text-[9px] font-bold rounded-full flex items-center justify-center border-2 border-white">
                     {activeFiltersCount}
                   </span>
                 )}
@@ -521,7 +523,7 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
               <button
                 type="button"
                 onClick={() => setFiltersOpen(true)}
-                className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-[#2d2f4c] border border-[#7D7E92]/30 text-xs font-semibold text-[#E6D7FA] hover:border-[#9a8cc3]/60 hover:text-white transition"
+                className="flex items-center gap-2 px-4 py-2.5 rounded-full bg-white border border-[#DDD7E5] text-xs font-semibold text-[#1C1924] hover:border-[#9a8cc3]/60 hover:text-white transition"
               >
                 <SlidersHorizontal className="w-3.5 h-3.5 text-[#b2a4d7]" />
                 <span>Filters</span>
@@ -536,7 +538,7 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
 
           {/* Quick Filter Horizontal Scrollbar */}
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1 pt-2 sm:pt-2.5 scrollbar-none no-scrollbar">
-            <div className="flex items-center bg-[#2d2f4c] p-0.5 rounded-full border border-[#7D7E92]/30 shrink-0 mr-1.5">
+            <div className="flex items-center bg-white p-0.5 rounded-full border border-[#DDD7E5] shrink-0 mr-1.5">
               {(['All', 'woman', 'trans', 'man']).map((gender) => {
                 const label = gender === 'All' ? 'All' : gender === 'woman' ? 'Women' : gender === 'trans' ? 'Trans' : 'Men';
                 const active = selectedGender === gender;
@@ -562,7 +564,7 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
                   key={c}
                   type="button"
                   onClick={() => setSelectedCountry(c)}
-                  className={'px-3.5 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all shrink-0 border ' + (active ? 'bg-[#6555b8] text-white border-[#9a8cc3] shadow-sm' : 'bg-[#2d2f4c] text-[#D5CEE5] border-[#7D7E92]/25 hover:border-[#9a8cc3]/40 hover:text-white')}
+                  className={'px-3.5 py-1 rounded-full text-xs font-medium whitespace-nowrap transition-all shrink-0 border ' + (active ? 'bg-[#6555b8] text-white border-[#9a8cc3] shadow-sm' : 'bg-white text-[#D5CEE5] border-[#7D7E92]/25 hover:border-[#9a8cc3]/40 hover:text-white')}
                 >
                   {c}
                 </button>
@@ -581,7 +583,7 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
             return (
               <div
                 key={profile.id}
-                className={'group relative rounded-2xl overflow-hidden bg-[#1E1727] border transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-[#6555b8]/15 flex flex-col justify-between ' + (
+                className={'group relative rounded-2xl overflow-hidden bg-white border border-[#DDD7E5]/70 transition-all duration-300 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-[#6555b8]/15 flex flex-col justify-between ' + (
                   isLiked
                     ? 'border-rose-500/60 shadow-[0_0_20px_rgba(244,63,94,0.18)]'
                     : isStarred
@@ -599,7 +601,7 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
                   recentlyActive={profile.recentlyActive}
                 />
 
-                <div className="p-3 sm:p-3.5 space-y-2 bg-[#3b3d60]">
+                <div className="p-3 sm:p-3.5 space-y-2 bg-[#F2EEF7]">
                   <Link href={'/profile/' + profile.id} className="block group-hover:opacity-95">
                     <div className="flex items-center justify-between gap-1.5 mb-1">
                       <h3 className="text-sm sm:text-base font-bold text-white flex items-center gap-1.5 truncate">
@@ -614,7 +616,7 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
                           ? getDistanceLabel(currentUserCoords.lat, currentUserCoords.lon, profile.latitude, profile.longitude)
                           : null;
                         return (
-                          <p className="text-[11px] sm:text-xs font-medium text-[#E6D7FA]/80 flex items-center gap-1.5 truncate mt-0.5">
+                          <p className="text-[11px] sm:text-xs font-medium text-[#1C1924]/80 flex items-center gap-1.5 truncate mt-0.5">
                             <MapPin
                               className={`w-3 h-3 shrink-0 ${
                                 isVerified ? 'text-emerald-400' : 'text-[#9a8cc3]'
@@ -622,7 +624,7 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
                             />
                             <span className="truncate">{profile.location}</span>
                             {isVerified && distance && (
-                              <span className="text-[10px] text-emerald-300 font-normal shrink-0">• {distance}</span>
+                              <span className="text-[10px] text-emerald-300 font-normal shrink-0">â€¢ {distance}</span>
                             )}
                           </p>
                         );
@@ -634,7 +636,7 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
                       type="button"
                       aria-label="Pass"
                       onClick={() => triggerAction(profile.id, 'pass', profile.name)}
-                      className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border transition-all duration-150 active:scale-90 bg-[#2d2f4c] border-[#7D7E92]/30 text-[#E6D7FA]/70 hover:text-white hover:border-zinc-500 hover:bg-zinc-800/80"
+                      className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border transition-all duration-150 active:scale-90 bg-white border-[#DDD7E5] text-[#1C1924]/70 hover:text-white hover:border-zinc-500 hover:bg-zinc-800/80"
                     >
                       <XIcon className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
                     </button>
@@ -646,7 +648,7 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
                       className={'w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border transition-all duration-200 active:scale-95 ' + (
                         isStarred 
                           ? 'text-amber-400 bg-amber-400/20 border-amber-400/60 shadow-[0_0_12px_rgba(251,191,36,0.35)] scale-105' 
-                          : 'bg-[#2d2f4c] border-[#7D7E92]/30 text-[#E6D7FA]/70 hover:text-amber-400 hover:border-amber-400/40 hover:bg-[#2d2f4c]/80'
+                          : 'bg-white border-[#DDD7E5] text-[#1C1924]/70 hover:text-amber-400 hover:border-amber-400/40 hover:bg-white/80'
                       )}
                     >
                       <Star className={'w-4 h-4 sm:w-4.5 sm:h-4.5 ' + (isStarred ? 'fill-amber-400' : '')} />
@@ -655,7 +657,7 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
                     <Link 
                       href={'/chat/' + profile.id}
                       aria-label="Message" 
-                      className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center bg-[#2d2f4c] border border-[#7D7E92]/30 text-[#E6D7FA]/70 hover:text-[#b2a4d7] hover:border-[#9a8cc3]/60 hover:bg-[#6555b8]/30 transition active:scale-90"
+                      className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center bg-white border border-[#DDD7E5] text-[#1C1924]/70 hover:text-[#b2a4d7] hover:border-[#9a8cc3]/60 hover:bg-[#6555b8]/30 transition active:scale-90"
                     >
                       <MessageCircle className="w-4 h-4 sm:w-4.5 sm:h-4.5" />
                     </Link>
@@ -667,7 +669,7 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
                       className={'w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border transition-all duration-200 active:scale-95 ' + (
                         isLiked 
                           ? 'text-rose-400 bg-rose-500/20 border-rose-500/60 shadow-[0_0_12px_rgba(244,63,94,0.35)] scale-105' 
-                          : 'bg-[#2d2f4c] border-[#7D7E92]/30 text-[#E6D7FA]/70 hover:text-rose-400 hover:border-rose-400/40 hover:bg-[#2d2f4c]/80'
+                          : 'bg-white border-[#DDD7E5] text-[#1C1924]/70 hover:text-rose-400 hover:border-rose-400/40 hover:bg-white/80'
                       )}
                     >
                       <Heart className={'w-4 h-4 sm:w-4.5 sm:h-4.5 ' + (isLiked ? 'fill-rose-500' : '')} />
@@ -711,7 +713,7 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
                 }, 300);
               }}
               disabled={isLoadingMore}
-              className="px-6 py-2.5 rounded-full bg-[#2d2f4c] border border-[#9a8cc3]/40 text-[#E6D7FA] hover:text-white hover:border-[#9a8cc3] text-xs font-semibold transition flex items-center gap-2 shadow-lg"
+              className="px-6 py-2.5 rounded-full bg-white border border-[#9a8cc3]/40 text-[#1C1924] hover:text-white hover:border-[#9a8cc3] text-xs font-semibold transition flex items-center gap-2 shadow-lg"
             >
               {isLoadingMore ? (
                 <>
@@ -744,8 +746,8 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
 
         {/* Undo Dismissal Snackbar */}
         {lastPassed && (
-          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-4 py-2.5 rounded-full bg-[#2d2f4c]/95 border border-[#9a8cc3]/40 shadow-2xl backdrop-blur-md">
-            <span className="text-xs text-[#E6D7FA]">Passed <strong className="text-white">{lastPassed.name}</strong></span>
+          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-4 py-2.5 rounded-full bg-white/95 border border-[#9a8cc3]/40 shadow-2xl backdrop-blur-md">
+            <span className="text-xs text-[#1C1924]">Passed <strong className="text-white">{lastPassed.name}</strong></span>
             <button
               type="button"
               onClick={undoLastPass}
@@ -767,7 +769,7 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
         onClick={() => setFiltersOpen(false)}
       >
         <div 
-          className={'w-full max-w-sm sm:max-w-md bg-[#1B1524] h-full border-l border-[#7D7E92]/30 p-5 sm:p-6 overflow-y-auto flex flex-col justify-between transform transition-transform duration-300 ease-out ' + (
+          className={'w-full max-w-sm sm:max-w-md bg-[#1B1524] h-full border-l border-[#DDD7E5] p-5 sm:p-6 overflow-y-auto flex flex-col justify-between transform transition-transform duration-300 ease-out ' + (
             filtersOpen ? 'translate-x-0' : 'translate-x-full'
           )}
           onClick={(e) => e.stopPropagation()}
@@ -790,7 +792,7 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
             <div className="space-y-3">
               <div className="flex justify-between items-center text-xs font-semibold text-[#D5CEE5]">
                 <span>Age Range</span>
-                <span className="text-white font-mono">{minAge} • {maxAge} yrs</span>
+                <span className="text-white font-mono">{minAge} â€¢ {maxAge} yrs</span>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -876,7 +878,7 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
             <button
               type="button"
               onClick={resetFilters}
-              className="flex-1 py-2.5 rounded-full border border-[#7D7E92]/30 text-xs font-semibold text-[#D5CEE5] hover:text-white hover:bg-[#2B2338] transition flex items-center justify-center gap-1.5"
+              className="flex-1 py-2.5 rounded-full border border-[#DDD7E5] text-xs font-semibold text-[#D5CEE5] hover:text-white hover:bg-[#2B2338] transition flex items-center justify-center gap-1.5"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               Reset
@@ -900,7 +902,7 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
 
 export default function DiscoverPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#1e1f30] text-[#E6D7FA] p-8 text-center text-xs">Loading discover feed...</div>}>
+    <Suspense fallback={<div className="min-h-screen bg-[#FAFAFD] text-[#1C1924] p-8 text-center text-xs">Loading discover feed...</div>}>
       <DiscoverContent />
     </Suspense>
   );

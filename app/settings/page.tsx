@@ -202,27 +202,27 @@ export default function SettingsPage() {
   };
 
   return (
-    <div className="min-h-screen bg-[#130F18] text-[#E6D7FA]">
+    <div className="min-h-screen bg-[#F8F7FA] text-[#1C1924]">
       <main className="max-w-xl mx-auto w-full px-4 py-8 pb-28 space-y-6">
         
         {/* Top Header */}
-        <div className="flex items-center justify-between pb-4 border-b border-[#9A79BA]/25">
+        <div className="flex items-center justify-between pb-4 border-b border-[#9A8CC3]/25">
           <div className="flex items-center gap-3">
             <button
               type="button"
               onClick={() => router.back()}
-              className="h-10 w-10 rounded-2xl bg-[#261F33] border border-[#9A79BA]/35 text-[#E6D7FA] hover:text-white flex items-center justify-center text-sm active:scale-90 transition"
+              className="h-10 w-10 rounded-2xl bg-[#FFFFFF] border border-[#9A8CC3]/35 text-[#1C1924] hover:text-[#1C1924] flex items-center justify-center text-sm active:scale-90 transition"
               aria-label="Back"
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
-            <h1 className="text-xl font-bold text-white tracking-tight">
+            <h1 className="text-xl font-bold text-[#1C1924] tracking-tight">
               Account Settings
             </h1>
           </div>
           <Link
             href="/profile"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#9A79BA] hover:text-white transition"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#9A8CC3] hover:text-[#1C1924] transition"
           >
             <span>My Bio</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -230,14 +230,14 @@ export default function SettingsPage() {
         </div>
 
         {/* Segmented Tab Bar */}
-          <div className="p-1.5 rounded-2xl bg-[#261F33] border border-[#9A79BA]/35 grid grid-cols-5 gap-1 shadow-lg">
+          <div className="p-1.5 rounded-2xl bg-[#FFFFFF] border border-[#9A8CC3]/35 grid grid-cols-5 gap-1 shadow-lg">
             <button
               type="button"
               onClick={() => setActiveTab('account')}
               className={`py-2 rounded-xl text-xs font-bold transition ${
                 activeTab === 'account'
-                  ? 'bg-[#653C87] text-white shadow-md shadow-[#653C87]/40'
-                  : 'text-[#9A79BA] hover:text-white hover:bg-[#181222]/50'
+                  ? 'bg-[#6555B8] text-white shadow-md shadow-[#6555B8]/40'
+                  : 'text-[#9A8CC3] hover:text-white hover:bg-[#FFFFFF]/50'
               }`}
             >
               Account
@@ -247,8 +247,8 @@ export default function SettingsPage() {
             onClick={() => setActiveTab('app')}
             className={`py-2 rounded-xl text-xs font-bold transition ${
               activeTab === 'app'
-                ? 'bg-[#653C87] text-white shadow-md shadow-[#653C87]/40'
-                : 'text-[#9A79BA] hover:text-white hover:bg-[#181222]/50'
+                ? 'bg-[#6555B8] text-white shadow-md shadow-[#6555B8]/40'
+                : 'text-[#9A8CC3] hover:text-white hover:bg-[#FFFFFF]/50'
             }`}
           >
             App
@@ -258,8 +258,8 @@ export default function SettingsPage() {
             onClick={() => setActiveTab('notifications')}
             className={`py-2 rounded-xl text-xs font-bold transition ${
               activeTab === 'notifications'
-                ? 'bg-[#653C87] text-white shadow-md shadow-[#653C87]/40'
-                : 'text-[#9A79BA] hover:text-white hover:bg-[#181222]/50'
+                ? 'bg-[#6555B8] text-white shadow-md shadow-[#6555B8]/40'
+                : 'text-[#9A8CC3] hover:text-white hover:bg-[#FFFFFF]/50'
             }`}
           >
             Alerts
@@ -269,8 +269,8 @@ export default function SettingsPage() {
             onClick={() => setActiveTab('privacy')}
             className={`py-2 rounded-xl text-xs font-bold transition ${
               activeTab === 'privacy'
-                ? 'bg-[#653C87] text-white shadow-md shadow-[#653C87]/40'
-                : 'text-[#9A79BA] hover:text-white hover:bg-[#181222]/50'
+                ? 'bg-[#6555B8] text-white shadow-md shadow-[#6555B8]/40'
+                : 'text-[#9A8CC3] hover:text-white hover:bg-[#FFFFFF]/50'
             }`}
           >
             Privacy
@@ -280,8 +280,8 @@ export default function SettingsPage() {
             onClick={() => setActiveTab('reports')}
             className={`py-2 rounded-xl text-xs font-bold transition ${
               activeTab === 'reports'
-                ? 'bg-[#653C87] text-white shadow-md shadow-[#653C87]/40'
-                : 'text-[#9A79BA] hover:text-white hover:bg-[#181222]/50'
+                ? 'bg-[#6555B8] text-white shadow-md shadow-[#6555B8]/40'
+                : 'text-[#9A8CC3] hover:text-white hover:bg-[#FFFFFF]/50'
             }`}
           >
             Reports
@@ -291,13 +291,13 @@ export default function SettingsPage() {
         
           {/* Tab 0: Account */}
           {activeTab === 'account' && (
-            <div className="rounded-3xl bg-[#261F33] border border-[#9A79BA]/35 p-6 space-y-6 shadow-2xl">
+            <div className="rounded-3xl bg-[#FFFFFF] border border-[#9A8CC3]/35 p-6 space-y-6 shadow-2xl">
               <div>
-                <h2 className="text-xs font-bold uppercase tracking-wider text-[#9A79BA] flex items-center gap-2">
-                  <User className="w-4 h-4 text-[#C9A4E8]" />
+                <h2 className="text-xs font-bold uppercase tracking-wider text-[#9A8CC3] flex items-center gap-2">
+                  <User className="w-4 h-4 text-[#B2A4D7]" />
                   Handle & Account Identity
                 </h2>
-                <p className="mt-1 text-xs text-[#E6D7FA]/70">
+                <p className="mt-1 text-xs text-[#1C1924]/70">
                   Your distinct identifier used in profile links and direct messages.
                 </p>
               </div>
@@ -316,17 +316,17 @@ export default function SettingsPage() {
               )}
 
               <div className="space-y-3">
-                <label className="text-xs font-semibold text-[#E6D7FA]">Username Handle</label>
+                <label className="text-xs font-semibold text-[#1C1924]">Username Handle</label>
 
                 <div className="flex items-center gap-2">
                   <div className="relative flex-1">
-                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-semibold text-[#9A79BA]">@</span>
+                    <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-semibold text-[#9A8CC3]">@</span>
                     <input
                       type="text"
                       disabled={!isEditingUsername}
                       value={usernameInput}
                       onChange={(e) => setUsernameInput(e.target.value.replace(/[^a-zA-Z0-9_.]/g, ''))}
-                      className="w-full pl-8 pr-4 py-2.5 rounded-xl bg-[#181222] border border-[#9A79BA]/30 text-sm font-semibold text-white focus:outline-none focus:border-[#C9A4E8] disabled:opacity-75 disabled:cursor-not-allowed"
+                      className="w-full pl-8 pr-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#9A8CC3]/30 text-sm font-semibold text-[#1C1924] focus:outline-none focus:border-[#B2A4D7] disabled:opacity-75 disabled:cursor-not-allowed"
                       placeholder="Username"
                     />
                   </div>
@@ -344,7 +344,7 @@ export default function SettingsPage() {
                           setUsernameError(null);
                         }
                       }}
-                      className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#653C87] hover:bg-[#7D49A8] text-white text-xs font-bold transition shadow-md shadow-[#653C87]/30"
+                      className="flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#6555B8] hover:bg-[#7D4B9F] text-white text-xs font-bold transition shadow-md shadow-[#6555B8]/30"
                     >
                       {isForeignBlocked && <Lock className="w-3.5 h-3.5 text-amber-300" />}
                       <span>Edit</span>
@@ -355,7 +355,7 @@ export default function SettingsPage() {
                         type="button"
                         onClick={handleSaveUsername}
                         disabled={isSavingUsername}
-                        className="px-4 py-2.5 rounded-xl bg-[#653C87] hover:bg-[#7D49A8] text-white text-xs font-bold transition disabled:opacity-50"
+                        className="px-4 py-2.5 rounded-xl bg-[#6555B8] hover:bg-[#7D4B9F] text-white text-xs font-bold transition disabled:opacity-50"
                       >
                         {isSavingUsername ? 'Saving...' : 'Save'}
                       </button>
@@ -366,7 +366,7 @@ export default function SettingsPage() {
                           setUsernameInput(profile?.username || '');
                           setUsernameError(null);
                         }}
-                        className="px-3 py-2.5 rounded-xl bg-[#181222] border border-[#9A79BA]/30 text-[#9A79BA] hover:text-white text-xs font-bold transition"
+                        className="px-3 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#9A8CC3]/30 text-[#9A8CC3] hover:text-[#1C1924] text-xs font-bold transition"
                       >
                         Cancel
                       </button>
@@ -386,7 +386,7 @@ export default function SettingsPage() {
                       <button
                         type="button"
                         onClick={() => setShowUpgradeModal(true)}
-                        className="inline-block mt-1 font-bold text-[#E6D7FA] underline hover:text-white"
+                        className="inline-block mt-1 font-bold text-[#1C1924] underline hover:text-[#1C1924]"
                       >
                         Upgrade to Premium →
                       </button>
@@ -403,7 +403,7 @@ export default function SettingsPage() {
                     </div>
                   </div>
                 ) : (
-                  <p className="text-[11px] text-[#9A79BA]">
+                  <p className="text-[11px] text-[#9A8CC3]">
                     Letters (uppercase and lowercase), numbers, underscores, and periods are permitted.
                   </p>
                 )}
@@ -413,22 +413,22 @@ export default function SettingsPage() {
 
           {/* Tab 1: App */}
         {activeTab === 'app' && (
-          <div className="rounded-3xl bg-[#261F33] border border-[#9A79BA]/35 p-6 space-y-5 shadow-2xl">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-[#9A79BA] flex items-center gap-2">
-              <Smartphone className="w-4 h-4 text-[#C9A4E8]" />
+          <div className="rounded-3xl bg-[#FFFFFF] border border-[#9A8CC3]/35 p-6 space-y-5 shadow-2xl">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-[#9A8CC3] flex items-center gap-2">
+              <Smartphone className="w-4 h-4 text-[#B2A4D7]" />
               Display & Measurement
             </h2>
 
-            <div className="flex items-center justify-between py-3 border-b border-[#9A79BA]/20">
+            <div className="flex items-center justify-between py-3 border-b border-[#9A8CC3]/20">
               <div>
-                <p className="text-sm font-bold text-white">Imperial Units</p>
-                <p className="text-xs text-[#E6D7FA] mt-0.5">Show height in feet/inches and distances in miles</p>
+                <p className="text-sm font-bold text-[#1C1924]">Imperial Units</p>
+                <p className="text-xs text-[#1C1924] mt-0.5">Show height in feet/inches and distances in miles</p>
               </div>
               <button
                 type="button"
                 onClick={() => setImperialUnits(!imperialUnits)}
                 className={`w-12 h-6 rounded-full transition-colors relative ${
-                  imperialUnits ? 'bg-[#653C87]' : 'bg-[#181222] border border-[#9A79BA]/40'
+                  imperialUnits ? 'bg-[#6555B8]' : 'bg-[#FFFFFF] border border-[#9A8CC3]/40'
                 }`}
               >
                 <span
@@ -441,14 +441,14 @@ export default function SettingsPage() {
 
             <div className="flex items-center justify-between py-3">
               <div>
-                <p className="text-sm font-bold text-white">Haptic Touch Vibrations</p>
-                <p className="text-xs text-[#E6D7FA] mt-0.5">Provide tactile feedback when tapping actions</p>
+                <p className="text-sm font-bold text-[#1C1924]">Haptic Touch Vibrations</p>
+                <p className="text-xs text-[#1C1924] mt-0.5">Provide tactile feedback when tapping actions</p>
               </div>
               <button
                 type="button"
                 onClick={() => setVibrations(!vibrations)}
                 className={`w-12 h-6 rounded-full transition-colors relative ${
-                  vibrations ? 'bg-[#653C87]' : 'bg-[#181222] border border-[#9A79BA]/40'
+                  vibrations ? 'bg-[#6555B8]' : 'bg-[#FFFFFF] border border-[#9A8CC3]/40'
                 }`}
               >
                 <span
@@ -463,22 +463,22 @@ export default function SettingsPage() {
 
         {/* Tab 2: Notifications */}
         {activeTab === 'notifications' && (
-          <div className="rounded-3xl bg-[#261F33] border border-[#9A79BA]/35 p-6 space-y-5 shadow-2xl">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-[#9A79BA] flex items-center gap-2">
-              <Bell className="w-4 h-4 text-[#C9A4E8]" />
+          <div className="rounded-3xl bg-[#FFFFFF] border border-[#9A8CC3]/35 p-6 space-y-5 shadow-2xl">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-[#9A8CC3] flex items-center gap-2">
+              <Bell className="w-4 h-4 text-[#B2A4D7]" />
               Notification Preferences
             </h2>
 
-            <div className="flex items-center justify-between py-3 border-b border-[#9A79BA]/20">
+            <div className="flex items-center justify-between py-3 border-b border-[#9A8CC3]/20">
               <div>
-                <p className="text-sm font-bold text-white">New Direct Messages</p>
-                <p className="text-xs text-[#E6D7FA] mt-0.5">Instant notification when a courtship match replies</p>
+                <p className="text-sm font-bold text-[#1C1924]">New Direct Messages</p>
+                <p className="text-xs text-[#1C1924] mt-0.5">Instant notification when a courtship match replies</p>
               </div>
               <button
                 type="button"
                 onClick={() => setNotifyMessages(!notifyMessages)}
                 className={`w-12 h-6 rounded-full transition-colors relative ${
-                  notifyMessages ? 'bg-[#653C87]' : 'bg-[#181222] border border-[#9A79BA]/40'
+                  notifyMessages ? 'bg-[#6555B8]' : 'bg-[#FFFFFF] border border-[#9A8CC3]/40'
                 }`}
               >
                 <span
@@ -489,16 +489,16 @@ export default function SettingsPage() {
               </button>
             </div>
 
-            <div className="flex items-center justify-between py-3 border-b border-[#9A79BA]/20">
+            <div className="flex items-center justify-between py-3 border-b border-[#9A8CC3]/20">
               <div>
-                <p className="text-sm font-bold text-white">Profile Visits</p>
-                <p className="text-xs text-[#E6D7FA] mt-0.5">Notify when a member views your bio</p>
+                <p className="text-sm font-bold text-[#1C1924]">Profile Visits</p>
+                <p className="text-xs text-[#1C1924] mt-0.5">Notify when a member views your bio</p>
               </div>
               <button
                 type="button"
                 onClick={() => setNotifyVisits(!notifyVisits)}
                 className={`w-12 h-6 rounded-full transition-colors relative ${
-                  notifyVisits ? 'bg-[#653C87]' : 'bg-[#181222] border border-[#9A79BA]/40'
+                  notifyVisits ? 'bg-[#6555B8]' : 'bg-[#FFFFFF] border border-[#9A8CC3]/40'
                 }`}
               >
                 <span
@@ -511,14 +511,14 @@ export default function SettingsPage() {
 
             <div className="flex items-center justify-between py-3">
               <div>
-                <p className="text-sm font-bold text-white">Email Digest</p>
-                <p className="text-xs text-[#E6D7FA] mt-0.5">Receive an email if you have unread messages after 1 hour</p>
+                <p className="text-sm font-bold text-[#1C1924]">Email Digest</p>
+                <p className="text-xs text-[#1C1924] mt-0.5">Receive an email if you have unread messages after 1 hour</p>
               </div>
               <button
                 type="button"
                 onClick={() => setEmailDigest(!emailDigest)}
                 className={`w-12 h-6 rounded-full transition-colors relative ${
-                  emailDigest ? 'bg-[#653C87]' : 'bg-[#181222] border border-[#9A79BA]/40'
+                  emailDigest ? 'bg-[#6555B8]' : 'bg-[#FFFFFF] border border-[#9A8CC3]/40'
                 }`}
               >
                 <span
@@ -533,24 +533,24 @@ export default function SettingsPage() {
 
         {/* Tab 3: Privacy */}
         {activeTab === 'privacy' && (
-          <div className="rounded-3xl bg-[#261F33] border border-[#9A79BA]/35 p-6 space-y-5 shadow-2xl">
-            <h2 className="text-xs font-bold uppercase tracking-wider text-[#9A79BA] flex items-center gap-2">
-              <UserX className="w-4 h-4 text-[#C9A4E8]" />
+          <div className="rounded-3xl bg-[#FFFFFF] border border-[#9A8CC3]/35 p-6 space-y-5 shadow-2xl">
+            <h2 className="text-xs font-bold uppercase tracking-wider text-[#9A8CC3] flex items-center gap-2">
+              <UserX className="w-4 h-4 text-[#B2A4D7]" />
               Safety & Blocked Profiles
             </h2>
 
             {blockedUsers.length > 0 ? (
-              <div className="divide-y divide-[#9A79BA]/20">
+              <div className="divide-y divide-[#9A8CC3]/20">
                 {blockedUsers.map((user) => (
                   <div key={user.id} className="py-3 flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-bold text-white">{user.name}</p>
-                      <p className="text-xs text-[#9A79BA]">{user.date}</p>
+                      <p className="text-sm font-bold text-[#1C1924]">{user.name}</p>
+                      <p className="text-xs text-[#9A8CC3]">{user.date}</p>
                     </div>
                     <button
                       type="button"
                       onClick={() => handleUnblock(user.id)}
-                      className="px-3.5 py-1.5 rounded-xl bg-[#181222] border border-[#9A79BA]/35 hover:border-[#9A79BA] text-xs font-bold text-[#E6D7FA] hover:text-white transition active:scale-95"
+                      className="px-3.5 py-1.5 rounded-xl bg-[#FFFFFF] border border-[#9A8CC3]/35 hover:border-[#9A8CC3] text-xs font-bold text-[#1C1924] hover:text-[#1C1924] transition active:scale-95"
                     >
                       Unblock
                     </button>
@@ -558,7 +558,7 @@ export default function SettingsPage() {
                 ))}
               </div>
             ) : (
-              <div className="text-center py-6 text-[#E6D7FA]">
+              <div className="text-center py-6 text-[#1C1924]">
                 <p className="text-xs font-semibold">Your blocked list is empty.</p>
               </div>
             )}
@@ -567,12 +567,12 @@ export default function SettingsPage() {
 
         {/* Tab 4: Reports */}
         {activeTab === 'reports' && (
-          <div className="rounded-3xl bg-[#261F33] border border-[#9A79BA]/35 p-8 text-center space-y-3 shadow-2xl">
-            <div className="h-14 w-14 rounded-2xl bg-[#181222] border border-[#9A79BA]/35 mx-auto flex items-center justify-center text-[#9A79BA]">
-              <ShieldAlert className="w-6 h-6 text-[#C9A4E8]" />
+          <div className="rounded-3xl bg-[#FFFFFF] border border-[#9A8CC3]/35 p-8 text-center space-y-3 shadow-2xl">
+            <div className="h-14 w-14 rounded-2xl bg-[#FFFFFF] border border-[#9A8CC3]/35 mx-auto flex items-center justify-center text-[#9A8CC3]">
+              <ShieldAlert className="w-6 h-6 text-[#B2A4D7]" />
             </div>
-            <h2 className="text-base font-bold text-white">No Active Reports</h2>
-            <p className="text-xs text-[#E6D7FA] leading-relaxed max-w-sm mx-auto">
+            <h2 className="text-base font-bold text-[#1C1924]">No Active Reports</h2>
+            <p className="text-xs text-[#1C1924] leading-relaxed max-w-sm mx-auto">
               Thanks for helping keep our community sincere. Any flagged safety violations or fraudulent solicitations will appear here.
             </p>
           </div>

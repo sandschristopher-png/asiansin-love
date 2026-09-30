@@ -59,29 +59,29 @@ export function IosInstallBanner() {
   if (!showPrompt) return null;
 
   return (
-    <div className="fixed bottom-20 left-4 right-4 sm:left-auto sm:right-6 sm:bottom-6 z-50 max-w-sm mx-auto bg-[#1E1727]/95 backdrop-blur-md border border-[#9A79BA]/40 rounded-2xl p-4 shadow-2xl shadow-black/80 text-white animate-in fade-in slide-in-from-bottom-5 duration-300">
+    <div className="fixed bottom-20 left-4 right-4 sm:left-auto sm:right-6 sm:bottom-6 z-50 max-w-sm mx-auto bg-[#2D2F4C]/95 backdrop-blur-md border border-[#9A8CC3]/40 rounded-2xl p-4 shadow-2xl shadow-black/80 text-white animate-in fade-in slide-in-from-bottom-5 duration-300">
       <div className="flex items-start justify-between gap-3">
         <div className="flex items-center gap-3">
-          <div className="relative w-11 h-11 rounded-xl overflow-hidden border border-[#9A79BA]/40 bg-[#261F33] p-1.5 shrink-0 flex items-center justify-center">
+          <div className="relative w-11 h-11 rounded-xl overflow-hidden border border-[#9A8CC3]/40 bg-[#2D2F4C] p-1.5 shrink-0 flex items-center justify-center">
             <Image src="/ail-heart.png" alt="asiansin.love" fill className="object-contain p-1" />
           </div>
           <div className="flex flex-col">
             <h4 className="text-xs font-bold text-white tracking-wide">Install asiansin.love</h4>
-            <span className="text-[10px] text-[#C9A4E8]">Add to Home Screen for full app experience</span>
+            <span className="text-[10px] text-[#B2A4D7]">Add to Home Screen for full app experience</span>
           </div>
         </div>
         <button
           onClick={handleDismiss}
-          className="text-[#A8A2AB] hover:text-white p-1 rounded-lg transition"
+          className="text-[#B2A4D7] hover:text-white p-1 rounded-lg transition"
           aria-label="Dismiss banner"
         >
           <X className="w-4 h-4" />
         </button>
       </div>
 
-      <div className="mt-3 pt-3 border-t border-[#7D7E92]/25 space-y-2 text-[11px] text-[#E6D7FA]/90">
+      <div className="mt-3 pt-3 border-t border-[#7D7E92]/25 space-y-2 text-[11px] text-[#1C1924]/90">
         <div className="flex items-center gap-2">
-          <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#261F33] text-[10px] font-bold text-[#C9A4E8] shrink-0">
+          <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#2D2F4C] text-[10px] font-bold text-[#B2A4D7] shrink-0">
             1
           </span>
           <span>
@@ -89,7 +89,7 @@ export function IosInstallBanner() {
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#261F33] text-[10px] font-bold text-[#C9A4E8] shrink-0">
+          <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#2D2F4C] text-[10px] font-bold text-[#B2A4D7] shrink-0">
             2
           </span>
           <span>

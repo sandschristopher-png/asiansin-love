@@ -25,11 +25,11 @@ export function FilterModal({
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end bg-black/75 backdrop-blur-sm transition-opacity duration-300">
-      <div className="w-full max-w-md h-full bg-[#17131F] border-l border-[#725A7A]/30 flex flex-col justify-between p-6 shadow-2xl overflow-y-auto sheet-slide-right">
+      <div className="w-full max-w-md h-full bg-[#2D2F4C] border-l border-[#9A8CC3]/30 flex flex-col justify-between p-6 shadow-2xl overflow-y-auto sheet-slide-right">
         
         {/* Header */}
         <div className="space-y-6">
-          <div className="flex items-center justify-between border-b border-[#725A7A]/30 pb-4 pt-[max(0.5rem,env(safe-area-inset-top))]">
+          <div className="flex items-center justify-between border-b border-[#9A8CC3]/30 pb-4 pt-[max(0.5rem,env(safe-area-inset-top))]">
             <div>
               <h2 className="text-xl font-extrabold text-white tracking-tight">
                 Search Settings
@@ -38,7 +38,7 @@ export function FilterModal({
             </div>
             <button
               onClick={onClose}
-              className="h-9 w-9 rounded-xl bg-[#241E2F] border border-[#725A7A]/35 text-white font-black text-sm flex items-center justify-center touch-press"
+              className="h-9 w-9 rounded-xl bg-[#2D2F4C] border border-[#9A8CC3]/35 text-white font-black text-sm flex items-center justify-center touch-press"
             >
               ✕
             </button>
@@ -46,7 +46,7 @@ export function FilterModal({
 
           {/* Region / Country */}
           <div>
-            <label className="text-xs font-black uppercase tracking-wider text-[#B8AAC3] block mb-2.5">
+            <label className="text-xs font-black uppercase tracking-wider text-[#9A8CC3] block mb-2.5">
               Target Country
             </label>
             <div className="grid grid-cols-2 gap-2">
@@ -58,8 +58,8 @@ export function FilterModal({
                     onClick={() => onSelectRegion(region)}
                     className={`py-3 px-3 rounded-xl text-xs font-bold transition-all border text-center touch-press ${
                       active
-                        ? 'bg-[#653C87] border-[#978FA8] text-white shadow-md'
-                        : 'bg-[#241E2F] border-[#725A7A]/30 text-[#DDD8D4] hover:text-white'
+                        ? 'bg-[#6555B8] border-[#978FA8] text-white shadow-md'
+                        : 'bg-[#2D2F4C] border-[#9A8CC3]/30 text-[#DDD8D4] hover:text-white'
                     }`}
                   >
                     {region}
@@ -70,7 +70,7 @@ export function FilterModal({
           </div>
 
           {/* Verified Members Only Switch */}
-          <div className="rounded-2xl bg-[#241E2F] border border-[#725A7A]/35 p-4 flex items-center justify-between">
+          <div className="rounded-2xl bg-[#2D2F4C] border border-[#9A8CC3]/35 p-4 flex items-center justify-between">
             <div className="pr-4">
               <span className="text-sm font-extrabold text-white block">
                 Verified Profiles Only
@@ -83,7 +83,7 @@ export function FilterModal({
               type="button"
               onClick={onToggleVerified}
               className={`w-12 h-6 rounded-full transition-colors relative flex-shrink-0 touch-press ${
-                verifiedOnly ? 'bg-[#653C87]' : 'bg-[#17131F]'
+                verifiedOnly ? 'bg-[#6555B8]' : 'bg-[#2D2F4C]'
               }`}
             >
               <span
@@ -95,22 +95,22 @@ export function FilterModal({
           </div>
 
           {/* Age Bracket */}
-          <div className="rounded-2xl bg-[#241E2F] border border-[#725A7A]/35 p-4 space-y-2">
+          <div className="rounded-2xl bg-[#2D2F4C] border border-[#9A8CC3]/35 p-4 space-y-2">
             <div className="flex justify-between text-xs font-bold">
-              <span className="text-[#B8AAC3] uppercase tracking-wider">Age Bracket</span>
+              <span className="text-[#9A8CC3] uppercase tracking-wider">Age Bracket</span>
               <span className="text-white">20 – 45+</span>
             </div>
-            <div className="h-2 w-full bg-[#17131F] rounded-full overflow-hidden">
-              <div className="h-full bg-[#653C87] w-3/4 rounded-full" />
+            <div className="h-2 w-full bg-[#2D2F4C] rounded-full overflow-hidden">
+              <div className="h-full bg-[#6555B8] w-3/4 rounded-full" />
             </div>
           </div>
         </div>
 
         {/* Bottom Apply Action */}
-        <div className="pt-6 border-t border-[#725A7A]/30 pb-[max(1rem,env(safe-area-inset-bottom))]">
+        <div className="pt-6 border-t border-[#9A8CC3]/30 pb-[max(1rem,env(safe-area-inset-bottom))]">
           <button
             onClick={onClose}
-            className="w-full py-4 rounded-2xl bg-[#653C87] hover:bg-[#7A49A2] text-white font-extrabold text-sm shadow-xl shadow-[#653C87]/40 touch-press"
+            className="w-full py-4 rounded-2xl bg-[#6555B8] hover:bg-[#7D4B9F] text-white font-extrabold text-sm shadow-xl shadow-[#6555B8]/40 touch-press"
           >
             Apply Settings
           </button>

@@ -50,7 +50,7 @@ export function ProfileCard({
 
   if (isPassed) {
     return (
-      <div className="relative aspect-[4/5] w-full rounded-2xl overflow-hidden bg-[#261F33] border border-[#9A79BA]/35 flex items-center justify-center">
+      <div className="relative aspect-[4/5] w-full rounded-2xl overflow-hidden bg-[#2D2F4C] border border-[#9A8CC3]/35 flex items-center justify-center">
         <Image
           src={displayAvatar}
           alt={displayName}
@@ -59,7 +59,7 @@ export function ProfileCard({
         />
         <button
           onClick={() => onUndoPass?.(profile.id)}
-          className="relative z-10 flex items-center gap-2 px-4 py-2 rounded-full bg-[#241E2F]/90 border border-[#653C87]/60 text-xs font-semibold text-[#E6D7FA] hover:bg-[#653C87]/40 transition shadow-lg backdrop-blur-md"
+          className="relative z-10 flex items-center gap-2 px-4 py-2 rounded-full bg-[#2D2F4C]/90 border border-[#6555B8]/60 text-xs font-semibold text-[#1C1924] hover:bg-[#6555B8]/40 transition shadow-lg backdrop-blur-md"
         >
           <RotateCcw className="w-3.5 h-3.5" />
           Undo Pass
@@ -69,7 +69,7 @@ export function ProfileCard({
   }
 
   return (
-    <div className="group relative aspect-[4/5] w-full rounded-2xl overflow-hidden bg-[#261F33] border border-[#9A79BA]/35 hover:border-[#9A79BA]/70 transition duration-300 shadow-xl flex flex-col justify-end">
+    <div className="group relative aspect-[4/5] w-full rounded-2xl overflow-hidden bg-[#2D2F4C] border border-[#9A8CC3]/35 hover:border-[#9A8CC3]/70 transition duration-300 shadow-xl flex flex-col justify-end">
       <Link href={`/profile/${profile.id}`} className="absolute inset-0 z-0">
         <Image
           src={displayAvatar}
@@ -77,19 +77,19 @@ export function ProfileCard({
           fill sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
           className="object-cover object-[50%_20%] transition-transform duration-500 group-hover:scale-105"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#130F18] via-[#130F18]/50 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-[#1E1F30] via-[#1E1F30]/50 to-transparent" />
       </Link>
 
       <div className="absolute top-3 left-3 right-3 z-10 flex items-center justify-between pointer-events-none">
         {profile.isOnline ? (
-          <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#15101C]/80 border border-emerald-500/40 text-[10px] font-medium text-emerald-400 backdrop-blur-md">
+          <span className="flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-[#2D2F4C]/80 border border-emerald-500/40 text-[10px] font-medium text-emerald-400 backdrop-blur-md">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
             Online
           </span>
         ) : <div />}
 
         {profile.repScore !== undefined && (
-          <span className="px-2 py-0.5 rounded-full bg-[#261F33]/90 border border-[#9A79BA]/50 text-[10px] font-bold text-white backdrop-blur-md">
+          <span className="px-2 py-0.5 rounded-full bg-[#2D2F4C]/90 border border-[#9A8CC3]/50 text-[10px] font-bold text-white backdrop-blur-md">
             {profile.repScore}% Rep
           </span>
         )}
@@ -101,28 +101,28 @@ export function ProfileCard({
             <h3 className="text-base font-bold text-white leading-tight hover:underline flex items-center gap-1">
               {displayName}{displayAge}
               {profile.isVerified && (
-                <CheckCircle className="w-3.5 h-3.5 text-[#9A79BA] shrink-0" />
+                <CheckCircle className="w-3.5 h-3.5 text-[#9A8CC3] shrink-0" />
               )}
             </h3>
           </Link>
         </div>
 
-        <div className="flex items-center gap-1 text-xs font-semibold text-[#E6D7FA]">
+        <div className="flex items-center gap-1 text-xs font-semibold text-[#1C1924]">
           <MapPin className="w-3 h-3 shrink-0" />
           <span className="truncate">{locationLabel}</span>
         </div>
 
         {profile.headline && (
-          <p className="text-xs text-[#E6D7FA]/90 line-clamp-1 italic">
+          <p className="text-xs text-[#1C1924]/90 line-clamp-1 italic">
             "{profile.headline}"
           </p>
         )}
 
-        <div className="mt-1 pt-2 border-t border-[#9A79BA]/20 flex items-center justify-around pointer-events-auto">
+        <div className="mt-1 pt-2 border-t border-[#9A8CC3]/20 flex items-center justify-around pointer-events-auto">
           <button
             onClick={() => onPass?.(profile.id)}
             title="Pass"
-            className="p-2 rounded-full text-[#9A79BA] hover:text-rose-400 hover:bg-[#653C87]/20 transition"
+            className="p-2 rounded-full text-[#9A8CC3] hover:text-rose-400 hover:bg-[#6555B8]/20 transition"
           >
             <X className="w-4 h-4" />
           </button>
@@ -133,7 +133,7 @@ export function ProfileCard({
             className={`p-2 rounded-full transition ${
               isLiked 
                 ? 'text-rose-400 bg-rose-500/10' 
-                : 'text-[#E6D7FA] hover:text-rose-400 hover:bg-rose-500/10'
+                : 'text-[#1C1924] hover:text-rose-400 hover:bg-rose-500/10'
             }`}
           >
             <Heart className={`w-4 h-4 ${isLiked ? 'fill sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"-rose-400' : ''}`} />
@@ -145,7 +145,7 @@ export function ProfileCard({
             className={`p-2 rounded-full transition ${
               isSaved 
                 ? 'text-amber-400 bg-amber-500/10' 
-                : 'text-[#E6D7FA] hover:text-amber-400 hover:bg-amber-500/10'
+                : 'text-[#1C1924] hover:text-amber-400 hover:bg-amber-500/10'
             }`}
           >
             <Star className={`w-4 h-4 ${isSaved ? 'fill sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"-amber-400' : ''}`} />
@@ -154,7 +154,7 @@ export function ProfileCard({
           <Link
             href={`/chat/${profile.id}`}
             title="Message"
-            className="p-2 rounded-full text-[#E6D7FA] hover:text-[#9A79BA] hover:bg-[#653C87]/20 transition"
+            className="p-2 rounded-full text-[#1C1924] hover:text-[#9A8CC3] hover:bg-[#6555B8]/20 transition"
           >
             <MessageCircle className="w-4 h-4" />
           </Link>

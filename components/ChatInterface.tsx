@@ -222,11 +222,11 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-64px)] max-w-4xl mx-auto bg-[#181222] border-x border-[#9A79BA]/20">
+    <div className="flex flex-col h-[calc(100vh-64px)] max-w-4xl mx-auto bg-[#2D2F4C] border-x border-[#9A8CC3]/20">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 bg-[#1D1726] border-b border-[#7D7E92]/20">
+      <div className="flex items-center justify-between px-4 py-3 bg-[#2D2F4C] border-b border-[#7D7E92]/20">
         <div className="flex items-center gap-3">
-          <Link href="/discover" className="text-[#E6D7FA]/70 hover:text-white transition">
+          <Link href="/discover" className="text-[#1C1924]/70 hover:text-white transition">
             &larr;
           </Link>
           <div className="flex items-center gap-2">
@@ -236,7 +236,7 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
         </div>
         <div className="flex items-center gap-2">
           {targetUser.reputationScore && (
-            <span className="text-[11px] text-[#C9A4E8] font-mono font-semibold px-2 py-0.5 rounded-full bg-[#261F33] border border-[#9A79BA]/30">
+            <span className="text-[11px] text-[#B2A4D7] font-mono font-semibold px-2 py-0.5 rounded-full bg-[#2D2F4C] border border-[#9A8CC3]/30">
               {targetUser.reputationScore}% Rep
             </span>
           )}
@@ -262,13 +262,13 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
               <div
                 className={`max-w-[78%] px-3.5 py-2.5 rounded-2xl text-xs leading-relaxed ${
                   isMe
-                    ? 'bg-[#653C87] text-white rounded-br-xs shadow-md shadow-[#653C87]/20'
-                    : 'bg-[#261F33] text-[#E6D7FA] border border-[#7D7E92]/25 rounded-bl-xs'
+                    ? 'bg-[#6555B8] text-white rounded-br-xs shadow-md shadow-[#6555B8]/20'
+                    : 'bg-[#2D2F4C] text-white border border-[#7D7E92]/25 rounded-bl-xs'
                 }`}
               >
                 {msg.content}
               </div>
-              <span className="text-[10px] text-[#A8A2AB] mt-0.5 px-1">
+              <span className="text-[10px] text-[#B2A4D7] mt-0.5 px-1">
                 {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
               </span>
             </div>
@@ -278,18 +278,18 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
       </div>
 
       {/* Input Row */}
-      <form onSubmit={handleSendMessage} className="p-3 bg-[#1D1726] border-t border-[#7D7E92]/20 flex items-center gap-2">
+      <form onSubmit={handleSendMessage} className="p-3 bg-[#2D2F4C] border-t border-[#7D7E92]/20 flex items-center gap-2">
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
           placeholder="Write a message..."
-          className="flex-1 bg-[#130f18] border border-[#7D7E92]/30 rounded-xl px-3.5 py-2 text-xs text-white placeholder-[#7D7E92] focus:outline-none focus:border-[#9A79BA]"
+          className="flex-1 bg-[#1E1F30] border border-[#7D7E92]/30 rounded-xl px-3.5 py-2 text-xs text-white placeholder-[#7D7E92] focus:outline-none focus:border-[#9A8CC3]"
         />
         <button
           type="submit"
           disabled={!input.trim() || isSending}
-          className="px-4 py-2 bg-[#653C87] hover:bg-[#7D4B9F] disabled:opacity-40 text-white rounded-xl text-xs font-semibold transition"
+          className="px-4 py-2 bg-[#6555B8] hover:bg-[#7D4B9F] disabled:opacity-40 text-white rounded-xl text-xs font-semibold transition"
         >
           Send
         </button>

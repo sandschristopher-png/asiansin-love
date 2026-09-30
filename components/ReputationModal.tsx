@@ -75,13 +75,13 @@ export default function ReputationModal({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-md bg-[#181222] border border-[#9A79BA]/30 rounded-3xl p-5 sm:p-6 shadow-2xl space-y-5 animate-in fade-in zoom-in-95 duration-200"
+        className="w-full max-w-md bg-[#2D2F4C] border border-[#9A8CC3]/30 rounded-3xl p-5 sm:p-6 shadow-2xl space-y-5 animate-in fade-in zoom-in-95 duration-200"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#653C87] to-[#42225B] border border-[#9A79BA]/40 flex items-center justify-center shadow-lg shadow-[#653C87]/30">
+            <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#6555B8] to-[#42225B] border border-[#9A8CC3]/40 flex items-center justify-center shadow-lg shadow-[#6555B8]/30">
               <Sparkles className="w-6 h-6 text-white" />
             </div>
             <div>
@@ -94,7 +94,7 @@ export default function ReputationModal({
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-full text-[#A8A2AB] hover:text-white hover:bg-[#261F33] transition"
+            className="p-1.5 rounded-full text-[#B2A4D7] hover:text-white hover:bg-[#2D2F4C] transition"
             aria-label="Close reputation breakdown"
           >
             <X className="w-5 h-5" />
@@ -102,37 +102,37 @@ export default function ReputationModal({
         </div>
 
         {/* Big Score Card */}
-        <div className="flex items-center justify-between p-4 rounded-2xl bg-[#20182E] border border-[#9A79BA]/25">
+        <div className="flex items-center justify-between p-4 rounded-2xl bg-[#2D2F4C] border border-[#9A8CC3]/25">
           <div className="space-y-0.5">
-            <span className="text-[10px] uppercase font-bold tracking-wider text-[#A8A2AB]">Behavioral Standing</span>
+            <span className="text-[10px] uppercase font-bold tracking-wider text-[#B2A4D7]">Behavioral Standing</span>
             <p className="text-xs text-[#D5CEE5]">
               {score >= 95 ? 'Exceptional etiquette: exemplary community member.' : 'Respectful member in solid standing.'}
             </p>
           </div>
-          <div className="flex items-baseline gap-0.5 bg-[#653C87]/40 px-3 py-1.5 rounded-xl border border-[#9A79BA]/40">
+          <div className="flex items-baseline gap-0.5 bg-[#6555B8]/40 px-3 py-1.5 rounded-xl border border-[#9A8CC3]/40">
             <span className="text-2xl font-extrabold text-white">{score}</span>
-            <span className="text-xs font-semibold text-[#C9A4E8]">%</span>
+            <span className="text-xs font-semibold text-[#B2A4D7]">%</span>
           </div>
         </div>
 
         {/* Behavioral Pillars Breakdown */}
         <div className="space-y-2.5">
-          <h4 className="text-[11px] font-bold uppercase tracking-wider text-[#A8A2AB] px-0.5">
+          <h4 className="text-[11px] font-bold uppercase tracking-wider text-[#B2A4D7] px-0.5">
             How This Score Is Earned
           </h4>
           <div className="space-y-2">
             {behavioralMetrics.map((m, idx) => (
               <div
                 key={idx}
-                className="flex items-center justify-between p-2.5 rounded-xl bg-[#20182E]/60 border border-[#9A79BA]/15 hover:border-[#9A79BA]/30 transition"
+                className="flex items-center justify-between p-2.5 rounded-xl bg-[#2D2F4C]/60 border border-[#9A8CC3]/15 hover:border-[#9A8CC3]/30 transition"
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-[#2B203C] border border-[#9A79BA]/20 shrink-0">
+                  <div className="p-2 rounded-lg bg-[#2D2F4C] border border-[#9A8CC3]/20 shrink-0">
                     {m.icon}
                   </div>
                   <div className="space-y-0.5 text-left">
                     <p className="text-xs font-semibold text-white leading-tight">{m.title}</p>
-                    <p className="text-[10px] text-[#A8A2AB] line-clamp-1">{m.desc}</p>
+                    <p className="text-[10px] text-[#B2A4D7] line-clamp-1">{m.desc}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-1.5 shrink-0 ml-2">
@@ -146,15 +146,15 @@ export default function ReputationModal({
 
         {/* Peer Endorsement Tags */}
         <div className="space-y-2 pt-1">
-          <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[#A8A2AB] px-0.5">
-            <ThumbsUp className="w-3 h-3 text-[#9A79BA]" />
+          <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[#B2A4D7] px-0.5">
+            <ThumbsUp className="w-3 h-3 text-[#9A8CC3]" />
             <span>Community Tags</span>
           </div>
           <div className="flex flex-wrap gap-1.5">
             {peerTags.map((tag, idx) => (
               <span
                 key={idx}
-                className="px-2.5 py-1 rounded-full bg-[#2B203C]/80 border border-[#9A79BA]/25 text-[11px] text-[#E6D7FA]"
+                className="px-2.5 py-1 rounded-full bg-[#2D2F4C]/80 border border-[#9A8CC3]/25 text-[11px] text-[#1C1924]"
               >
                 {tag}
               </span>
@@ -163,12 +163,12 @@ export default function ReputationModal({
         </div>
 
         {/* Footer Guarantee */}
-        <div className="pt-2 border-t border-[#7D7E92]/20 flex items-center justify-between text-[11px] text-[#A8A2AB]">
+        <div className="pt-2 border-t border-[#7D7E92]/20 flex items-center justify-between text-[11px] text-[#B2A4D7]">
           <span>Updated dynamically based on behavior</span>
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-1.5 rounded-full bg-[#653C87] hover:bg-[#7D49A8] text-white text-xs font-semibold transition"
+            className="px-4 py-1.5 rounded-full bg-[#6555B8] hover:bg-[#7D4B9F] text-white text-xs font-semibold transition"
           >
             Got It
           </button>

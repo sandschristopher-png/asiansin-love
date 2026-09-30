@@ -34,14 +34,14 @@ export default function CommunityStandardsPage() {
   ];
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#130F18] text-[#E6D7FA]">
+    <div className="min-h-screen flex flex-col bg-[#F8F7FA] text-[#1C1924]">
       <main className="max-w-3xl mx-auto w-full px-4 sm:px-6 py-8 sm:py-12 flex-1 flex flex-col justify-center">
         
         {/* Navigation */}
         <div className="mb-4">
           <Link
             href="/discover"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#9A79BA] hover:text-white transition"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#9A8CC3] hover:text-[#1C1924] transition"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Back to Discover</span>
@@ -49,30 +49,30 @@ export default function CommunityStandardsPage() {
         </div>
 
         {/* Editorial Card */}
-        <div className="rounded-3xl bg-[#261F33] border border-[#9A79BA]/35 p-6 sm:p-9 shadow-2xl space-y-6">
+        <div className="rounded-3xl bg-[#FFFFFF] border border-[#9A8CC3]/35 p-6 sm:p-9 shadow-2xl space-y-6">
           <div>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-[#9A79BA]">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-[#9A8CC3]">
               Platform Guidelines
             </span>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-white mt-1 mb-2 tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1C1924] mt-1 mb-2 tracking-tight">
               Community Standards
             </h1>
-            <p className="text-xs sm:text-sm text-[#E6D7FA] leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#1C1924] leading-relaxed">
               These standards apply equally to every member—international gentlemen and Southeast Asian ladies alike. They are built directly into our verification systems and chat protections to ensure a safe, honest, and comfortable environment for everyone.
             </p>
           </div>
 
-          <div className="border-t border-[#9A79BA]/20 pt-6 space-y-5">
+          <div className="border-t border-[#9A8CC3]/20 pt-6 space-y-5">
             {standards.map((s, idx) => {
               const Icon = s.icon;
               return (
                 <div key={idx} className="flex items-start gap-4">
-                  <div className="w-9 h-9 rounded-xl bg-[#181222] border border-[#9A79BA]/35 flex items-center justify-center shrink-0 mt-0.5">
-                    <Icon className="w-4 h-4 text-[#C9A4E8]" />
+                  <div className="w-9 h-9 rounded-xl bg-[#FFFFFF] border border-[#9A8CC3]/35 flex items-center justify-center shrink-0 mt-0.5">
+                    <Icon className="w-4 h-4 text-[#B2A4D7]" />
                   </div>
                   <div className="space-y-1">
-                    <h2 className="text-sm font-bold text-white">{s.title}</h2>
-                    <p className="text-xs sm:text-sm text-[#E6D7FA] leading-relaxed">
+                    <h2 className="text-sm font-bold text-[#1C1924]">{s.title}</h2>
+                    <p className="text-xs sm:text-sm text-[#1C1924] leading-relaxed">
                       {s.description}
                     </p>
                   </div>
@@ -81,10 +81,10 @@ export default function CommunityStandardsPage() {
             })}
           </div>
 
-          <div className="pt-4 border-t border-[#9A79BA]/20 text-center">
+          <div className="pt-4 border-t border-[#9A8CC3]/20 text-center">
             <Link
               href="/discover"
-              className="inline-block px-8 py-3.5 rounded-2xl bg-[#653C87] hover:bg-[#7D49A8] text-white text-xs sm:text-sm font-bold shadow-lg shadow-[#653C87]/40 transition active:scale-[0.98]"
+              className="inline-block px-8 py-3.5 rounded-2xl bg-[#6555B8] hover:bg-[#7D4B9F] text-white text-xs sm:text-sm font-bold shadow-lg shadow-[#6555B8]/40 transition active:scale-[0.98]"
             >
               Back to Profiles
             </Link>

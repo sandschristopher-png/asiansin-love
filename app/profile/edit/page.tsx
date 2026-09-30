@@ -237,14 +237,14 @@ export default function EditProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#130F18] flex items-center justify-center text-sm font-semibold text-[#9A79BA]">
+      <div className="min-h-screen bg-[#F8F7FA] flex items-center justify-center text-sm font-semibold text-[#9A8CC3]">
         Loading profile settings...
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#130F18] text-[#E6D7FA]">
+    <div className="min-h-screen bg-[#F8F7FA] text-[#1C1924]">
       <div className="max-w-xl mx-auto px-4 py-8 pb-28 space-y-6">
         
         {/* Header */}
@@ -253,19 +253,19 @@ export default function EditProfilePage() {
             <button
               type="button"
               onClick={() => router.back()}
-              className="h-10 w-10 rounded-2xl bg-[#261F33] border border-[#9A79BA]/35 text-[#E6D7FA] hover:text-white flex items-center justify-center text-sm active:scale-90 transition"
+              className="h-10 w-10 rounded-2xl bg-[#FFFFFF] border border-[#9A8CC3]/35 text-[#1C1924] hover:text-[#1C1924] flex items-center justify-center text-sm active:scale-90 transition"
               aria-label="Back"
             >
               <ArrowLeft className="w-5 h-5" />
             </button>
             <div>
-              <h1 className="text-xl font-bold text-white tracking-tight">Edit Profile</h1>
-              <p className="text-xs text-[#9A79BA] mt-0.5">Manage your public information and identity handle</p>
+              <h1 className="text-xl font-bold text-[#1C1924] tracking-tight">Edit Profile</h1>
+              <p className="text-xs text-[#9A8CC3] mt-0.5">Manage your public information and identity handle</p>
             </div>
           </div>
           <Link
             href="/profile"
-            className="text-xs font-semibold text-[#9A79BA] hover:text-white px-3.5 py-2 rounded-xl bg-[#261F33] border border-[#9A79BA]/35 transition"
+            className="text-xs font-semibold text-[#9A8CC3] hover:text-[#1C1924] px-3.5 py-2 rounded-xl bg-[#FFFFFF] border border-[#9A8CC3]/35 transition"
           >
             View Bio
           </Link>
@@ -284,11 +284,11 @@ export default function EditProfilePage() {
         )}
 
         {/* Photo Management Section */}
-        <div className="bg-[#1D1726] border border-[#7D7E92]/25 rounded-2xl p-4 sm:p-5 space-y-3">
+        <div className="bg-[#FFFFFF] border border-[#DDD7E5]/25 rounded-2xl p-4 sm:p-5 space-y-3">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-sm font-bold text-white flex items-center gap-2">
-                <Camera className="w-4 h-4 text-[#C9A4E8]" />
+              <h2 className="text-sm font-bold text-[#1C1924] flex items-center gap-2">
+                <Camera className="w-4 h-4 text-[#B2A4D7]" />
                 Profile Photos ({photos.length}/6)
               </h2>
               <p className="text-[11px] text-[#D5CEE5]">
@@ -307,7 +307,7 @@ export default function EditProfilePage() {
                 return (
                   <div
                     key={slotIdx}
-                    className="relative aspect-[3/4] rounded-xl overflow-hidden bg-[#261F33] border border-[#7D7E92]/30 group"
+                    className="relative aspect-[3/4] rounded-xl overflow-hidden bg-[#FFFFFF] border border-[#E2DCE8] group"
                   >
                     <img
                       src={photo}
@@ -316,14 +316,14 @@ export default function EditProfilePage() {
                     />
 
                     {isPrimary ? (
-                      <div className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full bg-[#653C87]/90 text-white text-[9px] font-bold shadow-sm">
+                      <div className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full bg-[#6555B8]/90 text-white text-[9px] font-bold shadow-sm">
                         Primary
                       </div>
                     ) : (
                       <button
                         type="button"
                         onClick={() => handleSetPrimary(slotIdx)}
-                        className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full bg-black/60 text-[#E6D7FA] hover:text-white hover:bg-[#653C87] text-[9px] font-semibold transition"
+                        className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full bg-black/60 text-[#1C1924] hover:text-[#1C1924] hover:bg-[#6555B8] text-[9px] font-semibold transition"
                       >
                         Make Primary
                       </button>
@@ -344,7 +344,7 @@ export default function EditProfilePage() {
               return (
                 <label
                   key={slotIdx}
-                  className="relative aspect-[3/4] rounded-xl border border-dashed border-[#7D7E92]/40 hover:border-[#C9A4E8] bg-[#261F33]/50 hover:bg-[#261F33] flex flex-col items-center justify-center cursor-pointer transition p-2 text-center group"
+                  className="relative aspect-[3/4] rounded-xl border border-dashed border-[#DDD7E5]/40 hover:border-[#B2A4D7] bg-[#FFFFFF]/50 hover:bg-[#FFFFFF] flex flex-col items-center justify-center cursor-pointer transition p-2 text-center group"
                 >
                   <input
                     type="file"
@@ -354,13 +354,13 @@ export default function EditProfilePage() {
                     className="hidden"
                   />
                   {isUploading ? (
-                    <Loader2 className="w-5 h-5 text-[#C9A4E8] animate-spin" />
+                    <Loader2 className="w-5 h-5 text-[#B2A4D7] animate-spin" />
                   ) : (
                     <>
-                      <div className="w-8 h-8 rounded-full bg-[#1D1726] border border-[#7D7E92]/30 flex items-center justify-center text-[#D5CEE5] group-hover:text-white group-hover:border-[#C9A4E8] mb-1.5 transition">
+                      <div className="w-8 h-8 rounded-full bg-[#FFFFFF] border border-[#E2DCE8] flex items-center justify-center text-[#D5CEE5] group-hover:text-[#1C1924] group-hover:border-[#B2A4D7] mb-1.5 transition">
                         <Plus className="w-4 h-4" />
                       </div>
-                      <span className="text-[10px] font-medium text-[#D5CEE5] group-hover:text-white">
+                      <span className="text-[10px] font-medium text-[#D5CEE5] group-hover:text-[#1C1924]">
                         {slotIdx === 0 ? 'Add Primary' : 'Add Photo'}
                       </span>
                     </>
@@ -373,30 +373,30 @@ export default function EditProfilePage() {
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Handle Claim */}
-          <div className="p-4 rounded-2xl bg-[#261F33] border border-[#9A79BA]/35 space-y-2">
-            <label className="block text-xs font-bold uppercase tracking-wider text-[#9A79BA]">
+          <div className="p-4 rounded-2xl bg-[#FFFFFF] border border-[#9A8CC3]/35 space-y-2">
+            <label className="block text-xs font-bold uppercase tracking-wider text-[#9A8CC3]">
               Member Handle
             </label>
             {initialHasUsername ? (
               <div className="flex items-center justify-between">
-                <span className="font-mono text-sm text-white font-bold">@{username}</span>
-                <span className="text-xs px-2.5 py-1 rounded-lg bg-[#181222] border border-[#9A79BA]/35 text-[#9A79BA]">
+                <span className="font-mono text-sm text-[#1C1924] font-bold">@{username}</span>
+                <span className="text-xs px-2.5 py-1 rounded-lg bg-[#FFFFFF] border border-[#9A8CC3]/35 text-[#9A8CC3]">
                   Handle Locked
                 </span>
               </div>
             ) : (
               <div>
                 <div className="relative">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9A79BA] font-mono">@</span>
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9A8CC3] font-mono">@</span>
                   <input
                     type="text"
                     value={username}
                     onChange={(e) => handleUsernameChange(e.target.value)}
                     placeholder="choose_handle"
-                    className="w-full pl-8 pr-4 py-2.5 rounded-xl bg-[#181222] border border-[#9A79BA]/40 text-white font-mono text-sm focus:outline-none focus:border-[#9A79BA]"
+                    className="w-full pl-8 pr-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#9A8CC3]/40 text-[#1C1924] font-mono text-sm focus:outline-none focus:border-[#9A8CC3]"
                   />
                 </div>
-                <p className="text-[11px] text-[#9A79BA] mt-1.5">
+                <p className="text-[11px] text-[#9A8CC3] mt-1.5">
                   {usernameStatus === 'checking' && 'Checking availability...'}
                   {usernameStatus === 'available' && <span className="text-emerald-400">Handle is available.</span>}
                   {usernameStatus === 'taken' && <span className="text-rose-400">Handle is already taken.</span>}
@@ -408,7 +408,7 @@ export default function EditProfilePage() {
 
           {/* Display Name */}
           <div className="space-y-1.5">
-            <label className="block text-xs font-bold uppercase tracking-wider text-[#9A79BA]">
+            <label className="block text-xs font-bold uppercase tracking-wider text-[#9A8CC3]">
               Display Name
             </label>
             <input
@@ -416,14 +416,14 @@ export default function EditProfilePage() {
               required
               value={formData.full_name}
               onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-              className="w-full px-4 py-2.5 rounded-xl bg-[#181222] border border-[#9A79BA]/35 text-white text-sm focus:outline-none focus:border-[#9A79BA]"
+              className="w-full px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#9A8CC3]/35 text-[#1C1924] text-sm focus:outline-none focus:border-[#9A8CC3]"
             />
           </div>
 
           {/* Age & Location */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="space-y-1.5">
-              <label className="block text-xs font-bold uppercase tracking-wider text-[#9A79BA]">
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#9A8CC3]">
                 Age
               </label>
               <input
@@ -432,29 +432,29 @@ export default function EditProfilePage() {
                 max="99"
                 value={formData.age}
                 onChange={(e) => setFormData({ ...formData, age: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-xl bg-[#181222] border border-[#9A79BA]/35 text-white text-sm focus:outline-none focus:border-[#9A79BA]"
+                className="w-full px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#9A8CC3]/35 text-[#1C1924] text-sm focus:outline-none focus:border-[#9A8CC3]"
               />
             </div>
             <div className="space-y-1.5">
-              <label className="block text-xs font-bold uppercase tracking-wider text-[#9A79BA]">
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#9A8CC3]">
                 City
               </label>
               <input
                 type="text"
                 value={formData.city}
                 onChange={(e) => setFormData({ ...formData, city: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-xl bg-[#181222] border border-[#9A79BA]/35 text-white text-sm focus:outline-none focus:border-[#9A79BA]"
+                className="w-full px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#9A8CC3]/35 text-[#1C1924] text-sm focus:outline-none focus:border-[#9A8CC3]"
               />
             </div>
             <div className="space-y-1.5">
-              <label className="block text-xs font-bold uppercase tracking-wider text-[#9A79BA]">
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#9A8CC3]">
                 Country
               </label>
               <input
                 type="text"
                 value={formData.country}
                 onChange={(e) => setFormData({ ...formData, country: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-xl bg-[#181222] border border-[#9A79BA]/35 text-white text-sm focus:outline-none focus:border-[#9A79BA]"
+                className="w-full px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#9A8CC3]/35 text-[#1C1924] text-sm focus:outline-none focus:border-[#9A8CC3]"
               />
             </div>
           </div>
@@ -462,24 +462,24 @@ export default function EditProfilePage() {
           {/* Profession & Relationship Intent */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <label className="block text-xs font-bold uppercase tracking-wider text-[#9A79BA]">
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#9A8CC3]">
                 Profession / Occupation
               </label>
               <input
                 type="text"
                 value={formData.profession}
                 onChange={(e) => setFormData({ ...formData, profession: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-xl bg-[#181222] border border-[#9A79BA]/35 text-white text-sm focus:outline-none focus:border-[#9A79BA]"
+                className="w-full px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#9A8CC3]/35 text-[#1C1924] text-sm focus:outline-none focus:border-[#9A8CC3]"
               />
             </div>
             <div className="space-y-1.5">
-              <label className="block text-xs font-bold uppercase tracking-wider text-[#9A79BA]">
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#9A8CC3]">
                 Relationship Goal
               </label>
               <select
                 value={formData.relationship_goal}
                 onChange={(e) => setFormData({ ...formData, relationship_goal: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-xl bg-[#181222] border border-[#9A79BA]/35 text-white text-sm focus:outline-none focus:border-[#9A79BA]"
+                className="w-full px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#9A8CC3]/35 text-[#1C1924] text-sm focus:outline-none focus:border-[#9A8CC3]"
               >
                 <option value="Marriage">Marriage</option>
                 <option value="Serious Relationship">Serious Relationship</option>
@@ -491,7 +491,7 @@ export default function EditProfilePage() {
 
           {/* Bio */}
           <div className="space-y-1.5">
-            <label className="block text-xs font-bold uppercase tracking-wider text-[#9A79BA]">
+            <label className="block text-xs font-bold uppercase tracking-wider text-[#9A8CC3]">
               About You
             </label>
             <textarea
@@ -499,14 +499,14 @@ export default function EditProfilePage() {
               value={formData.bio}
               onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
               placeholder="Tell sincere community members about your values and relationship goals..."
-              className="w-full px-4 py-2.5 rounded-xl bg-[#181222] border border-[#9A79BA]/35 text-white text-sm focus:outline-none focus:border-[#9A79BA]"
+              className="w-full px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#9A8CC3]/35 text-[#1C1924] text-sm focus:outline-none focus:border-[#9A8CC3]"
             />
           </div>
 
           <button
             type="submit"
             disabled={saving}
-            className="w-full py-3.5 rounded-2xl bg-[#653C87] hover:bg-[#7D49A8] text-white font-bold text-sm shadow-lg shadow-[#653C87]/40 transition active:scale-[0.99] disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full py-3.5 rounded-2xl bg-[#6555B8] hover:bg-[#7D4B9F] text-white font-bold text-sm shadow-lg shadow-[#6555B8]/40 transition active:scale-[0.99] disabled:opacity-50 flex items-center justify-center gap-2"
           >
             <Save className="w-4 h-4" />
             <span>{saving ? 'Saving Changes...' : 'Save Profile'}</span>

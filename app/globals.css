@@ -52,3 +52,8 @@ input[type="submit"]:active {
                 border-color 200ms ease;
   }
 }
+
+body {
+  background-color: #F2EEF7 !important;
+  color: #1C1924;
+}

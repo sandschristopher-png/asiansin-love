@@ -238,16 +238,16 @@ export default function MyProfilePage() {
         <button
           type="button"
           onClick={() => setOpenDropdown(isOpen ? null : dropdownKey)}
-          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#181222] border border-[#9A79BA]/40 hover:border-[#9A79BA] text-xs font-medium text-white transition active:scale-95"
+          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#F3EFFC] border border-[#E2DAEF] hover:border-[#9A8CC3] text-xs font-medium text-[#1C1924] transition active:scale-95"
         >
-          <Icon className="w-3.5 h-3.5 text-[#9A79BA] shrink-0" />
+          <Icon className="w-3.5 h-3.5 text-[#9A8CC3] shrink-0" />
           <span className="text-[#D5CEE5]/70">{label}:</span>
-          <span className="font-semibold text-white">{value}</span>
-          <ChevronDown className={`w-3 h-3 text-[#9A79BA] shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
+          <span className="font-semibold text-[#1C1924]">{value}</span>
+          <ChevronDown className={`w-3 h-3 text-[#9A8CC3] shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
         </button>
 
         {isOpen && (
-          <div className={`absolute left-0 top-full mt-1.5 w-48 rounded-2xl bg-[#20182E] border border-[#9A79BA]/40 shadow-2xl py-1.5 z-50 overflow-y-auto backdrop-blur-md ${scrollable ? 'max-h-52' : ''}`}>
+          <div className={`absolute left-0 top-full mt-1.5 w-48 rounded-2xl bg-[#F3EFFC] border border-[#E2DAEF] shadow-2xl py-1.5 z-50 overflow-y-auto backdrop-blur-md ${scrollable ? 'max-h-52' : ''}`}>
             {options.map((opt) => (
               <button
                 key={opt}
@@ -258,12 +258,12 @@ export default function MyProfilePage() {
                 }}
                 className={`w-full text-left px-3 py-1.5 text-xs transition flex items-center justify-between ${
                   value === opt 
-                    ? 'text-white font-bold bg-[#653C87]/40' 
-                    : 'text-[#D5CEE5] hover:bg-[#2B203C] hover:text-white'
+                    ? 'text-[#1C1924] font-bold bg-[#6555B8]/40' 
+                    : 'text-[#D5CEE5] hover:bg-[#F3EFFC] hover:text-white'
                 }`}
               >
                 <span>{opt}</span>
-                {value === opt && <Check className="w-3.5 h-3.5 text-white" />}
+                {value === opt && <Check className="w-3.5 h-3.5 text-[#1C1924]" />}
               </button>
             ))}
           </div>
@@ -274,21 +274,21 @@ export default function MyProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#130F18] flex items-center justify-center text-[#9A79BA] text-xs">
+      <div className="min-h-screen bg-[#F8F7FA] flex items-center justify-center text-[#9A8CC3] text-xs">
         Loading profile...
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#130F18] text-[#E6D7FA]">
+    <div className="min-h-screen flex flex-col bg-[#F8F7FA] text-[#1C1924]">
       <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 py-4 sm:py-6 space-y-4 pb-28 md:pb-12" ref={dropdownRef}>
         
         {/* Navigation & Status */}
         <div className="flex items-center justify-between">
           <Link
             href="/discover"
-            className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#9A79BA] hover:text-white transition"
+            className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#9A8CC3] hover:text-[#1C1924] transition"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Back to Discover</span>
@@ -306,34 +306,34 @@ export default function MyProfilePage() {
         <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
           
           {/* Left Column: Top Masthead with Framed Photo */}
-          <div className="md:col-span-5 rounded-3xl bg-[#261F33] border border-[#9A79BA]/35 shadow-xl p-4 sm:p-5 space-y-4">
+          <div className="md:col-span-5 rounded-3xl bg-[#F3EFFC] border border-[#E2DAEF] shadow-sm p-4 sm:p-5 space-y-4">
             
             {/* Header Up Top */}
             {isEditing ? (
-              <div className="space-y-3 pb-1 border-b border-[#9A79BA]/25">
+              <div className="space-y-3 pb-1 border-b border-[#9A8CC3]/25">
                 <div className="grid grid-cols-3 gap-2">
                   <div className="col-span-2">
-                    <label className="text-[10px] uppercase font-bold text-[#9A79BA]">Name</label>
+                    <label className="text-[10px] uppercase font-bold text-[#9A8CC3]">Name</label>
                     <input
                       type="text"
                       value={name}
                       onChange={(e) => setName(e.target.value)}
-                      className="w-full mt-1 px-3 py-1.5 rounded-xl bg-[#181222] border border-[#9A79BA]/40 text-xs text-white focus:outline-none focus:border-[#9A79BA] [appearance:text-field] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                      className="w-full mt-1 px-3 py-1.5 rounded-xl bg-[#F3EFFC] border border-[#E2DAEF] text-xs text-[#1C1924] focus:outline-none focus:border-[#9A8CC3] [appearance:text-field] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                     />
                   </div>
                   <div>
-                    <label className="text-[10px] uppercase font-bold text-[#9A79BA]">Age</label>
+                    <label className="text-[10px] uppercase font-bold text-[#9A8CC3]">Age</label>
                     <input
                       type="number"
                       value={age}
                       onChange={(e) => setAge(Number(e.target.value))}
-                      className="w-full mt-1 px-3 py-1.5 rounded-xl bg-[#181222] border border-[#9A79BA]/40 text-xs text-white focus:outline-none focus:border-[#9A79BA] [appearance:text-field] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                      className="w-full mt-1 px-3 py-1.5 rounded-xl bg-[#F3EFFC] border border-[#E2DAEF] text-xs text-[#1C1924] focus:outline-none focus:border-[#9A8CC3] [appearance:text-field] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
                     />
                   </div>
                 </div>
                 <div>
                   <div className="flex items-center justify-between">
-                    <label className="text-[10px] uppercase font-bold text-[#9A79BA]">Location</label>
+                    <label className="text-[10px] uppercase font-bold text-[#9A8CC3]">Location</label>
                     <button
                       type="button"
                       disabled={isLocating}
@@ -353,16 +353,16 @@ export default function MyProfilePage() {
                           setLocError(res.error);
                         }
                       }}
-                      className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#C9A4E8] hover:text-white transition disabled:opacity-50"
+                      className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#B2A4D7] hover:text-[#1C1924] transition disabled:opacity-50"
                     >
                       {isLocating ? (
                         <>
-                          <Loader2 className="w-3 h-3 animate-spin text-[#C9A4E8]" />
+                          <Loader2 className="w-3 h-3 animate-spin text-[#B2A4D7]" />
                           <span>Detecting GPS...</span>
                         </>
                       ) : (
                         <>
-                          <Navigation className="w-3 h-3 text-[#C9A4E8]" />
+                          <Navigation className="w-3 h-3 text-[#B2A4D7]" />
                           <span>Detect Current Location</span>
                         </>
                       )}
@@ -373,7 +373,7 @@ export default function MyProfilePage() {
                     readOnly
                     value={location}
                     placeholder="GPS location will appear here"
-                    className="w-full mt-1.5 px-3 py-1.5 rounded-xl bg-[#181222]/50 border border-[#9A79BA]/30 text-xs text-gray-400 cursor-not-allowed focus:outline-none"
+                    className="w-full mt-1.5 px-3 py-1.5 rounded-xl bg-[#F3EFFC]/50 border border-[#9A8CC3]/30 text-xs text-[#756D82] cursor-not-allowed focus:outline-none"
                   />
                   {locError && <p className="text-[10px] text-red-400 mt-1">{locError}</p>}
                 </div>
@@ -381,11 +381,11 @@ export default function MyProfilePage() {
             ) : (
               <div className="flex items-start justify-between gap-2 pb-1">
                 <div>
-                  <h1 className="text-2xl font-bold text-white tracking-tight flex items-center gap-1.5">
+                  <h1 className="text-2xl font-bold text-[#1C1924] tracking-tight flex items-center gap-1.5">
                     {name}, {age}
                   </h1>
                   <div className="flex flex-wrap items-center gap-2 mt-1">
-                      <p className="text-xs font-medium text-white">
+                      <p className="text-xs font-medium text-[#1C1924]">
                         {location}
                       </p>
                       {locationSource === 'gps_verified' ? (
@@ -394,14 +394,14 @@ export default function MyProfilePage() {
                           <span>Verified {locationVerifiedAt ? formatVerifiedDate(locationVerifiedAt) : ''}</span>
                         </span>
                       ) : (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#181222] border border-[#9A79BA]/25 text-[10px] font-medium text-[#A8A2AB]">
+                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#F3EFFC] border border-[#9A8CC3]/25 text-[10px] font-medium text-[#B2A4D7]">
                           Self-Reported
                         </span>
                       )}
                     </div>
                   </div>
-                <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#181222] border border-[#9A79BA]/40 text-[11px] font-medium text-[#E6D7FA] shrink-0">
-                  <ShieldCheck className="w-3.5 h-3.5 text-[#C9A4E8]" />
+                <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#F3EFFC] border border-[#E2DAEF] text-[11px] font-medium text-[#1C1924] shrink-0">
+                  <ShieldCheck className="w-3.5 h-3.5 text-[#B2A4D7]" />
                   <span>100% Rep</span>
                 </div>
               </div>
@@ -416,7 +416,7 @@ export default function MyProfilePage() {
               const hasMultiple = photoList.length > 1;
 
               return (
-                <div className="relative aspect-[4/5] w-full rounded-2xl overflow-hidden bg-gradient-to-b from-[#241E2F] to-[#17131F] border border-[#9A79BA]/30 flex items-center justify-center select-none group">
+                <div className="relative aspect-[4/5] w-full rounded-2xl overflow-hidden bg-gradient-to-b from-[#FFFFFF] to-[#FFFFFF] border border-[#9A8CC3]/30 flex items-center justify-center select-none group">
                   {currentImg ? (
                     <img
                       src={currentImg}
@@ -424,11 +424,11 @@ export default function MyProfilePage() {
                       className="w-full h-full object-cover transition-opacity duration-200"
                     />
                   ) : (
-                    <div className="flex flex-col items-center justify-center gap-3 text-[#9A79BA]/60 p-6 text-center">
-                      <div className="w-20 h-20 rounded-3xl bg-[#17131F] border border-[#9A79BA]/35 flex items-center justify-center shadow-inner">
-                        <User className="w-10 h-10 stroke-[1.5] text-[#9A79BA]" />
+                    <div className="flex flex-col items-center justify-center gap-3 text-[#9A8CC3]/60 p-6 text-center">
+                      <div className="w-20 h-20 rounded-3xl bg-[#F3EFFC] border border-[#9A8CC3]/35 flex items-center justify-center shadow-inner">
+                        <User className="w-10 h-10 stroke-[1.5] text-[#9A8CC3]" />
                       </div>
-                      <label className="inline-flex items-center gap-1.5 text-xs font-medium text-[#C9A4E8] hover:underline cursor-pointer">
+                      <label className="inline-flex items-center gap-1.5 text-xs font-medium text-[#B2A4D7] hover:underline cursor-pointer">
                         <Camera className="w-3.5 h-3.5" />
                         <span>Upload Profile Photo</span>
                         <input type="file" accept="image/*" className="hidden" onChange={() => alert('Photo upload bucket integration next')} />
@@ -498,7 +498,7 @@ export default function MyProfilePage() {
                     setIsEditing(true);
                   }
                 }}
-                className="flex-1 py-2.5 rounded-xl bg-[#653C87] hover:bg-[#7D49A8] text-xs font-bold text-white flex items-center justify-center gap-1.5 transition active:scale-95 shadow-lg shadow-[#653C87]/40"
+                className="flex-1 py-2.5 rounded-xl bg-[#6555B8] hover:bg-[#7D4B9F] text-xs font-bold text-white flex items-center justify-center gap-1.5 transition active:scale-95 shadow-lg shadow-[#6555B8]/40"
               >
                 {isEditing ? <Save className="w-3.5 h-3.5" /> : <Edit3 className="w-3.5 h-3.5" />}
                 <span>{isEditing ? 'Save All Changes' : 'Edit Profile'}</span>
@@ -511,7 +511,7 @@ export default function MyProfilePage() {
                     setIsEditing(false);
                     setOpenDropdown(null);
                   }}
-                  className="px-4 py-2.5 rounded-xl bg-[#241E2F] border border-[#9A79BA]/35 hover:bg-[#3B1E42] text-xs font-medium text-[#B6AEC7] hover:text-white flex items-center gap-1 transition"
+                  className="px-4 py-2.5 rounded-xl bg-[#F3EFFC] border border-[#9A8CC3]/35 hover:bg-[#3B1E42] text-xs font-medium text-[#B2A4D7] hover:text-[#1C1924] flex items-center gap-1 transition"
                 >
                   <X className="w-3.5 h-3.5" />
                   <span>Cancel</span>
@@ -519,7 +519,7 @@ export default function MyProfilePage() {
               ) : (
                 <Link
                   href="/settings"
-                  className="px-4 py-2.5 rounded-xl bg-[#241E2F] border border-[#9A79BA]/35 hover:bg-[#3B1E42] text-xs font-medium text-[#B6AEC7] hover:text-white flex items-center gap-1 transition"
+                  className="px-4 py-2.5 rounded-xl bg-[#F3EFFC] border border-[#9A8CC3]/35 hover:bg-[#3B1E42] text-xs font-medium text-[#B2A4D7] hover:text-[#1C1924] flex items-center gap-1 transition"
                 >
                   <Settings className="w-3.5 h-3.5" />
                   <span>Settings</span>
@@ -533,17 +533,17 @@ export default function MyProfilePage() {
           <div className="md:col-span-7 space-y-4">
             
             {/* Top Preview/Edit Status Banner */}
-            <div className="p-4 sm:p-5 rounded-3xl bg-[#261F33] border border-[#9A79BA]/35 shadow-xl space-y-1">
+            <div className="p-4 sm:p-5 rounded-3xl bg-[#F3EFFC] border border-[#E2DAEF] shadow-sm space-y-1">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-2">
-                  <Edit3 className="w-4 h-4 text-[#9A79BA]" />
+                <span className="text-xs font-bold text-[#1C1924] uppercase tracking-wider flex items-center gap-2">
+                  <Edit3 className="w-4 h-4 text-[#9A8CC3]" />
                   {isEditing ? 'Editing Your Profile' : 'Public Profile Preview'}
                 </span>
-                <span className="text-xs text-[#E6D7FA]">
+                <span className="text-xs text-[#6B627A]">
                   {isEditing ? 'Remember to save changes' : 'Visible to verified members'}
                 </span>
               </div>
-              <p className="text-xs text-[#E6D7FA] pt-0.5">
+              <p className="text-xs text-[#6B627A] pt-0.5">
                 {isEditing 
                   ? 'Update your bio, preferences, and vitals below.' 
                   : 'This is the exact view verified singles see when viewing your profile.'}
@@ -551,43 +551,43 @@ export default function MyProfilePage() {
             </div>
 
             {/* ABOUT ME */}
-            <div className="p-5 sm:p-6 rounded-3xl bg-[#261F33] border border-[#9A79BA]/35 shadow-xl space-y-2">
-              <h3 className="text-xs font-bold text-[#C9A4E8] uppercase tracking-wider">ABOUT ME</h3>
+            <div className="p-5 sm:p-6 rounded-3xl bg-[#F3EFFC] border border-[#E2DAEF] shadow-sm space-y-2">
+              <h3 className="text-xs font-bold text-[#6555B8] uppercase tracking-wider font-bold">ABOUT ME</h3>
               {isEditing ? (
                 <textarea
                   value={bio}
                   onChange={(e) => setBio(e.target.value)}
                   rows={3}
-                  className="w-full p-3 rounded-2xl bg-[#181222] border border-[#9A79BA]/40 text-xs text-white focus:outline-none focus:border-[#9A79BA]"
+                  className="w-full p-3 rounded-2xl bg-[#F3EFFC] border border-[#E2DAEF] text-xs text-[#1C1924] focus:outline-none focus:border-[#9A8CC3]"
                 />
               ) : (
-                <p className="text-sm text-white leading-relaxed">
+                <p className="text-sm text-[#1C1924] leading-relaxed">
                   {bio}
                 </p>
               )}
             </div>
 
             {/* WHAT I'M LOOKING FOR */}
-            <div className="p-5 sm:p-6 rounded-3xl bg-[#261F33] border border-[#9A79BA]/35 shadow-xl space-y-2">
-              <h3 className="text-xs font-bold text-[#C9A4E8] uppercase tracking-wider">WHAT I'M LOOKING FOR</h3>
+            <div className="p-5 sm:p-6 rounded-3xl bg-[#F3EFFC] border border-[#E2DAEF] shadow-sm space-y-2">
+              <h3 className="text-xs font-bold text-[#6555B8] uppercase tracking-wider font-bold">WHAT I'M LOOKING FOR</h3>
               {isEditing ? (
                 <textarea
                   value={lookingFor}
                   onChange={(e) => setLookingFor(e.target.value)}
                   rows={3}
-                  className="w-full p-3 rounded-2xl bg-[#181222] border border-[#9A79BA]/40 text-xs text-white focus:outline-none focus:border-[#9A79BA]"
+                  className="w-full p-3 rounded-2xl bg-[#F3EFFC] border border-[#E2DAEF] text-xs text-[#1C1924] focus:outline-none focus:border-[#9A8CC3]"
                 />
               ) : (
-                <p className="text-sm text-white leading-relaxed">
+                <p className="text-sm text-[#1C1924] leading-relaxed">
                   {lookingFor}
                 </p>
               )}
             </div>
 
 {/* SLEEK COMPACT VITALS */}
-              <div className="p-5 sm:p-6 rounded-3xl bg-[#261F33] border border-[#9A79BA]/35 shadow-xl space-y-5">
-                <div className="flex items-center justify-between border-b border-[#9A79BA]/20 pb-3">
-                  <h3 className="text-xs font-bold text-[#C9A4E8] uppercase tracking-wider">VITALS & TRAITS</h3>
+              <div className="p-5 sm:p-6 rounded-3xl bg-[#F3EFFC] border border-[#E2DAEF] shadow-sm space-y-5">
+                <div className="flex items-center justify-between border-b border-[#9A8CC3]/20 pb-3">
+                  <h3 className="text-xs font-bold text-[#6555B8] uppercase tracking-wider font-bold">VITALS & TRAITS</h3>
                   
                 </div>
 
@@ -595,37 +595,37 @@ export default function MyProfilePage() {
                   /* Edit Mode */
                   <div className="space-y-4">
                     <div>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-[#C9A4E8] mb-2">Basics</p>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-[#B2A4D7] mb-2">Basics</p>
                       <div className="flex flex-wrap items-center gap-2">
-                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#181222] border border-[#9A79BA]/40 text-xs">
-                          <Briefcase className="w-3.5 h-3.5 text-[#9A79BA] shrink-0" />
-                          <span className="text-[#9A79BA] font-medium">Work:</span>
+                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#F3EFFC] border border-[#E2DAEF] text-xs">
+                          <Briefcase className="w-3.5 h-3.5 text-[#9A8CC3] shrink-0" />
+                          <span className="text-[#9A8CC3] font-medium">Work:</span>
                           <input
                             type="text"
                             value={profession}
                             onChange={(e) => setProfession(e.target.value)}
                             placeholder="Profession"
-                            className="bg-transparent text-white font-semibold text-xs focus:outline-none w-28"
+                            className="bg-transparent text-[#1C1924] font-semibold text-xs focus:outline-none w-28"
                           />
                         </div>
                         {renderDropdownPill('Height', height, HEIGHT_OPTIONS, setHeight, 'height', Ruler, true)}
                         <div className="w-full space-y-2 pt-1">
-                        <div className="flex items-center gap-1.5 text-xs text-[#9A79BA]">
+                        <div className="flex items-center gap-1.5 text-xs text-[#9A8CC3]">
                           <Languages className="w-3.5 h-3.5 shrink-0" />
-                          <span className="font-semibold text-white">Languages Spoken</span>
-                          <span className="text-[10px] text-[#A8A2AB]">(Type & press Enter or tap suggestions)</span>
+                          <span className="font-semibold text-[#1C1924]">Languages Spoken</span>
+                          <span className="text-[10px] text-[#B2A4D7]">(Type & press Enter or tap suggestions)</span>
                         </div>
-                        <div className="flex flex-wrap items-center gap-1.5 p-2 rounded-2xl bg-[#181222] border border-[#9A79BA]/35 min-h-[42px]">
+                        <div className="flex flex-wrap items-center gap-1.5 p-2 rounded-2xl bg-[#F3EFFC] border border-[#9A8CC3]/35 min-h-[42px]">
                           {currentLanguages.map((lang: string) => (
                             <span
                               key={lang}
-                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#653C87]/40 border border-[#9A79BA]/50 text-xs font-medium text-white shadow-sm"
+                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#6555B8]/40 border border-[#9A8CC3]/50 text-xs font-medium text-white shadow-sm"
                             >
                               {lang}
                               <button
                                 type="button"
                                 onClick={() => handleRemoveLanguage(lang)}
-                                className="text-[#C9A4E8] hover:text-white transition"
+                                className="text-[#B2A4D7] hover:text-[#1C1924] transition"
                               >
                                 <X className="w-3 h-3" />
                               </button>
@@ -637,17 +637,17 @@ export default function MyProfilePage() {
                             onChange={(e) => setLangInput(e.target.value)}
                             onKeyDown={handleLangKeyDown}
                             placeholder={currentLanguages.length === 0 ? "e.g. English, Tagalog..." : "Add more..."}
-                            className="bg-transparent text-xs text-white placeholder-[#7A6B8A] focus:outline-none flex-1 min-w-[110px] px-1 py-0.5"
+                            className="bg-transparent text-xs text-[#1C1924] placeholder-[#756D82] focus:outline-none flex-1 min-w-[110px] px-1 py-0.5"
                           />
                         </div>
                         <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
-                          <span className="text-[10px] text-[#7A6B8A] font-semibold uppercase">Popular:</span>
+                          <span className="text-[10px] text-[#9A8CC3] font-semibold uppercase">Popular:</span>
                           {QUICK_LANGUAGES.filter((ql: string) => !currentLanguages.some((cl: string) => cl.toLowerCase() === ql.toLowerCase())).slice(0, 5).map((ql: string) => (
                             <button
                               key={ql}
                               type="button"
                               onClick={() => handleAddLanguage(ql)}
-                              className="text-[11px] px-2 py-0.5 rounded-full bg-[#20172C] hover:bg-[#2F2142] border border-[#9A79BA]/25 text-[#C9A4E8] transition"
+                              className="text-[11px] px-2 py-0.5 rounded-full bg-[#F3EFFC] hover:bg-[#EAE6F2] border border-[#9A8CC3]/25 text-[#B2A4D7] transition"
                             >
                               + {ql}
                             </button>
@@ -658,7 +658,7 @@ export default function MyProfilePage() {
                     </div>
 
                     <div>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-[#C9A4E8] mb-2">Relationship Goals</p>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-[#B2A4D7] mb-2">Relationship Goals</p>
                       <div className="flex flex-wrap items-center gap-2">
                         {renderDropdownPill('Intent', intent, INTENT_OPTIONS, setIntent, 'intent', Heart)}
                         {renderDropdownPill('Relocation', relocation, RELOCATION_OPTIONS, setRelocation, 'relocation', Globe)}
@@ -669,7 +669,7 @@ export default function MyProfilePage() {
                     </div>
 
                     <div>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-[#C9A4E8] mb-2">Lifestyle</p>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-[#B2A4D7] mb-2">Lifestyle</p>
                       <div className="flex flex-wrap items-center gap-2">
                         {renderDropdownPill('Faith', religion, RELIGION_OPTIONS, setReligion, 'religion', Flower2)}
                         {renderDropdownPill('Drinks', drinking, DRINKING_OPTIONS, setDrinking, 'drinking', Wine)}
@@ -681,86 +681,86 @@ export default function MyProfilePage() {
                   /* View Mode: Clean inline items without pill borders */
                   <div className="space-y-4">
                     <div>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-[#C9A4E8] mb-2.5">Basics</p>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-[#B2A4D7] mb-2.5">Basics</p>
                       <div className="flex flex-wrap items-center gap-x-6 gap-y-2.5 text-xs">
                         <div className="flex items-center gap-1.5">
-                          <Briefcase className="w-3.5 h-3.5 text-[#9A79BA] shrink-0" />
-                          <span className="text-[#9A79BA] font-medium">Work:</span>
-                          <span className="text-white font-medium">{profession || 'Not set'}</span>
+                          <Briefcase className="w-3.5 h-3.5 text-[#9A8CC3] shrink-0" />
+                          <span className="text-[#9A8CC3] font-medium">Work:</span>
+                          <span className="text-[#1C1924] font-medium">{profession || 'Not set'}</span>
                         </div>
                         <div className="flex items-center gap-1.5">
-                          <Ruler className="w-3.5 h-3.5 text-[#9A79BA] shrink-0" />
-                          <span className="text-[#9A79BA] font-medium">Height:</span>
-                          <span className="text-white font-medium">{height || 'Not set'}</span>
+                          <Ruler className="w-3.5 h-3.5 text-[#9A8CC3] shrink-0" />
+                          <span className="text-[#9A8CC3] font-medium">Height:</span>
+                          <span className="text-[#1C1924] font-medium">{height || 'Not set'}</span>
                         </div>
                         <div className="flex items-center gap-2 flex-wrap">
-                          <div className="flex items-center gap-1.5 text-[#9A79BA] font-medium">
+                          <div className="flex items-center gap-1.5 text-[#9A8CC3] font-medium">
                             <Languages className="w-3.5 h-3.5 shrink-0" />
                             <span>Languages:</span>
                           </div>
                           {currentLanguages.length > 0 ? (
                             <div className="flex flex-wrap items-center gap-1.5">
                               {currentLanguages.map((l: string) => (
-                                <span key={l} className="px-2.5 py-0.5 rounded-md bg-white/[0.05] border border-[#9A79BA]/40 text-xs font-normal text-[#E6D7FA]">
+                                <span key={l} className="px-2.5 py-0.5 rounded-md bg-white/[0.05] border border-[#E2DAEF] text-xs font-normal text-[#1C1924]">
                                   {l}
                                 </span>
                               ))}
                             </div>
                           ) : (
-                            <span className="text-[#7A6B8A]">Not set</span>
+                            <span className="text-[#9A8CC3]">Not set</span>
                           )}
                         </div>
                       </div>
                     </div>
 
                     <div>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-[#C9A4E8] mb-2.5">Relationship Goals</p>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-[#B2A4D7] mb-2.5">Relationship Goals</p>
                       <div className="flex flex-wrap items-center gap-x-6 gap-y-2.5 text-xs">
                         <div className="flex items-center gap-1.5">
-                          <Heart className="w-3.5 h-3.5 text-[#C9A4E8] shrink-0" />
-                          <span className="text-[#9A79BA] font-medium">Intent:</span>
-                          <span className="text-white font-medium">{intent || 'Not set'}</span>
+                          <Heart className="w-3.5 h-3.5 text-[#B2A4D7] shrink-0" />
+                          <span className="text-[#9A8CC3] font-medium">Intent:</span>
+                          <span className="text-[#1C1924] font-medium">{intent || 'Not set'}</span>
                         </div>
                         <div className="flex items-center gap-1.5">
-                          <Globe className="w-3.5 h-3.5 text-[#9A79BA] shrink-0" />
-                          <span className="text-[#9A79BA] font-medium">Relocation:</span>
-                          <span className="text-white font-medium">{relocation || 'Not set'}</span>
+                          <Globe className="w-3.5 h-3.5 text-[#9A8CC3] shrink-0" />
+                          <span className="text-[#9A8CC3] font-medium">Relocation:</span>
+                          <span className="text-[#1C1924] font-medium">{relocation || 'Not set'}</span>
                         </div>
                         <div className="flex items-center gap-1.5">
-                          <HeartHandshake className="w-3.5 h-3.5 text-[#9A79BA] shrink-0" />
-                          <span className="text-[#9A79BA] font-medium">Status:</span>
-                          <span className="text-white font-medium">{maritalStatus || 'Not set'}</span>
+                          <HeartHandshake className="w-3.5 h-3.5 text-[#9A8CC3] shrink-0" />
+                          <span className="text-[#9A8CC3] font-medium">Status:</span>
+                          <span className="text-[#1C1924] font-medium">{maritalStatus || 'Not set'}</span>
                         </div>
                         <div className="flex items-center gap-1.5">
-                          <Baby className="w-3.5 h-3.5 text-[#9A79BA] shrink-0" />
-                          <span className="text-[#9A79BA] font-medium">Has Kids:</span>
-                          <span className="text-white font-medium">{hasKids || 'Not set'}</span>
+                          <Baby className="w-3.5 h-3.5 text-[#9A8CC3] shrink-0" />
+                          <span className="text-[#9A8CC3] font-medium">Has Kids:</span>
+                          <span className="text-[#1C1924] font-medium">{hasKids || 'Not set'}</span>
                         </div>
                         <div className="flex items-center gap-1.5">
-                          <Baby className="w-3.5 h-3.5 text-[#9A79BA] shrink-0" />
-                          <span className="text-[#9A79BA] font-medium">Wants Kids:</span>
-                          <span className="text-white font-medium">{wantsKids || 'Not set'}</span>
+                          <Baby className="w-3.5 h-3.5 text-[#9A8CC3] shrink-0" />
+                          <span className="text-[#9A8CC3] font-medium">Wants Kids:</span>
+                          <span className="text-[#1C1924] font-medium">{wantsKids || 'Not set'}</span>
                         </div>
                       </div>
                     </div>
 
                     <div>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-[#C9A4E8] mb-2.5">Lifestyle</p>
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-[#B2A4D7] mb-2.5">Lifestyle</p>
                       <div className="flex flex-wrap items-center gap-x-6 gap-y-2.5 text-xs">
                         <div className="flex items-center gap-1.5">
-                          <Flower2 className="w-3.5 h-3.5 text-[#9A79BA] shrink-0" />
-                          <span className="text-[#9A79BA] font-medium">Faith:</span>
-                          <span className="text-white font-medium">{religion || 'Not set'}</span>
+                          <Flower2 className="w-3.5 h-3.5 text-[#9A8CC3] shrink-0" />
+                          <span className="text-[#9A8CC3] font-medium">Faith:</span>
+                          <span className="text-[#1C1924] font-medium">{religion || 'Not set'}</span>
                         </div>
                         <div className="flex items-center gap-1.5">
-                          <Wine className="w-3.5 h-3.5 text-[#9A79BA] shrink-0" />
-                          <span className="text-[#9A79BA] font-medium">Drinks:</span>
-                          <span className="text-white font-medium">{drinking || 'Not set'}</span>
+                          <Wine className="w-3.5 h-3.5 text-[#9A8CC3] shrink-0" />
+                          <span className="text-[#9A8CC3] font-medium">Drinks:</span>
+                          <span className="text-[#1C1924] font-medium">{drinking || 'Not set'}</span>
                         </div>
                         <div className="flex items-center gap-1.5">
-                          <Cigarette className="w-3.5 h-3.5 text-[#9A79BA] shrink-0" />
-                          <span className="text-[#9A79BA] font-medium">Smokes:</span>
-                          <span className="text-white font-medium">{smoking || 'Not set'}</span>
+                          <Cigarette className="w-3.5 h-3.5 text-[#9A8CC3] shrink-0" />
+                          <span className="text-[#9A8CC3] font-medium">Smokes:</span>
+                          <span className="text-[#1C1924] font-medium">{smoking || 'Not set'}</span>
                         </div>
                       </div>
                     </div>

@@ -68,17 +68,17 @@ export function InteractionReviewModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/75 backdrop-blur-md">
-      <div className="relative w-full max-w-lg rounded-3xl bg-[#241e2f] border border-[#725A7A]/30 p-6 sm:p-8 shadow-2xl text-[#E6D7FA] max-h-[90vh] overflow-y-auto">
+      <div className="relative w-full max-w-lg rounded-3xl bg-[#2D2F4C] border border-[#9A8CC3]/30 p-6 sm:p-8 shadow-2xl text-[#1C1924] max-h-[90vh] overflow-y-auto">
         
         {/* Header */}
         <div className="mb-6">
-          <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#B8AAC3] block mb-1">
+          <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#9A8CC3] block mb-1">
             Confidential Feedback
           </span>
           <h2 className="text-xl font-bold text-white tracking-tight">
             Accountability Check for {targetUserName}
           </h2>
-          <p className="text-xs text-[#A8A2AB] mt-1 leading-relaxed">
+          <p className="text-xs text-[#B2A4D7] mt-1 leading-relaxed">
             Your answers are completely private and never shown directly to this member. They help our system maintain high community trust.
           </p>
         </div>
@@ -95,8 +95,8 @@ export function InteractionReviewModal({
                   onClick={() => setInteractionType(type)}
                   className={`py-2 px-2 rounded-xl text-xs font-medium border capitalize transition-all ${
                     interactionType === type
-                      ? 'bg-[#653C87] border-[#9A79BA] text-white'
-                      : 'bg-[#1d1827] border-[#725A7A]/20 text-[#A8A2AB] hover:text-white'
+                      ? 'bg-[#6555B8] border-[#9A8CC3] text-white'
+                      : 'bg-[#2D2F4C] border-[#9A8CC3]/20 text-[#B2A4D7] hover:text-white'
                   }`}
                 >
                   {type.replace('_', ' ')}
@@ -106,14 +106,14 @@ export function InteractionReviewModal({
           </div>
 
           {/* Question 1 */}
-          <div className="p-3.5 rounded-2xl bg-[#1d1827] border border-[#725A7A]/20">
+          <div className="p-3.5 rounded-2xl bg-[#2D2F4C] border border-[#9A8CC3]/20">
             <span className="text-xs text-white block mb-2">Did their actual appearance match their profile photos?</span>
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => setPhotosMatched(true)}
                 className={`flex-1 py-1.5 rounded-lg text-xs font-medium border ${
-                  photosMatched === true ? 'bg-[#653C87] border-[#9A79BA] text-white' : 'border-[#725A7A]/20 text-[#A8A2AB]'
+                  photosMatched === true ? 'bg-[#6555B8] border-[#9A8CC3] text-white' : 'border-[#9A8CC3]/20 text-[#B2A4D7]'
                 }`}
               >
                 Yes, matched
@@ -122,7 +122,7 @@ export function InteractionReviewModal({
                 type="button"
                 onClick={() => setPhotosMatched(false)}
                 className={`flex-1 py-1.5 rounded-lg text-xs font-medium border ${
-                  photosMatched === false ? 'bg-amber-950/80 border-amber-500/50 text-amber-200' : 'border-[#725A7A]/20 text-[#A8A2AB]'
+                  photosMatched === false ? 'bg-amber-950/80 border-amber-500/50 text-amber-200' : 'border-[#9A8CC3]/20 text-[#B2A4D7]'
                 }`}
               >
                 No, discrepancy
@@ -131,14 +131,14 @@ export function InteractionReviewModal({
           </div>
 
           {/* Question 2 */}
-          <div className="p-3.5 rounded-2xl bg-[#1d1827] border border-[#725A7A]/20">
+          <div className="p-3.5 rounded-2xl bg-[#2D2F4C] border border-[#9A8CC3]/20">
             <span className="text-xs text-white block mb-2">Did this person ask for money, gifts, GCash, or emergency support?</span>
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => setSolicitedMoney(false)}
                 className={`flex-1 py-1.5 rounded-lg text-xs font-medium border ${
-                  solicitedMoney === false ? 'bg-[#653C87] border-[#9A79BA] text-white' : 'border-[#725A7A]/20 text-[#A8A2AB]'
+                  solicitedMoney === false ? 'bg-[#6555B8] border-[#9A8CC3] text-white' : 'border-[#9A8CC3]/20 text-[#B2A4D7]'
                 }`}
               >
                 No solicitation
@@ -147,7 +147,7 @@ export function InteractionReviewModal({
                 type="button"
                 onClick={() => setSolicitedMoney(true)}
                 className={`flex-1 py-1.5 rounded-lg text-xs font-medium border ${
-                  solicitedMoney === true ? 'bg-amber-950/80 border-amber-500/50 text-amber-200' : 'border-[#725A7A]/20 text-[#A8A2AB]'
+                  solicitedMoney === true ? 'bg-amber-950/80 border-amber-500/50 text-amber-200' : 'border-[#9A8CC3]/20 text-[#B2A4D7]'
                 }`}
               >
                 Yes, asked for funds
@@ -156,14 +156,14 @@ export function InteractionReviewModal({
           </div>
 
           {/* Question 3 */}
-          <div className="p-3.5 rounded-2xl bg-[#1d1827] border border-[#725A7A]/20">
+          <div className="p-3.5 rounded-2xl bg-[#2D2F4C] border border-[#9A8CC3]/20">
             <span className="text-xs text-white block mb-2">Were they respectful of personal boundaries?</span>
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => setWasRespectful(true)}
                 className={`flex-1 py-1.5 rounded-lg text-xs font-medium border ${
-                  wasRespectful === true ? 'bg-[#653C87] border-[#9A79BA] text-white' : 'border-[#725A7A]/20 text-[#A8A2AB]'
+                  wasRespectful === true ? 'bg-[#6555B8] border-[#9A8CC3] text-white' : 'border-[#9A8CC3]/20 text-[#B2A4D7]'
                 }`}
               >
                 Yes, respectful
@@ -172,7 +172,7 @@ export function InteractionReviewModal({
                 type="button"
                 onClick={() => setWasRespectful(false)}
                 className={`flex-1 py-1.5 rounded-lg text-xs font-medium border ${
-                  wasRespectful === false ? 'bg-rose-950/80 border-rose-500/50 text-rose-200' : 'border-[#725A7A]/20 text-[#A8A2AB]'
+                  wasRespectful === false ? 'bg-rose-950/80 border-rose-500/50 text-rose-200' : 'border-[#9A8CC3]/20 text-[#B2A4D7]'
                 }`}
               >
                 Disrespectful / inappropriate
@@ -181,14 +181,14 @@ export function InteractionReviewModal({
           </div>
 
           {/* Question 4 */}
-          <div className="p-3.5 rounded-2xl bg-[#1d1827] border border-[#725A7A]/20">
+          <div className="p-3.5 rounded-2xl bg-[#2D2F4C] border border-[#9A8CC3]/20">
             <span className="text-xs text-white block mb-2">Was their background information honest (e.g. single status, intent)?</span>
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={() => setIdentityAccurate(true)}
                 className={`flex-1 py-1.5 rounded-lg text-xs font-medium border ${
-                  identityAccurate === true ? 'bg-[#653C87] border-[#9A79BA] text-white' : 'border-[#725A7A]/20 text-[#A8A2AB]'
+                  identityAccurate === true ? 'bg-[#6555B8] border-[#9A8CC3] text-white' : 'border-[#9A8CC3]/20 text-[#B2A4D7]'
                 }`}
               >
                 Yes, honest
@@ -197,7 +197,7 @@ export function InteractionReviewModal({
                 type="button"
                 onClick={() => setIdentityAccurate(false)}
                 className={`flex-1 py-1.5 rounded-lg text-xs font-medium border ${
-                  identityAccurate === false ? 'bg-amber-950/80 border-amber-500/50 text-amber-200' : 'border-[#725A7A]/20 text-[#A8A2AB]'
+                  identityAccurate === false ? 'bg-amber-950/80 border-amber-500/50 text-amber-200' : 'border-[#9A8CC3]/20 text-[#B2A4D7]'
                 }`}
               >
                 Dishonest / misleading
@@ -213,7 +213,7 @@ export function InteractionReviewModal({
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
               placeholder="Any details to help our safety moderation team..."
-              className="w-full rounded-xl bg-[#1d1827] border border-[#725A7A]/20 p-3 text-xs text-white placeholder-[#A8A2AB]/40 focus:outline-none focus:border-[#9A79BA]"
+              className="w-full rounded-xl bg-[#2D2F4C] border border-[#9A8CC3]/20 p-3 text-xs text-white placeholder-[#B2A4D7]/40 focus:outline-none focus:border-[#9A8CC3]"
             />
           </div>
         </div>
@@ -223,13 +223,13 @@ export function InteractionReviewModal({
           <button
             onClick={handleSubmit}
             disabled={isSubmitting}
-            className="w-full py-3 rounded-xl bg-[#653C87] hover:bg-[#7a49a2] disabled:opacity-50 text-[#F3EBF9] font-semibold text-xs transition-all shadow-lg shadow-[#41384E]/50"
+            className="w-full py-3 rounded-xl bg-[#6555B8] hover:bg-[#7D4B9F] disabled:opacity-50 text-[#F3EBF9] font-semibold text-xs transition-all shadow-lg shadow-[#3B3D60]/50"
           >
             {isSubmitting ? 'Recording...' : 'Submit Confidential Report'}
           </button>
           <button
             onClick={onClose}
-            className="w-full sm:w-auto px-5 py-3 rounded-xl bg-[#1d1827] hover:bg-[#282136] text-[#A8A2AB] text-xs font-medium transition-colors"
+            className="w-full sm:w-auto px-5 py-3 rounded-xl bg-[#2D2F4C] hover:bg-[#2D2F4C] text-[#B2A4D7] text-xs font-medium transition-colors"
           >
             Close
           </button>
