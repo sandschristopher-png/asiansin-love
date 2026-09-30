@@ -13,7 +13,8 @@ import { Footer } from '@/components/Footer';
 import { supabase } from '@/lib/supabaseClient';
 import { ActionType, getLocalCardActions, persistCardAction } from '@/lib/interactions';
 
-const TARGET_COUNTRIES = ['All', 'Philippines', 'Thailand', 'Vietnam', 'Indonesia', 'Malaysia', 'Singapore', 'Cambodia', 'Laos'];
+const SEA_COUNTRIES = ['Philippines', 'Thailand', 'Vietnam', 'Indonesia', 'Malaysia', 'Singapore', 'Cambodia'];
+const SUITOR_COUNTRIES = ['United States', 'Australia', 'United Kingdom', 'Canada', 'Japan', 'South Korea', 'Germany'];
 
 const PRIORITY_ORDER = ['Philippines', 'Thailand', 'Vietnam', 'Laos', 'Cambodia', 'Indonesia'];
 
@@ -174,6 +175,7 @@ function DiscoverCardPhotoCarousel({
 function DiscoverContent() {
   const searchParams = useSearchParams();
   const [currentUserCoords, setCurrentUserCoords] = useState<{ lat: number; lon: number } | null>(null);
+  const [currentUserProfile, setCurrentUserProfile] = useState<{ gender?: string; country?: string } | null>(null);
   const [profiles, setProfiles] = useState<ProfileItem[]>([]);
 
   const [searchQuery, setSearchQuery] = useState(() => searchParams.get('q') || '');
@@ -368,11 +370,14 @@ function DiscoverContent() {
           if (user) {
             const { data: userProfile } = await supabase
               .from('profiles')
-              .select('latitude, longitude')
+              .select('latitude, longitude, gender, country')
               .eq('id', user.id)
               .maybeSingle();
-            if (userProfile?.latitude && userProfile?.longitude) {
-              setCurrentUserCoords({ lat: userProfile.latitude, lon: userProfile.longitude });
+            if (userProfile) {
+              if (userProfile.latitude && userProfile.longitude) {
+                setCurrentUserCoords({ lat: userProfile.latitude, lon: userProfile.longitude });
+              }
+              setCurrentUserProfile({ gender: userProfile.gender, country: userProfile.country });
             }
           }
         } catch (e) {
@@ -446,19 +451,26 @@ function DiscoverContent() {
   }, [supabase]);
 
   const availableCountries = Array.from(new Set(profiles.map((p) => p.country)));
-  const SEA_COUNTRIES = ['Philippines', 'Thailand', 'Vietnam', 'Indonesia', 'Malaysia', 'Singapore', 'Cambodia', 'Laos'];
-const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdom', 'Singapore', 'Japan', 'Philippines', 'Thailand'];
 
   const isUserInSEA = useMemo(() => {
-    // If auth user location/country is in SEA, show suitor list first
-    return false;
-    return false; // Default to SEA list, dynamically switches if user country is SEA
-  }, []);
+    if (!currentUserProfile) return false;
+    const g = (currentUserProfile.gender || '').toLowerCase();
+    const isFemale = g === 'woman' || g === 'female';
+    const c = (currentUserProfile.country || '').toLowerCase();
+    const seaList = ['philippines', 'thailand', 'vietnam', 'indonesia', 'malaysia', 'singapore', 'cambodia'];
+    return isFemale && seaList.includes(c);
+  }, [currentUserProfile]);
 
   const sortedCountries = useMemo(() => {
-    const list = isUserInSEA ? SUITOR_COUNTRIES : SEA_COUNTRIES;
-    return ['All', ...list];
-  }, [isUserInSEA]);
+    if (isUserInSEA) {
+      const userHome = currentUserProfile?.country;
+      const filteredSuitors = userHome && !SUITOR_COUNTRIES.includes(userHome)
+        ? [userHome, ...SUITOR_COUNTRIES]
+        : SUITOR_COUNTRIES;
+      return ['All', ...filteredSuitors];
+    }
+    return ['All', ...SEA_COUNTRIES];
+  }, [isUserInSEA, currentUserProfile]);
 
   const filteredProfiles = profiles.filter((profile) => {
     const matchesCountry = selectedCountry.toLowerCase() === 'all' || profile.country.toLowerCase() === selectedCountry.toLowerCase();
@@ -513,7 +525,7 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
           </div>
 
           {/* Unified Filter Pills: Scaled & Flush Left */}
-          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar w-full py-0.5">
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar w-full py-0.5 scroll-smooth">
             {/* Gender Filters */}
             <div className="flex items-center gap-1 p-1 bg-white border border-[#DDD7E5] rounded-full shadow-xs shrink-0">
               {['all', 'women', 'trans', 'men'].map((gender) => {
@@ -544,7 +556,7 @@ const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdo
 
             {/* Country Filters */}
             <div className="flex items-center gap-1 p-1 bg-white border border-[#DDD7E5] rounded-full shadow-xs shrink-0">
-              {TARGET_COUNTRIES.map((c) => {
+              {sortedCountries.map((c) => {
                 const active = selectedCountry === c;
                 return (
                   <button
