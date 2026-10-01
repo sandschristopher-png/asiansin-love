@@ -13,10 +13,10 @@ import { Footer } from '@/components/Footer';
 import { supabase } from '@/lib/supabaseClient';
 import { ActionType, getLocalCardActions, persistCardAction } from '@/lib/interactions';
 
-const SEA_COUNTRIES = ['Philippines', 'Thailand', 'Vietnam', 'Indonesia', 'Malaysia', 'Singapore', 'Cambodia'];
-const WESTERN_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdom', 'Germany'];
+const SEA_COUNTRIES = ['Philippines', 'Thailand', 'Vietnam', 'Indonesia', 'Malaysia', 'Singapore', 'Laos', 'Cambodia'];
+const WESTERN_COUNTRIES = ['United States', 'Canada', 'Australia', 'New Zealand', 'United Kingdom', 'Germany'];
 const ASIA_HUBS = ['Singapore', 'Japan', 'South Korea', 'Taiwan', 'Hong Kong'];
-const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdom', 'Germany', 'Japan', 'South Korea'];
+const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'New Zealand', 'United Kingdom', 'Germany', 'Japan', 'South Korea'];
 
 const PRIORITY_ORDER = ['Philippines', 'Thailand', 'Vietnam', 'Laos', 'Cambodia', 'Indonesia'];
 
@@ -361,9 +361,9 @@ function DiscoverContent() {
           setVisibleLimit((prev) => prev + BATCH_SIZE);
           setAutoLoadsCount((prev) => prev + 1);
           setIsLoadingMore(false);
-        }, 350);
+        }, 200);
       }
-    }, { rootMargin: '400px' });
+    }, { rootMargin: '150px' });
 
     observer.observe(sentinel);
     return () => observer.disconnect();
@@ -517,53 +517,74 @@ function DiscoverContent() {
       <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 pt-6 pb-32 md:pb-24 space-y-5">
         
         {/* Top Control Bar */}
-        <section aria-label="Search and Filters" className="w-full">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 w-full">
-            {/* Left Controls: Gender & Country Selectors */}
-            <div className="flex flex-wrap items-center gap-2 shrink-0">
-              {/* Gender Segmented Switch */}
-              <div className="flex items-center gap-1 p-1 bg-white border border-[#DDD7E5] rounded-full shadow-xs shrink-0">
-                {(['All', 'woman', 'trans', 'man'] as const).map((gender) => {
-                  const label = gender === 'All' ? 'All' : gender === 'woman' ? 'Women' : gender === 'trans' ? 'Trans' : 'Men';
-                  const active = selectedGender === gender;
-                  return (
-                    <button
-                      key={gender}
-                      type="button"
-                      onClick={() => {
-                        userSelectedGenderManually.current = true;
-                        setSelectedGender(gender);
-                      }}
-                      className={'px-3.5 py-1.5 text-xs sm:text-sm font-semibold rounded-full transition-all shrink-0 ' + (
-                        active
-                          ? 'bg-[#6555b8] text-white shadow-xs'
-                          : 'text-[#6C637B] hover:text-[#1C1924] hover:bg-[#F3EFFC]'
-                      )}
-                    >
-                      {label}
-                    </button>
-                  );
-                })}
-              </div>
+        <section aria-label="Search and Filters" className="w-full space-y-3">
+          {/* Search Row */}
+          <div className="w-full bg-white border border-[#DDD7E5] hover:border-[#6555b8]/50 focus-within:border-[#6555b8] focus-within:ring-2 focus-within:ring-[#6555b8]/15 rounded-full shadow-xs transition-all flex items-center pl-3.5 pr-1.5 py-1.5">
+            <Search className="w-4 h-4 text-[#8C849B] shrink-0 pointer-events-none" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search city, name..."
+              className="w-full bg-transparent px-2.5 text-xs sm:text-sm text-[#1C1924] placeholder-[#8C849B] focus:outline-none min-w-0"
+            />
+            {searchQuery && (
+              <button
+                type="button"
+                onClick={() => setSearchQuery('')}
+                className="text-[#8C849B] hover:text-[#1C1924] text-xs px-2 py-0.5"
+              >
+                Clear
+              </button>
+            )}
+          </div>
 
-              {/* Country Selector Pill */}
+          {/* Unified Compact Filter Row: Gender (Left) & Location + Drawer (Right) */}
+          <div className="flex items-center justify-between gap-1.5 w-full overflow-x-auto no-scrollbar py-0.5">
+            {/* Gender Segmented Switch */}
+            <div className="flex items-center gap-0.5 p-0.5 bg-white border border-[#DDD7E5] rounded-full shadow-xs shrink-0">
+              {(['All', 'woman', 'trans', 'man'] as const).map((gender) => {
+                const label = gender === 'All' ? 'All' : gender === 'woman' ? 'Women' : gender === 'trans' ? 'Trans' : 'Men';
+                const active = selectedGender === gender;
+                return (
+                  <button
+                    key={gender}
+                    type="button"
+                    onClick={() => {
+                      userSelectedGenderManually.current = true;
+                      setSelectedGender(gender);
+                    }}
+                    className={'px-2.5 sm:px-3.5 py-1 sm:py-1.5 text-xs sm:text-sm font-semibold rounded-full transition-all shrink-0 ' + (
+                      active
+                        ? 'bg-[#6555b8] text-white shadow-xs'
+                        : 'text-[#6C637B] hover:text-[#1C1924] hover:bg-[#F3EFFC]'
+                    )}
+                  >
+                    {label}
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Right Group: Location Dropdown + Filters Button */}
+            <div className="flex items-center gap-1.5 shrink-0">
+              {/* Location Dropdown */}
               <div ref={countryDropdownRef} className="relative shrink-0">
                 <button
                   type="button"
                   onClick={() => setIsCountryOpen((prev) => !prev)}
-                  className={'flex items-center gap-1.5 px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-full border transition-all shadow-xs ' + (
+                  className={'flex items-center gap-1 px-2.5 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-semibold rounded-full border transition-all shadow-xs max-w-[140px] sm:max-w-none ' + (
                     selectedCountry.toLowerCase() !== 'all'
                       ? 'bg-[#F3EFFC] border-[#6555b8] text-[#6555b8]'
                       : 'bg-white border-[#DDD7E5] text-[#524B5E] hover:text-[#1C1924] hover:border-[#6555b8]/50'
                   )}
                 >
-                  <span>{selectedCountry.toLowerCase() === 'all' ? 'All Locations' : selectedCountry}</span>
-                  <ChevronDown className={'w-4 h-4 shrink-0 transition-transform duration-200 ' + (isCountryOpen ? 'rotate-180 text-[#6555b8]' : 'text-[#8C849B]')} />
+                  <span className="truncate">{selectedCountry.toLowerCase() === 'all' ? 'Locations' : selectedCountry}</span>
+                  <ChevronDown className={'w-3.5 h-3.5 shrink-0 transition-transform duration-200 ' + (isCountryOpen ? 'rotate-180 text-[#6555b8]' : 'text-[#8C849B]')} />
                 </button>
 
-                {/* Country Dropdown Menu */}
                 {isCountryOpen && (
-                  <div className="absolute left-0 mt-2 w-56 bg-white border border-[#E5E1EC] rounded-2xl shadow-xl p-1.5 z-40 max-h-80 overflow-y-auto">
+                  <div className="absolute right-0 sm:left-0 mt-2 w-56 bg-white border border-[#E5E1EC] rounded-2xl shadow-xl p-1.5 z-40 max-h-80 overflow-y-auto">
                     <button
                       type="button"
                       onClick={() => {
@@ -573,7 +594,7 @@ function DiscoverContent() {
                       className={'w-full text-left px-3 py-2 text-xs font-semibold rounded-xl flex items-center justify-between transition ' + (
                         selectedCountry.toLowerCase() === 'all'
                           ? 'bg-[#F3EFFC] text-[#6555b8]'
-                          : 'text-[#1C1924] hover:bg-[#F7F6FA]'
+                          : 'text-[#524B5E] hover:bg-[#F8F7FA] hover:text-[#1C1924]'
                       )}
                     >
                       <span>All Locations</span>
@@ -582,10 +603,9 @@ function DiscoverContent() {
 
                     {(() => {
                       const isSeekingMen = selectedGender === 'man';
-                      const sections = isSeekingMen
+                      const groups = isSeekingMen
                         ? [
-                            { title: 'Western & Overseas', list: WESTERN_COUNTRIES },
-                            { title: 'Asia Hubs', list: ASIA_HUBS },
+                            { title: 'Western & Overseas', list: SUITOR_COUNTRIES },
                             { title: 'Southeast Asia', list: SEA_COUNTRIES },
                           ]
                         : [
@@ -608,38 +628,45 @@ function DiscoverContent() {
 
                       return (
                         <>
-                          {sections.map((section, idx) => (
-                            <div key={section.title}>
-                              <div className={'px-3 pt-2.5 pb-1 text-[10px] font-bold text-[#8C849B] tracking-wider uppercase ' + (idx > 0 ? 'border-t border-[#F3EFFC] mt-1.5' : '')}>
-                                {section.title}
+                          {groups.map((group) => {
+                            const available = group.list.filter(c => 
+                              profiles.some(p => p.country?.toLowerCase() === c.toLowerCase())
+                            );
+                            if (available.length === 0) return null;
+
+                            return (
+                              <div key={group.title} className="mt-2 pt-2 border-t border-[#F0EDF5]">
+                                <div className="px-3 py-1 text-[10px] font-bold text-[#8C849B] uppercase tracking-wider">
+                                  {group.title}
+                                </div>
+                                {available.map((c) => (
+                                  <button
+                                    key={c}
+                                    type="button"
+                                    onClick={() => {
+                                      setSelectedCountry(c);
+                                      setIsCountryOpen(false);
+                                    }}
+                                    className={'w-full text-left px-3 py-1.5 text-xs font-medium rounded-xl flex items-center justify-between transition ' + (
+                                      selectedCountry.toLowerCase() === c.toLowerCase()
+                                        ? 'bg-[#F3EFFC] text-[#6555b8] font-bold'
+                                        : 'text-[#524B5E] hover:bg-[#F8F7FA] hover:text-[#1C1924]'
+                                    )}
+                                  >
+                                    <span>{c}</span>
+                                    {selectedCountry.toLowerCase() === c.toLowerCase() && (
+                                      <Check className="w-3.5 h-3.5 text-[#6555b8]" />
+                                    )}
+                                  </button>
+                                ))}
                               </div>
-                              {section.list.map((c) => (
-                                <button
-                                  key={c}
-                                  type="button"
-                                  onClick={() => {
-                                    setSelectedCountry(c);
-                                    setIsCountryOpen(false);
-                                  }}
-                                  className={'w-full text-left px-3 py-1.5 text-xs font-medium rounded-xl flex items-center justify-between transition ' + (
-                                    selectedCountry.toLowerCase() === c.toLowerCase()
-                                      ? 'bg-[#F3EFFC] text-[#6555b8] font-bold'
-                                      : 'text-[#524B5E] hover:bg-[#F7F6FA] hover:text-[#1C1924]'
-                                  )}
-                                >
-                                  <span>{c}</span>
-                                  {selectedCountry.toLowerCase() === c.toLowerCase() && (
-                                    <Check className="w-3.5 h-3.5 text-[#6555b8]" />
-                                  )}
-                                </button>
-                              ))}
-                            </div>
-                          ))}
+                            );
+                          })}
 
                           {otherCountries.length > 0 && (
-                            <div>
-                              <div className="px-3 pt-2.5 pb-1 text-[10px] font-bold text-[#8C849B] tracking-wider uppercase border-t border-[#F3EFFC] mt-1.5">
-                                Other Regions
+                            <div className="mt-2 pt-2 border-t border-[#F0EDF5]">
+                              <div className="px-3 py-1 text-[10px] font-bold text-[#8C849B] uppercase tracking-wider">
+                                Other Locations
                               </div>
                               {otherCountries.map((c) => (
                                 <button
@@ -652,7 +679,7 @@ function DiscoverContent() {
                                   className={'w-full text-left px-3 py-1.5 text-xs font-medium rounded-xl flex items-center justify-between transition ' + (
                                     selectedCountry.toLowerCase() === c.toLowerCase()
                                       ? 'bg-[#F3EFFC] text-[#6555b8] font-bold'
-                                      : 'text-[#524B5E] hover:bg-[#F7F6FA] hover:text-[#1C1924]'
+                                      : 'text-[#524B5E] hover:bg-[#F8F7FA] hover:text-[#1C1924]'
                                   )}
                                 >
                                   <span>{c}</span>
@@ -669,35 +696,22 @@ function DiscoverContent() {
                   </div>
                 )}
               </div>
-            </div>
 
-            {/* Right Controls: Quick Search + Filters Drawer Button */}
-            <div className="flex items-center gap-2 w-full lg:w-auto lg:max-w-md">
-              <div className="w-full bg-white border border-[#DDD7E5] hover:border-[#6555b8]/50 focus-within:border-[#6555b8] focus-within:ring-2 focus-within:ring-[#6555b8]/15 rounded-full shadow-xs transition-all flex items-center pl-3.5 pr-1.5 py-1.5">
-                <Search className="w-4 h-4 text-[#8C849B] shrink-0 pointer-events-none" />
-                <input
-                  type="text"
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Search city, name..."
-                  className="w-full bg-transparent px-2.5 text-xs sm:text-sm text-[#1C1924] placeholder-[#8C849B] focus:outline-none min-w-0"
-                />
-                <div className="h-5 w-[1px] bg-[#DDD7E5] shrink-0 mx-1" />
-                <button
-                  type="button"
-                  onClick={() => setFiltersOpen(true)}
-                  aria-label="Open Filters"
-                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-[#524B5E] hover:text-[#1C1924] hover:bg-[#F3EFFC] transition shrink-0"
-                >
-                  <SlidersHorizontal className="w-3.5 h-3.5 text-[#6555b8]" />
-                  <span>Filters</span>
-                  {activeFiltersCount > 0 && (
-                    <span className="w-4 h-4 bg-[#6555b8] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-                      {activeFiltersCount}
-                    </span>
-                  )}
-                </button>
-              </div>
+              {/* Filters Drawer Trigger */}
+              <button
+                type="button"
+                onClick={() => setFiltersOpen(true)}
+                aria-label="Open Filters"
+                className="flex items-center gap-1 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full border border-[#DDD7E5] bg-white text-xs font-semibold text-[#524B5E] hover:text-[#1C1924] hover:bg-[#F3EFFC] shadow-xs transition shrink-0"
+              >
+                <SlidersHorizontal className="w-3.5 h-3.5 text-[#6555b8]" />
+                <span className="hidden xs:inline sm:inline">Filters</span>
+                {activeFiltersCount > 0 && (
+                  <span className="w-4 h-4 bg-[#6555b8] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                    {activeFiltersCount}
+                  </span>
+                )}
+              </button>
             </div>
           </div>
         </section>
@@ -711,7 +725,7 @@ function DiscoverContent() {
             return (
               <div
                 key={profile.id}
-                className="group relative rounded-2xl sm:rounded-3xl overflow-hidden bg-white border border-[#E5E1EC] hover:border-[#6555b8]/35 shadow-xs hover:shadow-lg transition-all duration-200 flex flex-col justify-between"
+                className="group relative rounded-2xl sm:rounded-3xl overflow-hidden bg-white border border-[#E5E1EC] hover:border-[#6555b8]/35 shadow-xs hover:shadow-lg transition-shadow duration-200 flex flex-col justify-between will-change-transform"
               >
                 {/* Photo Carousel Container */}
                 <div className="relative w-full aspect-[4/5] overflow-hidden bg-[#F2EEF7]">
