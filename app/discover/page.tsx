@@ -275,12 +275,13 @@ function DiscoverContent() {
 
   const activeFiltersCount = useMemo(() => {
     let count = 0;
+    if (selectedGenders.length > 0) count++;
     if (minAge > 18 || maxAge < 65) count++;
     if (selectedIntent !== 'All') count++;
     if (verifiedOnly) count++;
     if (activeNowOnly) count++;
     return count;
-  }, [minAge, maxAge, selectedIntent, verifiedOnly, activeNowOnly]);
+  }, [selectedGenders, minAge, maxAge, selectedIntent, verifiedOnly, activeNowOnly]);
 
   const resetFilters = () => {
     setSelectedGenders([]);
@@ -303,9 +304,9 @@ function DiscoverContent() {
       if (user && !searchParams.get('gender') && !userSelectedGenderManually.current) {
         const { data: p } = await supabase.from('profiles').select('interested_in, seeking_gender').eq('id', user.id).single();
         const seeking = (p?.interested_in || p?.seeking_gender || '').toLowerCase().trim();
-        if (seeking === 'men' || seeking === 'man') setSelectedGender('man');
-        else if (seeking === 'women' || seeking === 'woman') setSelectedGender('woman');
-        else if (seeking === 'trans') setSelectedGender('trans');
+        if (seeking === 'men' || seeking === 'man') setSelectedGenders(['man']);
+        else if (seeking === 'women' || seeking === 'woman') setSelectedGenders(['woman']);
+        else if (seeking === 'trans') setSelectedGenders(['trans']);
       }
         if (!user) return;
 
