@@ -788,7 +788,7 @@ function DiscoverContent() {
                         : 'bg-black/40 hover:bg-black/60 border-white/20 text-white'
                     )}
                   >
-                    <Heart className={'w-4 h-4 sm:w-5 sm:h-5 ' + (isLiked ? 'fill-white' : '')} />
+                    <Heart className={'w-4 h-4 sm:w-5 sm:h-5 transition-transform duration-200 ' + (isLiked ? 'fill-white scale-110' : 'hover:scale-105')} />
                   </button>
                 </div>
               </div>
@@ -798,7 +798,18 @@ function DiscoverContent() {
 
         {!isLoading && filteredProfiles.length === 0 && (
           <div className="py-16 text-center space-y-3">
-            <p className="text-sm text-[#524B5E]">No members match your current filter settings.</p>
+            <div className="w-12 h-12 mx-auto rounded-full bg-[#F3EFFC] flex items-center justify-center text-[#6555b8]">
+              <Search className="w-5 h-5" />
+            </div>
+            <p className="text-sm font-semibold text-[#1C1924]">No members match your current filters</p>
+            <p className="text-xs text-[#756D82] max-w-xs mx-auto">Try widening your age, country, or gender preferences to see more profiles.</p>
+            <button
+              type="button"
+              onClick={resetFilters}
+              className="mt-2 inline-flex items-center px-4 py-2 text-xs font-semibold rounded-full bg-[#6555b8] text-white hover:bg-[#5242a3] transition shadow-xs"
+            >
+              Reset All Filters
+            </button>
             <button
               type="button"
               onClick={resetFilters}
