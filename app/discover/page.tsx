@@ -725,79 +725,60 @@ function DiscoverContent() {
           {visibleProfiles.map((profile) => {
             const state = cardActions[profile.id];
             const isLiked = state === 'like';
+            const displayName = ((profile.username || profile.name || 'Member').startsWith('user_') ? 'Member' : (profile.username || profile.name || 'Member'));
 
             return (
               <div
                 key={profile.id}
-                className="group relative rounded-2xl sm:rounded-3xl overflow-hidden bg-white border border-[#E5E1EC] hover:border-[#6555b8]/35 shadow-xs hover:shadow-lg transition-shadow duration-200 flex flex-col justify-between will-change-transform"
+                className="group relative rounded-2xl sm:rounded-3xl overflow-hidden aspect-[3/4] w-full bg-[#1E1F30] border border-[#9A8CC3]/20 shadow-md hover:shadow-xl transition-all duration-300"
               >
-                {/* Photo Carousel Container */}
-                <div className="relative w-full aspect-[4/5] overflow-hidden bg-[#F2EEF7]">
-                  <DiscoverCardPhotoCarousel
-                    profileId={profile.id}
-                    photos={profile.photos}
-                    avatarUrl={profile.avatarUrl}
-                    name={profile.name}
-                    repScore={profile.repScore}
-                    online={profile.online}
-                    recentlyActive={profile.recentlyActive}
-                  />
+                {/* Full-Bleed Carousel */}
+                <DiscoverCardPhotoCarousel
+                  profileId={profile.id}
+                  photos={profile.photos}
+                  avatarUrl={profile.avatarUrl}
+                  name={profile.name}
+                  repScore={profile.repScore}
+                  online={profile.online}
+                  recentlyActive={profile.recentlyActive}
+                />
 
-                  {/* Contrast Gradient for Controls */}
-                  <div className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-t from-black/65 via-black/25 to-transparent pointer-events-none" />
+                {/* Dark Scrim Gradient for Legibility */}
+                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/90 via-black/45 to-transparent z-10" />
 
-                  {/* Pairs-Style Action Buttons: Pass (X) & Heart (Like) */}
-                  <div className="absolute bottom-3 inset-x-3 flex items-center justify-between z-20 pointer-events-auto">
-                    <button
-                      type="button"
-                      aria-label="Pass"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        triggerAction(profile.id, 'pass', profile.name);
-                      }}
-                      className="w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center bg-black/45 hover:bg-black/65 text-white backdrop-blur-md border border-white/25 shadow-md transition-all active:scale-90"
-                    >
-                      <XIcon className="w-5 h-5" />
-                    </button>
-
-                    <button
-                      type="button"
-                      aria-label="Like"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        triggerAction(profile.id, 'like');
-                      }}
-                      className={'w-10 h-10 sm:w-11 sm:h-11 rounded-full flex items-center justify-center border transition-all duration-200 active:scale-95 shadow-md backdrop-blur-md ' + (
-                        isLiked
-                          ? 'bg-rose-500 border-rose-400 text-white shadow-rose-500/40 scale-105'
-                          : 'bg-[#6555b8]/90 hover:bg-[#6555b8] border-white/30 text-white hover:shadow-[#6555b8]/40'
-                      )}
-                    >
-                      <Heart className={'w-5 h-5 ' + (isLiked ? 'fill-white' : '')} />
-                    </button>
-                  </div>
-                </div>
-
-                {/* High Contrast Clean Details */}
-                <div className="p-3.5 sm:p-4 bg-white">
-                  <Link href={'/profile/' + profile.id} className="block group-hover:opacity-95">
-                    <div className="flex items-center gap-1.5 mb-1">
-                      <h3 className="text-lg sm:text-xl font-bold text-[#1C1924] flex items-center gap-1.5 truncate">
-                        {((profile.username || profile.name || 'Member').startsWith('user_') ? 'Member' : (profile.username || profile.name || 'Member'))}{profile.age ? `, ${profile.age}` : ''}
-                        {profile.verified && <CheckCircle className="w-4.5 h-4.5 text-[#6555b8] shrink-0" />}
-                      </h3>
-                    </div>
-                    <p className="text-sm sm:text-base font-medium text-[#756D82] flex items-center gap-1.5 truncate">
-                        <MapPin
-                          className={'w-3.5 h-3.5 shrink-0 ' + (
-                            profile.location_source === 'gps_verified' ? 'text-emerald-500' : 'text-[#8C849B]'
-                          )}
-                        />
-                        <span className="truncate">{profile.location ? profile.location.split(',')[0] : 'Unknown'}</span>
-                      </p>
+                {/* Bottom Overlay: Info (Left) & Heart (Right) */}
+                <div className="absolute bottom-0 inset-x-0 p-3 sm:p-3.5 flex items-end justify-between gap-2 z-20 pointer-events-none">
+                  <Link href={'/profile/' + profile.id} className="min-w-0 flex-1 pointer-events-auto">
+                    <h3 className="text-sm sm:text-base font-bold text-white tracking-tight flex items-center gap-1 truncate drop-shadow-xs">
+                      <span className="truncate">{displayName}{profile.age ? ', ' + profile.age : ''}</span>
+                      {profile.verified && <CheckCircle className="w-3.5 h-3.5 text-[#B2A4D7] shrink-0" />}
+                    </h3>
+                    <p className="flex items-center gap-1 text-[11px] sm:text-xs text-white/80 font-medium mt-0.5 truncate drop-shadow-xs">
+                      <MapPin
+                        className={'w-3 h-3 shrink-0 ' + (
+                          profile.location_source === 'gps_verified' ? 'text-emerald-400' : 'text-[#B2A4D7]'
+                        )}
+                      />
+                      <span className="truncate">{profile.location ? profile.location.split(',')[0] : 'Unknown'}</span>
+                    </p>
                   </Link>
+
+                  <button
+                    type="button"
+                    aria-label={isLiked ? 'Unlike' : 'Like'}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      triggerAction(profile.id, 'like');
+                    }}
+                    className={'w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border transition-all duration-200 active:scale-90 shadow-md backdrop-blur-md shrink-0 pointer-events-auto ' + (
+                      isLiked
+                        ? 'bg-rose-500 border-rose-400 text-white shadow-rose-500/40 scale-105'
+                        : 'bg-black/40 hover:bg-black/60 border-white/20 text-white'
+                    )}
+                  >
+                    <Heart className={'w-4 h-4 sm:w-5 sm:h-5 ' + (isLiked ? 'fill-white' : '')} />
+                  </button>
                 </div>
               </div>
             );
