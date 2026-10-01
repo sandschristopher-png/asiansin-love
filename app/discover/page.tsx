@@ -190,10 +190,23 @@ function DiscoverContent() {
     return c && c.toLowerCase() !== 'all' ? c : 'All';
   });
   const userSelectedGenderManually = useRef(Boolean(searchParams.get('gender')));
-  const [selectedGender, setSelectedGender] = useState<'All' | 'woman' | 'man' | 'trans'>(() => {
+  const [selectedGenders, setSelectedGenders] = useState<string[]>(() => {
     const g = searchParams.get('gender');
-    return g && ['All', 'woman', 'man', 'trans'].includes(g) ? (g as any) : 'All';
+    if (!g || g.toLowerCase() === 'all') return [];
+    return g.split(',').map(s => s.trim().toLowerCase()).filter(s => ['woman', 'man', 'trans'].includes(s));
   });
+
+  
+  const toggleGender = (gender: string) => {
+    userSelectedGenderManually.current = true;
+    setSelectedGenders((prev) => {
+      if (prev.includes(gender)) {
+        return prev.filter((g) => g !== gender);
+      } else {
+        return [...prev, gender];
+      }
+    });
+  };
 
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [isCountryOpen, setIsCountryOpen] = useState(false);
@@ -239,7 +252,7 @@ function DiscoverContent() {
 
     if (searchQuery.trim()) params.set('q', searchQuery.trim());
     if (selectedCountry.toLowerCase() !== 'all') params.set('country', selectedCountry);
-    if (selectedGender !== 'All') params.set('gender', selectedGender);
+    if (selectedGenders.length > 0) params.set('gender', selectedGenders.join(','));
     if (minAge > 18) params.set('minAge', minAge.toString());
     if (maxAge < 65) params.set('maxAge', maxAge.toString());
     if (selectedIntent !== 'All') params.set('intent', selectedIntent);
@@ -252,7 +265,7 @@ function DiscoverContent() {
   }, [
     searchQuery,
     selectedCountry,
-    selectedGender,
+    selectedGenders.join(','),
     minAge,
     maxAge,
     selectedIntent,
@@ -270,7 +283,7 @@ function DiscoverContent() {
   }, [minAge, maxAge, selectedIntent, verifiedOnly, activeNowOnly]);
 
   const resetFilters = () => {
-    setSelectedGender('All');
+    setSelectedGenders([]);
     setSelectedCountry('All');
     setSearchQuery('');
     setMinAge(18);
@@ -348,7 +361,7 @@ function DiscoverContent() {
   useEffect(() => {
     setVisibleLimit(BATCH_SIZE);
     setAutoLoadsCount(0);
-  }, [searchQuery, selectedCountry, selectedGender, minAge, maxAge, selectedIntent, verifiedOnly, activeNowOnly]);
+  }, [searchQuery, selectedCountry, selectedGenders.join(','), minAge, maxAge, selectedIntent, verifiedOnly, activeNowOnly]);
 
   // IntersectionObserver for auto-loading batches
   useEffect(() => {
@@ -500,7 +513,7 @@ function DiscoverContent() {
 
   const filteredProfiles = profiles.filter((profile) => {
     const matchesCountry = selectedCountry.toLowerCase() === 'all' || profile.country.toLowerCase() === selectedCountry.toLowerCase();
-    const matchesGender = selectedGender === 'All' || profile.gender.toLowerCase() === selectedGender.toLowerCase();
+    const matchesGender = selectedGenders.length === 0 || selectedGenders.includes(profile.gender.toLowerCase());
     const matchesQuery = 
       profile.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
       profile.location.toLowerCase().includes(searchQuery.toLowerCase());
@@ -547,21 +560,18 @@ function DiscoverContent() {
           <div className="flex items-center justify-between gap-1.5 w-full overflow-x-auto no-scrollbar py-0.5">
             {/* Gender Segmented Switch */}
             <div className="flex items-center gap-0.5 p-0.5 bg-white border border-[#DDD7E5] rounded-full shadow-xs shrink-0">
-              {(['All', 'woman', 'trans', 'man'] as const).map((gender) => {
-                const label = gender === 'All' ? 'All' : gender === 'woman' ? 'Women' : gender === 'trans' ? 'Trans' : 'Men';
-                const active = selectedGender === gender;
+              {(['woman', 'trans', 'man'] as const).map((gender) => {
+                const label = gender === 'woman' ? 'Women' : gender === 'trans' ? 'Trans' : 'Men';
+                const active = selectedGenders.includes(gender);
                 return (
                   <button
                     key={gender}
                     type="button"
-                    onClick={() => {
-                      userSelectedGenderManually.current = true;
-                      setSelectedGender(gender);
-                    }}
-                    className={'px-2.5 sm:px-3.5 py-1 sm:py-1.5 text-xs sm:text-sm font-semibold rounded-full transition-all shrink-0 ' + (
+                    onClick={() => toggleGender(gender)}
+                    className={'px-3 sm:px-3.5 py-1 sm:py-1.5 text-xs sm:text-sm font-semibold rounded-full border transition-all shrink-0 ' + (
                       active
-                        ? 'bg-[#6555b8] text-white shadow-xs'
-                        : 'text-[#6C637B] hover:text-[#1C1924] hover:bg-[#F3EFFC]'
+                        ? 'bg-[#6555b8] border-[#6555b8] text-white shadow-xs'
+                        : 'bg-white border-[#DDD7E5] text-[#6C637B] hover:text-[#1C1924] hover:bg-[#F3EFFC]'
                     )}
                   >
                     {label}
@@ -606,7 +616,7 @@ function DiscoverContent() {
                     </button>
 
                     {(() => {
-                      const isSeekingMen = selectedGender === 'man';
+                      const isSeekingMen = selectedGenders.includes('man') && !selectedGenders.includes('woman');
                       const groups = isSeekingMen
                         ? [
                             { title: 'Western & Overseas', list: SUITOR_COUNTRIES },
