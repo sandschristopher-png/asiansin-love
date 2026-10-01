@@ -902,6 +902,38 @@ function DiscoverContent() {
               </button>
             </div>
 
+                        {/* Gender Multi-Select Pills */}
+            <div className="space-y-2">
+              <div className="flex justify-between items-center text-xs font-semibold text-[#524B5E]">
+                <span>I'm Interested In</span>
+                {selectedGenders.length > 0 && (
+                  <span className="text-[11px] font-bold text-[#6555b8] bg-[#F3EFFC] px-2 py-0.5 rounded-full">
+                    {selectedGenders.length} selected
+                  </span>
+                )}
+              </div>
+              <div className="grid grid-cols-3 gap-2">
+                {(['woman', 'trans', 'man'] as const).map((gender) => {
+                  const label = gender === 'woman' ? 'Women' : gender === 'trans' ? 'Trans' : 'Men';
+                  const active = selectedGenders.includes(gender);
+                  return (
+                    <button
+                      key={gender}
+                      type="button"
+                      onClick={() => toggleGender(gender)}
+                      className={'py-2 text-xs font-semibold rounded-xl border text-center transition-all ' + (
+                        active
+                          ? 'bg-[#6555b8] border-[#6555b8] text-white shadow-xs'
+                          : 'bg-white border-[#DDD7E5] text-[#524B5E] hover:border-[#6555b8]/50 hover:bg-[#F3EFFC]'
+                      )}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
             <div className="space-y-3">
               <div className="flex justify-between items-center text-xs font-semibold text-[#524B5E]">
                 <span>Age Range</span>
