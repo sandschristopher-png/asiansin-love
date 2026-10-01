@@ -11,10 +11,6 @@ import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
   manifest: '/manifest.webmanifest',
-  icons: {
-    icon: '/favicon.png',
-    apple: '/icon-192.png',
-  },
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
