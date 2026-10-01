@@ -48,6 +48,8 @@ export interface ProfileItem {
   intent?: string;
   bio?: string;
   occupation?: string;
+  languages?: string | string[];
+  height?: string;
 }
 
 
@@ -420,7 +422,7 @@ function DiscoverContent() {
 
         const { data, error } = await supabase
           .from('profiles')
-          .select('id, display_name, full_name, username, age, gender, city, country, avatar_url, photos, is_verified, reputation_score, last_active, intent:relationship_intent, occupation, bio, latitude, longitude, location_source')
+          .select('id, display_name, full_name, username, age, gender, city, country, avatar_url, photos, is_verified, reputation_score, last_active, intent:relationship_intent, occupation, bio, languages, height, latitude, longitude, location_source')
           .order('created_at', { ascending: false })
           .limit(120);
 
@@ -454,6 +456,8 @@ function DiscoverContent() {
               intent: row.intent || 'Marriage',
               bio: row.bio,
               occupation: row.occupation,
+        languages: row.languages,
+        height: row.height,
             };
           });
 

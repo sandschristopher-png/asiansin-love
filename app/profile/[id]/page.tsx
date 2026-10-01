@@ -367,7 +367,7 @@ export default function PublicProfilePage() {
                   <span className="font-semibold text-[#1C1924]">{profile.wants_kids || 'Yes'}</span>
                 </div>
 
-                <div className="flex items-center gap-2 p-3 sm:p-3.5 rounded-2xl bg-[#FAF8FD] border border-[#DDD7E5]">
+                <div className="col-span-full flex items-center gap-2 p-3 sm:p-3.5 rounded-2xl bg-[#FAF8FD] border border-[#DDD7E5]">
                   <Languages className="w-4 h-4 text-[#6555b8] shrink-0" />
                   <span className="text-[#756D82]">Languages:</span>
                   <span className="font-semibold text-[#1C1924]">{profile.languages || 'English'}</span>

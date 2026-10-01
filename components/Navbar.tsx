@@ -45,8 +45,12 @@ export function Navbar() {
           .single();
         if (data) setProfile(data);
 
-        channel = supabase
-            .channel(`user-notifications-${user.id}`)
+        const channelTopic = `user-notifications-${user.id}`;
+        const existingChannel = supabase.getChannels().find((c: any) => c.topic === `realtime:${channelTopic}`);
+        if (existingChannel) {
+          await supabase.removeChannel(existingChannel);
+        }
+        channel = supabase.channel(channelTopic)
             .on(
               'postgres_changes',
               {

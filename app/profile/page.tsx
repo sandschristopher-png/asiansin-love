@@ -234,7 +234,7 @@ export default function MyProfilePage() {
   ) => {
     const isOpen = openDropdown === dropdownKey;
     return (
-      <div className="relative inline-block">
+      <div className="w-full basis-full pt-1 relative inline-block">
         <button
           type="button"
           onClick={() => setOpenDropdown(isOpen ? null : dropdownKey)}
@@ -682,7 +682,7 @@ export default function MyProfilePage() {
                   <div className="space-y-4">
                     <div>
                       <p className="text-[10px] font-bold uppercase tracking-widest text-[#B2A4D7] mb-2.5">Basics</p>
-                      <div className="flex flex-wrap items-center gap-x-6 gap-y-2.5 text-xs">
+                      <div className="flex flex-wrap items-center gap-x-4 sm:gap-x-6 gap-y-2 sm:gap-y-2.5 text-xs">
                         <div className="flex items-center gap-1.5">
                           <Briefcase className="w-3.5 h-3.5 text-[#9A8CC3] shrink-0" />
                           <span className="text-[#9A8CC3] font-medium">Work:</span>
@@ -693,7 +693,7 @@ export default function MyProfilePage() {
                           <span className="text-[#9A8CC3] font-medium">Height:</span>
                           <span className="text-[#1C1924] font-medium">{height || 'Not set'}</span>
                         </div>
-                        <div className="flex items-center gap-2 flex-wrap">
+                        <div className="w-full flex items-center gap-2 flex-wrap pt-1">
                           <div className="flex items-center gap-1.5 text-[#9A8CC3] font-medium">
                             <Languages className="w-3.5 h-3.5 shrink-0" />
                             <span>Languages:</span>
