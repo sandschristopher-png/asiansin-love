@@ -1,8 +1,8 @@
-﻿'use client';
+'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { MapPin, ShieldCheck, Heart, MessageCircle, Star, X } from 'lucide-react';
+import { MapPin, ShieldCheck, Heart } from 'lucide-react';
 
 interface DiscoverCardProps {
   id: string;
@@ -23,86 +23,83 @@ export function DiscoverCard({
   repScore = 100,
   online = true,
 }: DiscoverCardProps) {
+  const [liked, setLiked] = useState(false);
+
+  const handleLike = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    setLiked((prev) => !prev);
+    // Hook into likes API / toast here
+  };
+
   return (
-    <div className="group rounded-3xl bg-[#2D2F4C] border border-[#9A8CC3]/20 hover:border-[#9A8CC3]/50 transition-all duration-300 shadow-xl overflow-hidden flex flex-col">
-      {/* Framed Image Container */}
-      <Link href={`/profile/${id}`} className="relative aspect-[4/5] w-full block overflow-hidden bg-[#1E1F30]">
+    <Link
+      href={`/profile/${id}`}
+      className="group relative block aspect-[3/4] w-full overflow-hidden rounded-2xl sm:rounded-3xl bg-[#1E1F30] border border-[#9A8CC3]/15 shadow-md hover:shadow-2xl transition-all duration-300"
+    >
+      {/* Full-Bleed Image or Gradient Fallback */}
+      {avatarUrl ? (
         <img
           src={avatarUrl}
           alt={name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+          className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
         />
+      ) : (
+        <div className="h-full w-full bg-gradient-to-br from-[#6555b8] to-[#2D2F4C] flex items-center justify-center">
+          <span className="text-3xl font-bold text-white/50">{name?.[0] || '?'}</span>
+        </div>
+      )}
 
-        {/* Gradient Scrim for Contrast */}
-        <div className="absolute inset-0 bg-gradient-to-t from-[#2D2F4C] via-transparent to-black/40" />
+      {/* Darkening Gradient Scrim */}
+      <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-black/90 via-black/35 to-transparent" />
 
-        {/* Top Badges */}
-        <div className="absolute top-3 left-3 right-3 flex items-center justify-between pointer-events-none">
-          {online ? (
-            <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-[11px] font-semibold text-emerald-400 border border-emerald-500/20">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-              Online
-            </span>
-          ) : <span />}
+      {/* Top Floating Micro-Badges */}
+      <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between pointer-events-none z-10">
+        {online ? (
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-black/50 backdrop-blur-md text-[10px] sm:text-[11px] font-semibold text-emerald-400 border border-emerald-500/20">
+            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
+            Online
+          </span>
+        ) : (
+          <span />
+        )}
 
-          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-[11px] font-semibold text-[#1C1924] border border-[#9A8CC3]/30">
-            <ShieldCheck className="w-3.5 h-3.5 text-[#B2A4D7]" />
+        {repScore > 0 && (
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-black/50 backdrop-blur-md text-[10px] sm:text-[11px] font-medium text-[#E2DCF3] border border-white/10">
+            <ShieldCheck className="h-3 w-3 text-[#B2A4D7]" />
             {repScore}%
           </span>
-        </div>
-      </Link>
+        )}
+      </div>
 
-      {/* Card Info Body */}
-      <div className="p-4 flex flex-col flex-1 justify-between bg-[#2D2F4C]">
-        <div>
-          <Link href={`/profile/${id}`}>
-            <h2 className="text-base font-bold text-white hover:text-[#1C1924] transition flex items-center gap-1.5">
-              {name}, {age}
-            </h2>
-          </Link>
-          
-          {/* High-Contrast Location Pop */}
-          <p className="text-xs font-medium text-[#1C1924] flex items-center gap-1.5 mt-1">
-            <MapPin className="w-3.5 h-3.5 text-[#9A8CC3] shrink-0" />
+      {/* Bottom Info & Corner Like */}
+      <div className="absolute bottom-0 left-0 right-0 p-3 sm:p-4.5 flex items-end justify-between gap-2 z-10">
+        {/* Left: Identity Details */}
+        <div className="min-w-0 flex-1">
+          <h2 className="text-sm sm:text-base font-bold text-white tracking-tight truncate">
+            {name}, {age}
+          </h2>
+
+          <p className="flex items-center gap-1 text-[11px] sm:text-xs text-[#E2DCF3]/90 font-medium mt-0.5 truncate">
+            <MapPin className="h-3 w-3 text-[#B2A4D7] shrink-0" />
             <span className="truncate">{location}</span>
           </p>
         </div>
 
-        {/* Action Button Strip */}
-        <div className="flex items-center justify-between gap-1.5 pt-3.5 mt-3 border-t border-[#2D2F4C]">
-          <button
-            type="button"
-            className="w-8 h-8 rounded-xl bg-[#1E1F30] border border-[#9A8CC3]/20 hover:border-rose-500/50 hover:bg-rose-500/10 text-[#B2A4D7] hover:text-rose-400 flex items-center justify-center transition active:scale-95"
-            aria-label="Pass"
-          >
-            <X className="w-4 h-4" />
-          </button>
-
-          <button
-            type="button"
-            className="w-8 h-8 rounded-xl bg-[#1E1F30] border border-[#9A8CC3]/20 hover:border-[#B2A4D7] hover:bg-[#6555B8]/20 text-[#B2A4D7] hover:text-white flex items-center justify-center transition active:scale-95"
-            aria-label="Bookmark"
-          >
-            <Star className="w-4 h-4" />
-          </button>
-
-          <button
-            type="button"
-            className="w-8 h-8 rounded-xl bg-[#1E1F30] border border-[#9A8CC3]/20 hover:border-pink-500/50 hover:bg-pink-500/20 text-[#B2A4D7] hover:text-pink-400 flex items-center justify-center transition active:scale-95"
-            aria-label="Like"
-          >
-            <Heart className="w-4 h-4" />
-          </button>
-
-          <Link
-            href={`/profile/${id}`}
-            className="flex-1 h-8 rounded-xl bg-[#6555B8] hover:bg-[#7D4B9F] text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition active:scale-95 shadow-sm"
-          >
-            <MessageCircle className="w-3.5 h-3.5" />
-            <span>Chat</span>
-          </Link>
-        </div>
+        {/* Right: Tactile Heart Action */}
+        <button
+          type="button"
+          onClick={handleLike}
+          aria-label={liked ? "Unlike" : "Like"}
+          className={`h-9 w-9 sm:h-10 sm:w-10 rounded-full flex items-center justify-center backdrop-blur-md transition-all duration-200 active:scale-90 shrink-0 ${
+            liked
+              ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/30'
+              : 'bg-black/40 border border-white/20 text-white/90 hover:text-white hover:bg-black/60'
+          }`}
+        >
+          <Heart className={`h-4 w-4 sm:h-5 sm:w-5 ${liked ? 'fill-current' : ''}`} />
+        </button>
       </div>
-    </div>
+    </Link>
   );
 }
