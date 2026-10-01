@@ -716,7 +716,7 @@ export default function OnboardingPage() {
                         type="text"
                         value={height}
                         onChange={(e) => setHeight(e.target.value)}
-                        placeholder="e.g. 5'10" (178 cm)"
+                        placeholder="e.g. 5ft 10in (178 cm)"
                         className="w-full px-3 py-2 rounded-xl text-xs bg-white border border-[#DDD7E5] text-[#1C1924] focus:outline-none focus:border-[#6555b8]"
                       />
                     </div>
