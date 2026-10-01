@@ -147,13 +147,13 @@ export default function PublicProfilePage() {
           <div className="md:col-span-5 bg-white rounded-3xl border border-[#DDD7E5] shadow-xs p-4 sm:p-5 space-y-4">
             <div className="pb-3 border-b border-[#DDD7E5] space-y-1">
               <div className="flex items-baseline gap-2 flex-wrap">
-                <h1 className="text-xl sm:text-2xl font-bold text-[#1C1924] tracking-tight">
+                <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1C1924] tracking-tight">
                   {profile.name}{profile.age ? `, ${profile.age}` : ''}
                 </h1>
                 
               </div>
               <div className="flex items-center gap-2 flex-wrap">
-                <p className="text-xs sm:text-sm font-medium text-[#524B5E] flex items-center gap-1.5">
+                <p className="text-sm sm:text-base font-medium text-[#524B5E] flex items-center gap-1.5">
                   <MapPin className={`w-3.5 h-3.5 ${'text-[#6555B8]'}`} />
                   <span>{profile.location || 'Southeast Asia'}</span>
                 </p>
@@ -314,92 +314,84 @@ export default function PublicProfilePage() {
             </div>
 
             <div className="p-5 sm:p-6 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-2">
-              <h3 className="text-xs font-bold text-[#756D82] uppercase tracking-wider">About Me</h3>
-              <p className="text-xs sm:text-sm text-[#1C1924] leading-relaxed font-normal whitespace-pre-line">
+              <h3 className="text-xs sm:text-sm font-bold text-[#6B627A] uppercase tracking-wider">About Me</h3>
+              <p className="text-sm sm:text-base text-[#1C1924] leading-relaxed font-normal whitespace-pre-line">
                 {profile.bio || 'No bio provided yet.'}
               </p>
             </div>
 
             <div className="p-5 sm:p-6 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-2">
-              <h3 className="text-xs font-bold text-[#756D82] uppercase tracking-wider">What I&apos;m Looking For</h3>
+              <h3 className="text-xs sm:text-sm font-bold text-[#6B627A] uppercase tracking-wider">What I&apos;m Looking For</h3>
               <p className="text-xs sm:text-sm text-[#1C1924] leading-relaxed font-normal whitespace-pre-line">
                 {profile.looking_for || 'Seeking an intentional, marriage-minded partner.'}
               </p>
             </div>
 
             <div className="p-5 sm:p-6 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-4">
-              <h3 className="text-xs font-bold text-[#756D82] uppercase tracking-wider">Courtship Vitals</h3>
+              <h3 className="text-xs sm:text-sm font-bold text-[#6B627A] uppercase tracking-wider">Courtship Vitals</h3>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 text-xs">
-                <div className="flex items-center gap-2 p-2.5 rounded-2xl bg-[#FAF8FD] border border-[#DDD7E5]">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                <div className="flex items-center gap-2 p-3 sm:p-3.5 rounded-2xl bg-[#FAF8FD] border border-[#DDD7E5]">
                   <Briefcase className="w-4 h-4 text-[#6555b8] shrink-0" />
                   <span className="text-[#756D82]">Profession:</span>
-                  <span className="font-semibold text-[#1C1924] truncate">{profile.occupation || 'Professional'}</span>
+                  <span className="font-semibold text-[#1C1924]">{profile.occupation || 'Professional'}</span>
                 </div>
 
-                <div className="flex items-center gap-2 p-2.5 rounded-2xl bg-[#FAF8FD] border border-[#DDD7E5]">
-                  <Heart className="w-4 h-4 text-[#6555b8] shrink-0" />
-                  <span className="text-[#756D82]">Intent:</span>
-                  <span className="font-semibold text-[#1C1924] truncate">{profile.relationship_intent || profile.intentions || profile.intent || 'Marriage'}</span>
-                </div>
-
-                <div className="flex items-center gap-2 p-2.5 rounded-2xl bg-[#FAF8FD] border border-[#DDD7E5]">
+                <div className="flex items-center gap-2 p-3 sm:p-3.5 rounded-2xl bg-[#FAF8FD] border border-[#DDD7E5]">
                   <Sparkles className="w-4 h-4 text-[#6555b8] shrink-0" />
                   <span className="text-[#756D82]">Faith:</span>
-                  <span className="font-semibold text-[#1C1924] truncate">{profile.religion || 'Christian'}</span>
+                  <span className="font-semibold text-[#1C1924]">{profile.religion || 'Christian'}</span>
                 </div>
 
-                <div className="flex items-center gap-2 p-2.5 rounded-2xl bg-[#FAF8FD] border border-[#DDD7E5]">
+                <div className="flex items-center gap-2 p-3 sm:p-3.5 rounded-2xl bg-[#FAF8FD] border border-[#DDD7E5]">
                   <Globe className="w-4 h-4 text-[#6555b8] shrink-0" />
                   <span className="text-[#756D82]">Relocation:</span>
-                  <span className="font-semibold text-[#1C1924] truncate">{profile.relocation || 'Open'}</span>
+                  <span className="font-semibold text-[#1C1924]">{profile.relocation || 'Open'}</span>
                 </div>
 
-                <div className="flex items-center gap-2 p-2.5 rounded-2xl bg-[#FAF8FD] border border-[#DDD7E5]">
+                <div className="flex items-center gap-2 p-3 sm:p-3.5 rounded-2xl bg-[#FAF8FD] border border-[#DDD7E5]">
                   <HeartHandshake className="w-4 h-4 text-[#6555b8] shrink-0" />
                   <span className="text-[#756D82]">Status:</span>
-                  <span className="font-semibold text-[#1C1924] truncate">{profile.marital_status || 'Never Married'}</span>
+                  <span className="font-semibold text-[#1C1924]">{profile.marital_status || 'Never Married'}</span>
                 </div>
 
-                <div className="flex items-center gap-2 p-2.5 rounded-2xl bg-[#FAF8FD] border border-[#DDD7E5]">
+                <div className="flex items-center gap-2 p-3 sm:p-3.5 rounded-2xl bg-[#FAF8FD] border border-[#DDD7E5]">
                   <Baby className="w-4 h-4 text-[#6555b8] shrink-0" />
                   <span className="text-[#756D82]">Has Kids:</span>
-                  <span className="font-semibold text-[#1C1924] truncate">{profile.has_kids || 'No'}</span>
+                  <span className="font-semibold text-[#1C1924]">{profile.has_kids || 'No'}</span>
                 </div>
 
-                <div className="flex items-center gap-2 p-2.5 rounded-2xl bg-[#FAF8FD] border border-[#DDD7E5]">
+                <div className="flex items-center gap-2 p-3 sm:p-3.5 rounded-2xl bg-[#FAF8FD] border border-[#DDD7E5]">
                   <Baby className="w-4 h-4 text-[#6555b8] shrink-0" />
                   <span className="text-[#756D82]">Wants Kids:</span>
-                  <span className="font-semibold text-[#1C1924] truncate">{profile.wants_kids || 'Yes'}</span>
+                  <span className="font-semibold text-[#1C1924]">{profile.wants_kids || 'Yes'}</span>
                 </div>
 
-                <div className="flex items-center gap-2 p-2.5 rounded-2xl bg-[#FAF8FD] border border-[#DDD7E5]">
+                <div className="flex items-center gap-2 p-3 sm:p-3.5 rounded-2xl bg-[#FAF8FD] border border-[#DDD7E5]">
                   <Languages className="w-4 h-4 text-[#6555b8] shrink-0" />
                   <span className="text-[#756D82]">Languages:</span>
-                  <span className="font-semibold text-[#1C1924] truncate">{profile.languages || 'English'}</span>
+                  <span className="font-semibold text-[#1C1924]">{profile.languages || 'English'}</span>
+                </div>
+
+                <div className="flex items-center gap-2 p-3 sm:p-3.5 rounded-2xl bg-[#FAF8FD] border border-[#DDD7E5]">
+                  <Ruler className="w-4 h-4 text-[#6555b8] shrink-0" />
+                    <span className="text-[#756D82]">Height:</span>
+                    <span className="font-semibold text-[#1C1924]">{formattedHeight !== 'Not specified' ? formattedHeight : '—'}</span>
+                  </div>
+
+                  <div className="flex items-center gap-2 p-3 sm:p-3.5 rounded-2xl bg-[#FAF8FD] border border-[#DDD7E5]">
+                    <Wine className="w-4 h-4 text-[#6555b8] shrink-0" />
+                    <span className="text-[#756D82]">Drinks:</span>
+                    <span className="font-semibold text-[#1C1924]">{profile.drinking || 'Socially'}</span>
+                  </div>
+
+                  <div className="flex items-center gap-2 p-3 sm:p-3.5 rounded-2xl bg-[#FAF8FD] border border-[#DDD7E5]">
+                    <Cigarette className="w-4 h-4 text-[#6555b8] shrink-0" />
+                    <span className="text-[#756D82]">Smokes:</span>
+                    <span className="font-semibold text-[#1C1924]">{profile.smoking || 'No'}</span>
+                  </div>
                 </div>
               </div>
-
-              <div className="pt-3 border-t border-[#DDD7E5] grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
-                <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[#FAF8FD] border border-[#DDD7E5] whitespace-nowrap min-w-0">
-                  <Ruler className="w-3.5 h-3.5 text-[#6555b8] shrink-0" />
-                  <span className="text-[#756D82] shrink-0">Height:</span>
-                  <span className="font-semibold text-[#1C1924] truncate">{formattedHeight}</span>
-                </div>
-
-                <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[#FAF8FD] border border-[#DDD7E5] whitespace-nowrap min-w-0">
-                  <Wine className="w-3.5 h-3.5 text-[#6555b8] shrink-0" />
-                  <span className="text-[#756D82] shrink-0">Drinks:</span>
-                  <span className="font-semibold text-[#1C1924] truncate">{profile.drinking || 'Socially'}</span>
-                </div>
-
-                <div className="flex items-center gap-2 px-3 py-2 rounded-xl bg-[#FAF8FD] border border-[#DDD7E5] whitespace-nowrap min-w-0">
-                  <Cigarette className="w-3.5 h-3.5 text-[#6555b8] shrink-0" />
-                  <span className="text-[#756D82] shrink-0">Smokes:</span>
-                  <span className="font-semibold text-[#1C1924] truncate">{profile.smoking || 'No'}</span>
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </main>

@@ -134,3 +134,11 @@ export default function InAppToast() {
     </div>
   );
 }
+export function notifyUser(data: Omit<ToastData, 'id'> & { id?: string }) {
+  if (typeof window === 'undefined') return;
+  const payload: ToastData = {
+    id: data.id || Math.random().toString(36).slice(2),
+    ...data,
+  };
+  window.dispatchEvent(new CustomEvent('ail-notification', { detail: payload }));
+}

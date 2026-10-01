@@ -8,23 +8,24 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { ChevronLeft, ChevronRight, Search, Heart, X as XIcon, Star, MessageCircle, 
   MapPin, ShieldCheck, CheckCircle, SlidersHorizontal, 
-  RotateCcw, Loader2, Check } from 'lucide-react';
+  RotateCcw, Loader2, Check, Globe, ChevronDown } from 'lucide-react';
 import { Footer } from '@/components/Footer';
 import { supabase } from '@/lib/supabaseClient';
 import { ActionType, getLocalCardActions, persistCardAction } from '@/lib/interactions';
 
 const SEA_COUNTRIES = ['Philippines', 'Thailand', 'Vietnam', 'Indonesia', 'Malaysia', 'Singapore', 'Cambodia'];
-const SUITOR_COUNTRIES = ['United States', 'Australia', 'United Kingdom', 'Canada', 'Japan', 'South Korea', 'Germany'];
+const WESTERN_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdom', 'Germany'];
+const ASIA_HUBS = ['Singapore', 'Japan', 'South Korea', 'Taiwan', 'Hong Kong'];
+const SUITOR_COUNTRIES = ['United States', 'Canada', 'Australia', 'United Kingdom', 'Germany', 'Japan', 'South Korea'];
 
 const PRIORITY_ORDER = ['Philippines', 'Thailand', 'Vietnam', 'Laos', 'Cambodia', 'Indonesia'];
 
 const RELATIONSHIP_INTENTS = [
   'All',
   'Marriage',
-  'Long-term Relationship',
-  'Serious Dating',
+  'Serious Relationship',
   'Casual Dating',
-  'Friendship'
+  'Friendship',
 ];
 
 export interface ProfileItem {
@@ -179,6 +180,7 @@ function DiscoverContent() {
   const [currentUserCoords, setCurrentUserCoords] = useState<{ lat: number; lon: number } | null>(null);
   const [currentUserProfile, setCurrentUserProfile] = useState<{ gender?: string; country?: string } | null>(null);
   const [profiles, setProfiles] = useState<ProfileItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const [searchQuery, setSearchQuery] = useState(() => searchParams.get('q') || '');
   const [selectedCountry, setSelectedCountry] = useState(() => {
@@ -192,6 +194,22 @@ function DiscoverContent() {
   });
 
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [isCountryOpen, setIsCountryOpen] = useState(false);
+  const countryDropdownRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (countryDropdownRef.current && !countryDropdownRef.current.contains(event.target as Node)) {
+        setIsCountryOpen(false);
+      }
+    }
+    if (isCountryOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isCountryOpen]);
   const [minAge, setMinAge] = useState<number>(() => {
     const val = Number(searchParams.get('minAge'));
     return !isNaN(val) && val >= 18 && val <= 65 ? val : 18;
@@ -442,7 +460,9 @@ function DiscoverContent() {
           // Avoid duplicating profiles that exist in remote DB
           const liveIds = new Set(liveItems.map(p => p.id));
           const filteredLiveItems = currentAuthUser ? liveItems.filter(p => p.id !== currentAuthUser.id) : liveItems;
-          setProfiles(filteredLiveItems);
+            const existingIds = new Set(filteredLiveItems.map(p => p.id));
+            const merged = [...filteredLiveItems, ...DUMMY_BOT_PROFILES.filter(b => !existingIds.has(b.id))];
+            setProfiles(merged);
         }
       } catch (err) {
         console.error('Failed to load discovery profiles:', err);
@@ -494,70 +514,196 @@ function DiscoverContent() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#FAFAFD] text-[#1C1924]">
-      <main className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-6 pb-32 md:pb-24 space-y-5">
+      <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 pt-6 pb-32 md:pb-24 space-y-5">
         
         {/* Top Control Bar */}
-        <section aria-label="Search and Filters" className="w-full space-y-4">
-          {/* Integrated Search Bar with Embedded Filter Button */}
-          <div className="w-full bg-white border border-[#DDD7E5] hover:border-[#6555b8]/50 focus-within:border-[#6555b8] focus-within:ring-2 focus-within:ring-[#6555b8]/15 rounded-full shadow-xs transition-all flex items-center pl-4 pr-1.5 py-1.5 sm:py-2">
-            <Search className="w-5 h-5 text-[#8C849B] shrink-0 pointer-events-none" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Find someone in Manila, Bangkok, or Cebu..."
-              className="w-full bg-transparent px-3 text-sm sm:text-base text-[#1C1924] placeholder-[#8C849B] focus:outline-none min-w-0"
-            />
-            {/* Embedded Filter Trigger on Far Right */}
-            <div className="h-6 w-[1px] bg-[#DDD7E5] shrink-0 mx-1.5" />
-            <button
-              type="button"
-              onClick={() => setFiltersOpen(true)}
-              aria-label="Open Filters"
-              className="flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-full text-xs sm:text-sm font-semibold text-[#524B5E] hover:text-[#1C1924] hover:bg-[#F3EFFC] transition shrink-0"
-            >
-              <SlidersHorizontal className="w-4 h-4 text-[#6555b8]" />
-              <span className="font-semibold">Filters</span>
-              {activeFiltersCount > 0 && (
-                <span className="w-4.5 h-4.5 bg-[#6555b8] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-                  {activeFiltersCount}
-                </span>
-              )}
-            </button>
+        <section aria-label="Search and Filters" className="w-full">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-3 w-full">
+            {/* Left Controls: Gender & Country Selectors */}
+            <div className="flex flex-wrap items-center gap-2 shrink-0">
+              {/* Gender Segmented Switch */}
+              <div className="flex items-center gap-1 p-1 bg-white border border-[#DDD7E5] rounded-full shadow-xs shrink-0">
+                {(['All', 'woman', 'trans', 'man'] as const).map((gender) => {
+                  const label = gender === 'All' ? 'All' : gender === 'woman' ? 'Women' : gender === 'trans' ? 'Trans' : 'Men';
+                  const active = selectedGender === gender;
+                  return (
+                    <button
+                      key={gender}
+                      type="button"
+                      onClick={() => {
+                        userSelectedGenderManually.current = true;
+                        setSelectedGender(gender);
+                      }}
+                      className={'px-3.5 py-1.5 text-xs sm:text-sm font-semibold rounded-full transition-all shrink-0 ' + (
+                        active
+                          ? 'bg-[#6555b8] text-white shadow-xs'
+                          : 'text-[#6C637B] hover:text-[#1C1924] hover:bg-[#F3EFFC]'
+                      )}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Country Selector Pill */}
+              <div ref={countryDropdownRef} className="relative shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setIsCountryOpen((prev) => !prev)}
+                  className={'flex items-center gap-1.5 px-3.5 py-2 text-xs sm:text-sm font-semibold rounded-full border transition-all shadow-xs ' + (
+                    selectedCountry.toLowerCase() !== 'all'
+                      ? 'bg-[#F3EFFC] border-[#6555b8] text-[#6555b8]'
+                      : 'bg-white border-[#DDD7E5] text-[#524B5E] hover:text-[#1C1924] hover:border-[#6555b8]/50'
+                  )}
+                >
+                  <span>{selectedCountry.toLowerCase() === 'all' ? 'All Locations' : selectedCountry}</span>
+                  <ChevronDown className={'w-4 h-4 shrink-0 transition-transform duration-200 ' + (isCountryOpen ? 'rotate-180 text-[#6555b8]' : 'text-[#8C849B]')} />
+                </button>
+
+                {/* Country Dropdown Menu */}
+                {isCountryOpen && (
+                  <div className="absolute left-0 mt-2 w-56 bg-white border border-[#E5E1EC] rounded-2xl shadow-xl p-1.5 z-40 max-h-80 overflow-y-auto">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setSelectedCountry('All');
+                        setIsCountryOpen(false);
+                      }}
+                      className={'w-full text-left px-3 py-2 text-xs font-semibold rounded-xl flex items-center justify-between transition ' + (
+                        selectedCountry.toLowerCase() === 'all'
+                          ? 'bg-[#F3EFFC] text-[#6555b8]'
+                          : 'text-[#1C1924] hover:bg-[#F7F6FA]'
+                      )}
+                    >
+                      <span>All Locations</span>
+                      {selectedCountry.toLowerCase() === 'all' && <Check className="w-3.5 h-3.5 text-[#6555b8]" />}
+                    </button>
+
+                    {(() => {
+                      const isSeekingMen = selectedGender === 'man';
+                      const sections = isSeekingMen
+                        ? [
+                            { title: 'Western & Overseas', list: WESTERN_COUNTRIES },
+                            { title: 'Asia Hubs', list: ASIA_HUBS },
+                            { title: 'Southeast Asia', list: SEA_COUNTRIES },
+                          ]
+                        : [
+                            { title: 'Southeast Asia', list: SEA_COUNTRIES },
+                            { title: 'Western & Overseas', list: SUITOR_COUNTRIES },
+                          ];
+
+                      const knownLower = new Set([
+                        ...WESTERN_COUNTRIES.map(c => c.toLowerCase()),
+                        ...ASIA_HUBS.map(c => c.toLowerCase()),
+                        ...SEA_COUNTRIES.map(c => c.toLowerCase()),
+                        ...SUITOR_COUNTRIES.map(c => c.toLowerCase())
+                      ]);
+
+                      const otherCountries = Array.from(new Set(
+                        profiles
+                          .map(p => p.country)
+                          .filter(c => c && !knownLower.has(c.toLowerCase()))
+                      )).sort();
+
+                      return (
+                        <>
+                          {sections.map((section, idx) => (
+                            <div key={section.title}>
+                              <div className={'px-3 pt-2.5 pb-1 text-[10px] font-bold text-[#8C849B] tracking-wider uppercase ' + (idx > 0 ? 'border-t border-[#F3EFFC] mt-1.5' : '')}>
+                                {section.title}
+                              </div>
+                              {section.list.map((c) => (
+                                <button
+                                  key={c}
+                                  type="button"
+                                  onClick={() => {
+                                    setSelectedCountry(c);
+                                    setIsCountryOpen(false);
+                                  }}
+                                  className={'w-full text-left px-3 py-1.5 text-xs font-medium rounded-xl flex items-center justify-between transition ' + (
+                                    selectedCountry.toLowerCase() === c.toLowerCase()
+                                      ? 'bg-[#F3EFFC] text-[#6555b8] font-bold'
+                                      : 'text-[#524B5E] hover:bg-[#F7F6FA] hover:text-[#1C1924]'
+                                  )}
+                                >
+                                  <span>{c}</span>
+                                  {selectedCountry.toLowerCase() === c.toLowerCase() && (
+                                    <Check className="w-3.5 h-3.5 text-[#6555b8]" />
+                                  )}
+                                </button>
+                              ))}
+                            </div>
+                          ))}
+
+                          {otherCountries.length > 0 && (
+                            <div>
+                              <div className="px-3 pt-2.5 pb-1 text-[10px] font-bold text-[#8C849B] tracking-wider uppercase border-t border-[#F3EFFC] mt-1.5">
+                                Other Regions
+                              </div>
+                              {otherCountries.map((c) => (
+                                <button
+                                  key={c}
+                                  type="button"
+                                  onClick={() => {
+                                    setSelectedCountry(c);
+                                    setIsCountryOpen(false);
+                                  }}
+                                  className={'w-full text-left px-3 py-1.5 text-xs font-medium rounded-xl flex items-center justify-between transition ' + (
+                                    selectedCountry.toLowerCase() === c.toLowerCase()
+                                      ? 'bg-[#F3EFFC] text-[#6555b8] font-bold'
+                                      : 'text-[#524B5E] hover:bg-[#F7F6FA] hover:text-[#1C1924]'
+                                  )}
+                                >
+                                  <span>{c}</span>
+                                  {selectedCountry.toLowerCase() === c.toLowerCase() && (
+                                    <Check className="w-3.5 h-3.5 text-[#6555b8]" />
+                                  )}
+                                </button>
+                              ))}
+                            </div>
+                          )}
+                        </>
+                      );
+                    })()}
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Right Controls: Quick Search + Filters Drawer Button */}
+            <div className="flex items-center gap-2 w-full lg:w-auto lg:max-w-md">
+              <div className="w-full bg-white border border-[#DDD7E5] hover:border-[#6555b8]/50 focus-within:border-[#6555b8] focus-within:ring-2 focus-within:ring-[#6555b8]/15 rounded-full shadow-xs transition-all flex items-center pl-3.5 pr-1.5 py-1.5">
+                <Search className="w-4 h-4 text-[#8C849B] shrink-0 pointer-events-none" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search city, name..."
+                  className="w-full bg-transparent px-2.5 text-xs sm:text-sm text-[#1C1924] placeholder-[#8C849B] focus:outline-none min-w-0"
+                />
+                <div className="h-5 w-[1px] bg-[#DDD7E5] shrink-0 mx-1" />
+                <button
+                  type="button"
+                  onClick={() => setFiltersOpen(true)}
+                  aria-label="Open Filters"
+                  className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-semibold text-[#524B5E] hover:text-[#1C1924] hover:bg-[#F3EFFC] transition shrink-0"
+                >
+                  <SlidersHorizontal className="w-3.5 h-3.5 text-[#6555b8]" />
+                  <span>Filters</span>
+                  {activeFiltersCount > 0 && (
+                    <span className="w-4 h-4 bg-[#6555b8] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                      {activeFiltersCount}
+                    </span>
+                  )}
+                </button>
+              </div>
+            </div>
           </div>
-
-          {/* Unified Filter Pills: Scaled & Flush Left */}
-          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar w-full py-0.5 scroll-smooth">
-            {/* Gender Filters */}
-            <div className="flex items-center gap-1 p-1 bg-white border border-[#DDD7E5] rounded-full shadow-xs shrink-0">
-              {['all', 'women', 'trans', 'men'].map((gender) => {
-                const label = gender === 'all' ? 'All' : gender === 'women' ? 'Women' : gender === 'trans' ? 'Trans' : 'Men';
-                const active = selectedGender === gender;
-                return (
-                  <button
-                    key={gender}
-                    type="button"
-                    onClick={() => {
-                      userSelectedGenderManually.current = true;
-                      setSelectedGender(gender as any);
-                    }}
-                    className={'px-4 py-1.5 text-xs sm:text-sm font-semibold rounded-full transition-all shrink-0 ' + (
-                      active
-                        ? 'bg-[#6555b8] text-white shadow-xs'
-                        : 'text-[#6C637B] hover:text-[#1C1924] hover:bg-[#F3EFFC]'
-                    )}
-                  >
-                    {label}
-                  </button>
-                );
-              })}
-            </div>
-
-            </div>
         </section>
 
         {/* Discovery Grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-3.5 sm:gap-4 lg:gap-5 w-full">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3.5 sm:gap-4 w-full">
           {visibleProfiles.map((profile) => {
             const state = cardActions[profile.id];
             const isLiked = state === 'like';
@@ -620,12 +766,12 @@ function DiscoverContent() {
                 <div className="p-3.5 sm:p-4 bg-white">
                   <Link href={'/profile/' + profile.id} className="block group-hover:opacity-95">
                     <div className="flex items-center gap-1.5 mb-1">
-                      <h3 className="text-base sm:text-lg font-bold text-[#1C1924] flex items-center gap-1.5 truncate">
+                      <h3 className="text-lg sm:text-xl font-bold text-[#1C1924] flex items-center gap-1.5 truncate">
                         {((profile.username || profile.name || 'Member').startsWith('user_') ? 'Member' : (profile.username || profile.name || 'Member'))}{profile.age ? `, ${profile.age}` : ''}
-                        {profile.verified && <CheckCircle className="w-4 h-4 text-[#6555b8] shrink-0" />}
+                        {profile.verified && <CheckCircle className="w-4.5 h-4.5 text-[#6555b8] shrink-0" />}
                       </h3>
                     </div>
-                    <p className="text-xs sm:text-sm font-medium text-[#756D82] flex items-center gap-1.5 truncate">
+                    <p className="text-sm sm:text-base font-medium text-[#756D82] flex items-center gap-1.5 truncate">
                         <MapPin
                           className={'w-3.5 h-3.5 shrink-0 ' + (
                             profile.location_source === 'gps_verified' ? 'text-emerald-500' : 'text-[#8C849B]'
@@ -640,7 +786,7 @@ function DiscoverContent() {
           })}
         </div>
 
-        {filteredProfiles.length === 0 && (
+        {!isLoading && filteredProfiles.length === 0 && (
           <div className="py-16 text-center space-y-3">
             <p className="text-sm text-[#524B5E]">No members match your current filter settings.</p>
             <button
@@ -749,7 +895,7 @@ function DiscoverContent() {
             <div className="space-y-3">
               <div className="flex justify-between items-center text-xs font-semibold text-[#524B5E]">
                 <span>Age Range</span>
-                <span className="text-white font-mono">{minAge} · {maxAge} yrs</span>
+                <span className="text-xs font-bold text-[#6555b8] bg-[#F3EFFC] px-2.5 py-0.5 rounded-full">{minAge} – {maxAge} yrs</span>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -760,7 +906,7 @@ function DiscoverContent() {
                     max="65" 
                     value={minAge} 
                     onChange={(e) => setMinAge(Math.min(Number(e.target.value), maxAge - 1))}
-                    className="w-full accent-[#9a8cc3]" 
+                    className="w-full accent-[#6555b8]" 
                   />
                 </div>
                 <div>
@@ -771,7 +917,7 @@ function DiscoverContent() {
                     max="65" 
                     value={maxAge} 
                     onChange={(e) => setMaxAge(Math.max(Number(e.target.value), minAge + 1))}
-                    className="w-full accent-[#9a8cc3]" 
+                    className="w-full accent-[#6555b8]" 
                   />
                 </div>
               </div>
@@ -856,6 +1002,44 @@ function DiscoverContent() {
     </div>
   );
 }
+
+
+const DUMMY_BOT_PROFILES: ProfileItem[] = [
+  {
+    id: 'bot-jhoanna-cebu',
+    name: 'Jhoanna',
+    age: 29,
+    gender: 'woman',
+    location: 'Cebu City, Philippines',
+    country: 'Philippines',
+    avatarUrl: '/jhoanna.png',
+    photos: ['/jhoanna.png'],
+    verified: true,
+    repScore: 98,
+    online: true,
+    recentlyActive: true,
+    intent: 'Marriage',
+    occupation: 'Registered Nurse',
+    bio: 'Family-oriented and warm-hearted. Looking for a genuine, kind partner to build a meaningful life together.'
+  },
+  {
+    id: 'bot-ploy-bangkok',
+    name: 'Ploy',
+    age: 32,
+    gender: 'woman',
+    location: 'Bangkok, Thailand',
+    country: 'Thailand',
+    avatarUrl: '/ploy%20chaiyaphon.png',
+    photos: ['/ploy%20chaiyaphon.png'],
+    verified: true,
+    repScore: 97,
+    online: true,
+    recentlyActive: true,
+    intent: 'Long-term relationship',
+    occupation: 'Hospitality & Events',
+    bio: 'Passionate about travel, great conversation, and quiet evenings. Seeking a mature, respectful gentleman.'
+  }
+];
 
 export default function DiscoverPage() {
   return (

@@ -168,8 +168,8 @@ export default function FavoritesPage() {
 
                 {/* Reputation Badge */}
                 {profile.repScore !== undefined && (
-                  <div className="absolute top-2.5 left-2.5 z-10 flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/55 backdrop-blur-md border border-white/20 text-[10px] font-semibold text-white">
-                    <ShieldCheck className="w-3 h-3 text-emerald-400" />
+                  <div className="absolute top-2.5 left-2.5 z-10 flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/55 backdrop-blur-md border border-white/20 text-[10px] font-semibold text-[#E5DEFF]">
+                    <ShieldCheck className="w-3 h-3 text-[#A78BFA] shrink-0" />
                     <span>{profile.repScore}%</span>
                   </div>
                 )}

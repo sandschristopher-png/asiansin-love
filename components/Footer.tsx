@@ -5,34 +5,32 @@ import Link from 'next/link';
 
 export function Footer() {
   return (
-    <footer className="w-full border-t border-[#2D2F4C] bg-[#2D2F4C]/80 backdrop-blur-md mt-auto">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-[#756D82]">
+    <footer className="w-full border-t border-[#DDD7E5] bg-[#F8F7FA] mt-auto py-8">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-[#6B627A]">
         
-        {/* Left: Brand & Copyright */}
-        <div className="flex items-center gap-2">
-          <span>&copy; 2026 asiansin.love. All rights reserved.</span>
+        {/* Left: Brand & Purpose */}
+        <div className="flex flex-col sm:flex-row items-center gap-2 text-center sm:text-left">
+          <span className="font-bold text-[#1C1924]">Asians in Love</span>
+          <span className="hidden sm:inline text-[#DDD7E5]">•</span>
+          <span>Serious Courtship &amp; Marriage</span>
+          <span className="hidden sm:inline text-[#DDD7E5]">•</span>
+          <span>&copy; 2026</span>
         </div>
 
-        {/* Right: All Legal, Trust, & Support Links */}
+        {/* Right: Working Legal & Trust Links */}
         <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 font-medium">
-          <Link href="/terms" className="hover:text-[#1C1924] transition">
-            Terms of Service
+          <Link href="/terms" className="hover:text-[#6555B8] transition">
+            Terms of Use
           </Link>
-          <Link href="/privacy" className="hover:text-[#1C1924] transition">
+          <Link href="/privacy" className="hover:text-[#6555B8] transition">
             Privacy Policy
           </Link>
-          <Link href="/safety" className="hover:text-[#1C1924] transition">
-            Safety & Verification
+          <Link href="/terms#safety" className="hover:text-[#6555B8] transition">
+            Safety &amp; Anti-Scam
           </Link>
-          <Link href="/guidelines" className="hover:text-[#1C1924] transition">
-            Community Guidelines
-          </Link>
-          <Link href="/anti-scam" className="hover:text-[#1C1924] transition">
-            Anti-Scam Policy
-          </Link>
-          <Link href="/support" className="hover:text-[#1C1924] transition">
+          <a href="mailto:support@asiansin.love" className="hover:text-[#6555B8] transition">
             Contact Support
-          </Link>
+          </a>
         </div>
 
       </div>

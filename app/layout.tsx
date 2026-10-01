@@ -18,15 +18,15 @@ export const metadata: Metadata = {
   appleWebApp: {
     capable: true,
     statusBarStyle: 'black-translucent',
-    title: 'asiansin.love',
+    title: 'Asians in Love — Serious Courtship & Marriage',
   },
-  title: 'asiansin.love',
+  title: 'Asians in Love — Serious Courtship & Marriage',
   description: 'Verified, intentional relationships connecting Southeast Asian singles with international gentlemen.',
 };
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
+  weight: ['300', '400', '500', '600', '700', '800'],
   variable: '--font-sans',
   display: 'swap',
 });

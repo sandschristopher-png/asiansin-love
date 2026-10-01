@@ -70,7 +70,7 @@ class NotificationService {
   }
 
   // Trigger system notification if window is backgrounded
-  public triggerSystemNotification(title: string, body: string, icon = '/ail-logo.png') {
+  public triggerSystemNotification(title: string, body: string, icon = '/icon') {
     if (typeof window !== 'undefined' && 'Notification' in window && Notification.permission === 'granted') {
       try {
         new Notification(title, {

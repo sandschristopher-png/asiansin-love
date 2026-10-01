@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
-import { InteractionReviewModal } from './InteractionReviewModal';
+import { CheckCircle, ArrowLeft, Send } from 'lucide-react';
 
 export interface TargetUserProfile {
   id: string;
@@ -46,14 +46,7 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
   const [input, setInput] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [showReviewModal, setShowReviewModal] = useState(false);
-  const [showMobileBio, setShowMobileBio] = useState(false);
-  const [showSafetyMenu, setShowSafetyMenu] = useState(false);
   const [feedbackSuccess, setFeedbackSuccess] = useState<string | null>(null);
-
-  const allPhotos = [targetUser.avatarUrl, ...(targetUser.galleryUrls || [])].filter(Boolean);
-  const [activePhotoIndex, setActivePhotoIndex] = useState(0);
-  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const scrollToBottom = () => {
@@ -68,6 +61,7 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
   useEffect(() => {
     async function markAsRead() {
       if (!currentUserId || currentUserId.startsWith('00000000')) return;
+
       const unreadIds = messages
         .filter((m) => {
           const recId = m.recipient_id || m.receiver_id;
@@ -195,48 +189,43 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
     }
   };
 
-  const handleQuickReport = async (category: string, penalty: number, label: string) => {
-    setShowSafetyMenu(false);
-    if (!confirm(`Are you sure you want to log this report: "${label}"? This will be added to community moderation logs.`)) {
-      return;
-    }
-
-    try {
-      const { error } = await supabase.from('reputation_reports').insert({
-        reporter_id: currentUserId,
-        target_user_id: targetUser.id,
-        violation_category: category,
-        penalty_points: penalty,
-        notes: `Direct chat report: ${label}`,
-      });
-
-      if (error) {
-        setErrorMessage('Unable to log incident.');
-      } else {
-        setFeedbackSuccess(`Incident recorded: ${label}.`);
-        setTimeout(() => setFeedbackSuccess(null), 5000);
-      }
-    } catch {
-      setErrorMessage('Network error submitting report.');
-    }
-  };
-
   return (
-    <div className="flex flex-col h-[calc(100vh-64px)] max-w-4xl mx-auto bg-[#2D2F4C] border-x border-[#9A8CC3]/20">
+    <div className="flex flex-col h-[calc(100vh-64px)] max-w-4xl mx-auto bg-[#FAFAFD] border-x border-[#E5E1EC]">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 bg-[#2D2F4C] border-b border-[#7D7E92]/20">
+      <div className="flex items-center justify-between px-4 py-3 bg-white/95 backdrop-blur-md border-b border-[#E5E1EC] sticky top-0 z-20">
         <div className="flex items-center gap-3">
-          <Link href="/discover" className="text-[#1C1924]/70 hover:text-white transition">
-            &larr;
+          <Link
+            href="/messages"
+            className="w-8 h-8 rounded-full flex items-center justify-center text-[#524B5E] hover:text-[#1C1924] hover:bg-[#F3EFFC] transition"
+            aria-label="Back to messages"
+          >
+            <ArrowLeft className="w-4 h-4" />
           </Link>
-          <div className="flex items-center gap-2">
-            <span className="font-bold text-white text-sm">{targetUser.fullName}, {targetUser.age}</span>
-            {targetUser.isVerified && <span className="text-[10px] text-emerald-400 font-bold">&#10003; Verified</span>}
-          </div>
+          <Link href={`/profile/${targetUser.id}`} className="flex items-center gap-2.5 group">
+            {targetUser.avatarUrl ? (
+              <img
+                src={targetUser.avatarUrl}
+                alt={targetUser.fullName}
+                className="w-9 h-9 rounded-full object-cover border border-[#DDD7E5]"
+              />
+            ) : (
+              <div className="w-9 h-9 rounded-full bg-[#F3EFFC] text-[#6555B8] flex items-center justify-center text-xs font-bold">
+                {targetUser.fullName.charAt(0)}
+              </div>
+            )}
+            <div className="flex items-center gap-1.5">
+              <span className="font-bold text-[#1C1924] text-sm group-hover:text-[#6555B8] transition truncate">
+                {targetUser.fullName}{targetUser.age ? `, ${targetUser.age}` : ''}
+              </span>
+              {targetUser.isVerified && (
+                <CheckCircle className="w-3.5 h-3.5 text-[#6555B8] shrink-0" />
+              )}
+            </div>
+          </Link>
         </div>
         <div className="flex items-center gap-2">
-          {targetUser.reputationScore && (
-            <span className="text-[11px] text-[#B2A4D7] font-mono font-semibold px-2 py-0.5 rounded-full bg-[#2D2F4C] border border-[#9A8CC3]/30">
+          {targetUser.reputationScore !== undefined && (
+            <span className="text-xs font-semibold px-2.5 py-0.5 rounded-full bg-[#F3EFFC] text-[#6555B8] border border-[#DDD7E5]">
               {targetUser.reputationScore}% Rep
             </span>
           )}
@@ -246,52 +235,65 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
       {/* Messages Feed */}
       <div className="flex-1 overflow-y-auto p-4 space-y-3">
         {errorMessage && (
-          <div className="p-3 bg-rose-950/60 border border-rose-500/50 rounded-xl text-rose-200 text-xs text-center">
+          <div className="p-3 bg-rose-50 border border-rose-200 rounded-2xl text-rose-700 text-xs text-center font-medium shadow-xs">
             {errorMessage}
           </div>
         )}
         {feedbackSuccess && (
-          <div className="p-3 bg-emerald-950/60 border border-emerald-500/50 rounded-xl text-emerald-200 text-xs text-center">
+          <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-2xl text-emerald-700 text-xs text-center font-medium shadow-xs">
             {feedbackSuccess}
           </div>
         )}
-        {messages.map((msg) => {
-          const isMe = msg.sender_id === currentUserId;
-          return (
-            <div key={msg.id} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
-              <div
-                className={`max-w-[78%] px-3.5 py-2.5 rounded-2xl text-xs leading-relaxed ${
-                  isMe
-                    ? 'bg-[#6555B8] text-white rounded-br-xs shadow-md shadow-[#6555B8]/20'
-                    : 'bg-[#2D2F4C] text-white border border-[#7D7E92]/25 rounded-bl-xs'
-                }`}
-              >
-                {msg.content}
-              </div>
-              <span className="text-[10px] text-[#B2A4D7] mt-0.5 px-1">
-                {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-              </span>
+        {messages.length === 0 ? (
+          <div className="h-full flex items-center justify-center text-center p-8 text-xs sm:text-sm text-[#756D82]">
+            <div>
+              <p className="font-semibold text-[#1C1924] mb-1">Begin your intentional conversation</p>
+              <p>Say hello with sincere interest and mutual respect.</p>
             </div>
-          );
-        })}
+          </div>
+        ) : (
+          messages.map((msg) => {
+            const isMe = msg.sender_id === currentUserId;
+            return (
+              <div key={msg.id} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
+                <div
+                  className={`max-w-[78%] px-4 py-2.5 rounded-2xl text-xs sm:text-sm leading-relaxed shadow-xs ${
+                    isMe
+                      ? 'bg-[#6555B8] text-white rounded-br-xs'
+                      : 'bg-white text-[#1C1924] border border-[#E5E1EC] rounded-bl-xs'
+                  }`}
+                >
+                  {msg.content}
+                </div>
+                <span className="text-[10px] text-[#8C849B] mt-0.5 px-1.5 font-medium">
+                  {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                </span>
+              </div>
+            );
+          })
+        )}
         <div ref={messagesEndRef} />
       </div>
 
       {/* Input Row */}
-      <form onSubmit={handleSendMessage} className="p-3 bg-[#2D2F4C] border-t border-[#7D7E92]/20 flex items-center gap-2">
+      <form
+        onSubmit={handleSendMessage}
+        className="p-3 bg-white/95 backdrop-blur-md border-t border-[#E5E1EC] flex items-center gap-2 pb-[max(0.75rem,env(safe-area-inset-bottom))]"
+      >
         <input
           type="text"
           value={input}
           onChange={(e) => setInput(e.target.value)}
-          placeholder="Write a message..."
-          className="flex-1 bg-[#1E1F30] border border-[#7D7E92]/30 rounded-xl px-3.5 py-2 text-xs text-white placeholder-[#7D7E92] focus:outline-none focus:border-[#9A8CC3]"
+          placeholder="Write a sincere message..."
+          className="flex-1 bg-[#F7F6FA] border border-[#DDD7E5] rounded-full px-4 py-2.5 text-xs sm:text-sm text-[#1C1924] placeholder-[#8C849B] focus:outline-none focus:border-[#6555B8] focus:ring-2 focus:ring-[#6555B8]/15 transition-all shadow-xs"
         />
         <button
           type="submit"
           disabled={!input.trim() || isSending}
-          className="px-4 py-2 bg-[#6555B8] hover:bg-[#7D4B9F] disabled:opacity-40 text-white rounded-xl text-xs font-semibold transition"
+          className="px-4 py-2.5 bg-[#6555B8] hover:bg-[#52449E] disabled:opacity-40 text-white rounded-full text-xs sm:text-sm font-semibold transition active:scale-95 shadow-xs flex items-center gap-1.5 shrink-0"
         >
-          Send
+          <span>Send</span>
+          <Send className="w-3.5 h-3.5" />
         </button>
       </form>
     </div>
