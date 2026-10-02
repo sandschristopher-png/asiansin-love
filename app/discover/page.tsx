@@ -9,6 +9,7 @@ import { useSearchParams } from 'next/navigation';
 import { ChevronLeft, ChevronRight, Search, Heart, X as XIcon, Star, MessageCircle, 
   MapPin, ShieldCheck, CheckCircle, SlidersHorizontal, 
   RotateCcw, Loader2, Check, Globe, ChevronDown } from 'lucide-react';
+import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { supabase } from '@/lib/supabaseClient';
 import { ActionType, getLocalCardActions, persistCardAction } from '@/lib/interactions';
@@ -483,8 +484,10 @@ function DiscoverContent() {
             setProfiles(merged);
         }
       } catch (err) {
-        console.error('Failed to load discovery profiles:', err);
-      }
+          console.error('Failed to load discovery profiles:', err);
+        } finally {
+          setIsLoading(false);
+        }
     }
 
     loadLiveProfiles();
@@ -532,12 +535,13 @@ function DiscoverContent() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#FAFAFD] text-[#1C1924]">
+        <Navbar />
       <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 pt-6 pb-32 md:pb-24 space-y-5">
         
         {/* Top Control Bar */}
         <section aria-label="Search and Filters" className="w-full space-y-3">
           {/* Search Row */}
-          <div className="w-full bg-white border border-[#DDD7E5] hover:border-[#6555b8]/50 focus-within:border-[#6555b8] focus-within:ring-2 focus-within:ring-[#6555b8]/15 rounded-full shadow-xs transition-all flex items-center pl-3.5 pr-1.5 py-1.5">
+          <div className="w-full bg-white border border-[#E5E1EC] hover:border-[#CFC8DC] focus-within:border-[#6555b8] focus-within:ring-2 focus-within:ring-[#6555b8]/15 rounded-full shadow-[0_1px_3px_rgba(28,25,36,0.03)] transition-all flex items-center pl-3.5 pr-1.5 py-1.5">
             <Search className="w-4 h-4 text-[#8C849B] shrink-0 pointer-events-none" />
             <input
               type="text"
@@ -560,7 +564,7 @@ function DiscoverContent() {
           {/* Unified Compact Filter Row: Gender (Left) & Location + Drawer (Right) */}
           <div className="flex items-center justify-between gap-1.5 w-full overflow-x-auto no-scrollbar py-0.5">
             {/* Gender Segmented Switch */}
-            <div className="flex items-center gap-0.5 p-0.5 bg-white border border-[#DDD7E5] rounded-full shadow-xs shrink-0">
+            <div className="flex items-center gap-1 p-1 bg-[#F5F3F8] border border-[#E8E4EF] rounded-full shrink-0">
               {(['woman', 'trans', 'man'] as const).map((gender) => {
                 const label = gender === 'woman' ? 'Women' : gender === 'trans' ? 'Trans' : 'Men';
                 const active = selectedGenders.includes(gender);
@@ -570,9 +574,7 @@ function DiscoverContent() {
                     type="button"
                     onClick={() => toggleGender(gender)}
                     className={'px-3 sm:px-3.5 py-1 sm:py-1.5 text-xs sm:text-sm font-semibold rounded-full border transition-all shrink-0 ' + (
-                      active
-                        ? 'bg-[#6555b8] border-[#6555b8] text-white shadow-xs'
-                        : 'bg-white border-[#DDD7E5] text-[#6C637B] hover:text-[#1C1924] hover:bg-[#F3EFFC]'
+                      active ? 'bg-[#6555b8] border-[#6555b8] text-white shadow-xs' : 'bg-transparent border-transparent text-[#6C637B] hover:text-[#1C1924] hover:bg-white/80'
                     )}
                   >
                     {label}
@@ -591,7 +593,7 @@ function DiscoverContent() {
                   className={'flex items-center gap-1 px-2.5 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-semibold rounded-full border transition-all shadow-xs max-w-[140px] sm:max-w-none ' + (
                     selectedCountry.toLowerCase() !== 'all'
                       ? 'bg-[#F3EFFC] border-[#6555b8] text-[#6555b8]'
-                      : 'bg-white border-[#DDD7E5] text-[#524B5E] hover:text-[#1C1924] hover:border-[#6555b8]/50'
+                      : 'bg-white border-[#E5E1EC] text-[#524B5E] hover:text-[#1C1924] hover:border-[#CFC8DC] hover:bg-[#FAF9FC]'
                   )}
                 >
                   <span className="truncate">{selectedCountry.toLowerCase() === 'all' ? 'Locations' : selectedCountry}</span>
@@ -717,7 +719,7 @@ function DiscoverContent() {
                 type="button"
                 onClick={() => setFiltersOpen(true)}
                 aria-label="Open Filters"
-                className="flex items-center gap-1 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full border border-[#DDD7E5] bg-white text-xs font-semibold text-[#524B5E] hover:text-[#1C1924] hover:bg-[#F3EFFC] shadow-xs transition shrink-0"
+                className="flex items-center gap-1 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full border border-[#E5E1EC] bg-white text-xs font-semibold text-[#524B5E] hover:text-[#1C1924] hover:border-[#CFC8DC] hover:bg-[#FAF9FC] shadow-[0_1px_2px_rgba(28,25,36,0.03)] transition shrink-0"
               >
                 <SlidersHorizontal className="w-3.5 h-3.5 text-[#6555b8]" />
                 <span className="hidden xs:inline sm:inline">Filters</span>
@@ -733,7 +735,20 @@ function DiscoverContent() {
 
         {/* Discovery Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3.5 sm:gap-4 w-full">
-          {visibleProfiles.map((profile) => {
+          {isLoading ? (
+            Array.from({ length: 8 }).map((_, i) => (
+              <div
+                key={i}
+                className="rounded-2xl sm:rounded-3xl overflow-hidden aspect-[3/4] w-full bg-[#EAE8F0] animate-pulse border border-[#E5E1EC] relative"
+              >
+                <div className="absolute inset-x-0 bottom-0 p-3 sm:p-3.5 space-y-2">
+                  <div className="h-4 bg-white/40 rounded-full w-2/3" />
+                  <div className="h-3 bg-white/30 rounded-full w-1/3" />
+                </div>
+              </div>
+            ))
+          ) : (
+            visibleProfiles.map((profile) => {
             const state = cardActions[profile.id];
             const isLiked = state === 'like';
             const displayName = ((profile.username || profile.name || 'Member').startsWith('user_') ? 'Member' : (profile.username || profile.name || 'Member'));
@@ -741,7 +756,7 @@ function DiscoverContent() {
             return (
               <div
                 key={profile.id}
-                className="group relative rounded-2xl sm:rounded-3xl overflow-hidden aspect-[3/4] w-full bg-[#1E1F30] border border-[#9A8CC3]/20 shadow-md hover:shadow-xl transition-all duration-300"
+                className="group relative rounded-2xl sm:rounded-3xl overflow-hidden aspect-[3/4] w-full bg-[#181926] border border-[#E5E1EC]/20 shadow-[0_2px_8px_rgba(28,25,36,0.06)] hover:shadow-[0_8px_24px_rgba(28,25,36,0.12)] transition-all duration-300"
               >
                 {/* Full-Bleed Carousel */}
                 <DiscoverCardPhotoCarousel
@@ -793,7 +808,7 @@ function DiscoverContent() {
                 </div>
               </div>
             );
-          })}
+          }))}
         </div>
 
         {!isLoading && filteredProfiles.length === 0 && (

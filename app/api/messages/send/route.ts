@@ -1,4 +1,4 @@
-﻿import { NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabaseClient';
 import { detectFinancialSolicitation } from '@/lib/moderation';
 
@@ -56,8 +56,78 @@ export async function POST(req: Request) {
       );
     }
 
-    // 2. Resolve target receiver UUID
     const targetReceiverId = isUUID(receiverId) ? receiverId : DEMO_TARGET_UUID;
+
+    // 2. Hybrid Messaging Limit Enforcement
+    if (isUUID(senderId)) {
+      const { data: senderProfile } = await supabase
+        .from('profiles')
+        .select('membership_tier, gender, is_verified')
+        .eq('id', senderId)
+        .maybeSingle();
+
+      const isPlus = senderProfile?.membership_tier === 'plus';
+      const isVerifiedWoman =
+        senderProfile?.is_verified &&
+        (senderProfile?.gender?.toLowerCase() === 'female' || senderProfile?.gender?.toLowerCase() === 'woman');
+
+      // Plus members and verified female profiles get unlimited messaging
+      if (!isPlus && !isVerifiedWoman) {
+        // Check if mutual conversation (has recipient ever replied?)
+        const { data: mutualReply } = await supabase
+          .from('messages')
+          .select('id')
+          .eq('sender_id', targetReceiverId)
+          .eq('receiver_id', senderId)
+          .limit(1)
+          .maybeSingle();
+
+        const isMutual = !!mutualReply;
+
+        if (!isMutual) {
+          // Check if conversation with this person was already started prior to today
+          const startOfToday = new Date();
+          startOfToday.setUTCHours(0, 0, 0, 0);
+
+          const { data: pastMessageToThisUser } = await supabase
+            .from('messages')
+            .select('id')
+            .eq('sender_id', senderId)
+            .eq('receiver_id', targetReceiverId)
+            .lt('created_at', startOfToday.toISOString())
+            .limit(1)
+            .maybeSingle();
+
+          const isOngoingPreExisting = !!pastMessageToThisUser;
+
+          // If brand new conversation start today: check daily cap of 5 new recipients
+          if (!isOngoingPreExisting) {
+            const { data: messagesToday } = await supabase
+              .from('messages')
+              .select('receiver_id')
+              .eq('sender_id', senderId)
+              .gte('created_at', startOfToday.toISOString());
+
+            const uniqueRecipientsToday = new Set(
+              (messagesToday || []).map((m: any) => m.receiver_id)
+            );
+
+            // If this is a 6th recipient not yet in today's unique set
+            if (!uniqueRecipientsToday.has(targetReceiverId) && uniqueRecipientsToday.size >= 5) {
+              return NextResponse.json(
+                {
+                  error:
+                    'Daily conversation limit reached (5/5). Upgrade to Asians in Love Plus for unlimited new introductions.',
+                  code: 'OUTREACH_LIMIT_REACHED',
+                  upgradeUrl: '/pricing',
+                },
+                { status: 403 }
+              );
+            }
+          }
+        }
+      }
+    }
 
     // 3. Safe message insert into database
     const { data: message, error: insertError } = await supabase
@@ -92,4 +162,3 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: err.message || 'Internal Server Error' }, { status: 500 });
   }
 }
-

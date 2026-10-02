@@ -1,3 +1,4 @@
+import { PlusBadge } from '@/components/PlusBadge';
 'use client';
 
 import React, { useState } from 'react';
@@ -5,6 +6,7 @@ import Link from 'next/link';
 import { MapPin, ShieldCheck, Heart } from 'lucide-react';
 
 interface DiscoverCardProps {
+  isPlus?: boolean;
   id: string;
   name: string;
   age: number;
@@ -22,6 +24,7 @@ export function DiscoverCard({
   avatarUrl,
   repScore = 100,
   online = true,
+  isPlus = false,
 }: DiscoverCardProps) {
   const [liked, setLiked] = useState(false);
 
@@ -55,6 +58,7 @@ export function DiscoverCard({
 
       {/* Top Floating Micro-Badges */}
       <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between pointer-events-none z-10">
+        {isPlus && <PlusBadge size="sm" />}
         {online ? (
           <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-black/50 backdrop-blur-md text-[10px] sm:text-[11px] font-semibold text-emerald-400 border border-emerald-500/20">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />

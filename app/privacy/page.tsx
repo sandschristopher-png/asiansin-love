@@ -26,7 +26,7 @@ export default function PrivacyPolicyPage() {
           <span className="text-[11px] font-bold uppercase tracking-wider text-[#9A8CC3]">
             Privacy & Security
           </span>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1C1924] tracking-tight">
+          <h1 className="text-xl sm:text-[22px] font-semibold text-[#1C1924] tracking-tight">
             Privacy Policy
           </h1>
           <p className="text-xs sm:text-sm text-[#1C1924]">

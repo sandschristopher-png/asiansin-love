@@ -1,57 +1,73 @@
-﻿// app/api/verify/submit/route.ts
+// app/api/admin/verify/route.ts
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabaseClient';
-import { sendTelegramVerificationAlert } from '@/lib/adminAlerts';
 
-export async function POST(req: Request) {
+export async function GET(req: Request) {
   try {
-    const { userId, poseRequested, selfieUrl } = await req.json();
+    const { searchParams } = new URL(req.url);
+    const uid = searchParams.get('uid');
+    const action = searchParams.get('action');
 
-    if (!userId || !poseRequested || !selfieUrl) {
-      return NextResponse.json({ error: 'Missing required parameters' }, { status: 400 });
+    if (!uid || !action || !['approve', 'reject'].includes(action)) {
+      return new NextResponse('Invalid verification request parameters.', { status: 400 });
     }
 
-    const { data: profile, error: profileErr } = await supabase
-      .from('profiles')
-      .select('avatar_url, full_name')
-      .eq('id', userId)
-      .single();
+    const isApprove = action === 'approve';
 
-    if (profileErr || !profile) {
-      return NextResponse.json({ error: 'User profile not found' }, { status: 404 });
-    }
-
-    const { error: updateErr } = await supabase
+    const { error: profileErr } = await supabase
       .from('profiles')
       .update({
-        verification_status: 'pending',
-        verification_pose_requested: poseRequested,
-        verification_submitted_at: new Date().toISOString(),
+        verification_status: isApprove ? 'verified' : 'rejected',
+        is_verified: isApprove,
+        verified_at: isApprove ? new Date().toISOString() : null,
       })
-      .eq('id', userId);
+      .eq('id', uid);
 
-    if (updateErr) {
-      return NextResponse.json({ error: updateErr.message }, { status: 500 });
+    if (profileErr) {
+      return new NextResponse(`Database update error: ${profileErr.message}`, { status: 500 });
     }
 
-    // Insert user notification that verification is pending review
     await supabase.from('notifications').insert({
-      user_id: userId,
+      user_id: uid,
       type: 'verification',
-      title: 'Verification Submitted',
-      description: 'Your selfie gesture is currently under review by our moderation team.',
+      title: isApprove ? 'Identity Verified! ??' : 'Verification Update',
+      description: isApprove
+        ? 'Your identity has been verified. The verified checkmark is now active on your profile.'
+        : 'Your selfie verification could not be approved. Please submit a new photo following the instructions.',
       link_url: '/profile',
     });
 
-    await sendTelegramVerificationAlert({
-      userId,
-      poseRequested,
-      selfieUrl,
-      avatarUrl: profile.avatar_url || 'No avatar provided',
-    });
+    const statusColor = isApprove ? '#10B981' : '#EF4444';
+    const statusText = isApprove ? 'Approved & Verified' : 'Rejected';
 
-    return NextResponse.json({ success: true, status: 'pending' });
+    const html = `
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta name="viewport" content="width=device-width, initial-scale=1">
+          <title>Verification Moderation</title>
+          <style>
+            body { background: #13141f; color: #fff; font-family: -apple-system, BlinkMacSystemFont, sans-serif; display: flex; align-items: center; justify-content: center; min-height: 100vh; margin: 0; padding: 20px; }
+            .card { background: #1e1f30; border: 1px solid rgba(255,255,255,0.1); border-radius: 16px; padding: 32px; text-align: center; max-width: 400px; width: 100%; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
+            h2 { color: ${statusColor}; margin-top: 0; }
+            p { color: #a1a1aa; font-size: 14px; word-break: break-all; }
+            .badge { display: inline-block; padding: 6px 16px; border-radius: 9999px; background: ${statusColor}22; color: ${statusColor}; font-weight: bold; margin-bottom: 12px; }
+          </style>
+        </head>
+        <body>
+          <div class="card">
+            <div class="badge">${statusText}</div>
+            <h2>Action Recorded</h2>
+            <p>User <code>${uid}</code> has been set to <strong>${statusText}</strong>.</p>
+          </div>
+        </body>
+      </html>
+    `;
+
+    return new NextResponse(html, {
+      headers: { 'Content-Type': 'text/html; charset=utf-8' },
+    });
   } catch (err: any) {
-    return NextResponse.json({ error: err.message || 'Internal Server Error' }, { status: 500 });
+    return new NextResponse(`Server error: ${err.message}`, { status: 500 });
   }
 }

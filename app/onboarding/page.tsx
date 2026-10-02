@@ -10,12 +10,38 @@ import {
   Loader2, 
   Sparkles,
   ShieldCheck,
-  Heart
+  Heart,
+  Globe,
+  Shield
 } from 'lucide-react';
 import { captureCurrentLocation } from '@/lib/location';
 import { supabase } from '@/lib/supabaseClient';
 
 export default function OnboardingPage() {
+  const triggerLocationDetection = async () => {
+    setIsLocating(true);
+    setErrorMessage(null);
+    try {
+      const res = await captureCurrentLocation();
+      if (res.success && res.data) {
+        setCity(res.data.city);
+        setCountry(res.data.country);
+        setLocationSource('gps_verified');
+        setLocationVerifiedAt(new Date().toISOString());
+        if (res.data.latitude) setLatitude(res.data.latitude);
+        if (res.data.longitude) setLongitude(res.data.longitude);
+        setShowLocationModal(false);
+      } else {
+        setErrorMessage(res.error || 'Could not auto-detect location. Please enter manually.');
+        setShowLocationModal(false);
+      }
+    } catch {
+      setShowLocationModal(false);
+    } finally {
+      setIsLocating(false);
+    }
+  };
+
   const router = useRouter();
   const [step, setStep] = useState(1);
   const [userId, setUserId] = useState<string | null>(null);
@@ -42,6 +68,7 @@ export default function OnboardingPage() {
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
   const [isLocating, setIsLocating] = useState(false);
+  const [showLocationModal, setShowLocationModal] = useState(true);
 
   // Intent & Goals matching your profile schema
   const [relationshipIntent, setRelationshipIntent] = useState('Marriage & Kids');
@@ -419,7 +446,7 @@ export default function OnboardingPage() {
             </div>
 
             {/* Location Section */}
-            <div className="p-4 sm:p-5 rounded-2xl bg-[#F8F7FA] border border-[#DDD7E5] space-y-3">
+            <div className="p-4 sm:p-5 rounded-2xl bg-[#F8F7FA] border border-[#DDD7E5] space-y-3.5">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-1.5 text-xs font-bold text-[#1C1924]">
                   <MapPin className="w-3.5 h-3.5 text-[#6555b8]" />
@@ -428,23 +455,33 @@ export default function OnboardingPage() {
                 {locationSource === 'gps_verified' ? (
                   <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-[11px] font-bold text-emerald-700">
                     <CheckCircle2 className="w-3 h-3 text-emerald-600" />
-                    Verified
+                    Verified City
                   </span>
                 ) : (
-                  <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-white border border-[#DDD7E5] text-[10px] font-semibold text-[#6C637B]">
+                  <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white border border-[#DDD7E5] text-[10px] font-semibold text-[#6C637B]">
+                    <Globe className="w-3 h-3 text-[#6C637B]" />
                     Self-Reported
                   </span>
                 )}
               </div>
 
+              {/* Privacy Primer Info */}
+              <div className="flex items-start gap-2 p-2.5 rounded-xl bg-white/70 border border-[#E5E1EC] text-[11px] text-[#6C637B] leading-relaxed">
+                <Shield className="w-3.5 h-3.5 text-[#6555b8] shrink-0 mt-0.5" />
+                <span>We only ever display your general city and approximate distance to potential matches. Your exact address is never stored or shared.</span>
+              </div>
+
               {locationSource === 'gps_verified' ? (
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between px-3.5 py-2.5 rounded-xl bg-white border border-emerald-200">
-                    <span className="text-[#1C1924] text-xs font-semibold">
-                      {city}{country ? `, ${country}` : ''}
-                    </span>
+                <div className="space-y-2.5">
+                  <div className="flex items-center justify-between px-3.5 py-3 rounded-xl bg-emerald-50/70 border border-emerald-200">
+                    <div className="flex items-center gap-2">
+                      <div className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                      <span className="text-[#1C1924] text-xs font-semibold">
+                        {city}{country ? `, ${country}` : ''}
+                      </span>
+                    </div>
                     <span className="text-emerald-700 text-[11px] font-bold inline-flex items-center gap-1">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Confirmed
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> GPS Confirmed
                     </span>
                   </div>
                   <div className="flex justify-end">
@@ -454,9 +491,9 @@ export default function OnboardingPage() {
                         setLocationSource('self_reported');
                         setLocationVerifiedAt(null);
                       }}
-                      className="text-[11px] text-[#6555b8] hover:underline font-medium"
+                      className="text-[11px] text-[#6555b8] hover:underline font-semibold"
                     >
-                      Change or enter manually
+                      Change or enter manually instead
                     </button>
                   </div>
                 </div>
@@ -467,6 +504,7 @@ export default function OnboardingPage() {
                     disabled={isLocating}
                     onClick={async () => {
                       setIsLocating(true);
+                      setErrorMessage(null);
                       const res = await captureCurrentLocation();
                       setIsLocating(false);
                       if (res.success && res.data) {
@@ -477,34 +515,51 @@ export default function OnboardingPage() {
                         if (res.data.latitude) setLatitude(res.data.latitude);
                         if (res.data.longitude) setLongitude(res.data.longitude);
                       } else {
-                        setErrorMessage(res.error || 'Could not verify location. Please allow browser location access.');
+                        setErrorMessage(res.error || 'Could not verify location. You can select your country and city manually below.');
                       }
                     }}
-                    className="w-full py-2.5 rounded-xl bg-white hover:bg-[#F3EFFC] border border-[#DDD7E5] hover:border-[#6555b8]/50 text-xs font-semibold text-[#1C1924] inline-flex items-center justify-center gap-2 transition active:scale-95 disabled:opacity-50 shadow-xs"
+                    className="w-full py-2.5 px-3 rounded-xl bg-white hover:bg-[#F3EFFC] border border-[#DDD7E5] hover:border-[#6555b8]/50 text-xs font-semibold text-[#1C1924] inline-flex items-center justify-center gap-2 transition active:scale-95 disabled:opacity-50 shadow-xs"
                   >
                     {isLocating ? (
                       <Loader2 className="w-3.5 h-3.5 animate-spin text-[#6555b8]" />
                     ) : (
                       <Navigation className="w-3.5 h-3.5 text-[#6555b8]" />
                     )}
-                    {isLocating ? 'Detecting location...' : 'Verify current city automatically'}
+                    {isLocating ? 'Verifying city location...' : 'Verify current city automatically'}
                   </button>
 
                   <div className="pt-2 border-t border-[#E5E1EC] space-y-2">
-                    <div className="text-[11px] font-bold text-[#6C637B]">Or specify manually:</div>
+                    <div className="flex items-center justify-between text-[11px] font-bold text-[#6C637B]">
+                      <span>Or enter manually:</span>
+                      <span className="text-[10px] font-normal text-[#8C849B]">Country & City</span>
+                    </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full">
+                      <select
+                        value={country}
+                        onChange={(e) => setCountry(e.target.value)}
+                        className="w-full px-3 py-2 rounded-xl bg-white border border-[#DDD7E5] text-xs text-[#1C1924] focus:outline-none focus:border-[#6555b8]"
+                      >
+                        <option value="Philippines">Philippines</option>
+                        <option value="United States">United States</option>
+                        <option value="Canada">Canada</option>
+                        <option value="Thailand">Thailand</option>
+                        <option value="Vietnam">Vietnam</option>
+                        <option value="Japan">Japan</option>
+                        <option value="South Korea">South Korea</option>
+                        <option value="Taiwan">Taiwan</option>
+                        <option value="Hong Kong">Hong Kong</option>
+                        <option value="Singapore">Singapore</option>
+                        <option value="Malaysia">Malaysia</option>
+                        <option value="Indonesia">Indonesia</option>
+                        <option value="Australia">Australia</option>
+                        <option value="United Kingdom">United Kingdom</option>
+                        <option value="Other">Other</option>
+                      </select>
                       <input
                         type="text"
                         value={city}
                         onChange={(e) => setCity(e.target.value)}
-                        placeholder="City"
-                        className="w-full px-3 py-2 rounded-xl bg-white border border-[#DDD7E5] text-xs text-[#1C1924] focus:outline-none focus:border-[#6555b8] placeholder-[#8C849B]"
-                      />
-                      <input
-                        type="text"
-                        value={country}
-                        onChange={(e) => setCountry(e.target.value)}
-                        placeholder="Country"
+                        placeholder="City (e.g. Cebu, Manila, Seattle)"
                         className="w-full px-3 py-2 rounded-xl bg-white border border-[#DDD7E5] text-xs text-[#1C1924] focus:outline-none focus:border-[#6555b8] placeholder-[#8C849B]"
                       />
                     </div>
@@ -890,7 +945,57 @@ export default function OnboardingPage() {
             </div>
           </div>
         )}
+        {/* Soft Location Detection Modal */}
+        {showLocationModal && step === 1 && !city && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/50 backdrop-blur-xs animate-in fade-in duration-200">
+            <div className="relative w-full max-w-sm rounded-3xl bg-white p-6 shadow-2xl border border-[#DDD7E5] text-center space-y-4">
+              <button
+                type="button"
+                onClick={() => setShowLocationModal(false)}
+                className="absolute top-4 right-4 text-gray-400 hover:text-gray-600 transition"
+              >
+                ?
+              </button>
 
+              <div className="w-14 h-14 rounded-2xl bg-[#6555b8]/10 text-[#6555b8] flex items-center justify-center mx-auto">
+                <MapPin className="w-7 h-7" />
+              </div>
+
+              <div>
+                <h3 className="text-base font-bold text-[#1C1924]">Auto-Detect Your City?</h3>
+                <p className="text-xs text-[#6C637B] mt-1 leading-relaxed">
+                  Automatically set your location to receive the <strong className="text-emerald-700">Verified City</strong> badge and see matches nearby. Your exact address is never stored or shared.
+                </p>
+              </div>
+
+              <div className="space-y-2 pt-2">
+                <button
+                  type="button"
+                  disabled={isLocating}
+                  onClick={triggerLocationDetection}
+                  className="w-full py-3 rounded-2xl bg-[#6555b8] hover:bg-[#52449e] active:scale-95 text-white text-xs font-bold shadow-md transition disabled:opacity-50 inline-flex items-center justify-center gap-2"
+                >
+                  {isLocating ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin text-white" />
+                      <span>Detecting GPS...</span>
+                    </>
+                  ) : (
+                    <span>Use My Current Location</span>
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setShowLocationModal(false)}
+                  className="w-full py-2.5 rounded-2xl bg-transparent hover:bg-gray-50 text-xs font-semibold text-[#6C637B] transition"
+                >
+                  Enter Manually Instead
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

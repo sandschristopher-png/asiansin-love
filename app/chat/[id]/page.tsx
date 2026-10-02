@@ -1,12 +1,132 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowLeft, Send, Zap, ShieldAlert, CheckCheck, Clock, ShieldCheck, UserCheck, MoreVertical } from 'lucide-react';
+import { ArrowLeft, Send, Zap, ShieldAlert, CheckCheck, Clock } from 'lucide-react';
 import UpgradeModal from '@/components/UpgradeModal';
 import ReputationModal from '@/components/ReputationModal';
 import { supabase } from '@/lib/supabaseClient';
+
+interface Persona {
+  name: string;
+  avatar: string;
+  location: string;
+  rep: number;
+  initialReply: string;
+  followups: string[];
+}
+
+const PLACEHOLDER_USERS: Record<string, Persona> = {
+  'jennalyn': {
+    name: 'Jennalyn',
+    avatar: '/jennalyn.png',
+    location: 'Cebu City, Philippines',
+    rep: 99,
+    initialReply: 'Hello po! Thank you for the message. Im just drinking coffee before my shift starts. How is your day there?',
+    followups: [
+      'Yes, hospitality work is tiring sometimes but i enjoy meeting polite guests. Are you having busy day today?',
+      'Aww thank you! My mother always told me to be honest and work hard. What kind of work do you do?',
+      'Cebu has nice beaches if you go south to Moalboal. Have you visited Philippines before?'
+    ]
+  },
+  'jhoanna': {
+    name: 'Jhoanna',
+    avatar: '/jhoanna.png',
+    location: 'Quezon City, Philippines',
+    rep: 98,
+    initialReply: 'Good day! Thanks for dropping by my profile. Glad to meet you. Where are you from po?',
+    followups: [
+      'Haha yes, traffic here in Manila is crazy every day! How is life over there?',
+      'I appreciate sincere people. Hard to find gentlemen online now. What made you message me?',
+      'Sounds nice! When I have day off, I usually just bake or watch movies with my sister.'
+    ]
+  },
+  'anong': {
+    name: 'Anong',
+    avatar: '/anong.png',
+    location: 'Chiang Mai, Thailand',
+    rep: 99,
+    initialReply: 'Sawasdee kha! Thank you for say hi to me. Today Chiang Mai is nice weather. Have you ever come to Thailand before?',
+    followups: [
+      'Chiang Mai is very calm not like Bangkok. Many mountains and fresh air. Do you like city or quiet place?',
+      'Thank you na ka. I try practice english every day so we can understand each other.',
+      'That is so kind of you! Sincerity is what I want most in life.'
+    ]
+  },
+  'ploy': {
+    name: 'Ploy',
+    avatar: '/ploy%20chaiyaphon.png',
+    location: 'Bangkok, Thailand',
+    rep: 97,
+    initialReply: 'Hey there! Thanks for reaching out. Always nice to chat with someone genuine. What kind of food do you like?',
+    followups: [
+      'Street food here is top tier, especially spicy papaya salad! Can you handle spicy food haha?',
+      'Freelance design keeps me busy but gives me freedom. What about you, what keeps you busy?',
+      'I like that you are straightforward. No time for mind games on here.'
+    ]
+  },
+  'suwannarat': {
+    name: 'Suwannarat',
+    avatar: '/suwannarat.png',
+    location: 'Khon Kaen, Thailand',
+    rep: 100,
+    initialReply: 'Sawasdee kha. Nice to meet you na ka. I hope you having good day. What are you looking for on here?',
+    followups: [
+      'Teaching small children takes patience, but I love them very much. Do you like kids?',
+      'Isan countryside is very simple. We grow our own herbs and cook together as family.',
+      'Thank you for your respect. Good values and loyalty are the most important things for a future husband.'
+    ]
+  },
+  'mai': {
+    name: 'Mai',
+    avatar: '/nguyen%20thi%20mai.png',
+    location: 'Da Nang, Vietnam',
+    rep: 98,
+    initialReply: 'Xin chao! Very happy to receive your message. Da Nang is windy tonight. How was your work today?',
+    followups: [
+      'My students were very energetic today haha. What time is it over where you are?',
+      'Walking by My Khe beach in the morning gives me peaceful energy. Do you like the ocean?',
+      'I am glad you are looking for serious relationship too. Life is better when shared with good person.'
+    ]
+  },
+  'linh-pham': {
+    name: 'Linh Pham',
+    avatar: '/pham.png',
+    location: 'Ho Chi Minh City, Vietnam',
+    rep: 96,
+    initialReply: 'Chao anh! Thank you for text me. Im just finishing my dinner here. What do you usually do on weekend?',
+    followups: [
+      'Saigon is fast and lively, lots of motorbikes! But at night I prefer quiet iced coffee.',
+      'I like a man who is honest and has clear goals. Talk is easy, action is what matters.',
+      'That sounds really interesting! Tell me more about your life.'
+    ]
+  },
+  'thu-trang': {
+    name: 'Thu Trang',
+    avatar: '/trang.png',
+    location: 'Hanoi, Vietnam',
+    rep: 99,
+    initialReply: 'Xin chao anh. Thank you for your nice message. It is rare to meet polite person online. What season you like most?',
+    followups: [
+      'Autumn in Hanoi is the most beautiful when the leaves turn and the air is cool. Have you visited Vietnam?',
+      'Working at the pharmacy teaches me to care for people carefully. Health and family come first.',
+      'Thank you anh. It is pleasant to have a gentle conversation with someone mature.'
+    ]
+  },
+  'khamla': {
+    name: 'Khamla',
+    avatar: '/khamla%20sithirath.png',
+    location: 'Vientiane, Laos',
+    rep: 98,
+    initialReply: 'Sabaidee! Very nice to see your message. Greetings from Laos. Do you know where Laos country is?',
+    followups: [
+      'Haha yes, many people donÃ¢â‚¬â„¢t know Laos, it is small and quiet next to Thailand and Vietnam.',
+      'We weave silk patterns by hand here. It takes weeks for one scarf. Patience is everything.',
+      'Thank you for being so polite to me. Please bear with my english, I try my best!'
+    ]
+  }
+};
 
 interface ChatMessage {
   id: string;
@@ -25,13 +145,13 @@ function sanitizeMessage(text: string): { sanitized: string; wasMasked: boolean 
     .replace(/[\s\.\-_]/g, '');
 
   const offPlatformKeywords = ['whatsapp', 'telegram', 'viber', 'lineid', 'wechat', 'snapchat', 'instagram'];
-  const hasOffPlatformWord = offPlatformKeywords.some((kw) => normalized.includes(kw));
+  const hasOffPlatformWord = offPlatformKeywords.some(kw => normalized.includes(kw));
   const digitClusterRegex = /(?:\+?\d[\s\.\-_\(\)]*){7,}/g;
   const hasPhoneDigits = digitClusterRegex.test(text);
 
   if (hasOffPlatformWord || hasPhoneDigits) {
     let masked = text.replace(digitClusterRegex, '[contact info hidden for safety]');
-    offPlatformKeywords.forEach((kw) => {
+    offPlatformKeywords.forEach(kw => {
       const reg = new RegExp(`(${kw.split('').join('[\\s\\.\\-_]*')})`, 'gi');
       masked = masked.replace(reg, '[contact info hidden for safety]');
     });
@@ -43,16 +163,29 @@ function sanitizeMessage(text: string): { sanitized: string; wasMasked: boolean 
 
 export default function ChatConversationPage({ params }: { params: { id: string } }) {
   const targetId = params.id;
+  const botPersona = PLACEHOLDER_USERS[targetId];
 
   const [currentUserId, setCurrentUserId] = useState<string>('guest-user');
   const [targetInfo, setTargetInfo] = useState({
-    id: targetId,
-    name: 'Member',
-    avatar: '/placeholder-avatar.svg',
-    rep: 98,
+    name: botPersona?.name || 'Member',
+    avatar: botPersona?.avatar || '/jennalyn.png',
+    rep: botPersona?.rep || 98,
   });
 
-  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>(() => {
+    if (botPersona) {
+      return [
+        {
+          id: 'welcome-bot-msg',
+          sender: 'them',
+          text: botPersona.initialReply,
+          time: 'Just now'
+        }
+      ];
+    }
+    return [];
+  });
+
   const [inputText, setInputText] = useState('');
   const [sentCount, setSentCount] = useState(0);
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
@@ -62,7 +195,6 @@ export default function ChatConversationPage({ params }: { params: { id: string 
   const [showReportModal, setShowReportModal] = useState(false);
   const [actionDoneMsg, setActionDoneMsg] = useState<string | null>(null);
   const [resolvedTargetUuid, setResolvedTargetUuid] = useState<string | null>(null);
-
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -100,9 +232,8 @@ export default function ChatConversationPage({ params }: { params: { id: string 
         targetUuid = prof.id;
         setResolvedTargetUuid(prof.id);
         setTargetInfo({
-          id: prof.id,
-          name: prof.username || prof.display_name || 'Member',
-          avatar: prof.avatar_url || '/placeholder-avatar.svg',
+          name: prof.display_name || prof.full_name || prof.username || 'Member',
+          avatar: prof.avatar_url || '/jennalyn.png',
           rep: prof.reputation_score || 98,
         });
       } else if (isUuid) {
@@ -141,7 +272,7 @@ export default function ChatConversationPage({ params }: { params: { id: string 
     }
 
     initUserAndTarget();
-  }, [targetId]);
+  }, [supabase, targetId]);
 
   useEffect(() => {
     if (!resolvedTargetUuid || currentUserId === 'guest-user') return;
@@ -157,15 +288,18 @@ export default function ChatConversationPage({ params }: { params: { id: string 
           const isFromTarget = newRow.sender_id === resolvedTargetUuid && recId === currentUserId;
 
           if (isFromTarget) {
-            setMessages((prev) => [
-              ...prev,
-              {
-                id: newRow.id,
-                sender: 'them',
-                text: newRow.content,
-                time: new Date(newRow.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-              },
-            ]);
+            setMessages((prev) => {
+              if (prev.some((m) => m.id === newRow.id)) return prev;
+              return [
+                ...prev,
+                {
+                  id: newRow.id,
+                  sender: 'them',
+                  text: newRow.content,
+                  time: new Date(newRow.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                },
+              ];
+            });
           }
         }
       )
@@ -174,7 +308,7 @@ export default function ChatConversationPage({ params }: { params: { id: string 
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [resolvedTargetUuid, currentUserId]);
+  }, [supabase, resolvedTargetUuid, currentUserId]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -189,7 +323,7 @@ export default function ChatConversationPage({ params }: { params: { id: string 
       id: tempId,
       sender: 'me',
       text: sanitized,
-      time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+      time: 'Just now',
     };
 
     setMessages((prev) => [...prev, myNewMsg]);
@@ -211,6 +345,21 @@ export default function ChatConversationPage({ params }: { params: { id: string 
       } catch (err) {
         console.error('Failed to save message to Supabase:', err);
       }
+    } else if (botPersona) {
+      setTimeout(() => {
+        const pool = botPersona.followups;
+        const randomAnswer = pool[Math.floor(Math.random() * pool.length)];
+
+        setMessages((prev) => [
+          ...prev,
+          {
+            id: `bot-reply-${Date.now()}`,
+            sender: 'them',
+            text: randomAnswer,
+            time: 'Just now',
+          },
+        ]);
+      }, 1600);
     }
   };
 
@@ -258,194 +407,135 @@ export default function ChatConversationPage({ params }: { params: { id: string 
   };
 
   return (
-    <div className="min-h-screen bg-[#F8F7FA] text-[#1C1924] flex flex-col justify-between">
-      {/* Outer pairs-style centered container on desktop */}
-      <main className="flex-1 max-w-5xl mx-auto w-full flex flex-col sm:px-4 sm:py-6">
-        <div className="flex-1 flex flex-col bg-white sm:rounded-3xl sm:border sm:border-[#DDD7E5] sm:shadow-xs overflow-hidden h-[calc(100dvh-1rem)] sm:h-[82vh]">
-          
-          {/* Pairs-Style Top Navigation Header */}
-          <div className="sticky top-0 z-30 flex items-center justify-between px-4 sm:px-6 py-3.5 bg-white/95 backdrop-blur-md border-b border-[#DDD7E5]">
-            <div className="flex items-center gap-3">
-              <Link
-                href="/messages"
-                className="w-8 h-8 rounded-full bg-[#FAF8FD] border border-[#DDD7E5] flex items-center justify-center text-[#524B5E] hover:text-[#1C1924] hover:bg-[#F3EFFC] transition shadow-xs"
-              >
-                <ArrowLeft className="w-4 h-4" />
-              </Link>
-              <div className="relative w-10 h-10 rounded-full overflow-hidden border border-[#DDD7E5] bg-[#EAE6F2] shrink-0">
-                <Image src={targetInfo.avatar} alt={targetInfo.name} fill className="object-cover" />
-              </div>
-              <div className="flex flex-col">
-                <div className="flex items-center gap-2">
-                  <span className="text-sm font-bold text-[#1C1924] leading-tight">
-                    {targetInfo.name}
-                  </span>
-                  <span className="inline-flex items-center gap-0.5 text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full">
-                    <ShieldCheck className="w-3 h-3 text-emerald-600" />
-                    Verified
-                  </span>
-                </div>
-                <span className="text-[11px] text-emerald-600 font-medium flex items-center gap-1">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                  Active now
-                </span>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <button
-                type="button"
-                onClick={() => setShowRepModal(true)}
-                className="px-3 py-1 rounded-full bg-white hover:bg-[#F3EFFC] border border-[#DDD7E5] text-xs font-semibold text-[#6555b8] transition active:scale-95 cursor-pointer shadow-xs"
-                title="View Conduct and Behavior Breakdown"
-              >
-                {targetInfo.rep}% Rep
-              </button>
-              <button
-                type="button"
-                onClick={() => setShowReportModal(true)}
-                className="w-8 h-8 rounded-full flex items-center justify-center text-[#8C849B] hover:text-rose-600 hover:bg-rose-50 border border-[#DDD7E5] transition"
-                title="Safety & Report"
-              >
-                <ShieldAlert className="w-4 h-4" />
-              </button>
-            </div>
+    <main className="min-h-screen bg-[#130F18] text-[#E6D7FA] flex flex-col justify-between">
+      <div className="sticky top-0 z-30 flex items-center justify-between px-4 py-3 bg-[#181222]/95 backdrop-blur-md border-b border-[#9A79BA]/30">
+        <div className="flex items-center gap-3">
+          <Link href="/discover" className="text-[#9A79BA] hover:text-[#E6D7FA] transition">
+            <ArrowLeft className="w-5 h-5" />
+          </Link>
+          <div className="relative w-9 h-9 rounded-full overflow-hidden border border-[#9A79BA]/50">
+            <Image src={targetInfo.avatar} alt={targetInfo.name} fill className="object-cover object-[50%_20%]" />
           </div>
-
-          {/* Safety Reminder Banner */}
-          {showSafetyNotice && (
-            <div className="p-3 mx-4 mt-3 rounded-2xl bg-amber-50 border border-amber-200 text-xs text-amber-900 flex items-start gap-2 shadow-xs">
-              <ShieldAlert className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-              <p>
-                Courtship Safety: External handles and phone digits are masked during initial intros to prevent off-platform spam.
-              </p>
-            </div>
-          )}
-
-          {/* Message Stream */}
-          <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
-            {messages.length === 0 ? (
-              <div className="h-full flex flex-col items-center justify-center text-center p-6 space-y-2 text-[#756D82]">
-                <div className="w-12 h-12 rounded-full bg-[#F3EFFC] text-[#6555b8] flex items-center justify-center mb-1">
-                  <UserCheck className="w-6 h-6" />
-                </div>
-                <p className="text-sm font-bold text-[#1C1924]">Start a sincere conversation</p>
-                <p className="text-xs max-w-xs text-[#756D82]">
-                  Compliment something from their profile or ask about their day to begin meaningful courtship.
-                </p>
-              </div>
-            ) : (
-              messages.map((msg) => (
-                <div
-                  key={msg.id}
-                  className={`flex flex-col ${msg.sender === 'me' ? 'items-end' : 'items-start'}`}
-                >
-                  <div
-                    className={`max-w-[85%] sm:max-w-[70%] px-4 py-2.5 rounded-2xl text-xs sm:text-sm leading-relaxed ${
-                      msg.sender === 'me'
-                        ? 'bg-[#6555b8] text-white font-medium rounded-br-xs shadow-xs'
-                        : 'bg-[#F3EFFC] text-[#1C1924] font-medium rounded-bl-xs border border-[#DDD7E5]'
-                    }`}
-                  >
-                    {msg.text}
-                  </div>
-                  <div className="flex items-center gap-1 mt-1 text-[10px] text-[#8C849B]">
-                    <span>{msg.time}</span>
-                    {msg.sender === 'me' && <CheckCheck className="w-3 h-3 text-[#6555b8]" />}
-                  </div>
-                </div>
-              ))
-            )}
-            <div ref={chatEndRef} />
-          </div>
-
-          {/* Bottom Dock / Input Form */}
-          <div className="p-3 sm:p-4 bg-white border-t border-[#DDD7E5]">
-            {cooldownSeconds > 0 ? (
-              <div className="p-4 rounded-2xl bg-[#FAF8FD] border border-[#DDD7E5] flex flex-col items-center gap-2.5 shadow-xs text-center">
-                <div className="flex items-center gap-1.5 text-xs text-[#524B5E]">
-                  <Clock className="w-4 h-4 text-amber-500" />
-                  <span>Next free message unlocks in</span>
-                </div>
-                <span className="text-2xl font-extrabold tracking-wider text-[#1C1924]">
-                  {formatTimer(cooldownSeconds)}
-                </span>
-                <button
-                  type="button"
-                  onClick={() => setShowUpgradeModal(true)}
-                  className="w-full sm:w-auto px-6 py-2.5 rounded-full bg-[#6555b8] hover:bg-[#52449e] text-white font-bold text-xs shadow-md active:scale-95 transition flex items-center justify-center gap-2"
-                >
-                  <Zap className="w-4 h-4 fill-current" />
-                  Skip the Wait â€” Upgrade to Unlimited
-                </button>
-              </div>
-            ) : (
-              <form onSubmit={handleSendMessage} className="flex items-center gap-2 max-w-4xl mx-auto w-full">
-                <input
-                  type="text"
-                  value={inputText}
-                  onChange={(e) => setInputText(e.target.value)}
-                  placeholder="Type a polite, authentic message..."
-                  className="flex-1 px-4 py-2.5 bg-white border border-[#DDD7E5] rounded-full text-xs sm:text-sm text-[#1C1924] placeholder-[#8C849B] focus:outline-none focus:border-[#6555b8] focus:ring-2 focus:ring-[#6555b8]/15 transition shadow-xs"
-                />
-                <button
-                  type="submit"
-                  disabled={!inputText.trim()}
-                  className="w-10 h-10 rounded-full bg-[#6555b8] hover:bg-[#52449e] disabled:opacity-40 disabled:hover:bg-[#6555b8] text-white flex items-center justify-center transition active:scale-95 shrink-0 shadow-xs"
-                >
-                  <Send className="w-4 h-4" />
-                </button>
-              </form>
-            )}
+          <div className="flex flex-col">
+            <span className="text-sm font-bold text-white leading-tight">{targetInfo.name}</span>
+            <span className="text-[10px] text-emerald-400 font-medium">Active now</span>
           </div>
         </div>
-      </main>
 
-      {/* Report / Safety Modal */}
-      {showReportModal && (
-        <div className="fixed inset-0 z-50 bg-black/40 backdrop-blur-xs flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl border border-[#DDD7E5] max-w-sm w-full p-6 space-y-4 shadow-xl">
-            <h3 className="text-base font-bold text-[#1C1924]">Member Safety Options</h3>
-            {actionDoneMsg ? (
-              <p className="text-xs text-emerald-600 font-semibold">{actionDoneMsg}</p>
-            ) : (
-              <div className="space-y-2">
-                <button
-                  type="button"
-                  onClick={() => handleReportUser('Inappropriate behavior')}
-                  className="w-full py-2.5 px-4 text-left rounded-xl border border-[#DDD7E5] hover:bg-[#FAF8FD] text-xs font-semibold text-[#1C1924] transition"
-                >
-                  Report Inappropriate Behavior
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleReportUser('Scam or financial solicitation')}
-                  className="w-full py-2.5 px-4 text-left rounded-xl border border-[#DDD7E5] hover:bg-[#FAF8FD] text-xs font-semibold text-[#1C1924] transition"
-                >
-                  Report Scam or Financial Request
-                </button>
-                <button
-                  type="button"
-                  onClick={handleBlockUser}
-                  className="w-full py-2.5 px-4 text-left rounded-xl border border-rose-200 bg-rose-50 hover:bg-rose-100 text-xs font-semibold text-rose-700 transition"
-                >
-                  Block This Member
-                </button>
-              </div>
-            )}
-            <button
-              type="button"
-              onClick={() => setShowReportModal(false)}
-              className="w-full py-2 text-xs font-semibold text-[#756D82] hover:text-[#1C1924]"
+        <button
+          type="button"
+          onClick={() => setShowRepModal(true)}
+          className="px-2.5 py-1 rounded-full bg-[#241E2F] hover:bg-[#2F273E] border border-[#9A79BA]/30 hover:border-[#9A79BA]/60 text-[10px] font-semibold text-[#E6D7FA] transition active:scale-95 cursor-pointer"
+          title="View Conduct and Behavior Breakdown"
+        >
+          {targetInfo.rep}% Rep
+        </button>
+          <button onClick={() => setShowReportModal(true)} className="flex items-center gap-1 rounded-full border border-zinc-200 px-2.5 py-1 text-xs font-medium text-zinc-500 hover:border-rose-300 hover:text-rose-600 dark:border-zinc-700 dark:text-zinc-400" title="Safety Options"><ShieldAlert className="h-3.5 w-3.5" /><span>Report</span></button>
+      </div>
+
+      <div className="flex-1 overflow-y-auto p-4 space-y-3 max-w-md mx-auto w-full">
+        {showSafetyNotice && (
+          <div className="p-3 rounded-2xl bg-[#261F33] border border-amber-400/50 text-[11px] text-amber-200 flex items-start gap-2 shadow-md">
+            <ShieldAlert className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+            <p>
+              Courtship Safety: External contact handles and phone digits are masked during initial intros to prevent unverified off-platform spam.
+            </p>
+          </div>
+        )}
+
+        {messages.map((msg) => (
+          <div
+            key={msg.id}
+            className={`flex flex-col ${msg.sender === 'me' ? 'items-end' : 'items-start'}`}
+          >
+            <div
+              className={`max-w-[80%] px-4 py-2.5 rounded-2xl text-xs leading-relaxed ${
+                msg.sender === 'me'
+                  ? 'bg-[#653C87] text-white font-medium rounded-br-xs shadow-md shadow-[#653C87]/30'
+                  : 'bg-[#261F33] text-[#E6D7FA] border border-[#9A79BA]/35 rounded-bl-xs shadow-md'
+              }`}
             >
-              Cancel
+              {msg.text}
+            </div>
+            <div className="flex items-center gap-1 mt-1 text-[10px] text-[#C9A4E8]">
+              <span>{msg.time}</span>
+              {msg.sender === 'me' && <CheckCheck className="w-3 h-3 text-[#9A79BA]" />}
+            </div>
+          </div>
+        ))}
+        <div ref={chatEndRef} />
+      </div>
+
+      <div className="sticky bottom-0 z-30 bg-[#181222]/95 backdrop-blur-md border-t border-[#9A79BA]/30 p-3 max-w-md mx-auto w-full">
+        {cooldownSeconds > 0 ? (
+          <div className="p-4 rounded-2xl bg-[#241E2F] border border-[#9A79BA]/50 flex flex-col items-center gap-2.5 shadow-xl text-center">
+            <div className="flex items-center gap-1.5 text-xs text-[#9A79BA]">
+              <Clock className="w-4 h-4 text-amber-400" />
+              <span>Next free message unlocks in</span>
+            </div>
+            <span className="text-2xl font-extrabold tracking-wider text-white">
+              {formatTimer(cooldownSeconds)}
+            </span>
+            <button
+              onClick={() => setShowUpgradeModal(true)}
+              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-full bg-[#653C87] hover:bg-[#7D49A8] text-white font-bold text-xs shadow-lg shadow-[#653C87]/40 active:scale-95 transition"
+            >
+              <Zap className="w-4 h-4 fill-current" />
+              Skip the Wait Ã¢â‚¬â€ Unlock Instant Chat
             </button>
           </div>
+        ) : (
+          <form onSubmit={handleSendMessage} className="flex items-center gap-2">
+            <input
+              type="text"
+              value={inputText}
+              onChange={(e) => setInputText(e.target.value)}
+              placeholder="Write a sincere message..."
+              className="flex-1 bg-[#241E2F] border border-[#241E2F] focus:border-[#653C87] rounded-full px-4 py-2.5 text-xs text-[#E6D7FA] placeholder-[#7D7E92] outline-none transition"
+            />
+            <button
+              type="submit"
+              disabled={!inputText.trim()}
+              className="p-2.5 rounded-full bg-[#653C87] hover:bg-[#7D49A8] text-white disabled:opacity-40 transition shrink-0 shadow-md shadow-[#653C87]/40 active:scale-95"
+            >
+              <Send className="w-4 h-4" />
+            </button>
+          </form>
+        )}
+      </div>
+
+      <UpgradeModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+        onSelectPlan={(p) => alert('Plan selected: ' + p)}
+      />
+      <ReputationModal
+        isOpen={showRepModal}
+        onClose={() => setShowRepModal(false)}
+        name={targetInfo.name}
+        score={targetInfo.rep}
+      />
+    {showReportModal && (
+  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+    <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl dark:bg-zinc-900">
+      <div className="flex items-center gap-2 text-rose-600 dark:text-rose-400">
+        <ShieldAlert className="h-5 w-5" />
+        <h3 className="font-semibold text-zinc-900 dark:text-white">Safety & Moderation</h3>
+      </div>
+      <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">Take action regarding this member. Reports are reviewed by human moderators within 24 hours.</p>
+      {actionDoneMsg ? (
+        <div className="mt-4 rounded-xl bg-emerald-50 p-3 text-center text-sm font-medium text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">{actionDoneMsg}</div>
+      ) : (
+        <div className="mt-5 space-y-2">
+          <button onClick={() => { setActionDoneMsg("User has been blocked. Messages from this user are now muted."); setTimeout(() => { setShowReportModal(false); setActionDoneMsg(null); }, 1800); }} className="w-full rounded-xl border border-zinc-200 py-2.5 text-sm font-medium text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800">Block Member</button>
+          <button onClick={() => { setActionDoneMsg("Report submitted. Thank you for keeping Asians in Love safe."); setTimeout(() => { setShowReportModal(false); setActionDoneMsg(null); }, 1800); }} className="w-full rounded-xl bg-rose-600 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-rose-700">Report Violation / Scammer</button>
         </div>
       )}
-
-      {showUpgradeModal && <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />}
-      {showRepModal && <ReputationModal isOpen={showRepModal} onClose={() => setShowRepModal(false)} name={targetInfo.name} score={targetInfo.rep} />}
+      <button onClick={() => { setShowReportModal(false); setActionDoneMsg(null); }} className="mt-3 w-full py-1.5 text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200">Cancel</button>
     </div>
+  </div>
+)}
+    </main>
   );
 }
+

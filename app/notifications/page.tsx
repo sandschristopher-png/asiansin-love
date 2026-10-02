@@ -86,10 +86,10 @@ export default function NotificationsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-black text-[#1C1924] tracking-tight">
-            Notifications
-          </h1>
-          <p className="text-sm text-[#1C1924] mt-0.5">
+          <h1 className="text-xl sm:text-[22px] font-semibold text-[#1C1924] tracking-tight">
+              Notifications
+            </h1>
+            <p className="text-xs sm:text-sm text-[#756D82] mt-0.5">
             Activity updates, messages, and security notices.
           </p>
         </div>

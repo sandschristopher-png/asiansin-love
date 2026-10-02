@@ -1,8 +1,8 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Bookmark, Heart, ArrowRight, MapPin, CheckCircle, ShieldCheck, Loader2 } from 'lucide-react';
+import { Heart, MapPin, CheckCircle, ShieldCheck, Loader2, Sparkles } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 
 interface FavoriteProfile {
@@ -87,7 +87,6 @@ export default function FavoritesPage() {
   const handleRemoveFavorite = async (profileId: string) => {
     if (!userId) return;
 
-    // Optimistically remove from UI
     setFavorites((prev) => prev.filter((p) => p.id !== profileId));
 
     try {
@@ -104,47 +103,37 @@ export default function FavoritesPage() {
   return (
     <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-6 pb-32 space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-[#1C1924]">Saved Profiles</h1>
-          <p className="text-xs sm:text-sm text-[#756D82] mt-1">
-            Members bookmarked for sincere courtship and intentional conversation.
-          </p>
-        </div>
-
-        <Link
-          href="/discover"
-          className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-white border border-[#DDD7E5] text-xs font-semibold text-[#524B5E] hover:text-[#1C1924] hover:bg-[#F3EFFC] transition shadow-xs"
-        >
-          <span>Discover Feed</span>
-          <ArrowRight className="w-3.5 h-3.5" />
-        </Link>
+      <div>
+        <h1 className="text-xl sm:text-[22px] font-semibold text-[#1C1924] tracking-tight">Saved Profiles</h1>
+        <p className="text-xs sm:text-sm text-[#756D82] mt-1">
+          Profiles you've bookmarked to revisit anytime.
+        </p>
       </div>
 
       {/* Main Content Area */}
       {loading ? (
-        <div className="py-20 text-center space-y-3">
+        <div className="py-24 text-center space-y-3">
           <Loader2 className="w-7 h-7 text-[#6555b8] animate-spin mx-auto" />
           <p className="text-xs sm:text-sm text-[#756D82]">Loading your saved profiles...</p>
         </div>
       ) : favorites.length === 0 ? (
-        <div className="bg-white rounded-3xl border border-[#DDD7E5] p-8 sm:p-12 shadow-xs text-center">
+        <div className="py-16 sm:py-24 text-center">
           <div className="space-y-4 max-w-sm mx-auto">
-            <div className="w-14 h-14 rounded-full bg-[#F3EFFC] text-[#6555b8] flex items-center justify-center mx-auto shadow-xs">
-              <Bookmark className="w-6 h-6" />
+            <div className="w-14 h-14 rounded-2xl bg-[#F0EBF8] text-[#6555b8] flex items-center justify-center mx-auto transition-transform">
+              <Sparkles className="w-6 h-6" />
             </div>
-            <div className="space-y-1">
-              <h2 className="text-base sm:text-lg font-bold text-[#1C1924]">No Saved Profiles Yet</h2>
+            <div className="space-y-1.5">
+              <h2 className="text-base sm:text-lg font-bold text-[#1C1924]">No saved profiles yet</h2>
               <p className="text-xs sm:text-sm text-[#756D82] leading-relaxed">
-                When someone matches your values and relationship goals, bookmark them to keep their profile accessible here.
+                When you discover someone who stands out, tap the bookmark or heart on their profile to save them here.
               </p>
             </div>
             <div className="pt-2">
               <Link
                 href="/discover"
-                className="inline-flex px-6 py-2.5 rounded-full bg-[#6555b8] hover:bg-[#52449e] text-xs sm:text-sm font-semibold text-white transition active:scale-95 shadow-md"
+                className="inline-flex items-center justify-center px-6 py-2.5 rounded-full bg-[#6555b8] hover:bg-[#52449e] text-xs sm:text-sm font-semibold text-white transition active:scale-95 shadow-sm"
               >
-                Explore Profiles
+                Explore Discover Feed
               </Link>
             </div>
           </div>

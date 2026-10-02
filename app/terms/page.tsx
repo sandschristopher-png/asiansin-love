@@ -26,7 +26,7 @@ export default function TermsOfUsePage() {
           <span className="text-[11px] font-bold uppercase tracking-wider text-[#9A8CC3]">
             Legal & Terms
           </span>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1C1924] tracking-tight">
+          <h1 className="text-xl sm:text-[22px] font-semibold text-[#1C1924] tracking-tight">
             Terms of Use
           </h1>
           <p className="text-xs sm:text-sm text-[#1C1924]">

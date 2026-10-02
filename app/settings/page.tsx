@@ -26,7 +26,7 @@ export default function SettingsPage() {
           >
             <ArrowLeft className="w-4 h-4" />
           </Link>
-          <h1 className="text-2xl sm:text-3xl font-bold text-[#1C1924]">Account Settings</h1>
+          <h1 className="text-xl sm:text-[22px] font-semibold text-[#1C1924] tracking-tight">Account Settings</h1>
         </div>
 
         <Link

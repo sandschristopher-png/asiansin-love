@@ -5,11 +5,17 @@ export async function sendTelegramVerificationAlert({
   poseRequested,
   selfieUrl,
   avatarUrl,
+  aiVerdict,
 }: {
   userId: string;
   poseRequested: string;
   selfieUrl: string;
   avatarUrl: string;
+  aiVerdict?: {
+    isSafe: boolean;
+    poseMatchesPrompt: boolean;
+    reason: string;
+  };
 }) {
   const token = process.env.TELEGRAM_BOT_TOKEN;
   const chatId = process.env.ADMIN_TELEGRAM_CHAT_ID;
@@ -23,6 +29,7 @@ export async function sendTelegramVerificationAlert({
 `🛡️ *New Identity Gesture Verification*
 *User ID:* \`${userId}\`
 *Requested Pose:* ${poseRequested}
+${aiVerdict ? `\n?? *Gemini AI Pre-Check:*\n� Pose Match: ${aiVerdict.poseMatchesPrompt ? "? Yes" : "?? Unconfirmed"}\n� Content Safe: ${aiVerdict.isSafe ? "? Safe" : "?? Flagged"}\n� Note: _${aiVerdict.reason}_\n` : ""}
 
 👉 [View Profile Avatar](${avatarUrl})
 👉 [View Live Selfie Capture](${selfieUrl})`;

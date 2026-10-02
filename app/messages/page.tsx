@@ -129,7 +129,7 @@ export default function MessagesPage() {
   return (
     <main className="flex-1 max-w-4xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-6 pb-32 space-y-6">
       <div className="space-y-1">
-        <h1 className="text-2xl sm:text-3xl font-bold text-[#1C1924]">Direct Messages</h1>
+        <h1 className="text-xl sm:text-[22px] font-semibold text-[#1C1924] tracking-tight">Direct Messages</h1>
         <p className="text-xs sm:text-sm text-[#756D82]">
           Private, authentic courtship conversations with verified members.
         </p>
