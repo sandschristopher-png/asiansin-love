@@ -381,3 +381,19 @@ Import traces:
 Γ£ô Compiled in 87ms
  GET /icon?67b9808bf6294208 200 in 6ms
  GET /icon?67b9808bf6294208 200 in 5ms
+ GET /discover 200 in 33ms (next.js: 3ms, application-code: 30ms)
+ GET /icon?67b9808bf6294208 200 in 7ms
+Γ£ô Compiled in 102ms
+ GET /discover 200 in 24ms (next.js: 8ms, application-code: 16ms)
+ GET /icon?67b9808bf6294208 200 in 7ms
+ GET /icon?67b9808bf6294208 200 in 6ms
+ GET /discover 200 in 26ms (next.js: 3ms, application-code: 23ms)
+ GET /icon?67b9808bf6294208 200 in 7ms
+ GET /icon?67b9808bf6294208 200 in 5ms
+ GET /discover 200 in 25ms (next.js: 8ms, application-code: 17ms)
+Γ£ô Compiled in 82ms
+ GET /icon?67b9808bf6294208 200 in 13ms
+ GET /icon?67b9808bf6294208 200 in 5ms
+ GET /discover 200 in 28ms (next.js: 5ms, application-code: 24ms)
+ GET /icon?67b9808bf6294208 200 in 8ms
+ GET /icon?67b9808bf6294208 200 in 5ms
