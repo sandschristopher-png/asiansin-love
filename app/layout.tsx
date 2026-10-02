@@ -1,16 +1,17 @@
-﻿import type { Metadata, Viewport } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Outfit } from 'next/font/google';
 import './globals.css';
+import { BottomNav } from '@/components/BottomNav';
 
 const outfit = Outfit({
   subsets: ['latin'],
-  weight: ['400', '500', '600'],
+  weight: ['400', '500', '600', '700'],
   variable: '--font-outfit',
   display: 'swap',
 });
 
 export const metadata: Metadata = {
-  title: 'Asians in Love — Serious Courtship & Marriage',
+  title: 'Asians in Love - Serious Courtship & Marriage',
   description: 'Serious courtship & marriage platform for intentional singles.',
 };
 
@@ -28,8 +29,14 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`h-full ${outfit.variable}`}>
-      <body className="font-sans bg-[#FFFFFF] text-[#1C1924] min-h-full overflow-y-auto selection:bg-[#6555B8] selection:text-white pb-24 sm:pb-0">
-        {children}
+      <body className="font-sans bg-[#ECE9F1] text-[#1C1924] min-h-screen selection:bg-[#6555B8] selection:text-white antialiased">
+        {/* Centered Mobile App Shell */}
+        <div className="w-full max-w-[430px] min-h-screen mx-auto bg-white flex flex-col shadow-[0_0_50px_rgba(0,0,0,0.08)] relative border-x border-black/[0.04]">
+          <div className="flex-1 pb-20">
+            {children}
+          </div>
+          <BottomNav />
+        </div>
       </body>
     </html>
   );

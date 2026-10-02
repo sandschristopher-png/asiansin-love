@@ -1,12 +1,13 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { 
-  Heart as LucideHeart, 
-  Search, 
-  MessageCircle 
+  Compass, 
+  Heart, 
+  MessageCircle, 
+  User 
 } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 
@@ -25,6 +26,7 @@ export function BottomNav() {
   const pathname = usePathname();
   const [user, setUser] = useState<any>(null);
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
+  const [unreadMsgCount, setUnreadMsgCount] = useState(0);
 
   const isActive = (path: string) => pathname === path;
 
@@ -32,6 +34,18 @@ export function BottomNav() {
     async function checkAuth() {
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
+      if (user) {
+        try {
+          const { count } = await supabase
+            .from('messages')
+            .select('*', { count: 'exact', head: true })
+            .eq('receiver_id', user.id)
+            .eq('is_read', false);
+          setUnreadMsgCount(count ?? 0);
+        } catch (e) {
+          // Schema fallback
+        }
+      }
     }
     checkAuth();
 
@@ -65,65 +79,83 @@ export function BottomNav() {
     return null;
   }
 
-  // Suppress on individual profile deep dives or chat rooms
-  if (pathname.startsWith('/chat/') || pathname.startsWith('/profile/')) {
+  // Suppress on individual deep dives or chat rooms
+  if (pathname.startsWith('/chat/')) {
     return null;
   }
 
   return (
-    <nav 
-      className={`sm:hidden fixed bottom-0 inset-x-0 w-full z-50 bg-white/95 backdrop-blur-md border-t border-[#E5E1EC] pb-[env(safe-area-inset-bottom)] transition-all duration-300 ease-out ${
-        isKeyboardOpen ? 'translate-y-full opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'
+    <div 
+      className={`fixed bottom-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[400px] z-50 transition-all duration-300 ease-out ${
+        isKeyboardOpen ? 'translate-y-24 opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'
       }`}
     >
-      <div className="max-w-md mx-auto grid grid-cols-3 items-center h-14 px-4">
+      <nav className="bg-white/90 backdrop-blur-xl border border-black/[0.08] shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-full px-3 py-2 flex items-center justify-around">
         
         {/* 1. DISCOVER */}
         <Link
           href="/discover"
-          className={`flex flex-col items-center justify-center py-1 transition-colors active:scale-95 ${
-            isActive('/discover') ? 'text-[#6555B8]' : 'text-[#756D82] hover:text-[#1C1924]'
+          className={`flex flex-col items-center justify-center p-2 rounded-full transition-all active:scale-90 ${
+            isActive('/discover') ? 'text-[#6555B8]' : 'text-gray-400 hover:text-gray-700'
           }`}
+          aria-label="Discover"
         >
-          <div className={`p-1 rounded-full transition-colors ${isActive('/discover') ? 'bg-[#F3EFFC]' : ''}`}>
-            <Search className="w-5 h-5" strokeWidth={isActive('/discover') ? 2.3 : 1.9} />
-          </div>
-          <span className={`text-[10px] mt-0.5 ${isActive('/discover') ? 'font-bold' : 'font-medium'}`}>
-            Discover
-          </span>
+          <Compass className="w-5 h-5" strokeWidth={isActive('/discover') ? 2.4 : 1.8} />
+          {isActive('/discover') && (
+            <span className="w-1 h-1 rounded-full bg-[#6555B8] mt-1" />
+          )}
         </Link>
 
-        {/* 2. SAVED */}
+        {/* 2. SAVED / LIKES */}
         <Link
           href="/favorites"
-          className={`flex flex-col items-center justify-center py-1 transition-colors active:scale-95 ${
-            isActive('/favorites') ? 'text-[#6555B8]' : 'text-[#756D82] hover:text-[#1C1924]'
+          className={`flex flex-col items-center justify-center p-2 rounded-full transition-all active:scale-90 ${
+            isActive('/favorites') ? 'text-[#6555B8]' : 'text-gray-400 hover:text-gray-700'
           }`}
+          aria-label="Saved"
         >
-          <div className={`p-1 rounded-full transition-colors ${isActive('/favorites') ? 'bg-[#F3EFFC]' : ''}`}>
-            <LucideHeart className="w-5 h-5" fill={isActive('/favorites') ? 'currentColor' : 'none'} strokeWidth={1.9} />
-          </div>
-          <span className={`text-[10px] mt-0.5 ${isActive('/favorites') ? 'font-bold' : 'font-medium'}`}>
-            Saved
-          </span>
+          <Heart 
+            className="w-5 h-5" 
+            fill={isActive('/favorites') ? 'currentColor' : 'none'} 
+            strokeWidth={isActive('/favorites') ? 2.4 : 1.8} 
+          />
+          {isActive('/favorites') && (
+            <span className="w-1 h-1 rounded-full bg-[#6555B8] mt-1" />
+          )}
         </Link>
 
         {/* 3. INBOX */}
         <Link
           href="/messages"
-          className={`flex flex-col items-center justify-center py-1 transition-colors active:scale-95 ${
-            isActive('/messages') ? 'text-[#6555B8]' : 'text-[#756D82] hover:text-[#1C1924]'
+          className={`relative flex flex-col items-center justify-center p-2 rounded-full transition-all active:scale-90 ${
+            isActive('/messages') ? 'text-[#6555B8]' : 'text-gray-400 hover:text-gray-700'
           }`}
+          aria-label="Messages"
         >
-          <div className={`p-1 rounded-full transition-colors relative ${isActive('/messages') ? 'bg-[#F3EFFC]' : ''}`}>
-            <MessageCircle className="w-5 h-5" strokeWidth={isActive('/messages') ? 2.3 : 1.9} />
-          </div>
-          <span className={`text-[10px] mt-0.5 ${isActive('/messages') ? 'font-bold' : 'font-medium'}`}>
-            Inbox
-          </span>
+          <MessageCircle className="w-5 h-5" strokeWidth={isActive('/messages') ? 2.4 : 1.8} />
+          {unreadMsgCount > 0 && (
+            <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#6555B8] ring-2 ring-white" />
+          )}
+          {isActive('/messages') && (
+            <span className="w-1 h-1 rounded-full bg-[#6555B8] mt-1" />
+          )}
         </Link>
 
-      </div>
-    </nav>
+        {/* 4. PROFILE */}
+        <Link
+          href="/profile"
+          className={`flex flex-col items-center justify-center p-2 rounded-full transition-all active:scale-90 ${
+            isActive('/profile') ? 'text-[#6555B8]' : 'text-gray-400 hover:text-gray-700'
+          }`}
+          aria-label="Profile"
+        >
+          <User className="w-5 h-5" strokeWidth={isActive('/profile') ? 2.4 : 1.8} />
+          {isActive('/profile') && (
+            <span className="w-1 h-1 rounded-full bg-[#6555B8] mt-1" />
+          )}
+        </Link>
+
+      </nav>
+    </div>
   );
 }

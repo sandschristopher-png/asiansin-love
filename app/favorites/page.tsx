@@ -1,4 +1,6 @@
-﻿'use client';
+'use client';
+
+import { Navbar } from '@/components/Navbar';
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -101,11 +103,11 @@ export default function FavoritesPage() {
   };
 
   return (
-    <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-6 pb-32 space-y-6">
+    <div className="min-h-screen flex flex-col bg-[#F8F7FA] text-[#1C1924]">`n      <Navbar />`n      <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-6 pb-32 space-y-6">
       {/* Header */}
-      <div>
+      <div className="space-y-0.5">
         <h1 className="text-xl sm:text-[22px] font-semibold text-[#1C1924] tracking-tight">Saved Profiles</h1>
-        <p className="text-xs sm:text-sm text-[#756D82] mt-1">
+        <p className="text-xs sm:text-sm text-[#756D82]">
           Profiles you've bookmarked to revisit anytime.
         </p>
       </div>
@@ -208,5 +210,6 @@ export default function FavoritesPage() {
         </div>
       )}
     </main>
+  );</div>
   );
 }

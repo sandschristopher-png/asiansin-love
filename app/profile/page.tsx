@@ -12,6 +12,7 @@ import {
   Navigation, CheckCircle2, Clock, ShieldAlert 
 } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
+import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 
 export const QUICK_LANGUAGES = ['English', 'Tagalog', 'Thai', 'Japanese', 'Vietnamese', 'Mandarin', 'Spanish', 'Korean'];
@@ -66,6 +67,7 @@ export default function MyProfilePage() {
   const [saveSuccess, setSaveSuccess] = useState(false);
 
   const [name, setName] = useState('Christopher');
+  const [username, setUsername] = useState('chris');
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [photos, setPhotos] = useState<string[]>([]);
   const [currentPhotoIdx, setCurrentPhotoIdx] = useState(0);
@@ -125,6 +127,7 @@ export default function MyProfilePage() {
         .maybeSingle();
 
       if (data) {
+        if (data.username) setUsername(data.username); else if (data.name) setUsername(data.name.replace(/\s+/g, ''));
         if (data.name) setName(data.name);
         if (data.age) setAge(data.age);
         if (data.location) setLocation(data.location);
@@ -241,37 +244,20 @@ export default function MyProfilePage() {
   }
 
   return (
-    <main className="min-h-screen bg-[#F8F7FA] text-[#1C1924] flex flex-col justify-between">
-      <div className="max-w-4xl mx-auto w-full px-4 sm:px-6 py-6 pb-28 space-y-6">
-
-        {/* Top Navbar */}
-        <div className="flex items-center justify-between pb-4 border-b border-[#DDD7E5]">
-          <button
-            type="button"
-            onClick={() => router.back()}
-            className="h-10 w-10 rounded-2xl bg-white border border-[#DDD7E5] text-[#1C1924] hover:bg-[#F3EFFC] flex items-center justify-center text-sm active:scale-95 transition shadow-xs"
-          >
-            <ArrowLeft className="w-5 h-5 text-[#1C1924]" />
-          </button>
-          <div className="flex items-center gap-2">
-            <User className="w-5 h-5 text-[#6555b8]" />
-            <h1 className="text-xl font-bold text-[#1C1924] tracking-tight">
-              My Profile
-            </h1>
-          </div>
-          <Link
-            href="/settings"
-            className="h-10 w-10 rounded-2xl bg-white border border-[#DDD7E5] text-[#1C1924] hover:bg-[#F3EFFC] flex items-center justify-center text-sm active:scale-95 transition shadow-xs"
-          >
-            <Settings className="w-5 h-5 text-[#1C1924]" />
-          </Link>
-        </div>
-
-        {/* Main Grid: Left preview photo card & Right vitals */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start" ref={dropdownRef}>
+    <div className="min-h-screen flex flex-col bg-[#F8F7FA] text-[#1C1924]">
+      <Navbar />
+      <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-6 pb-32 space-y-6">
+        {/* Uniform Page Header */}
+        <div className="space-y-0.5">
+          <h1 className="text-xl sm:text-[22px] font-semibold text-[#1C1924] tracking-tight">My Profile</h1>
+          <p className="text-xs sm:text-sm text-[#756D82]">
+            Manage your courtship presence and preferences.
+          </p>
+        </div>{/* Main Grid: Left preview photo card & Right vitals */}
+        <div className="flex flex-col gap-4 w-full" ref={dropdownRef}>
           
           {/* Left Column: Visual card & actions */}
-          <div className="md:col-span-5 space-y-4">
+          <div className="w-full space-y-4">
             
             {/* Header info over photo */}
             {isEditing ? (
@@ -341,43 +327,46 @@ export default function MyProfilePage() {
               <div className="flex items-center justify-between px-1">
                 <div>
                   <h1 className="text-xl sm:text-[22px] font-semibold text-[#1C1924] tracking-tight">
-                    {name}, {age}
+                    {username}, {age}
                   </h1>
-                  <div className="flex flex-wrap items-center gap-2 mt-1">
-                    <p className="text-xs font-medium text-[#1C1924]">
+                  <div className="flex items-center gap-1.5 mt-1">
+                    <p className="text-xs font-medium text-[#756D82]">
                       {location}
                     </p>
-                    {locationSource === 'gps_verified' ? (
-                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#F3EFFC] border border-[#DDD7E5] text-[11px] font-medium text-[#6555B8]">
-                        <MapPin className="w-3 h-3 text-emerald-500 shrink-0" />
-                        <span>Verified {locationVerifiedAt ? formatVerifiedDate(locationVerifiedAt) : ''}</span>
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#F3EFFC] border border-[#9A8CC3]/25 text-[10px] font-medium text-[#8C849B]">
-                        Self-Reported
+                    {locationSource === 'gps_verified' && (
+                      <span
+                        title={locationVerifiedAt ? `GPS Verified ${formatVerifiedDate(locationVerifiedAt)}` : 'GPS Verified'}
+                        className="inline-flex items-center justify-center w-5 h-5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-600 shadow-2xs"
+                      >
+                        <MapPin className="w-3 h-3 text-emerald-600" />
                       </span>
                     )}
                   </div>
                 </div>
 
-                {/* Verification Status Pill */}
+                {/* Streamlined Verification Shield */}
                 {verificationStatus === 'verified' ? (
-                  <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-[11px] font-semibold text-emerald-700 shrink-0 shadow-xs">
-                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-                    <span>Verified</span>
+                  <div
+                    title="ID & Profile Verified"
+                    className="inline-flex items-center gap-1 px-2 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 shadow-2xs"
+                  >
+                    <ShieldCheck className="w-4 h-4 text-emerald-600" />
+                    <Check className="w-3 h-3 text-emerald-600 stroke-[3]" />
                   </div>
                 ) : verificationStatus === 'pending' ? (
-                  <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-[11px] font-semibold text-amber-700 shrink-0 shadow-xs">
-                    <Clock className="w-3.5 h-3.5 text-amber-600 animate-pulse" />
-                    <span>Review Pending</span>
+                  <div
+                    title="Review Pending"
+                    className="inline-flex items-center p-1.5 rounded-full bg-amber-50 border border-amber-200 text-amber-700 shadow-2xs"
+                  >
+                    <Clock className="w-4 h-4 text-amber-600 animate-pulse" />
                   </div>
                 ) : (
                   <Link
                     href="/verify"
-                    className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#F3EFFC] border border-[#DDD7E5] hover:border-[#6555B8] text-[11px] font-bold text-[#6555B8] shrink-0 transition active:scale-95 shadow-xs"
+                    className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#F3EFFC] border border-[#DDD7E5] hover:border-[#6555B8] text-[11px] font-bold text-[#6555B8] shrink-0 transition active:scale-95 shadow-2xs"
                   >
                     <ShieldAlert className="w-3.5 h-3.5 text-[#6555B8]" />
-                    <span>Get Verified</span>
+                    <span>Verify</span>
                   </Link>
                 )}
               </div>
@@ -396,163 +385,73 @@ export default function MyProfilePage() {
                   {currentImg ? (
                     <img
                       src={currentImg}
-                      alt={name}
-                      className="w-full h-full object-cover transition-opacity duration-200"
+                      alt={username}
+                      className="w-full h-full object-cover"
                     />
                   ) : (
-                    <div className="flex flex-col items-center justify-center gap-3 text-[#8C849B] p-6 text-center">
-                      <div className="w-20 h-20 rounded-3xl bg-[#F8F7FA] border border-[#DDD7E5] flex items-center justify-center shadow-inner">
-                        <User className="w-10 h-10 stroke-[1.5] text-[#8C849B]" />
-                      </div>
-                      <Link
-                        href="/profile/edit"
-                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#6555B8] hover:underline"
-                      >
-                        <Camera className="w-3.5 h-3.5" />
-                        <span>Upload Profile Photo</span>
-                      </Link>
+                    <div className="flex flex-col items-center justify-center text-[#9A8CC3]">
+                      <Camera className="w-12 h-12 stroke-[1.5]" />
+                      <span className="text-xs font-semibold mt-2 text-[#756D82]">No photos added</span>
                     </div>
                   )}
 
-                  {/* Story Dashes */}
+                  {/* Online Badge */}
+                  <div className="absolute top-4 left-4 z-10">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-black/60 backdrop-blur-md text-emerald-400 border border-white/10">
+                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                      Online
+                    </span>
+                  </div>
+
+                  {/* Photo Indicators */}
                   {hasMultiple && (
-                    <div className="absolute top-3 left-3 right-3 flex items-center gap-1.5 z-20 pointer-events-none">
+                    <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-1.5 z-10">
                       {photoList.map((_, idx) => (
-                        <div
+                        <button
                           key={idx}
-                          className={'h-1 flex-1 rounded-full transition-all duration-300 ' + (
-                            idx === currentPhotoIdx
-                              ? 'bg-white shadow-[0_0_6px_rgba(255,255,255,0.7)]'
-                              : 'bg-white/40 backdrop-blur-sm'
-                          )}
+                          type="button"
+                          onClick={() => setCurrentPhotoIdx(idx)}
+                          className={`h-1.5 rounded-full transition-all ${idx === currentPhotoIdx ? "w-6 bg-white" : "w-1.5 bg-white/50"}`}
                         />
                       ))}
                     </div>
                   )}
-
-                  {/* Touch / Click zones for cycling photos */}
-                  {hasMultiple && (
-                    <>
-                      <button
-                        type="button"
-                        aria-label="Previous photo"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setCurrentPhotoIdx((prev) => (prev > 0 ? prev - 1 : photoList.length - 1));
-                        }}
-                        className="absolute inset-y-0 left-0 w-1/2 z-10 cursor-pointer focus:outline-none"
-                      />
-                      <button
-                        type="button"
-                        aria-label="Next photo"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setCurrentPhotoIdx((prev) => (prev < photoList.length - 1 ? prev + 1 : 0));
-                        }}
-                        className="absolute inset-y-0 right-0 w-1/2 z-10 cursor-pointer focus:outline-none"
-                      />
-                    </>
-                  )}
-
-                  {/* Online Presence Badge */}
-                  <div className={'absolute left-3 z-20 flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-md text-[11px] font-medium text-emerald-400 border border-white/10 pointer-events-none ' + (
-                    hasMultiple ? 'top-6' : 'top-3'
-                  )}>
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                    <span>Online</span>
-                  </div>
                 </div>
               );
             })()}
 
-            {/* Actions at Base */}
-            <div className="flex items-center gap-2 pt-1">
-              <button
-                type="button"
-                onClick={() => {
-                  if (isEditing) {
-                    handleSave();
-                  } else {
-                    setIsEditing(true);
-                  }
-                }}
-                className="flex-1 py-2.5 rounded-xl bg-[#6555B8] hover:bg-[#52449e] text-xs font-bold text-white flex items-center justify-center gap-1.5 transition active:scale-95 shadow-md shadow-[#6555B8]/20"
-              >
-                {saving ? (
-                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                ) : isEditing ? (
-                  <Save className="w-3.5 h-3.5" />
-                ) : (
-                  <Edit3 className="w-3.5 h-3.5" />
-                )}
-                <span>{saving ? 'Saving...' : isEditing ? 'Save All Changes' : 'Edit Profile'}</span>
-              </button>
-
+            {/* Actions: Edit & Save Profile */}
+            <div className="flex gap-2 pt-1">
               {isEditing ? (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setIsEditing(false)}
+                    className="flex-1 py-2.5 rounded-2xl bg-white border border-[#DDD7E5] text-xs font-semibold text-[#756D82] hover:bg-[#F8F7FA] transition active:scale-98"
+                  >
+                    Cancel
+                  </button>
+                  <button
+                    type="button"
+                    onClick={handleSave}
+                    disabled={saving}
+                    className="flex-1 py-2.5 rounded-2xl bg-[#6555B8] text-white text-xs font-semibold hover:bg-[#5243A3] transition active:scale-98 flex items-center justify-center gap-1.5"
+                  >
+                    {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+                    <span>{saving ? 'Saving...' : 'Save Changes'}</span>
+                  </button>
+                </>
+              ) : (
                 <button
                   type="button"
-                  onClick={() => {
-                    setIsEditing(false);
-                    setOpenDropdown(null);
-                  }}
-                  className="px-4 py-2.5 rounded-xl bg-white border border-[#DDD7E5] hover:bg-[#F8F7FA] text-xs font-medium text-[#6C637B] flex items-center gap-1 transition"
+                  onClick={() => setIsEditing(true)}
+                  className="w-full py-2.5 rounded-2xl bg-white border border-[#DDD7E5] text-xs font-semibold text-[#1C1924] hover:bg-[#F8F7FA] transition active:scale-98 flex items-center justify-center gap-2 shadow-2xs"
                 >
-                  <X className="w-3.5 h-3.5" />
-                  <span>Cancel</span>
+                  <Edit3 className="w-3.5 h-3.5 text-[#6555B8]" />
+                  <span>Edit Profile</span>
                 </button>
-              ) : (
-                <Link
-                  href="/settings"
-                  className="px-4 py-2.5 rounded-xl bg-white border border-[#DDD7E5] hover:bg-[#F8F7FA] text-xs font-medium text-[#6C637B] flex items-center gap-1 transition"
-                >
-                  <Settings className="w-3.5 h-3.5" />
-                  <span>Settings</span>
-                </Link>
               )}
             </div>
-
-            {saveSuccess && (
-              <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs font-medium text-emerald-700 flex items-center justify-center gap-1.5 animate-fade-in">
-                <Check className="w-4 h-4 text-emerald-600" />
-                <span>Profile updated successfully!</span>
-              </div>
-            )}
-
-          </div>
-
-          {/* Right Column: Verification CTA, About Me & Vitals */}
-          <div className="md:col-span-7 space-y-4">
-            
-            {/* Identity Verification Prompt Card */}
-            {verificationStatus === 'unverified' && (
-              <div className="p-5 rounded-3xl bg-gradient-to-br from-white via-white to-[#F3EFFC] border border-[#DDD7E5] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="space-y-1">
-                  <div className="flex items-center gap-2">
-                    <ShieldCheck className="w-5 h-5 text-[#6555B8]" />
-                    <h2 className="text-sm font-bold text-[#1C1924]">Get Profile Verified</h2>
-                  </div>
-                  <p className="text-xs text-[#6C637B] leading-relaxed">
-                    Complete a quick 5-second gesture selfie to verify your profile and earn the verified trust badge.
-                  </p>
-                </div>
-                <Link
-                  href="/verify"
-                  className="px-4 py-2.5 rounded-xl bg-[#6555B8] hover:bg-[#52449e] text-xs font-bold text-white text-center whitespace-nowrap transition active:scale-95 shadow-md shadow-[#6555B8]/20"
-                >
-                  Start Verification
-                </Link>
-              </div>
-            )}
-
-            {verificationStatus === 'pending' && (
-              <div className="p-4 rounded-3xl bg-amber-50/70 border border-amber-200/80 shadow-xs flex items-center gap-3">
-                <Clock className="w-5 h-5 text-amber-600 shrink-0" />
-                <div className="text-xs">
-                  <span className="font-bold text-amber-900 block">Verification In Review</span>
-                  <span className="text-amber-800/80">Our moderation team is reviewing your gesture photo. You will be notified once approved.</span>
-                </div>
-              </div>
-            )}
 
             {/* Top Preview/Edit Status Banner */}
             <div className="p-4 sm:p-5 rounded-3xl bg-white border border-[#E5E1EC] shadow-xs space-y-1">
@@ -607,104 +506,126 @@ export default function MyProfilePage() {
             </div>
 
             {/* VITALS & VALUES GRID */}
-            <div className="p-5 sm:p-6 rounded-3xl bg-white border border-[#E5E1EC] shadow-xs space-y-4">
-              <h3 className="text-xs font-bold text-[#6555B8] uppercase tracking-wider">VITALS & INTENTIONS</h3>
+            <div className="p-5 sm:p-6 rounded-3xl bg-white border border-[#E5E1EC] shadow-2xs space-y-5">
+              <h3 className="text-xs font-bold text-[#6555B8] uppercase tracking-wider">
+                Vitals & Intentions
+              </h3>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                
-                {/* Intentions */}
-                <div className="p-3 rounded-2xl bg-[#FAFAFC] border border-[#E5E1EC]">
-                  <span className="text-[10px] font-bold text-[#8C849B] uppercase tracking-wider flex items-center gap-1.5">
-                    <Heart className="w-3.5 h-3.5 text-[#6555B8]" />
-                    Relationship Intent
-                  </span>
+              <div className="grid grid-cols-2 gap-x-6 gap-y-4 pt-1">
+                {/* Intent */}
+                <div className="space-y-1">
+                  <p className="text-[11px] font-semibold text-[#8C849B] uppercase tracking-wider">Relationship Intent</p>
                   {isEditing ? (
                     <select
                       value={intent}
                       onChange={(e) => setIntent(e.target.value)}
-                      className="w-full mt-1.5 p-2 rounded-xl bg-white border border-[#DDD7E5] text-xs font-semibold text-[#1C1924]"
+                      className="w-full p-1.5 rounded-lg bg-[#F8F7FA] border border-[#DDD7E5] text-xs font-semibold text-[#1C1924]"
                     >
                       {INTENT_OPTIONS.map((opt) => (
                         <option key={opt} value={opt}>{opt}</option>
                       ))}
                     </select>
                   ) : (
-                    <p className="text-xs font-semibold text-[#1C1924] mt-1">{intent}</p>
+                    <p className="text-sm font-normal text-[#1C1924]">{intent || 'Not specified'}</p>
                   )}
                 </div>
 
                 {/* Profession */}
-                <div className="p-3 rounded-2xl bg-[#FAFAFC] border border-[#E5E1EC]">
-                  <span className="text-[10px] font-bold text-[#8C849B] uppercase tracking-wider flex items-center gap-1.5">
-                    <Briefcase className="w-3.5 h-3.5 text-[#6555B8]" />
-                    Occupation
-                  </span>
+                <div className="space-y-1">
+                  <p className="text-[11px] font-semibold text-[#8C849B] uppercase tracking-wider">Occupation</p>
                   {isEditing ? (
                     <input
                       type="text"
                       value={profession}
                       onChange={(e) => setProfession(e.target.value)}
-                      className="w-full mt-1.5 p-2 rounded-xl bg-white border border-[#DDD7E5] text-xs font-semibold text-[#1C1924]"
+                      className="w-full p-1.5 rounded-lg bg-[#F8F7FA] border border-[#DDD7E5] text-xs font-semibold text-[#1C1924]"
                     />
                   ) : (
-                    <p className="text-xs font-semibold text-[#1C1924] mt-1">{profession}</p>
+                    <p className="text-sm font-normal text-[#1C1924]">{profession || 'Not specified'}</p>
                   )}
                 </div>
 
                 {/* Religion */}
-                <div className="p-3 rounded-2xl bg-[#FAFAFC] border border-[#E5E1EC]">
-                  <span className="text-[10px] font-bold text-[#8C849B] uppercase tracking-wider flex items-center gap-1.5">
-                    <Flower2 className="w-3.5 h-3.5 text-[#6555B8]" />
-                    Beliefs / Religion
-                  </span>
+                <div className="space-y-1">
+                  <p className="text-[11px] font-semibold text-[#8C849B] uppercase tracking-wider">Beliefs / Religion</p>
                   {isEditing ? (
                     <select
                       value={religion}
                       onChange={(e) => setReligion(e.target.value)}
-                      className="w-full mt-1.5 p-2 rounded-xl bg-white border border-[#DDD7E5] text-xs font-semibold text-[#1C1924]"
+                      className="w-full p-1.5 rounded-lg bg-[#F8F7FA] border border-[#DDD7E5] text-xs font-semibold text-[#1C1924]"
                     >
                       {RELIGION_OPTIONS.map((opt) => (
                         <option key={opt} value={opt}>{opt}</option>
                       ))}
                     </select>
                   ) : (
-                    <p className="text-xs font-semibold text-[#1C1924] mt-1">{religion}</p>
+                    <p className="text-sm font-normal text-[#1C1924]">{religion || 'Not specified'}</p>
                   )}
                 </div>
 
                 {/* Marital Status */}
-                <div className="p-3 rounded-2xl bg-[#FAFAFC] border border-[#E5E1EC]">
-                  <span className="text-[10px] font-bold text-[#8C849B] uppercase tracking-wider flex items-center gap-1.5">
-                    <HeartHandshake className="w-3.5 h-3.5 text-[#6555B8]" />
-                    Marital Status
-                  </span>
+                <div className="space-y-1">
+                  <p className="text-[11px] font-semibold text-[#8C849B] uppercase tracking-wider">Marital Status</p>
                   {isEditing ? (
                     <select
                       value={maritalStatus}
                       onChange={(e) => setMaritalStatus(e.target.value)}
-                      className="w-full mt-1.5 p-2 rounded-xl bg-white border border-[#DDD7E5] text-xs font-semibold text-[#1C1924]"
+                      className="w-full p-1.5 rounded-lg bg-[#F8F7FA] border border-[#DDD7E5] text-xs font-semibold text-[#1C1924]"
                     >
                       {MARITAL_OPTIONS.map((opt) => (
                         <option key={opt} value={opt}>{opt}</option>
                       ))}
                     </select>
                   ) : (
-                    <p className="text-xs font-semibold text-[#1C1924] mt-1">{maritalStatus}</p>
+                    <p className="text-sm font-normal text-[#1C1924]">{maritalStatus || 'Not specified'}</p>
                   )}
                 </div>
 
-                {/* Kids Status */}
-                <div className="p-3 rounded-2xl bg-[#FAFAFC] border border-[#E5E1EC]">
-                  <span className="text-[10px] font-bold text-[#8C849B] uppercase tracking-wider flex items-center gap-1.5">
-                    <Baby className="w-3.5 h-3.5 text-[#6555B8]" />
-                    Children
-                  </span>
+                {/* Height */}
+                <div className="space-y-1">
+                  <p className="text-[11px] font-semibold text-[#8C849B] uppercase tracking-wider">Height</p>
                   {isEditing ? (
-                    <div className="grid grid-cols-2 gap-1.5 mt-1.5">
+                    <select
+                      value={height}
+                      onChange={(e) => setHeight(e.target.value)}
+                      className="w-full p-1.5 rounded-lg bg-[#F8F7FA] border border-[#DDD7E5] text-xs font-semibold text-[#1C1924]"
+                    >
+                      {HEIGHT_OPTIONS.map((opt) => (
+                        <option key={opt} value={opt}>{opt}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <p className="text-sm font-normal text-[#1C1924]">{height || 'Not specified'}</p>
+                  )}
+                </div>
+
+                {/* Relocation */}
+                <div className="space-y-1">
+                  <p className="text-[11px] font-semibold text-[#8C849B] uppercase tracking-wider">Relocation</p>
+                  {isEditing ? (
+                    <select
+                      value={relocation}
+                      onChange={(e) => setRelocation(e.target.value)}
+                      className="w-full p-1.5 rounded-lg bg-[#F8F7FA] border border-[#DDD7E5] text-xs font-semibold text-[#1C1924]"
+                    >
+                      {RELOCATION_OPTIONS.map((opt) => (
+                        <option key={opt} value={opt}>{opt}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <p className="text-sm font-normal text-[#1C1924]">{relocation || 'Not specified'}</p>
+                  )}
+                </div>
+
+                {/* Children */}
+                <div className="space-y-1">
+                  <p className="text-[11px] font-semibold text-[#8C849B] uppercase tracking-wider">Children</p>
+                  {isEditing ? (
+                    <div className="grid grid-cols-2 gap-1.5">
                       <select
                         value={hasKids}
                         onChange={(e) => setHasKids(e.target.value)}
-                        className="p-1.5 rounded-lg bg-white border border-[#DDD7E5] text-[11px] font-semibold text-[#1C1924]"
+                        className="p-1 rounded bg-[#F8F7FA] border border-[#DDD7E5] text-[11px] font-semibold text-[#1C1924]"
                       >
                         {HAS_KIDS_OPTIONS.map((opt) => (
                           <option key={opt} value={opt}>Has: {opt}</option>
@@ -713,7 +634,7 @@ export default function MyProfilePage() {
                       <select
                         value={wantsKids}
                         onChange={(e) => setWantsKids(e.target.value)}
-                        className="p-1.5 rounded-lg bg-white border border-[#DDD7E5] text-[11px] font-semibold text-[#1C1924]"
+                        className="p-1 rounded bg-[#F8F7FA] border border-[#DDD7E5] text-[11px] font-semibold text-[#1C1924]"
                       >
                         {WANTS_KIDS_OPTIONS.map((opt) => (
                           <option key={opt} value={opt}>Wants: {opt}</option>
@@ -721,64 +642,21 @@ export default function MyProfilePage() {
                       </select>
                     </div>
                   ) : (
-                    <p className="text-xs font-semibold text-[#1C1924] mt-1">Has {hasKids} • Wants {wantsKids}</p>
+                    <p className="text-sm font-normal text-[#1C1924]">
+                      {hasKids?.toLowerCase().includes('yes') ? 'Has children' : 'No children'} · {wantsKids?.toLowerCase().includes('yes') ? 'Wants kids' : "Doesn't want"}
+                    </p>
                   )}
                 </div>
 
-                {/* Relocation */}
-                <div className="p-3 rounded-2xl bg-[#FAFAFC] border border-[#E5E1EC]">
-                  <span className="text-[10px] font-bold text-[#8C849B] uppercase tracking-wider flex items-center gap-1.5">
-                    <Globe className="w-3.5 h-3.5 text-[#6555B8]" />
-                    Relocation Willingness
-                  </span>
+                {/* Habits */}
+                <div className="space-y-1">
+                  <p className="text-[11px] font-semibold text-[#8C849B] uppercase tracking-wider">Habits</p>
                   {isEditing ? (
-                    <select
-                      value={relocation}
-                      onChange={(e) => setRelocation(e.target.value)}
-                      className="w-full mt-1.5 p-2 rounded-xl bg-white border border-[#DDD7E5] text-xs font-semibold text-[#1C1924]"
-                    >
-                      {RELOCATION_OPTIONS.map((opt) => (
-                        <option key={opt} value={opt}>{opt}</option>
-                      ))}
-                    </select>
-                  ) : (
-                    <p className="text-xs font-semibold text-[#1C1924] mt-1">{relocation}</p>
-                  )}
-                </div>
-
-                {/* Height */}
-                <div className="p-3 rounded-2xl bg-[#FAFAFC] border border-[#E5E1EC]">
-                  <span className="text-[10px] font-bold text-[#8C849B] uppercase tracking-wider flex items-center gap-1.5">
-                    <Ruler className="w-3.5 h-3.5 text-[#6555B8]" />
-                    Height
-                  </span>
-                  {isEditing ? (
-                    <select
-                      value={height}
-                      onChange={(e) => setHeight(e.target.value)}
-                      className="w-full mt-1.5 p-2 rounded-xl bg-white border border-[#DDD7E5] text-xs font-semibold text-[#1C1924]"
-                    >
-                      {HEIGHT_OPTIONS.map((opt) => (
-                        <option key={opt} value={opt}>{opt}</option>
-                      ))}
-                    </select>
-                  ) : (
-                    <p className="text-xs font-semibold text-[#1C1924] mt-1">{height}</p>
-                  )}
-                </div>
-
-                {/* Habits: Drinking & Smoking */}
-                <div className="p-3 rounded-2xl bg-[#FAFAFC] border border-[#E5E1EC]">
-                  <span className="text-[10px] font-bold text-[#8C849B] uppercase tracking-wider flex items-center gap-1.5">
-                    <Wine className="w-3.5 h-3.5 text-[#6555B8]" />
-                    Habits (Drink / Smoke)
-                  </span>
-                  {isEditing ? (
-                    <div className="grid grid-cols-2 gap-1.5 mt-1.5">
+                    <div className="grid grid-cols-2 gap-1.5">
                       <select
                         value={drinking}
                         onChange={(e) => setDrinking(e.target.value)}
-                        className="p-1.5 rounded-lg bg-white border border-[#DDD7E5] text-[11px] font-semibold text-[#1C1924]"
+                        className="p-1 rounded bg-[#F8F7FA] border border-[#DDD7E5] text-[11px] font-semibold text-[#1C1924]"
                       >
                         {DRINKING_OPTIONS.map((opt) => (
                           <option key={opt} value={opt}>Drink: {opt}</option>
@@ -787,7 +665,7 @@ export default function MyProfilePage() {
                       <select
                         value={smoking}
                         onChange={(e) => setSmoking(e.target.value)}
-                        className="p-1.5 rounded-lg bg-white border border-[#DDD7E5] text-[11px] font-semibold text-[#1C1924]"
+                        className="p-1 rounded bg-[#F8F7FA] border border-[#DDD7E5] text-[11px] font-semibold text-[#1C1924]"
                       >
                         {SMOKING_OPTIONS.map((opt) => (
                           <option key={opt} value={opt}>Smoke: {opt}</option>
@@ -795,10 +673,12 @@ export default function MyProfilePage() {
                       </select>
                     </div>
                   ) : (
-                    <p className="text-xs font-semibold text-[#1C1924] mt-1">Drink: {drinking} • Smoke: {smoking}</p>
+                    <div className="text-sm font-normal text-[#1C1924] space-y-0.5">
+                        <p>Drink: {drinking || 'No'}</p>
+                        <p>Smoke: {smoking || 'No'}</p>
+                      </div>
                   )}
                 </div>
-
               </div>
             </div>
 
@@ -877,15 +757,10 @@ export default function MyProfilePage() {
                   )}
                 </div>
               )}
-            </div>
-
+                        </div>
           </div>
-
         </div>
-
-      </div>
-
-      <Footer />
-    </main>
+      </main>
+    </div>
   );
 }

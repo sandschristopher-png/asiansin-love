@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { getDistanceLabel } from '@/lib/location';
 
@@ -541,24 +541,37 @@ function DiscoverContent() {
         {/* Top Control Bar */}
         <section aria-label="Search and Filters" className="w-full space-y-3">
           {/* Search Row */}
-          <div className="w-full bg-white border border-[#E5E1EC] hover:border-[#CFC8DC] focus-within:border-[#6555b8] focus-within:ring-2 focus-within:ring-[#6555b8]/15 rounded-full shadow-[0_1px_3px_rgba(28,25,36,0.03)] transition-all flex items-center pl-3.5 pr-1.5 py-1.5">
+          <div className="w-full bg-white border border-[#E5E1EC] hover:border-[#CFC8DC] focus-within:border-[#6555b8] focus-within:ring-2 focus-within:ring-[#6555b8]/15 rounded-full shadow-[0_1px_3px_rgba(28,25,36,0.03)] transition-all flex items-center pl-3.5 pr-1.5 py-1">
             <Search className="w-4 h-4 text-[#8C849B] shrink-0 pointer-events-none" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search city, name..."
-              className="w-full bg-transparent px-2.5 text-xs sm:text-sm text-[#1C1924] placeholder-[#8C849B] focus:outline-none min-w-0"
+              className="w-full bg-transparent px-2 text-xs sm:text-sm text-[#1C1924] placeholder-[#8C849B] focus:outline-none min-w-0"
             />
             {searchQuery && (
               <button
                 type="button"
                 onClick={() => setSearchQuery('')}
-                className="text-[#8C849B] hover:text-[#1C1924] text-xs px-2 py-0.5"
+                className="text-[#8C849B] hover:text-[#1C1924] text-xs px-1.5 py-0.5 shrink-0"
               >
                 Clear
               </button>
             )}
+            <button
+              type="button"
+              onClick={() => setFiltersOpen(true)}
+              aria-label="Open Filters"
+              className="relative p-1.5 rounded-full text-[#6555b8] hover:bg-[#F3EFFC] transition shrink-0 ml-1"
+            >
+              <SlidersHorizontal className="w-4 h-4" />
+              {activeFiltersCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-[#6555b8] text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+                  {activeFiltersCount}
+                </span>
+              )}
+            </button>
           </div>
 
           {/* Unified Compact Filter Row: Gender (Left) & Location + Drawer (Right) */}
@@ -714,27 +727,13 @@ function DiscoverContent() {
                 )}
               </div>
 
-              {/* Filters Drawer Trigger */}
-              <button
-                type="button"
-                onClick={() => setFiltersOpen(true)}
-                aria-label="Open Filters"
-                className="flex items-center gap-1 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-full border border-[#E5E1EC] bg-white text-xs font-semibold text-[#524B5E] hover:text-[#1C1924] hover:border-[#CFC8DC] hover:bg-[#FAF9FC] shadow-[0_1px_2px_rgba(28,25,36,0.03)] transition shrink-0"
-              >
-                <SlidersHorizontal className="w-3.5 h-3.5 text-[#6555b8]" />
-                <span className="hidden xs:inline sm:inline">Filters</span>
-                {activeFiltersCount > 0 && (
-                  <span className="w-4 h-4 bg-[#6555b8] text-white text-[10px] font-bold rounded-full flex items-center justify-center">
-                    {activeFiltersCount}
-                  </span>
-                )}
-              </button>
+
             </div>
           </div>
         </section>
 
         {/* Discovery Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3.5 sm:gap-4 w-full">
+        <div className="grid grid-cols-2 gap-3 w-full">
           {isLoading ? (
             Array.from({ length: 8 }).map((_, i) => (
               <div
@@ -1066,7 +1065,7 @@ function DiscoverContent() {
         </div>
       </div>
 
-      <Footer />
+      {/* Footer removed for mobile dock */}
     </div>
   );
 }

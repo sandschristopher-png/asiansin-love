@@ -9,7 +9,6 @@ import {
   Bookmark, User, Sparkles, HeartHandshake, Baby, Ruler, Wine, Cigarette
 } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
-import { Footer } from '@/components/Footer';
 
 export default function PublicProfilePage() {
   const params = useParams();
@@ -75,17 +74,17 @@ export default function PublicProfilePage() {
         return;
       }
 
-      await supabase.from('messages').insert({
+      const { error } = await supabase.from('messages').insert({
         sender_id: user.id,
         receiver_id: profile.id,
         content: message.trim(),
       });
 
+      if (error) throw error;
       setSentSuccess(true);
       setMessage('');
-      setTimeout(() => setSentSuccess(false), 3000);
     } catch (err) {
-      console.error('Error sending message:', err);
+      console.error('Failed to send message:', err);
     } finally {
       setSending(false);
     }
@@ -93,46 +92,49 @@ export default function PublicProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F8F7FA] flex items-center justify-center text-[#756D82] text-sm">
-        Loading profile...
+      <div className="min-h-screen bg-[#F8F7FA] flex items-center justify-center p-6">
+        <div className="w-8 h-8 rounded-full border-2 border-[#6555b8] border-t-transparent animate-spin" />
       </div>
     );
   }
 
   if (!profile) {
     return (
-      <div className="min-h-screen bg-[#F8F7FA] flex flex-col items-center justify-center text-center p-6 space-y-4 text-[#1C1924]">
-        <p className="text-base font-bold">Profile not found.</p>
-        <Link href="/discover" className="text-sm font-semibold text-[#6555b8] hover:underline">
+      <div className="min-h-screen bg-[#F8F7FA] flex flex-col items-center justify-center p-6 text-center space-y-4">
+        <h2 className="text-xl font-bold text-[#1C1924]">Profile Not Found</h2>
+        <p className="text-sm text-[#756D82]">This member may have deactivated their account or updated their handle.</p>
+        <Link
+          href="/discover"
+          className="px-5 py-2.5 rounded-full bg-[#6555b8] text-white text-sm font-semibold hover:bg-[#52449e] transition shadow-xs"
+        >
           Return to Discover
         </Link>
       </div>
     );
   }
 
-  const photoList: string[] = Array.isArray(profile.photos) && profile.photos.length > 0
-    ? profile.photos
-    : [profile.avatar_url];
-  const currentImg = photoList[currentPhotoIdx] || photoList[0];
+  const photoList = profile.photos || [profile.avatar_url];
+  const currentImg = photoList[currentPhotoIdx] || profile.avatar_url;
   const hasMultiple = photoList.length > 1;
 
-    const parseCmHeight = (val: string | undefined | null) => {
+  const parseCmHeight = (val: any) => {
     if (!val) return 'Not specified';
-    const match = val.match(/(\d{2,3})\s*cm/i);
+    const match = String(val).match(/(\d{2,3})\s*cm/i);
     if (match) return `${match[1]} cm`;
-    const numOnly = val.match(/^\d{2,3}$/);
+    const numOnly = String(val).match(/^\d{2,3}$/);
     if (numOnly) return `${numOnly[0]} cm`;
-    return val.replace(/[()]/g, '').trim();
+    return String(val).replace(/[()]/g, '').trim();
   };
   const formattedHeight = parseCmHeight(profile.height);
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F8F7FA] text-[#1C1924]">
-      <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 py-6 space-y-6 pb-32">
+      <main className="flex-1 w-full px-4 pt-4 pb-28 space-y-4">
+        {/* Top Bar Navigation */}
         <div className="flex items-center justify-between">
           <Link
             href="/discover"
-            className="inline-flex items-center gap-1.5 text-xs sm:text-sm font-semibold text-[#524B5E] hover:text-[#1C1924] transition active:scale-95"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#524B5E] hover:text-[#1C1924] transition active:scale-95"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Back to Discover</span>
@@ -143,18 +145,78 @@ export default function PublicProfilePage() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
-          <div className="md:col-span-5 bg-white rounded-3xl border border-[#DDD7E5] shadow-xs p-4 sm:p-5 space-y-4">
-            <div className="pb-3 border-b border-[#DDD7E5] space-y-1">
-              <div className="flex items-baseline gap-2 flex-wrap">
-                <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1C1924] tracking-tight">
-                  {profile.name}{profile.age ? `, ${profile.age}` : ''}
-                </h1>
-                
+        {/* Hero Card: Photo + Identity + Direct Actions */}
+        <div className="bg-white rounded-3xl border border-[#DDD7E5] shadow-xs overflow-hidden">
+          {/* Main Photo Frame */}
+          <div className="relative aspect-[4/5] w-full bg-[#181926] select-none group">
+            {currentImg ? (
+              <img
+                src={currentImg}
+                alt={profile.name}
+                className="w-full h-full object-cover transition-opacity duration-200"
+              />
+            ) : (
+              <div className="flex flex-col items-center justify-center gap-2 text-[#756D82] h-full">
+                <User className="w-12 h-12 stroke-[1.5] text-[#6555b8]" />
+                <span className="text-xs">No photo available</span>
               </div>
+            )}
+
+            {/* Instagram / Story Tap Targets & Progress Bars */}
+            {hasMultiple && (
+              <>
+                <div className="absolute top-2.5 inset-x-3 flex items-center gap-1 z-20 pointer-events-none">
+                  {photoList.map((_: any, idx: number) => (
+                    <div
+                      key={idx}
+                      className={'h-1 flex-1 rounded-full transition-all duration-300 ' + (
+                        idx === currentPhotoIdx
+                          ? 'bg-white shadow-[0_0_6px_rgba(255,255,255,0.8)]'
+                          : 'bg-white/40 backdrop-blur-xs'
+                      )}
+                    />
+                  ))}
+                </div>
+
+                <button
+                  type="button"
+                  aria-label="Previous photo"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCurrentPhotoIdx((prev) => (prev > 0 ? prev - 1 : photoList.length - 1));
+                  }}
+                  className="absolute inset-y-0 left-0 w-1/3 z-10 cursor-pointer focus:outline-none"
+                />
+                <button
+                  type="button"
+                  aria-label="Next photo"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setCurrentPhotoIdx((prev) => (prev < photoList.length - 1 ? prev + 1 : 0));
+                  }}
+                  className="absolute inset-y-0 right-0 w-1/3 z-10 cursor-pointer focus:outline-none"
+                />
+              </>
+            )}
+
+            {/* Online Status Badge */}
+            <div className={'absolute left-3 flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/90 backdrop-blur-xs text-[11px] font-semibold text-[#1C1924] border border-[#E5E1EC] z-20 pointer-events-none ' + (
+              hasMultiple ? 'top-6' : 'top-3'
+            )}>
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Active</span>
+            </div>
+          </div>
+
+          {/* Profile Name & Primary Quick Details */}
+          <div className="p-4 space-y-3">
+            <div className="space-y-1">
+              <h1 className="text-2xl font-extrabold text-[#1C1924] tracking-tight">
+                {profile.name}{profile.age ? `, ${profile.age}` : ''}
+              </h1>
               <div className="flex items-center gap-2 flex-wrap">
-                <p className="text-sm sm:text-base font-medium text-[#524B5E] flex items-center gap-1.5">
-                  <MapPin className={`w-3.5 h-3.5 ${'text-[#6555B8]'}`} />
+                <p className="text-xs font-medium text-[#524B5E] flex items-center gap-1">
+                  <MapPin className="w-3.5 h-3.5 text-[#6555B8]" />
                   <span>{profile.location || 'Southeast Asia'}</span>
                 </p>
                 {profile.location_source === 'gps_verified' && (
@@ -166,101 +228,15 @@ export default function PublicProfilePage() {
               </div>
             </div>
 
-            <div className="relative aspect-[4/5] w-full rounded-2xl overflow-hidden bg-[#FAF8FD] border border-[#DDD7E5] flex items-center justify-center select-none group">
-              {currentImg ? (
-                <img
-                  src={currentImg}
-                  alt={profile.name}
-                  className="w-full h-full object-cover transition-opacity duration-200"
-                />
-              ) : (
-                <div className="flex flex-col items-center justify-center gap-2.5 text-[#756D82] p-6 text-center">
-                  <div className="w-16 h-16 rounded-full bg-[#F3EFFC] flex items-center justify-center text-[#6555b8]">
-                    <User className="w-8 h-8 stroke-[1.5]" />
-                  </div>
-                  <span className="text-xs">No photo available</span>
-                </div>
-              )}
-
-              {hasMultiple && (
-                <div className="absolute top-2.5 left-3 right-3 flex items-center gap-1.5 z-20 pointer-events-none">
-                  {photoList.map((_, idx) => (
-                    <div
-                      key={idx}
-                      className={'h-1 flex-1 rounded-full transition-all duration-300 ' + (
-                        idx === currentPhotoIdx
-                          ? 'bg-white shadow-[0_0_6px_rgba(255,255,255,0.8)]'
-                          : 'bg-white/40 backdrop-blur-xs'
-                      )}
-                    />
-                  ))}
-                </div>
-              )}
-
-              {hasMultiple && (
-                <>
-                  <button
-                    type="button"
-                    aria-label="Previous photo"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setCurrentPhotoIdx((prev) => (prev > 0 ? prev - 1 : photoList.length - 1));
-                    }}
-                    className="absolute inset-y-0 left-0 w-1/2 z-10 cursor-pointer focus:outline-none"
-                  />
-                  <button
-                    type="button"
-                    aria-label="Next photo"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setCurrentPhotoIdx((prev) => (prev < photoList.length - 1 ? prev + 1 : 0));
-                    }}
-                    className="absolute inset-y-0 right-0 w-1/2 z-10 cursor-pointer focus:outline-none"
-                  />
-
-                  <div className="hidden sm:flex items-center justify-between absolute inset-x-2 top-1/2 -translate-y-1/2 z-20 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button
-                      type="button"
-                      aria-label="Previous photo button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setCurrentPhotoIdx((prev) => (prev > 0 ? prev - 1 : photoList.length - 1));
-                      }}
-                      className="pointer-events-auto p-1.5 rounded-full bg-black/60 hover:bg-black/80 text-white backdrop-blur-xs transition shadow"
-                    >
-                      <ChevronLeft className="w-4 h-4" />
-                    </button>
-                    <button
-                      type="button"
-                      aria-label="Next photo button"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        setCurrentPhotoIdx((prev) => (prev < photoList.length - 1 ? prev + 1 : 0));
-                      }}
-                      className="pointer-events-auto p-1.5 rounded-full bg-black/60 hover:bg-black/80 text-white backdrop-blur-xs transition shadow"
-                    >
-                      <ChevronRight className="w-4 h-4" />
-                    </button>
-                  </div>
-                </>
-              )}
-
-              <div className={'absolute left-3 flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/90 backdrop-blur-xs text-[11px] font-semibold text-[#1C1924] border border-[#E5E1EC] z-20 pointer-events-none ' + (
-                hasMultiple ? 'top-6' : 'top-3'
-              )}>
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                <span>Active</span>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 pt-1">
+            {/* Action Buttons: Like & Save */}
+            <div className="flex items-center gap-2 pt-1 border-t border-[#F0EDF5]">
               <button
                 type="button"
                 onClick={() => setIsLiked(!isLiked)}
-                className={`flex-1 py-2.5 rounded-full border text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 transition active:scale-95 shadow-xs ${
+                className={`flex-1 py-2.5 rounded-full border text-xs font-semibold flex items-center justify-center gap-1.5 transition active:scale-95 shadow-xs ${
                   isLiked
-                    ? 'bg-[#6555b8] border-[#6555b8] text-white shadow-xs'
-                    : 'bg-white border-[#DDD7E5] text-[#1C1924] hover:bg-[#FAF8FD] hover:border-[#6555b8]'
+                    ? 'bg-[#6555b8] border-[#6555b8] text-white'
+                    : 'bg-white border-[#DDD7E5] text-[#1C1924] hover:bg-[#FAF8FD]'
                 }`}
               >
                 <Heart className={`w-4 h-4 ${isLiked ? 'fill-white text-white' : 'text-[#6555b8]'}`} />
@@ -270,10 +246,10 @@ export default function PublicProfilePage() {
               <button
                 type="button"
                 onClick={() => setIsSaved(!isSaved)}
-                className={`flex-1 py-2.5 rounded-full border text-xs sm:text-sm font-semibold flex items-center justify-center gap-1.5 transition active:scale-95 shadow-xs ${
+                className={`flex-1 py-2.5 rounded-full border text-xs font-semibold flex items-center justify-center gap-1.5 transition active:scale-95 shadow-xs ${
                   isSaved
-                    ? 'bg-[#6555b8] border-[#6555b8] text-white shadow-xs'
-                    : 'bg-white border-[#DDD7E5] text-[#1C1924] hover:bg-[#FAF8FD] hover:border-[#6555b8]'
+                    ? 'bg-[#6555b8] border-[#6555b8] text-white'
+                    : 'bg-white border-[#DDD7E5] text-[#1C1924] hover:bg-[#FAF8FD]'
                 }`}
               >
                 <Bookmark className={`w-4 h-4 ${isSaved ? 'fill-white text-white' : 'text-[#6555b8]'}`} />
@@ -281,122 +257,142 @@ export default function PublicProfilePage() {
               </button>
             </div>
           </div>
+        </div>
 
-          <div className="md:col-span-7 space-y-4">
-            <div className="p-5 sm:p-6 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="text-xs sm:text-sm font-bold text-[#1C1924] flex items-center gap-2">
-                  <MessageCircle className="w-4 h-4 text-[#6555b8]" />
-                  Send {profile.name} a Message
+        {/* Message Composer Card */}
+        <div className="p-4 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-2.5">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-bold text-[#1C1924] flex items-center gap-1.5">
+              <MessageCircle className="w-4 h-4 text-[#6555b8]" />
+              Send {profile.name} a Message
+            </span>
+            <span className="text-[10px] font-medium text-[#756D82]">Direct Delivery</span>
+          </div>
+
+          <form onSubmit={handleSendMessage} className="space-y-2.5">
+            <textarea
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              rows={3}
+              placeholder={`Hi ${profile.name}, I noticed your profile and would love to introduce myself...`}
+              className="w-full text-xs p-3 rounded-2xl border border-[#DDD7E5] bg-[#FAF8FD] focus:bg-white focus:border-[#6555b8] focus:outline-none transition resize-none placeholder:text-[#8C849B]"
+            />
+
+            <div className="flex items-center justify-between">
+              {sentSuccess ? (
+                <span className="text-xs font-medium text-emerald-600 flex items-center gap-1">
+                  <ShieldCheck className="w-3.5 h-3.5" /> Sent successfully!
                 </span>
-                <span className="text-[11px] font-medium text-[#756D82]">Direct Delivery</span>
+              ) : (
+                <span className="text-[11px] text-[#756D82]">Polite intros build trust</span>
+              )}
+
+              <button
+                type="submit"
+                disabled={sending || !message.trim()}
+                className="px-4 py-2 rounded-full bg-[#6555b8] hover:bg-[#52449e] disabled:opacity-50 text-white text-xs font-semibold flex items-center gap-1.5 transition active:scale-95 shadow-xs"
+              >
+                <Send className="w-3.5 h-3.5" />
+                <span>{sending ? 'Sending...' : 'Send Message'}</span>
+              </button>
+            </div>
+          </form>
+        </div>
+
+        {/* About Me Card */}
+        <div className="p-4 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-1.5">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-[#756D82]">About Me</h2>
+          <p className="text-xs sm:text-sm text-[#1C1924] leading-relaxed">
+            {profile.bio || 'No bio provided yet.'}
+          </p>
+        </div>
+
+        {/* Looking For Card */}
+        <div className="p-4 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-1.5">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-[#756D82]">What I'm Looking For</h2>
+          <p className="text-xs sm:text-sm text-[#1C1924] leading-relaxed">
+            {profile.looking_for || 'Long-Term Relationship'}
+          </p>
+        </div>
+
+        {/* Courtship Vitals Card */}
+        <div className="p-4 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-3">
+          <h2 className="text-xs font-bold uppercase tracking-wider text-[#756D82]">Courtship Vitals</h2>
+          <div className="grid grid-cols-2 gap-2 text-xs">
+            <div className="flex items-center gap-2 p-2.5 rounded-xl bg-[#FAF8FD] border border-[#DDD7E5] min-w-0">
+              <Briefcase className="w-3.5 h-3.5 text-[#6555b8] shrink-0" />
+              <div className="min-w-0 flex-1">
+                <p className="text-[10px] text-[#756D82] leading-none">Career</p>
+                <p className="font-semibold text-[#1C1924] truncate mt-0.5">{profile.occupation || 'Professional'}</p>
               </div>
-
-              <form onSubmit={handleSendMessage} className="space-y-3 pt-1">
-                <textarea
-                  value={message}
-                  onChange={(e) => setMessage(e.target.value)}
-                  rows={3}
-                  placeholder={`Hi ${profile.name}, I noticed your profile and would love to introduce myself...`}
-                  className="w-full p-3.5 rounded-2xl bg-white border border-[#DDD7E5] text-[#1C1924] placeholder-[#8C849B] text-xs sm:text-sm focus:outline-none focus:border-[#6555b8] focus:ring-2 focus:ring-[#6555b8]/15 transition shadow-xs resize-none"
-                />
-                <div className="flex justify-end">
-                  <button
-                    type="submit"
-                    disabled={sending || !message.trim()}
-                    className="px-6 py-2.5 rounded-full bg-[#6555b8] hover:bg-[#52449e] disabled:opacity-40 text-white font-bold text-xs sm:text-sm shadow-xs active:scale-95 transition flex items-center gap-2"
-                  >
-                    <Send className="w-3.5 h-3.5 text-white" />
-                    <span>{sending ? 'Sending...' : sentSuccess ? 'Message Sent!' : 'Send Message'}</span>
-                  </button>
-                </div>
-              </form>
             </div>
 
-            <div className="p-5 sm:p-6 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-2">
-              <h3 className="text-xs sm:text-sm font-bold text-[#6B627A] uppercase tracking-wider">About Me</h3>
-              <p className="text-sm sm:text-base text-[#1C1924] leading-relaxed font-normal whitespace-pre-line">
-                {profile.bio || 'No bio provided yet.'}
-              </p>
-            </div>
-
-            <div className="p-5 sm:p-6 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-2">
-              <h3 className="text-xs sm:text-sm font-bold text-[#6B627A] uppercase tracking-wider">What I&apos;m Looking For</h3>
-              <p className="text-xs sm:text-sm text-[#1C1924] leading-relaxed font-normal whitespace-pre-line">
-                {profile.looking_for || 'Seeking an intentional, marriage-minded partner.'}
-              </p>
-            </div>
-
-            <div className="p-5 sm:p-6 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-4">
-              <h3 className="text-xs sm:text-sm font-bold text-[#6B627A] uppercase tracking-wider">Courtship Vitals</h3>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
-                <div className="flex items-center gap-2 p-3 sm:p-3.5 rounded-2xl bg-[#FAF8FD] border border-[#DDD7E5]">
-                  <Briefcase className="w-4 h-4 text-[#6555b8] shrink-0" />
-                  <span className="text-[#756D82]">Profession:</span>
-                  <span className="font-semibold text-[#1C1924]">{profile.occupation || 'Professional'}</span>
-                </div>
-
-                <div className="flex items-center gap-2 p-3 sm:p-3.5 rounded-2xl bg-[#FAF8FD] border border-[#DDD7E5]">
-                  <Sparkles className="w-4 h-4 text-[#6555b8] shrink-0" />
-                  <span className="text-[#756D82]">Faith:</span>
-                  <span className="font-semibold text-[#1C1924]">{profile.religion || 'Christian'}</span>
-                </div>
-
-                <div className="flex items-center gap-2 p-3 sm:p-3.5 rounded-2xl bg-[#FAF8FD] border border-[#DDD7E5]">
-                  <Globe className="w-4 h-4 text-[#6555b8] shrink-0" />
-                  <span className="text-[#756D82]">Relocation:</span>
-                  <span className="font-semibold text-[#1C1924]">{profile.relocation || 'Open'}</span>
-                </div>
-
-                <div className="flex items-center gap-2 p-3 sm:p-3.5 rounded-2xl bg-[#FAF8FD] border border-[#DDD7E5]">
-                  <HeartHandshake className="w-4 h-4 text-[#6555b8] shrink-0" />
-                  <span className="text-[#756D82]">Status:</span>
-                  <span className="font-semibold text-[#1C1924]">{profile.marital_status || 'Never Married'}</span>
-                </div>
-
-                <div className="flex items-center gap-2 p-3 sm:p-3.5 rounded-2xl bg-[#FAF8FD] border border-[#DDD7E5]">
-                  <Baby className="w-4 h-4 text-[#6555b8] shrink-0" />
-                  <span className="text-[#756D82]">Has Kids:</span>
-                  <span className="font-semibold text-[#1C1924]">{profile.has_kids || 'No'}</span>
-                </div>
-
-                <div className="flex items-center gap-2 p-3 sm:p-3.5 rounded-2xl bg-[#FAF8FD] border border-[#DDD7E5]">
-                  <Baby className="w-4 h-4 text-[#6555b8] shrink-0" />
-                  <span className="text-[#756D82]">Wants Kids:</span>
-                  <span className="font-semibold text-[#1C1924]">{profile.wants_kids || 'Yes'}</span>
-                </div>
-
-                <div className="col-span-full flex items-center gap-2 p-3 sm:p-3.5 rounded-2xl bg-[#FAF8FD] border border-[#DDD7E5]">
-                  <Languages className="w-4 h-4 text-[#6555b8] shrink-0" />
-                  <span className="text-[#756D82]">Languages:</span>
-                  <span className="font-semibold text-[#1C1924]">{profile.languages || 'English'}</span>
-                </div>
-
-                <div className="flex items-center gap-2 p-3 sm:p-3.5 rounded-2xl bg-[#FAF8FD] border border-[#DDD7E5]">
-                  <Ruler className="w-4 h-4 text-[#6555b8] shrink-0" />
-                    <span className="text-[#756D82]">Height:</span>
-                    <span className="font-semibold text-[#1C1924]">{formattedHeight !== 'Not specified' ? formattedHeight : '—'}</span>
-                  </div>
-
-                  <div className="flex items-center gap-2 p-3 sm:p-3.5 rounded-2xl bg-[#FAF8FD] border border-[#DDD7E5]">
-                    <Wine className="w-4 h-4 text-[#6555b8] shrink-0" />
-                    <span className="text-[#756D82]">Drinks:</span>
-                    <span className="font-semibold text-[#1C1924]">{profile.drinking || 'Socially'}</span>
-                  </div>
-
-                  <div className="flex items-center gap-2 p-3 sm:p-3.5 rounded-2xl bg-[#FAF8FD] border border-[#DDD7E5]">
-                    <Cigarette className="w-4 h-4 text-[#6555b8] shrink-0" />
-                    <span className="text-[#756D82]">Smokes:</span>
-                    <span className="font-semibold text-[#1C1924]">{profile.smoking || 'No'}</span>
-                  </div>
-                </div>
+            <div className="flex items-center gap-2 p-2.5 rounded-xl bg-[#FAF8FD] border border-[#DDD7E5] min-w-0">
+              <Sparkles className="w-3.5 h-3.5 text-[#6555b8] shrink-0" />
+              <div className="min-w-0 flex-1">
+                <p className="text-[10px] text-[#756D82] leading-none">Faith</p>
+                <p className="font-semibold text-[#1C1924] truncate mt-0.5">{profile.religion || 'Christian'}</p>
               </div>
+            </div>
+
+            <div className="flex items-center gap-2 p-2.5 rounded-xl bg-[#FAF8FD] border border-[#DDD7E5] min-w-0">
+              <Globe className="w-3.5 h-3.5 text-[#6555b8] shrink-0" />
+              <div className="min-w-0 flex-1">
+                <p className="text-[10px] text-[#756D82] leading-none">Relocation</p>
+                <p className="font-semibold text-[#1C1924] truncate mt-0.5">{profile.relocation || 'Open'}</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 p-2.5 rounded-xl bg-[#FAF8FD] border border-[#DDD7E5] min-w-0">
+              <HeartHandshake className="w-3.5 h-3.5 text-[#6555b8] shrink-0" />
+              <div className="min-w-0 flex-1">
+                <p className="text-[10px] text-[#756D82] leading-none">Status</p>
+                <p className="font-semibold text-[#1C1924] truncate mt-0.5">{profile.marital_status || 'Never Married'}</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 p-2.5 rounded-xl bg-[#FAF8FD] border border-[#DDD7E5] min-w-0">
+              <Baby className="w-3.5 h-3.5 text-[#6555b8] shrink-0" />
+              <div className="min-w-0 flex-1">
+                <p className="text-[10px] text-[#756D82] leading-none">Has Kids</p>
+                <p className="font-semibold text-[#1C1924] truncate mt-0.5">{profile.has_kids || 'No'}</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 p-2.5 rounded-xl bg-[#FAF8FD] border border-[#DDD7E5] min-w-0">
+              <Baby className="w-3.5 h-3.5 text-[#6555b8] shrink-0" />
+              <div className="min-w-0 flex-1">
+                <p className="text-[10px] text-[#756D82] leading-none">Wants Kids</p>
+                <p className="font-semibold text-[#1C1924] truncate mt-0.5">{profile.wants_kids || 'Yes'}</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 p-2.5 rounded-xl bg-[#FAF8FD] border border-[#DDD7E5] min-w-0">
+              <Ruler className="w-3.5 h-3.5 text-[#6555b8] shrink-0" />
+              <div className="min-w-0 flex-1">
+                <p className="text-[10px] text-[#756D82] leading-none">Height</p>
+                <p className="font-semibold text-[#1C1924] truncate mt-0.5">{formattedHeight !== 'Not specified' ? formattedHeight : '—'}</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 p-2.5 rounded-xl bg-[#FAF8FD] border border-[#DDD7E5] min-w-0">
+              <Wine className="w-3.5 h-3.5 text-[#6555b8] shrink-0" />
+              <div className="min-w-0 flex-1">
+                <p className="text-[10px] text-[#756D82] leading-none">Drinks</p>
+                <p className="font-semibold text-[#1C1924] truncate mt-0.5">{profile.drinking || 'Socially'}</p>
+              </div>
+            </div>
+
+            <div className="col-span-2 flex items-center gap-2 p-2.5 rounded-xl bg-[#FAF8FD] border border-[#DDD7E5] min-w-0">
+              <Languages className="w-3.5 h-3.5 text-[#6555b8] shrink-0" />
+              <div className="min-w-0 flex-1">
+                <p className="text-[10px] text-[#756D82] leading-none">Languages</p>
+                <p className="font-semibold text-[#1C1924] truncate mt-0.5">{profile.languages || 'English'}</p>
+              </div>
+            </div>
           </div>
         </div>
       </main>
-
-      <Footer />
     </div>
   );
 }
