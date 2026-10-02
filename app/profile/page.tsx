@@ -6,10 +6,13 @@ import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { 
-  ArrowLeft, ShieldCheck, MapPin, Briefcase, Flower2, Heart, Languages, Globe, User, Edit3, Settings, Save, Check, Camera, X, ChevronDown, Baby, Sparkles, HeartHandshake, Ruler, Wine, Cigarette, Loader2, Navigation, CheckCircle2 } from 'lucide-react';
+  ArrowLeft, ShieldCheck, MapPin, Briefcase, Flower2, Heart, Languages, 
+  Globe, User, Edit3, Settings, Save, Check, Camera, X, ChevronDown, 
+  Baby, Sparkles, HeartHandshake, Ruler, Wine, Cigarette, Loader2, 
+  Navigation, CheckCircle2, Clock, ShieldAlert 
+} from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 import { Footer } from '@/components/Footer';
-
 
 export const QUICK_LANGUAGES = ['English', 'Tagalog', 'Thai', 'Japanese', 'Vietnamese', 'Mandarin', 'Spanish', 'Korean'];
 
@@ -36,15 +39,11 @@ export const NATIONALITY_OPTIONS = [
 ];
 
 const INTENT_OPTIONS = ['Marriage & Kids', 'Marriage', 'Marriage (No Kids)', 'Life Partner'];
-const RELIGION_OPTIONS = ['Catholic', 'Christian', 'Buddhist', 'Muslim', 'Spiritual', 'None',
-  'Other'
-];
+const RELIGION_OPTIONS = ['Catholic', 'Christian', 'Buddhist', 'Muslim', 'Spiritual', 'None', 'Other'];
 const MARITAL_OPTIONS = ['Never Married', 'Divorced', 'Widowed', 'Separated'];
 const HAS_KIDS_OPTIONS = ['No', 'Yes (Lives with me)', 'Yes (Lives away)'];
 const WANTS_KIDS_OPTIONS = ['Yes', 'Open', 'No'];
-const RELOCATION_OPTIONS = ['Can Relocate', 'Open to Either', 'Cannot Relocate',
-  'Other'
-];
+const RELOCATION_OPTIONS = ['Can Relocate', 'Open to Either', 'Cannot Relocate', 'Other'];
 const DRINKING_OPTIONS = ['No', 'Socially', 'Yes'];
 const SMOKING_OPTIONS = ['No', 'Occasionally', 'Yes'];
 
@@ -59,15 +58,16 @@ const HEIGHT_OPTIONS = [
 
 export default function MyProfilePage() {
   const router = useRouter();
+
+  // Basic Information State
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
+  const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
-  
-  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Profile data
   const [name, setName] = useState('Christopher');
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+  const [photos, setPhotos] = useState<string[]>([]);
   const [currentPhotoIdx, setCurrentPhotoIdx] = useState(0);
   const [age, setAge] = useState(30);
   const [location, setLocation] = useState('Las Vegas, NV');
@@ -80,6 +80,9 @@ export default function MyProfilePage() {
   const [bio, setBio] = useState('Down-to-earth tech professional with a passion for creative projects, travel, and honest conversations. Looking for someone grounded who values intentional courtship and a genuine future.');
   const [lookingFor, setLookingFor] = useState('A sincere, patient, and grounded partner who values family, communicates openly, and is ready for an intentional cross-border commitment.');
   
+  // Verification State
+  const [verificationStatus, setVerificationStatus] = useState<'unverified' | 'pending' | 'verified'>('unverified');
+
   // Vitals
   const [profession, setProfession] = useState('Software Developer');
   const [intent, setIntent] = useState('Marriage & Kids');
@@ -93,12 +96,13 @@ export default function MyProfilePage() {
   const [drinking, setDrinking] = useState('Socially');
   const [smoking, setSmoking] = useState('No');
   
-  const [avatarUrl, setAvatarUrl] = useState('');
-  const [photos, setPhotos] = useState<string[]>([]);
+  // Dropdown States
+  const [openDropdown, setOpenDropdown] = useState<string | null>(null);
+  const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    function handleClickOutside(e: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
+    function handleClickOutside(event: MouseEvent) {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
         setOpenDropdown(null);
       }
     }
@@ -126,8 +130,8 @@ export default function MyProfilePage() {
         if (data.location) setLocation(data.location);
         if (data.location_source) setLocationSource(data.location_source);
         if (data.location_verified_at) setLocationVerifiedAt(data.location_verified_at);
-          if (data.latitude) setLatitude(data.latitude);
-          if (data.longitude) setLongitude(data.longitude);
+        if (data.latitude) setLatitude(data.latitude);
+        if (data.longitude) setLongitude(data.longitude);
         if (data.bio) setBio(data.bio);
         if (data.looking_for) setLookingFor(data.looking_for);
         if (data.occupation) setProfession(data.occupation);
@@ -142,6 +146,11 @@ export default function MyProfilePage() {
         if (data.drinking) setDrinking(data.drinking);
         if (data.smoking) setSmoking(data.smoking);
         if (data.avatar_url) setAvatarUrl(data.avatar_url);
+        if (data.verification_status) {
+          setVerificationStatus(data.verification_status);
+        } else if (data.is_verified) {
+          setVerificationStatus('verified');
+        }
         if (Array.isArray(data.photos) && data.photos.length > 0) {
           setPhotos(data.photos.filter(Boolean));
         } else if (data.avatar_url) {
@@ -153,7 +162,7 @@ export default function MyProfilePage() {
     loadUserData();
   }, [router]);
 
-    const [langInput, setLangInput] = useState('');
+  const [langInput, setLangInput] = useState('');
 
   const currentLanguages = userLanguages
     ? userLanguages.split(',').map((s: string) => s.trim()).filter(Boolean)
@@ -206,204 +215,171 @@ export default function MyProfilePage() {
         smoking,
         updated_at: new Date().toISOString()
       };
+      if (latitude) payload.latitude = latitude;
+      if (longitude) payload.longitude = longitude;
 
-      if (latitude !== null) payload.latitude = latitude;
-      if (longitude !== null) payload.longitude = longitude;
-
+      setSaving(true);
       const { error } = await supabase.from('profiles').upsert(payload);
-      if (error) {
-        console.error('Supabase profile save error:', error);
-        alert('Failed to save profile: ' + error.message);
-        return;
+      setSaving(false);
+
+      if (!error) {
+        setIsEditing(false);
+        setSaveSuccess(true);
+        setTimeout(() => setSaveSuccess(false), 2500);
+      } else {
+        alert('Could not update profile: ' + error.message);
       }
     }
-    setSaveSuccess(true);
-    setIsEditing(false);
-    setOpenDropdown(null);
-    setTimeout(() => setSaveSuccess(false), 2500);
-  };
-
-  const renderDropdownPill = (
-    label: string,
-    value: string, 
-    options: string[], 
-    setter: (val: string) => void, 
-    dropdownKey: string,
-    Icon: any,
-    scrollable: boolean = false
-  ) => {
-    const isOpen = openDropdown === dropdownKey;
-    return (
-      <div className="w-full basis-full pt-1 relative inline-block">
-        <button
-          type="button"
-          onClick={() => setOpenDropdown(isOpen ? null : dropdownKey)}
-          className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#F3EFFC] border border-[#E2DAEF] hover:border-[#9A8CC3] text-xs font-medium text-[#1C1924] transition active:scale-95"
-        >
-          <Icon className="w-3.5 h-3.5 text-[#9A8CC3] shrink-0" />
-          <span className="text-[#D5CEE5]/70">{label}:</span>
-          <span className="font-semibold text-[#1C1924]">{value}</span>
-          <ChevronDown className={`w-3 h-3 text-[#9A8CC3] shrink-0 transition-transform ${isOpen ? 'rotate-180' : ''}`} />
-        </button>
-
-        {isOpen && (
-          <div className={`absolute left-0 top-full mt-1.5 w-48 rounded-2xl bg-[#F3EFFC] border border-[#E2DAEF] shadow-2xl py-1.5 z-50 overflow-y-auto backdrop-blur-md ${scrollable ? 'max-h-52' : ''}`}>
-            {options.map((opt) => (
-              <button
-                key={opt}
-                type="button"
-                onClick={() => {
-                  setter(opt);
-                  setOpenDropdown(null);
-                }}
-                className={`w-full text-left px-3 py-1.5 text-xs transition flex items-center justify-between ${
-                  value === opt 
-                    ? 'text-[#1C1924] font-bold bg-[#6555B8]/40' 
-                    : 'text-[#D5CEE5] hover:bg-[#F3EFFC] hover:text-white'
-                }`}
-              >
-                <span>{opt}</span>
-                {value === opt && <Check className="w-3.5 h-3.5 text-[#1C1924]" />}
-              </button>
-            ))}
-          </div>
-        )}
-      </div>
-    );
   };
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F8F7FA] flex items-center justify-center text-[#9A8CC3] text-xs">
-        Loading profile...
+      <div className="min-h-screen bg-[#F8F7FA] flex items-center justify-center">
+        <Loader2 className="w-8 h-8 animate-spin text-[#6555B8]" />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F8F7FA] text-[#1C1924]">
-      <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 py-4 sm:py-6 space-y-4 pb-28 md:pb-32" ref={dropdownRef}>
-        
-        {/* Navigation & Status */}
-        <div className="flex items-center justify-between">
-          <Link
-            href="/discover"
-            className="inline-flex items-center gap-1.5 text-sm font-semibold text-[#9A8CC3] hover:text-[#1C1924] transition"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Back to Discover</span>
-          </Link>
+    <main className="min-h-screen bg-[#F8F7FA] text-[#1C1924] flex flex-col justify-between">
+      <div className="max-w-4xl mx-auto w-full px-4 sm:px-6 py-6 pb-28 space-y-6">
 
-          {saveSuccess && (
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/20 text-emerald-400 text-xs font-medium border border-emerald-500/30">
-              <Check className="w-3.5 h-3.5" />
-              Changes Saved
-            </span>
-          )}
+        {/* Top Navbar */}
+        <div className="flex items-center justify-between pb-4 border-b border-[#DDD7E5]">
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="h-10 w-10 rounded-2xl bg-white border border-[#DDD7E5] text-[#1C1924] hover:bg-[#F3EFFC] flex items-center justify-center text-sm active:scale-95 transition shadow-xs"
+          >
+            <ArrowLeft className="w-5 h-5 text-[#1C1924]" />
+          </button>
+          <div className="flex items-center gap-2">
+            <User className="w-5 h-5 text-[#6555b8]" />
+            <h1 className="text-xl font-bold text-[#1C1924] tracking-tight">
+              My Profile
+            </h1>
+          </div>
+          <Link
+            href="/settings"
+            className="h-10 w-10 rounded-2xl bg-white border border-[#DDD7E5] text-[#1C1924] hover:bg-[#F3EFFC] flex items-center justify-center text-sm active:scale-95 transition shadow-xs"
+          >
+            <Settings className="w-5 h-5 text-[#1C1924]" />
+          </Link>
         </div>
 
-        {/* 2-Column Responsive Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start">
+        {/* Main Grid: Left preview photo card & Right vitals */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-start" ref={dropdownRef}>
           
-          {/* Left Column: Top Masthead with Framed Photo */}
-          <div className="md:col-span-5 rounded-3xl bg-white border border-[#E5E1EC] shadow-sm p-4 sm:p-5 space-y-4">
+          {/* Left Column: Visual card & actions */}
+          <div className="md:col-span-5 space-y-4">
             
-            {/* Header Up Top */}
+            {/* Header info over photo */}
             {isEditing ? (
-              <div className="space-y-3 pb-1 border-b border-[#9A8CC3]/25">
-                <div className="grid grid-cols-3 gap-2">
-                  <div className="col-span-2">
-                    <label className="text-[10px] uppercase font-bold text-[#9A8CC3]">Name</label>
-                    <input
-                      type="text"
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      className="w-full mt-1 px-3 py-1.5 rounded-xl bg-[#FAFAFC] border border-[#E5E1EC] text-xs text-[#1C1924] focus:outline-none focus:border-[#6555B8] focus:bg-white transition-colors [appearance:text-field] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
-                    />
-                  </div>
+              <div className="p-4 rounded-3xl bg-white border border-[#E5E1EC] space-y-3 shadow-xs">
+                <div>
+                  <label className="text-[10px] font-bold text-[#6555B8] uppercase tracking-wider">Display Name</label>
+                  <input
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    className="w-full mt-1 p-2.5 rounded-xl bg-[#FAFAFC] border border-[#DDD7E5] text-sm font-semibold text-[#1C1924] focus:outline-none focus:border-[#6555B8]"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="text-[10px] uppercase font-bold text-[#9A8CC3]">Age</label>
+                    <label className="text-[10px] font-bold text-[#6555B8] uppercase tracking-wider">Age</label>
                     <input
                       type="number"
                       value={age}
                       onChange={(e) => setAge(Number(e.target.value))}
-                      className="w-full mt-1 px-3 py-1.5 rounded-xl bg-[#FAFAFC] border border-[#E5E1EC] text-xs text-[#1C1924] focus:outline-none focus:border-[#6555B8] focus:bg-white transition-colors [appearance:text-field] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+                      className="w-full mt-1 p-2.5 rounded-xl bg-[#FAFAFC] border border-[#DDD7E5] text-sm font-semibold text-[#1C1924] focus:outline-none focus:border-[#6555B8]"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-[10px] font-bold text-[#6555B8] uppercase tracking-wider">Location</label>
+                    <input
+                      type="text"
+                      value={location}
+                      onChange={(e) => {
+                        setLocation(e.target.value);
+                        setLocationSource('self_reported');
+                      }}
+                      className="w-full mt-1 p-2.5 rounded-xl bg-[#FAFAFC] border border-[#DDD7E5] text-sm font-semibold text-[#1C1924] focus:outline-none focus:border-[#6555B8]"
                     />
                   </div>
                 </div>
-                <div>
-                  <div className="flex items-center justify-between">
-                    <label className="text-[10px] uppercase font-bold text-[#9A8CC3]">Location</label>
-                    <button
-                      type="button"
-                      disabled={isLocating}
-                      onClick={async () => {
-                        setIsLocating(true);
-                        setLocError(null);
-                        const res = await captureCurrentLocation();
-                        setIsLocating(false);
-                        if (res.success && res.data) {
-                          const formatted = `${res.data.city}, ${res.data.country}`;
-                          setLocation(formatted);
-                          setLocationSource('gps_verified');
-                          setLocationVerifiedAt(new Date().toISOString());
-                            if (res.data.latitude) setLatitude(res.data.latitude);
-                            if (res.data.longitude) setLongitude(res.data.longitude);
-                        } else if (res.error) {
-                          setLocError(res.error);
-                        }
-                      }}
-                      className="inline-flex items-center gap-1 text-[11px] font-semibold text-[#B2A4D7] hover:text-[#1C1924] transition disabled:opacity-50"
-                    >
-                      {isLocating ? (
-                        <>
-                          <Loader2 className="w-3 h-3 animate-spin text-[#B2A4D7]" />
-                          <span>Detecting GPS...</span>
-                        </>
-                      ) : (
-                        <>
-                          <Navigation className="w-3 h-3 text-[#B2A4D7]" />
-                          <span>Detect Current Location</span>
-                        </>
-                      )}
-                    </button>
-                  </div>
-                  <input
-                    type="text"
-                    readOnly
-                    value={location}
-                    placeholder="GPS location will appear here"
-                    className="w-full mt-1.5 px-3 py-1.5 rounded-xl bg-[#F3EFFC]/50 border border-[#9A8CC3]/30 text-xs text-[#756D82] cursor-not-allowed focus:outline-none"
-                  />
-                  {locError && <p className="text-[10px] text-red-400 mt-1">{locError}</p>}
+
+                <div className="pt-1">
+                  <button
+                    type="button"
+                    disabled={isLocating}
+                    onClick={async () => {
+                      setIsLocating(true);
+                      setLocError(null);
+                      const res = await captureCurrentLocation();
+                      setIsLocating(false);
+                      if (res.success && res.data) {
+                        const formatted = `${res.data.city}, ${res.data.country}`;
+                        setLocation(formatted);
+                        setLocationSource('gps_verified');
+                        setLocationVerifiedAt(new Date().toISOString());
+                        if (res.data.latitude) setLatitude(res.data.latitude);
+                        if (res.data.longitude) setLongitude(res.data.longitude);
+                      } else if (res.error) {
+                        setLocError(res.error);
+                      }
+                    }}
+                    className="w-full py-2 px-3 rounded-xl bg-[#F3EFFC] border border-[#DDD7E5] hover:bg-[#EAE4F7] text-xs font-semibold text-[#6555B8] flex items-center justify-center gap-1.5 transition active:scale-98"
+                  >
+                    {isLocating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Navigation className="w-3.5 h-3.5" />}
+                    <span>{isLocating ? 'Detecting Location...' : 'Detect & Verify with GPS'}</span>
+                  </button>
+                  {locError && <p className="text-[11px] text-rose-600 mt-1 text-center">{locError}</p>}
                 </div>
               </div>
             ) : (
-              <div className="flex items-start justify-between gap-2 pb-1">
+              <div className="flex items-center justify-between px-1">
                 <div>
-                  <h1 className="text-2xl font-bold text-[#1C1924] tracking-tight flex items-center gap-1.5">
+                  <h1 className="text-xl sm:text-[22px] font-semibold text-[#1C1924] tracking-tight">
                     {name}, {age}
                   </h1>
                   <div className="flex flex-wrap items-center gap-2 mt-1">
-                      <p className="text-xs font-medium text-[#1C1924]">
-                        {location}
-                      </p>
-                      {locationSource === 'gps_verified' ? (
-                        <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#F3EFFC] border border-[#DDD7E5] text-[11px] font-medium text-[#6555B8]">
-                          <MapPin className="w-3 h-3 text-emerald-400 shrink-0" />
-                          <span>Verified {locationVerifiedAt ? formatVerifiedDate(locationVerifiedAt) : ''}</span>
-                        </span>
-                      ) : (
-                        <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#F3EFFC] border border-[#9A8CC3]/25 text-[10px] font-medium text-[#B2A4D7]">
-                          Self-Reported
-                        </span>
-                      )}
-                    </div>
+                    <p className="text-xs font-medium text-[#1C1924]">
+                      {location}
+                    </p>
+                    {locationSource === 'gps_verified' ? (
+                      <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#F3EFFC] border border-[#DDD7E5] text-[11px] font-medium text-[#6555B8]">
+                        <MapPin className="w-3 h-3 text-emerald-500 shrink-0" />
+                        <span>Verified {locationVerifiedAt ? formatVerifiedDate(locationVerifiedAt) : ''}</span>
+                      </span>
+                    ) : (
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#F3EFFC] border border-[#9A8CC3]/25 text-[10px] font-medium text-[#8C849B]">
+                        Self-Reported
+                      </span>
+                    )}
                   </div>
-                <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#F3EFFC] border border-[#E2DAEF] text-[11px] font-medium text-[#1C1924] shrink-0">
-                  <ShieldCheck className="w-3.5 h-3.5 text-[#B2A4D7]" />
-                  <span>100% Rep</span>
                 </div>
+
+                {/* Verification Status Pill */}
+                {verificationStatus === 'verified' ? (
+                  <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-[11px] font-semibold text-emerald-700 shrink-0 shadow-xs">
+                    <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+                    <span>Verified</span>
+                  </div>
+                ) : verificationStatus === 'pending' ? (
+                  <div className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-[11px] font-semibold text-amber-700 shrink-0 shadow-xs">
+                    <Clock className="w-3.5 h-3.5 text-amber-600 animate-pulse" />
+                    <span>Review Pending</span>
+                  </div>
+                ) : (
+                  <Link
+                    href="/verify"
+                    className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#F3EFFC] border border-[#DDD7E5] hover:border-[#6555B8] text-[11px] font-bold text-[#6555B8] shrink-0 transition active:scale-95 shadow-xs"
+                  >
+                    <ShieldAlert className="w-3.5 h-3.5 text-[#6555B8]" />
+                    <span>Get Verified</span>
+                  </Link>
+                )}
               </div>
             )}
 
@@ -416,7 +392,7 @@ export default function MyProfilePage() {
               const hasMultiple = photoList.length > 1;
 
               return (
-                <div className="relative aspect-[4/5] w-full rounded-2xl overflow-hidden bg-gradient-to-b from-[#FFFFFF] to-[#FFFFFF] border border-[#9A8CC3]/30 flex items-center justify-center select-none group">
+                <div className="relative aspect-[4/5] w-full rounded-3xl overflow-hidden bg-white border border-[#DDD7E5] flex items-center justify-center select-none shadow-xs group">
                   {currentImg ? (
                     <img
                       src={currentImg}
@@ -424,28 +400,30 @@ export default function MyProfilePage() {
                       className="w-full h-full object-cover transition-opacity duration-200"
                     />
                   ) : (
-                    <div className="flex flex-col items-center justify-center gap-3 text-[#9A8CC3]/60 p-6 text-center">
-                      <div className="w-20 h-20 rounded-3xl bg-[#F3EFFC] border border-[#9A8CC3]/35 flex items-center justify-center shadow-inner">
-                        <User className="w-10 h-10 stroke-[1.5] text-[#9A8CC3]" />
+                    <div className="flex flex-col items-center justify-center gap-3 text-[#8C849B] p-6 text-center">
+                      <div className="w-20 h-20 rounded-3xl bg-[#F8F7FA] border border-[#DDD7E5] flex items-center justify-center shadow-inner">
+                        <User className="w-10 h-10 stroke-[1.5] text-[#8C849B]" />
                       </div>
-                      <label className="inline-flex items-center gap-1.5 text-xs font-medium text-[#B2A4D7] hover:underline cursor-pointer">
+                      <Link
+                        href="/profile/edit"
+                        className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#6555B8] hover:underline"
+                      >
                         <Camera className="w-3.5 h-3.5" />
                         <span>Upload Profile Photo</span>
-                        <input type="file" accept="image/*" className="hidden" onChange={() => alert('Photo upload bucket integration next')} />
-                      </label>
+                      </Link>
                     </div>
                   )}
 
-                  {/* Story Dashes - only visible when more than 1 photo exists */}
+                  {/* Story Dashes */}
                   {hasMultiple && (
-                    <div className="absolute top-2.5 left-3 right-3 flex items-center gap-1.5 z-20 pointer-events-none">
+                    <div className="absolute top-3 left-3 right-3 flex items-center gap-1.5 z-20 pointer-events-none">
                       {photoList.map((_, idx) => (
                         <div
                           key={idx}
                           className={'h-1 flex-1 rounded-full transition-all duration-300 ' + (
                             idx === currentPhotoIdx
                               ? 'bg-white shadow-[0_0_6px_rgba(255,255,255,0.7)]'
-                              : 'bg-white/30 backdrop-blur-sm'
+                              : 'bg-white/40 backdrop-blur-sm'
                           )}
                         />
                       ))}
@@ -498,10 +476,16 @@ export default function MyProfilePage() {
                     setIsEditing(true);
                   }
                 }}
-                className="flex-1 py-2.5 rounded-xl bg-[#6555B8] hover:bg-[#7D4B9F] text-xs font-bold text-white flex items-center justify-center gap-1.5 transition active:scale-95 shadow-lg shadow-[#6555B8]/40"
+                className="flex-1 py-2.5 rounded-xl bg-[#6555B8] hover:bg-[#52449e] text-xs font-bold text-white flex items-center justify-center gap-1.5 transition active:scale-95 shadow-md shadow-[#6555B8]/20"
               >
-                {isEditing ? <Save className="w-3.5 h-3.5" /> : <Edit3 className="w-3.5 h-3.5" />}
-                <span>{isEditing ? 'Save All Changes' : 'Edit Profile'}</span>
+                {saving ? (
+                  <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                ) : isEditing ? (
+                  <Save className="w-3.5 h-3.5" />
+                ) : (
+                  <Edit3 className="w-3.5 h-3.5" />
+                )}
+                <span>{saving ? 'Saving...' : isEditing ? 'Save All Changes' : 'Edit Profile'}</span>
               </button>
 
               {isEditing ? (
@@ -511,7 +495,7 @@ export default function MyProfilePage() {
                     setIsEditing(false);
                     setOpenDropdown(null);
                   }}
-                  className="px-4 py-2.5 rounded-xl bg-[#F3EFFC] border border-[#9A8CC3]/35 hover:bg-[#3B1E42] text-xs font-medium text-[#B2A4D7] hover:text-[#1C1924] flex items-center gap-1 transition"
+                  className="px-4 py-2.5 rounded-xl bg-white border border-[#DDD7E5] hover:bg-[#F8F7FA] text-xs font-medium text-[#6C637B] flex items-center gap-1 transition"
                 >
                   <X className="w-3.5 h-3.5" />
                   <span>Cancel</span>
@@ -519,7 +503,7 @@ export default function MyProfilePage() {
               ) : (
                 <Link
                   href="/settings"
-                  className="px-4 py-2.5 rounded-xl bg-[#F3EFFC] border border-[#9A8CC3]/35 hover:bg-[#3B1E42] text-xs font-medium text-[#B2A4D7] hover:text-[#1C1924] flex items-center gap-1 transition"
+                  className="px-4 py-2.5 rounded-xl bg-white border border-[#DDD7E5] hover:bg-[#F8F7FA] text-xs font-medium text-[#6C637B] flex items-center gap-1 transition"
                 >
                   <Settings className="w-3.5 h-3.5" />
                   <span>Settings</span>
@@ -527,23 +511,61 @@ export default function MyProfilePage() {
               )}
             </div>
 
+            {saveSuccess && (
+              <div className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs font-medium text-emerald-700 flex items-center justify-center gap-1.5 animate-fade-in">
+                <Check className="w-4 h-4 text-emerald-600" />
+                <span>Profile updated successfully!</span>
+              </div>
+            )}
+
           </div>
 
-          {/* Right Column */}
+          {/* Right Column: Verification CTA, About Me & Vitals */}
           <div className="md:col-span-7 space-y-4">
             
+            {/* Identity Verification Prompt Card */}
+            {verificationStatus === 'unverified' && (
+              <div className="p-5 rounded-3xl bg-gradient-to-br from-white via-white to-[#F3EFFC] border border-[#DDD7E5] shadow-xs flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div className="space-y-1">
+                  <div className="flex items-center gap-2">
+                    <ShieldCheck className="w-5 h-5 text-[#6555B8]" />
+                    <h2 className="text-sm font-bold text-[#1C1924]">Get Profile Verified</h2>
+                  </div>
+                  <p className="text-xs text-[#6C637B] leading-relaxed">
+                    Complete a quick 5-second gesture selfie to verify your profile and earn the verified trust badge.
+                  </p>
+                </div>
+                <Link
+                  href="/verify"
+                  className="px-4 py-2.5 rounded-xl bg-[#6555B8] hover:bg-[#52449e] text-xs font-bold text-white text-center whitespace-nowrap transition active:scale-95 shadow-md shadow-[#6555B8]/20"
+                >
+                  Start Verification
+                </Link>
+              </div>
+            )}
+
+            {verificationStatus === 'pending' && (
+              <div className="p-4 rounded-3xl bg-amber-50/70 border border-amber-200/80 shadow-xs flex items-center gap-3">
+                <Clock className="w-5 h-5 text-amber-600 shrink-0" />
+                <div className="text-xs">
+                  <span className="font-bold text-amber-900 block">Verification In Review</span>
+                  <span className="text-amber-800/80">Our moderation team is reviewing your gesture photo. You will be notified once approved.</span>
+                </div>
+              </div>
+            )}
+
             {/* Top Preview/Edit Status Banner */}
-            <div className="p-4 sm:p-5 rounded-3xl bg-white border border-[#E5E1EC] shadow-sm space-y-1">
+            <div className="p-4 sm:p-5 rounded-3xl bg-white border border-[#E5E1EC] shadow-xs space-y-1">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-bold text-[#1C1924] uppercase tracking-wider flex items-center gap-2">
-                  <Edit3 className="w-4 h-4 text-[#9A8CC3]" />
+                  <Edit3 className="w-4 h-4 text-[#6555B8]" />
                   {isEditing ? 'Editing Your Profile' : 'Public Profile Preview'}
                 </span>
-                <span className="text-xs text-[#6B627A]">
+                <span className="text-xs text-[#6C637B]">
                   {isEditing ? 'Remember to save changes' : 'Visible to verified members'}
                 </span>
               </div>
-              <p className="text-xs text-[#6B627A] pt-0.5">
+              <p className="text-xs text-[#6C637B] pt-0.5">
                 {isEditing 
                   ? 'Update your bio, preferences, and vitals below.' 
                   : 'This is the exact view verified singles see when viewing your profile.'}
@@ -551,8 +573,8 @@ export default function MyProfilePage() {
             </div>
 
             {/* ABOUT ME */}
-            <div className="p-5 sm:p-6 rounded-3xl bg-white border border-[#E5E1EC] shadow-sm space-y-2">
-              <h3 className="text-xs font-bold text-[#6555B8] uppercase tracking-wider font-bold">ABOUT ME</h3>
+            <div className="p-5 sm:p-6 rounded-3xl bg-white border border-[#E5E1EC] shadow-xs space-y-2">
+              <h3 className="text-xs font-bold text-[#6555B8] uppercase tracking-wider">ABOUT ME</h3>
               {isEditing ? (
                 <textarea
                   value={bio}
@@ -568,8 +590,8 @@ export default function MyProfilePage() {
             </div>
 
             {/* WHAT I'M LOOKING FOR */}
-            <div className="p-5 sm:p-6 rounded-3xl bg-white border border-[#E5E1EC] shadow-sm space-y-2">
-              <h3 className="text-xs font-bold text-[#6555B8] uppercase tracking-wider font-bold">WHAT I'M LOOKING FOR</h3>
+            <div className="p-5 sm:p-6 rounded-3xl bg-white border border-[#E5E1EC] shadow-xs space-y-2">
+              <h3 className="text-xs font-bold text-[#6555B8] uppercase tracking-wider">LOOKING FOR</h3>
               {isEditing ? (
                 <textarea
                   value={lookingFor}
@@ -584,194 +606,286 @@ export default function MyProfilePage() {
               )}
             </div>
 
-{/* SLEEK COMPACT VITALS */}
-              <div className="p-5 sm:p-6 rounded-3xl bg-white border border-[#E5E1EC] shadow-sm space-y-5">
-                <div className="flex items-center justify-between border-b border-[#9A8CC3]/20 pb-3">
-                  <h3 className="text-xs font-bold text-[#6555B8] uppercase tracking-wider font-bold">VITALS & TRAITS</h3>
-                  
+            {/* VITALS & VALUES GRID */}
+            <div className="p-5 sm:p-6 rounded-3xl bg-white border border-[#E5E1EC] shadow-xs space-y-4">
+              <h3 className="text-xs font-bold text-[#6555B8] uppercase tracking-wider">VITALS & INTENTIONS</h3>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                
+                {/* Intentions */}
+                <div className="p-3 rounded-2xl bg-[#FAFAFC] border border-[#E5E1EC]">
+                  <span className="text-[10px] font-bold text-[#8C849B] uppercase tracking-wider flex items-center gap-1.5">
+                    <Heart className="w-3.5 h-3.5 text-[#6555B8]" />
+                    Relationship Intent
+                  </span>
+                  {isEditing ? (
+                    <select
+                      value={intent}
+                      onChange={(e) => setIntent(e.target.value)}
+                      className="w-full mt-1.5 p-2 rounded-xl bg-white border border-[#DDD7E5] text-xs font-semibold text-[#1C1924]"
+                    >
+                      {INTENT_OPTIONS.map((opt) => (
+                        <option key={opt} value={opt}>{opt}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <p className="text-xs font-semibold text-[#1C1924] mt-1">{intent}</p>
+                  )}
                 </div>
 
-                {isEditing ? (
-                  /* Edit Mode */
-                  <div className="space-y-4">
-                    <div>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-[#B2A4D7] mb-2">Basics</p>
-                      <div className="flex flex-wrap items-center gap-2">
-                        <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-[#F3EFFC] border border-[#E2DAEF] text-xs">
-                          <Briefcase className="w-3.5 h-3.5 text-[#9A8CC3] shrink-0" />
-                          <span className="text-[#9A8CC3] font-medium">Work:</span>
-                          <input
-                            type="text"
-                            value={profession}
-                            onChange={(e) => setProfession(e.target.value)}
-                            placeholder="Profession"
-                            className="bg-transparent text-[#1C1924] font-semibold text-xs focus:outline-none w-28"
-                          />
-                        </div>
-                        {renderDropdownPill('Height', height, HEIGHT_OPTIONS, setHeight, 'height', Ruler, true)}
-                        <div className="w-full space-y-2 pt-1">
-                        <div className="flex items-center gap-1.5 text-xs text-[#9A8CC3]">
-                          <Languages className="w-3.5 h-3.5 shrink-0" />
-                          <span className="font-semibold text-[#1C1924]">Languages Spoken</span>
-                          <span className="text-[10px] text-[#B2A4D7]">(Type & press Enter or tap suggestions)</span>
-                        </div>
-                        <div className="flex flex-wrap items-center gap-1.5 p-2 rounded-2xl bg-[#F3EFFC] border border-[#9A8CC3]/35 min-h-[42px]">
-                          {currentLanguages.map((lang: string) => (
-                            <span
-                              key={lang}
-                              className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#6555B8]/40 border border-[#9A8CC3]/50 text-xs font-medium text-white shadow-sm"
-                            >
-                              {lang}
-                              <button
-                                type="button"
-                                onClick={() => handleRemoveLanguage(lang)}
-                                className="text-[#B2A4D7] hover:text-[#1C1924] transition"
-                              >
-                                <X className="w-3 h-3" />
-                              </button>
-                            </span>
-                          ))}
-                          <input
-                            type="text"
-                            value={langInput}
-                            onChange={(e) => setLangInput(e.target.value)}
-                            onKeyDown={handleLangKeyDown}
-                            placeholder={currentLanguages.length === 0 ? "e.g. English, Tagalog..." : "Add more..."}
-                            className="bg-transparent text-xs text-[#1C1924] placeholder-[#756D82] focus:outline-none flex-1 min-w-[110px] px-1 py-0.5"
-                          />
-                        </div>
-                        <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
-                          <span className="text-[10px] text-[#9A8CC3] font-semibold uppercase">Popular:</span>
-                          {QUICK_LANGUAGES.filter((ql: string) => !currentLanguages.some((cl: string) => cl.toLowerCase() === ql.toLowerCase())).slice(0, 5).map((ql: string) => (
-                            <button
-                              key={ql}
-                              type="button"
-                              onClick={() => handleAddLanguage(ql)}
-                              className="text-[11px] px-2 py-0.5 rounded-full bg-[#F3EFFC] hover:bg-[#EAE6F2] border border-[#9A8CC3]/25 text-[#B2A4D7] transition"
-                            >
-                              + {ql}
-                            </button>
-                          ))}
-                        </div>
-                      </div>
-                      </div>
-                    </div>
+                {/* Profession */}
+                <div className="p-3 rounded-2xl bg-[#FAFAFC] border border-[#E5E1EC]">
+                  <span className="text-[10px] font-bold text-[#8C849B] uppercase tracking-wider flex items-center gap-1.5">
+                    <Briefcase className="w-3.5 h-3.5 text-[#6555B8]" />
+                    Occupation
+                  </span>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      value={profession}
+                      onChange={(e) => setProfession(e.target.value)}
+                      className="w-full mt-1.5 p-2 rounded-xl bg-white border border-[#DDD7E5] text-xs font-semibold text-[#1C1924]"
+                    />
+                  ) : (
+                    <p className="text-xs font-semibold text-[#1C1924] mt-1">{profession}</p>
+                  )}
+                </div>
 
-                    <div>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-[#B2A4D7] mb-2">Relationship Goals</p>
-                      <div className="flex flex-wrap items-center gap-2">
-                        {renderDropdownPill('Intent', intent, INTENT_OPTIONS, setIntent, 'intent', Heart)}
-                        {renderDropdownPill('Relocation', relocation, RELOCATION_OPTIONS, setRelocation, 'relocation', Globe)}
-                        {renderDropdownPill('Status', maritalStatus, MARITAL_OPTIONS, setMaritalStatus, 'maritalStatus', HeartHandshake)}
-                        {renderDropdownPill('Has Kids', hasKids, HAS_KIDS_OPTIONS, setHasKids, 'hasKids', Baby)}
-                        {renderDropdownPill('Wants Kids', wantsKids, WANTS_KIDS_OPTIONS, setWantsKids, 'wantsKids', Baby)}
-                      </div>
-                    </div>
+                {/* Religion */}
+                <div className="p-3 rounded-2xl bg-[#FAFAFC] border border-[#E5E1EC]">
+                  <span className="text-[10px] font-bold text-[#8C849B] uppercase tracking-wider flex items-center gap-1.5">
+                    <Flower2 className="w-3.5 h-3.5 text-[#6555B8]" />
+                    Beliefs / Religion
+                  </span>
+                  {isEditing ? (
+                    <select
+                      value={religion}
+                      onChange={(e) => setReligion(e.target.value)}
+                      className="w-full mt-1.5 p-2 rounded-xl bg-white border border-[#DDD7E5] text-xs font-semibold text-[#1C1924]"
+                    >
+                      {RELIGION_OPTIONS.map((opt) => (
+                        <option key={opt} value={opt}>{opt}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <p className="text-xs font-semibold text-[#1C1924] mt-1">{religion}</p>
+                  )}
+                </div>
 
-                    <div>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-[#B2A4D7] mb-2">Lifestyle</p>
-                      <div className="flex flex-wrap items-center gap-2">
-                        {renderDropdownPill('Faith', religion, RELIGION_OPTIONS, setReligion, 'religion', Flower2)}
-                        {renderDropdownPill('Drinks', drinking, DRINKING_OPTIONS, setDrinking, 'drinking', Wine)}
-                        {renderDropdownPill('Smokes', smoking, SMOKING_OPTIONS, setSmoking, 'smoking', Cigarette)}
-                      </div>
-                    </div>
-                  </div>
-                ) : (
-                  /* View Mode: Clean inline items without pill borders */
-                  <div className="space-y-4">
-                    <div>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-[#B2A4D7] mb-2.5">Basics</p>
-                      <div className="flex flex-wrap items-center gap-x-4 sm:gap-x-6 gap-y-2 sm:gap-y-2.5 text-xs">
-                        <div className="flex items-center gap-1.5">
-                          <Briefcase className="w-3.5 h-3.5 text-[#9A8CC3] shrink-0" />
-                          <span className="text-[#9A8CC3] font-medium">Work:</span>
-                          <span className="text-[#1C1924] font-medium">{profession || 'Not set'}</span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <Ruler className="w-3.5 h-3.5 text-[#9A8CC3] shrink-0" />
-                          <span className="text-[#9A8CC3] font-medium">Height:</span>
-                          <span className="text-[#1C1924] font-medium">{height || 'Not set'}</span>
-                        </div>
-                        <div className="w-full flex items-center gap-2 flex-wrap pt-1">
-                          <div className="flex items-center gap-1.5 text-[#9A8CC3] font-medium">
-                            <Languages className="w-3.5 h-3.5 shrink-0" />
-                            <span>Languages:</span>
-                          </div>
-                          {currentLanguages.length > 0 ? (
-                            <div className="flex flex-wrap items-center gap-1.5">
-                              {currentLanguages.map((l: string) => (
-                                <span key={l} className="px-2.5 py-0.5 rounded-md bg-white/[0.05] border border-[#E2DAEF] text-xs font-normal text-[#1C1924]">
-                                  {l}
-                                </span>
-                              ))}
-                            </div>
-                          ) : (
-                            <span className="text-[#9A8CC3]">Not set</span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
+                {/* Marital Status */}
+                <div className="p-3 rounded-2xl bg-[#FAFAFC] border border-[#E5E1EC]">
+                  <span className="text-[10px] font-bold text-[#8C849B] uppercase tracking-wider flex items-center gap-1.5">
+                    <HeartHandshake className="w-3.5 h-3.5 text-[#6555B8]" />
+                    Marital Status
+                  </span>
+                  {isEditing ? (
+                    <select
+                      value={maritalStatus}
+                      onChange={(e) => setMaritalStatus(e.target.value)}
+                      className="w-full mt-1.5 p-2 rounded-xl bg-white border border-[#DDD7E5] text-xs font-semibold text-[#1C1924]"
+                    >
+                      {MARITAL_OPTIONS.map((opt) => (
+                        <option key={opt} value={opt}>{opt}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <p className="text-xs font-semibold text-[#1C1924] mt-1">{maritalStatus}</p>
+                  )}
+                </div>
 
-                    <div>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-[#B2A4D7] mb-2.5">Relationship Goals</p>
-                      <div className="flex flex-wrap items-center gap-x-6 gap-y-2.5 text-xs">
-                        <div className="flex items-center gap-1.5">
-                          <Heart className="w-3.5 h-3.5 text-[#B2A4D7] shrink-0" />
-                          <span className="text-[#9A8CC3] font-medium">Intent:</span>
-                          <span className="text-[#1C1924] font-medium">{intent || 'Not set'}</span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <Globe className="w-3.5 h-3.5 text-[#9A8CC3] shrink-0" />
-                          <span className="text-[#9A8CC3] font-medium">Relocation:</span>
-                          <span className="text-[#1C1924] font-medium">{relocation || 'Not set'}</span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <HeartHandshake className="w-3.5 h-3.5 text-[#9A8CC3] shrink-0" />
-                          <span className="text-[#9A8CC3] font-medium">Status:</span>
-                          <span className="text-[#1C1924] font-medium">{maritalStatus || 'Not set'}</span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <Baby className="w-3.5 h-3.5 text-[#9A8CC3] shrink-0" />
-                          <span className="text-[#9A8CC3] font-medium">Has Kids:</span>
-                          <span className="text-[#1C1924] font-medium">{hasKids || 'Not set'}</span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <Baby className="w-3.5 h-3.5 text-[#9A8CC3] shrink-0" />
-                          <span className="text-[#9A8CC3] font-medium">Wants Kids:</span>
-                          <span className="text-[#1C1924] font-medium">{wantsKids || 'Not set'}</span>
-                        </div>
-                      </div>
+                {/* Kids Status */}
+                <div className="p-3 rounded-2xl bg-[#FAFAFC] border border-[#E5E1EC]">
+                  <span className="text-[10px] font-bold text-[#8C849B] uppercase tracking-wider flex items-center gap-1.5">
+                    <Baby className="w-3.5 h-3.5 text-[#6555B8]" />
+                    Children
+                  </span>
+                  {isEditing ? (
+                    <div className="grid grid-cols-2 gap-1.5 mt-1.5">
+                      <select
+                        value={hasKids}
+                        onChange={(e) => setHasKids(e.target.value)}
+                        className="p-1.5 rounded-lg bg-white border border-[#DDD7E5] text-[11px] font-semibold text-[#1C1924]"
+                      >
+                        {HAS_KIDS_OPTIONS.map((opt) => (
+                          <option key={opt} value={opt}>Has: {opt}</option>
+                        ))}
+                      </select>
+                      <select
+                        value={wantsKids}
+                        onChange={(e) => setWantsKids(e.target.value)}
+                        className="p-1.5 rounded-lg bg-white border border-[#DDD7E5] text-[11px] font-semibold text-[#1C1924]"
+                      >
+                        {WANTS_KIDS_OPTIONS.map((opt) => (
+                          <option key={opt} value={opt}>Wants: {opt}</option>
+                        ))}
+                      </select>
                     </div>
+                  ) : (
+                    <p className="text-xs font-semibold text-[#1C1924] mt-1">Has {hasKids} • Wants {wantsKids}</p>
+                  )}
+                </div>
 
-                    <div>
-                      <p className="text-[10px] font-bold uppercase tracking-widest text-[#B2A4D7] mb-2.5">Lifestyle</p>
-                      <div className="flex flex-wrap items-center gap-x-6 gap-y-2.5 text-xs">
-                        <div className="flex items-center gap-1.5">
-                          <Flower2 className="w-3.5 h-3.5 text-[#9A8CC3] shrink-0" />
-                          <span className="text-[#9A8CC3] font-medium">Faith:</span>
-                          <span className="text-[#1C1924] font-medium">{religion || 'Not set'}</span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <Wine className="w-3.5 h-3.5 text-[#9A8CC3] shrink-0" />
-                          <span className="text-[#9A8CC3] font-medium">Drinks:</span>
-                          <span className="text-[#1C1924] font-medium">{drinking || 'Not set'}</span>
-                        </div>
-                        <div className="flex items-center gap-1.5">
-                          <Cigarette className="w-3.5 h-3.5 text-[#9A8CC3] shrink-0" />
-                          <span className="text-[#9A8CC3] font-medium">Smokes:</span>
-                          <span className="text-[#1C1924] font-medium">{smoking || 'Not set'}</span>
-                        </div>
-                      </div>
+                {/* Relocation */}
+                <div className="p-3 rounded-2xl bg-[#FAFAFC] border border-[#E5E1EC]">
+                  <span className="text-[10px] font-bold text-[#8C849B] uppercase tracking-wider flex items-center gap-1.5">
+                    <Globe className="w-3.5 h-3.5 text-[#6555B8]" />
+                    Relocation Willingness
+                  </span>
+                  {isEditing ? (
+                    <select
+                      value={relocation}
+                      onChange={(e) => setRelocation(e.target.value)}
+                      className="w-full mt-1.5 p-2 rounded-xl bg-white border border-[#DDD7E5] text-xs font-semibold text-[#1C1924]"
+                    >
+                      {RELOCATION_OPTIONS.map((opt) => (
+                        <option key={opt} value={opt}>{opt}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <p className="text-xs font-semibold text-[#1C1924] mt-1">{relocation}</p>
+                  )}
+                </div>
+
+                {/* Height */}
+                <div className="p-3 rounded-2xl bg-[#FAFAFC] border border-[#E5E1EC]">
+                  <span className="text-[10px] font-bold text-[#8C849B] uppercase tracking-wider flex items-center gap-1.5">
+                    <Ruler className="w-3.5 h-3.5 text-[#6555B8]" />
+                    Height
+                  </span>
+                  {isEditing ? (
+                    <select
+                      value={height}
+                      onChange={(e) => setHeight(e.target.value)}
+                      className="w-full mt-1.5 p-2 rounded-xl bg-white border border-[#DDD7E5] text-xs font-semibold text-[#1C1924]"
+                    >
+                      {HEIGHT_OPTIONS.map((opt) => (
+                        <option key={opt} value={opt}>{opt}</option>
+                      ))}
+                    </select>
+                  ) : (
+                    <p className="text-xs font-semibold text-[#1C1924] mt-1">{height}</p>
+                  )}
+                </div>
+
+                {/* Habits: Drinking & Smoking */}
+                <div className="p-3 rounded-2xl bg-[#FAFAFC] border border-[#E5E1EC]">
+                  <span className="text-[10px] font-bold text-[#8C849B] uppercase tracking-wider flex items-center gap-1.5">
+                    <Wine className="w-3.5 h-3.5 text-[#6555B8]" />
+                    Habits (Drink / Smoke)
+                  </span>
+                  {isEditing ? (
+                    <div className="grid grid-cols-2 gap-1.5 mt-1.5">
+                      <select
+                        value={drinking}
+                        onChange={(e) => setDrinking(e.target.value)}
+                        className="p-1.5 rounded-lg bg-white border border-[#DDD7E5] text-[11px] font-semibold text-[#1C1924]"
+                      >
+                        {DRINKING_OPTIONS.map((opt) => (
+                          <option key={opt} value={opt}>Drink: {opt}</option>
+                        ))}
+                      </select>
+                      <select
+                        value={smoking}
+                        onChange={(e) => setSmoking(e.target.value)}
+                        className="p-1.5 rounded-lg bg-white border border-[#DDD7E5] text-[11px] font-semibold text-[#1C1924]"
+                      >
+                        {SMOKING_OPTIONS.map((opt) => (
+                          <option key={opt} value={opt}>Smoke: {opt}</option>
+                        ))}
+                      </select>
                     </div>
-                  </div>
-                )}
+                  ) : (
+                    <p className="text-xs font-semibold text-[#1C1924] mt-1">Drink: {drinking} • Smoke: {smoking}</p>
+                  )}
+                </div>
+
               </div>
             </div>
+
+            {/* LANGUAGES SPOKEN */}
+            <div className="p-5 sm:p-6 rounded-3xl bg-white border border-[#E5E1EC] shadow-xs space-y-3">
+              <h3 className="text-xs font-bold text-[#6555B8] uppercase tracking-wider flex items-center gap-1.5">
+                <Languages className="w-4 h-4 text-[#6555B8]" />
+                Languages Spoken
+              </h3>
+
+              {isEditing ? (
+                <div className="space-y-3">
+                  <div className="flex flex-wrap gap-1.5">
+                    {currentLanguages.map((lang) => (
+                      <span
+                        key={lang}
+                        className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#F3EFFC] border border-[#DDD7E5] text-xs font-semibold text-[#6555B8]"
+                      >
+                        {lang}
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveLanguage(lang)}
+                          className="hover:text-rose-600 transition"
+                        >
+                          <X className="w-3 h-3" />
+                        </button>
+                      </span>
+                    ))}
+                  </div>
+
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="Add language (press Enter)"
+                      value={langInput}
+                      onChange={(e) => setLangInput(e.target.value)}
+                      onKeyDown={handleLangKeyDown}
+                      className="flex-1 p-2.5 rounded-xl bg-[#FAFAFC] border border-[#DDD7E5] text-xs font-semibold text-[#1C1924] focus:outline-none focus:border-[#6555B8]"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => handleAddLanguage(langInput)}
+                      className="px-4 py-2.5 rounded-xl bg-[#6555B8] text-white text-xs font-bold hover:bg-[#52449e] transition"
+                    >
+                      Add
+                    </button>
+                  </div>
+
+                  <div className="flex flex-wrap gap-1 pt-1">
+                    <span className="text-[10px] font-bold text-[#8C849B] mr-1 uppercase">Quick Add:</span>
+                    {QUICK_LANGUAGES.map((ql) => (
+                      <button
+                        key={ql}
+                        type="button"
+                        onClick={() => handleAddLanguage(ql)}
+                        className="px-2 py-0.5 rounded-lg bg-[#FAFAFC] border border-[#DDD7E5] text-[11px] font-medium text-[#6C637B] hover:border-[#6555B8] hover:text-[#6555B8] transition"
+                      >
+                        + {ql}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-wrap gap-1.5">
+                  {currentLanguages.length > 0 ? (
+                    currentLanguages.map((lang) => (
+                      <span
+                        key={lang}
+                        className="px-3 py-1 rounded-full bg-[#F8F7FA] border border-[#DDD7E5] text-xs font-semibold text-[#1C1924]"
+                      >
+                        {lang}
+                      </span>
+                    ))
+                  ) : (
+                    <span className="text-xs text-[#8C849B]">No languages specified</span>
+                  )}
+                </div>
+              )}
+            </div>
+
           </div>
-      </main>
+
+        </div>
+
+      </div>
 
       <Footer />
-    </div>
+    </main>
   );
 }

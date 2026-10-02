@@ -1,4 +1,6 @@
-'use client';
+﻿'use client';
+
+import { BrandLogo } from '@/components/BrandLogo';
 
 import { notifyUser } from '@/components/InAppToast';
 import { notificationService } from '@/lib/notificationService';
@@ -17,6 +19,7 @@ export function Navbar() {
   const [profile, setProfile] = useState<any>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [hasUnread, setHasUnread] = useState(false);
+  const [hasUnreadMessages, setHasUnreadMessages] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
 
@@ -27,6 +30,16 @@ export function Navbar() {
       .eq('user_id', userId)
       .eq('read', false);
     setHasUnread((count ?? 0) > 0);
+      try {
+        const { count: msgCount } = await supabase
+          .from('messages')
+          .select('*', { count: 'exact', head: true })
+          .eq('receiver_id', userId)
+          .eq('is_read', false);
+        setHasUnreadMessages((msgCount ?? 0) > 0);
+      } catch (e) {
+        // Table fallback if schema varies
+      }
   }
 
   useEffect(() => {
@@ -126,32 +139,30 @@ export function Navbar() {
   const avatarUrl = profile?.avatar_url || user?.user_metadata?.avatar_url || null;
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-[#F3F2F7]/90 backdrop-blur-md border-b border-[#DDD7E5] shadow-[0_1px_4px_rgba(28,25,36,0.03)] transition-all">
+    <header className="sticky top-0 z-50 w-full bg-white/75 backdrop-blur-xl border-b border-[#E8E4EF] shadow-[0_1px_4px_rgba(28,25,36,0.03)] transition-all">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between">
         
         {/* Brand Logo */}
-        <Link 
-          href={user ? "/discover" : "/"} 
-          className="flex items-center active:scale-95 transition-transform py-1"
-        >
-          <span className="inline-flex items-baseline gap-1.5 tracking-tight select-none">
-              <span className="text-2xl sm:text-3xl font-extrabold text-[#1C1924] group-hover:text-[#2D2F4C] transition-colors">
-                asians
-              </span>
-              <span className="text-2xl sm:text-3xl font-semibold text-[#7D4B9F]">
-                in
-              </span>
-              <span className="text-2xl sm:text-3xl font-bold text-[#6555B8]">
-                love
-              </span>
-            </span>
-          </Link>
+        <BrandLogo href={user ? "/discover" : "/"} size="md" />
 
         {/* Action cluster */}
         <div className="flex items-center gap-2.5 sm:gap-3">
           {user ? (
             <>
 
+
+              {/* Messages */}
+                            
+            <Link
+                href="/messages"
+                className="relative h-11 w-11 sm:h-12 sm:w-12 rounded-2xl bg-white hover:bg-[#EAE6F2] border border-[#DDD7E5] flex items-center justify-center text-[#524B5E] hover:text-[#1C1924] transition-all shadow-sm active:scale-95"
+                title="Messages"
+              >
+                <MessageCircle className="w-5 h-5" />
+              {hasUnreadMessages && (
+                <span className="absolute top-2 right-2 h-2 w-2 rounded-full bg-[#6555B8] ring-2 ring-white" />
+              )}
+              </Link>
 
               {/* Notifications */}
               <Link

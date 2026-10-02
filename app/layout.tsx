@@ -1,31 +1,25 @@
-import { Plus_Jakarta_Sans } from 'next/font/google';
-import InAppToast from '@/components/InAppToast';
+﻿import type { Metadata, Viewport } from 'next';
+import { Outfit } from 'next/font/google';
 import './globals.css';
-import { Navbar } from '@/components/Navbar';
-import { BottomNav } from '@/components/BottomNav';
-import { OnboardingGuard } from '@/components/OnboardingGuard';
-import { FavoritesProvider } from '@/lib/favoritesContext';
-import { PwaRegister } from '@/components/PwaRegister';
-import { IosInstallBanner } from '@/components/IosInstallBanner';
-import type { Metadata } from 'next';
 
-export const metadata: Metadata = {
-  manifest: '/manifest.webmanifest',
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: 'black-translucent',
-    title: 'Asians in Love — Serious Courtship & Marriage',
-  },
-  title: 'Asians in Love — Serious Courtship & Marriage',
-  description: 'Verified, intentional relationships connecting Southeast Asian singles with international gentlemen.',
-};
-
-const plusJakarta = Plus_Jakarta_Sans({
+const outfit = Outfit({
   subsets: ['latin'],
-  weight: ['300', '400', '500', '600', '700', '800'],
-  variable: '--font-sans',
+  weight: ['400', '500', '600'],
+  variable: '--font-outfit',
   display: 'swap',
 });
+
+export const metadata: Metadata = {
+  title: 'Asians in Love — Serious Courtship & Marriage',
+  description: 'Serious courtship & marriage platform for intentional singles.',
+};
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  userScalable: false,
+};
 
 export default function RootLayout({
   children,
@@ -33,20 +27,9 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`h-full ${plusJakarta.variable}`}>
+    <html lang="en" className={`h-full ${outfit.variable}`}>
       <body className="font-sans bg-[#FFFFFF] text-[#1C1924] min-h-full overflow-y-auto selection:bg-[#6555B8] selection:text-white pb-24 sm:pb-0">
-        <PwaRegister />
-        <IosInstallBanner />
-        <FavoritesProvider>
-          <OnboardingGuard>
-            <Navbar />
-            <main className="w-full">
-              <InAppToast />
-              {children}
-            </main>
-            <BottomNav />
-          </OnboardingGuard>
-        </FavoritesProvider>
+        {children}
       </body>
     </html>
   );
