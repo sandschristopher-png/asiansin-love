@@ -1,9 +1,8 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
-import { Navbar } from '@/components/Navbar';
 
 
 interface NotificationItem {
@@ -87,7 +86,6 @@ export default function NotificationsPage() {
     <main className="max-w-2xl mx-auto px-4 sm:px-6 py-6 pb-28 space-y-5">
       {/* Header */}
       <div className="flex items-center justify-between">
-      <Navbar />
 
         <div>
           <h1 className="text-xl sm:text-[22px] font-semibold text-[#1C1924] ">

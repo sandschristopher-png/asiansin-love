@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { captureCurrentLocation, formatVerifiedDate } from '@/lib/location';
 
@@ -12,7 +12,6 @@ import {
   Navigation, CheckCircle2, Clock, ShieldAlert 
 } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
-import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 
 export const QUICK_LANGUAGES = ['English', 'Tagalog', 'Thai', 'Japanese', 'Vietnamese', 'Mandarin', 'Spanish', 'Korean'];
@@ -45,16 +44,16 @@ const MARITAL_OPTIONS = ['Never Married', 'Divorced', 'Widowed', 'Separated'];
 const HAS_KIDS_OPTIONS = ['No', 'Yes (Lives with me)', 'Yes (Lives away)'];
 const WANTS_KIDS_OPTIONS = ['Yes', 'Open', 'No'];
 const RELOCATION_OPTIONS = ['Can Relocate', 'Open to Either', 'Cannot Relocate', 'Other'];
-const DRINKING_OPTIONS = ['No', 'Socially', 'Yes'];
-const SMOKING_OPTIONS = ['No', 'Occasionally', 'Yes'];
+const DRINKING_OPTIONS = ['No', 'Sometimes', 'Yes'];
+const SMOKING_OPTIONS = ['No', 'Sometimes', 'Yes'];
 
 const HEIGHT_OPTIONS = [
-  `4'10" (147 cm)`, `4'11" (150 cm)`,
-  `5'0" (152 cm)`, `5'1" (155 cm)`, `5'2" (157 cm)`, `5'3" (160 cm)`,
-  `5'4" (163 cm)`, `5'5" (165 cm)`, `5'6" (168 cm)`, `5'7" (170 cm)`,
-  `5'8" (173 cm)`, `5'9" (175 cm)`, `5'10" (178 cm)`, `5'11" (180 cm)`,
-  `6'0" (183 cm)`, `6'1" (185 cm)`, `6'2" (188 cm)`, `6'3" (191 cm)`,
-  `6'4" (193 cm)`, `6'5" (196 cm)`, `6'6" (198 cm)`, `6'7" (201 cm)`
+  '4ft 10in (147 cm)', '4ft 11in (150 cm)',
+  '5ft 0in (152 cm)', '5ft 1in (155 cm)', '5ft 2in (157 cm)', '5ft 3in (160 cm)',
+  '5ft 4in (163 cm)', '5ft 5in (165 cm)', '5ft 6in (168 cm)', '5ft 7in (170 cm)',
+  '5ft 8in (173 cm)', '5ft 9in (175 cm)', '5ft 10in (178 cm)', '5ft 11in (180 cm)',
+  '6ft 0in (183 cm)', '6ft 1in (185 cm)', '6ft 2in (188 cm)', '6ft 3in (191 cm)',
+  '6ft 4in (193 cm)', '6ft 5in (196 cm)', '6ft 6in (198 cm)', '6ft 7in (201 cm)'
 ];
 
 export default function MyProfilePage() {
@@ -213,7 +212,8 @@ export default function MyProfilePage() {
         wants_kids: wantsKids,
         relocation,
         languages: userLanguages,
-        height,
+          height: height ? height.replace(/(\d+)['\u2019]?\s*(\d+)[\x22\u201D]?\s*\((\d+)\s*cm\)/, '$1ft $2in ($3 cm)') : null,
+
         drinking,
         smoking,
         updated_at: new Date().toISOString()
@@ -245,7 +245,6 @@ export default function MyProfilePage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F8F7FA] text-[#1C1924]">
-      <Navbar />
       <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-6 pb-32 space-y-6">
         {/* Uniform Page Header */}
         <div className="space-y-0.5">
@@ -450,230 +449,284 @@ export default function MyProfilePage() {
               )}
             </div>
 
-            {/* Top Preview/Edit Status Banner */}
-            <div className="p-4 sm:p-5 rounded-3xl bg-white border border-[#E5E1EC] shadow-xs space-y-1">
-              <div className="flex items-center justify-between">
-                <span className="text-xs font-medium text-[#1C1924] uppercase tracking-wider flex items-center gap-2">
-                  <Edit3 className="w-4 h-4 text-[#6555B8]" />
-                  {isEditing ? 'Editing Your Profile' : 'Public Profile Preview'}
-                </span>
-                <span className="text-xs text-[#6C637B]">
-                  {isEditing ? 'Remember to save changes' : 'Visible to verified members'}
-                </span>
-              </div>
-              <p className="text-xs text-[#6C637B] pt-0.5">
-                {isEditing 
-                  ? 'Update your bio, preferences, and vitals below.' 
-                  : 'This is the exact view verified singles see when viewing your profile.'}
-              </p>
-            </div>
-
             {/* ABOUT ME */}
-            <div className="p-5 sm:p-6 rounded-3xl bg-white border border-[#E5E1EC] shadow-xs space-y-2">
-              <h3 className="text-xs font-medium text-[#6555B8] uppercase tracking-wider">ABOUT ME</h3>
+            <div className="p-5 sm:p-6 rounded-3xl bg-white border border-[#E5E1EC] shadow-xs space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold text-[#6555B8] uppercase tracking-wider">About Me</span>
+                {isEditing && (
+                  <span className="text-[11px] font-medium text-[#8C849B]">{bio.length} / 500</span>
+                )}
+              </div>
               {isEditing ? (
-                <textarea
-                  value={bio}
-                  onChange={(e) => setBio(e.target.value)}
-                  rows={3}
-                  className="w-full p-3 rounded-2xl bg-[#FAFAFC] border border-[#E5E1EC] text-xs text-[#1C1924] focus:outline-none focus:border-[#6555B8] focus:bg-white transition-colors"
-                />
+                <div className="relative rounded-2xl bg-[#FBF9FE] border border-[#DDD7E5] focus-within:border-[#6555B8] focus-within:ring-2 focus-within:ring-[#6555B8]/15 transition-all p-3.5">
+                  <textarea
+                    value={bio}
+                    onChange={(e) => setBio(e.target.value.slice(0, 500))}
+                    rows={4}
+                    placeholder="Share your passions, what a normal Sunday looks like, and what makes you laugh..."
+                    className="w-full bg-transparent border-0 text-sm text-[#1C1924] leading-relaxed placeholder-[#8C849B] focus:outline-none resize-none"
+                  />
+                </div>
               ) : (
                 <p className="text-sm text-[#1C1924] leading-relaxed">
-                  {bio}
+                  {bio || <span className="text-[#8C849B] italic">No bio written yet.</span>}
                 </p>
               )}
             </div>
 
             {/* WHAT I'M LOOKING FOR */}
-            <div className="p-5 sm:p-6 rounded-3xl bg-white border border-[#E5E1EC] shadow-xs space-y-2">
-              <h3 className="text-xs font-medium text-[#6555B8] uppercase tracking-wider">LOOKING FOR</h3>
+            <div className="p-5 sm:p-6 rounded-3xl bg-white border border-[#E5E1EC] shadow-xs space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] font-bold text-[#6555B8] uppercase tracking-wider">Looking For</span>
+                {isEditing && (
+                  <span className="text-[11px] font-medium text-[#8C849B]">{lookingFor.length} / 500</span>
+                )}
+              </div>
               {isEditing ? (
-                <textarea
-                  value={lookingFor}
-                  onChange={(e) => setLookingFor(e.target.value)}
-                  rows={3}
-                  className="w-full p-3 rounded-2xl bg-[#FAFAFC] border border-[#E5E1EC] text-xs text-[#1C1924] focus:outline-none focus:border-[#6555B8] focus:bg-white transition-colors"
-                />
+                <div className="relative rounded-2xl bg-[#FBF9FE] border border-[#DDD7E5] focus-within:border-[#6555B8] focus-within:ring-2 focus-within:ring-[#6555B8]/15 transition-all p-3.5">
+                  <textarea
+                    value={lookingFor}
+                    onChange={(e) => setLookingFor(e.target.value.slice(0, 500))}
+                    rows={4}
+                    placeholder="Describe your partner values, communication style, or future goals..."
+                    className="w-full bg-transparent border-0 text-sm text-[#1C1924] leading-relaxed placeholder-[#8C849B] focus:outline-none resize-none"
+                  />
+                </div>
               ) : (
                 <p className="text-sm text-[#1C1924] leading-relaxed">
-                  {lookingFor}
+                  {lookingFor || <span className="text-[#8C849B] italic">No preferences added yet.</span>}
                 </p>
               )}
             </div>
 
-            {/* VITALS & VALUES GRID */}
+            {/* VITALS & VALUES */}
             <div className="p-5 sm:p-6 rounded-3xl bg-white border border-[#E5E1EC] shadow-2xs space-y-5">
-              <h3 className="text-xs font-medium text-[#6555B8] uppercase tracking-wider">
-                Vitals & Intentions
+              <h3 className="text-xs font-bold text-[#6555B8] uppercase tracking-wider">
+                Vitals & Lifestyle
               </h3>
 
-              <div className="grid grid-cols-2 gap-x-6 gap-y-4 pt-1">
+              <div className="space-y-4 pt-1">
                 {/* Intent */}
-                <div className="space-y-1">
-                  <p className="text-[11px] font-semibold text-[#8C849B] uppercase tracking-wider">Relationship Intent</p>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 pb-3 border-b border-[#F0ECF5]">
+                  <span className="text-xs font-semibold text-[#6C637B]">Relationship Intent</span>
                   {isEditing ? (
-                    <select
-                      value={intent}
-                      onChange={(e) => setIntent(e.target.value)}
-                      className="w-full p-1.5 rounded-lg bg-[#F8F7FA] border border-[#DDD7E5] text-xs font-semibold text-[#1C1924]"
-                    >
-                      {INTENT_OPTIONS.map((opt) => (
-                        <option key={opt} value={opt}>{opt}</option>
-                      ))}
-                    </select>
+                    <div className="relative">
+                      <select
+                        value={intent}
+                        onChange={(e) => setIntent(e.target.value)}
+                        className="appearance-none pr-8 pl-3 py-1.5 rounded-xl bg-[#F3EFFC] border border-[#6555B8]/20 text-xs font-semibold text-[#6555B8] focus:outline-none focus:ring-2 focus:ring-[#6555B8]/30 transition cursor-pointer"
+                      >
+                        {INTENT_OPTIONS.map((opt) => (
+                          <option key={opt} value={opt}>{opt}</option>
+                        ))}
+                      </select>
+                      <ChevronDown className="w-3.5 h-3.5 text-[#6555B8] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    </div>
                   ) : (
-                    <p className="text-sm font-normal text-[#1C1924]">{intent || 'Not specified'}</p>
+                    <span className="text-xs font-semibold text-[#1C1924]">{intent || 'Not specified'}</span>
                   )}
                 </div>
 
-                {/* Profession */}
-                <div className="space-y-1">
-                  <p className="text-[11px] font-semibold text-[#8C849B] uppercase tracking-wider">Occupation</p>
+                {/* Occupation */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 pb-3 border-b border-[#F0ECF5]">
+                  <span className="text-xs font-semibold text-[#6C637B]">Occupation</span>
                   {isEditing ? (
                     <input
                       type="text"
                       value={profession}
                       onChange={(e) => setProfession(e.target.value)}
-                      className="w-full p-1.5 rounded-lg bg-[#F8F7FA] border border-[#DDD7E5] text-xs font-semibold text-[#1C1924]"
+                      placeholder="e.g. Software Engineer"
+                      className="px-3 py-1.5 rounded-xl bg-[#F3EFFC] border border-[#6555B8]/20 text-xs font-semibold text-[#1C1924] focus:outline-none focus:ring-2 focus:ring-[#6555B8]/30 transition"
                     />
                   ) : (
-                    <p className="text-sm font-normal text-[#1C1924]">{profession || 'Not specified'}</p>
-                  )}
-                </div>
-
-                {/* Religion */}
-                <div className="space-y-1">
-                  <p className="text-[11px] font-semibold text-[#8C849B] uppercase tracking-wider">Beliefs / Religion</p>
-                  {isEditing ? (
-                    <select
-                      value={religion}
-                      onChange={(e) => setReligion(e.target.value)}
-                      className="w-full p-1.5 rounded-lg bg-[#F8F7FA] border border-[#DDD7E5] text-xs font-semibold text-[#1C1924]"
-                    >
-                      {RELIGION_OPTIONS.map((opt) => (
-                        <option key={opt} value={opt}>{opt}</option>
-                      ))}
-                    </select>
-                  ) : (
-                    <p className="text-sm font-normal text-[#1C1924]">{religion || 'Not specified'}</p>
+                    <span className="text-xs font-semibold text-[#1C1924]">{profession || 'Not specified'}</span>
                   )}
                 </div>
 
                 {/* Marital Status */}
-                <div className="space-y-1">
-                  <p className="text-[11px] font-semibold text-[#8C849B] uppercase tracking-wider">Marital Status</p>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 pb-3 border-b border-[#F0ECF5]">
+                  <span className="text-xs font-semibold text-[#6C637B]">Marital Status</span>
                   {isEditing ? (
-                    <select
-                      value={maritalStatus}
-                      onChange={(e) => setMaritalStatus(e.target.value)}
-                      className="w-full p-1.5 rounded-lg bg-[#F8F7FA] border border-[#DDD7E5] text-xs font-semibold text-[#1C1924]"
-                    >
-                      {MARITAL_OPTIONS.map((opt) => (
-                        <option key={opt} value={opt}>{opt}</option>
-                      ))}
-                    </select>
+                    <div className="relative">
+                      <select
+                        value={maritalStatus}
+                        onChange={(e) => setMaritalStatus(e.target.value)}
+                        className="appearance-none pr-8 pl-3 py-1.5 rounded-xl bg-[#F3EFFC] border border-[#6555B8]/20 text-xs font-semibold text-[#6555B8] focus:outline-none focus:ring-2 focus:ring-[#6555B8]/30 transition cursor-pointer"
+                      >
+                        {MARITAL_OPTIONS.map((opt) => (
+                          <option key={opt} value={opt}>{opt}</option>
+                        ))}
+                      </select>
+                      <ChevronDown className="w-3.5 h-3.5 text-[#6555B8] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    </div>
                   ) : (
-                    <p className="text-sm font-normal text-[#1C1924]">{maritalStatus || 'Not specified'}</p>
+                    <span className="text-xs font-semibold text-[#1C1924]">{maritalStatus || 'Not specified'}</span>
                   )}
                 </div>
 
                 {/* Height */}
-                <div className="space-y-1">
-                  <p className="text-[11px] font-semibold text-[#8C849B] uppercase tracking-wider">Height</p>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 pb-3 border-b border-[#F0ECF5]">
+                  <span className="text-xs font-semibold text-[#6C637B]">Height</span>
                   {isEditing ? (
-                    <select
-                      value={height}
-                      onChange={(e) => setHeight(e.target.value)}
-                      className="w-full p-1.5 rounded-lg bg-[#F8F7FA] border border-[#DDD7E5] text-xs font-semibold text-[#1C1924]"
-                    >
-                      {HEIGHT_OPTIONS.map((opt) => (
-                        <option key={opt} value={opt}>{opt}</option>
-                      ))}
-                    </select>
+                    <div className="relative">
+                      <select
+                        value={height}
+                        onChange={(e) => setHeight(e.target.value)}
+                        className="appearance-none pr-8 pl-3 py-1.5 rounded-xl bg-[#F3EFFC] border border-[#6555B8]/20 text-xs font-semibold text-[#6555B8] focus:outline-none focus:ring-2 focus:ring-[#6555B8]/30 transition cursor-pointer"
+                      >
+                        {HEIGHT_OPTIONS.map((opt) => (
+                          <option key={opt} value={opt}>{opt}</option>
+                        ))}
+                      </select>
+                      <ChevronDown className="w-3.5 h-3.5 text-[#6555B8] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    </div>
                   ) : (
-                    <p className="text-sm font-normal text-[#1C1924]">{height || 'Not specified'}</p>
+                    <span className="text-xs font-semibold text-[#1C1924]">{height || 'Not specified'}</span>
+                  )}
+                </div>
+
+                {/* Religion */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 pb-3 border-b border-[#F0ECF5]">
+                  <span className="text-xs font-semibold text-[#6C637B]">Beliefs</span>
+                  {isEditing ? (
+                    <div className="relative">
+                      <select
+                        value={religion}
+                        onChange={(e) => setReligion(e.target.value)}
+                        className="appearance-none pr-8 pl-3 py-1.5 rounded-xl bg-[#F3EFFC] border border-[#6555B8]/20 text-xs font-semibold text-[#6555B8] focus:outline-none focus:ring-2 focus:ring-[#6555B8]/30 transition cursor-pointer"
+                      >
+                        {RELIGION_OPTIONS.map((opt) => (
+                          <option key={opt} value={opt}>{opt}</option>
+                        ))}
+                      </select>
+                      <ChevronDown className="w-3.5 h-3.5 text-[#6555B8] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    </div>
+                  ) : (
+                    <span className="text-xs font-semibold text-[#1C1924]">{religion || 'Not specified'}</span>
                   )}
                 </div>
 
                 {/* Relocation */}
-                <div className="space-y-1">
-                  <p className="text-[11px] font-semibold text-[#8C849B] uppercase tracking-wider">Relocation</p>
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 pb-3 border-b border-[#F0ECF5]">
+                  <span className="text-xs font-semibold text-[#6C637B]">Relocation</span>
                   {isEditing ? (
-                    <select
-                      value={relocation}
-                      onChange={(e) => setRelocation(e.target.value)}
-                      className="w-full p-1.5 rounded-lg bg-[#F8F7FA] border border-[#DDD7E5] text-xs font-semibold text-[#1C1924]"
-                    >
-                      {RELOCATION_OPTIONS.map((opt) => (
-                        <option key={opt} value={opt}>{opt}</option>
+                    <div className="relative">
+                      <select
+                        value={relocation}
+                        onChange={(e) => setRelocation(e.target.value)}
+                        className="appearance-none pr-8 pl-3 py-1.5 rounded-xl bg-[#F3EFFC] border border-[#6555B8]/20 text-xs font-semibold text-[#6555B8] focus:outline-none focus:ring-2 focus:ring-[#6555B8]/30 transition cursor-pointer"
+                      >
+                        {RELOCATION_OPTIONS.map((opt) => (
+                          <option key={opt} value={opt}>{opt}</option>
+                        ))}
+                      </select>
+                      <ChevronDown className="w-3.5 h-3.5 text-[#6555B8] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    </div>
+                  ) : (
+                    <span className="text-xs font-semibold text-[#1C1924]">{relocation || 'Not specified'}</span>
+                  )}
+                </div>
+
+                {/* Drinks - Segmented Pill (Pairs style) */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[#F0ECF5]">
+                  <span className="text-xs font-semibold text-[#6C637B]">Drinks</span>
+                  {isEditing ? (
+                    <div className="flex items-center gap-1 bg-[#F4F1FA] p-1 rounded-2xl border border-[#DDD7E5]">
+                      {['No', 'Sometimes', 'Yes'].map((choice) => (
+                        <button
+                          key={choice}
+                          type="button"
+                          onClick={() => setDrinking(choice)}
+                          className={`px-3 py-1 rounded-xl text-xs font-semibold transition-all ${
+                            drinking === choice
+                              ? 'bg-[#6555B8] text-white shadow-xs'
+                              : 'text-[#6C637B] hover:text-[#1C1924]'
+                          }`}
+                        >
+                          {choice}
+                        </button>
                       ))}
-                    </select>
+                    </div>
                   ) : (
-                    <p className="text-sm font-normal text-[#1C1924]">{relocation || 'Not specified'}</p>
+                    <span className="text-xs font-semibold text-[#1C1924]">{drinking || 'No'}</span>
                   )}
                 </div>
 
-                {/* Children */}
-                <div className="space-y-1">
-                  <p className="text-[11px] font-semibold text-[#8C849B] uppercase tracking-wider">Children</p>
+                {/* Smokes - Segmented Pill (Pairs style) */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[#F0ECF5]">
+                  <span className="text-xs font-semibold text-[#6C637B]">Smokes</span>
                   {isEditing ? (
-                    <div className="grid grid-cols-2 gap-1.5">
-                      <select
-                        value={hasKids}
-                        onChange={(e) => setHasKids(e.target.value)}
-                        className="p-1 rounded bg-[#F8F7FA] border border-[#DDD7E5] text-[11px] font-semibold text-[#1C1924]"
-                      >
-                        {HAS_KIDS_OPTIONS.map((opt) => (
-                          <option key={opt} value={opt}>Has: {opt}</option>
-                        ))}
-                      </select>
-                      <select
-                        value={wantsKids}
-                        onChange={(e) => setWantsKids(e.target.value)}
-                        className="p-1 rounded bg-[#F8F7FA] border border-[#DDD7E5] text-[11px] font-semibold text-[#1C1924]"
-                      >
-                        {WANTS_KIDS_OPTIONS.map((opt) => (
-                          <option key={opt} value={opt}>Wants: {opt}</option>
-                        ))}
-                      </select>
+                    <div className="flex items-center gap-1 bg-[#F4F1FA] p-1 rounded-2xl border border-[#DDD7E5]">
+                      {['No', 'Sometimes', 'Yes'].map((choice) => (
+                        <button
+                          key={choice}
+                          type="button"
+                          onClick={() => setSmoking(choice)}
+                          className={`px-3 py-1 rounded-xl text-xs font-semibold transition-all ${
+                            smoking === choice
+                              ? 'bg-[#6555B8] text-white shadow-xs'
+                              : 'text-[#6C637B] hover:text-[#1C1924]'
+                          }`}
+                        >
+                          {choice}
+                        </button>
+                      ))}
                     </div>
                   ) : (
-                    <p className="text-sm font-normal text-[#1C1924]">
-                      {hasKids?.toLowerCase().includes('yes') ? 'Has children' : 'No children'} Â· {wantsKids?.toLowerCase().includes('yes') ? 'Wants kids' : "Doesn't want"}
-                    </p>
+                    <span className="text-xs font-semibold text-[#1C1924]">{smoking || 'No'}</span>
                   )}
                 </div>
 
-                {/* Habits */}
-                <div className="space-y-1">
-                  <p className="text-[11px] font-semibold text-[#8C849B] uppercase tracking-wider">Habits</p>
+                {/* Has Children - Segmented Pill */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[#F0ECF5]">
+                  <span className="text-xs font-semibold text-[#6C637B]">Has Children</span>
                   {isEditing ? (
-                    <div className="grid grid-cols-2 gap-1.5">
-                      <select
-                        value={drinking}
-                        onChange={(e) => setDrinking(e.target.value)}
-                        className="p-1 rounded bg-[#F8F7FA] border border-[#DDD7E5] text-[11px] font-semibold text-[#1C1924]"
-                      >
-                        {DRINKING_OPTIONS.map((opt) => (
-                          <option key={opt} value={opt}>Drink: {opt}</option>
-                        ))}
-                      </select>
-                      <select
-                        value={smoking}
-                        onChange={(e) => setSmoking(e.target.value)}
-                        className="p-1 rounded bg-[#F8F7FA] border border-[#DDD7E5] text-[11px] font-semibold text-[#1C1924]"
-                      >
-                        {SMOKING_OPTIONS.map((opt) => (
-                          <option key={opt} value={opt}>Smoke: {opt}</option>
-                        ))}
-                      </select>
+                    <div className="flex items-center gap-1 bg-[#F4F1FA] p-1 rounded-2xl border border-[#DDD7E5]">
+                      {['No', 'Yes'].map((choice) => {
+                        const isMatch = choice === 'No' ? hasKids === 'No' : hasKids?.toLowerCase().includes('yes');
+                        return (
+                          <button
+                            key={choice}
+                            type="button"
+                            onClick={() => setHasKids(choice === 'No' ? 'No' : 'Yes (Lives with me)')}
+                            className={`px-3 py-1 rounded-xl text-xs font-semibold transition-all ${
+                              isMatch
+                                ? 'bg-[#6555B8] text-white shadow-xs'
+                                : 'text-[#6C637B] hover:text-[#1C1924]'
+                            }`}
+                          >
+                            {choice}
+                          </button>
+                        );
+                      })}
                     </div>
                   ) : (
-                    <div className="text-sm font-normal text-[#1C1924] space-y-0.5">
-                        <p>Drink: {drinking || 'No'}</p>
-                        <p>Smoke: {smoking || 'No'}</p>
-                      </div>
+                    <span className="text-xs font-semibold text-[#1C1924]">{hasKids || 'No'}</span>
+                  )}
+                </div>
+
+                {/* Wants Children - Segmented Pill */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                  <span className="text-xs font-semibold text-[#6C637B]">Wants Children</span>
+                  {isEditing ? (
+                    <div className="flex items-center gap-1 bg-[#F4F1FA] p-1 rounded-2xl border border-[#DDD7E5]">
+                      {['Yes', 'Open', 'No'].map((choice) => (
+                        <button
+                          key={choice}
+                          type="button"
+                          onClick={() => setWantsKids(choice)}
+                          className={`px-3 py-1 rounded-xl text-xs font-semibold transition-all ${
+                            wantsKids === choice
+                              ? 'bg-[#6555B8] text-white shadow-xs'
+                              : 'text-[#6C637B] hover:text-[#1C1924]'
+                          }`}
+                        >
+                          {choice}
+                        </button>
+                      ))}
+                    </div>
+                  ) : (
+                    <span className="text-xs font-semibold text-[#1C1924]">{wantsKids || 'Open'}</span>
                   )}
                 </div>
               </div>
