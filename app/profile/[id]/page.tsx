@@ -9,6 +9,8 @@ import {
   Bookmark, User, Sparkles, HeartHandshake, Baby, Ruler, Wine, Cigarette
 } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
+import { Navbar } from '@/components/Navbar';
+
 
 export default function PublicProfilePage() {
   const params = useParams();
@@ -107,6 +109,8 @@ export default function PublicProfilePage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#F8F7FA] flex items-center justify-center p-6">
+      <Navbar />
+
         <div className="w-8 h-8 rounded-full border-2 border-[#6555b8] border-t-transparent animate-spin" />
       </div>
     );

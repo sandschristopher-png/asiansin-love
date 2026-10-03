@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import Link from 'next/link';
 
 interface BrandLogoProps {
@@ -9,15 +9,15 @@ interface BrandLogoProps {
 
 export function BrandLogo({ href, size = 'md', className = '' }: BrandLogoProps) {
   const sizeClasses = {
-    sm: 'text-[20px] sm:text-[24px] md:text-[26px]',
-    md: 'text-[22px] sm:text-[30px] md:text-[36px]',
-    lg: 'text-[28px] sm:text-[36px] md:text-[44px]',
+    sm: 'text-[15px] sm:text-[16px]',
+    md: 'text-[17px] sm:text-[18px]',
+    lg: 'text-[22px] sm:text-[26px]',
   }[size];
 
   const content = (
     <span
-      className={`inline-flex items-baseline select-none lowercase whitespace-nowrap leading-none tracking-[-0.035em] text-[#1C1924] ${sizeClasses} ${className}`}
-      style={{ fontFamily: "'Outfit', sans-serif", fontWeight: 500 }}
+      className={`inline-flex items-baseline select-none lowercase whitespace-nowrap leading-none tracking-[-0.035em] text-[#4C3B75] ${sizeClasses} ${className}`}
+      style={{ fontFamily: 'var(--font-brand)', fontWeight: 600 }}
     >
       asians in love
     </span>

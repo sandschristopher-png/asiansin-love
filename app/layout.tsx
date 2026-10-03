@@ -1,5 +1,5 @@
 ﻿import type { Metadata, Viewport } from 'next';
-import { Plus_Jakarta_Sans } from 'next/font/google';
+import { Plus_Jakarta_Sans, Outfit } from 'next/font/google';
 import './globals.css';
 import { BottomNav } from '@/components/BottomNav';
 
@@ -7,6 +7,13 @@ const plusJakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
   weight: ['400', '500', '600'],
   variable: '--font-sans',
+  display: 'swap',
+});
+
+const outfit = Outfit({
+  subsets: ['latin'],
+  weight: ['400', '500', '600'],
+  variable: '--font-brand',
   display: 'swap',
 });
 
@@ -28,7 +35,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`h-full ${plusJakarta.variable}`}>
+    <html lang="en" className={`h-full ${plusJakarta.variable} ${outfit.variable}`}>
       <body className="font-sans bg-[#ECE9F1] text-[#1C1924] min-h-screen selection:bg-[#6555B8] selection:text-white antialiased">
         {/* Centered Mobile App Shell */}
         <div className="w-full max-w-[430px] min-h-screen mx-auto bg-white flex flex-col shadow-[0_0_50px_rgba(0,0,0,0.08)] relative border-x border-black/[0.04]">

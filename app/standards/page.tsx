@@ -4,6 +4,8 @@ import React from 'react';
 import Link from 'next/link';
 import { ShieldCheck, HeartHandshake, Ban, Users, ArrowLeft } from 'lucide-react';
 import { Footer } from '@/components/Footer';
+import { Navbar } from '@/components/Navbar';
+
 
 export default function CommunityStandardsPage() {
   const standards = [
@@ -35,6 +37,8 @@ export default function CommunityStandardsPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F8F7FA] text-[#1C1924]">
+      <Navbar />
+
       <main className="max-w-3xl mx-auto w-full px-4 sm:px-6 py-8 sm:py-12 flex-1 flex flex-col justify-center">
         
         {/* Navigation */}

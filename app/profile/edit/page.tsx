@@ -5,6 +5,8 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Save, UserCheck, ShieldCheck, Camera, Trash2, Loader2, Plus } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
+import { Navbar } from '@/components/Navbar';
+
 
 export default function EditProfilePage() {
   const router = useRouter();
@@ -238,6 +240,8 @@ export default function EditProfilePage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#F8F7FA] flex items-center justify-center text-sm font-semibold text-[#9A8CC3]">
+      <Navbar />
+
         Loading profile settings...
       </div>
     );

@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, User, Shield, Bell, Lock, FileText, CheckCircle2, Crown } from 'lucide-react';
+import { Navbar } from '@/components/Navbar';
+
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState<'account' | 'app' | 'alerts' | 'privacy' | 'reports'>('account');
@@ -19,6 +21,8 @@ export default function SettingsPage() {
     <main className="flex-1 max-w-4xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-6 pb-32 space-y-6">
       {/* Header Navigation */}
       <div className="flex items-center justify-between">
+      <Navbar />
+
         <div className="flex items-center gap-3">
           <Link
             href="/discover"

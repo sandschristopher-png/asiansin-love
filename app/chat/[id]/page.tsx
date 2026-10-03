@@ -7,6 +7,8 @@ import { ArrowLeft, Send, Zap, ShieldAlert, CheckCheck, Clock } from 'lucide-rea
 import UpgradeModal from '@/components/UpgradeModal';
 import ReputationModal from '@/components/ReputationModal';
 import { supabase } from '@/lib/supabaseClient';
+import { Navbar } from '@/components/Navbar';
+
 
 interface Persona {
   name: string;
@@ -409,6 +411,8 @@ export default function ChatConversationPage({ params }: { params: { id: string 
   return (
     <main className="min-h-screen bg-[#130F18] text-[#E6D7FA] flex flex-col justify-between">
       <div className="sticky top-0 z-30 flex items-center justify-between px-4 py-3 bg-[#181222]/95 backdrop-blur-md border-b border-[#9A79BA]/30">
+      <Navbar />
+
         <div className="flex items-center gap-3">
           <Link href="/discover" className="text-[#9A79BA] hover:text-[#E6D7FA] transition">
             <ArrowLeft className="w-5 h-5" />

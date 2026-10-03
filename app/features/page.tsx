@@ -1,6 +1,8 @@
 ﻿import Link from 'next/link'
 import { Logo } from '@/components/Logo'
 import { 
+import { Navbar } from '@/components/Navbar';
+
   ShieldCheck, 
   Sparkles, 
   Plane, 
@@ -51,6 +53,8 @@ const features = [
 export default function FeaturesPage() {
   return (
     <div className="min-h-dvh bg-[#F8F7FA] font-sans text-[#1C1924] selection:bg-[#6555B8] selection:text-white pb-16 relative">
+      <Navbar />
+
       
       {/* Soft Ambient Plum Glow */}
       <div className="pointer-events-none absolute -top-32 left-1/2 -translate-x-1/2 h-72 w-[600px] bg-gradient-to-b from-[#6555B8]/20 to-transparent blur-3xl opacity-60" />
