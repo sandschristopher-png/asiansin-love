@@ -116,7 +116,6 @@ export function BottomNav() {
         >
           <Heart 
             className="w-5 h-5" 
-            fill={isActive('/favorites') ? 'currentColor' : 'none'} 
             strokeWidth={isActive('/favorites') ? 2.4 : 1.8} 
           />
           {isActive('/favorites') && (

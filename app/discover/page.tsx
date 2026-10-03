@@ -818,13 +818,6 @@ function DiscoverContent() {
             >
               Reset All Filters
             </button>
-            <button
-              type="button"
-              onClick={resetFilters}
-              className="px-5 py-2 rounded-full bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#7D4B9F] transition"
-            >
-              Reset Filters
-            </button>
           </div>
         )}
 

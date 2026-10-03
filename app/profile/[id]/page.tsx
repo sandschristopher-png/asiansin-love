@@ -109,7 +109,6 @@ export default function PublicProfilePage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#F8F7FA] flex items-center justify-center p-6">
-      <Navbar />
 
         <div className="w-8 h-8 rounded-full border-2 border-[#6555b8] border-t-transparent animate-spin" />
       </div>
@@ -147,6 +146,7 @@ export default function PublicProfilePage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F8F7FA] text-[#1C1924]">
+      <Navbar />
       <main className="flex-1 w-full px-4 pt-4 pb-28 space-y-4">
         {/* Top Bar Navigation */}
         <div className="flex items-center justify-between">
@@ -218,12 +218,7 @@ export default function PublicProfilePage() {
             )}
 
             {/* Online Status Badge */}
-            <div className={'absolute left-3 flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/90 backdrop-blur-xs text-[11px] font-semibold text-[#1C1924] border border-[#E5E1EC] z-20 pointer-events-none ' + (
-              hasMultiple ? 'top-6' : 'top-3'
-            )}>
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-              <span>Active</span>
-            </div>
+            <span className="presence-dot h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white/90 shadow" />
           </div>
 
           {/* Profile Name & Primary Quick Details */}
