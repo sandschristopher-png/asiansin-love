@@ -232,7 +232,7 @@ export default function ChatConversationPage({ params }: { params: { id: string 
         targetUuid = prof.id;
         setResolvedTargetUuid(prof.id);
         setTargetInfo({
-          name: prof.display_name || prof.full_name || prof.username || 'Member',
+          name: (prof.username || prof.display_name || prof.full_name || 'member').replace(/^@/, ''),
           avatar: prof.avatar_url || '/jennalyn.png',
           rep: prof.reputation_score || 98,
         });
@@ -417,7 +417,7 @@ export default function ChatConversationPage({ params }: { params: { id: string 
             <Image src={targetInfo.avatar} alt={targetInfo.name} fill className="object-cover object-[50%_20%]" />
           </div>
           <div className="flex flex-col">
-            <span className="text-sm font-bold text-white leading-tight">{targetInfo.name}</span>
+            <span className="text-sm font-medium text-white leading-tight">{targetInfo.name}</span>
             <span className="text-[10px] text-emerald-400 font-medium">Active now</span>
           </div>
         </div>
@@ -434,6 +434,14 @@ export default function ChatConversationPage({ params }: { params: { id: string 
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-3 max-w-md mx-auto w-full">
+        {targetInfo.rep < 50 && (
+          <div className="p-3 rounded-2xl bg-amber-950/40 border border-amber-500/40 text-[11px] text-amber-200 flex items-start gap-2.5 shadow-md">
+            <ShieldAlert className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+            <div className="leading-relaxed">
+              <span className="font-semibold text-amber-300">Caution:</span> This member has a low reputation score ({targetInfo.rep}%). Take extra care and avoid sharing financial details or off-platform contact information.
+            </div>
+          </div>
+        )}
         {showSafetyNotice && (
           <div className="p-3 rounded-2xl bg-[#261F33] border border-amber-400/50 text-[11px] text-amber-200 flex items-start gap-2 shadow-md">
             <ShieldAlert className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
@@ -473,12 +481,12 @@ export default function ChatConversationPage({ params }: { params: { id: string 
               <Clock className="w-4 h-4 text-amber-400" />
               <span>Next free message unlocks in</span>
             </div>
-            <span className="text-2xl font-extrabold tracking-wider text-white">
+            <span className="text-2xl font-medium tracking-wider text-white">
               {formatTimer(cooldownSeconds)}
             </span>
             <button
               onClick={() => setShowUpgradeModal(true)}
-              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-full bg-[#653C87] hover:bg-[#7D49A8] text-white font-bold text-xs shadow-lg shadow-[#653C87]/40 active:scale-95 transition"
+              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-full bg-[#653C87] hover:bg-[#7D49A8] text-white font-medium text-xs shadow-lg shadow-[#653C87]/40 active:scale-95 transition"
             >
               <Zap className="w-4 h-4 fill-current" />
               Skip the Wait Ã¢â‚¬â€ Unlock Instant Chat
@@ -538,4 +546,6 @@ export default function ChatConversationPage({ params }: { params: { id: string 
     </main>
   );
 }
+
+
 
