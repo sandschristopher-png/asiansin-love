@@ -1,9 +1,8 @@
-'use client';
+﻿'use client';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, User, Shield, Bell, Lock, FileText, CheckCircle2, Crown } from 'lucide-react';
-
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState<'account' | 'app' | 'alerts' | 'privacy' | 'reports'>('account');
@@ -19,7 +18,10 @@ export default function SettingsPage() {
   return (
     <main className="flex-1 max-w-4xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-6 pb-32 space-y-6">
       {/* Category Pills Navigation */}
-      <div className="flex items-center gap-2 overflow-x-auto no-scrollbar px-2 py-1.5 snap-x snap-mandatory" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+      <div
+        className="flex items-center gap-2 overflow-x-auto no-scrollbar px-2 py-1.5 snap-x snap-mandatory"
+        style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+      >
         {[
           { key: 'account', label: 'Account' },
           { key: 'app', label: 'App' },
@@ -33,35 +35,12 @@ export default function SettingsPage() {
               key={tab.key}
               type="button"
               onClick={() => setActiveTab(tab.key as any)}
-              className={'snap-center shrink-0 px-4 py-1.5 text-xs sm:text-sm font-semibold rounded-full transition-all whitespace-nowrap ' + (
-                active
+              className={
+                'snap-center shrink-0 px-4 py-1.5 text-xs sm:text-sm font-semibold rounded-full transition-all whitespace-nowrap ' +
+                (active
                   ? 'bg-[#6555b8] text-white shadow-xs'
-                  : 'text-[#524B5E] hover:text-[#1C1924] hover:bg-[#F3EFFC]'
-              )}
-            >
-              {tab.label}
-            </button>
-          );
-        })}
-      </div>
-        {[
-          { key: 'account', label: 'Account' },
-          { key: 'app', label: 'App' },
-          { key: 'alerts', label: 'Alerts' },
-          { key: 'privacy', label: 'Privacy' },
-          { key: 'reports', label: 'Reports' },
-        ].map((tab) => {
-          const active = activeTab === tab.key;
-          return (
-            <button
-              key={tab.key}
-              type="button"
-              onClick={() => setActiveTab(tab.key as any)}
-              className={'px-4 py-1.5 text-xs sm:text-sm font-semibold rounded-full transition-all shrink-0 ' + (
-                active
-                  ? 'bg-[#6555b8] text-white shadow-xs'
-                  : 'text-[#524B5E] hover:text-[#1C1924] hover:bg-[#F3EFFC]'
-              )}
+                  : 'text-[#524B5E] hover:text-[#1C1924] hover:bg-[#F3EFFC]')
+              }
             >
               {tab.label}
             </button>
@@ -73,7 +52,6 @@ export default function SettingsPage() {
       <div className="bg-white rounded-3xl border border-[#DDD7E5] p-5 sm:p-8 shadow-xs space-y-8">
         {activeTab === 'account' && (
           <div className="space-y-6">
-
             <form onSubmit={handleSaveHandle} className="space-y-4 max-w-md">
               <div className="space-y-1.5">
                 <label className="text-xs font-medium uppercase tracking-wider text-[#524B5E]">
