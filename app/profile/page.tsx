@@ -395,12 +395,9 @@ export default function MyProfilePage() {
                     </div>
                   )}
 
-                  {/* Online Badge */}
+                  {/* Online Dot */}
                   <div className="absolute top-4 left-4 z-10">
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-black/60 backdrop-blur-md text-emerald-400 border border-white/10">
-                      <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                      Online
-                    </span>
+                    <span className="presence-dot h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white/90 shadow" />
                   </div>
 
                   {/* Photo Indicators */}
@@ -764,4 +761,5 @@ export default function MyProfilePage() {
     </div>
   );
 }
+
 

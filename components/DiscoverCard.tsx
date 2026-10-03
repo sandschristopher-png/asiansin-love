@@ -68,10 +68,7 @@ export function DiscoverCard({
         </div>
 
         {online && (
-          <span className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-black/30 backdrop-blur-md text-[10px] font-medium text-emerald-300 border border-white/20 shadow-sm">
-            <span className="h-1.5 w-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            Online
-          </span>
+          <span className="presence-dot h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white/90 shadow" />
         )}
       </div>
 
