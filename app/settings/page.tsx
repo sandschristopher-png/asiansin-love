@@ -19,7 +19,31 @@ export default function SettingsPage() {
   return (
     <main className="flex-1 max-w-4xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-6 pb-32 space-y-6">
       {/* Category Pills Navigation */}
-      <div className="flex items-center gap-1.5 p-1 bg-[#F5F3F8] border border-[#E8E4EF] rounded-full shadow-xs w-full overflow-x-auto no-scrollbar">
+      <div className="flex items-center gap-2 overflow-x-auto no-scrollbar px-2 py-1.5 snap-x snap-mandatory" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+        {[
+          { key: 'account', label: 'Account' },
+          { key: 'app', label: 'App' },
+          { key: 'alerts', label: 'Alerts' },
+          { key: 'privacy', label: 'Privacy' },
+          { key: 'reports', label: 'Reports' },
+        ].map((tab) => {
+          const active = activeTab === tab.key;
+          return (
+            <button
+              key={tab.key}
+              type="button"
+              onClick={() => setActiveTab(tab.key as any)}
+              className={'snap-center shrink-0 px-4 py-1.5 text-xs sm:text-sm font-semibold rounded-full transition-all whitespace-nowrap ' + (
+                active
+                  ? 'bg-[#6555b8] text-white shadow-xs'
+                  : 'text-[#524B5E] hover:text-[#1C1924] hover:bg-[#F3EFFC]'
+              )}
+            >
+              {tab.label}
+            </button>
+          );
+        })}
+      </div>
         {[
           { key: 'account', label: 'Account' },
           { key: 'app', label: 'App' },
@@ -49,15 +73,6 @@ export default function SettingsPage() {
       <div className="bg-white rounded-3xl border border-[#DDD7E5] p-5 sm:p-8 shadow-xs space-y-8">
         {activeTab === 'account' && (
           <div className="space-y-6">
-            {/* Handle & Identity Section */}
-            <div className="space-y-2">
-              <h2 className="text-sm sm:text-base font-medium text-[#1C1924] flex items-center gap-2">
-                <User className="w-4 h-4 text-[#6555b8]" /> Handle & Account Identity
-              </h2>
-              <p className="text-xs sm:text-sm text-[#756D82]">
-                Your unique handle used across direct messages, links, and public previews.
-              </p>
-            </div>
 
             <form onSubmit={handleSaveHandle} className="space-y-4 max-w-md">
               <div className="space-y-1.5">
@@ -118,7 +133,7 @@ export default function SettingsPage() {
 
         {activeTab !== 'account' && (
           <div className="py-12 text-center space-y-2">
-            <h2 className="text-base font-medium text-[#1C1924] capitalize">{activeTab} Preferences</h2>
+            <div className="py-16 text-center text-sm text-[#8C849B]">Coming soon</div>
             <p className="text-xs sm:text-sm text-[#756D82]">
               Configured automatically for verified accounts.
             </p>

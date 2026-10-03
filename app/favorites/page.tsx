@@ -76,7 +76,7 @@ export default function FavoritesPage() {
 
         setFavorites(mapped);
       } catch (err) {
-        console.error('Error loading favorites:', { message: err && err.message, code: err && err.code, details: err && err.details, hint: err && err.hint });
+        console.error('Error loading favorites:', err instanceof Error ? err.message : JSON.stringify(err, Object.getOwnPropertyNames(err)));
       } finally {
         setLoading(false);
       }
