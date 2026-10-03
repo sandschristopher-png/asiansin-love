@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -24,12 +24,13 @@ export default function MessagesPage() {
 
   useEffect(() => {
     let channel: any = null;
+    let isMounted = true;
 
     async function loadConversations() {
       try {
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
-          setLoading(false);
+        if (!user || !isMounted) {
+          if (isMounted) setLoading(false);
           return;
         }
 
@@ -46,8 +47,10 @@ export default function MessagesPage() {
           .order('updated_at', { ascending: false });
 
         if (error || !data || data.length === 0) {
-          setConversations([]);
-          setLoading(false);
+          if (isMounted) {
+            setConversations([]);
+            setLoading(false);
+          }
           return;
         }
 
@@ -81,11 +84,13 @@ export default function MessagesPage() {
           };
         });
 
-        setConversations(formatted);
+        if (isMounted) {
+          setConversations(formatted);
+        }
       } catch (err) {
         console.error('Error loading conversations:', err);
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     }
 
@@ -93,20 +98,32 @@ export default function MessagesPage() {
 
     const channelSetup = async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user || !isMounted) return;
+
+      const channelName = `user_inbox_${user.id}`;
+      const existingChannel = supabase.getChannels().find((ch: any) => ch.topic === `realtime:${channelName}`);
+      if (existingChannel) {
+        supabase.removeChannel(existingChannel);
+      }
+
       channel = supabase
-        .channel(`user_inbox_${user.id}`)
+        .channel(channelName)
         .on(
           'postgres_changes',
           { event: '*', schema: 'public', table: 'conversations' },
-          () => loadConversations()
+          () => {
+            if (isMounted) loadConversations();
+          }
         )
         .subscribe();
     };
     channelSetup();
 
     return () => {
-      if (channel) supabase.removeChannel(channel);
+      isMounted = false;
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
     };
   }, []);
 
@@ -118,107 +135,111 @@ export default function MessagesPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F8F7FA] text-[#1C1924]">
-
       <main className="flex-1 w-full px-4 pt-4 pb-28 space-y-4">
         {/* Page Title */}
-        
-
-        {/* Controls: Segmented Tabs & Search */}
-        <div className="space-y-2.5">
-          {/* Compact Segmented Control */}
-          <div className="grid grid-cols-2 p-1 bg-[#F0ECF6] rounded-2xl text-xs font-semibold text-[#756D82]">
+        <div className="flex items-center justify-between">
+          <h1 className="text-xl font-bold text-[#1C1924]">Messages</h1>
+          <div className="flex gap-1.5 bg-white border border-[#DDD7E5] p-1 rounded-2xl">
             <button
-              type="button"
               onClick={() => setActiveTab('all')}
-              className={`py-1.5 rounded-xl transition-all text-center ${
+              className={`px-3 py-1 rounded-xl text-xs font-semibold transition ${
                 activeTab === 'all'
-                  ? 'bg-white text-[#1C1924] shadow-xs font-medium'
-                  : 'hover:text-[#1C1924]'
+                  ? 'bg-[#6555b8] text-white shadow-xs'
+                  : 'text-[#524B5E] hover:text-[#1C1924]'
               }`}
             >
-              All Messages
+              All
             </button>
             <button
-              type="button"
               onClick={() => setActiveTab('unread')}
-              className={`py-1.5 rounded-xl transition-all text-center ${
+              className={`px-3 py-1 rounded-xl text-xs font-semibold transition ${
                 activeTab === 'unread'
-                  ? 'bg-white text-[#1C1924] shadow-xs font-medium'
-                  : 'hover:text-[#1C1924]'
+                  ? 'bg-[#6555b8] text-white shadow-xs'
+                  : 'text-[#524B5E] hover:text-[#1C1924]'
               }`}
             >
               Unread
             </button>
           </div>
-
-          {/* Full-Width Search Input */}
-          <div className="relative w-full">
-            <Search className="w-4 h-4 text-[#8C849B] absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search conversations..."
-              className="w-full pl-9 pr-4 py-2 bg-white border border-[#DDD7E5] rounded-2xl text-xs text-[#1C1924] placeholder-[#8C849B] focus:outline-none focus:border-[#6555b8] shadow-xs transition"
-            />
-          </div>
         </div>
 
-        {/* Conversations List */}
-        <div className="bg-white rounded-3xl border border-[#DDD7E5] shadow-xs overflow-hidden divide-y divide-[#F0EDF5]">
+        {/* Search Input */}
+        <div className="relative">
+          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8C849B]" />
+          <input
+            type="text"
+            placeholder="Search conversations..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-10 pr-4 py-2 bg-white border border-[#DDD7E5] rounded-2xl text-xs text-[#1C1924] placeholder-[#8C849B] focus:outline-none focus:border-[#6555b8] focus:ring-1 focus:ring-[#6555b8]/20 transition shadow-xs"
+          />
+        </div>
+
+        {/* List of Conversations */}
+        <div className="space-y-2">
           {loading ? (
-            <div className="py-16 text-center text-xs text-[#756D82]">
+            <div className="py-16 text-center text-xs text-[#8C849B]">
               Loading conversations...
             </div>
           ) : filteredConversations.length === 0 ? (
-            <div className="py-14 px-6 text-center space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-[#F3EFFC] text-[#6555b8] flex items-center justify-center mx-auto">
-                <MessageCircle className="w-6 h-6 stroke-[1.75]" />
+            <div className="bg-white border border-[#DDD7E5] rounded-2xl p-8 text-center space-y-3 shadow-xs">
+              <div className="w-12 h-12 bg-[#F3EFFC] text-[#6555b8] rounded-2xl flex items-center justify-center mx-auto">
+                <MessageCircle className="w-6 h-6" />
               </div>
-              <div className="space-y-1 max-w-xs mx-auto">
-                <h3 className="text-sm font-medium text-[#1C1924]">No conversations yet</h3>
-                <p className="text-xs text-[#756D82] leading-relaxed">
-                  Explore profiles in the discover feed to send introductions and initiate meaningful courtship.
+              <div className="space-y-1">
+                <h3 className="text-sm font-semibold text-[#1C1924]">No conversations yet</h3>
+                <p className="text-xs text-[#524B5E]">
+                  Discover new members and start an introduction.
                 </p>
               </div>
               <Link
                 href="/discover"
-                className="inline-flex items-center justify-center px-5 py-2.5 rounded-full bg-[#6555b8] hover:bg-[#52449e] text-white text-xs font-semibold shadow-xs transition active:scale-95"
+                className="inline-block px-4 py-2 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#52449e] transition shadow-xs"
               >
-                Explore Discover Feed
+                Find Connections
               </Link>
             </div>
           ) : (
-            filteredConversations.map((c) => (
+            filteredConversations.map((conv) => (
               <Link
-                key={c.id}
-                href={`/chat/${c.recipientId}`}
-                className="flex items-center gap-3.5 p-3.5 hover:bg-[#FAF8FD] transition group"
+                key={conv.id}
+                href={`/chat/${conv.recipientId}`}
+                className="flex items-center gap-3.5 p-3.5 bg-white border border-[#DDD7E5] rounded-2xl hover:border-[#6555b8]/30 hover:bg-[#FAF8FD] transition shadow-xs"
               >
-                <div className="relative w-12 h-12 rounded-2xl overflow-hidden bg-[#FAF8FD] border border-[#DDD7E5] shrink-0">
+                <div className="relative shrink-0">
                   <img
-                    src={c.avatarUrl}
-                    alt={c.name}
-                    className="w-full h-full object-cover"
+                    src={conv.avatarUrl}
+                    alt={conv.name}
+                    className="w-12 h-12 rounded-full object-cover border border-[#DDD7E5]"
                   />
+                  {conv.repScore !== undefined && (
+                    <span className="absolute -bottom-1 -right-1 bg-white px-1.5 py-0.5 rounded-full text-[10px] font-bold text-[#6555b8] border border-[#DDD7E5] shadow-xs">
+                      {conv.repScore}%
+                    </span>
+                  )}
                 </div>
 
-                <div className="min-w-0 flex-1 space-y-1">
-                  <div className="flex items-center justify-between gap-2">
-                    <h4 className="text-sm font-medium text-[#1C1924] truncate group-hover:text-[#6555b8] transition">
-                      {c.name}
-                    </h4>
-                    <span className="text-[10px] text-[#8C849B] shrink-0 flex items-center gap-1">
-                      <Clock className="w-3 h-3" />
-                      {new Date(c.lastMessageAt).toLocaleDateString([], { month: 'short', day: 'numeric' })}
-                    </span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-1 mb-1">
+                    <h2 className="text-xs sm:text-sm font-semibold text-[#1C1924] truncate">
+                      {conv.name}
+                    </h2>
+                    {conv.lastMessageAt && (
+                      <span className="text-[10px] text-[#8C849B] flex items-center gap-1 shrink-0">
+                        <Clock className="w-2.5 h-2.5" />
+                        {new Date(conv.lastMessageAt).toLocaleDateString([], {
+                          month: 'short',
+                          day: 'numeric',
+                        })}
+                      </span>
+                    )}
                   </div>
-                  <p className="text-xs text-[#756D82] truncate">
-                    {c.lastMessage}
+                  <p className="text-xs text-[#524B5E] truncate">
+                    {conv.lastMessage}
                   </p>
                 </div>
 
-                <ChevronRight className="w-4 h-4 text-[#8C849B] shrink-0 group-hover:text-[#6555b8] transition" />
+                <ChevronRight className="w-4 h-4 text-[#8C849B] shrink-0" />
               </Link>
             ))
           )}

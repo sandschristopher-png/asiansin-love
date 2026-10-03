@@ -51,7 +51,7 @@ export default function FavoritesPage() {
 
         const { data: profs, error: profErr } = await supabase
           .from('profiles')
-          .select('id, username, display_name, avatar_url, photos, reputation_score, age, location, location_source, verified')
+          .select('id, username, display_name, avatar_url, photos, reputation_score, age, city, country, location_source, is_verified')
           .in('id', profileIds);
 
         if (profErr) throw profErr;
@@ -65,9 +65,9 @@ export default function FavoritesPage() {
             id: p.id,
             name: cleanName,
             age: p.age,
-            location: p.location,
+            location: [p.city, p.country].filter(Boolean).join(', ') || 'Global',
             location_source: p.location_source,
-            verified: p.verified,
+            verified: p.is_verified ?? false,
             repScore: p.reputation_score || 98,
             avatarUrl: p.avatar_url || '/placeholder-avatar.svg',
             photoUrl: firstPhoto,
