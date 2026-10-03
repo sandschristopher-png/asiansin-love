@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { getDistanceLabel } from '@/lib/location';
 
@@ -567,7 +567,7 @@ function DiscoverContent() {
             >
               <SlidersHorizontal className="w-4 h-4" />
               {activeFiltersCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-[#6555b8] text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+                <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-[#6555b8] text-white text-[9px] font-medium rounded-full flex items-center justify-center">
                   {activeFiltersCount}
                 </span>
               )}
@@ -666,7 +666,7 @@ function DiscoverContent() {
 
                             return (
                               <div key={group.title} className="mt-2 pt-2 border-t border-[#F0EDF5]">
-                                <div className="px-3 py-1 text-[10px] font-bold text-[#8C849B] uppercase tracking-wider">
+                                <div className="px-3 py-1 text-[10px] font-medium text-[#8C849B] uppercase tracking-wider">
                                   {group.title}
                                 </div>
                                 {available.map((c) => (
@@ -679,7 +679,7 @@ function DiscoverContent() {
                                     }}
                                     className={'w-full text-left px-3 py-1.5 text-xs font-medium rounded-xl flex items-center justify-between transition ' + (
                                       selectedCountry.toLowerCase() === c.toLowerCase()
-                                        ? 'bg-[#F3EFFC] text-[#6555b8] font-bold'
+                                        ? 'bg-[#F3EFFC] text-[#6555b8] font-medium'
                                         : 'text-[#524B5E] hover:bg-[#F8F7FA] hover:text-[#1C1924]'
                                     )}
                                   >
@@ -695,7 +695,7 @@ function DiscoverContent() {
 
                           {otherCountries.length > 0 && (
                             <div className="mt-2 pt-2 border-t border-[#F0EDF5]">
-                              <div className="px-3 py-1 text-[10px] font-bold text-[#8C849B] uppercase tracking-wider">
+                              <div className="px-3 py-1 text-[10px] font-medium text-[#8C849B] uppercase tracking-wider">
                                 Other Locations
                               </div>
                               {otherCountries.map((c) => (
@@ -708,7 +708,7 @@ function DiscoverContent() {
                                   }}
                                   className={'w-full text-left px-3 py-1.5 text-xs font-medium rounded-xl flex items-center justify-between transition ' + (
                                     selectedCountry.toLowerCase() === c.toLowerCase()
-                                      ? 'bg-[#F3EFFC] text-[#6555b8] font-bold'
+                                      ? 'bg-[#F3EFFC] text-[#6555b8] font-medium'
                                       : 'text-[#524B5E] hover:bg-[#F8F7FA] hover:text-[#1C1924]'
                                   )}
                                 >
@@ -774,7 +774,7 @@ function DiscoverContent() {
                 {/* Bottom Overlay: Info (Left) & Heart (Right) */}
                 <div className="absolute bottom-0 inset-x-0 p-3 sm:p-3.5 flex items-end justify-between gap-2 z-20 pointer-events-none">
                   <Link href={'/profile/' + profile.id} className="min-w-0 flex-1 pointer-events-auto">
-                    <h3 className="text-sm sm:text-base font-bold text-white tracking-tight flex items-center gap-1 truncate drop-shadow-xs">
+                    <h3 className="text-sm sm:text-base font-medium text-white  flex items-center gap-1 truncate drop-shadow-xs">
                       <span className="truncate">{displayName}{profile.age ? ', ' + profile.age : ''}</span>
                       {profile.verified && <CheckCircle className="w-3.5 h-3.5 text-[#B2A4D7] shrink-0" />}
                     </h3>
@@ -916,7 +916,7 @@ function DiscoverContent() {
             <div className="flex items-center justify-between pb-4 border-b border-[#7D7E92]/20">
               <div className="flex items-center gap-2">
                 <SlidersHorizontal className="w-5 h-5 text-[#b2a4d7]" />
-                <h2 className="text-base font-bold text-[#1C1924]">Refine Discover Feed</h2>
+                <h2 className="text-base font-medium text-[#1C1924]">Refine Discover Feed</h2>
               </div>
               <button 
                 type="button" 
@@ -932,7 +932,7 @@ function DiscoverContent() {
               <div className="flex justify-between items-center text-xs font-semibold text-[#524B5E]">
                 <span>I'm Interested In</span>
                 {selectedGenders.length > 0 && (
-                  <span className="text-[11px] font-bold text-[#6555b8] bg-[#F3EFFC] px-2 py-0.5 rounded-full">
+                  <span className="text-[11px] font-medium text-[#6555b8] bg-[#F3EFFC] px-2 py-0.5 rounded-full">
                     {selectedGenders.length} selected
                   </span>
                 )}
@@ -962,11 +962,11 @@ function DiscoverContent() {
             <div className="space-y-3">
               <div className="flex justify-between items-center text-xs font-semibold text-[#524B5E]">
                 <span>Age Range</span>
-                <span className="text-xs font-bold text-[#6555b8] bg-[#F3EFFC] px-2.5 py-0.5 rounded-full">{minAge} – {maxAge} yrs</span>
+                <span className="text-xs font-medium text-[#6555b8] bg-[#F3EFFC] px-2.5 py-0.5 rounded-full">{minAge} â€“ {maxAge} yrs</span>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="text-[10px] text-[#756D82] uppercase font-bold">Min Age</label>
+                  <label className="text-[10px] text-[#756D82] uppercase font-medium">Min Age</label>
                   <input 
                     type="range" 
                     min="18" 
@@ -977,7 +977,7 @@ function DiscoverContent() {
                   />
                 </div>
                 <div>
-                  <label className="text-[10px] text-[#756D82] uppercase font-bold">Max Age</label>
+                  <label className="text-[10px] text-[#756D82] uppercase font-medium">Max Age</label>
                   <input 
                     type="range" 
                     min="18" 
@@ -1115,4 +1115,5 @@ export default function DiscoverPage() {
     </Suspense>
   );
 }
+
 

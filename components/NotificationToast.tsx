@@ -93,7 +93,7 @@ export function NotificationToast() {
             🔔
           </div>
           <div className="flex-1 min-w-0">
-            <h2 className="text-xs sm:text-sm font-bold text-white">Enable Notifications</h2>
+            <h2 className="text-xs sm:text-sm font-medium text-white">Enable Notifications</h2>
             <p className="text-[11px] text-[#DDD8D4] leading-snug mt-0.5">
               Get instant sound alerts when genuine matches message or verify.
             </p>
@@ -102,7 +102,7 @@ export function NotificationToast() {
             <button
               type="button"
               onClick={handleEnablePermissions}
-              className="px-3 py-1.5 rounded-xl bg-[#6555B8] hover:bg-[#7D4B9F] text-white text-xs font-bold shadow-md transition-all active:scale-[0.98]"
+              className="px-3 py-1.5 rounded-xl bg-[#6555B8] hover:bg-[#7D4B9F] text-white text-xs font-medium shadow-md transition-all active:scale-[0.98]"
             >
               Allow
             </button>
@@ -149,7 +149,7 @@ export function NotificationToast() {
 
             <div className="flex-1 min-w-0 pr-2">
               <div className="flex items-center justify-between">
-                <h3 className="text-xs sm:text-sm font-bold text-white group-hover:text-[#1C1924] transition-colors truncate">
+                <h3 className="text-xs sm:text-sm font-medium text-white group-hover:text-[#1C1924] transition-colors truncate">
                   {activeToast.title}
                 </h3>
                 <span className="text-[10px] text-[#978FA8]">Just now</span>
@@ -177,3 +177,4 @@ export function NotificationToast() {
     </>
   );
 }
+

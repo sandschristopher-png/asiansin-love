@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { BrandLogo } from '@/components/BrandLogo';
 import { notifyUser } from '@/components/InAppToast';
@@ -163,7 +163,7 @@ export function Navbar() {
                 {menuOpen && (
                   <div className="absolute right-0 mt-2.5 w-56 rounded-2xl bg-white border border-black/10 shadow-xl py-2 z-50 animate-in fade-in zoom-in-95 duration-100">
                     <div className="px-4 py-2 border-b border-gray-100">
-                      <p className="text-[11px] uppercase font-bold tracking-wider text-gray-400">Signed In As</p>
+                      <p className="text-[11px] uppercase font-medium tracking-wider text-gray-400">Signed In As</p>
                       <p className="text-sm font-semibold text-gray-900 truncate">@{profile?.username || displayName}</p>
                     </div>
 
@@ -215,3 +215,4 @@ export function Navbar() {
     </header>
   );
 }
+

@@ -259,7 +259,7 @@ export default function EditProfilePage() {
               <ArrowLeft className="w-5 h-5" />
             </button>
             <div>
-              <h1 className="text-xl font-bold text-[#1C1924] tracking-tight">Edit Profile</h1>
+              <h1 className="text-xl font-medium text-[#1C1924] ">Edit Profile</h1>
               <p className="text-xs text-[#9A8CC3] mt-0.5">Manage your public information and identity handle</p>
             </div>
           </div>
@@ -287,7 +287,7 @@ export default function EditProfilePage() {
         <div className="bg-[#FFFFFF] border border-[#DDD7E5]/25 rounded-2xl p-4 sm:p-5 space-y-3">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-sm font-bold text-[#1C1924] flex items-center gap-2">
+              <h2 className="text-sm font-medium text-[#1C1924] flex items-center gap-2">
                 <Camera className="w-4 h-4 text-[#B2A4D7]" />
                 Profile Photos ({photos.length}/6)
               </h2>
@@ -316,7 +316,7 @@ export default function EditProfilePage() {
                     />
 
                     {isPrimary ? (
-                      <div className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full bg-[#6555B8]/90 text-white text-[9px] font-bold shadow-sm">
+                      <div className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full bg-[#6555B8]/90 text-white text-[9px] font-medium shadow-sm">
                         Primary
                       </div>
                     ) : (
@@ -374,12 +374,12 @@ export default function EditProfilePage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Handle Claim */}
           <div className="p-4 rounded-2xl bg-[#FFFFFF] border border-[#9A8CC3]/35 space-y-2">
-            <label className="block text-xs font-bold uppercase tracking-wider text-[#9A8CC3]">
+            <label className="block text-xs font-medium uppercase tracking-wider text-[#9A8CC3]">
               Member Handle
             </label>
             {initialHasUsername ? (
               <div className="flex items-center justify-between">
-                <span className="font-mono text-sm text-[#1C1924] font-bold">@{username}</span>
+                <span className="font-mono text-sm text-[#1C1924] font-medium">@{username}</span>
                 <span className="text-xs px-2.5 py-1 rounded-lg bg-[#FFFFFF] border border-[#9A8CC3]/35 text-[#9A8CC3]">
                   Handle Locked
                 </span>
@@ -408,7 +408,7 @@ export default function EditProfilePage() {
 
           {/* Display Name */}
           <div className="space-y-1.5">
-            <label className="block text-xs font-bold uppercase tracking-wider text-[#9A8CC3]">
+            <label className="block text-xs font-medium uppercase tracking-wider text-[#9A8CC3]">
               Display Name
             </label>
             <input
@@ -423,7 +423,7 @@ export default function EditProfilePage() {
           {/* Age & Location */}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             <div className="space-y-1.5">
-              <label className="block text-xs font-bold uppercase tracking-wider text-[#9A8CC3]">
+              <label className="block text-xs font-medium uppercase tracking-wider text-[#9A8CC3]">
                 Age
               </label>
               <input
@@ -436,7 +436,7 @@ export default function EditProfilePage() {
               />
             </div>
             <div className="space-y-1.5">
-              <label className="block text-xs font-bold uppercase tracking-wider text-[#9A8CC3]">
+              <label className="block text-xs font-medium uppercase tracking-wider text-[#9A8CC3]">
                 City
               </label>
               <input
@@ -447,7 +447,7 @@ export default function EditProfilePage() {
               />
             </div>
             <div className="space-y-1.5">
-              <label className="block text-xs font-bold uppercase tracking-wider text-[#9A8CC3]">
+              <label className="block text-xs font-medium uppercase tracking-wider text-[#9A8CC3]">
                 Country
               </label>
               <input
@@ -462,7 +462,7 @@ export default function EditProfilePage() {
           {/* Profession & Relationship Intent */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <label className="block text-xs font-bold uppercase tracking-wider text-[#9A8CC3]">
+              <label className="block text-xs font-medium uppercase tracking-wider text-[#9A8CC3]">
                 Profession / Occupation
               </label>
               <input
@@ -473,7 +473,7 @@ export default function EditProfilePage() {
               />
             </div>
             <div className="space-y-1.5">
-              <label className="block text-xs font-bold uppercase tracking-wider text-[#9A8CC3]">
+              <label className="block text-xs font-medium uppercase tracking-wider text-[#9A8CC3]">
                 Relationship Goal
               </label>
               <select
@@ -491,7 +491,7 @@ export default function EditProfilePage() {
 
           {/* Bio */}
           <div className="space-y-1.5">
-            <label className="block text-xs font-bold uppercase tracking-wider text-[#9A8CC3]">
+            <label className="block text-xs font-medium uppercase tracking-wider text-[#9A8CC3]">
               About You
             </label>
             <textarea
@@ -506,7 +506,7 @@ export default function EditProfilePage() {
           <button
             type="submit"
             disabled={saving}
-            className="w-full py-3.5 rounded-2xl bg-[#6555B8] hover:bg-[#7D4B9F] text-white font-bold text-sm shadow-lg shadow-[#6555B8]/40 transition active:scale-[0.99] disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full py-3.5 rounded-2xl bg-[#6555B8] hover:bg-[#7D4B9F] text-white font-medium text-sm shadow-lg shadow-[#6555B8]/40 transition active:scale-[0.99] disabled:opacity-50 flex items-center justify-center gap-2"
           >
             <Save className="w-4 h-4" />
             <span>{saving ? 'Saving Changes...' : 'Save Profile'}</span>
@@ -516,3 +516,4 @@ export default function EditProfilePage() {
     </div>
   );
 }
+

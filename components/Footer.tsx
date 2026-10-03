@@ -10,7 +10,7 @@ export function Footer() {
         
         {/* Left: Brand & Purpose */}
         <div className="flex flex-col sm:flex-row items-center gap-2 text-center sm:text-left">
-          <span className="font-bold text-[#1C1924]">Asians in Love</span>
+          <span className="font-medium text-[#1C1924]">Asians in Love</span>
           <span className="hidden sm:inline text-[#DDD7E5]">•</span>
           <span>Serious Courtship &amp; Marriage</span>
           <span className="hidden sm:inline text-[#DDD7E5]">•</span>
@@ -39,3 +39,4 @@ export function Footer() {
 }
 
 export default Footer;
+

@@ -69,7 +69,7 @@ export default function FeaturesPage() {
           </Link>
           <Link
             href="/signup"
-            className="rounded-xl bg-[#6555B8] hover:bg-[#7D4B9F] px-3.5 py-1.5 text-xs font-bold text-white transition shadow-md shadow-[#6555B8]/40 active:scale-95"
+            className="rounded-xl bg-[#6555B8] hover:bg-[#7D4B9F] px-3.5 py-1.5 text-xs font-medium text-white transition shadow-md shadow-[#6555B8]/40 active:scale-95"
           >
             Join Free
           </Link>
@@ -80,10 +80,10 @@ export default function FeaturesPage() {
         
         {/* Hero Header */}
         <div className="text-center max-w-xl mx-auto space-y-3 mb-12">
-          <span className="text-xs font-bold uppercase tracking-wider text-[#9A8CC3]">
+          <span className="text-xs font-medium uppercase tracking-wider text-[#9A8CC3]">
             Platform Standards
           </span>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-[#1C1924] tracking-tight leading-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-medium text-[#1C1924]  leading-tight">
             Engineered For Serious Love, <br />
             <span className="bg-gradient-to-r from-[#9A8CC3] via-[#1C1924] to-white bg-clip-text text-transparent">
               Not Casual Scams
@@ -107,7 +107,7 @@ export default function FeaturesPage() {
                   <div className="p-2.5 rounded-2xl bg-[#FFFFFF] border border-[#9A8CC3]/40 text-[#9A8CC3] shrink-0">
                     <Icon className="h-5 w-5 text-[#B2A4D7]" />
                   </div>
-                  <h2 className="text-sm font-bold text-[#1C1924] tracking-tight">{item.title}</h2>
+                  <h2 className="text-sm font-medium text-[#1C1924] ">{item.title}</h2>
                 </div>
                 <p className="text-xs sm:text-sm text-[#1C1924] leading-relaxed">
                   {item.desc}
@@ -120,7 +120,7 @@ export default function FeaturesPage() {
         {/* Commitment Strip */}
         <section className="mt-12 rounded-3xl border border-[#9A8CC3]/35 bg-[#FFFFFF] p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-2xl">
           <div className="space-y-1.5 text-center sm:text-left">
-            <h2 className="text-base sm:text-lg font-bold text-[#1C1924]">
+            <h2 className="text-base sm:text-lg font-medium text-[#1C1924]">
               100% Free For Local Southeast Asian Members
             </h2>
             <p className="text-xs sm:text-sm text-[#1C1924] max-w-xl leading-relaxed">
@@ -130,7 +130,7 @@ export default function FeaturesPage() {
           <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
             <Link
               href="/signup"
-              className="w-full sm:w-auto rounded-2xl bg-[#6555B8] hover:bg-[#7D4B9F] px-6 py-3 text-xs sm:text-sm font-bold text-white transition shadow-lg shadow-[#6555B8]/40 flex items-center justify-center gap-2 active:scale-95"
+              className="w-full sm:w-auto rounded-2xl bg-[#6555B8] hover:bg-[#7D4B9F] px-6 py-3 text-xs sm:text-sm font-medium text-white transition shadow-lg shadow-[#6555B8]/40 flex items-center justify-center gap-2 active:scale-95"
             >
               <span>Get Started</span>
               <ArrowRight className="h-4 w-4" />
@@ -159,3 +159,4 @@ export default function FeaturesPage() {
     </div>
   )
 }
+

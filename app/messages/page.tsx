@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -124,7 +124,7 @@ export default function MessagesPage() {
       <main className="flex-1 w-full px-4 pt-4 pb-28 space-y-4">
         {/* Page Title */}
         <div className="space-y-0.5">
-          <h1 className="text-xl sm:text-[22px] font-semibold text-[#1C1924] tracking-tight">Direct Messages</h1>
+          <h1 className="text-xl sm:text-[22px] font-semibold text-[#1C1924] ">Direct Messages</h1>
           <p className="text-xs text-[#756D82]">
             Private courtship conversations with verified members
           </p>
@@ -139,7 +139,7 @@ export default function MessagesPage() {
               onClick={() => setActiveTab('all')}
               className={`py-1.5 rounded-xl transition-all text-center ${
                 activeTab === 'all'
-                  ? 'bg-white text-[#1C1924] shadow-xs font-bold'
+                  ? 'bg-white text-[#1C1924] shadow-xs font-medium'
                   : 'hover:text-[#1C1924]'
               }`}
             >
@@ -150,7 +150,7 @@ export default function MessagesPage() {
               onClick={() => setActiveTab('unread')}
               className={`py-1.5 rounded-xl transition-all text-center ${
                 activeTab === 'unread'
-                  ? 'bg-white text-[#1C1924] shadow-xs font-bold'
+                  ? 'bg-white text-[#1C1924] shadow-xs font-medium'
                   : 'hover:text-[#1C1924]'
               }`}
             >
@@ -183,7 +183,7 @@ export default function MessagesPage() {
                 <MessageCircle className="w-6 h-6 stroke-[1.75]" />
               </div>
               <div className="space-y-1 max-w-xs mx-auto">
-                <h3 className="text-sm font-bold text-[#1C1924]">No conversations yet</h3>
+                <h3 className="text-sm font-medium text-[#1C1924]">No conversations yet</h3>
                 <p className="text-xs text-[#756D82] leading-relaxed">
                   Explore profiles in the discover feed to send introductions and initiate meaningful courtship.
                 </p>
@@ -212,7 +212,7 @@ export default function MessagesPage() {
 
                 <div className="min-w-0 flex-1 space-y-1">
                   <div className="flex items-center justify-between gap-2">
-                    <h4 className="text-sm font-bold text-[#1C1924] truncate group-hover:text-[#6555b8] transition">
+                    <h4 className="text-sm font-medium text-[#1C1924] truncate group-hover:text-[#6555b8] transition">
                       {c.name}
                     </h4>
                     <span className="text-[10px] text-[#8C849B] shrink-0 flex items-center gap-1">

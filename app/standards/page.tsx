@@ -51,10 +51,10 @@ export default function CommunityStandardsPage() {
         {/* Editorial Card */}
         <div className="rounded-3xl bg-[#FFFFFF] border border-[#9A8CC3]/35 p-6 sm:p-9 shadow-2xl space-y-6">
           <div>
-            <span className="text-[11px] font-bold uppercase tracking-wider text-[#9A8CC3]">
+            <span className="text-[11px] font-medium uppercase tracking-wider text-[#9A8CC3]">
               Platform Guidelines
             </span>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1C1924] mt-1 mb-2 tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-medium text-[#1C1924] mt-1 mb-2 ">
               Community Standards
             </h1>
             <p className="text-xs sm:text-sm text-[#1C1924] leading-relaxed">
@@ -71,7 +71,7 @@ export default function CommunityStandardsPage() {
                     <Icon className="w-4 h-4 text-[#B2A4D7]" />
                   </div>
                   <div className="space-y-1">
-                    <h2 className="text-sm font-bold text-[#1C1924]">{s.title}</h2>
+                    <h2 className="text-sm font-medium text-[#1C1924]">{s.title}</h2>
                     <p className="text-xs sm:text-sm text-[#1C1924] leading-relaxed">
                       {s.description}
                     </p>
@@ -84,7 +84,7 @@ export default function CommunityStandardsPage() {
           <div className="pt-4 border-t border-[#9A8CC3]/20 text-center">
             <Link
               href="/discover"
-              className="inline-block px-8 py-3.5 rounded-2xl bg-[#6555B8] hover:bg-[#7D4B9F] text-white text-xs sm:text-sm font-bold shadow-lg shadow-[#6555B8]/40 transition active:scale-[0.98]"
+              className="inline-block px-8 py-3.5 rounded-2xl bg-[#6555B8] hover:bg-[#7D4B9F] text-white text-xs sm:text-sm font-medium shadow-lg shadow-[#6555B8]/40 transition active:scale-[0.98]"
             >
               Back to Profiles
             </Link>
@@ -98,3 +98,4 @@ export default function CommunityStandardsPage() {
     </div>
   );
 }
+

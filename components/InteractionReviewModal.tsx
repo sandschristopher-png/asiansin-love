@@ -72,10 +72,10 @@ export function InteractionReviewModal({
         
         {/* Header */}
         <div className="mb-6">
-          <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#9A8CC3] block mb-1">
+          <span className="text-[10px] font-mono font-medium uppercase tracking-widest text-[#9A8CC3] block mb-1">
             Confidential Feedback
           </span>
-          <h2 className="text-xl font-bold text-white tracking-tight">
+          <h2 className="text-xl font-medium text-white ">
             Accountability Check for {targetUserName}
           </h2>
           <p className="text-xs text-[#B2A4D7] mt-1 leading-relaxed">
@@ -239,3 +239,4 @@ export function InteractionReviewModal({
     </div>
   );
 }
+

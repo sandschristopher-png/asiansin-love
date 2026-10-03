@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 import { 
@@ -86,7 +86,7 @@ export default function ReputationModal({
             </div>
             <div>
               <div className="flex items-center gap-1.5">
-                <h3 className="text-base font-bold text-white">{name}&apos;s Conduct Index</h3>
+                <h3 className="text-base font-medium text-white">{name}&apos;s Conduct Index</h3>
               </div>
               <p className="text-xs text-[#D5CEE5]/70">Behavioral Sincerity Score</p>
             </div>
@@ -104,20 +104,20 @@ export default function ReputationModal({
         {/* Big Score Card */}
         <div className="flex items-center justify-between p-4 rounded-2xl bg-[#2D2F4C] border border-[#9A8CC3]/25">
           <div className="space-y-0.5">
-            <span className="text-[10px] uppercase font-bold tracking-wider text-[#B2A4D7]">Behavioral Standing</span>
+            <span className="text-[10px] uppercase font-medium tracking-wider text-[#B2A4D7]">Behavioral Standing</span>
             <p className="text-xs text-[#D5CEE5]">
               {score >= 95 ? 'Exceptional etiquette: exemplary community member.' : 'Respectful member in solid standing.'}
             </p>
           </div>
           <div className="flex items-baseline gap-0.5 bg-[#6555B8]/40 px-3 py-1.5 rounded-xl border border-[#9A8CC3]/40">
-            <span className="text-2xl font-extrabold text-white">{score}</span>
+            <span className="text-2xl font-medium text-white">{score}</span>
             <span className="text-xs font-semibold text-[#B2A4D7]">%</span>
           </div>
         </div>
 
         {/* Behavioral Pillars Breakdown */}
         <div className="space-y-2.5">
-          <h4 className="text-[11px] font-bold uppercase tracking-wider text-[#B2A4D7] px-0.5">
+          <h4 className="text-[11px] font-medium uppercase tracking-wider text-[#B2A4D7] px-0.5">
             How This Score Is Earned
           </h4>
           <div className="space-y-2">
@@ -146,7 +146,7 @@ export default function ReputationModal({
 
         {/* Peer Endorsement Tags */}
         <div className="space-y-2 pt-1">
-          <div className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wider text-[#B2A4D7] px-0.5">
+          <div className="flex items-center gap-1.5 text-[11px] font-medium uppercase tracking-wider text-[#B2A4D7] px-0.5">
             <ThumbsUp className="w-3 h-3 text-[#9A8CC3]" />
             <span>Community Tags</span>
           </div>
@@ -177,3 +177,4 @@ export default function ReputationModal({
     </div>
   );
 }
+

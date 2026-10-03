@@ -1,4 +1,4 @@
-import React from 'react';
+﻿import React from 'react';
 import Link from 'next/link';
 import { ArrowRight, ShieldCheck, HeartHandshake, Sparkles, Users } from 'lucide-react';
 
@@ -15,7 +15,7 @@ export default function HomePage() {
             Serious Courtship & Marriage
           </span>
 
-          <h1 className="text-3xl font-extrabold tracking-tight leading-[1.12] bg-gradient-to-b from-[#181126] via-[#3E2F6E] to-[#6555b8] bg-clip-text text-transparent">
+          <h1 className="text-3xl font-medium  leading-[1.12] bg-gradient-to-b from-[#181126] via-[#3E2F6E] to-[#6555b8] bg-clip-text text-transparent">
             Where Intentional Love Crosses Oceans
           </h1>
 
@@ -28,7 +28,7 @@ export default function HomePage() {
         <div className="flex flex-col gap-2.5 w-full pt-1">
           <Link
             href="/login"
-            className="w-full py-3.5 rounded-full bg-[#6555b8] hover:bg-[#52449e] text-sm font-bold text-white transition active:scale-95 shadow-md flex items-center justify-center gap-2"
+            className="w-full py-3.5 rounded-full bg-[#6555b8] hover:bg-[#52449e] text-sm font-medium text-white transition active:scale-95 shadow-md flex items-center justify-center gap-2"
           >
             <span>Create Your Account</span>
             <ArrowRight className="w-4 h-4" />
@@ -50,7 +50,7 @@ export default function HomePage() {
               <Sparkles className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-[#1C1924]">Always Free for Women</h3>
+              <h3 className="text-sm font-medium text-[#1C1924]">Always Free for Women</h3>
               <p className="text-xs text-[#524B5E] leading-relaxed mt-0.5">
                 Southeast Asian members browse, match, and message with completely open inboxes.
               </p>
@@ -62,7 +62,7 @@ export default function HomePage() {
               <ShieldCheck className="w-4 h-4 text-emerald-600" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-[#1C1924]">Direct & Uncluttered</h3>
+              <h3 className="text-sm font-medium text-[#1C1924]">Direct & Uncluttered</h3>
               <p className="text-xs text-[#524B5E] leading-relaxed mt-0.5">
                 No coin packs, micro-transactions, or third-party ad clutter. Just honest profiles.
               </p>
@@ -74,7 +74,7 @@ export default function HomePage() {
               <HeartHandshake className="w-4 h-4" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-[#1C1924]">Intentional Courtship</h3>
+              <h3 className="text-sm font-medium text-[#1C1924]">Intentional Courtship</h3>
               <p className="text-xs text-[#524B5E] leading-relaxed mt-0.5">
                 Built exclusively for singles seeking marriage, family, and lifelong commitment.
               </p>

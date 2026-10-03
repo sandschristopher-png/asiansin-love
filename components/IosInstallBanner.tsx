@@ -66,7 +66,7 @@ export function IosInstallBanner() {
             <Image src="/ail-heart.png" alt="asiansin.love" fill className="object-contain p-1" />
           </div>
           <div className="flex flex-col">
-            <h4 className="text-xs font-bold text-white tracking-wide">Install asiansin.love</h4>
+            <h4 className="text-xs font-medium text-white tracking-wide">Install asiansin.love</h4>
             <span className="text-[10px] text-[#B2A4D7]">Add to Home Screen for full app experience</span>
           </div>
         </div>
@@ -81,7 +81,7 @@ export function IosInstallBanner() {
 
       <div className="mt-3 pt-3 border-t border-[#7D7E92]/25 space-y-2 text-[11px] text-[#1C1924]/90">
         <div className="flex items-center gap-2">
-          <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#2D2F4C] text-[10px] font-bold text-[#B2A4D7] shrink-0">
+          <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#2D2F4C] text-[10px] font-medium text-[#B2A4D7] shrink-0">
             1
           </span>
           <span>
@@ -89,7 +89,7 @@ export function IosInstallBanner() {
           </span>
         </div>
         <div className="flex items-center gap-2">
-          <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#2D2F4C] text-[10px] font-bold text-[#B2A4D7] shrink-0">
+          <span className="flex items-center justify-center w-5 h-5 rounded-full bg-[#2D2F4C] text-[10px] font-medium text-[#B2A4D7] shrink-0">
             2
           </span>
           <span>
@@ -102,3 +102,4 @@ export function IosInstallBanner() {
 }
 
 export default IosInstallBanner;
+

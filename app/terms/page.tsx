@@ -23,10 +23,10 @@ export default function TermsOfUsePage() {
 
         {/* Header */}
         <div className="space-y-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-[#9A8CC3]">
+          <span className="text-[11px] font-medium uppercase tracking-wider text-[#9A8CC3]">
             Legal & Terms
           </span>
-          <h1 className="text-xl sm:text-[22px] font-semibold text-[#1C1924] tracking-tight">
+          <h1 className="text-xl sm:text-[22px] font-semibold text-[#1C1924] ">
             Terms of Use
           </h1>
           <p className="text-xs sm:text-sm text-[#1C1924]">
@@ -40,14 +40,14 @@ export default function TermsOfUsePage() {
             By creating an account on asiansin.love, you confirm that you are at least 18 years of age and seeking authentic interpersonal courtship.
           </p>
           
-          <h2 className="text-xs font-bold text-[#1C1924] uppercase tracking-wider pt-2">
+          <h2 className="text-xs font-medium text-[#1C1924] uppercase tracking-wider pt-2">
             Non-Agency Platform Notice
           </h2>
           <p>
             asiansin.love operates strictly as an independent communications service connecting adult individuals. We are not an international marriage broker, catalog agency, or legal immigration representative. All users are personally responsible for conducting their own diligence and exercising caution before meeting in person.
           </p>
 
-          <h2 className="text-xs font-bold text-[#1C1924] uppercase tracking-wider pt-2">
+          <h2 className="text-xs font-medium text-[#1C1924] uppercase tracking-wider pt-2">
             Prohibited Conduct
           </h2>
           <p>
@@ -61,3 +61,4 @@ export default function TermsOfUsePage() {
     </div>
   );
 }
+

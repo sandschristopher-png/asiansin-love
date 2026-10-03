@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
@@ -153,7 +153,7 @@ export default function VerifyPage() {
           </button>
           <div className="flex items-center gap-2">
             <ShieldCheck className="w-5 h-5 text-[#6555b8]" />
-            <h1 className="text-xl font-bold text-[#1C1924] tracking-tight">
+            <h1 className="text-xl font-medium text-[#1C1924] ">
               Profile Verification
             </h1>
           </div>
@@ -165,7 +165,7 @@ export default function VerifyPage() {
             <div className="h-16 w-16 mx-auto rounded-full bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center">
               <CheckCircle2 className="w-8 h-8" />
             </div>
-            <h2 className="text-xl font-bold text-[#1C1924]">Verification Submitted</h2>
+            <h2 className="text-xl font-medium text-[#1C1924]">Verification Submitted</h2>
             <p className="text-sm text-[#6C637B] leading-relaxed">
               Your gesture selfie was analyzed and securely submitted. Once verified by our moderation team, your profile will display the verified trust badge.
             </p>
@@ -176,7 +176,7 @@ export default function VerifyPage() {
             {/* Pose Challenge Card */}
             <div className="p-5 rounded-3xl bg-white border border-[#DDD7E5] space-y-3 shadow-sm">
               <div className="flex items-center justify-between">
-                <span className="text-[11px] font-bold uppercase tracking-wider text-[#6555b8]">
+                <span className="text-[11px] font-medium uppercase tracking-wider text-[#6555b8]">
                   Assigned Gesture Challenge
                 </span>
                 <button
@@ -192,7 +192,7 @@ export default function VerifyPage() {
 
               <div className="p-3.5 rounded-2xl bg-[#F8F7FA] border border-[#E5E1EC] space-y-1.5">
                 <div className="flex items-center gap-2">
-                  <span className="text-sm font-bold text-[#1C1924]">{challenge.badge}</span>
+                  <span className="text-sm font-medium text-[#1C1924]">{challenge.badge}</span>
                 </div>
                 <p className="text-xs text-[#6C637B] leading-relaxed">
                   {challenge.instruction}
@@ -245,7 +245,7 @@ export default function VerifyPage() {
                     className="w-full h-full object-cover"
                   />
                   <div className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 hover:opacity-100 transition-opacity">
-                    <span className="px-4 py-2 rounded-2xl bg-white border border-[#DDD7E5] text-xs font-bold text-[#1C1924] shadow-md">
+                    <span className="px-4 py-2 rounded-2xl bg-white border border-[#DDD7E5] text-xs font-medium text-[#1C1924] shadow-md">
                       Tap to retake
                     </span>
                   </div>
@@ -256,7 +256,7 @@ export default function VerifyPage() {
                     <Camera className="w-8 h-8 text-[#6555b8]" />
                   </div>
                   <div>
-                    <p className="text-sm font-bold text-[#1C1924]">
+                    <p className="text-sm font-medium text-[#1C1924]">
                       Take Verification Selfie
                     </p>
                     <p className="text-xs text-[#6C637B] mt-0.5">
@@ -288,7 +288,7 @@ export default function VerifyPage() {
               type="button"
               disabled={uploading || analyzing || !compressedBlob}
               onClick={handleUpload}
-              className={`w-full py-3.5 rounded-2xl font-bold text-xs uppercase tracking-wider shadow-md transition active:scale-95 flex items-center justify-center gap-2 ${
+              className={`w-full py-3.5 rounded-2xl font-medium text-xs uppercase tracking-wider shadow-md transition active:scale-95 flex items-center justify-center gap-2 ${
                 compressedBlob && !uploading && !analyzing
                   ? 'bg-[#6555b8] hover:bg-[#52449e] text-white shadow-[#6555b8]/30'
                   : 'bg-white text-[#8C849B] cursor-not-allowed border border-[#DDD7E5]'

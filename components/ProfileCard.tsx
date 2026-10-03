@@ -89,7 +89,7 @@ export function ProfileCard({
         ) : <div />}
 
         {profile.repScore !== undefined && (
-          <span className="px-2 py-0.5 rounded-full bg-[#2D2F4C]/90 border border-[#9A8CC3]/50 text-[10px] font-bold text-white backdrop-blur-md">
+          <span className="px-2 py-0.5 rounded-full bg-[#2D2F4C]/90 border border-[#9A8CC3]/50 text-[10px] font-medium text-white backdrop-blur-md">
             {profile.repScore}% Rep
           </span>
         )}
@@ -98,7 +98,7 @@ export function ProfileCard({
       <div className="relative z-10 p-3 flex flex-col gap-1.5 pointer-events-none">
         <div className="flex items-center gap-1.5">
           <Link href={`/profile/${profile.id}`} className="pointer-events-auto">
-            <h3 className="text-base font-bold text-white leading-tight hover:underline flex items-center gap-1">
+            <h3 className="text-base font-medium text-white leading-tight hover:underline flex items-center gap-1">
               {displayName}{displayAge}
               {profile.isVerified && (
                 <CheckCircle className="w-3.5 h-3.5 text-[#9A8CC3] shrink-0" />

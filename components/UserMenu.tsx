@@ -54,7 +54,7 @@ export function UserMenu({ displayName, avatarUrl, userId }: UserMenuProps) {
       {open && (
         <div className="absolute right-0 mt-2 w-52 rounded-2xl border border-slate-200 bg-white/95 p-1.5 backdrop-blur-xl shadow-xl z-50 animate-in fade-in zoom-in-95 duration-100">
           <div className="px-3 py-2 border-b border-slate-100 mb-1">
-            <p className="text-xs font-bold text-slate-900 truncate">{displayName}</p>
+            <p className="text-xs font-medium text-slate-900 truncate">{displayName}</p>
             <p className="text-[10px] text-emerald-600 flex items-center gap-1 mt-0.5 font-medium">
               <ShieldCheck className="h-3 w-3" />
               <span>Verified Account</span>
@@ -102,3 +102,4 @@ export function UserMenu({ displayName, avatarUrl, userId }: UserMenuProps) {
     </div>
   )
 }
+

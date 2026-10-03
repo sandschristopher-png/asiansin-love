@@ -86,7 +86,7 @@ export default function NotificationsPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-xl sm:text-[22px] font-semibold text-[#1C1924] tracking-tight">
+          <h1 className="text-xl sm:text-[22px] font-semibold text-[#1C1924] ">
               Notifications
             </h1>
             <p className="text-xs sm:text-sm text-[#756D82] mt-0.5">
@@ -97,7 +97,7 @@ export default function NotificationsPage() {
         {notifications.some((n) => !n.is_read) && (
           <button
             onClick={markAllRead}
-            className="text-xs font-bold text-[#B2A4D7] hover:text-[#1C1924] active:scale-95 transition-all"
+            className="text-xs font-medium text-[#B2A4D7] hover:text-[#1C1924] active:scale-95 transition-all"
           >
             Mark all read
           </button>
@@ -125,7 +125,7 @@ export default function NotificationsPage() {
               <div className="flex items-start justify-between gap-3">
                 <div className="space-y-1">
                   <div className="flex items-center gap-2">
-                    <h3 className="text-sm font-extrabold text-[#1C1924]">
+                    <h3 className="text-sm font-medium text-[#1C1924]">
                       {item.title}
                     </h3>
                     {!item.is_read && (
@@ -147,7 +147,7 @@ export default function NotificationsPage() {
         {!loading && notifications.length === 0 && (
           <div className="rounded-3xl bg-[#FFFFFF] border border-[#9A8CC3]/35 p-10 shadow-2xl text-center space-y-2">
             <span className="text-3xl">🔔</span>
-            <h3 className="text-sm font-extrabold text-[#1C1924]">All caught up!</h3>
+            <h3 className="text-sm font-medium text-[#1C1924]">All caught up!</h3>
             <p className="text-sm text-[#1C1924]">You have no unread notifications right now.</p>
           </div>
         )}
@@ -155,3 +155,4 @@ export default function NotificationsPage() {
     </main>
   );
 }
+

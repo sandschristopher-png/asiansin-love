@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React from 'react';
 
@@ -31,22 +31,22 @@ export function FilterModal({
         <div className="space-y-6">
           <div className="flex items-center justify-between border-b border-[#9A8CC3]/30 pb-4 pt-[max(0.5rem,env(safe-area-inset-top))]">
             <div>
-              <h2 className="text-xl font-extrabold text-white tracking-tight">
+              <h2 className="text-xl font-medium text-white ">
                 Search Settings
               </h2>
               <span className="text-[11px] text-[#DDD8D4] font-medium">Fine-tune your courtship discovery</span>
             </div>
             <button
               onClick={onClose}
-              className="h-9 w-9 rounded-xl bg-[#2D2F4C] border border-[#9A8CC3]/35 text-white font-black text-sm flex items-center justify-center touch-press"
+              className="h-9 w-9 rounded-xl bg-[#2D2F4C] border border-[#9A8CC3]/35 text-white font-medium text-sm flex items-center justify-center touch-press"
             >
-              ✕
+              âœ•
             </button>
           </div>
 
           {/* Region / Country */}
           <div>
-            <label className="text-xs font-black uppercase tracking-wider text-[#9A8CC3] block mb-2.5">
+            <label className="text-xs font-medium uppercase tracking-wider text-[#9A8CC3] block mb-2.5">
               Target Country
             </label>
             <div className="grid grid-cols-2 gap-2">
@@ -56,7 +56,7 @@ export function FilterModal({
                   <button
                     key={region}
                     onClick={() => onSelectRegion(region)}
-                    className={`py-3 px-3 rounded-xl text-xs font-bold transition-all border text-center touch-press ${
+                    className={`py-3 px-3 rounded-xl text-xs font-medium transition-all border text-center touch-press ${
                       active
                         ? 'bg-[#6555B8] border-[#978FA8] text-white shadow-md'
                         : 'bg-[#2D2F4C] border-[#9A8CC3]/30 text-[#DDD8D4] hover:text-white'
@@ -72,7 +72,7 @@ export function FilterModal({
           {/* Verified Members Only Switch */}
           <div className="rounded-2xl bg-[#2D2F4C] border border-[#9A8CC3]/35 p-4 flex items-center justify-between">
             <div className="pr-4">
-              <span className="text-sm font-extrabold text-white block">
+              <span className="text-sm font-medium text-white block">
                 Verified Profiles Only
               </span>
               <span className="text-xs text-[#DDD8D4] leading-relaxed">
@@ -96,9 +96,9 @@ export function FilterModal({
 
           {/* Age Bracket */}
           <div className="rounded-2xl bg-[#2D2F4C] border border-[#9A8CC3]/35 p-4 space-y-2">
-            <div className="flex justify-between text-xs font-bold">
+            <div className="flex justify-between text-xs font-medium">
               <span className="text-[#9A8CC3] uppercase tracking-wider">Age Bracket</span>
-              <span className="text-white">20 – 45+</span>
+              <span className="text-white">20 â€“ 45+</span>
             </div>
             <div className="h-2 w-full bg-[#2D2F4C] rounded-full overflow-hidden">
               <div className="h-full bg-[#6555B8] w-3/4 rounded-full" />
@@ -110,7 +110,7 @@ export function FilterModal({
         <div className="pt-6 border-t border-[#9A8CC3]/30 pb-[max(1rem,env(safe-area-inset-bottom))]">
           <button
             onClick={onClose}
-            className="w-full py-4 rounded-2xl bg-[#6555B8] hover:bg-[#7D4B9F] text-white font-extrabold text-sm shadow-xl shadow-[#6555B8]/40 touch-press"
+            className="w-full py-4 rounded-2xl bg-[#6555B8] hover:bg-[#7D4B9F] text-white font-medium text-sm shadow-xl shadow-[#6555B8]/40 touch-press"
           >
             Apply Settings
           </button>

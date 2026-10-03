@@ -60,7 +60,7 @@ export default function SignUpPage() {
   return (
     <main className="max-w-md mx-auto w-full px-4 py-12 flex-1 flex flex-col justify-center">
       <div className="text-center mb-6">
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-[#1C1924] tracking-tight font-[family-name:var(--font-nunito)]">
+        <h1 className="text-2xl sm:text-3xl font-medium text-[#1C1924]  font-[family-name:var(--font-nunito)]">
           Join asiansin.love
         </h1>
         <p className="text-sm text-[#1C1924] mt-1">
@@ -77,7 +77,7 @@ export default function SignUpPage() {
 
         <form onSubmit={handleSignUp} className="space-y-4">
           <div>
-            <label className="text-xs font-bold uppercase tracking-wider text-[#9A8CC3] block mb-1">
+            <label className="text-xs font-medium uppercase tracking-wider text-[#9A8CC3] block mb-1">
               Your Name / Display Name
             </label>
             <input
@@ -91,7 +91,7 @@ export default function SignUpPage() {
           </div>
 
           <div>
-            <label className="text-xs font-bold uppercase tracking-wider text-[#9A8CC3] block mb-1">
+            <label className="text-xs font-medium uppercase tracking-wider text-[#9A8CC3] block mb-1">
               Email Address
             </label>
             <input
@@ -105,7 +105,7 @@ export default function SignUpPage() {
           </div>
 
           <div>
-            <label className="text-xs font-bold uppercase tracking-wider text-[#9A8CC3] block mb-1">
+            <label className="text-xs font-medium uppercase tracking-wider text-[#9A8CC3] block mb-1">
               Password
             </label>
             <input
@@ -122,7 +122,7 @@ export default function SignUpPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 rounded-2xl bg-[#6555B8] hover:bg-[#7D4B9F] disabled:opacity-50 text-white font-bold text-sm shadow-lg shadow-[#6555B8]/40 transition active:scale-95 mt-2"
+            className="w-full py-3.5 rounded-2xl bg-[#6555B8] hover:bg-[#7D4B9F] disabled:opacity-50 text-white font-medium text-sm shadow-lg shadow-[#6555B8]/40 transition active:scale-95 mt-2"
           >
             {loading ? 'Creating Account...' : 'Create Account'}
           </button>
@@ -130,7 +130,7 @@ export default function SignUpPage() {
 
         <div className="pt-2 border-t border-[#9A8CC3]/20 text-center text-xs text-[#1C1924]">
           Already have an account?{' '}
-          <Link href="/login" className="text-[#B2A4D7] font-bold hover:underline">
+          <Link href="/login" className="text-[#B2A4D7] font-medium hover:underline">
             Sign In
           </Link>
         </div>
@@ -138,3 +138,4 @@ export default function SignUpPage() {
     </main>
   );
 }
+

@@ -148,7 +148,7 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
             onTouchEnd={handleTouchEnd}
             className="pb-2 border-b border-[#9A8CC3]/25 touch-none"
           >
-            <h2 className="text-xl font-black text-[#1C1924] tracking-tight">
+            <h2 className="text-xl font-medium text-[#1C1924] ">
               Your Account
             </h2>
           </div>
@@ -156,11 +156,11 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
           {/* User Profile Summary: Circular rounded-full avatar matching chat rows */}
           <div className="p-4 rounded-2xl bg-[#1E1F30] border border-[#9A8CC3]/30 flex items-center justify-between gap-3 shadow-md">
             <div className="flex items-center gap-3">
-              <div className="h-12 w-12 rounded-full bg-[#6555B8] text-white flex items-center justify-center font-black text-base border border-[#9A8CC3]/50 shadow-inner flex-shrink-0">
+              <div className="h-12 w-12 rounded-full bg-[#6555B8] text-white flex items-center justify-center font-medium text-base border border-[#9A8CC3]/50 shadow-inner flex-shrink-0">
                 {initials}
               </div>
               <div>
-                <h3 className="text-base font-extrabold text-[#1C1924]">
+                <h3 className="text-base font-medium text-[#1C1924]">
                   {profile?.full_name || 'Your Profile'}
                   {profile?.age ? `, ${profile.age}` : ''}
                 </h3>
@@ -177,7 +177,7 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
             <Link
               href="/profile"
               onClick={closeWithAnimation}
-              className="px-3.5 py-1.5 rounded-xl bg-[#2D2F4C] hover:bg-[#6555B8]/30 border border-[#9A8CC3]/40 text-white hover:text-white text-xs font-bold transition-all active:scale-95"
+              className="px-3.5 py-1.5 rounded-xl bg-[#2D2F4C] hover:bg-[#6555B8]/30 border border-[#9A8CC3]/40 text-white hover:text-white text-xs font-medium transition-all active:scale-95"
             >
               Edit
             </Link>
@@ -190,7 +190,7 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
                 <svg className="w-4 h-4 text-[#9A8CC3]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
                 </svg>
-                <span className="text-[11px] font-black uppercase tracking-wider text-[#1C1924]">
+                <span className="text-[11px] font-medium uppercase tracking-wider text-[#1C1924]">
                   {profile?.is_verified ? 'Identity Verified' : 'Pose Unverified'}
                 </span>
               </div>
@@ -205,7 +205,7 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
               <Link
                 href="/verify"
                 onClick={closeWithAnimation}
-                className="px-3.5 py-2 rounded-xl bg-[#6555B8] hover:bg-[#9A8CC3] text-white text-xs font-black shadow-md flex-shrink-0 active:scale-95 transition-all"
+                className="px-3.5 py-2 rounded-xl bg-[#6555B8] hover:bg-[#9A8CC3] text-white text-xs font-medium shadow-md flex-shrink-0 active:scale-95 transition-all"
               >
                 Verify
               </Link>
@@ -217,7 +217,7 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
             <Link
               href="/profile"
               onClick={closeWithAnimation}
-              className="flex items-center justify-between p-3.5 rounded-2xl bg-[#1E1F30]/90 hover:bg-[#1E1F30] border border-[#9A8CC3]/30 text-white font-bold text-sm transition-all active:scale-[0.985]"
+              className="flex items-center justify-between p-3.5 rounded-2xl bg-[#1E1F30]/90 hover:bg-[#1E1F30] border border-[#9A8CC3]/30 text-white font-medium text-sm transition-all active:scale-[0.985]"
             >
               <div className="flex items-center gap-3">
                 <svg className="w-4 h-4 text-[#9A8CC3]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -231,7 +231,7 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
             <Link
               href="/favorites"
               onClick={closeWithAnimation}
-              className="flex items-center justify-between p-3.5 rounded-2xl bg-[#1E1F30]/90 hover:bg-[#1E1F30] border border-[#9A8CC3]/30 text-white font-bold text-sm transition-all active:scale-[0.985]"
+              className="flex items-center justify-between p-3.5 rounded-2xl bg-[#1E1F30]/90 hover:bg-[#1E1F30] border border-[#9A8CC3]/30 text-white font-medium text-sm transition-all active:scale-[0.985]"
             >
               <div className="flex items-center gap-3">
                 <svg className="w-4 h-4 text-[#9A8CC3]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -245,7 +245,7 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
             <Link
               href="/settings"
               onClick={closeWithAnimation}
-              className="flex items-center justify-between p-3.5 rounded-2xl bg-[#1E1F30]/90 hover:bg-[#1E1F30] border border-[#9A8CC3]/30 text-white font-bold text-sm transition-all active:scale-[0.985]"
+              className="flex items-center justify-between p-3.5 rounded-2xl bg-[#1E1F30]/90 hover:bg-[#1E1F30] border border-[#9A8CC3]/30 text-white font-medium text-sm transition-all active:scale-[0.985]"
             >
               <div className="flex items-center gap-3">
                 <svg className="w-4 h-4 text-[#9A8CC3]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -263,7 +263,7 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
           <button
             type="button"
             onClick={handleSignOut}
-            className="w-full py-3 rounded-2xl bg-[#1E1F30] hover:bg-[#2D2F4C] border border-rose-500/30 text-rose-300 font-extrabold text-xs tracking-wider uppercase active:scale-[0.985] transition-transform"
+            className="w-full py-3 rounded-2xl bg-[#1E1F30] hover:bg-[#2D2F4C] border border-rose-500/30 text-rose-300 font-medium text-xs tracking-wider uppercase active:scale-[0.985] transition-transform"
           >
             Sign Out / Switch Account
           </button>

@@ -115,7 +115,7 @@ export default function LoginPage() {
       <main className="flex-1 flex items-center justify-center p-4">
         <div className="w-full max-w-sm rounded-3xl bg-[#FFFFFF] border border-[#DDD7E5]/25 p-7 shadow-2xl">
           <div className="text-center mb-6">
-            <h2 className="text-2xl font-black text-[#1C1924] tracking-tight">
+            <h2 className="text-2xl font-medium text-[#1C1924] ">
               {mode === 'signup' && 'Create Account'}
               {mode === 'signin' && 'Sign In'}
               {mode === 'forgot' && 'Reset Password'}
@@ -174,7 +174,7 @@ export default function LoginPage() {
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-[#DDD7E5]/25" />
                 </div>
-                <div className="relative flex justify-center text-[10px] uppercase font-bold tracking-wider">
+                <div className="relative flex justify-center text-[10px] uppercase font-medium tracking-wider">
                   <span className="bg-[#FFFFFF] px-2 text-[#1C1924]/60">or with email</span>
                 </div>
               </div>
@@ -248,7 +248,7 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-1.5 py-3 rounded-2xl bg-[#7D4B9F] hover:bg-[#7D4B9F] text-[#1C1924] font-bold text-sm tracking-wide shadow-lg shadow-[#7D4B9F]/30 transition active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full mt-1.5 py-3 rounded-2xl bg-[#7D4B9F] hover:bg-[#7D4B9F] text-[#1C1924] font-medium text-sm tracking-wide shadow-lg shadow-[#7D4B9F]/30 transition active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
             >
               {loading && <Loader2 className="w-4 h-4 animate-spin text-[#1C1924]" />}
               {mode === 'signup' && 'Sign Up'}
@@ -264,7 +264,7 @@ export default function LoginPage() {
                 onClick={() => resetFormState('signin')}
                 className="text-xs text-[#1C1924]/80 hover:text-[#1C1924] transition cursor-pointer"
               >
-                Back to <span className="text-[#1C1924] font-bold">Sign In</span>
+                Back to <span className="text-[#1C1924] font-medium">Sign In</span>
               </button>
             ) : (
               <button
@@ -274,11 +274,11 @@ export default function LoginPage() {
               >
                 {mode === 'signin' ? (
                   <>
-                    Need an account? <span className="text-[#1C1924] font-bold">Sign Up</span>
+                    Need an account? <span className="text-[#1C1924] font-medium">Sign Up</span>
                   </>
                 ) : (
                   <>
-                    Already have an account? <span className="text-[#1C1924] font-bold">Sign In</span>
+                    Already have an account? <span className="text-[#1C1924] font-medium">Sign In</span>
                   </>
                 )}
               </button>
@@ -298,3 +298,4 @@ export default function LoginPage() {
     </div>
   );
 }
+

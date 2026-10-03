@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
@@ -26,7 +26,7 @@ export default function SettingsPage() {
           >
             <ArrowLeft className="w-4 h-4" />
           </Link>
-          <h1 className="text-xl sm:text-[22px] font-semibold text-[#1C1924] tracking-tight">Account Settings</h1>
+          <h1 className="text-xl sm:text-[22px] font-semibold text-[#1C1924] ">Account Settings</h1>
         </div>
 
         <Link
@@ -70,7 +70,7 @@ export default function SettingsPage() {
           <div className="space-y-6">
             {/* Handle & Identity Section */}
             <div className="space-y-2">
-              <h2 className="text-sm sm:text-base font-bold text-[#1C1924] flex items-center gap-2">
+              <h2 className="text-sm sm:text-base font-medium text-[#1C1924] flex items-center gap-2">
                 <User className="w-4 h-4 text-[#6555b8]" /> Handle & Account Identity
               </h2>
               <p className="text-xs sm:text-sm text-[#756D82]">
@@ -80,7 +80,7 @@ export default function SettingsPage() {
 
             <form onSubmit={handleSaveHandle} className="space-y-4 max-w-md">
               <div className="space-y-1.5">
-                <label className="text-xs font-bold uppercase tracking-wider text-[#524B5E]">
+                <label className="text-xs font-medium uppercase tracking-wider text-[#524B5E]">
                   Username Handle
                 </label>
                 <div className="relative flex items-center">
@@ -116,7 +116,7 @@ export default function SettingsPage() {
                 <Crown className="w-5 h-5 text-amber-500" />
               </div>
               <div className="space-y-1.5 flex-1">
-                <h3 className="text-xs sm:text-sm font-bold text-[#1C1924]">
+                <h3 className="text-xs sm:text-sm font-medium text-[#1C1924]">
                   Premium Member Features
                 </h3>
                 <p className="text-xs sm:text-sm text-[#524B5E] leading-relaxed">
@@ -137,7 +137,7 @@ export default function SettingsPage() {
 
         {activeTab !== 'account' && (
           <div className="py-12 text-center space-y-2">
-            <h2 className="text-base font-bold text-[#1C1924] capitalize">{activeTab} Preferences</h2>
+            <h2 className="text-base font-medium text-[#1C1924] capitalize">{activeTab} Preferences</h2>
             <p className="text-xs sm:text-sm text-[#756D82]">
               Configured automatically for verified accounts.
             </p>

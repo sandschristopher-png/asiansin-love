@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { Navbar } from '@/components/Navbar';
 
@@ -106,7 +106,7 @@ export default function FavoritesPage() {
     <div className="min-h-screen flex flex-col bg-[#F8F7FA] text-[#1C1924]">`n      <Navbar />`n      <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-6 pb-32 space-y-6">
       {/* Header */}
       <div className="space-y-0.5">
-        <h1 className="text-xl sm:text-[22px] font-semibold text-[#1C1924] tracking-tight">Saved Profiles</h1>
+        <h1 className="text-xl sm:text-[22px] font-semibold text-[#1C1924] ">Saved Profiles</h1>
         <p className="text-xs sm:text-sm text-[#756D82]">
           Profiles you've bookmarked to revisit anytime.
         </p>
@@ -125,7 +125,7 @@ export default function FavoritesPage() {
               <Sparkles className="w-6 h-6" />
             </div>
             <div className="space-y-1.5">
-              <h2 className="text-base sm:text-lg font-bold text-[#1C1924]">No saved profiles yet</h2>
+              <h2 className="text-base sm:text-lg font-medium text-[#1C1924]">No saved profiles yet</h2>
               <p className="text-xs sm:text-sm text-[#756D82] leading-relaxed">
                 When you discover someone who stands out, tap the bookmark or heart on their profile to save them here.
               </p>
@@ -190,7 +190,7 @@ export default function FavoritesPage() {
               <div className="p-3.5 sm:p-4 bg-white">
                 <Link href={'/profile/' + profile.id} className="block group-hover:opacity-95">
                   <div className="flex items-center gap-1.5 mb-1">
-                    <h3 className="text-sm sm:text-base font-bold text-[#1C1924] flex items-center gap-1.5 truncate">
+                    <h3 className="text-sm sm:text-base font-medium text-[#1C1924] flex items-center gap-1.5 truncate">
                       {profile.name}{profile.age ? `, ${profile.age}` : ''}
                       {profile.verified && <CheckCircle className="w-3.5 h-3.5 text-[#6555b8] shrink-0" />}
                     </h3>
@@ -213,3 +213,4 @@ export default function FavoritesPage() {
   );</div>
   );
 }
+

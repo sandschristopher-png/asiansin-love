@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
@@ -48,7 +48,7 @@ export function DiscoverCard({
         />
       ) : (
         <div className="h-full w-full bg-gradient-to-br from-[#ECE7F6] to-[#DDD5EE] flex items-center justify-center">
-          <span className="text-3xl font-bold text-[#6555B8]/40">{name?.[0] || '?'}</span>
+          <span className="text-3xl font-medium text-[#6555B8]/40">{name?.[0] || '?'}</span>
         </div>
       )}
 
@@ -78,7 +78,7 @@ export function DiscoverCard({
       {/* Bottom Identity & Tactile Action */}
       <div className="absolute bottom-0 inset-x-0 p-3 flex items-end justify-between gap-2 z-10">
         <div className="min-w-0 flex-1">
-          <h2 className="text-[15px] font-bold text-white tracking-tight truncate drop-shadow-sm">
+          <h2 className="text-[15px] font-medium text-white  truncate drop-shadow-sm">
             {name}, {age}
           </h2>
 
@@ -105,3 +105,4 @@ export function DiscoverCard({
     </Link>
   );
 }
+

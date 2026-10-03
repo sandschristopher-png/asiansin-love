@@ -37,7 +37,7 @@ export default function ForgotPasswordPage() {
             <div className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 text-emerald-400">
               <CheckCircle2 className="w-7 h-7" />
             </div>
-            <h1 className="text-xl font-bold text-[#1C1924]">Reset Link Sent</h1>
+            <h1 className="text-xl font-medium text-[#1C1924]">Reset Link Sent</h1>
             <p className="text-sm text-[#1C1924] leading-relaxed">
               If an account is associated with <span className="text-[#1C1924] font-medium">{email}</span>, you will receive a secure password recovery link shortly.
             </p>
@@ -57,7 +57,7 @@ export default function ForgotPasswordPage() {
             <div className="flex flex-col space-y-1">
               <div className="flex items-center gap-2 mb-1">
                 <ShieldCheck className="w-5 h-5 text-[#9A8CC3]" />
-                <h1 className="text-xl font-bold text-[#1C1924]">Reset Your Password</h1>
+                <h1 className="text-xl font-medium text-[#1C1924]">Reset Your Password</h1>
               </div>
               <p className="text-sm text-[#1C1924] leading-relaxed">
                 Enter your account email address and we will dispatch a confidential reset link.
@@ -79,7 +79,7 @@ export default function ForgotPasswordPage() {
             <button
               type="submit"
               disabled={isLoading || !email.trim()}
-              className="w-full py-2.5 rounded-full bg-[#6555B8] hover:bg-[#9A8CC3] hover:text-[#FFFFFF] text-white font-bold text-xs shadow-lg transition disabled:opacity-40"
+              className="w-full py-2.5 rounded-full bg-[#6555B8] hover:bg-[#9A8CC3] hover:text-[#FFFFFF] text-white font-medium text-xs shadow-lg transition disabled:opacity-40"
             >
               {isLoading ? 'Dispatching...' : 'Send Recovery Link'}
             </button>

@@ -17,10 +17,10 @@ export function SafetyGuidelinesModal({ isOpen, onClose, onAcknowledge }: Safety
         
         {/* Header */}
         <div className="mb-6">
-          <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#9A8CC3] block mb-1">
+          <span className="text-[10px] font-mono font-medium uppercase tracking-widest text-[#9A8CC3] block mb-1">
             Community Standards
           </span>
-          <h2 className="text-xl sm:text-2xl font-bold text-white tracking-tight">
+          <h2 className="text-xl sm:text-2xl font-medium text-white ">
             Mutual Respect & Safety Charter
           </h2>
           <p className="text-xs text-[#B2A4D7] mt-1.5 leading-relaxed">
@@ -31,7 +31,7 @@ export function SafetyGuidelinesModal({ isOpen, onClose, onAcknowledge }: Safety
         {/* Standards Stack */}
         <div className="space-y-3 mb-6">
           <div className="p-3.5 rounded-2xl bg-[#2D2F4C] border border-[#9A8CC3]/20 flex gap-3">
-            <span className="text-xs font-mono font-bold text-[#9A8CC3] shrink-0">01</span>
+            <span className="text-xs font-mono font-medium text-[#9A8CC3] shrink-0">01</span>
             <div>
               <h4 className="text-xs font-semibold text-white">Genuine Courtship Only</h4>
               <p className="text-[11px] text-[#B2A4D7] mt-0.5 leading-relaxed">
@@ -41,7 +41,7 @@ export function SafetyGuidelinesModal({ isOpen, onClose, onAcknowledge }: Safety
           </div>
 
           <div className="p-3.5 rounded-2xl bg-[#2D2F4C] border border-[#9A8CC3]/20 flex gap-3">
-            <span className="text-xs font-mono font-bold text-[#9A8CC3] shrink-0">02</span>
+            <span className="text-xs font-mono font-medium text-[#9A8CC3] shrink-0">02</span>
             <div>
               <h4 className="text-xs font-semibold text-white">Public Daylight First Meetings</h4>
               <p className="text-[11px] text-[#B2A4D7] mt-0.5 leading-relaxed">
@@ -51,7 +51,7 @@ export function SafetyGuidelinesModal({ isOpen, onClose, onAcknowledge }: Safety
           </div>
 
           <div className="p-3.5 rounded-2xl bg-[#2D2F4C] border border-[#9A8CC3]/20 flex gap-3">
-            <span className="text-xs font-mono font-bold text-[#9A8CC3] shrink-0">03</span>
+            <span className="text-xs font-mono font-medium text-[#9A8CC3] shrink-0">03</span>
             <div>
               <h4 className="text-xs font-semibold text-white">Mutual Dignity & Respect</h4>
               <p className="text-[11px] text-[#B2A4D7] mt-0.5 leading-relaxed">
@@ -81,3 +81,4 @@ export function SafetyGuidelinesModal({ isOpen, onClose, onAcknowledge }: Safety
     </div>
   );
 }
+

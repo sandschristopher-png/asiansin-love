@@ -25,11 +25,12 @@ export function Logo({ className = "h-6 w-6", textSize = "text-xl" }: { classNam
         <circle cx="16" cy="11.5" r="2.2" fill="#FFFFFF" fillOpacity="0.92" />
       </svg>
 
-      <span className={`${textSize} font-sans leading-none tracking-tight flex items-baseline gap-1`}>
-        <span className="font-bold text-[#1C1924]">Asians</span>
+      <span className={`${textSize} font-sans leading-none  flex items-baseline gap-1`}>
+        <span className="font-medium text-[#1C1924]">Asians</span>
         <span className="font-normal text-[#756D82] text-[0.88em]">in</span>
-        <span className="font-extrabold text-[#6555B8]">Love</span>
+        <span className="font-medium text-[#6555B8]">Love</span>
       </span>
     </div>
   );
 }
+

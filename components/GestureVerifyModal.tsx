@@ -80,10 +80,10 @@ export function GestureVerifyModal({
         
         {/* Header */}
         <div className="mb-6">
-          <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-[#9A8CC3] block mb-1">
+          <span className="text-[10px] font-mono font-medium uppercase tracking-widest text-[#9A8CC3] block mb-1">
             Live Verification
           </span>
-          <h2 className="text-xl font-bold text-white tracking-tight">
+          <h2 className="text-xl font-medium text-white ">
             Confirm Your Identity
           </h2>
           <p className="text-xs text-[#B2A4D7] mt-1 leading-relaxed">
@@ -96,7 +96,7 @@ export function GestureVerifyModal({
           <span className="text-[10px] font-mono uppercase tracking-wider text-[#9A8CC3] block mb-1">
             Required Pose
           </span>
-          <p className="text-sm font-bold text-white">
+          <p className="text-sm font-medium text-white">
             "{selectedGesture}"
           </p>
         </div>
@@ -143,3 +143,4 @@ export function GestureVerifyModal({
     </div>
   );
 }
+

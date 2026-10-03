@@ -1,4 +1,4 @@
-'use client'
+﻿'use client'
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
@@ -78,7 +78,7 @@ export function ProfileActions({ targetUserId, targetUserName, currentUserId, is
       <div className="pt-2">
         <button
           onClick={() => router.push('/onboarding')}
-          className="w-full rounded-xl border border-stone-300 bg-stone-100 py-2.5 text-xs font-bold text-stone-800 hover:bg-stone-200 transition"
+          className="w-full rounded-xl border border-stone-300 bg-stone-100 py-2.5 text-xs font-medium text-stone-800 hover:bg-stone-200 transition"
         >
           Edit My Profile
         </button>
@@ -92,7 +92,7 @@ export function ProfileActions({ targetUserId, targetUserName, currentUserId, is
         <button
           onClick={handleSpark}
           disabled={loadingSpark || sparkSent}
-          className="flex items-center justify-center gap-2 rounded-xl bg-rose-600 py-3 text-xs font-bold text-[#1C1924] hover:bg-rose-500 transition shadow-xs disabled:opacity-75"
+          className="flex items-center justify-center gap-2 rounded-xl bg-rose-600 py-3 text-xs font-medium text-[#1C1924] hover:bg-rose-500 transition shadow-xs disabled:opacity-75"
         >
           {loadingSpark ? (
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -111,7 +111,7 @@ export function ProfileActions({ targetUserId, targetUserName, currentUserId, is
 
         <button
           onClick={handleMessage}
-          className="flex items-center justify-center gap-2 rounded-xl border border-stone-300 bg-white py-3 text-xs font-bold text-stone-800 hover:bg-stone-50 transition shadow-2xs"
+          className="flex items-center justify-center gap-2 rounded-xl border border-stone-300 bg-white py-3 text-xs font-medium text-stone-800 hover:bg-stone-50 transition shadow-2xs"
         >
           <MessageSquare className="h-4 w-4 text-stone-600" />
           <span>Message</span>
@@ -134,7 +134,7 @@ export function ProfileActions({ targetUserId, targetUserName, currentUserId, is
           <div className="w-full max-w-sm rounded-2xl border border-stone-200 bg-white p-6 shadow-xl space-y-4">
             <div className="flex items-center gap-2 text-rose-600">
               <ShieldAlert className="h-5 w-5" />
-              <h3 className="text-sm font-bold text-stone-900">Report {targetUserName}</h3>
+              <h3 className="text-sm font-medium text-stone-900">Report {targetUserName}</h3>
             </div>
 
             {reportSubmitted ? (
@@ -144,7 +144,7 @@ export function ProfileActions({ targetUserId, targetUserName, currentUserId, is
             ) : (
               <form onSubmit={submitReport} className="space-y-3">
                 <div>
-                  <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-600 mb-1">Reason</label>
+                  <label className="block text-[11px] font-medium uppercase tracking-wider text-stone-600 mb-1">Reason</label>
                   <select
                     value={reportReason}
                     onChange={(e) => setReportReason(e.target.value)}
@@ -159,7 +159,7 @@ export function ProfileActions({ targetUserId, targetUserName, currentUserId, is
                 </div>
 
                 <div>
-                  <label className="block text-[11px] font-bold uppercase tracking-wider text-stone-600 mb-1">Details (Optional)</label>
+                  <label className="block text-[11px] font-medium uppercase tracking-wider text-stone-600 mb-1">Details (Optional)</label>
                   <textarea
                     rows={2}
                     value={reportDetails}
@@ -180,7 +180,7 @@ export function ProfileActions({ targetUserId, targetUserName, currentUserId, is
                   <button
                     type="submit"
                     disabled={reporting}
-                    className="rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-bold text-[#1C1924] hover:bg-rose-500 transition disabled:opacity-50"
+                    className="rounded-lg bg-rose-600 px-3 py-1.5 text-xs font-medium text-[#1C1924] hover:bg-rose-500 transition disabled:opacity-50"
                   >
                     {reporting ? 'Submitting...' : 'Submit Report'}
                   </button>

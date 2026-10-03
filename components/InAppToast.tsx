@@ -110,7 +110,7 @@ export default function InAppToast() {
             />
           </div>
           <div className="flex flex-col min-w-0">
-            <span className="text-xs font-bold text-[#1C1924] flex items-center gap-1.5 leading-tight">
+            <span className="text-xs font-medium text-[#1C1924] flex items-center gap-1.5 leading-tight">
               <MessageSquareHeart className="w-3.5 h-3.5 text-[#9A8CC3] shrink-0" />
               {toast.senderName}
             </span>
@@ -142,3 +142,4 @@ export function notifyUser(data: Omit<ToastData, 'id'> & { id?: string }) {
   };
   window.dispatchEvent(new CustomEvent('ail-notification', { detail: payload }));
 }
+

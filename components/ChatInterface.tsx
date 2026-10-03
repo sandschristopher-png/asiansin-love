@@ -209,12 +209,12 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
                 className="w-9 h-9 rounded-full object-cover border border-[#DDD7E5]"
               />
             ) : (
-              <div className="w-9 h-9 rounded-full bg-[#F3EFFC] text-[#6555B8] flex items-center justify-center text-xs font-bold">
+              <div className="w-9 h-9 rounded-full bg-[#F3EFFC] text-[#6555B8] flex items-center justify-center text-xs font-medium">
                 {targetUser.fullName.charAt(0)}
               </div>
             )}
             <div className="flex items-center gap-1.5">
-              <span className="font-bold text-[#1C1924] text-sm group-hover:text-[#6555B8] transition truncate">
+              <span className="font-medium text-[#1C1924] text-sm group-hover:text-[#6555B8] transition truncate">
                 {targetUser.fullName}{targetUser.age ? `, ${targetUser.age}` : ''}
               </span>
               {targetUser.isVerified && (
@@ -301,3 +301,4 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
 }
 
 export default ChatInterface;
+

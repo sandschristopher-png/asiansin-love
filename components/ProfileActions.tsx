@@ -97,7 +97,7 @@ export function ProfileActions({
       <button
         onClick={handleSpark}
         disabled={sparkLoading}
-        className={`flex items-center justify-center gap-2 rounded-xl py-3 text-xs font-bold transition shadow-sm ${
+        className={`flex items-center justify-center gap-2 rounded-xl py-3 text-xs font-medium transition shadow-sm ${
           sparked
             ? 'bg-purple-50 border border-purple-200 text-[#6d4aff]'
             : 'bg-[#6d4aff] text-white hover:bg-[#5b3ae6]'
@@ -139,3 +139,4 @@ export function ProfileActions({
     </div>
   )
 }
+

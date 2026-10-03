@@ -23,10 +23,10 @@ export default function PrivacyPolicyPage() {
 
         {/* Header */}
         <div className="space-y-1">
-          <span className="text-[11px] font-bold uppercase tracking-wider text-[#9A8CC3]">
+          <span className="text-[11px] font-medium uppercase tracking-wider text-[#9A8CC3]">
             Privacy & Security
           </span>
-          <h1 className="text-xl sm:text-[22px] font-semibold text-[#1C1924] tracking-tight">
+          <h1 className="text-xl sm:text-[22px] font-semibold text-[#1C1924] ">
             Privacy Policy
           </h1>
           <p className="text-xs sm:text-sm text-[#1C1924]">
@@ -40,14 +40,14 @@ export default function PrivacyPolicyPage() {
             Your privacy and safety are paramount. We never sell your personal data, chat history, or verification photos to advertising brokers or external marketing companies.
           </p>
           
-          <h2 className="text-xs font-bold text-[#1C1924] uppercase tracking-wider pt-2">
+          <h2 className="text-xs font-medium text-[#1C1924] uppercase tracking-wider pt-2">
             Verification Selfie Security
           </h2>
           <p>
             Photos uploaded solely for gesture identity verification are stored in encrypted, non-public storage containers. They are reviewed strictly by our safety audit team and are never published to your public bio or shared with other members.
           </p>
 
-          <h2 className="text-xs font-bold text-[#1C1924] uppercase tracking-wider pt-2">
+          <h2 className="text-xs font-medium text-[#1C1924] uppercase tracking-wider pt-2">
             Account Deletion & Data Erasure
           </h2>
           <p>
@@ -61,3 +61,4 @@ export default function PrivacyPolicyPage() {
     </div>
   );
 }
+

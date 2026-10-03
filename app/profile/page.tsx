@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { captureCurrentLocation, formatVerifiedDate } from '@/lib/location';
 
@@ -249,7 +249,7 @@ export default function MyProfilePage() {
       <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-6 pb-32 space-y-6">
         {/* Uniform Page Header */}
         <div className="space-y-0.5">
-          <h1 className="text-xl sm:text-[22px] font-semibold text-[#1C1924] tracking-tight">My Profile</h1>
+          <h1 className="text-xl sm:text-[22px] font-semibold text-[#1C1924] ">My Profile</h1>
           <p className="text-xs sm:text-sm text-[#756D82]">
             Manage your courtship presence and preferences.
           </p>
@@ -263,7 +263,7 @@ export default function MyProfilePage() {
             {isEditing ? (
               <div className="p-4 rounded-3xl bg-white border border-[#E5E1EC] space-y-3 shadow-xs">
                 <div>
-                  <label className="text-[10px] font-bold text-[#6555B8] uppercase tracking-wider">Display Name</label>
+                  <label className="text-[10px] font-medium text-[#6555B8] uppercase tracking-wider">Display Name</label>
                   <input
                     type="text"
                     value={name}
@@ -273,7 +273,7 @@ export default function MyProfilePage() {
                 </div>
                 <div className="grid grid-cols-2 gap-2">
                   <div>
-                    <label className="text-[10px] font-bold text-[#6555B8] uppercase tracking-wider">Age</label>
+                    <label className="text-[10px] font-medium text-[#6555B8] uppercase tracking-wider">Age</label>
                     <input
                       type="number"
                       value={age}
@@ -282,7 +282,7 @@ export default function MyProfilePage() {
                     />
                   </div>
                   <div>
-                    <label className="text-[10px] font-bold text-[#6555B8] uppercase tracking-wider">Location</label>
+                    <label className="text-[10px] font-medium text-[#6555B8] uppercase tracking-wider">Location</label>
                     <input
                       type="text"
                       value={location}
@@ -326,7 +326,7 @@ export default function MyProfilePage() {
             ) : (
               <div className="flex items-center justify-between px-1">
                 <div>
-                  <h1 className="text-xl sm:text-[22px] font-semibold text-[#1C1924] tracking-tight">
+                  <h1 className="text-xl sm:text-[22px] font-semibold text-[#1C1924] ">
                     {username}, {age}
                   </h1>
                   <div className="flex items-center gap-1.5 mt-1">
@@ -363,7 +363,7 @@ export default function MyProfilePage() {
                 ) : (
                   <Link
                     href="/verify"
-                    className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#F3EFFC] border border-[#DDD7E5] hover:border-[#6555B8] text-[11px] font-bold text-[#6555B8] shrink-0 transition active:scale-95 shadow-2xs"
+                    className="flex items-center gap-1 px-2.5 py-1 rounded-full bg-[#F3EFFC] border border-[#DDD7E5] hover:border-[#6555B8] text-[11px] font-medium text-[#6555B8] shrink-0 transition active:scale-95 shadow-2xs"
                   >
                     <ShieldAlert className="w-3.5 h-3.5 text-[#6555B8]" />
                     <span>Verify</span>
@@ -456,7 +456,7 @@ export default function MyProfilePage() {
             {/* Top Preview/Edit Status Banner */}
             <div className="p-4 sm:p-5 rounded-3xl bg-white border border-[#E5E1EC] shadow-xs space-y-1">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-[#1C1924] uppercase tracking-wider flex items-center gap-2">
+                <span className="text-xs font-medium text-[#1C1924] uppercase tracking-wider flex items-center gap-2">
                   <Edit3 className="w-4 h-4 text-[#6555B8]" />
                   {isEditing ? 'Editing Your Profile' : 'Public Profile Preview'}
                 </span>
@@ -473,7 +473,7 @@ export default function MyProfilePage() {
 
             {/* ABOUT ME */}
             <div className="p-5 sm:p-6 rounded-3xl bg-white border border-[#E5E1EC] shadow-xs space-y-2">
-              <h3 className="text-xs font-bold text-[#6555B8] uppercase tracking-wider">ABOUT ME</h3>
+              <h3 className="text-xs font-medium text-[#6555B8] uppercase tracking-wider">ABOUT ME</h3>
               {isEditing ? (
                 <textarea
                   value={bio}
@@ -490,7 +490,7 @@ export default function MyProfilePage() {
 
             {/* WHAT I'M LOOKING FOR */}
             <div className="p-5 sm:p-6 rounded-3xl bg-white border border-[#E5E1EC] shadow-xs space-y-2">
-              <h3 className="text-xs font-bold text-[#6555B8] uppercase tracking-wider">LOOKING FOR</h3>
+              <h3 className="text-xs font-medium text-[#6555B8] uppercase tracking-wider">LOOKING FOR</h3>
               {isEditing ? (
                 <textarea
                   value={lookingFor}
@@ -507,7 +507,7 @@ export default function MyProfilePage() {
 
             {/* VITALS & VALUES GRID */}
             <div className="p-5 sm:p-6 rounded-3xl bg-white border border-[#E5E1EC] shadow-2xs space-y-5">
-              <h3 className="text-xs font-bold text-[#6555B8] uppercase tracking-wider">
+              <h3 className="text-xs font-medium text-[#6555B8] uppercase tracking-wider">
                 Vitals & Intentions
               </h3>
 
@@ -643,7 +643,7 @@ export default function MyProfilePage() {
                     </div>
                   ) : (
                     <p className="text-sm font-normal text-[#1C1924]">
-                      {hasKids?.toLowerCase().includes('yes') ? 'Has children' : 'No children'} · {wantsKids?.toLowerCase().includes('yes') ? 'Wants kids' : "Doesn't want"}
+                      {hasKids?.toLowerCase().includes('yes') ? 'Has children' : 'No children'} Â· {wantsKids?.toLowerCase().includes('yes') ? 'Wants kids' : "Doesn't want"}
                     </p>
                   )}
                 </div>
@@ -684,7 +684,7 @@ export default function MyProfilePage() {
 
             {/* LANGUAGES SPOKEN */}
             <div className="p-5 sm:p-6 rounded-3xl bg-white border border-[#E5E1EC] shadow-xs space-y-3">
-              <h3 className="text-xs font-bold text-[#6555B8] uppercase tracking-wider flex items-center gap-1.5">
+              <h3 className="text-xs font-medium text-[#6555B8] uppercase tracking-wider flex items-center gap-1.5">
                 <Languages className="w-4 h-4 text-[#6555B8]" />
                 Languages Spoken
               </h3>
@@ -721,14 +721,14 @@ export default function MyProfilePage() {
                     <button
                       type="button"
                       onClick={() => handleAddLanguage(langInput)}
-                      className="px-4 py-2.5 rounded-xl bg-[#6555B8] text-white text-xs font-bold hover:bg-[#52449e] transition"
+                      className="px-4 py-2.5 rounded-xl bg-[#6555B8] text-white text-xs font-medium hover:bg-[#52449e] transition"
                     >
                       Add
                     </button>
                   </div>
 
                   <div className="flex flex-wrap gap-1 pt-1">
-                    <span className="text-[10px] font-bold text-[#8C849B] mr-1 uppercase">Quick Add:</span>
+                    <span className="text-[10px] font-medium text-[#8C849B] mr-1 uppercase">Quick Add:</span>
                     {QUICK_LANGUAGES.map((ql) => (
                       <button
                         key={ql}
