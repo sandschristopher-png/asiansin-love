@@ -1,5 +1,4 @@
-﻿'use client';
-import { Navbar } from '@/components/Navbar';
+'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
@@ -143,7 +142,6 @@ export default function VerifyPage() {
   return (
     <main className="min-h-screen bg-[#F8F7FA] text-[#1C1924] flex flex-col justify-start">
       <div className="max-w-md mx-auto w-full px-4 py-8 pb-28 space-y-6">
-      <Navbar />
 
         
         {/* Top Header */}

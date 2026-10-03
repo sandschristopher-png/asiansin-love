@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -9,7 +9,6 @@ import {
   Bookmark, User, Sparkles, HeartHandshake, Baby, Ruler, Wine, Cigarette
 } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
-import { Navbar } from '@/components/Navbar';
 
 
 export default function PublicProfilePage() {
@@ -146,7 +145,6 @@ export default function PublicProfilePage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F8F7FA] text-[#1C1924]">
-      <Navbar />
       <main className="flex-1 w-full px-4 pt-4 pb-28 space-y-4">
         {/* Top Bar Navigation */}
         <div className="flex items-center justify-between">
@@ -226,13 +224,9 @@ export default function PublicProfilePage() {
             <div className="space-y-1">
               <div className="flex items-baseline gap-2 flex-wrap">
                 <h1 className="text-lg font-medium text-[#1C1924]">
-                  {profile.name}{profile.age ? (', ' + profile.age) : ''}
+                  {profile.username || "Member"}{profile.age ? (', ' + profile.age) : ''}
                 </h1>
-                {profile.handle && (
-                  <span className="text-xs text-neutral-400 font-normal">
-                    @{profile.handle}
-                  </span>
-                )}
+                
               </div>
 
               <div className="flex items-center gap-2 flex-wrap pt-0.5">
@@ -295,7 +289,7 @@ export default function PublicProfilePage() {
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               rows={3}
-              placeholder={`Hi ${profile.name}, I noticed your profile and would love to introduce myself...`}
+              placeholder={`Hi ${profile.username || "Member"}, I noticed your profile and would love to introduce myself...`}
               className="w-full text-xs p-3 rounded-2xl border border-[#DDD7E5] bg-[#FAF8FD] focus:bg-white focus:border-[#6555b8] focus:outline-none transition resize-none placeholder:text-[#8C849B]"
             />
 

@@ -1,13 +1,13 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import { ArrowLeft, Send, Zap, ShieldAlert, CheckCheck, Clock } from 'lucide-react';
 import UpgradeModal from '@/components/UpgradeModal';
 import ReputationModal from '@/components/ReputationModal';
 import { supabase } from '@/lib/supabaseClient';
-import { Navbar } from '@/components/Navbar';
 
 
 interface Persona {
@@ -20,6 +20,14 @@ interface Persona {
 }
 
 const PLACEHOLDER_USERS: Record<string, Persona> = {
+    'test-flagged': {
+    name: 'Suspicious Account',
+    avatar: '/jennalyn.png',
+    location: 'Unverified Location',
+    rep: 42,
+    initialReply: 'Hey there! Can we move to WhatsApp or Telegram instead? Text me at +1 555-0199.',
+    followups: ['Why are you asking so many questions? Just message my other number.']
+  },
   'jennalyn': {
     name: 'Jennalyn',
     avatar: '/jennalyn.png',
@@ -163,9 +171,10 @@ function sanitizeMessage(text: string): { sanitized: string; wasMasked: boolean 
   return { sanitized: text, wasMasked: false };
 }
 
-export default function ChatConversationPage({ params }: { params: { id: string } }) {
-  const targetId = params.id;
-  const botPersona = PLACEHOLDER_USERS[targetId];
+export default function ChatConversationPage() {
+  const routeParams = useParams();
+  const targetId = (Array.isArray(routeParams?.id) ? routeParams.id[0] : (routeParams?.id as string)) || '';
+    const botPersona = PLACEHOLDER_USERS[targetId];
 
   const [currentUserId, setCurrentUserId] = useState<string>('guest-user');
   const [targetInfo, setTargetInfo] = useState({
@@ -197,11 +206,12 @@ export default function ChatConversationPage({ params }: { params: { id: string 
   const [showReportModal, setShowReportModal] = useState(false);
   const [actionDoneMsg, setActionDoneMsg] = useState<string | null>(null);
   const [resolvedTargetUuid, setResolvedTargetUuid] = useState<string | null>(null);
+  const [isTyping, setIsTyping] = useState(false);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, isTyping]);
 
   useEffect(() => {
     if (cooldownSeconds <= 0) return;
@@ -409,147 +419,187 @@ export default function ChatConversationPage({ params }: { params: { id: string 
   };
 
   return (
-    <main className="min-h-screen bg-[#130F18] text-[#E6D7FA] flex flex-col justify-between">
-      <div className="sticky top-0 z-30 flex items-center justify-between px-4 py-3 bg-[#181222]/95 backdrop-blur-md border-b border-[#9A79BA]/30">
-      <Navbar />
-
-        <div className="flex items-center gap-3">
-          <Link href="/discover" className="text-[#9A79BA] hover:text-[#E6D7FA] transition">
-            <ArrowLeft className="w-5 h-5" />
-          </Link>
-          <div className="relative w-9 h-9 rounded-full overflow-hidden border border-[#9A79BA]/50">
-            <Image src={targetInfo.avatar} alt={targetInfo.name} fill className="object-cover object-[50%_20%]" />
-          </div>
-          <div className="flex flex-col">
-            <span className="text-sm font-medium text-white leading-tight">{targetInfo.name}</span>
-            <span className="text-[10px] text-emerald-400 font-medium">Active now</span>
-          </div>
-        </div>
-
-        <button
-          type="button"
-          onClick={() => setShowRepModal(true)}
-          className="px-2.5 py-1 rounded-full bg-[#241E2F] hover:bg-[#2F273E] border border-[#9A79BA]/30 hover:border-[#9A79BA]/60 text-[10px] font-semibold text-[#E6D7FA] transition active:scale-95 cursor-pointer"
-          title="View Conduct and Behavior Breakdown"
-        >
-          {targetInfo.rep}% Rep
-        </button>
-          <button onClick={() => setShowReportModal(true)} className="flex items-center gap-1 rounded-full border border-zinc-200 px-2.5 py-1 text-xs font-medium text-zinc-500 hover:border-rose-300 hover:text-rose-600 dark:border-zinc-700 dark:text-zinc-400" title="Safety Options"><ShieldAlert className="h-3.5 w-3.5" /><span>Report</span></button>
-      </div>
-
-      <div className="flex-1 overflow-y-auto p-4 space-y-3 max-w-md mx-auto w-full">
-        {targetInfo.rep < 50 && (
-          <div className="p-3 rounded-2xl bg-amber-950/40 border border-amber-500/40 text-[11px] text-amber-200 flex items-start gap-2.5 shadow-md">
-            <ShieldAlert className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-            <div className="leading-relaxed">
-              <span className="font-semibold text-amber-300">Caution:</span> This member has a low reputation score ({targetInfo.rep}%). Take extra care and avoid sharing financial details or off-platform contact information.
+    <main className="flex flex-col h-[100dvh] bg-[#FBF9FD] relative overflow-hidden">
+        {/* Sticky Header */}
+        <div className="sticky top-0 z-30 flex items-center justify-between px-4 py-3 bg-white/95 backdrop-blur-md border-b border-[#E2DCED] shrink-0">
+          <div className="flex items-center gap-3">
+            <Link href="/discover" className="p-1 -ml-1 text-[#6B5E87] hover:text-[#4C3B75] transition rounded-full hover:bg-[#F3EEFA]">
+              <ArrowLeft className="w-5 h-5" />
+            </Link>
+            <div className="relative w-9 h-9 rounded-full overflow-hidden border border-[#D8C7EE]">
+              <Image src={targetInfo.avatar} alt={targetInfo.name} fill className="object-cover object-[50%_20%]" />
+            </div>
+            <div className="flex flex-col">
+              <span className="text-sm font-semibold text-[#2D2640] leading-tight">{targetInfo.name}</span>
+              <div className="flex items-center gap-1.5 mt-0.5">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-pulse" />
+                <span className="text-[10px] text-emerald-700 font-medium">Active now</span>
+              </div>
             </div>
           </div>
-        )}
-        {showSafetyNotice && (
-          <div className="p-3 rounded-2xl bg-[#261F33] border border-amber-400/50 text-[11px] text-amber-200 flex items-start gap-2 shadow-md">
-            <ShieldAlert className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-            <p>
-              Courtship Safety: External contact handles and phone digits are masked during initial intros to prevent unverified off-platform spam.
-            </p>
-          </div>
-        )}
 
-        {messages.map((msg) => (
-          <div
-            key={msg.id}
-            className={`flex flex-col ${msg.sender === 'me' ? 'items-end' : 'items-start'}`}
-          >
-            <div
-              className={`max-w-[80%] px-4 py-2.5 rounded-2xl text-xs leading-relaxed ${
-                msg.sender === 'me'
-                  ? 'bg-[#653C87] text-white font-medium rounded-br-xs shadow-md shadow-[#653C87]/30'
-                  : 'bg-[#261F33] text-[#E6D7FA] border border-[#9A79BA]/35 rounded-bl-xs shadow-md'
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => setShowRepModal(true)}
+              className={`px-2.5 py-1 rounded-full text-[10px] font-semibold transition active:scale-95 cursor-pointer border ${
+                targetInfo.rep < 50
+                  ? 'bg-amber-50 border-amber-300 text-amber-800'
+                  : 'bg-[#F3EEFA] border-[#D8C7EE] text-[#4C3B75] hover:bg-[#EAE0F5]'
               }`}
+              title="View Conduct and Behavior Breakdown"
             >
-              {msg.text}
-            </div>
-            <div className="flex items-center gap-1 mt-1 text-[10px] text-[#C9A4E8]">
-              <span>{msg.time}</span>
-              {msg.sender === 'me' && <CheckCheck className="w-3 h-3 text-[#9A79BA]" />}
-            </div>
-          </div>
-        ))}
-        <div ref={chatEndRef} />
-      </div>
-
-      <div className="sticky bottom-0 z-30 bg-[#181222]/95 backdrop-blur-md border-t border-[#9A79BA]/30 p-3 max-w-md mx-auto w-full">
-        {cooldownSeconds > 0 ? (
-          <div className="p-4 rounded-2xl bg-[#241E2F] border border-[#9A79BA]/50 flex flex-col items-center gap-2.5 shadow-xl text-center">
-            <div className="flex items-center gap-1.5 text-xs text-[#9A79BA]">
-              <Clock className="w-4 h-4 text-amber-400" />
-              <span>Next free message unlocks in</span>
-            </div>
-            <span className="text-2xl font-medium tracking-wider text-white">
-              {formatTimer(cooldownSeconds)}
-            </span>
+              {targetInfo.rep}% Rep
+            </button>
             <button
-              onClick={() => setShowUpgradeModal(true)}
-              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-full bg-[#653C87] hover:bg-[#7D49A8] text-white font-medium text-xs shadow-lg shadow-[#653C87]/40 active:scale-95 transition"
+              type="button"
+              onClick={() => setShowReportModal(true)}
+              className="p-1 text-[#8B7E9F] hover:text-rose-600 hover:bg-rose-50 rounded-full transition"
+              title="Safety & Moderation"
             >
-              <Zap className="w-4 h-4 fill-current" />
-              Skip the Wait Ã¢â‚¬â€ Unlock Instant Chat
+              <ShieldAlert className="w-4 h-4" />
             </button>
           </div>
-        ) : (
-          <form onSubmit={handleSendMessage} className="flex items-center gap-2">
-            <input
-              type="text"
-              value={inputText}
-              onChange={(e) => setInputText(e.target.value)}
-              placeholder="Write a sincere message..."
-              className="flex-1 bg-[#241E2F] border border-[#241E2F] focus:border-[#653C87] rounded-full px-4 py-2.5 text-xs text-[#E6D7FA] placeholder-[#7D7E92] outline-none transition"
-            />
-            <button
-              type="submit"
-              disabled={!inputText.trim()}
-              className="p-2.5 rounded-full bg-[#653C87] hover:bg-[#7D49A8] text-white disabled:opacity-40 transition shrink-0 shadow-md shadow-[#653C87]/40 active:scale-95"
-            >
-              <Send className="w-4 h-4" />
-            </button>
-          </form>
-        )}
-      </div>
-
-      <UpgradeModal
-        isOpen={showUpgradeModal}
-        onClose={() => setShowUpgradeModal(false)}
-        onSelectPlan={(p) => alert('Plan selected: ' + p)}
-      />
-      <ReputationModal
-        isOpen={showRepModal}
-        onClose={() => setShowRepModal(false)}
-        name={targetInfo.name}
-        score={targetInfo.rep}
-      />
-    {showReportModal && (
-  <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
-    <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-xl dark:bg-zinc-900">
-      <div className="flex items-center gap-2 text-rose-600 dark:text-rose-400">
-        <ShieldAlert className="h-5 w-5" />
-        <h3 className="font-semibold text-zinc-900 dark:text-white">Safety & Moderation</h3>
-      </div>
-      <p className="mt-2 text-sm text-zinc-600 dark:text-zinc-300">Take action regarding this member. Reports are reviewed by human moderators within 24 hours.</p>
-      {actionDoneMsg ? (
-        <div className="mt-4 rounded-xl bg-emerald-50 p-3 text-center text-sm font-medium text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">{actionDoneMsg}</div>
-      ) : (
-        <div className="mt-5 space-y-2">
-          <button onClick={() => { setActionDoneMsg("User has been blocked. Messages from this user are now muted."); setTimeout(() => { setShowReportModal(false); setActionDoneMsg(null); }, 1800); }} className="w-full rounded-xl border border-zinc-200 py-2.5 text-sm font-medium text-zinc-700 hover:bg-zinc-100 dark:border-zinc-700 dark:text-zinc-200 dark:hover:bg-zinc-800">Block Member</button>
-          <button onClick={() => { setActionDoneMsg("Report submitted. Thank you for keeping Asians in Love safe."); setTimeout(() => { setShowReportModal(false); setActionDoneMsg(null); }, 1800); }} className="w-full rounded-xl bg-rose-600 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-rose-700">Report Violation / Scammer</button>
         </div>
-      )}
-      <button onClick={() => { setShowReportModal(false); setActionDoneMsg(null); }} className="mt-3 w-full py-1.5 text-xs text-zinc-400 hover:text-zinc-600 dark:hover:text-zinc-200">Cancel</button>
-    </div>
-  </div>
-)}
-    </main>
+
+        {/* Message Stream */}
+        <div className="flex-1 overflow-y-auto p-4 space-y-3">
+          {targetInfo.rep < 50 && (
+            <div className="p-3.5 rounded-2xl bg-amber-50/90 border border-amber-200 text-xs text-amber-900 flex items-start gap-2.5 shadow-sm">
+              <ShieldAlert className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+              <div className="leading-relaxed">
+                <span className="font-semibold text-amber-950">Caution:</span> This member has a low reputation score ({targetInfo.rep}%). Take extra care and avoid sharing personal financial details or off-platform contacts.
+              </div>
+            </div>
+          )}
+
+          {showSafetyNotice && (
+            <div className="p-3.5 rounded-2xl bg-[#F3EEFA] border border-[#D8C7EE] text-xs text-[#4C3B75] flex items-start gap-2.5 shadow-sm">
+              <ShieldAlert className="w-4 h-4 text-[#653C87] shrink-0 mt-0.5" />
+              <p className="leading-relaxed">
+                <strong className="font-semibold">Courtship Safety:</strong> External contact handles and phone digits are masked during initial intros to prevent off-platform spam.
+              </p>
+            </div>
+          )}
+
+          {messages.map((msg) => (
+            <div
+              key={msg.id}
+              className={`flex flex-col ${msg.sender === 'me' ? 'items-end' : 'items-start'}`}
+            >
+              <div
+                className={`max-w-[82%] px-4 py-2.5 rounded-2xl text-xs leading-relaxed shadow-sm ${
+                  msg.sender === 'me'
+                    ? 'bg-[#4C3B75] text-white font-normal rounded-br-xs'
+                    : 'bg-white text-[#2D2640] border border-[#E2DCED] rounded-bl-xs'
+                }`}
+              >
+                {msg.text}
+              </div>
+              <div className="flex items-center gap-1 mt-1 text-[10px] text-[#8B7E9F]">
+                <span>{msg.time}</span>
+                {msg.sender === 'me' && <CheckCheck className="w-3 h-3 text-[#653C87]" />}
+              </div>
+            </div>
+          ))}
+          <div ref={chatEndRef} />
+        </div>
+
+        {/* Input Bar / Cooldown */}
+        <div className="sticky bottom-0 z-30 bg-white/95 backdrop-blur-md border-t border-[#E2DCED] p-3 pb-[76px] w-full shrink-0 shadow-xs">
+          {cooldownSeconds > 0 ? (
+            <div className="p-3.5 rounded-2xl bg-[#F8F5FC] border border-[#E2DCED] flex flex-col items-center gap-2 shadow-sm text-center">
+              <div className="flex items-center gap-1.5 text-xs text-[#6B5E87]">
+                <Clock className="w-4 h-4 text-amber-500" />
+                <span>Next free message unlocks in</span>
+              </div>
+              <span className="text-xl font-semibold tracking-wider text-[#2D2640]">
+                {formatTimer(cooldownSeconds)}
+              </span>
+              <button
+                onClick={() => setShowUpgradeModal(true)}
+                className="w-full flex items-center justify-center gap-2 py-2.5 rounded-full bg-[#4C3B75] hover:bg-[#3D2F5F] text-white font-medium text-xs shadow-md shadow-[#4C3B75]/20 active:scale-95 transition"
+              >
+                <Zap className="w-3.5 h-3.5 fill-current" />
+                Skip the Wait with Plus
+              </button>
+            </div>
+          ) : (
+            <form onSubmit={handleSendMessage} className="flex items-center gap-2">
+              <input
+                type="text"
+                placeholder="Write a sincere message..."
+                value={inputText}
+                onChange={(e) => setInputText(e.target.value)}
+                className="flex-1 bg-[#F5F2F9] border border-[#E2DCED] focus:border-[#4C3B75] focus:bg-white text-[#2D2640] placeholder-[#8B7E9F] rounded-full px-4 py-2.5 text-xs outline-none transition"
+              />
+              <button
+                type="submit"
+                disabled={!inputText.trim()}
+                className="p-2.5 rounded-full bg-[#4C3B75] hover:bg-[#3D2F5F] disabled:opacity-40 disabled:hover:bg-[#4C3B75] text-white transition active:scale-95 shadow-sm"
+              >
+                <Send className="w-4 h-4" />
+              </button>
+            </form>
+          )}
+        </div>
+
+        <UpgradeModal
+          isOpen={showUpgradeModal}
+          onClose={() => setShowUpgradeModal(false)}
+          onSelectPlan={(p) => alert('Plan selected: ' + p)}
+        />
+        <ReputationModal
+          isOpen={showRepModal}
+          onClose={() => setShowRepModal(false)}
+          name={targetInfo.name}
+          score={targetInfo.rep}
+        />
+        {showReportModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs">
+            <div className="w-full max-w-sm rounded-2xl bg-white p-6 shadow-2xl border border-[#E2DCED]">
+              <div className="flex items-center gap-2 text-rose-600">
+                <ShieldAlert className="h-5 w-5" />
+                <h3 className="font-semibold text-[#2D2640]">Safety & Moderation</h3>
+              </div>
+              <p className="mt-2 text-xs text-[#6B5E87] leading-relaxed">
+                Take action regarding this member. Reports are reviewed by human moderators within 24 hours.
+              </p>
+              {actionDoneMsg ? (
+                <div className="mt-4 rounded-xl bg-emerald-50 border border-emerald-200 p-3 text-center text-xs font-medium text-emerald-800">
+                  {actionDoneMsg}
+                </div>
+              ) : (
+                <div className="mt-5 space-y-2">
+                  <button
+                    onClick={() => {
+                      setActionDoneMsg("User has been blocked. Messages from this user are now muted.");
+                      setTimeout(() => { setShowReportModal(false); setActionDoneMsg(null); }, 1800);
+                    }}
+                    className="w-full rounded-xl border border-[#E2DCED] py-2.5 text-xs font-medium text-[#2D2640] hover:bg-[#F3EEFA] transition"
+                  >
+                    Block Member
+                  </button>
+                  <button
+                    onClick={() => {
+                      setActionDoneMsg("Report submitted. Thank you for keeping Asians in Love safe.");
+                      setTimeout(() => { setShowReportModal(false); setActionDoneMsg(null); }, 1800);
+                    }}
+                    className="w-full rounded-xl bg-rose-600 hover:bg-rose-700 py-2.5 text-xs font-semibold text-white shadow-sm transition"
+                  >
+                    Report Violation / Scammer
+                  </button>
+                </div>
+              )}
+              <button
+                onClick={() => { setShowReportModal(false); setActionDoneMsg(null); }}
+                className="mt-3 w-full py-1.5 text-xs text-[#8B7E9F] hover:text-[#2D2640] transition"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        )}
+      </main>
   );
 }
-
-
-

@@ -1,9 +1,8 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { MessageCircle, Search, ChevronRight, Clock } from 'lucide-react';
-import { Navbar } from '@/components/Navbar';
 import { supabase } from '@/lib/supabaseClient';
 
 interface ConversationItem {
@@ -62,7 +61,7 @@ export default function MessagesPage() {
 
         const { data: profilesData } = await supabase
           .from('profiles')
-          .select('id, name, avatar_url, reputation_score')
+          .select('id, display_name, full_name, username, avatar_url, reputation_score')
           .in('id', partnerIds);
 
         const profileMap = new Map((profilesData || []).map((p: any) => [p.id, p]));
@@ -73,7 +72,7 @@ export default function MessagesPage() {
           return {
             id: conv.id,
             recipientId: partnerId,
-            name: partner?.name || 'Member',
+            name: partner?.display_name || partner?.full_name || partner?.username || 'Member',
             avatarUrl: partner?.avatar_url || '/placeholder-avatar.svg',
             repScore: partner?.reputation_score || 95,
             lastMessage: conv.last_message || 'Started a conversation',
@@ -119,16 +118,10 @@ export default function MessagesPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F8F7FA] text-[#1C1924]">
-      <Navbar />
 
       <main className="flex-1 w-full px-4 pt-4 pb-28 space-y-4">
         {/* Page Title */}
-        <div className="space-y-0.5">
-          <h1 className="text-xl sm:text-[22px] font-semibold text-[#1C1924] ">Direct Messages</h1>
-          <p className="text-xs text-[#756D82]">
-            Private courtship conversations with verified members
-          </p>
-        </div>
+        
 
         {/* Controls: Segmented Tabs & Search */}
         <div className="space-y-2.5">
@@ -199,7 +192,7 @@ export default function MessagesPage() {
             filteredConversations.map((c) => (
               <Link
                 key={c.id}
-                href={`/messages/${c.id}`}
+                href={`/chat/${c.recipientId}`}
                 className="flex items-center gap-3.5 p-3.5 hover:bg-[#FAF8FD] transition group"
               >
                 <div className="relative w-12 h-12 rounded-2xl overflow-hidden bg-[#FAF8FD] border border-[#DDD7E5] shrink-0">

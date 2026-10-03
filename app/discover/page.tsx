@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { getDistanceLabel } from '@/lib/location';
 
@@ -9,7 +9,6 @@ import { useSearchParams } from 'next/navigation';
 import { ChevronLeft, ChevronRight, Search, Heart, X as XIcon, Star, MessageCircle, 
   MapPin, ShieldCheck, CheckCircle, SlidersHorizontal, 
   RotateCcw, Loader2, Check, Globe, ChevronDown } from 'lucide-react';
-import { Navbar } from '@/components/Navbar';
 import { Footer } from '@/components/Footer';
 import { supabase } from '@/lib/supabaseClient';
 import { ActionType, getLocalCardActions, persistCardAction } from '@/lib/interactions';
@@ -529,7 +528,6 @@ function DiscoverContent() {
 
   return (
     <div className="min-h-screen flex flex-col bg-[#FAFAFD] text-[#1C1924]">
-        <Navbar />
       <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 pt-6 pb-32 md:pb-24 space-y-5">
         
         {/* Top Control Bar */}
@@ -765,41 +763,44 @@ function DiscoverContent() {
                 {/* Dark Scrim Gradient for Legibility */}
                 <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/90 via-black/45 to-transparent z-10" />
 
-                {/* Bottom Overlay: Info (Left) & Heart (Right) */}
-                <div className="absolute bottom-0 inset-x-0 p-3 sm:p-3.5 flex items-end justify-between gap-2 z-20 pointer-events-none">
-                  <Link href={'/profile/' + profile.id} className="min-w-0 flex-1 pointer-events-auto">
-                    <h3 className="text-sm sm:text-base font-medium text-white  flex items-center gap-1 truncate drop-shadow-xs">
-                      <span className="truncate">{displayName}{profile.age ? ', ' + profile.age : ''}</span>
-                      {profile.verified && <CheckCircle className="w-3.5 h-3.5 text-[#B2A4D7] shrink-0" />}
-                    </h3>
-                    <p className="flex items-center gap-1 text-[11px] sm:text-xs text-white/80 font-medium mt-0.5 truncate drop-shadow-xs">
-                      <MapPin
-                        className={'w-3 h-3 shrink-0 ' + (
-                          profile.location_source === 'gps_verified' ? 'text-emerald-400' : 'text-[#B2A4D7]'
-                        )}
-                      />
-                      <span className="truncate">{profile.location ? profile.location.split(',')[0] : 'Unknown'}</span>
-                    </p>
-                  </Link>
+                
 
-                  <button
-                    type="button"
-                    aria-label={isLiked ? 'Unlike' : 'Like'}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                      triggerAction(profile.id, 'like');
-                    }}
-                    className={'w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border transition-all duration-200 active:scale-90 shadow-md backdrop-blur-md shrink-0 pointer-events-auto ' + (
-                      isLiked
-                        ? 'bg-rose-500 border-rose-400 text-white shadow-rose-500/40 scale-105'
-                        : 'bg-black/40 hover:bg-black/60 border-white/20 text-white'
-                    )}
-                  >
-                    <Heart className={'w-4 h-4 sm:w-5 sm:h-5 transition-transform duration-200 ' + (isLiked ? 'fill-white scale-110' : 'hover:scale-105')} />
-                  </button>
+                  {/* Bottom Overlay: Info Left + Frosted Heart Lower Right */}
+                  <div className="absolute bottom-0 inset-x-0 p-3 sm:p-3.5 z-20 pointer-events-none bg-gradient-to-t from-black/80 via-black/40 to-transparent flex items-end justify-between gap-2">
+                    <Link href={'/profile/' + profile.id} className="min-w-0 flex-1 pointer-events-auto">
+                      <h3 className="text-sm font-semibold text-white flex items-center gap-1.5 drop-shadow-md">
+                        <span className="truncate max-w-[130px] sm:max-w-none">{displayName}{profile.age ? ', ' + profile.age : ''}</span>
+                        {profile.verified && <CheckCircle className="w-3.5 h-3.5 text-[#B2A4D7] shrink-0" />}
+                      </h3>
+                      <p className="flex items-center gap-1 text-[11px] sm:text-xs text-white/85 font-medium mt-0.5 drop-shadow-md truncate">
+                        <MapPin
+                          className={'w-3 h-3 shrink-0 ' + (
+                            profile.location_source === 'gps_verified' ? 'text-emerald-400' : 'text-[#B2A4D7]'
+                          )}
+                        />
+                        <span className="truncate">{profile.location ? profile.location.split(',')[0] : 'Unknown'}</span>
+                      </p>
+                    </Link>
+
+                    {/* Lower Right Frosted Heart Button */}
+                    <button
+                      type="button"
+                      aria-label={isLiked ? 'Unlike' : 'Like'}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        triggerAction(profile.id, 'like');
+                      }}
+                      className={'w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border transition-all duration-200 active:scale-90 shadow-md backdrop-blur-md shrink-0 pointer-events-auto ' + (
+                        isLiked
+                          ? 'bg-rose-500 border-rose-400 text-white shadow-rose-500/40 scale-105'
+                          : 'bg-black/75 hover:bg-black/85 border-white/20 text-white'
+                      )}
+                    >
+                      <Heart className={'w-4 h-4 sm:w-5 sm:h-5 transition-transform duration-200 ' + (isLiked ? 'fill-white scale-110' : 'hover:scale-105')} />
+                    </button>
+                  </div>
                 </div>
-              </div>
             );
           }))}
         </div>

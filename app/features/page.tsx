@@ -1,5 +1,4 @@
-﻿import Link from 'next/link'
-import { Navbar } from '@/components/Navbar';
+import Link from 'next/link'
 import { Logo } from '@/components/Logo'
 import { 
 
@@ -53,7 +52,6 @@ const features = [
 export default function FeaturesPage() {
   return (
     <div className="min-h-dvh bg-[#F8F7FA] font-sans text-[#1C1924] selection:bg-[#6555B8] selection:text-white pb-16 relative">
-      <Navbar />
 
       
       {/* Soft Ambient Plum Glow */}

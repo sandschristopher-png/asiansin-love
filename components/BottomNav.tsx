@@ -58,7 +58,6 @@ export function BottomNav() {
     };
   }, []);
 
-  // Auto-hide bottom nav when mobile virtual keyboard expands
   useEffect(() => {
     if (typeof window === 'undefined' || !window.visualViewport) return;
 
@@ -74,13 +73,10 @@ export function BottomNav() {
     };
   }, []);
 
-  // Suppress when logged out or on public / auth / onboarding pages
-  if (!user || PUBLIC_ROUTES.includes(pathname) || pathname.startsWith('/onboarding')) {
-    return null;
-  }
+  // Suppress on active chat rooms
 
-  // Suppress on individual deep dives or chat rooms
-  if (pathname.startsWith('/chat/')) {
+  // Suppress when logged out or on public / auth / onboarding pages
+  if (!user || PUBLIC_ROUTES.includes(pathname) || pathname?.startsWith('/onboarding')) {
     return null;
   }
 
@@ -91,8 +87,6 @@ export function BottomNav() {
       }`}
     >
       <nav className="bg-white/90 backdrop-blur-xl border border-black/[0.08] shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-full px-3 py-2 flex items-center justify-around">
-        
-        {/* 1. DISCOVER */}
         <Link
           href="/discover"
           className={`flex flex-col items-center justify-center p-2 rounded-full transition-all active:scale-90 ${
@@ -106,7 +100,6 @@ export function BottomNav() {
           )}
         </Link>
 
-        {/* 2. SAVED / LIKES */}
         <Link
           href="/favorites"
           className={`flex flex-col items-center justify-center p-2 rounded-full transition-all active:scale-90 ${
@@ -123,7 +116,6 @@ export function BottomNav() {
           )}
         </Link>
 
-        {/* 3. INBOX */}
         <Link
           href="/messages"
           className={`relative flex flex-col items-center justify-center p-2 rounded-full transition-all active:scale-90 ${
@@ -140,7 +132,6 @@ export function BottomNav() {
           )}
         </Link>
 
-        {/* 4. PROFILE */}
         <Link
           href="/profile"
           className={`flex flex-col items-center justify-center p-2 rounded-full transition-all active:scale-90 ${
@@ -153,7 +144,6 @@ export function BottomNav() {
             <span className="w-1 h-1 rounded-full bg-[#6555B8] mt-1" />
           )}
         </Link>
-
       </nav>
     </div>
   );

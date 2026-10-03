@@ -1,12 +1,12 @@
-﻿'use client';
+'use client';
 
 import { BrandLogo } from '@/components/BrandLogo';
 import { notifyUser } from '@/components/InAppToast';
 import { notificationService } from '@/lib/notificationService';
 import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { User, Settings, LogOut, Bell } from 'lucide-react';
+import { useRouter, usePathname } from 'next/navigation';
+import { User, Settings, LogOut, Bell, ArrowLeft } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 
 export function Navbar() {
@@ -16,7 +16,8 @@ export function Navbar() {
   const [hasUnread, setHasUnread] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-
+  const pathname = usePathname();
+  
   async function checkUnread(userId: string) {
     const { count } = await supabase
       .from('notifications')
@@ -119,15 +120,56 @@ export function Navbar() {
     router.refresh();
   };
 
-  const displayName = profile?.username || profile?.display_name || user?.user_metadata?.user_name || user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'Member';
+  const displayName = profile?.username || 'Member';
   const avatarUrl = profile?.avatar_url || user?.user_metadata?.avatar_url || null;
 
+  // Derive title for non-discover pages
+  const getPageTitle = () => {
+    if (!pathname || pathname === '/' || pathname === '/discover') return null;
+    if (pathname.startsWith('/favorites') || pathname.startsWith('/saved')) return 'Saved Profiles';
+    if (pathname.startsWith('/chat') || pathname.startsWith('/messages')) return 'Messages';
+    if (pathname === '/notifications') return 'Notifications';
+    if (pathname === '/settings') return 'Settings';
+    if (pathname === '/profile') return 'My Profile';
+    if (pathname.startsWith('/profile/')) return 'Profile';
+    return null;
+  };
+
+  const pageTitle = getPageTitle();
+
   return (
-    <header className="sticky top-0 z-40 w-full bg-white/80 backdrop-blur-md border-b border-black/[0.05] transition-all">
-      <div className="w-full px-4 h-16 flex items-center justify-between">
+    <header className="sticky top-0 z-40 w-full bg-white/75 backdrop-blur-md border-b border-[#DDD7E5]/50 transition-colors">
+      <div className="w-full px-4 h-14 flex items-center justify-between relative">
         
-        {/* Brand Logo with generous breathing room */}
-        <BrandLogo href={user ? "/discover" : "/"} size="md" />
+        {/* Left Side: Brand Logo or Back / Title with smooth transition */}
+        <div className="flex items-center gap-2 min-w-0">
+          <div 
+            key={pageTitle || 'brand-home'} 
+            className="transition-all duration-200 ease-out flex items-center"
+            style={{ animation: 'fadeInTitle 220ms ease-out forwards' }}
+          >
+            {!pageTitle ? (
+              <BrandLogo href={user ? "/discover" : "/"} size="md" />
+            ) : (
+              <div className="flex items-center gap-2.5">
+                <button
+                  type="button"
+                  onClick={() => router.back()}
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-[#4C3B75] hover:bg-black/5 transition-colors -ml-1 sm:hidden"
+                  aria-label="Back"
+                >
+                  <ArrowLeft className="w-5 h-5" />
+                </button>
+                <h1 
+                  className="text-[19px] sm:text-[21px] font-semibold text-[#4C3B75] tracking-[-0.025em] leading-snug pb-0.5 select-none truncate"
+                  style={{ fontFamily: 'var(--font-brand)' }}
+                >
+                  {pageTitle}
+                </h1>
+              </div>
+            )}
+          </div>
+        </div>
 
         {/* Minimal Right-side actions */}
         <div className="flex items-center gap-2">
@@ -212,7 +254,18 @@ export function Navbar() {
         </div>
 
       </div>
+      <style jsx global>{`
+        @keyframes fadeInTitle {
+          from {
+            opacity: 0;
+            transform: translateX(-4px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+      `}</style>
     </header>
   );
 }
-

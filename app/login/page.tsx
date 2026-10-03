@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
@@ -58,7 +58,7 @@ export default function LoginPage() {
       }
 
       if (mode === 'signup') {
-        const cleanedUsername = username.trim().toLowerCase();
+        const cleanedUsername = username.trim().replace(/[^a-zA-Z0-9_.]/g, '');
         if (cleanedUsername.length < 3 || cleanedUsername.length > 20) {
           setErrorMsg('Username must be 3-20 characters.');
           setLoading(false);

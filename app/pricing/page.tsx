@@ -1,9 +1,8 @@
-﻿'use client';
+'use client';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, Check, ShieldCheck, Lock, Sparkles, AlertCircle, Loader2 } from 'lucide-react';
-import { Navbar } from '@/components/Navbar';
 
 export default function PricingPage() {
   const [handleModalOpen, setHandleModalOpen] = useState(false);
@@ -51,7 +50,6 @@ export default function PricingPage() {
 
   return (
     <div className="w-full min-h-screen flex flex-col font-sans text-[#1C1924]">
-      <Navbar />
 
       <main className="w-full px-4 py-5 flex-1">
         <div className="flex items-center justify-between mb-4">
