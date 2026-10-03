@@ -9,9 +9,9 @@ interface BrandLogoProps {
 
 export function BrandLogo({ href, size = 'md', className = '' }: BrandLogoProps) {
   const sizeClasses = {
-    sm: 'text-[15px] sm:text-[16px]',
-    md: 'text-[17px] sm:text-[18px]',
-    lg: 'text-[22px] sm:text-[26px]',
+    sm: 'text-[19px] sm:text-[20px]',
+    md: 'text-[22px] sm:text-[24px]',
+    lg: 'text-[26px] sm:text-[30px]',
   }[size];
 
   const content = (
