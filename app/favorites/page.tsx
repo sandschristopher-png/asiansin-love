@@ -1,6 +1,5 @@
-﻿'use client';
+'use client';
 
-import { Navbar } from '@/components/Navbar';
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
@@ -77,7 +76,7 @@ export default function FavoritesPage() {
 
         setFavorites(mapped);
       } catch (err) {
-        console.error('Error loading favorites:', err);
+        console.error('Error loading favorites:', { message: err && err.message, code: err && err.code, details: err && err.details, hint: err && err.hint });
       } finally {
         setLoading(false);
       }
@@ -103,14 +102,8 @@ export default function FavoritesPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F8F7FA] text-[#1C1924]">`n      <Navbar />`n      <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-6 pb-32 space-y-6">
-      {/* Header */}
-      <div className="space-y-0.5">
-        <h1 className="text-xl sm:text-[22px] font-semibold text-[#1C1924] ">Saved Profiles</h1>
-        <p className="text-xs sm:text-sm text-[#756D82]">
-          Profiles you've bookmarked to revisit anytime.
-        </p>
-      </div>
+    <div className="min-h-screen flex flex-col bg-[#F8F7FA] text-[#1C1924]">      <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 pt-6 pb-32 md:pb-24 space-y-5">
+      
 
       {/* Main Content Area */}
       {loading ? (
@@ -210,7 +203,7 @@ export default function FavoritesPage() {
         </div>
       )}
     </main>
-  );</div>
+  </div>
   );
 }
 

@@ -1,9 +1,8 @@
-﻿'use client';
+'use client';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, User, Shield, Bell, Lock, FileText, CheckCircle2, Crown } from 'lucide-react';
-import { Navbar } from '@/components/Navbar';
 
 
 export default function SettingsPage() {
@@ -19,30 +18,8 @@ export default function SettingsPage() {
 
   return (
     <main className="flex-1 max-w-4xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-6 pb-32 space-y-6">
-      {/* Header Navigation */}
-      <div className="flex items-center justify-between">
-      <Navbar />
-
-        <div className="flex items-center gap-3">
-          <Link
-            href="/discover"
-            className="w-9 h-9 rounded-full bg-white border border-[#DDD7E5] flex items-center justify-center text-[#524B5E] hover:text-[#1C1924] hover:bg-[#F3EFFC] transition shadow-xs"
-          >
-            <ArrowLeft className="w-4 h-4" />
-          </Link>
-          <h1 className="text-xl sm:text-[22px] font-semibold text-[#1C1924] ">Account Settings</h1>
-        </div>
-
-        <Link
-          href="/profile"
-          className="text-xs sm:text-sm font-semibold text-[#6555b8] hover:underline"
-        >
-          My Bio &rarr;
-        </Link>
-      </div>
-
       {/* Category Pills Navigation */}
-      <div className="flex items-center gap-1.5 p-1 bg-white border border-[#DDD7E5] rounded-full shadow-xs w-full overflow-x-auto no-scrollbar">
+      <div className="sticky top-[60px] z-20 flex items-center gap-2 px-4 py-3 bg-white/50 border-b border-gray-100 overflow-x-auto no-scrollbar">
         {[
           { key: 'account', label: 'Account' },
           { key: 'app', label: 'App' },
