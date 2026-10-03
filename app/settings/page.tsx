@@ -19,7 +19,7 @@ export default function SettingsPage() {
   return (
     <main className="flex-1 max-w-4xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-6 pb-32 space-y-6">
       {/* Category Pills Navigation */}
-      <div className="sticky top-[60px] z-20 flex items-center gap-2 px-4 py-3 bg-white/50 border-b border-gray-100 overflow-x-auto no-scrollbar">
+      <div className="flex items-center gap-1.5 p-1 bg-[#F5F3F8] border border-[#E8E4EF] rounded-full shadow-xs w-full overflow-x-auto no-scrollbar">
         {[
           { key: 'account', label: 'Account' },
           { key: 'app', label: 'App' },
