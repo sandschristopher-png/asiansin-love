@@ -1,7 +1,7 @@
 ﻿import Link from 'next/link'
+import { Navbar } from '@/components/Navbar';
 import { Logo } from '@/components/Logo'
 import { 
-import { Navbar } from '@/components/Navbar';
 
   ShieldCheck, 
   Sparkles, 
@@ -163,4 +163,5 @@ export default function FeaturesPage() {
     </div>
   )
 }
+
 

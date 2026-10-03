@@ -1,4 +1,5 @@
 ﻿'use client';
+import { Navbar } from '@/components/Navbar';
 
 import React, { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
@@ -14,7 +15,6 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 import { 
-import { Navbar } from '@/components/Navbar';
 
   VERIFICATION_CHALLENGES, 
   VerificationChallenge, 
