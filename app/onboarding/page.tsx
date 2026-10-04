@@ -227,7 +227,6 @@ export default function OnboardingPage() {
           seeking_gender: seekingGender,
           city: city.trim(),
           country: country.trim(),
-          location: city.trim() ? (country.trim() ? `${city.trim()}, ${country.trim()}` : city.trim()) : country.trim(),
           location_source: locationSource,
           location_verified_at: locationVerifiedAt,
           latitude,

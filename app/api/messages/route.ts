@@ -20,7 +20,7 @@ export async function POST(req: Request) {
   const { data: previousMessages } = await supabase
     .from('messages')
     .select('id, sender_id')
-    .or(`and(sender_id.eq.${user.id},recipient_id.eq.${recipientId}),and(sender_id.eq.${recipientId},recipient_id.eq.${user.id})`)
+    .or(`and(sender_id.eq.${user.id},receiver_id.eq.${recipientId}),and(sender_id.eq.${recipientId},receiver_id.eq.${user.id})`)
 
   const mySentCount = previousMessages?.filter((m) => m.sender_id === user.id).length || 0
   const partnerSentCount = previousMessages?.filter((m) => m.sender_id === recipientId).length || 0
@@ -41,7 +41,7 @@ export async function POST(req: Request) {
     .from('messages')
     .insert({
       sender_id: user.id,
-      recipient_id: recipientId,
+      receiver_id: recipientId,
       content: content.trim(),
     })
     .select()
