@@ -138,7 +138,7 @@ export function Navbar() {
   const pageTitle = getPageTitle();
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-white/75 backdrop-blur-md border-b border-[#DDD7E5]/50 transition-colors">
+    <header className="sticky top-0 z-40 w-full bg-white/75 backdrop-blur-md backdrop-saturate-150 border-b border-[#DDD7E5]/40 shadow-[0_2px_12px_rgba(0,0,0,0.03)] transition-all">
       <div className="w-full px-4 h-14 flex items-center justify-between relative">
         
         {/* Left Side: Brand Logo or Back / Title with smooth transition */}

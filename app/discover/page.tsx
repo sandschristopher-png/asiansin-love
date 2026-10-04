@@ -1,12 +1,14 @@
 'use client';
 
+import MatchModal from '@/components/MatchModal';
+
 import { getDistanceLabel } from '@/lib/location';
 
 import React, { useState, useEffect, useMemo, useRef, Suspense } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { ChevronLeft, ChevronRight, Search, Heart, X as XIcon, Star, MessageCircle, 
+import { X,  ChevronLeft, ChevronRight, Search, Heart, X as XIcon, Star, MessageCircle, 
   MapPin, ShieldCheck, CheckCircle, SlidersHorizontal, 
   RotateCcw, Loader2, Check, Globe, ChevronDown } from 'lucide-react';
 import { Footer } from '@/components/Footer';
@@ -135,12 +137,12 @@ function DiscoverCardPhotoCarousel({
         <>
           <div
             onClick={handlePrev}
-            className="absolute inset-y-12 left-0 w-1/2 z-10 cursor-pointer"
+            className="absolute top-0 left-0 w-1/2 h-20 z-10 cursor-pointer"
             aria-label="Previous photo"
           />
           <div
             onClick={handleNext}
-            className="absolute inset-y-12 right-0 w-1/2 z-10 cursor-pointer"
+            className="absolute top-0 right-0 w-1/2 h-20 z-10 cursor-pointer"
             aria-label="Next photo"
           />
         </>
@@ -204,6 +206,7 @@ function DiscoverContent() {
 
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [isCountryOpen, setIsCountryOpen] = useState(false);
+  const [countryFilterQuery, setCountryFilterQuery] = useState('');
   const countryDropdownRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
@@ -231,6 +234,8 @@ function DiscoverContent() {
   const [verifiedOnly, setVerifiedOnly] = useState<boolean>(() => searchParams.get('verified') === 'true');
   const [activeNowOnly, setActiveNowOnly] = useState<boolean>(() => searchParams.get('active') === 'true');
 
+  const [matchedModalProfile, setMatchedModalProfile] = useState<{ id: string; name: string; avatarUrl?: string } | null>(null);
+  const [currentUserAvatar, setCurrentUserAvatar] = useState<string | undefined>(undefined);
   const [cardActions, setCardActions] = useState<Record<string, ActionType>>({});
   const [lastPassed, setLastPassed] = useState<{ id: string; name: string } | null>(null);
 
@@ -509,7 +514,22 @@ function DiscoverContent() {
   }, [isUserInSEA, currentUserProfile]);
 
   const filteredProfiles = profiles.filter((profile) => {
-    const matchesCountry = selectedCountry.toLowerCase() === 'all' || profile.country.toLowerCase() === selectedCountry.toLowerCase();
+    const matchesCountry = (() => {
+    if (selectedCountry.toLowerCase() === 'all') return true;
+    if (selectedCountry.toLowerCase() === 'other') {
+      const predefined = new Set([
+        'philippines', 'thailand', 'vietnam', 'indonesia', 'cambodia', 'malaysia',
+        'singapore', 'myanmar', 'laos', 'brunei', 'timor-leste',
+        'united arab emirates', 'saudi arabia', 'qatar', 'kuwait', 'bahrain', 'oman',
+        'hong kong', 'macau', 'taiwan', 'japan', 'south korea',
+        'united states', 'canada', 'australia', 'united kingdom', 'new zealand',
+        'germany', 'italy', 'netherlands', 'spain', 'france', 'ireland', 'sweden',
+        'switzerland', 'norway'
+      ]);
+      return !predefined.has((profile.country || '').toLowerCase());
+    }
+    return (profile.country || '').toLowerCase() === selectedCountry.toLowerCase();
+  })();
     const matchesGender = selectedGenders.length === 0 || selectedGenders.includes(profile.gender.toLowerCase());
     const matchesQuery = 
       profile.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -566,21 +586,23 @@ function DiscoverContent() {
             </button>
           </div>
 
-          {/* Unified Compact Filter Row: Gender (Left) & Location + Drawer (Right) */}
-          <div className="flex items-center justify-between gap-1.5 w-full overflow-x-auto no-scrollbar py-0.5">
-            {/* Gender Segmented Switch */}
-            <div className="flex items-center gap-1 p-1 bg-[#F5F3F8] border border-[#E8E4EF] rounded-full shrink-0">
-              {(['woman', 'trans', 'man'] as const).map((gender) => {
-                const label = gender === 'woman' ? 'Women' : gender === 'trans' ? 'Trans' : 'Men';
+          {/* Unified Compact Filter Row: Gender & Location */}
+          <div className="relative z-30 flex items-center justify-between gap-1.5 w-full py-0.5 select-none">
+            {/* Left Group: Gender Pills */}
+            <div className="flex items-center gap-1.5 shrink-0">
+              {(["woman", "trans", "man"]).map((gender) => {
+                const label = gender === "woman" ? "Women" : gender === "trans" ? "Trans" : "Men";
                 const active = selectedGenders.includes(gender);
                 return (
                   <button
                     key={gender}
                     type="button"
                     onClick={() => toggleGender(gender)}
-                    className={'px-3 sm:px-3.5 py-1 sm:py-1.5 text-xs sm:text-sm font-semibold rounded-full border transition-all shrink-0 ' + (
-                      active ? 'bg-[#6555b8] border-[#6555b8] text-white shadow-xs' : 'bg-transparent border-transparent text-[#6C637B] hover:text-[#1C1924] hover:bg-white/80'
-                    )}
+                    className={`shrink-0 px-3.5 py-1 text-xs font-semibold rounded-full transition-all whitespace-nowrap active:scale-95 ${
+                      active
+                        ? "bg-[#6555b8] text-white shadow-sm hover:bg-[#5646a3]"
+                        : "bg-[#F2EEF7] text-[#524B5E] hover:bg-[#E9E4F0] hover:text-[#1C1924]"
+                    }`}
                   >
                     {label}
                   </button>
@@ -588,138 +610,206 @@ function DiscoverContent() {
               })}
             </div>
 
-            {/* Right Group: Location Dropdown + Filters Button */}
-            <div className="flex items-center gap-1.5 shrink-0">
-              {/* Location Dropdown */}
-              <div ref={countryDropdownRef} className="relative shrink-0">
-                <button
-                  type="button"
-                  onClick={() => setIsCountryOpen((prev) => !prev)}
-                  className={'flex items-center gap-1 px-2.5 sm:px-3 py-1 sm:py-1.5 text-xs sm:text-sm font-semibold rounded-full border transition-all shadow-xs max-w-[140px] sm:max-w-none ' + (
-                    selectedCountry.toLowerCase() !== 'all'
-                      ? 'bg-[#F3EFFC] border-[#6555b8] text-[#6555b8]'
-                      : 'bg-white border-[#E5E1EC] text-[#524B5E] hover:text-[#1C1924] hover:border-[#CFC8DC] hover:bg-[#FAF9FC]'
-                  )}
-                >
-                  <span className="truncate">{selectedCountry.toLowerCase() === 'all' ? 'Locations' : selectedCountry}</span>
-                  <ChevronDown className={'w-3.5 h-3.5 shrink-0 transition-transform duration-200 ' + (isCountryOpen ? 'rotate-180 text-[#6555b8]' : 'text-[#8C849B]')} />
-                </button>
+            {/* Right Group: Locations Pill & Dropdown */}
+            <div ref={countryDropdownRef} className="relative shrink-0">
+              <button
+                type="button"
+                onClick={() => {
+                  setCountryFilterQuery('');
+                  setIsCountryOpen((prev) => !prev);
+                }}
+                className={`flex items-center gap-1 shrink-0 px-3.5 py-1 text-xs font-semibold rounded-full transition-all whitespace-nowrap active:scale-95 max-w-[150px] sm:max-w-none ${
+                  selectedCountry.toLowerCase() !== "all"
+                    ? "bg-[#6555b8] text-white shadow-sm hover:bg-[#5646a3]"
+                    : "bg-[#F2EEF7] text-[#524B5E] hover:bg-[#E9E4F0] hover:text-[#1C1924]"
+                }`}
+              >
+                <span className="truncate">{selectedCountry.toLowerCase() === "all" ? "Locations" : selectedCountry}</span>
+                <ChevronDown className={`w-3 h-3 shrink-0 transition-transform duration-200 ${isCountryOpen ? "rotate-180" : ""}`} />
+              </button>
 
-                {isCountryOpen && (
-                  <div className="absolute right-0 sm:left-0 mt-2 w-56 bg-white border border-[#E5E1EC] rounded-2xl shadow-xl p-1.5 z-40 max-h-80 overflow-y-auto">
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSelectedCountry('All');
-                        setIsCountryOpen(false);
-                      }}
-                      className={'w-full text-left px-3 py-2 text-xs font-semibold rounded-xl flex items-center justify-between transition ' + (
-                        selectedCountry.toLowerCase() === 'all'
-                          ? 'bg-[#F3EFFC] text-[#6555b8]'
-                          : 'text-[#524B5E] hover:bg-[#F8F7FA] hover:text-[#1C1924]'
-                      )}
-                    >
-                      <span>All Locations</span>
-                      {selectedCountry.toLowerCase() === 'all' && <Check className="w-3.5 h-3.5 text-[#6555b8]" />}
-                    </button>
+              {isCountryOpen && (
+                <div className="absolute right-0 mt-2 w-72 bg-white border border-[#E5E1EC] rounded-2xl shadow-2xl p-2 z-50 max-h-96 flex flex-col">
+                  {/* Search Bar */}
+                  <div className="relative mb-2">
+                    <input
+                      type="text"
+                      placeholder="Search countries..."
+                      value={countryFilterQuery}
+                      onChange={(e) => setCountryFilterQuery(e.target.value)}
+                      className="w-full pl-8 pr-7 py-1.5 text-xs rounded-xl bg-[#F8F7FA] border border-[#E5E1EC] text-[#1C1924] placeholder-[#8C849B] focus:outline-none focus:border-[#6555b8]"
+                      autoFocus
+                    />
+                    <Search className="w-3.5 h-3.5 text-[#8C849B] absolute left-2.5 top-2.5" />
+                    {countryFilterQuery && (
+                      <button
+                        type="button"
+                        onClick={() => setCountryFilterQuery('')}
+                        className="absolute right-2 top-2 text-[#8C849B] hover:text-[#1C1924]"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
+                  </div>
+
+                  <div className="overflow-y-auto space-y-1 pr-0.5" style={{ maxHeight: "280px" }}>
+                    {!countryFilterQuery && (
+                      <>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedCountry("All");
+                            setIsCountryOpen(false);
+                          }}
+                          className={"w-full text-left px-3 py-1.5 text-xs font-semibold rounded-xl flex items-center justify-between transition " + (
+                            selectedCountry.toLowerCase() === "all"
+                              ? "bg-[#F3EFFC] text-[#6555b8]"
+                              : "text-[#524B5E] hover:bg-[#F8F7FA] hover:text-[#1C1924]"
+                          )}
+                        >
+                          <span>All Locations (Worldwide)</span>
+                          {selectedCountry.toLowerCase() === "all" && <Check className="w-3.5 h-3.5 text-[#6555b8]" />}
+                        </button>
+
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedCountry("Other");
+                            setIsCountryOpen(false);
+                          }}
+                          className={"w-full text-left px-3 py-1.5 text-xs font-semibold rounded-xl flex items-center justify-between transition " + (
+                            selectedCountry.toLowerCase() === "other"
+                              ? "bg-[#F3EFFC] text-[#6555b8]"
+                              : "text-[#524B5E] hover:bg-[#F8F7FA] hover:text-[#1C1924]"
+                          )}
+                        >
+                          <span>Other / Unlisted Countries</span>
+                          {selectedCountry.toLowerCase() === "other" && <Check className="w-3.5 h-3.5 text-[#6555b8]" />}
+                        </button>
+                      </>
+                    )}
 
                     {(() => {
-                      const isSeekingMen = selectedGenders.includes('man') && !selectedGenders.includes('woman');
+                      const isSeekingMen = selectedGenders.includes("man") && !selectedGenders.includes("woman");
+
+                      const seaList = [
+                        "Philippines", "Thailand", "Vietnam", "Indonesia", "Cambodia",
+                        "Malaysia", "Singapore", "Myanmar", "Laos", "Brunei", "Timor-Leste"
+                      ];
+
+                      const ofwHubs = [
+                        "United Arab Emirates", "Saudi Arabia", "Qatar", "Kuwait",
+                        "Bahrain", "Oman", "Hong Kong", "Macau", "Taiwan", "Japan", "South Korea"
+                      ];
+
+                      const westernList = [
+                        "United States", "Canada", "Australia", "United Kingdom", "New Zealand",
+                        "Germany", "Italy", "Netherlands", "Spain", "France", "Ireland",
+                        "Sweden", "Switzerland", "Norway"
+                      ];
+
                       const groups = isSeekingMen
                         ? [
-                            { title: 'Western & Overseas', list: SUITOR_COUNTRIES },
-                            { title: 'Southeast Asia', list: SEA_COUNTRIES },
+                            { title: "Western & Diaspora Suitors", list: westernList },
+                            { title: "OFW & Overseas Hubs", list: ofwHubs },
+                            { title: "Southeast Asia", list: seaList },
                           ]
                         : [
-                            { title: 'Southeast Asia', list: SEA_COUNTRIES },
-                            { title: 'Western & Overseas', list: SUITOR_COUNTRIES },
+                            { title: "Southeast Asia", list: seaList },
+                            { title: "OFW & Overseas Hubs", list: ofwHubs },
+                            { title: "Western & Diaspora Countries", list: westernList },
                           ];
 
-                      const knownLower = new Set([
-                        ...WESTERN_COUNTRIES.map(c => c.toLowerCase()),
-                        ...ASIA_HUBS.map(c => c.toLowerCase()),
-                        ...SEA_COUNTRIES.map(c => c.toLowerCase()),
-                        ...SUITOR_COUNTRIES.map(c => c.toLowerCase())
-                      ]);
+                      const allStatic = new Set(
+                        groups.flatMap((g) => g.list.map((x) => x.toLowerCase()))
+                      );
 
-                      const otherCountries = Array.from(new Set(
-                        profiles
-                          .map(p => p.country)
-                          .filter(c => c && !knownLower.has(c.toLowerCase()))
-                      )).sort();
+                      const dynamicOthers = Array.from(
+                        new Set(
+                          profiles
+                            .map((p) => p.country)
+                            .filter((x) => x && !allStatic.has(x.toLowerCase()))
+                        )
+                      ).sort();
+
+                      const q = countryFilterQuery.trim().toLowerCase();
+                      const filterList = (list: string[]) =>
+                        q ? list.filter((item: string) => item.toLowerCase().includes(q)) : list;
+
+                      const filteredDynamicOthers = filterList(dynamicOthers);
 
                       return (
                         <>
                           {groups.map((group) => {
-                            const available = group.list.filter(c => 
-                              profiles.some(p => p.country?.toLowerCase() === c.toLowerCase())
-                            );
-                            if (available.length === 0) return null;
+                            const visibleItems = filterList(group.list);
+                            if (visibleItems.length === 0) return null;
 
                             return (
-                              <div key={group.title} className="mt-2 pt-2 border-t border-[#F0EDF5]">
-                                <div className="px-3 py-1 text-[10px] font-medium text-[#8C849B] uppercase tracking-wider">
+                              <div key={group.title} className="mt-2 pt-2 border-t border-[#F0EDF5] first:mt-0 first:pt-0 first:border-0">
+                                <div className="px-3 py-1 text-[10px] font-bold text-[#8C849B] uppercase tracking-wider">
                                   {group.title}
                                 </div>
-                                {available.map((c) => (
-                                  <button
-                                    key={c}
-                                    type="button"
-                                    onClick={() => {
-                                      setSelectedCountry(c);
-                                      setIsCountryOpen(false);
-                                    }}
-                                    className={'w-full text-left px-3 py-1.5 text-xs font-medium rounded-xl flex items-center justify-between transition ' + (
-                                      selectedCountry.toLowerCase() === c.toLowerCase()
-                                        ? 'bg-[#F3EFFC] text-[#6555b8] font-medium'
-                                        : 'text-[#524B5E] hover:bg-[#F8F7FA] hover:text-[#1C1924]'
-                                    )}
-                                  >
-                                    <span>{c}</span>
-                                    {selectedCountry.toLowerCase() === c.toLowerCase() && (
-                                      <Check className="w-3.5 h-3.5 text-[#6555b8]" />
-                                    )}
-                                  </button>
-                                ))}
+                                {visibleItems.map((cName: string) => {
+                                  const active = selectedCountry.toLowerCase() === cName.toLowerCase();
+                                  return (
+                                    <button
+                                      key={cName}
+                                      type="button"
+                                      onClick={() => {
+                                        setSelectedCountry(cName);
+                                        setIsCountryOpen(false);
+                                        setCountryFilterQuery('');
+                                      }}
+                                      className={"w-full text-left px-3 py-1.5 text-xs rounded-xl flex items-center justify-between transition active:scale-[0.98] " + (
+                                        active
+                                          ? "bg-[#F3EFFC] text-[#6555b8] font-semibold"
+                                          : "text-[#524B5E] hover:bg-[#F8F7FA] hover:text-[#1C1924]"
+                                      )}
+                                    >
+                                      <span>{cName}</span>
+                                      {active && <Check className="w-3.5 h-3.5 text-[#6555b8] shrink-0" />}
+                                    </button>
+                                  );
+                                })}
                               </div>
                             );
                           })}
 
-                          {otherCountries.length > 0 && (
+                          {filteredDynamicOthers.length > 0 && (
                             <div className="mt-2 pt-2 border-t border-[#F0EDF5]">
-                              <div className="px-3 py-1 text-[10px] font-medium text-[#8C849B] uppercase tracking-wider">
-                                Other Locations
+                              <div className="px-3 py-1 text-[10px] font-bold text-[#8C849B] uppercase tracking-wider">
+                                Other Active Locations
                               </div>
-                              {otherCountries.map((c) => (
-                                <button
-                                  key={c}
-                                  type="button"
-                                  onClick={() => {
-                                    setSelectedCountry(c);
-                                    setIsCountryOpen(false);
-                                  }}
-                                  className={'w-full text-left px-3 py-1.5 text-xs font-medium rounded-xl flex items-center justify-between transition ' + (
-                                    selectedCountry.toLowerCase() === c.toLowerCase()
-                                      ? 'bg-[#F3EFFC] text-[#6555b8] font-medium'
-                                      : 'text-[#524B5E] hover:bg-[#F8F7FA] hover:text-[#1C1924]'
-                                  )}
-                                >
-                                  <span>{c}</span>
-                                  {selectedCountry.toLowerCase() === c.toLowerCase() && (
-                                    <Check className="w-3.5 h-3.5 text-[#6555b8]" />
-                                  )}
-                                </button>
-                              ))}
+                              {filteredDynamicOthers.map((cName: string) => {
+                                const active = selectedCountry.toLowerCase() === cName.toLowerCase();
+                                return (
+                                  <button
+                                    key={cName}
+                                    type="button"
+                                    onClick={() => {
+                                      setSelectedCountry(cName);
+                                      setIsCountryOpen(false);
+                                      setCountryFilterQuery('');
+                                    }}
+                                    className={"w-full text-left px-3 py-1.5 text-xs rounded-xl flex items-center justify-between transition active:scale-[0.98] " + (
+                                      active
+                                        ? "bg-[#F3EFFC] text-[#6555b8] font-semibold"
+                                        : "text-[#524B5E] hover:bg-[#F8F7FA] hover:text-[#1C1924]"
+                                    )}
+                                  >
+                                    <span>{cName}</span>
+                                    {active && <Check className="w-3.5 h-3.5 text-[#6555b8] shrink-0" />}
+                                  </button>
+                                );
+                              })}
                             </div>
                           )}
                         </>
                       );
                     })()}
                   </div>
-                )}
-              </div>
-
-
+                </div>
+              )}
             </div>
           </div>
         </section>
@@ -761,7 +851,7 @@ function DiscoverContent() {
                 />
 
                 {/* Dark Scrim Gradient for Legibility */}
-                <div className="pointer-events-none absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/90 via-black/45 to-transparent z-10" />
+                
 
                 
 
@@ -782,7 +872,7 @@ function DiscoverContent() {
                       </p>
                     </Link>
 
-                    {/* Lower Right Frosted Heart Button */}
+                    {/* Lower Right Tactile Heart Button */}
                     <button
                       type="button"
                       aria-label={isLiked ? 'Unlike' : 'Like'}
@@ -791,13 +881,17 @@ function DiscoverContent() {
                         e.preventDefault();
                         triggerAction(profile.id, 'like');
                       }}
-                      className={'w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border transition-all duration-200 active:scale-90 shadow-md backdrop-blur-md shrink-0 pointer-events-auto ' + (
+                      className={`w-10 h-10 rounded-full flex items-center justify-center border transition-all duration-300 ease-out active:scale-75 active:rotate-[-8deg] shadow-lg backdrop-blur-md shrink-0 pointer-events-auto select-none ${
                         isLiked
-                          ? 'bg-rose-500 border-rose-400 text-white shadow-rose-500/40 scale-105'
-                          : 'bg-black/75 hover:bg-black/85 border-white/20 text-white'
-                      )}
+                          ? 'bg-[#6555b8] border-[#8b7bd9] text-white shadow-[0_0_20px_rgba(101,85,184,0.55)] scale-105'
+                          : 'bg-black/35 hover:bg-black/60 border-white/25 text-white/90 hover:text-white hover:scale-105'
+                      }`}
                     >
-                      <Heart className={'w-4 h-4 sm:w-5 sm:h-5 transition-transform duration-200 ' + (isLiked ? 'fill-white scale-110' : 'hover:scale-105')} />
+                      <Heart
+                        className={`w-5 h-5 transition-transform duration-300 ease-out ${
+                          isLiked ? 'fill-white scale-110' : 'hover:scale-110'
+                        }`}
+                      />
                     </button>
                   </div>
                 </div>

@@ -1,6 +1,8 @@
 ﻿'use client';
 
 import React, { useState } from 'react';
+import { supabase } from '@/lib/supabaseClient';
+import { validateAndCompressVerificationImage } from '@/lib/verification';
 
 interface GestureVerifyModalProps {
   isOpen: boolean;
@@ -30,6 +32,7 @@ export function GestureVerifyModal({
   const [file, setFile] = useState<File | null>(null);
   const [preview, setPreview] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [validationError, setValidationError] = useState<string | null>(null);
 
   if (!isOpen) return null;
 
@@ -38,6 +41,7 @@ export function GestureVerifyModal({
     if (selected) {
       setFile(selected);
       setPreview(URL.createObjectURL(selected));
+      setValidationError(null);
     }
   };
 
@@ -48,27 +52,55 @@ export function GestureVerifyModal({
     }
 
     setIsSubmitting(true);
-    try {
-      const formData = new FormData();
-      formData.append('userId', userId);
-      formData.append('userFullName', userFullName);
-      formData.append('gestureInstruction', selectedGesture);
-      formData.append('file', file);
+    setValidationError(null);
 
+    try {
+      // 1. Client-side quality & luminance validation + compression
+      const validation = await validateAndCompressVerificationImage(file);
+      if (!validation.valid || !validation.blob) {
+        setValidationError(validation.error || 'Image does not meet quality requirements.');
+        setIsSubmitting(false);
+        return;
+      }
+
+      // 2. Upload compressed image directly to Supabase avatars bucket
+      const filePath = `verifications/${userId}/${Date.now()}.jpg`;
+      const { error: uploadErr } = await supabase.storage
+        .from('avatars')
+        .upload(filePath, validation.blob, {
+          contentType: 'image/jpeg',
+          upsert: true,
+        });
+
+      if (uploadErr) {
+        throw new Error(`Upload failed: ${uploadErr.message}`);
+      }
+
+      const { data: publicUrlData } = supabase.storage
+        .from('avatars')
+        .getPublicUrl(filePath);
+
+      const selfieUrl = publicUrlData.publicUrl;
+
+      // 3. Post JSON payload to backend verification submission route
       const res = await fetch('/api/verify/submit', {
         method: 'POST',
-        body: formData,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          poseRequested: selectedGesture,
+          selfieUrl,
+        }),
       });
 
       if (res.ok) {
         onSuccess();
         onClose();
       } else {
-        const data = await res.json();
+        const data = await res.json().catch(() => ({}));
         alert(data.error || 'Submission failed.');
       }
-    } catch {
-      alert('Network error submitting verification.');
+    } catch (err: any) {
+      alert(err.message || 'Network error submitting verification.');
     } finally {
       setIsSubmitting(false);
     }
@@ -83,7 +115,7 @@ export function GestureVerifyModal({
           <span className="text-[10px] font-mono font-medium uppercase tracking-widest text-[#9A8CC3] block mb-1">
             Live Verification
           </span>
-          <h2 className="text-xl font-medium text-white ">
+          <h2 className="text-xl font-medium text-white">
             Confirm Your Identity
           </h2>
           <p className="text-xs text-[#B2A4D7] mt-1 leading-relaxed">
@@ -102,9 +134,9 @@ export function GestureVerifyModal({
         </div>
 
         {/* Upload Frame */}
-        <div className="relative aspect-[4/3] w-full rounded-2xl bg-[#2D2F4C] border border-[#9A8CC3]/20 flex flex-col items-center justify-center overflow-hidden mb-6">
+        <div className="relative aspect-[4/3] w-full rounded-2xl bg-[#2D2F4C] border border-[#9A8CC3]/20 flex flex-col items-center justify-center overflow-hidden mb-4">
           {preview ? (
-            <img src={preview} alt="Pose preview" className="w-full h-full object-cover" />
+            <img src={preview} alt="Pose preview" className="w-full h-full object-cover"/>
           ) : (
             <div className="text-center p-4">
               <span className="text-xs text-[#B2A4D7] block mb-2">No photo selected</span>
@@ -122,6 +154,12 @@ export function GestureVerifyModal({
           )}
         </div>
 
+        {validationError && (
+          <div className="mb-4 p-3 rounded-xl bg-red-500/20 border border-red-500/40 text-red-200 text-xs text-center">
+            {validationError}
+          </div>
+        )}
+
         {/* Action Controls */}
         <div className="flex flex-col sm:flex-row items-center gap-2.5">
           <button
@@ -129,7 +167,7 @@ export function GestureVerifyModal({
             disabled={!file || isSubmitting}
             className="w-full py-3 rounded-xl bg-[#6555B8] hover:bg-[#7D4B9F] disabled:opacity-50 text-[#F3EBF9] font-semibold text-xs transition-all shadow-lg shadow-[#3B3D60]/50"
           >
-            {isSubmitting ? 'Sending for Review...' : 'Submit Verification'}
+            {isSubmitting ? 'Validating & Uploading...' : 'Submit Verification'}
           </button>
           <button
             onClick={onClose}
@@ -143,4 +181,3 @@ export function GestureVerifyModal({
     </div>
   );
 }
-

@@ -1,15 +1,23 @@
 // app/api/admin/verify/route.ts
 import { NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabaseClient';
+import { verifyAdminActionSignature } from '@/lib/adminSecurity';
 
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
     const uid = searchParams.get('uid');
     const action = searchParams.get('action');
+    const sig = searchParams.get('sig');
 
     if (!uid || !action || !['approve', 'reject'].includes(action)) {
       return new NextResponse('Invalid verification request parameters.', { status: 400 });
+    }
+
+    // Verify HMAC signature
+    const isValid = verifyAdminActionSignature(`verify:${uid}:${action}`, sig);
+    if (!isValid) {
+      return new NextResponse('Unauthorized: Invalid or missing moderation signature.', { status: 403 });
     }
 
     const isApprove = action === 'approve';
@@ -30,7 +38,7 @@ export async function GET(req: Request) {
     await supabase.from('notifications').insert({
       user_id: uid,
       type: 'verification',
-      title: isApprove ? 'Identity Verified! ??' : 'Verification Update',
+      title: isApprove ? 'Identity Verified! ✅' : 'Verification Update',
       description: isApprove
         ? 'Your identity has been verified. The verified checkmark is now active on your profile.'
         : 'Your selfie verification could not be approved. Please submit a new photo following the instructions.',

@@ -1,4 +1,5 @@
-﻿// lib/adminAlerts.ts
+// lib/adminAlerts.ts
+import { generateAdminActionSignature } from './adminSecurity';
 
 export async function sendTelegramVerificationAlert({
   userId,
@@ -29,12 +30,14 @@ export async function sendTelegramVerificationAlert({
 `🛡️ *New Identity Gesture Verification*
 *User ID:* \`${userId}\`
 *Requested Pose:* ${poseRequested}
-${aiVerdict ? `\n?? *Gemini AI Pre-Check:*\n� Pose Match: ${aiVerdict.poseMatchesPrompt ? "? Yes" : "?? Unconfirmed"}\n� Content Safe: ${aiVerdict.isSafe ? "? Safe" : "?? Flagged"}\n� Note: _${aiVerdict.reason}_\n` : ""}
+${aiVerdict ? `\n🤖 *Gemini AI Pre-Check:*\n• Pose Match: ${aiVerdict.poseMatchesPrompt ? '✅ Yes' : '⚠️ Unconfirmed'}\n• Content Safe: ${aiVerdict.isSafe ? '✅ Safe' : '⚠️ Flagged'}\n• Note: _${aiVerdict.reason}_\n` : ''}
 
 👉 [View Profile Avatar](${avatarUrl})
 👉 [View Live Selfie Capture](${selfieUrl})`;
 
   const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
+  const approveSig = generateAdminActionSignature(`verify:${userId}:approve`);
+  const rejectSig = generateAdminActionSignature(`verify:${userId}:reject`);
 
   try {
     await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
@@ -49,11 +52,11 @@ ${aiVerdict ? `\n?? *Gemini AI Pre-Check:*\n� Pose Match: ${aiVerdict.poseMatc
             [
               { 
                 text: '✅ Approve Identity', 
-                url: `${baseUrl}/api/admin/verify?uid=${userId}&action=approve` 
+                url: `${baseUrl}/api/admin/verify?uid=${userId}&action=approve&sig=${approveSig}` 
               },
               { 
                 text: '❌ Reject Identity', 
-                url: `${baseUrl}/api/admin/verify?uid=${userId}&action=reject` 
+                url: `${baseUrl}/api/admin/verify?uid=${userId}&action=reject&sig=${rejectSig}` 
               },
             ],
           ],
@@ -90,8 +93,10 @@ export async function sendTelegramPhotoReviewAlert({
   const typeLabel = isPrimaryAvatar ? 'Main Avatar' : 'Gallery Photo';
   const caption = `📸 *New Photo Submission (${typeLabel})*\n*User ID:* \`${userId}\`\n*Gender:* ${userGender || 'female'}\n\nPlease inspect for inappropriate attire, solicitation watermarks, or violations.`;
 
+  const approveSig = generateAdminActionSignature(`photo:${userId}:${photoId}:approve:${isPrimaryAvatar}`);
+  const rejectSig = generateAdminActionSignature(`photo:${userId}:${photoId}:reject:${isPrimaryAvatar}`);
+
   try {
-    // Send photo directly to Telegram chat
     await fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -105,11 +110,11 @@ export async function sendTelegramPhotoReviewAlert({
             [
               {
                 text: '✅ Approve Photo',
-                url: `${baseUrl}/api/admin/review-photo?photoId=${photoId}&uid=${userId}&action=approve&isPrimary=${isPrimaryAvatar}`,
+                url: `${baseUrl}/api/admin/review-photo?photoId=${photoId}&uid=${userId}&action=approve&isPrimary=${isPrimaryAvatar}&sig=${approveSig}`,
               },
               {
                 text: '❌ Reject Photo',
-                url: `${baseUrl}/api/admin/review-photo?photoId=${photoId}&uid=${userId}&action=reject&isPrimary=${isPrimaryAvatar}`,
+                url: `${baseUrl}/api/admin/review-photo?photoId=${photoId}&uid=${userId}&action=reject&isPrimary=${isPrimaryAvatar}&sig=${rejectSig}`,
               },
             ],
           ],

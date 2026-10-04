@@ -92,18 +92,58 @@ export async function persistCardAction(
           }, { onConflict: 'user_id,favorite_profile_id' });
 
         if (!favError) {
+          // Check for reciprocal like (Mutual Match)
           try {
-            await supabase.from('notifications').insert({
-              user_id: targetId,
-              type: 'favorite',
-              title: action === 'star' ? 'Super Liked!' : 'New Favorite',
-              description: action === 'star' 
-                ? 'Someone starred your profile as a priority match.' 
-                : 'Someone added your profile to their favorites.',
-              is_read: false,
-            });
-          } catch {
-            // Notification dispatch is non-blocking
+            const { data: reciprocal } = await supabase
+              .from('favorites')
+              .select('id')
+              .eq('user_id', targetId)
+              .eq('favorite_profile_id', user.id)
+              .maybeSingle();
+
+            const isMutual = Boolean(reciprocal);
+
+            if (isMutual) {
+              // Dispatch mutual match event for client UI
+              if (typeof window !== 'undefined') {
+                window.dispatchEvent(
+                  new CustomEvent('ail-mutual-match', {
+                    detail: { targetId, currentUserId: user.id },
+                  })
+                );
+              }
+
+              // Notify both users of the mutual match
+              await supabase.from('notifications').insert([
+                {
+                  user_id: targetId,
+                  type: 'match',
+                  title: "It's a Match!",
+                  description: "You both liked each other! Start a conversation now.",
+                  is_read: false,
+                },
+                {
+                  user_id: user.id,
+                  type: 'match',
+                  title: "It's a Match!",
+                  description: "You have a new mutual match!",
+                  is_read: false,
+                }
+              ]);
+            } else {
+              // Standard single like notification
+              await supabase.from('notifications').insert({
+                user_id: targetId,
+                type: 'favorite',
+                title: action === 'star' ? 'Super Liked!' : 'New Favorite',
+                description: action === 'star' 
+                  ? 'Someone starred your profile as a priority match.' 
+                  : 'Someone added your profile to their favorites.',
+                is_read: false,
+              });
+            }
+          } catch (notifErr) {
+            console.warn('Match/notification check failed:', notifErr);
           }
         }
       }

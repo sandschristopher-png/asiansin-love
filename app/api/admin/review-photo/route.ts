@@ -1,20 +1,29 @@
-﻿// app/api/admin/review-photo/route.ts
+// app/api/admin/review-photo/route.ts
 import { supabase } from '@/lib/supabaseClient';
+import { verifyAdminActionSignature } from '@/lib/adminSecurity';
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url);
   const uid = searchParams.get('uid');
+  const photoId = searchParams.get('photoId') || '';
   const action = searchParams.get('action');
   const isPrimary = searchParams.get('isPrimary') === 'true';
+  const sig = searchParams.get('sig');
 
   if (!uid || !['approve', 'reject'].includes(action || '')) {
     return new Response('Invalid request parameters', { status: 400 });
   }
 
+  // Verify HMAC signature
+  const payload = `photo:${uid}:${photoId}:${action}:${isPrimary}`;
+  const isValid = verifyAdminActionSignature(payload, sig);
+  if (!isValid) {
+    return new Response('Unauthorized: Invalid or missing moderation signature.', { status: 403 });
+  }
+
   const isApproved = action === 'approve';
 
   if (isPrimary) {
-    // Update the profile avatar approval state
     const { error } = await supabase
       .from('profiles')
       .update({

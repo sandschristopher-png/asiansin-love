@@ -386,7 +386,7 @@ export default function PublicProfilePage() {
               <Ruler className="w-3.5 h-3.5 text-[#6555b8] shrink-0" />
               <div className="min-w-0 flex-1">
                 <p className="text-[10px] text-[#756D82] leading-none">Height</p>
-                <p className="font-semibold text-[#1C1924] truncate mt-0.5">{formattedHeight !== 'Not specified' ? formattedHeight : 'â€”'}</p>
+                <p className="font-semibold text-[#1C1924] truncate mt-0.5">{formattedHeight !== 'Not specified' ? formattedHeight : '—'}</p>
               </div>
             </div>
 
