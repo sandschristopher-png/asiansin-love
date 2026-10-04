@@ -289,13 +289,17 @@ export default function ChatConversationPage() {
   useEffect(() => {
     if (!resolvedTargetUuid || currentUserId === 'guest-user') return;
 
+    let isMounted = true;
+    const channelName = `chat_${resolvedTargetUuid}_${currentUserId}_${Date.now()}`;
+
     const channel = supabase
-      .channel(`chat_page_${resolvedTargetUuid}_${currentUserId}`)
+      .channel(channelName)
       .on(
         'postgres_changes',
         { event: 'INSERT', schema: 'public', table: 'messages' },
         (payload) => {
-          const newRow = payload.new;
+          if (!isMounted) return;
+          const newRow = payload.new as any;
           const recId = newRow.recipient_id || newRow.receiver_id;
           const isFromTarget = newRow.sender_id === resolvedTargetUuid && recId === currentUserId;
 
@@ -315,12 +319,17 @@ export default function ChatConversationPage() {
           }
         }
       )
-      .subscribe();
+      .subscribe((status) => {
+        if (status === 'CHANNEL_ERROR') {
+          console.error(`[Realtime] Subscription error on ${channelName}`);
+        }
+      });
 
     return () => {
+      isMounted = false;
       supabase.removeChannel(channel);
     };
-  }, [supabase, resolvedTargetUuid, currentUserId]);
+  }, [resolvedTargetUuid, currentUserId]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
