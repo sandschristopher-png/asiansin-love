@@ -144,7 +144,16 @@ export default function MyProfilePage() {
         if (data.wants_kids) setWantsKids(data.wants_kids);
         if (data.relocation) setRelocation(data.relocation);
         if (data.languages) setUserLanguages(data.languages);
-        if (data.height) setHeight(data.height);
+        if (data.height) {
+            const raw = data.height.trim();
+            const cmMatch = raw.match(/(d+)s*cm/i);
+            if (cmMatch) {
+              const matchedOption = HEIGHT_OPTIONS.find(opt => opt.includes(`(${cmMatch[1]} cm)`));
+              setHeight(matchedOption || raw);
+            } else {
+              setHeight(raw);
+            }
+          }
         if (data.drinking) setDrinking(data.drinking);
         if (data.smoking) setSmoking(data.smoking);
         if (data.avatar_url) setAvatarUrl(data.avatar_url);
@@ -212,7 +221,11 @@ export default function MyProfilePage() {
         wants_kids: wantsKids,
         relocation,
         languages: userLanguages,
-          height: height ? height.replace(/(\d+)['\u2019]?\s*(\d+)[\x22\u201D]?\s*\((\d+)\s*cm\)/, '$1ft $2in ($3 cm)') : null,
+          height: (() => {
+            if (!height) return null;
+            const cmMatch = height.match(/(d+)s*cm/i);
+            return cmMatch ? `${cmMatch[1]} cm` : height.trim();
+          })(),
 
         drinking,
         smoking,
