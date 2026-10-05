@@ -332,6 +332,9 @@ export default function ChatConversationPage() {
   }, [resolvedTargetUuid, currentUserId]);
 
   const handleSendMessage = async (e: React.FormEvent) => {
+    if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+      try { navigator.vibrate([15]); } catch (_) {}
+    }
     e.preventDefault();
     const clean = inputText.trim();
     if (!clean || cooldownSeconds > 0) return;

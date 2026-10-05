@@ -237,6 +237,15 @@ function DiscoverContent() {
   const [singleMomOnly, setSingleMomOnly] = useState<boolean>(false);
 
   const [matchedModalProfile, setMatchedModalProfile] = useState<{ id: string; name: string; avatarUrl?: string } | null>(null);
+  const [isModalClosing, setIsModalClosing] = useState(false);
+
+  const closeModalWithAnimation = () => {
+    setIsModalClosing(true);
+    setTimeout(() => {
+      setMatchedModalProfile(null);
+      setIsModalClosing(false);
+    }, 220);
+  };
   const [currentUserAvatar, setCurrentUserAvatar] = useState<string | undefined>(undefined);
   const [cardActions, setCardActions] = useState<Record<string, ActionType>>({});
   const [lastPassed, setLastPassed] = useState<{ id: string; name: string } | null>(null);
@@ -351,6 +360,9 @@ function DiscoverContent() {
     });
 
     if (action === 'like' && !isCurrentlyActive) {
+      if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+        try { navigator.vibrate([20, 40, 20]); } catch (_) {}
+      }
       setMatchedModalProfile({
         id,
         name: name || 'your match',
@@ -1163,11 +1175,19 @@ function DiscoverContent() {
       
       {/* Match Celebration Spring Modal */}
       {matchedModalProfile && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+        <div 
+          onClick={closeModalWithAnimation}
+          className={`fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-opacity duration-200 ${
+            isModalClosing ? 'opacity-0 pointer-events-none' : 'opacity-100'
+          }`}
+        >
           <div 
             role="dialog"
             aria-modal="true"
-            className="w-full max-w-sm rounded-3xl bg-white border border-[#DDD7E5]/70 p-6 shadow-2xl flex flex-col items-center text-center transform transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] scale-100"
+            onClick={(e) => e.stopPropagation()}
+            className={`w-full max-w-sm rounded-3xl bg-white border border-[#DDD7E5]/70 p-6 shadow-2xl flex flex-col items-center text-center transform transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+              isModalClosing ? 'scale-90 opacity-0' : 'scale-100 opacity-100'
+            }`}
           >
             <div className="w-12 h-12 rounded-full bg-rose-50 flex items-center justify-center text-2xl mb-3 shadow-inner">
               ✨
@@ -1201,7 +1221,7 @@ function DiscoverContent() {
               </Link>
               <button
                 type="button"
-                onClick={() => setMatchedModalProfile(null)}
+                onClick={closeModalWithAnimation}
                 className="w-full py-2.5 px-4 rounded-full text-xs font-semibold text-[#6E6481] hover:text-[#1C1924] hover:bg-[#F3EFFC] active:scale-95 transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-pointer"
               >
                 Keep Browsing
