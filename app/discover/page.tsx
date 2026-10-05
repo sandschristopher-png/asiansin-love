@@ -8,7 +8,7 @@ import { getDistanceLabel } from '@/lib/location';
 import React, { useState, useEffect, useMemo, useRef, Suspense } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
+import {  useSearchParams , useRouter } from 'next/navigation';
 import { X,  ChevronLeft, ChevronRight, Search, Heart, X as XIcon, Star, MessageCircle, 
   MapPin, ShieldCheck, CheckCircle, SlidersHorizontal, 
   RotateCcw, Loader2, Check, Globe, ChevronDown } from 'lucide-react';
@@ -176,6 +176,7 @@ function DiscoverCardPhotoCarousel({
 }
 
 function DiscoverContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const [currentUserCoords, setCurrentUserCoords] = useState<{ lat: number; lon: number } | null>(null);
   const [currentUserProfile, setCurrentUserProfile] = useState<{ gender?: string; country?: string } | null>(null);
@@ -1284,3 +1285,4 @@ export default function DiscoverPage() {
     </Suspense>
   );
 }
+
