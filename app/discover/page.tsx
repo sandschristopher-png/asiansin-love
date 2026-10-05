@@ -31,6 +31,7 @@ const RELATIONSHIP_INTENTS = [
 ];
 
 export interface ProfileItem {
+  is_single_mom?: boolean;
   username?: string;
   id: string;
   name: string;
@@ -233,6 +234,7 @@ function DiscoverContent() {
   const [selectedIntent, setSelectedIntent] = useState<string>(() => searchParams.get('intent') || 'All');
   const [verifiedOnly, setVerifiedOnly] = useState<boolean>(() => searchParams.get('verified') === 'true');
   const [activeNowOnly, setActiveNowOnly] = useState<boolean>(() => searchParams.get('active') === 'true');
+  const [singleMomOnly, setSingleMomOnly] = useState<boolean>(false);
 
   const [matchedModalProfile, setMatchedModalProfile] = useState<{ id: string; name: string; avatarUrl?: string } | null>(null);
   const [currentUserAvatar, setCurrentUserAvatar] = useState<string | undefined>(undefined);
@@ -291,6 +293,7 @@ function DiscoverContent() {
     setSelectedIntent('All');
     setVerifiedOnly(false);
     setActiveNowOnly(false);
+    setSingleMomOnly(false);
   };
 
   useEffect(() => {
@@ -333,7 +336,7 @@ function DiscoverContent() {
     hydrateRemoteFavorites();
   }, [supabase]);
 
-  const triggerAction = (id: string, action: ActionType, name?: string) => {
+  const triggerAction = (id: string, action: ActionType, name?: string, avatarUrl?: string) => {
     const currentAction = cardActions[id];
     const isCurrentlyActive = currentAction === action;
 
@@ -346,6 +349,14 @@ function DiscoverContent() {
       }
       return next;
     });
+
+    if (action === 'like' && !isCurrentlyActive) {
+      setMatchedModalProfile({
+        id,
+        name: name || 'your match',
+        avatarUrl: avatarUrl || '/placeholder-avatar.svg',
+      });
+    }
 
     if (action === 'pass' && !isCurrentlyActive && name) {
       setLastPassed({ id, name });
@@ -837,7 +848,7 @@ function DiscoverContent() {
             return (
               <div
                 key={profile.id}
-                className="group relative rounded-2xl sm:rounded-3xl overflow-hidden aspect-[3/4] w-full bg-[#181926] border border-[#E5E1EC]/20 shadow-[0_2px_8px_rgba(28,25,36,0.06)] hover:shadow-[0_8px_24px_rgba(28,25,36,0.12)] transition-all duration-300"
+                className="group relative rounded-2xl sm:rounded-3xl overflow-hidden aspect-[3/4] w-full bg-[#181926] border border-[#E5E1EC]/20 shadow-[0_2px_8px_rgba(28,25,36,0.06)] hover:shadow-[0_12px_32px_rgba(28,25,36,0.16)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 active:scale-[0.985] select-none"
               >
                 {/* Full-Bleed Carousel */}
                 <DiscoverCardPhotoCarousel
@@ -879,9 +890,9 @@ function DiscoverContent() {
                       onClick={(e) => {
                         e.stopPropagation();
                         e.preventDefault();
-                        triggerAction(profile.id, 'like');
+                        triggerAction(profile.id, 'like', displayName, profile.avatarUrl || (profile.photos && profile.photos[0]));
                       }}
-                      className={`w-10 h-10 rounded-full flex items-center justify-center border transition-all duration-300 ease-out active:scale-75 active:rotate-[-8deg] shadow-lg backdrop-blur-md shrink-0 pointer-events-auto select-none ${
+                      className={`w-10 h-10 rounded-full flex items-center justify-center border transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-75 active:rotate-[-12deg] shadow-lg backdrop-blur-md shrink-0 pointer-events-auto select-none cursor-pointer ${
                         isLiked
                           ? 'bg-[#6555b8] border-[#8b7bd9] text-white shadow-[0_0_20px_rgba(101,85,184,0.55)] scale-105'
                           : 'bg-black/35 hover:bg-black/60 border-white/25 text-white/90 hover:text-white hover:scale-105'
@@ -983,18 +994,19 @@ function DiscoverContent() {
 
       {/* Filter Drawer */}
       <div 
-        className={'fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex justify-end transition-opacity duration-300 ' + (
-          filtersOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-        )}
+        className={'absolute inset-0 z-50 bg-black/60 backdrop-blur-sm flex flex-col justify-end transition-opacity duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ' + (
+            filtersOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
+          )}
         onClick={() => setFiltersOpen(false)}
       >
         <div 
-          className={'w-full max-w-sm sm:max-w-md bg-white h-full border-l border-[#DDD7E5] p-5 sm:p-6 overflow-y-auto flex flex-col justify-between transform transition-transform duration-300 ease-out ' + (
-            filtersOpen ? 'translate-x-0' : 'translate-x-full'
-          )}
+          className={'w-full bg-white max-h-[85vh] rounded-t-3xl border-t border-[#E5E1EC] flex flex-col shadow-[0_-12px_40px_rgba(28,25,36,0.18)] transform transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ' + (
+              filtersOpen ? 'translate-y-0' : 'translate-y-full'
+            )}
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="space-y-6">
+          <div className="w-10 h-1 bg-[#D1CBD8] rounded-full mx-auto mt-2.5 mb-1 shrink-0" />
+            <div className="flex-1 overflow-y-auto px-5 py-3 space-y-6 overscroll-contain">
             <div className="flex items-center justify-between pb-4 border-b border-[#7D7E92]/20">
               <div className="flex items-center gap-2">
                 <SlidersHorizontal className="w-5 h-5 text-[#b2a4d7]" />
@@ -1028,7 +1040,7 @@ function DiscoverContent() {
                       key={gender}
                       type="button"
                       onClick={() => toggleGender(gender)}
-                      className={'py-2 text-xs font-semibold rounded-xl border text-center transition-all ' + (
+                      className={'py-2 text-xs font-semibold rounded-xl border text-center transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-95 cursor-pointer ' + (
                         active
                           ? 'bg-[#6555b8] border-[#6555b8] text-white shadow-xs'
                           : 'bg-white border-[#DDD7E5] text-[#524B5E] hover:border-[#6555b8]/50 hover:bg-[#F3EFFC]'
@@ -1126,11 +1138,12 @@ function DiscoverContent() {
             </div>
           </div>
 
-          <div className="pt-6 border-t border-[#7D7E92]/20 flex items-center gap-3">
+          {/* Sticky Action Footer */}
+          <div className="p-4 bg-white/95 backdrop-blur-md border-t border-[#E5E1EC] flex items-center gap-3 pb-[max(1rem,env(safe-area-inset-bottom))] shrink-0">
             <button
               type="button"
               onClick={resetFilters}
-              className="flex-1 py-2.5 rounded-full border border-[#DDD7E5] text-xs font-semibold text-[#524B5E] hover:text-white hover:bg-[#E5E1EC] transition flex items-center justify-center gap-1.5"
+              className="flex-1 py-2.5 rounded-full border border-[#DDD7E5] text-xs font-semibold text-[#524B5E] hover:bg-[#F3EFFC] active:scale-95 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               Reset
@@ -1138,7 +1151,7 @@ function DiscoverContent() {
             <button
               type="button"
               onClick={() => setFiltersOpen(false)}
-              className="flex-1 py-2.5 rounded-full bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#7D4B9F] transition shadow-md flex items-center justify-center gap-1.5"
+              className="flex-1 py-2.5 rounded-full bg-[#6555b8] hover:bg-[#5748a3] active:scale-95 text-white text-xs font-semibold transition-all shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <Check className="w-3.5 h-3.5" />
               Apply
@@ -1147,11 +1160,61 @@ function DiscoverContent() {
         </div>
       </div>
 
+      
+      {/* Match Celebration Spring Modal */}
+      {matchedModalProfile && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm animate-in fade-in duration-200">
+          <div 
+            role="dialog"
+            aria-modal="true"
+            className="w-full max-w-sm rounded-3xl bg-white border border-[#DDD7E5]/70 p-6 shadow-2xl flex flex-col items-center text-center transform transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] scale-100"
+          >
+            <div className="w-12 h-12 rounded-full bg-rose-50 flex items-center justify-center text-2xl mb-3 shadow-inner">
+              ✨
+            </div>
+            
+            <h3 className="text-xl font-bold text-[#1C1924] tracking-tight">
+              It&apos;s a Connection!
+            </h3>
+            <p className="text-xs text-[#6E6481] mt-1.5 max-w-[240px]">
+              You and <span className="font-semibold text-[#1C1924]">{matchedModalProfile.name}</span> caught each other&apos;s eye.
+            </p>
+
+            {/* Avatar display */}
+            <div className="my-5 relative flex items-center justify-center">
+              <div className="w-20 h-20 rounded-full border-4 border-[#6555b8]/20 overflow-hidden shadow-md">
+                <img 
+                  src={matchedModalProfile.avatarUrl || '/placeholder-avatar.svg'} 
+                  alt={matchedModalProfile.name}
+                  className="w-full h-full object-cover" 
+                />
+              </div>
+            </div>
+
+            {/* Action buttons */}
+            <div className="w-full flex flex-col gap-2 mt-1">
+              <Link
+                href={`/chat/${matchedModalProfile.id}`}
+                className="w-full py-3 px-4 rounded-full bg-[#6555b8] hover:bg-[#5748a3] active:scale-95 text-white text-xs font-semibold shadow-md transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] flex items-center justify-center gap-2 cursor-pointer"
+              >
+                Say Hello
+              </Link>
+              <button
+                type="button"
+                onClick={() => setMatchedModalProfile(null)}
+                className="w-full py-2.5 px-4 rounded-full text-xs font-semibold text-[#6E6481] hover:text-[#1C1924] hover:bg-[#F3EFFC] active:scale-95 transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] cursor-pointer"
+              >
+                Keep Browsing
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Footer removed for mobile dock */}
     </div>
   );
 }
-
 
 const DUMMY_BOT_PROFILES: ProfileItem[] = [
   {

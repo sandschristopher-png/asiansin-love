@@ -497,7 +497,7 @@ export default function ChatConversationPage() {
               className={`flex flex-col ${msg.sender === 'me' ? 'items-end' : 'items-start'}`}
             >
               <div
-                className={`max-w-[82%] px-4 py-2.5 rounded-2xl text-xs leading-relaxed shadow-sm ${
+                className={`max-w-[82%] px-4 py-2.5 rounded-2xl text-xs leading-relaxed shadow-sm transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] select-text ${
                   msg.sender === 'me'
                     ? 'bg-[#4C3B75] text-white font-normal rounded-br-xs'
                     : 'bg-white text-[#2D2640] border border-[#E2DCED] rounded-bl-xs'
@@ -540,12 +540,12 @@ export default function ChatConversationPage() {
                 placeholder="Write a sincere message..."
                 value={inputText}
                 onChange={(e) => setInputText(e.target.value)}
-                className="flex-1 bg-[#F5F2F9] border border-[#E2DCED] focus:border-[#4C3B75] focus:bg-white text-[#2D2640] placeholder-[#8B7E9F] rounded-full px-4 py-2.5 text-xs outline-none transition"
+                className="flex-1 bg-[#F5F2F9] border border-[#E2DCED] focus:border-[#4C3B75] focus:bg-white text-[#2D2640] placeholder-[#8B7E9F] rounded-full px-4 py-2.5 text-xs outline-none transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] focus:ring-2 focus:ring-[#4C3B75]/15"
               />
               <button
                 type="submit"
                 disabled={!inputText.trim()}
-                className="p-2.5 rounded-full bg-[#4C3B75] hover:bg-[#3D2F5F] disabled:opacity-40 disabled:hover:bg-[#4C3B75] text-white transition active:scale-95 shadow-sm"
+                className="p-2.5 rounded-full bg-gradient-to-r from-[#4C3B75] to-[#5C4B8A] hover:brightness-105 active:scale-90 disabled:opacity-40 disabled:hover:brightness-100 disabled:active:scale-100 text-white transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] shadow-sm select-none cursor-pointer"
               >
                 <Send className="w-4 h-4" />
               </button>
