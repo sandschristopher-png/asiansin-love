@@ -430,10 +430,14 @@ function DiscoverContent() {
           if (user) {
             const { data: userProfile } = await supabase
               .from('profiles')
-              .select('latitude, longitude, gender, country')
+              .select('latitude, longitude, gender, country, onboarding_completed')
               .eq('id', user.id)
               .maybeSingle();
             if (userProfile) {
+              if (!userProfile.onboarding_completed) {
+                router.push('/onboarding');
+                return;
+              }
               if (userProfile.latitude && userProfile.longitude) {
                 setCurrentUserCoords({ lat: userProfile.latitude, lon: userProfile.longitude });
               }
