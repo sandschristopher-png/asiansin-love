@@ -424,7 +424,6 @@ export default function PublicProfilePage() {
                 ))}
             </div>
           </div>
-        </div>
       </main>
     </div>
   );
