@@ -2,20 +2,11 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-
-const NO_FOOTER_ROUTES = ['/discover', '/messages'];
 
 export function Footer() {
-  const pathname = usePathname();
-
-  if (NO_FOOTER_ROUTES.some((route) => pathname?.startsWith(route))) {
-    return null;
-  }
-
   return (
-    <footer className="w-full mt-auto pt-8 pb-12 px-4 text-center border-t border-[#DDD7E5]/50 bg-[#FAF8FD]/80">
-      <div className="flex flex-col items-center justify-center gap-2.5 text-xs text-[#756D82]">
+    <footer className="w-full mt-auto pt-8 pb-24 px-4 text-center border-t border-[#DDD7E5]/50 bg-[#FAF8FD]/90">
+      <div className="flex flex-col items-center justify-center gap-2 text-xs text-[#756D82]">
         <div className="flex items-center gap-2 text-[11px] font-medium text-[#524B5E]">
           <span>Asians in Love</span>
           <span className="text-[#DDD7E5]">•</span>

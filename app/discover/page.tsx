@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { playMatchChime } from '@/lib/sound';
 import MatchModal from '@/components/MatchModal';
@@ -572,7 +572,7 @@ function DiscoverContent() {
   const hasMore = visibleLimit < filteredProfiles.length;
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#FAFAFD] text-[#1C1924]">
+    <div className="flex-1 flex flex-col min-h-full bg-[#FAFAFD] text-[#1C1924]">
       <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 pt-6 pb-32 md:pb-24 space-y-5">
         
         {/* Top Control Bar */}
@@ -1070,7 +1070,7 @@ function DiscoverContent() {
             <div className="space-y-3">
               <div className="flex justify-between items-center text-xs font-semibold text-[#524B5E]">
                 <span>Age Range</span>
-                <span className="text-xs font-medium text-[#6555b8] bg-[#F3EFFC] px-2.5 py-0.5 rounded-full">{minAge} â€“ {maxAge} yrs</span>
+                <span className="text-xs font-medium text-[#6555b8] bg-[#F3EFFC] px-2.5 py-0.5 rounded-full">{minAge} Ã¢â‚¬â€œ {maxAge} yrs</span>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -1192,7 +1192,7 @@ function DiscoverContent() {
             }`}
           >
             <div className="w-12 h-12 rounded-full bg-rose-50 flex items-center justify-center text-2xl mb-3 shadow-inner">
-              ✨
+              âœ¨
             </div>
             
             <h3 className="text-xl font-bold text-[#1C1924] tracking-tight">
