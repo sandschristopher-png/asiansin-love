@@ -12,7 +12,7 @@ import { useSearchParams } from 'next/navigation';
 import { X,  ChevronLeft, ChevronRight, Search, Heart, X as XIcon, Star, MessageCircle, 
   MapPin, ShieldCheck, CheckCircle, SlidersHorizontal, 
   RotateCcw, Loader2, Check, Globe, ChevronDown } from 'lucide-react';
-import { Footer } from '@/components/Footer';
+
 import { supabase } from '@/lib/supabaseClient';
 import { ActionType, getLocalCardActions, persistCardAction } from '@/lib/interactions';
 
@@ -1232,10 +1232,6 @@ function DiscoverContent() {
           </div>
         </div>
       )}
-
-      <div className="mt-auto pt-10 pb-28 sm:pb-24 w-full">
-          <Footer />
-        </div>
     </div>
   );
 }
