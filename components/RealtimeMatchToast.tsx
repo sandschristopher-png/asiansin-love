@@ -1,165 +1,121 @@
-﻿'use client';
+'use client';
 
 import React, { useEffect, useState } from 'react';
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import Link from 'next/link';
-import { Heart, Sparkles, X, MessageCircle } from 'lucide-react';
-import { supabase } from '@/lib/supabaseClient';
+import { Sparkles, MessageCircle, X } from 'lucide-react';
 
-interface MatchToastData {
-  id: string;
-  name: string;
-  avatarUrl?: string;
-  targetId: string;
+interface MatchEvent {
+  matchedProfileId: string;
+  matchedName: string;
+  avatarUrl: string;
 }
 
 export function RealtimeMatchToast() {
-  const [matchData, setMatchData] = useState<MatchToastData | null>(null);
+  const [match, setMatch] = useState<MatchEvent | null>(null);
   const [visible, setVisible] = useState(false);
+  const supabase = createClientComponentClient();
 
   useEffect(() => {
-    let channel: any = null;
-    let isMounted = true;
-    let dismissTimer: NodeJS.Timeout;
+    let channel: any;
 
-    const showMatch = (data: MatchToastData) => {
-      setMatchData(data);
-      setVisible(true);
-      clearTimeout(dismissTimer);
-      dismissTimer = setTimeout(() => {
-        if (isMounted) setVisible(false);
-      }, 6500);
-    };
+    const setupMatchListener = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+      const currentUserId = session.user.id;
 
-    // 1. Listen to client-side dispatched mutual match events
-    const handleLocalMutualMatch = async (e: any) => {
-      const { targetId } = e.detail || {};
-      if (!targetId) return;
+      channel = supabase
+        .channel('realtime-inbound-likes')
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'likes',
+            filter: `target_user_id=eq.${currentUserId}`
+          },
+          async (payload: any) => {
+            const senderId = payload.new.user_id;
+            
+            // Check mutual like
+            const { data: mutual } = await supabase
+              .from('likes')
+              .select('id')
+              .eq('user_id', currentUserId)
+              .eq('target_user_id', senderId)
+              .maybeSingle();
 
-      try {
-        const { data: profile } = await supabase
-          .from('profiles')
-          .select('id, full_name, display_name, username, avatar_url')
-          .eq('id', targetId)
-          .maybeSingle();
+            if (mutual) {
+              const { data: profile } = await supabase
+                .from('profiles')
+                .select('id, full_name, display_name, name, avatar_url')
+                .eq('id', senderId)
+                .single();
 
-        if (isMounted) {
-          showMatch({
-            id: targetId,
-            targetId,
-            name: profile?.display_name || profile?.full_name || profile?.username || 'Someone',
-            avatarUrl: profile?.avatar_url || '/placeholder-avatar.svg',
-          });
-        }
-      } catch (err) {
-        console.error('Failed to fetch matched profile details:', err);
-      }
-    };
-
-    window.addEventListener('ail-mutual-match', handleLocalMutualMatch);
-
-    // 2. Listen to Supabase Realtime for database match notifications
-    const initRealtime = async () => {
-      try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user || !isMounted) return;
-
-        channel = supabase
-          .channel(`match_toast_${user.id}`)
-          .on(
-            'postgres_changes',
-            {
-              event: 'INSERT',
-              schema: 'public',
-              table: 'notifications',
-              filter: `user_id=eq.${user.id}`,
-            },
-            async (payload: any) => {
-              const newRow = payload.new;
-              if (newRow && newRow.type === 'match') {
-                showMatch({
-                  id: newRow.id,
-                  targetId: newRow.actor_id || '',
-                  name: newRow.title || "It's a Match!",
-                  avatarUrl: undefined,
+              if (profile) {
+                if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
+                  try { navigator.vibrate([30, 60, 30]); } catch (_) {}
+                }
+                setMatch({
+                  matchedProfileId: profile.id,
+                  matchedName: profile.display_name || profile.full_name || profile.name || 'Someone',
+                  avatarUrl: profile.avatar_url || '/placeholder-avatar.svg'
                 });
+                setVisible(true);
               }
             }
-          )
-          .subscribe();
-      } catch (err) {
-        console.warn('Realtime subscription skipped:', err);
-      }
+          }
+        )
+        .subscribe();
     };
 
-    initRealtime();
+    setupMatchListener();
 
     return () => {
-      isMounted = false;
-      clearTimeout(dismissTimer);
-      window.removeEventListener('ail-mutual-match', handleLocalMutualMatch);
       if (channel) supabase.removeChannel(channel);
     };
   }, []);
 
-  if (!matchData || !visible) return null;
+  if (!visible || !match) return null;
 
   return (
-    <aside 
-      aria-label="Match alert"
-      className="absolute top-16 inset-x-3 z-50 pointer-events-auto animate-[pairsPageIn_320ms_cubic-bezier(0.16,1,0.3,1)_both]"
-    >
-      <div className="bg-white/95 backdrop-blur-md border border-[#6555b8]/30 rounded-2xl p-3 shadow-[0_12px_36px_rgba(101,85,184,0.22)] flex items-center justify-between gap-3">
-        <div className="flex items-center gap-3 min-w-0">
-          <div className="relative shrink-0">
-            {matchData.avatarUrl ? (
-              <img
-                src={matchData.avatarUrl}
-                alt={matchData.name}
-                className="w-11 h-11 rounded-full object-cover ring-2 ring-[#6555b8]/30"
-              />
-            ) : (
-              <div className="w-11 h-11 rounded-full bg-[#F3EFFC] flex items-center justify-center text-[#6555b8]">
-                <Heart className="w-5 h-5 fill-[#6555b8]" />
-              </div>
-            )}
-            <span className="absolute -bottom-1 -right-1 p-0.5 rounded-full bg-[#6555b8] text-white">
-              <Sparkles className="w-3 h-3" />
-            </span>
-          </div>
-
-          <div className="min-w-0">
-            <div className="flex items-center gap-1.5">
-              <span className="text-[11px] font-semibold text-[#6555b8] uppercase tracking-wider">
-                Mutual Match!
-              </span>
+    <div className="fixed top-5 left-1/2 -translate-x-1/2 z-[100] w-[92%] max-w-sm">
+      <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[#1C1924]/95 text-white border border-[#DDD7E5]/20 shadow-2xl backdrop-blur-md animate-in slide-in-from-top-4 duration-300">
+        <div className="flex items-center gap-3">
+          <img
+            src={match.avatarUrl}
+            alt={match.matchedName}
+            className="w-10 h-10 rounded-full object-cover border-2 border-[#8B7BD9]"
+          />
+          <div>
+            <div className="flex items-center gap-1.5 text-xs font-bold text-[#E2DCF7]">
+              <Sparkles className="w-3.5 h-3.5 text-[#E05375]" />
+              It's a Match!
             </div>
-            <p className="text-xs font-medium text-[#1C1924] truncate">
-              You and {matchData.name} liked each other
+            <p className="text-xs text-[#B2A9C4] truncate max-w-[140px]">
+              {match.matchedName} liked you back
             </p>
           </div>
         </div>
-
-        <div className="flex items-center gap-1.5 shrink-0">
-          {matchData.targetId ? (
-            <Link
-              href={`/profile/${matchData.targetId}`}
-              onClick={() => setVisible(false)}
-              className="px-2.5 py-1.5 rounded-full bg-[#6555b8] text-white text-[11px] font-medium flex items-center gap-1 active:scale-95 shadow-xs"
-            >
-              <MessageCircle className="w-3 h-3" />
-              <span>Say Hi</span>
-            </Link>
-          ) : null}
+        <div className="flex items-center gap-1.5">
+          <Link
+            href={`/chat/${match.matchedProfileId}`}
+            onClick={() => setVisible(false)}
+            className="px-3 py-1.5 rounded-xl bg-[#6555B8] hover:bg-[#5344A6] text-white text-xs font-semibold flex items-center gap-1 transition"
+          >
+            <MessageCircle className="w-3.5 h-3.5" />
+            Chat
+          </Link>
           <button
             type="button"
             onClick={() => setVisible(false)}
-            className="p-1 text-[#756D82] hover:text-[#1C1924] transition rounded-full hover:bg-black/5"
-            aria-label="Dismiss toast"
+            className="p-1 text-white/60 hover:text-white transition"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
       </div>
-    </aside>
+    </div>
   );
 }
+export default RealtimeMatchToast;

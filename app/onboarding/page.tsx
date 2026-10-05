@@ -236,7 +236,11 @@ export default function OnboardingPage() {
           children_status: calculatedChildrenStatus,
           children_count: finalChildrenCount,
           occupation: profession.trim() || null,
-          height: height.trim() || null,
+          height: (() => {
+              if (!height || !height.trim()) return null;
+              const cmMatch = height.match(/(\d+)\s*cm/i);
+              return cmMatch ? `${cmMatch[1]} cm` : height.trim();
+            })(),
           languages: languages.length > 0 ? languages.join(', ') : 'English',
           avatar_url: avatarUrl.trim() || null,
           onboarding_completed: true,

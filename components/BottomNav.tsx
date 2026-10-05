@@ -1,3 +1,4 @@
+import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -23,6 +24,48 @@ const PUBLIC_ROUTES = [
 ];
 
 export function BottomNav() {
+  const [unreadCount, setUnreadCount] = useState(0);
+  const supabase = createClientComponentClient();
+
+  useEffect(() => {
+    let channel: any;
+    const fetchAndSubscribeUnread = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session) return;
+      const uid = session.user.id;
+
+      const { count } = await supabase
+        .from('messages')
+        .select('*', { count: 'exact', head: true })
+        .eq('recipient_id', uid)
+        .eq('read', false);
+
+      setUnreadCount(count || 0);
+
+      channel = supabase
+        .channel('nav-unread-messages')
+        .on('postgres_changes', {
+          event: '*',
+          schema: 'public',
+          table: 'messages',
+          filter: `recipient_id=eq.${uid}`
+        }, async () => {
+          const { count: freshCount } = await supabase
+            .from('messages')
+            .select('*', { count: 'exact', head: true })
+            .eq('recipient_id', uid)
+            .eq('read', false);
+          setUnreadCount(freshCount || 0);
+        })
+        .subscribe();
+    };
+
+    fetchAndSubscribeUnread();
+    return () => {
+      if (channel) supabase.removeChannel(channel);
+    };
+  }, []);
+
   const pathname = usePathname();
   const [user, setUser] = useState<any>(null);
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
@@ -130,7 +173,11 @@ export function BottomNav() {
           {isActive('/messages') && (
             <span className="w-1.5 h-1.5 rounded-full bg-[#6555B8] mt-1 shadow-[0_0_6px_rgba(101,85,184,0.6)] animate-[pairsPageIn_240ms_cubic-bezier(0.16,1,0.3,1)_both]" />
           )}
-        </Link>
+        {unreadCount > 0 && (
+            <span className="absolute top-1 right-3 min-w-[16px] h-4 px-1 rounded-full bg-[#E05375] text-[10px] font-bold text-white flex items-center justify-center shadow-sm pointer-events-none">
+              {unreadCount > 9 ? '9+' : unreadCount}
+            </span>
+          )}</Link>
 
         <Link
           href="/profile"
