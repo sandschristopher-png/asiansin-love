@@ -259,13 +259,7 @@ export default function MyProfilePage() {
   return (
     <div className="min-h-screen flex flex-col bg-[#F8F7FA] text-[#1C1924]">
       <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-6 pb-32 space-y-6">
-        {/* Uniform Page Header */}
-        <div className="space-y-0.5">
-          <h1 className="text-xl sm:text-[22px] font-semibold text-[#1C1924] ">My Profile</h1>
-          <p className="text-xs sm:text-sm text-[#756D82]">
-            Manage your courtship presence and preferences.
-          </p>
-        </div>{/* Main Grid: Left preview photo card & Right vitals */}
+        {/* Main Grid: Left preview photo card & Right vitals */}
         <div className="flex flex-col gap-4 w-full" ref={dropdownRef}>
           
           {/* Left Column: Visual card & actions */}
