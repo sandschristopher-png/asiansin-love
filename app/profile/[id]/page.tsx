@@ -340,80 +340,88 @@ export default function PublicProfilePage() {
           </p>
         </div>
 
-        {/* Courtship Vitals Card */}
-        <div className="p-4 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-3">
-          <h2 className="text-xs font-medium uppercase tracking-wider text-[#756D82]">Courtship Vitals</h2>
-          <div className="grid grid-cols-2 gap-2 text-xs">
-            <div className="flex items-center gap-2 p-2.5 rounded-xl bg-[#FAF8FD] border border-[#DDD7E5] min-w-0">
-              <Briefcase className="w-3.5 h-3.5 text-[#6555b8] shrink-0" />
-              <div className="min-w-0 flex-1">
-                <p className="text-[10px] text-[#756D82] leading-none">Career</p>
-                <p className="font-semibold text-[#1C1924] truncate mt-0.5">{profile.occupation || 'Professional'}</p>
+        {/* Vitals & Lifestyle Card */}
+          <div className="p-5 rounded-3xl bg-white border border-[#DDD7E5]/70 shadow-sm space-y-4">
+            <h2 className="text-[11px] font-bold text-[#6555B8] uppercase tracking-wider">
+              Vitals & Lifestyle
+            </h2>
+
+            <div className="space-y-0 text-xs divide-y divide-[#F0ECF5]">
+              {profile.intent && (
+                <div className="flex items-center justify-between py-2.5">
+                  <span className="font-medium text-[#756D82]">Relationship Intent</span>
+                  <span className="font-semibold text-[#1C1924] text-right">{profile.intent}</span>
+                </div>
+              )}
+
+              <div className="flex items-center justify-between py-2.5">
+                <span className="font-medium text-[#756D82]">Occupation</span>
+                <span className="font-semibold text-[#1C1924] text-right">{profile.occupation || 'Not specified'}</span>
+              </div>
+
+              <div className="flex items-center justify-between py-2.5">
+                <span className="font-medium text-[#756D82]">Marital Status</span>
+                <span className="font-semibold text-[#1C1924] text-right">{profile.marital_status || 'Never Married'}</span>
+              </div>
+
+              <div className="flex items-center justify-between py-2.5">
+                <span className="font-medium text-[#756D82]">Height</span>
+                <span className="font-semibold text-[#1C1924] text-right">
+                  {formattedHeight && formattedHeight !== 'Not specified' ? formattedHeight : '—'}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between py-2.5">
+                <span className="font-medium text-[#756D82]">Beliefs</span>
+                <span className="font-semibold text-[#1C1924] text-right">{profile.religion || 'None'}</span>
+              </div>
+
+              <div className="flex items-center justify-between py-2.5">
+                <span className="font-medium text-[#756D82]">Relocation</span>
+                <span className="font-semibold text-[#1C1924] text-right">{profile.relocation || 'Open'}</span>
+              </div>
+
+              <div className="flex items-center justify-between py-2.5">
+                <span className="font-medium text-[#756D82]">Drinks</span>
+                <span className="font-semibold text-[#1C1924] text-right">{profile.drinking || 'Socially'}</span>
+              </div>
+
+              <div className="flex items-center justify-between py-2.5">
+                <span className="font-medium text-[#756D82]">Smokes</span>
+                <span className="font-semibold text-[#1C1924] text-right">{profile.smoking || 'No'}</span>
+              </div>
+
+              <div className="flex items-center justify-between py-2.5">
+                <span className="font-medium text-[#756D82]">Has Children</span>
+                <span className="font-semibold text-[#1C1924] text-right">{profile.has_kids || 'No'}</span>
+              </div>
+
+              <div className="flex items-center justify-between py-2.5">
+                <span className="font-medium text-[#756D82]">Wants Children</span>
+                <span className="font-semibold text-[#1C1924] text-right">{profile.wants_kids || 'Yes'}</span>
               </div>
             </div>
+          </div>
 
-            <div className="flex items-center gap-2 p-2.5 rounded-xl bg-[#FAF8FD] border border-[#DDD7E5] min-w-0">
-              <Sparkles className="w-3.5 h-3.5 text-[#6555b8] shrink-0" />
-              <div className="min-w-0 flex-1">
-                <p className="text-[10px] text-[#756D82] leading-none">Faith</p>
-                <p className="font-semibold text-[#1C1924] truncate mt-0.5">{profile.religion || 'Christian'}</p>
-              </div>
+          {/* Languages Spoken Card */}
+          <div className="p-5 rounded-3xl bg-white border border-[#DDD7E5]/70 shadow-sm space-y-3">
+            <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#6555B8] uppercase tracking-wider">
+              <Languages className="w-3.5 h-3.5" />
+              <span>Languages Spoken</span>
             </div>
-
-            <div className="flex items-center gap-2 p-2.5 rounded-xl bg-[#FAF8FD] border border-[#DDD7E5] min-w-0">
-              <Globe className="w-3.5 h-3.5 text-[#6555b8] shrink-0" />
-              <div className="min-w-0 flex-1">
-                <p className="text-[10px] text-[#756D82] leading-none">Relocation</p>
-                <p className="font-semibold text-[#1C1924] truncate mt-0.5">{profile.relocation || 'Open'}</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 p-2.5 rounded-xl bg-[#FAF8FD] border border-[#DDD7E5] min-w-0">
-              <HeartHandshake className="w-3.5 h-3.5 text-[#6555b8] shrink-0" />
-              <div className="min-w-0 flex-1">
-                <p className="text-[10px] text-[#756D82] leading-none">Status</p>
-                <p className="font-semibold text-[#1C1924] truncate mt-0.5">{profile.marital_status || 'Never Married'}</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 p-2.5 rounded-xl bg-[#FAF8FD] border border-[#DDD7E5] min-w-0">
-              <Baby className="w-3.5 h-3.5 text-[#6555b8] shrink-0" />
-              <div className="min-w-0 flex-1">
-                <p className="text-[10px] text-[#756D82] leading-none">Has Kids</p>
-                <p className="font-semibold text-[#1C1924] truncate mt-0.5">{profile.has_kids || 'No'}</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 p-2.5 rounded-xl bg-[#FAF8FD] border border-[#DDD7E5] min-w-0">
-              <Baby className="w-3.5 h-3.5 text-[#6555b8] shrink-0" />
-              <div className="min-w-0 flex-1">
-                <p className="text-[10px] text-[#756D82] leading-none">Wants Kids</p>
-                <p className="font-semibold text-[#1C1924] truncate mt-0.5">{profile.wants_kids || 'Yes'}</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 p-2.5 rounded-xl bg-[#FAF8FD] border border-[#DDD7E5] min-w-0">
-              <Ruler className="w-3.5 h-3.5 text-[#6555b8] shrink-0" />
-              <div className="min-w-0 flex-1">
-                <p className="text-[10px] text-[#756D82] leading-none">Height</p>
-                <p className="font-semibold text-[#1C1924] truncate mt-0.5">{formattedHeight !== 'Not specified' ? formattedHeight : '—'}</p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 p-2.5 rounded-xl bg-[#FAF8FD] border border-[#DDD7E5] min-w-0">
-              <Wine className="w-3.5 h-3.5 text-[#6555b8] shrink-0" />
-              <div className="min-w-0 flex-1">
-                <p className="text-[10px] text-[#756D82] leading-none">Drinks</p>
-                <p className="font-semibold text-[#1C1924] truncate mt-0.5">{profile.drinking || 'Socially'}</p>
-              </div>
-            </div>
-
-            <div className="col-span-2 flex items-center gap-2 p-2.5 rounded-xl bg-[#FAF8FD] border border-[#DDD7E5] min-w-0">
-              <Languages className="w-3.5 h-3.5 text-[#6555b8] shrink-0" />
-              <div className="min-w-0 flex-1">
-                <p className="text-[10px] text-[#756D82] leading-none">Languages</p>
-                <p className="font-semibold text-[#1C1924] truncate mt-0.5">{profile.languages || 'English'}</p>
-              </div>
+            <div className="flex flex-wrap gap-2 pt-1">
+              {(profile.languages || 'English')
+                .split(',')
+                .map((lang: string) => lang.trim())
+                .filter(Boolean)
+                .map((lang: string) => (
+                  <span
+                    key={lang}
+                    className="px-3.5 py-1.5 rounded-xl bg-[#FAF8FD] border border-[#DDD7E5] text-xs font-semibold text-[#1C1924]"
+                  >
+                    {lang}
+                  </span>
+                ))}
             </div>
           </div>
         </div>
