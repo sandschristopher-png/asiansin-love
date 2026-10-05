@@ -4,6 +4,7 @@ import { Plus_Jakarta_Sans, Outfit } from 'next/font/google';
 import './globals.css';
 import { Navbar } from '@/components/Navbar';
 import { BottomNav } from '@/components/BottomNav';
+import { Footer } from '@/components/Footer';
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -43,7 +44,8 @@ export default function RootLayout({
             <div className="flex-1 flex flex-col min-h-0 relative overflow-y-auto smooth-scroll no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
               <Navbar />
             {children}
-        <RealtimeMatchToast />
+            <Footer />
+            <RealtimeMatchToast />
           </div>
           <BottomNav />
         </div>
