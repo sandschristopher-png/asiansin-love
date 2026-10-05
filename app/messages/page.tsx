@@ -138,7 +138,7 @@ export default function MessagesPage() {
       <main className="flex-1 w-full px-4 pt-4 pb-6 space-y-4">
         {/* Page Title */}
         <div className="flex items-center justify-between">
-          <h1 className="text-xl font-bold text-[#1C1924]">Messages</h1>
+          
           <div className="flex gap-1.5 bg-white border border-[#DDD7E5] p-1 rounded-2xl">
             <button
               onClick={() => setActiveTab('all')}
