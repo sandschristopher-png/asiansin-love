@@ -1233,7 +1233,9 @@ function DiscoverContent() {
         </div>
       )}
 
-      {/* Footer removed for mobile dock */}
+      <div className="mt-auto pt-10 pb-28 sm:pb-24 w-full">
+          <Footer />
+        </div>
     </div>
   );
 }
