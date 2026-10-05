@@ -5,7 +5,7 @@ import Link from 'next/link';
 
 export function Footer() {
   return (
-    <footer className="w-full mt-auto shrink-0 pt-6 pb-24 px-4 text-center border-t border-[#DDD7E5]/40 bg-[#FAF8FD]/95">
+    <footer className="w-full shrink-0 mt-auto pt-6 pb-24 px-4 text-center border-t border-[#DDD7E5]/40 bg-[#FAF8FD]/95">
       <div className="flex flex-col items-center justify-center gap-2 text-xs text-[#756D82]">
         <div className="flex items-center gap-2 text-[11px] font-medium text-[#524B5E]">
           <span>Asians in Love</span>

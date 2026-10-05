@@ -572,8 +572,8 @@ function DiscoverContent() {
   const hasMore = visibleLimit < filteredProfiles.length;
 
   return (
-    <div className="flex-1 flex flex-col min-h-full bg-[#FAFAFD] text-[#1C1924]">
-      <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 pt-6 pb-32 md:pb-24 space-y-5">
+    <div className="flex-1 flex flex-col w-full h-full min-h-0 bg-[#FAFAFD] text-[#1C1924]">
+      <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 pt-6 pb-6 space-y-5">
         
         {/* Top Control Bar */}
         <section aria-label="Search and Filters" className="w-full space-y-3">
