@@ -255,12 +255,11 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
           messages.map((msg) => {
             const isMe = msg.sender_id === currentUserId;
             return (
-              <div key={msg.id} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'}`}>
+              <div key={msg.id} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} animate-[pairsPageIn_240ms_cubic-bezier(0.16,1,0.3,1)_both] will-change-transform`}>
                 <div
                   className={`max-w-[78%] px-4 py-2.5 rounded-2xl text-xs sm:text-sm leading-relaxed shadow-xs ${
                     isMe
-                      ? 'bg-[#6555B8] text-white rounded-br-xs'
-                      : 'bg-white text-[#1C1924] border border-[#E5E1EC] rounded-bl-xs'
+                      ? 'bg-[#6555B8] text-white rounded-br-xs shadow-[0_2px_10px_rgba(101,85,184,0.22)] active:scale-[0.99] transition-transform' : 'bg-white text-[#1C1924] border border-[#E5E1EC] rounded-bl-xs shadow-[0_2px_8px_rgba(0,0,0,0.04)] active:scale-[0.99] transition-transform'
                   }`}
                 >
                   {msg.content}
@@ -290,7 +289,7 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
         <button
           type="submit"
           disabled={!input.trim() || isSending}
-          className="px-4 py-2.5 bg-[#6555B8] hover:bg-[#52449E] disabled:opacity-40 text-white rounded-full text-xs sm:text-sm font-semibold transition active:scale-95 shadow-xs flex items-center gap-1.5 shrink-0"
+          className="px-4 py-2.5 bg-[#6555B8] hover:bg-[#52449E] disabled:opacity-40 text-white rounded-full text-xs sm:text-sm font-semibold transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-90 shadow-xs flex items-center gap-1.5 shrink-0 select-none cursor-pointer"
         >
           <span>Send</span>
           <Send className="w-3.5 h-3.5" />

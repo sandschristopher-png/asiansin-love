@@ -150,7 +150,7 @@ export default function PublicProfilePage() {
         <div className="flex items-center justify-between">
           <Link
             href="/discover"
-            className="inline-flex items-center gap-1.5 text-xs font-medium text-[#524B5E] hover:text-[#1C1924] transition active:scale-95"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#524B5E] hover:text-[#1C1924] transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-x-0.5 active:scale-90 select-none"
           >
             <ArrowLeft className="w-4 h-4" />
             <span>Back to Discover</span>
@@ -164,13 +164,23 @@ export default function PublicProfilePage() {
         {/* Hero Card: Photo + Identity + Direct Actions */}
         <div className="bg-white rounded-3xl border border-[#DDD7E5] shadow-xs overflow-hidden">
           {/* Main Photo Frame */}
-          <div className="relative aspect-[4/5] w-full bg-[#181926] select-none group">
-            {currentImg ? (
-              <img
-                src={currentImg}
-                alt={profile.name}
-                className="w-full h-full object-cover transition-opacity duration-200"
-              />
+          <div className="relative aspect-[4/5] w-full bg-[#181926] select-none group overflow-hidden">
+            {photoList && photoList.length > 0 ? (
+              <div 
+                className="flex h-full w-full transition-transform duration-350 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform"
+                style={{ transform: `translateX(-${currentPhotoIdx * 100}%)` }}
+              >
+                {photoList.map((photo: string, idx: number) => (
+                  <div key={idx} className="w-full h-full shrink-0 relative">
+                    <img
+                      src={photo}
+                      alt={`${profile.name} - ${idx + 1}`}
+                      className="w-full h-full object-cover select-none pointer-events-none"
+                      loading={idx === 0 ? "eager" : "lazy"}
+                    />
+                  </div>
+                ))}
+              </div>
             ) : (
               <div className="flex flex-col items-center justify-center gap-2 text-[#756D82] h-full">
                 <User className="w-12 h-12 stroke-[1.5] text-[#6555b8]" />
@@ -248,20 +258,20 @@ export default function PublicProfilePage() {
               <button
                 type="button"
                 onClick={() => setIsLiked(!isLiked)}
-                className={`flex-1 py-2.5 rounded-full border text-xs font-medium flex items-center justify-center gap-1.5 transition active:scale-95 shadow-xs ${
+                className={`flex-1 py-2.5 rounded-full border text-xs font-semibold flex items-center justify-center gap-1.5 transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-90 select-none cursor-pointer shadow-sm ${
                   isLiked
                     ? 'bg-[#6555b8] border-[#6555b8] text-white'
                     : 'bg-white border-[#DDD7E5] text-[#1C1924] hover:bg-[#FAF8FD]'
                 }`}
               >
-                <Heart className={`w-4 h-4 ${isLiked ? 'fill-white text-white' : 'text-[#6555b8]'}`} />
+                <Heart className={`w-4 h-4 transition-transform duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] ${isLiked ? 'fill-white text-white scale-110' : 'text-[#6555b8] active:scale-75'}`} />
                 <span>{isLiked ? 'Liked' : 'Like'}</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setIsSaved(!isSaved)}
-                className={`flex-1 py-2.5 rounded-full border text-xs font-medium flex items-center justify-center gap-1.5 transition active:scale-95 shadow-xs ${
+                className={`flex-1 py-2.5 rounded-full border text-xs font-semibold flex items-center justify-center gap-1.5 transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-90 select-none cursor-pointer shadow-sm ${
                   isSaved
                     ? 'bg-[#6555b8] border-[#6555b8] text-white'
                     : 'bg-white border-[#DDD7E5] text-[#1C1924] hover:bg-[#FAF8FD]'
@@ -305,7 +315,7 @@ export default function PublicProfilePage() {
               <button
                 type="submit"
                 disabled={sending || !message.trim()}
-                className="px-4 py-2 rounded-full bg-[#6555b8] hover:bg-[#52449e] disabled:opacity-50 text-white text-xs font-medium flex items-center gap-1.5 transition active:scale-95 shadow-xs"
+                className="px-4 py-2 rounded-full bg-[#6555b8] hover:bg-[#52449e] disabled:opacity-50 text-white text-xs font-semibold flex items-center gap-1.5 transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-95 select-none cursor-pointer shadow-md"
               >
                 <Send className="w-3.5 h-3.5" />
                 <span>{sending ? 'Sending...' : 'Send Message'}</span>

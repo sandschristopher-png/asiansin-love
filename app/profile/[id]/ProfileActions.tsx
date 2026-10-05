@@ -92,7 +92,7 @@ export function ProfileActions({ targetUserId, targetUserName, currentUserId, is
         <button
           onClick={handleSpark}
           disabled={loadingSpark || sparkSent}
-          className="flex items-center justify-center gap-2 rounded-xl bg-rose-600 py-3 text-xs font-medium text-[#1C1924] hover:bg-rose-500 transition shadow-xs disabled:opacity-75"
+          className="flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-rose-500 to-rose-600 py-3 text-xs font-semibold text-white hover:brightness-105 active:scale-95 transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] shadow-sm select-none cursor-pointer disabled:opacity-75"
         >
           {loadingSpark ? (
             <Loader2 className="h-4 w-4 animate-spin" />
@@ -111,7 +111,7 @@ export function ProfileActions({ targetUserId, targetUserName, currentUserId, is
 
         <button
           onClick={handleMessage}
-          className="flex items-center justify-center gap-2 rounded-xl border border-stone-300 bg-white py-3 text-xs font-medium text-stone-800 hover:bg-stone-50 transition shadow-2xs"
+          className="flex items-center justify-center gap-2 rounded-xl border border-[#DDD7E5] bg-white py-3 text-xs font-semibold text-[#1C1924] hover:bg-[#F3EFFC] active:scale-95 transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] shadow-sm select-none cursor-pointer"
         >
           <MessageSquare className="h-4 w-4 text-stone-600" />
           <span>Message</span>

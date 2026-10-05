@@ -82,27 +82,27 @@ export function BottomNav() {
 
   return (
     <div 
-      className={`fixed bottom-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[400px] z-50 transition-all duration-300 ease-out ${
+      className={`fixed bottom-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[400px] z-50 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
         isKeyboardOpen ? 'translate-y-24 opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'
       }`}
     >
-      <nav className="bg-white/90 backdrop-blur-xl border border-black/[0.08] shadow-[0_8px_30px_rgb(0,0,0,0.12)] rounded-full px-3 py-2 flex items-center justify-around">
+      <nav className="bg-white/85 backdrop-blur-2xl border border-[#E5E1EC]/70 shadow-[0_12px_36px_rgba(101,85,184,0.14),0_4px_16px_rgba(0,0,0,0.04)] rounded-full px-3 py-2 flex items-center justify-around select-none">
         <Link
           href="/discover"
-          className={`flex flex-col items-center justify-center p-2 rounded-full transition-all active:scale-90 ${
+          className={`flex flex-col items-center justify-center p-2 rounded-full transition-transform duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-80 select-none cursor-pointer ${
             isActive('/discover') ? 'text-[#6555B8]' : 'text-gray-400 hover:text-gray-700'
           }`}
           aria-label="Discover"
         >
           <Compass className="w-5 h-5" strokeWidth={isActive('/discover') ? 2.4 : 1.8} />
           {isActive('/discover') && (
-            <span className="w-1 h-1 rounded-full bg-[#6555B8] mt-1" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[#6555B8] mt-1 shadow-[0_0_6px_rgba(101,85,184,0.6)] animate-[pairsPageIn_240ms_cubic-bezier(0.16,1,0.3,1)_both]" />
           )}
         </Link>
 
         <Link
           href="/favorites"
-          className={`flex flex-col items-center justify-center p-2 rounded-full transition-all active:scale-90 ${
+          className={`flex flex-col items-center justify-center p-2 rounded-full transition-transform duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-80 select-none cursor-pointer ${
             isActive('/favorites') ? 'text-[#6555B8]' : 'text-gray-400 hover:text-gray-700'
           }`}
           aria-label="Saved"
@@ -112,13 +112,13 @@ export function BottomNav() {
             strokeWidth={isActive('/favorites') ? 2.4 : 1.8} 
           />
           {isActive('/favorites') && (
-            <span className="w-1 h-1 rounded-full bg-[#6555B8] mt-1" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[#6555B8] mt-1 shadow-[0_0_6px_rgba(101,85,184,0.6)] animate-[pairsPageIn_240ms_cubic-bezier(0.16,1,0.3,1)_both]" />
           )}
         </Link>
 
         <Link
           href="/messages"
-          className={`relative flex flex-col items-center justify-center p-2 rounded-full transition-all active:scale-90 ${
+          className={`relative flex flex-col items-center justify-center p-2 rounded-full transition-transform duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-80 select-none cursor-pointer ${
             isActive('/messages') ? 'text-[#6555B8]' : 'text-gray-400 hover:text-gray-700'
           }`}
           aria-label="Messages"
@@ -128,20 +128,20 @@ export function BottomNav() {
             <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#6555B8] ring-2 ring-white" />
           )}
           {isActive('/messages') && (
-            <span className="w-1 h-1 rounded-full bg-[#6555B8] mt-1" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[#6555B8] mt-1 shadow-[0_0_6px_rgba(101,85,184,0.6)] animate-[pairsPageIn_240ms_cubic-bezier(0.16,1,0.3,1)_both]" />
           )}
         </Link>
 
         <Link
           href="/profile"
-          className={`flex flex-col items-center justify-center p-2 rounded-full transition-all active:scale-90 ${
+          className={`flex flex-col items-center justify-center p-2 rounded-full transition-transform duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-80 select-none cursor-pointer ${
             isActive('/profile') ? 'text-[#6555B8]' : 'text-gray-400 hover:text-gray-700'
           }`}
           aria-label="Profile"
         >
           <User className="w-5 h-5" strokeWidth={isActive('/profile') ? 2.4 : 1.8} />
           {isActive('/profile') && (
-            <span className="w-1 h-1 rounded-full bg-[#6555B8] mt-1" />
+            <span className="w-1.5 h-1.5 rounded-full bg-[#6555B8] mt-1 shadow-[0_0_6px_rgba(101,85,184,0.6)] animate-[pairsPageIn_240ms_cubic-bezier(0.16,1,0.3,1)_both]" />
           )}
         </Link>
       </nav>
