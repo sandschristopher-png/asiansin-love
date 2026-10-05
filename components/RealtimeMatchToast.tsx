@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Sparkles, MessageCircle, X } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
+import { playMatchChime } from '@/lib/sound';
 
 interface MatchEvent {
   matchedProfileId: string;
@@ -55,6 +56,7 @@ export function RealtimeMatchToast() {
                 if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
                   try { navigator.vibrate([30, 60, 30]); } catch (_) {}
                 }
+                playMatchChime();
                 setMatch({
                   matchedProfileId: profile.id,
                   matchedName: profile.display_name || profile.full_name || profile.name || 'Someone',

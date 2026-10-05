@@ -218,7 +218,29 @@ export default function ChatConversationPage() {
     const interval = setInterval(() => {
       setCooldownSeconds((prev) => (prev > 0 ? prev - 1 : 0));
     }, 1000);
-    return () => clearInterval(interval);
+    
+  // Auto-mark incoming unread messages as read upon viewing thread
+  useEffect(() => {
+    const markMessagesAsRead = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session || !chatId) return;
+
+      try {
+        await supabase
+          .from('messages')
+          .update({ read: true, read_at: new Date().toISOString() })
+          .eq('recipient_id', session.user.id)
+          .eq('sender_id', chatId)
+          .eq('read', false);
+      } catch (err) {
+        // Silent catch for read receipt updates
+      }
+    };
+
+    markMessagesAsRead();
+  }, [chatId, messages.length]);
+
+  return () => clearInterval(interval);
   }, [cooldownSeconds]);
 
   useEffect(() => {

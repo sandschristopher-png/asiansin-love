@@ -1,3 +1,4 @@
+import { playMatchChime } from '@/lib/sound';
 'use client';
 
 import MatchModal from '@/components/MatchModal';
@@ -363,6 +364,7 @@ function DiscoverContent() {
       if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
         try { navigator.vibrate([20, 40, 20]); } catch (_) {}
       }
+      playMatchChime();
       setMatchedModalProfile({
         id,
         name: name || 'your match',
