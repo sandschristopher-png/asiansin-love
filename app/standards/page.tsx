@@ -3,7 +3,6 @@
 import React from 'react';
 import Link from 'next/link';
 import { ShieldCheck, HeartHandshake, Ban, Users, ArrowLeft } from 'lucide-react';
-import { Footer } from '@/components/Footer';
 
 
 export default function CommunityStandardsPage() {
@@ -95,8 +94,6 @@ export default function CommunityStandardsPage() {
         </div>
 
       </main>
-
-      <Footer />
     </div>
   );
 }

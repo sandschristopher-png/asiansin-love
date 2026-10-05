@@ -143,20 +143,7 @@ export default function FeaturesPage() {
       </main>
 
       {/* Footer */}
-      <footer className="mt-20 border-t border-[#9A8CC3]/20 bg-[#FFFFFF] py-6 px-4 sm:px-6 text-xs text-[#1C1924]/80">
-        <div className="mx-auto max-w-5xl flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <Logo className="h-5 w-5" textSize="text-xs" />
-            <span className="text-[#1C1924]/70">&copy; 2026 asiansin.love &bull; Modern Southeast Asian Dating</span>
-          </div>
-          <div className="flex flex-wrap items-center gap-4 text-xs font-semibold">
-            <Link href="/discover" className="hover:text-[#1C1924] transition">Discover</Link>
-            <Link href="/features" className="text-[#B2A4D7] hover:underline transition">Features</Link>
-            <Link href="/terms" className="hover:text-[#1C1924] transition">Terms</Link>
-            <Link href="/privacy" className="hover:text-[#1C1924] transition">Privacy</Link>
-          </div>
-        </div>
-      </footer>
+      
 
     </div>
   )

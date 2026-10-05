@@ -3,7 +3,6 @@
 import React from 'react';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
-import { Footer } from '@/components/Footer';
 
 
 export default function PrivacyPolicyPage() {
@@ -58,8 +57,6 @@ export default function PrivacyPolicyPage() {
         </div>
 
       </main>
-
-      <Footer />
     </div>
   );
 }

@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
 import { Mail, Lock, User, AlertCircle, CheckCircle2, Loader2, Eye, EyeOff } from 'lucide-react';
-import { Footer } from '@/components/Footer';
+
 
 export default function LoginPage() {
   const router = useRouter();
@@ -293,8 +293,6 @@ export default function LoginPage() {
           </p>
         </div>
       </main>
-
-      <Footer />
     </div>
   );
 }
