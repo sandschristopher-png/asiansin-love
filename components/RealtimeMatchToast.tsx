@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -17,25 +17,31 @@ export function RealtimeMatchToast() {
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    let channel: any;
+    let channel: any = null;
+    let isMounted = true;
 
     const setupMatchListener = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session) return;
+      if (!session || !isMounted) return;
       const currentUserId = session.user.id;
 
+      // Unique channel name avoids duplicate subscription errors during fast-refresh or re-renders
+      const channelName = `realtime-likes-${currentUserId}-${Math.random().toString(36).substring(2, 9)}`;
+
       channel = supabase
-        .channel('realtime-inbound-likes')
+        .channel(channelName)
         .on(
           'postgres_changes',
           {
             event: 'INSERT',
             schema: 'public',
             table: 'likes',
-            filter: `target_user_id=eq.${currentUserId}`
+            filter: `target_user_id=eq.${currentUserId}`,
           },
           async (payload: any) => {
-            const senderId = payload.new.user_id;
+            if (!isMounted) return;
+            const senderId = payload.new?.user_id;
+            if (!senderId) return;
 
             // Check mutual like
             const { data: mutual } = await supabase
@@ -45,14 +51,14 @@ export function RealtimeMatchToast() {
               .eq('target_user_id', senderId)
               .maybeSingle();
 
-            if (mutual) {
+            if (mutual && isMounted) {
               const { data: profile } = await supabase
                 .from('profiles')
                 .select('id, full_name, display_name, name, avatar_url')
                 .eq('id', senderId)
                 .single();
 
-              if (profile) {
+              if (profile && isMounted) {
                 if (typeof navigator !== 'undefined' && 'vibrate' in navigator) {
                   try { navigator.vibrate([30, 60, 30]); } catch (_) {}
                 }
@@ -60,7 +66,7 @@ export function RealtimeMatchToast() {
                 setMatch({
                   matchedProfileId: profile.id,
                   matchedName: profile.display_name || profile.full_name || profile.name || 'Someone',
-                  avatarUrl: profile.avatar_url || '/placeholder-avatar.svg'
+                  avatarUrl: profile.avatar_url || '/placeholder-avatar.svg',
                 });
                 setVisible(true);
               }
@@ -73,7 +79,10 @@ export function RealtimeMatchToast() {
     setupMatchListener();
 
     return () => {
-      if (channel) supabase.removeChannel(channel);
+      isMounted = false;
+      if (channel) {
+        supabase.removeChannel(channel);
+      }
     };
   }, []);
 
@@ -119,4 +128,5 @@ export function RealtimeMatchToast() {
     </div>
   );
 }
+
 export default RealtimeMatchToast;
