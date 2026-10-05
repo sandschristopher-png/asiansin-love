@@ -1,9 +1,9 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 import Link from 'next/link';
 import { Sparkles, MessageCircle, X } from 'lucide-react';
+import { supabase } from '@/lib/supabaseClient';
 
 interface MatchEvent {
   matchedProfileId: string;
@@ -14,7 +14,6 @@ interface MatchEvent {
 export function RealtimeMatchToast() {
   const [match, setMatch] = useState<MatchEvent | null>(null);
   const [visible, setVisible] = useState(false);
-  const supabase = createClientComponentClient();
 
   useEffect(() => {
     let channel: any;
@@ -36,7 +35,7 @@ export function RealtimeMatchToast() {
           },
           async (payload: any) => {
             const senderId = payload.new.user_id;
-            
+
             // Check mutual like
             const { data: mutual } = await supabase
               .from('likes')

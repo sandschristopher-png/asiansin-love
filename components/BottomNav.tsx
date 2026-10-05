@@ -1,4 +1,3 @@
-import { createClientComponentClient } from '@supabase/auth-helpers-nextjs';
 'use client';
 
 import React, { useState, useEffect } from 'react';
@@ -25,7 +24,7 @@ const PUBLIC_ROUTES = [
 
 export function BottomNav() {
   const [unreadCount, setUnreadCount] = useState(0);
-  const supabase = createClientComponentClient();
+  
 
   useEffect(() => {
     let channel: any;
@@ -92,7 +91,7 @@ export function BottomNav() {
     }
     checkAuth();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event: any, session: any) => {
       setUser(session?.user ?? null);
     });
 
