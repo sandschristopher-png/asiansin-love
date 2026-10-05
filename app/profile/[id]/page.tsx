@@ -56,7 +56,7 @@ export default function PublicProfilePage() {
 
           setProfile({
             ...data,
-            name: data.display_name || data.full_name || (data.username ? data.username.replace(/^@/, '') : 'Member'),
+            name: data.username ? data.username.replace(/^@/, '') : (data.display_name || 'Member'),
             handle: data.username ? data.username.replace(/^@/, '') : null,
             age: calculatedAge || null,
             locationDisplay,

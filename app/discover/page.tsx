@@ -79,7 +79,13 @@ function DiscoverCardPhotoCarousel({
 }: DiscoverCardPhotoCarouselProps) {
   const [currentIdx, setCurrentIdx] = useState(0);
 
-  const displayPhotos = (photos && photos.filter(Boolean).length > 0) ? photos.filter(Boolean) : [avatarUrl || '/placeholder-avatar.svg'];
+  const rawList = (photos && photos.length > 0 ? photos : [avatarUrl]).filter(
+    (p): p is string => typeof p === 'string' && p.trim().length > 0 && p !== '/placeholder-avatar.svg'
+  );
+  // Deduplicate and fallback
+  const displayPhotos = Array.from(new Set(rawList)).length > 0 
+    ? Array.from(new Set(rawList)) 
+    : [avatarUrl || '/placeholder-avatar.svg'];
   const hasMultiple = displayPhotos.length > 1;
 
   const handlePrev = (e: React.MouseEvent) => {
@@ -123,7 +129,7 @@ function DiscoverCardPhotoCarousel({
       {/* Story Progress Dashes */}
       {hasMultiple && (
         <div className="absolute top-8 inset-x-3 z-20 flex gap-1 pointer-events-none">
-          {displayPhotos.map((_, i) => (
+          {hasMultiple && displayPhotos.map((_, i) => (
             <div
               key={i}
               className={'h-1 flex-1 rounded-full transition-all duration-200 ' + (
@@ -483,7 +489,7 @@ function DiscoverContent() {
             const normGender = (row.gender?.toLowerCase() || 'woman') as 'woman' | 'man' | 'trans';
             return {
               id: row.id,
-              name: row.username || row.display_name || row.full_name || 'Member',
+              name: (row.username ? row.username.replace(/^@/, '') : '') || (row.display_name && !row.display_name.includes(' ') ? row.display_name : (row.display_name ? row.display_name.split(' ')[0] : 'Member')),
               age: row.age || 25,
               gender: ['woman', 'man', 'trans'].includes(normGender) ? normGender : 'woman',
               location: cityVal,
