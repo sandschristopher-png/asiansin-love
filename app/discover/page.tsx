@@ -1,6 +1,6 @@
-import { playMatchChime } from '@/lib/sound';
 'use client';
 
+import { playMatchChime } from '@/lib/sound';
 import MatchModal from '@/components/MatchModal';
 
 import { getDistanceLabel } from '@/lib/location';
@@ -1282,6 +1282,3 @@ export default function DiscoverPage() {
     </Suspense>
   );
 }
-
-
-

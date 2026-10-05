@@ -223,14 +223,14 @@ export default function ChatConversationPage() {
   useEffect(() => {
     const markMessagesAsRead = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session || !chatId) return;
+      if (!session || !(routeParams)) return;
 
       try {
         await supabase
           .from('messages')
           .update({ read: true, read_at: new Date().toISOString() })
           .eq('recipient_id', session.user.id)
-          .eq('sender_id', chatId)
+          .eq('sender_id', routeParams)
           .eq('read', false);
       } catch (err) {
         // Silent catch for read receipt updates
@@ -238,7 +238,7 @@ export default function ChatConversationPage() {
     };
 
     markMessagesAsRead();
-  }, [chatId, messages.length]);
+  }, [routeParams, messages.length]);
 
   return () => clearInterval(interval);
   }, [cooldownSeconds]);
