@@ -134,8 +134,8 @@ export default function MessagesPage() {
   });
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F8F7FA] text-[#1C1924]">
-      <main className="flex-1 w-full px-4 pt-4 pb-28 space-y-4">
+    <div className="flex-1 flex flex-col min-h-0 bg-[#F8F7FA] text-[#1C1924]">
+      <main className="flex-1 w-full px-4 pt-4 pb-6 space-y-4">
         {/* Page Title */}
         <div className="flex items-center justify-between">
           <h1 className="text-xl font-bold text-[#1C1924]">Messages</h1>
