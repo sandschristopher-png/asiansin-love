@@ -236,11 +236,7 @@ export default function OnboardingPage() {
           children_status: calculatedChildrenStatus,
           children_count: finalChildrenCount,
           occupation: profession.trim() || null,
-          height: (() => {
-              if (!height || !height.trim()) return null;
-              const cmMatch = height.match(/(\d+)\s*cm/i);
-              return cmMatch ? `${cmMatch[1]} cm` : height.trim();
-            })(),
+          height: height || null,
           languages: languages.length > 0 ? languages.join(', ') : 'English',
           avatar_url: avatarUrl.trim() || null,
           onboarding_completed: true,
@@ -769,15 +765,40 @@ export default function OnboardingPage() {
                       />
                     </div>
                     <div>
-                      <label className="text-[11px] font-medium text-[#524B5E] block mb-1">Height</label>
-                      <input
-                        type="text"
-                        value={height}
-                        onChange={(e) => setHeight(e.target.value)}
-                        placeholder="e.g. 5ft 10in (178 cm)"
-                        className="w-full px-3 py-2 rounded-xl text-xs bg-white border border-[#DDD7E5] text-[#1C1924] focus:outline-none focus:border-[#6555b8]"
-                      />
-                    </div>
+                        <label className="text-[11px] font-medium text-[#524B5E] block mb-1">Height</label>
+                        <select
+                          value={height}
+                          onChange={(e) => setHeight(e.target.value)}
+                          className="w-full px-3 py-2 rounded-xl text-xs bg-white border border-[#DDD7E5] text-[#1C1924] focus:outline-none focus:border-[#6555b8]"
+                        >
+                          <option value="">Select Height</option>
+                          <option value="142 cm">4'8" (142 cm)</option>
+                          <option value="145 cm">4'9" (145 cm)</option>
+                          <option value="147 cm">4'10" (147 cm)</option>
+                          <option value="150 cm">4'11" (150 cm)</option>
+                          <option value="152 cm">5'0" (152 cm)</option>
+                          <option value="155 cm">5'1" (155 cm)</option>
+                          <option value="157 cm">5'2" (157 cm)</option>
+                          <option value="160 cm">5'3" (160 cm)</option>
+                          <option value="163 cm">5'4" (163 cm)</option>
+                          <option value="165 cm">5'5" (165 cm)</option>
+                          <option value="168 cm">5'6" (168 cm)</option>
+                          <option value="170 cm">5'7" (170 cm)</option>
+                          <option value="173 cm">5'8" (173 cm)</option>
+                          <option value="175 cm">5'9" (175 cm)</option>
+                          <option value="178 cm">5'10" (178 cm)</option>
+                          <option value="180 cm">5'11" (180 cm)</option>
+                          <option value="183 cm">6'0" (183 cm)</option>
+                          <option value="185 cm">6'1" (185 cm)</option>
+                          <option value="188 cm">6'2" (188 cm)</option>
+                          <option value="191 cm">6'3" (191 cm)</option>
+                          <option value="193 cm">6'4" (193 cm)</option>
+                          <option value="196 cm">6'5" (196 cm)</option>
+                          <option value="198 cm">6'6" (198 cm)</option>
+                          <option value="201 cm">6'7" (201 cm)</option>
+                          <option value="203 cm">6'8" (203 cm)</option>
+                        </select>
+                      </div>
                   </div>
 
                   <div>
