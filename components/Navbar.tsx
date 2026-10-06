@@ -6,18 +6,44 @@ import { notificationService } from '@/lib/notificationService';
 import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { User, Settings, LogOut, Bell, ArrowLeft } from 'lucide-react';
+import { User, Settings, LogOut, Bell, ArrowLeft, Share2, Check } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 
 export function Navbar() {
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [inviteCopied, setInviteCopied] = useState(false);
   const [hasUnread, setHasUnread] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const pathname = usePathname();
-  
+
+  const handleInviteShare = async () => {
+    const shareData = {
+      title: 'Asians in Love',
+      text: 'Find meaningful connections on Asians in Love:',
+      url: typeof window !== 'undefined' ? window.location.origin : 'https://asiansin.love',
+    };
+    if (typeof navigator !== 'undefined' && navigator.share) {
+      try {
+        await navigator.share(shareData);
+        setMenuOpen(false);
+        return;
+      } catch (e: any) {
+        if (e.name === 'AbortError') return;
+      }
+    }
+    try {
+      await navigator.clipboard.writeText(shareData.url);
+      setInviteCopied(true);
+      setTimeout(() => {
+        setInviteCopied(false);
+        setMenuOpen(false);
+      }, 1500);
+    } catch {}
+  };
+
   async function checkUnread(userId: string) {
     const { count } = await supabase
       .from('notifications')
@@ -123,7 +149,6 @@ export function Navbar() {
   const displayName = profile?.username || 'Member';
   const avatarUrl = profile?.avatar_url || user?.user_metadata?.avatar_url || null;
 
-  // Derive title for non-discover pages
   const getPageTitle = () => {
     if (!pathname || pathname === '/' || pathname === '/discover') return null;
     if (pathname.startsWith('/favorites') || pathname.startsWith('/saved')) return 'Saved Profiles';
@@ -140,11 +165,10 @@ export function Navbar() {
   return (
     <header className="sticky top-0 z-40 w-full bg-white/75 backdrop-blur-md backdrop-saturate-150 border-b border-[#DDD7E5]/40 shadow-[0_2px_12px_rgba(0,0,0,0.03)] transition-all">
       <div className="w-full px-4 h-14 flex items-center justify-between relative">
-        
-        {/* Left Side: Brand Logo or Back / Title with smooth transition */}
+
         <div className="flex items-center gap-2 min-w-0">
-          <div 
-            key={pageTitle || 'brand-home'} 
+          <div
+            key={pageTitle || 'brand-home'}
             className="transition-all duration-200 ease-out flex items-center"
             style={{ animation: 'fadeInTitle 220ms ease-out forwards' }}
           >
@@ -160,7 +184,7 @@ export function Navbar() {
                 >
                   <ArrowLeft className="w-5 h-5" />
                 </button>
-                <h1 
+                <h1
                   className="text-[19px] sm:text-[21px] font-semibold text-[#4C3B75] tracking-[-0.025em] leading-snug pb-0.5 select-none truncate"
                   style={{ fontFamily: 'var(--font-brand)' }}
                 >
@@ -171,11 +195,9 @@ export function Navbar() {
           </div>
         </div>
 
-        {/* Minimal Right-side actions */}
         <div className="flex items-center gap-2">
           {user ? (
             <>
-              {/* Notifications */}
               <Link
                 href="/notifications"
                 className="relative h-9 w-9 rounded-full bg-transparent hover:bg-gray-100 flex items-center justify-center text-gray-600 transition-colors"
@@ -187,7 +209,6 @@ export function Navbar() {
                 )}
               </Link>
 
-              {/* Minimal Avatar Menu */}
               <div className="relative" ref={menuRef}>
                 <button
                   type="button"
@@ -227,6 +248,21 @@ export function Navbar() {
                         <Settings className="w-4 h-4 text-[#6555B8]" />
                         <span>Settings</span>
                       </Link>
+
+                      <button
+                        type="button"
+                        onClick={handleInviteShare}
+                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left"
+                      >
+                        {inviteCopied ? (
+                          <Check className="w-4 h-4 text-emerald-600" />
+                        ) : (
+                          <Share2 className="w-4 h-4 text-[#6555B8]" />
+                        )}
+                        <span className={inviteCopied ? "text-emerald-600 font-medium" : ""}>
+                          {inviteCopied ? "Link Copied!" : "Invite Friends"}
+                        </span>
+                      </button>
                     </div>
 
                     <div className="border-t border-gray-100 pt-1">
