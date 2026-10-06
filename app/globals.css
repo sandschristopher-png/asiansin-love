@@ -99,3 +99,8 @@ a:active,
   -ms-overflow-style: none;
   scrollbar-width: none;
 }
+
+
+.font-logo {
+  font-family: var(--font-logo), var(--font-brand), sans-serif;
+}

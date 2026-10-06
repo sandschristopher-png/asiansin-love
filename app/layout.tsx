@@ -1,5 +1,11 @@
 ﻿import type { Metadata, Viewport } from 'next';
-import { Plus_Jakarta_Sans, Outfit } from 'next/font/google';
+import { Comfortaa, Plus_Jakarta_Sans, Outfit } from 'next/font/google';
+
+const comfortaa = Comfortaa({
+  subsets: ['latin'],
+  weight: ['600', '700'],
+  variable: '--font-logo',
+});
 import './globals.css';
 import { LayoutShell } from '@/components/LayoutShell';
 
@@ -33,7 +39,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`h-full ${plusJakarta.variable} ${outfit.variable}`}>
+    <html lang="en" className={`h-full ${plusJakarta.variable} ${outfit.variable} ${comfortaa.variable}`}>
       <body className="font-sans bg-[#ECE9F1] text-[#1C1924] h-full selection:bg-[#6555B8] selection:text-white antialiased overflow-hidden">
         <LayoutShell>{children}</LayoutShell>
       </body>

@@ -17,7 +17,7 @@ export function BrandLogo({ href, size = 'md', className = '' }: BrandLogoProps)
   const content = (
     <span
       className={`inline-flex items-baseline select-none lowercase whitespace-nowrap leading-none tracking-[-0.035em] text-[#4C3B75] ${sizeClasses} ${className}`}
-      style={{ fontFamily: 'var(--font-brand)', fontWeight: 600 }}
+      style={{ fontFamily: 'var(--font-logo)', fontWeight: 600 }}
     >
       asians in love
     </span>

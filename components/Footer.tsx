@@ -13,7 +13,7 @@ export function Footer() {
         <div className="space-y-1">
           <div className="flex items-center justify-center gap-2">
             <span className="w-2 h-2 rounded-full bg-white shadow-xs" />
-            <h2 className="text-lg font-bold tracking-tight text-white">
+            <h2 className="font-logo text-lg font-bold tracking-tight text-white">
               asians in love
             </h2>
           </div>
