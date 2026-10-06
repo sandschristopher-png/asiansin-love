@@ -1,21 +1,17 @@
-﻿import React from 'react';
+﻿import Footer from '@/components/Footer';
+import React from 'react';
 import Link from 'next/link';
 import { ArrowRight, ShieldCheck, HeartHandshake, Sparkles, Users } from 'lucide-react';
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen flex flex-col bg-[#F8F7FA] text-[#1C1924]">
+    <div className="min-h-full flex flex-col bg-[#F8F7FA] text-[#1C1924]">
       {/* Hero Section */}
-      <main className="flex-1 w-full px-5 pt-12 pb-16 flex flex-col items-center text-center space-y-7">
+      <div className="flex-1 w-full px-5 pt-8 pb-12 flex flex-col items-center text-center space-y-7">
         
         {/* Full Headline with Deep Vertical Gradient */}
-        <div className="space-y-3.5">
-          <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F3EFFC] text-[#6555B8] text-xs font-semibold border border-[#6555B8]/20">
-            <Sparkles className="w-3.5 h-3.5" />
-            Serious Courtship & Marriage
-          </span>
-
-          <h1 className="text-3xl font-medium  leading-[1.12] bg-gradient-to-b from-[#181126] via-[#3E2F6E] to-[#6555b8] bg-clip-text text-transparent">
+        <div className="space-y-3 pt-2">
+          <h1 className="text-3xl font-medium leading-[1.14] bg-gradient-to-b from-[#181126] via-[#3E2F6E] to-[#6555b8] bg-clip-text text-transparent">
             Where Intentional Love Crosses Oceans
           </h1>
 
@@ -43,7 +39,7 @@ export default function HomePage() {
           </Link>
         </div>
 
-        {/* Feature Highlights - Clean Vertical Stack for 430px */}
+        {/* Feature Highlights */}
         <div className="flex flex-col gap-2.5 text-left w-full pt-4">
           <div className="p-4 rounded-2xl bg-white border border-[#E8E4EF] shadow-xs flex items-start gap-3.5">
             <div className="w-9 h-9 rounded-xl bg-[#F3EFFC] flex items-center justify-center text-[#6555b8] shrink-0 mt-0.5">
@@ -82,7 +78,8 @@ export default function HomePage() {
           </div>
         </div>
 
-      </main>
+      </div>
+      <Footer />
     </div>
   );
 }

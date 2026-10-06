@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { captureCurrentLocation, formatVerifiedDate } from '@/lib/location';
 
@@ -14,9 +14,9 @@ import {
 import { supabase } from '@/lib/supabaseClient';
 import { Footer } from '@/components/Footer';
 
-export const QUICK_LANGUAGES = ['English', 'Tagalog', 'Thai', 'Japanese', 'Vietnamese', 'Mandarin', 'Spanish', 'Korean'];
+const QUICK_LANGUAGES = ['English', 'Tagalog', 'Thai', 'Japanese', 'Vietnamese', 'Mandarin', 'Spanish', 'Korean'];
 
-export const NATIONALITY_OPTIONS = [
+const NATIONALITY_OPTIONS = [
   'Philippines',
   'Vietnam',
   'Thailand',

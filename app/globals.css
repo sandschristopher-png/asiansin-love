@@ -1,4 +1,4 @@
-@import "tailwindcss";
+﻿@import "tailwindcss";
 
 @keyframes slideDown {
   0% {
@@ -14,101 +14,53 @@
 .animate-slide-down {
   animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
-/* ==========================================================================
-   UNIFORM INTERACTION TIMING (MOTION ONLY - ZERO VISUAL/LAYOUT CHANGES)
-   ========================================================================== */
 
-/* Remove mobile tap gray highlight box without altering design */
+@keyframes pairsPageIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+main {
+  animation: pairsPageIn 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+@keyframes breathe {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.45; transform: scale(0.85); }
+}
+
+.presence-dot {
+  animation: breathe 2.6s ease-in-out infinite;
+}
+
+/* Touch and momentum scrolling */
 *, *::before, *::after {
   -webkit-tap-highlight-color: transparent;
 }
 
-/* Universal tactile micro-press curve for interactive elements */
-button, 
-a, 
-input[type="button"], 
-input[type="submit"] {
-  transition: transform 120ms cubic-bezier(0.2, 0, 0, 1), 
-              opacity 120ms ease, 
-              background-color 150ms ease, 
-              border-color 150ms ease, 
-              color 150ms ease;
-  will-change: transform;
-}
-
-/* Subtle physical compression on press/tap across mobile and desktop */
-button:active, 
-a:active, 
-input[type="button"]:active, 
-input[type="submit"]:active {
-  transform: scale(0.97) translateZ(0);
-}
-
-/* Smooth lift & settle for grid cards on desktop hover */
-@media (hover: hover) and (pointer: fine) {
-  .group {
-    transition: transform 200ms cubic-bezier(0.16, 1, 0.3, 1), 
-                box-shadow 200ms ease, 
-                border-color 200ms ease;
-  }
+html, body {
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
 }
 
 body {
   background-color: #F2EEF7 !important;
   color: #1C1924;
 }
-/* Slow breathing presence dot */
-@keyframes breathe {
-  0%, 100% { opacity: 1; transform: scale(1); }
-  50% { opacity: 0.45; transform: scale(0.85); }
-}
-.presence-dot {
-  animation: breathe 2.6s ease-in-out infinite;
-}
-
-/* Hide scrollbar for Chrome, Safari and Opera */
-.no-scrollbar::-webkit-scrollbar,
-*::-webkit-scrollbar {
-  display: none;
-  width: 0px;
-  background: transparent;
-}
-
-/* Hide scrollbar for IE, Edge and Firefox */
-.no-scrollbar,
-* {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
-}
-/* Fluid native momentum scroll & anti-jank optimizations */
-html {
-  scroll-behavior: smooth;
-  -webkit-tap-highlight-color: transparent;
-}
 
 .smooth-scroll {
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
   overscroll-behavior-y: contain;
-  backface-visibility: hidden;
-  transform: translateZ(0);
 }
 
-/* ==========================================================================
-   PAIRS-STYLE FLUID MOTION & MICRO-INTERACTIONS (ZERO LAYOUT/COLOR CHANGES)
-   ========================================================================== */
-
-/* 1. iOS-grade momentum scrolling & tap highlight cleanup */
-* {
-  -webkit-tap-highlight-color: transparent;
-}
-
-html, body, .smooth-scroll {
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
-}
-
-/* 2. Micro-press physics for all interactive elements */
+/* Micro-press transitions for interactive elements */
 button,
 a,
 [role="button"],
@@ -129,41 +81,21 @@ a:active,
   transform: scale(0.972);
 }
 
-/* 3. Subtle organic hover lift for cards without disrupting flow */
 .rounded-3xl,
 .rounded-2xl {
   transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
               box-shadow 220ms cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-/* 4. Global page transition keyframes */
-@keyframes pairsPageIn {
-  from {
-    opacity: 0;
-    transform: translateY(6px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+/* Scrollbar suppression */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+  width: 0;
+  height: 0;
+  background: transparent;
 }
 
-main {
-  animation: pairsPageIn 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
-}
-
-/* 5. Smooth pulse for online presence indicators */
-@keyframes subtlePulse {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.08);
-    opacity: 0.85;
-  }
-}
-
-.presence-dot {
-  animation: subtlePulse 3s ease-in-out infinite;
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

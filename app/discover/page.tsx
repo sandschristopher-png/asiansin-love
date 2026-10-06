@@ -299,7 +299,7 @@ function DiscoverContent() {
     if (verifiedOnly) count++;
     if (activeNowOnly) count++;
     return count;
-  }, [selectedGenders, minAge, maxAge, selectedIntent, verifiedOnly, activeNowOnly]);
+  }, [selectedGenders, minAge, maxAge, selectedIntent, verifiedOnly, activeNowOnly, singleMomOnly]);
 
   const resetFilters = () => {
     setSelectedGenders([]);
@@ -311,6 +311,9 @@ function DiscoverContent() {
     setVerifiedOnly(false);
     setActiveNowOnly(false);
     setSingleMomOnly(false);
+    if (typeof window !== 'undefined') {
+      window.history.replaceState(null, '', window.location.pathname);
+    }
   };
 
   useEffect(() => {
@@ -393,7 +396,7 @@ function DiscoverContent() {
   useEffect(() => {
     setVisibleLimit(BATCH_SIZE);
     setAutoLoadsCount(0);
-  }, [searchQuery, selectedCountry, selectedGenders.join(','), minAge, maxAge, selectedIntent, verifiedOnly, activeNowOnly]);
+  }, [searchQuery, selectedCountry, selectedGenders.join(','), minAge, maxAge, selectedIntent, verifiedOnly, activeNowOnly, singleMomOnly]);
 
   // IntersectionObserver for auto-loading batches
   useEffect(() => {
@@ -584,7 +587,7 @@ function DiscoverContent() {
 
   return (
     <div className="flex-1 flex flex-col w-full h-full min-h-0 bg-[#FAFAFD] text-[#1C1924]">
-      <main className="flex-1 max-w-5xl mx-auto w-full px-4 sm:px-6 pt-6 pb-6 space-y-5">
+      <main className="flex-1 max-w-5xl mx-auto w-full px-3.5 sm:px-4 pt-3.5 pb-24 space-y-4">
         
         {/* Top Control Bar */}
         <section aria-label="Search and Filters" className="w-full space-y-3">
@@ -1291,4 +1294,5 @@ export default function DiscoverPage() {
     </Suspense>
   );
 }
+
 
