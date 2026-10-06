@@ -267,6 +267,9 @@ function DiscoverContent() {
   });
   const [maxAge, setMaxAge] = useState<number>(() => {
     const val = Number(searchParams.get('maxAge'));
+  const [draftMinAge, setDraftMinAge] = useState<number>(minAge);
+  const [draftMaxAge, setDraftMaxAge] = useState<number>(maxAge);
+  useEffect(() => { if (filtersOpen) { setDraftMinAge(minAge); setDraftMaxAge(maxAge); } }, [filtersOpen, minAge, maxAge]);
     return !isNaN(val) && val >= 18 && val <= 65 ? val : 65;
   });
   const [selectedIntent, setSelectedIntent] = useState<string>(() => searchParams.get('intent') || 'All');
@@ -1051,181 +1054,81 @@ function DiscoverContent() {
       </main>
 
       {/* Filter Drawer */}
-      <div 
-        className={'fixed inset-0 z-[100] transition-transform duration-300 ease-in-out ' + (filtersOpen ? 'translate-y-0' : 'translate-y-full pointer-events-none') + (
-            filtersOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
-          )}
-        onClick={() => setFiltersOpen(false)}
-      >
-        <div 
-          className={'w-full max-w-lg mx-auto bg-white min-h-full flex flex-col rounded-t-3xl'}
-          style={drawerDragY > 0 ? { transform: `translateY(${drawerDragY}px)`, transition: 'none' } : undefined}
-          onClick={(e) => e.stopPropagation()}
-        >
-          <div
-              onTouchStart={handleDrawerTouchStart}
-              onTouchMove={handleDrawerTouchMove}
-              onTouchEnd={handleDrawerTouchEnd}
-              className="w-full py-3 cursor-grab active:cursor-grabbing flex justify-center items-center shrink-0 touch-none select-none"
-            >
-              <div className="w-10 h-1.5 bg-[#D1CBD8] rounded-full transition-colors" />
-            </div>
-            <div className="flex-1 overflow-y-auto px-5 pt-4 pb-6 space-y-6 overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-            <div className="flex items-center justify-between pb-4 border-b border-[#7D7E92]/20">
-              <div className="flex items-center gap-2">
-                <SlidersHorizontal className="w-5 h-5 text-[#b2a4d7]" />
-                <h2 className="text-base font-medium text-[#1C1924]">Refine Discover Feed</h2>
-              </div>
-              <button 
-                type="button" 
-                onClick={() => setFiltersOpen(false)}
-                className="p-1.5 rounded-full text-[#524B5E] hover:text-white hover:bg-[#E5E1EC] transition"
-              >
-                <XIcon className="w-5 h-5" />
-              </button>
-            </div>
+        {/* Backdrop */}
+        <div className={'fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm transition-opacity duration-300 ' + (filtersOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none')} onClick={() => setFiltersOpen(false)} />
 
-                        {/* Gender Multi-Select Pills */}
-            <div className="space-y-2">
-              <div className="flex justify-between items-center text-xs font-semibold text-[#524B5E]">
-                <span>I'm Interested In</span>
-                {selectedGenders.length > 0 && (
-                  <span className="text-[11px] font-medium text-[#6555b8] bg-[#F3EFFC] px-2 py-0.5 rounded-full">
-                    {selectedGenders.length} selected
-                  </span>
-                )}
-              </div>
+        {/* Sheet */}
+        <div className={'fixed inset-x-0 bottom-0 z-[101] w-full max-w-lg mx-auto bg-white rounded-t-3xl shadow-2xl flex flex-col max-h-[85vh] transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] pb-[max(1.25rem,env(safe-area-inset-bottom))] ' + (filtersOpen ? 'translate-y-0' : 'translate-y-full pointer-events-none')}>
+          <div className="flex items-center justify-between p-5 pb-3 border-b border-[#E5E1EC] shrink-0">
+            <div className="flex items-center gap-2">
+              <SlidersHorizontal className="w-5 h-5 text-[#6555b8]" />
+              <h2 className="text-base font-semibold text-[#1C1924]">Refine Discover Feed</h2>
+            </div>
+            <button type="button" onClick={() => setFiltersOpen(false)} className="p-1.5 rounded-full text-[#524B5E] hover:bg-[#F3EFFC] transition" aria-label="Close filters"><XIcon className="w-5 h-5" /></button>
+          </div>
+
+          <div className="flex-1 overflow-y-auto px-5 py-4 space-y-6">
+            <div>
+              <label className="text-xs font-semibold text-[#756D82] uppercase tracking-wider block mb-2">I'm Interested In</label>
               <div className="grid grid-cols-3 gap-2">
-                {(['woman', 'trans', 'man'] as const).map((gender) => {
-                  const label = gender === 'woman' ? 'Women' : gender === 'trans' ? 'Trans' : 'Men';
-                  const active = selectedGenders.includes(gender);
+                {[{ id: 'women', label: 'Women' },{ id: 'trans', label: 'Trans' },{ id: 'men', label: 'Men' }].map((item) => {
+                  const isSelected = selectedGenders.includes(item.id);
                   return (
-                    <button
-                      key={gender}
-                      type="button"
-                      onClick={() => toggleGender(gender)}
-                      className={'py-2 text-xs font-semibold rounded-xl border text-center transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-95 cursor-pointer ' + (
-                        active
-                          ? 'bg-[#6555b8] border-[#6555b8] text-white shadow-xs'
-                          : 'bg-white border-[#DDD7E5] text-[#524B5E] hover:border-[#6555b8]/50 hover:bg-[#F3EFFC]'
-                      )}
-                    >
-                      {label}
-                    </button>
+                    <button key={item.id} type="button" onClick={() => toggleGender(item.id)}
+                      className={'py-2.5 px-3 rounded-xl border text-xs font-medium transition ' + (isSelected ? 'bg-[#6555b8] text-white border-[#6555b8]' : 'bg-white text-[#1C1924] border-[#E5E1EC] hover:bg-[#FAF8FD]')}>{item.label}</button>
                   );
                 })}
               </div>
             </div>
 
-            <div className="space-y-3">
-              <div className="flex justify-between items-center text-xs font-semibold text-[#524B5E]">
-                <span>Age Range</span>
-                <span className="text-xs font-medium text-[#6555b8] bg-[#F3EFFC] px-2.5 py-0.5 rounded-full">{minAge} – {maxAge} yrs</span>
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-xs font-semibold text-[#756D82] uppercase tracking-wider">Age Range</label>
+                <span className="text-xs font-semibold text-[#6555b8] bg-[#F3EFFC] px-2.5 py-0.5 rounded-full">{draftMinAge} - {draftMaxAge} yrs</span>
               </div>
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="text-[10px] text-[#756D82] uppercase font-medium">Min Age</label>
-                  <input 
-                    type="range" 
-                    min="18" 
-                    max="65" 
-                    value={minAge} 
-                    onChange={(e) => setMinAge(Math.min(Number(e.target.value), maxAge - 1))}
-                    className="w-full accent-[#6555b8]" 
-                  />
+                  <span className="text-[10px] text-[#756D82] block mb-1">Min Age ({draftMinAge})</span>
+                  <input type="range" min={18} max={65} value={draftMinAge} onChange={(e) => setDraftMinAge(Math.min(Number(e.target.value), draftMaxAge - 1))} className="w-full accent-[#6555b8]" />
                 </div>
                 <div>
-                  <label className="text-[10px] text-[#756D82] uppercase font-medium">Max Age</label>
-                  <input 
-                    type="range" 
-                    min="18" 
-                    max="65" 
-                    value={maxAge} 
-                    onChange={(e) => setMaxAge(Math.max(Number(e.target.value), minAge + 1))}
-                    className="w-full accent-[#6555b8]" 
-                  />
+                  <span className="text-[10px] text-[#756D82] block mb-1">Max Age ({draftMaxAge})</span>
+                  <input type="range" min={18} max={65} value={draftMaxAge} onChange={(e) => setDraftMaxAge(Math.max(Number(e.target.value), draftMinAge + 1))} className="w-full accent-[#6555b8]" />
                 </div>
               </div>
             </div>
 
-            <div className="space-y-2">
-              <span className="text-xs font-semibold text-[#524B5E]">Relationship Intent</span>
+            <div>
+              <label className="text-xs font-semibold text-[#756D82] uppercase tracking-wider block mb-2">Relationship Intent</label>
               <div className="grid grid-cols-2 gap-2">
-                {RELATIONSHIP_INTENTS.map((intent) => {
-                  const active = selectedIntent === intent;
-                  return (
-                    <button
-                      key={intent}
-                      type="button"
-                      onClick={() => setSelectedIntent(intent)}
-                      className={'text-left text-xs px-3.5 py-2.5 rounded-xl border font-medium transition-all ' + (
-                        active
-                          ? 'bg-[#6555b8] border-[#6555b8] text-white shadow-xs'
-                          : 'bg-white border-[#E5E1EC] text-[#524B5E] hover:bg-[#F3EFFC] hover:text-[#1C1924] hover:border-[#D0C7DF]'
-                      )}
-                    >
-                      {intent}
-                    </button>
-                  );
-                })}
+                {['All','Marriage','Serious Relationship','Casual Dating','Friendship'].map((intent) => (
+                  <button key={intent} type="button" onClick={() => setSelectedIntent(intent)}
+                    className={'py-2.5 px-3 rounded-xl border text-xs font-medium text-left transition ' + (selectedIntent === intent ? 'bg-[#6555b8] text-white border-[#6555b8]' : 'bg-white text-[#1C1924] border-[#E5E1EC] hover:bg-[#FAF8FD]')}>{intent}</button>
+                ))}
               </div>
             </div>
 
-            <div className="flex items-center justify-between sm:justify-start sm:gap-3 pt-2 sm:pt-6">
-              <span className="text-xs font-semibold text-[#524B5E]">Verified Members Only</span>
-              <button
-                type="button"
-                onClick={() => setVerifiedOnly(!verifiedOnly)}
-                className={'w-11 h-6 rounded-full transition-colors flex items-center px-0.5 ' + (
-                  verifiedOnly ? 'bg-[#6555b8]' : 'bg-[#E5E1EC]'
-                )}
-              >
-                <div className={'w-5 h-5 rounded-full bg-white transition-transform ' + (
-                  verifiedOnly ? 'translate-x-5' : 'translate-x-0'
-                )} />
-              </button>
-            </div>
-
-            <div className="flex items-center justify-between sm:justify-start sm:gap-3 pt-2 sm:pt-6">
-              <span className="text-xs font-semibold text-[#524B5E]">Active Now / Today</span>
-              <button
-                type="button"
-                onClick={() => setActiveNowOnly(!activeNowOnly)}
-                className={'w-11 h-6 rounded-full transition-colors flex items-center px-0.5 ' + (
-                  activeNowOnly ? 'bg-[#6555b8]' : 'bg-[#E5E1EC]'
-                )}
-              >
-                <div className={'w-5 h-5 rounded-full bg-white transition-transform ' + (
-                  activeNowOnly ? 'translate-x-5' : 'translate-x-0'
-                )} />
-              </button>
+            <div className="space-y-3 pt-1 border-t border-[#E5E1EC]/60">
+              <label className="flex items-center justify-between cursor-pointer py-1">
+                <span className="text-xs font-medium text-[#1C1924]">Verified Members Only</span>
+                <input type="checkbox" checked={verifiedOnly} onChange={(e) => setVerifiedOnly(e.target.checked)} className="sr-only peer" />
+                <span className="w-10 h-6 rounded-full bg-[#E5E1EC] peer-checked:bg-[#6555b8] relative transition"><span className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition peer-checked:translate-x-4" /></span>
+              </label>
+              <label className="flex items-center justify-between cursor-pointer py-1">
+                <span className="text-xs font-medium text-[#1C1924]">Active Now / Today</span>
+                <input type="checkbox" checked={activeOnly} onChange={(e) => setActiveOnly(e.target.checked)} className="sr-only peer" />
+                <span className="w-10 h-6 rounded-full bg-[#E5E1EC] peer-checked:bg-[#6555b8] relative transition"><span className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition peer-checked:translate-x-4" /></span>
+              </label>
             </div>
           </div>
 
-          {/* Sticky Action Footer */}
-          <div className="p-4 bg-white border-t border-[#E5E1EC] flex items-center gap-3 pb-[max(1.25rem,env(safe-area-inset-bottom))] shrink-0">
-            <button
-              type="button"
-              onClick={resetFilters}
-              className="flex-1 py-2.5 rounded-full border border-[#DDD7E5] text-xs font-semibold text-[#524B5E] hover:bg-[#F3EFFC] active:scale-95 transition-all flex items-center justify-center gap-1.5 cursor-pointer"
-            >
-              <RotateCcw className="w-3.5 h-3.5" />
-              Reset
-            </button>
-            <button
-              type="button"
-              onClick={() => setFiltersOpen(false)}
-              className="flex-1 py-2.5 rounded-full bg-[#6555b8] hover:bg-[#5748a3] active:scale-95 text-white text-xs font-semibold transition-all shadow-md flex items-center justify-center gap-1.5 cursor-pointer"
-            >
-              <Check className="w-3.5 h-3.5" />
-              Apply
-            </button>
+          <div className="p-4 bg-white border-t border-[#E5E1EC] flex items-center gap-3 shrink-0">
+            <button type="button" onClick={resetFilters} className="flex-1 py-3 rounded-xl border border-[#E5E1EC] text-xs font-semibold text-[#524B5E] hover:bg-[#FAF8FD] transition">Reset</button>
+            <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
           </div>
         </div>
-      </div>
 
-      
-      {/* Match Celebration Spring Modal */}
+        {/* Match Celebration Spring Modal */}
       {matchedModalProfile && (
         <div 
           onClick={closeModalWithAnimation}
