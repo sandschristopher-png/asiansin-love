@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { playMatchChime } from '@/lib/sound';
 import MatchModal from '@/components/MatchModal';
@@ -259,7 +259,7 @@ function DiscoverContent() {
   const [lastPassed, setLastPassed] = useState<{ id: string; name: string } | null>(null);
 
   // Hybrid Infinite Scroll State
-  const BATCH_SIZE = 16;
+  const BATCH_SIZE = 6;
   const [visibleLimit, setVisibleLimit] = useState(BATCH_SIZE);
   const [autoLoadsCount, setAutoLoadsCount] = useState(0);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -579,15 +579,15 @@ function DiscoverContent() {
     const matchesOnline = !activeNowOnly || profile.online;
 
     const isPassed = cardActions[profile.id] === 'pass';
-    return !isPassed && matchesCountry && matchesGender && matchesQuery && matchesAge && matchesIntent && matchesVerified && matchesOnline;
+    return matchesCountry && matchesGender && matchesQuery && matchesAge && matchesIntent && matchesVerified && matchesOnline;
   });
 
   const visibleProfiles = filteredProfiles.slice(0, visibleLimit);
   const hasMore = visibleLimit < filteredProfiles.length;
 
   return (
-    <div className="flex-1 flex flex-col w-full h-full min-h-0 bg-[#FAFAFD] text-[#1C1924]">
-      <main className="flex-1 max-w-5xl mx-auto w-full px-3.5 sm:px-4 pt-3.5 pb-24 space-y-4">
+    <div className="w-full min-h-full bg-[#FAFAFD] text-[#1C1924] flex flex-col">
+      <main className="w-full px-3.5 sm:px-4 pt-3 pb-8 space-y-3.5">
         
         {/* Top Control Bar */}
         <section aria-label="Search and Filters" className="w-full space-y-3">
@@ -996,7 +996,7 @@ function DiscoverContent() {
 
         {/* End of Feed State */}
         {!hasMore && filteredProfiles.length > 0 && (
-          <div className="pt-8 pb-4 text-center">
+          <div className="py-4 text-center">
             <p className="text-xs text-[#756D82]/70">
               You've viewed all {filteredProfiles.length} matches for your current criteria.
             </p>
@@ -1084,7 +1084,7 @@ function DiscoverContent() {
             <div className="space-y-3">
               <div className="flex justify-between items-center text-xs font-semibold text-[#524B5E]">
                 <span>Age Range</span>
-                <span className="text-xs font-medium text-[#6555b8] bg-[#F3EFFC] px-2.5 py-0.5 rounded-full">{minAge} Ã¢â‚¬â€œ {maxAge} yrs</span>
+                <span className="text-xs font-medium text-[#6555b8] bg-[#F3EFFC] px-2.5 py-0.5 rounded-full">{minAge} ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã¢â‚¬Å“ {maxAge} yrs</span>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -1206,7 +1206,7 @@ function DiscoverContent() {
             }`}
           >
             <div className="w-12 h-12 rounded-full bg-rose-50 flex items-center justify-center text-2xl mb-3 shadow-inner">
-              âœ¨
+              ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“Ãƒâ€šÃ‚Â¨
             </div>
             
             <h3 className="text-xl font-bold text-[#1C1924] tracking-tight">
