@@ -335,6 +335,12 @@ function DiscoverContent() {
   }, [selectedGenders, minAge, maxAge, selectedIntent, verifiedOnly, activeNowOnly, singleMomOnly]);
 
   const resetFilters = () => {
+  const applyFilters = () => {
+    setMinAge(draftMinAge);
+    setMaxAge(draftMaxAge);
+    setActiveNowOnly(activeNowOnly);
+    if (typeof setFiltersOpen === 'function') setFiltersOpen(false);
+  };
     setSelectedGenders([]);
     setSelectedCountry('All');
     setSearchQuery('');
