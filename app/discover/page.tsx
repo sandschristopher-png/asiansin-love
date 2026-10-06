@@ -267,11 +267,11 @@ function DiscoverContent() {
   });
   const [maxAge, setMaxAge] = useState<number>(() => {
     const val = Number(searchParams.get('maxAge'));
+    return !isNaN(val) && val >= 18 && val <= 65 ? val : 65;
+  });
   const [draftMinAge, setDraftMinAge] = useState<number>(minAge);
   const [draftMaxAge, setDraftMaxAge] = useState<number>(maxAge);
   useEffect(() => { if (filtersOpen) { setDraftMinAge(minAge); setDraftMaxAge(maxAge); } }, [filtersOpen, minAge, maxAge]);
-    return !isNaN(val) && val >= 18 && val <= 65 ? val : 65;
-  });
   const [selectedIntent, setSelectedIntent] = useState<string>(() => searchParams.get('intent') || 'All');
   const [verifiedOnly, setVerifiedOnly] = useState<boolean>(() => searchParams.get('verified') === 'true');
   const [activeNowOnly, setActiveNowOnly] = useState<boolean>(() => searchParams.get('active') === 'true');
@@ -334,13 +334,13 @@ function DiscoverContent() {
     return count;
   }, [selectedGenders, minAge, maxAge, selectedIntent, verifiedOnly, activeNowOnly, singleMomOnly]);
 
-  const resetFilters = () => {
   const applyFilters = () => {
     setMinAge(draftMinAge);
     setMaxAge(draftMaxAge);
-    setActiveNowOnly(activeNowOnly);
     if (typeof setFiltersOpen === 'function') setFiltersOpen(false);
   };
+
+  const resetFilters = () => {
     setSelectedGenders([]);
     setSelectedCountry('All');
     setSearchQuery('');
@@ -1122,7 +1122,7 @@ function DiscoverContent() {
               </label>
               <label className="flex items-center justify-between cursor-pointer py-1">
                 <span className="text-xs font-medium text-[#1C1924]">Active Now / Today</span>
-                <input type="checkbox" checked={activeOnly} onChange={(e) => setActiveOnly(e.target.checked)} className="sr-only peer" />
+                <input type="checkbox" checked={activeNowOnly} onChange={(e) => setActiveNowOnly(e.target.checked)} className="sr-only peer" />
                 <span className="w-10 h-6 rounded-full bg-[#E5E1EC] peer-checked:bg-[#6555b8] relative transition"><span className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition peer-checked:translate-x-4" /></span>
               </label>
             </div>
