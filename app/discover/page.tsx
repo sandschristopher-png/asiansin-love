@@ -214,6 +214,36 @@ function DiscoverContent() {
   };
 
   const [filtersOpen, setFiltersOpen] = useState(false);
+
+  useEffect(() => {
+    if (filtersOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [filtersOpen]);
+  const [drawerDragY, setDrawerDragY] = useState(0);
+  const [isDraggingDrawer, setIsDraggingDrawer] = useState(false);
+  const drawerStartY = useRef(0);
+
+  const handleDrawerTouchStart = (e: React.TouchEvent) => {
+    drawerStartY.current = e.touches[0].clientY;
+    setIsDraggingDrawer(true);
+  };
+
+  const handleDrawerTouchMove = (e: React.TouchEvent) => {
+    const deltaY = e.touches[0].clientY - drawerStartY.current;
+    if (deltaY > 0) setDrawerDragY(deltaY);
+  };
+
+  const handleDrawerTouchEnd = () => {
+    setIsDraggingDrawer(false);
+    if (drawerDragY > 90) setFiltersOpen(false);
+    setDrawerDragY(0);
+  };
   const [isCountryOpen, setIsCountryOpen] = useState(false);
   const [countryFilterQuery, setCountryFilterQuery] = useState('');
   const countryDropdownRef = useRef<HTMLDivElement | null>(null);
@@ -1022,19 +1052,25 @@ function DiscoverContent() {
 
       {/* Filter Drawer */}
       <div 
-        className={'absolute inset-0 z-50 bg-black/60 backdrop-blur-sm flex flex-col justify-end transition-opacity duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ' + (
+        className={'fixed inset-0 z-[100] transition-transform duration-300 ease-in-out ' + (filtersOpen ? 'translate-y-0' : 'translate-y-full pointer-events-none') + (
             filtersOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none'
           )}
         onClick={() => setFiltersOpen(false)}
       >
         <div 
-          className={'w-full bg-white max-h-[85vh] rounded-t-3xl border-t border-[#E5E1EC] flex flex-col shadow-[0_-12px_40px_rgba(28,25,36,0.18)] transform transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ' + (
-              filtersOpen ? 'translate-y-0' : 'translate-y-full'
-            )}
+          className={'w-full max-w-lg mx-auto bg-white min-h-full flex flex-col rounded-t-3xl'}
+          style={drawerDragY > 0 ? { transform: `translateY(${drawerDragY}px)`, transition: 'none' } : undefined}
           onClick={(e) => e.stopPropagation()}
         >
-          <div className="w-10 h-1 bg-[#D1CBD8] rounded-full mx-auto mt-2.5 mb-1 shrink-0" />
-            <div className="flex-1 overflow-y-auto px-5 pb-28 space-y-6 overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          <div
+              onTouchStart={handleDrawerTouchStart}
+              onTouchMove={handleDrawerTouchMove}
+              onTouchEnd={handleDrawerTouchEnd}
+              className="w-full py-3 cursor-grab active:cursor-grabbing flex justify-center items-center shrink-0 touch-none select-none"
+            >
+              <div className="w-10 h-1.5 bg-[#D1CBD8] rounded-full transition-colors" />
+            </div>
+            <div className="flex-1 overflow-y-auto px-5 pt-4 pb-6 space-y-6 overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             <div className="flex items-center justify-between pb-4 border-b border-[#7D7E92]/20">
               <div className="flex items-center gap-2">
                 <SlidersHorizontal className="w-5 h-5 text-[#b2a4d7]" />
@@ -1167,7 +1203,7 @@ function DiscoverContent() {
           </div>
 
           {/* Sticky Action Footer */}
-          <div className="p-4 bg-white/95 backdrop-blur-md border-t border-[#E5E1EC] flex items-center gap-3 pb-24 shrink-0">
+          <div className="p-4 bg-white border-t border-[#E5E1EC] flex items-center gap-3 pb-[max(1.25rem,env(safe-area-inset-bottom))] shrink-0">
             <button
               type="button"
               onClick={resetFilters}
