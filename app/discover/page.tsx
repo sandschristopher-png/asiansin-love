@@ -1034,7 +1034,7 @@ function DiscoverContent() {
           onClick={(e) => e.stopPropagation()}
         >
           <div className="w-10 h-1 bg-[#D1CBD8] rounded-full mx-auto mt-2.5 mb-1 shrink-0" />
-            <div className="flex-1 overflow-y-auto px-5 py-3 space-y-6 overscroll-contain">
+            <div className="flex-1 overflow-y-auto px-5 pb-28 space-y-6 overscroll-contain [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
             <div className="flex items-center justify-between pb-4 border-b border-[#7D7E92]/20">
               <div className="flex items-center gap-2">
                 <SlidersHorizontal className="w-5 h-5 text-[#b2a4d7]" />
@@ -1084,7 +1084,7 @@ function DiscoverContent() {
             <div className="space-y-3">
               <div className="flex justify-between items-center text-xs font-semibold text-[#524B5E]">
                 <span>Age Range</span>
-                <span className="text-xs font-medium text-[#6555b8] bg-[#F3EFFC] px-2.5 py-0.5 rounded-full">{minAge} ÃƒÆ’Ã†â€™Ãƒâ€šÃ‚Â¢ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â€šÂ¬Ã…Â¡Ãƒâ€šÃ‚Â¬ÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€¦Ã¢â‚¬Å“ {maxAge} yrs</span>
+                <span className="text-xs font-medium text-[#6555b8] bg-[#F3EFFC] px-2.5 py-0.5 rounded-full">{minAge} – {maxAge} yrs</span>
               </div>
               <div className="grid grid-cols-2 gap-3">
                 <div>
@@ -1167,7 +1167,7 @@ function DiscoverContent() {
           </div>
 
           {/* Sticky Action Footer */}
-          <div className="p-4 bg-white/95 backdrop-blur-md border-t border-[#E5E1EC] flex items-center gap-3 pb-[max(1rem,env(safe-area-inset-bottom))] shrink-0">
+          <div className="p-4 bg-white/95 backdrop-blur-md border-t border-[#E5E1EC] flex items-center gap-3 pb-24 shrink-0">
             <button
               type="button"
               onClick={resetFilters}
