@@ -258,7 +258,7 @@ export default function MyProfilePage() {
 
   return (
     <div className="flex-1 flex flex-col w-full bg-[#F8F7FA] text-[#1C1924]">
-      <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-6 pb-6 space-y-6">
+      <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-6 pb-32 space-y-6">
         {/* Main Grid: Left preview photo card & Right vitals */}
         <div className="flex flex-col gap-4 w-full" ref={dropdownRef}>
           
