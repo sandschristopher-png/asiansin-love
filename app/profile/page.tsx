@@ -83,6 +83,7 @@ export default function MyProfilePage() {
   
   // Verification State
   const [verificationStatus, setVerificationStatus] = useState<'unverified' | 'pending' | 'verified'>('unverified');
+  const [isPlus, setIsPlus] = useState<boolean>(false);
 
   // Vitals
   const [profession, setProfession] = useState('Software Developer');
@@ -144,6 +145,7 @@ export default function MyProfilePage() {
         if (data.wants_kids) setWantsKids(data.wants_kids);
         if (data.relocation) setRelocation(data.relocation);
         if (data.languages) setUserLanguages(data.languages);
+        if (data.is_plus || data.membership_tier === 'plus' || data.tier === 'Plus') setIsPlus(true);
         if (data.height) {
             const raw = data.height.trim();
             const cmMatch = raw.match(/(d+)s*cm/i);
@@ -350,6 +352,12 @@ export default function MyProfilePage() {
                   </div>
                 </div>
 
+                {/* Plus Badge */}
+                {isPlus && (
+                  <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-bold text-[10px] uppercase tracking-wider shadow-2xs select-none">
+                    PLUS
+                  </span>
+                )}
                 {/* Streamlined Verification Shield */}
                 {verificationStatus === 'verified' ? (
                   <div

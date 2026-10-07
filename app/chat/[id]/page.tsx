@@ -199,6 +199,7 @@ export default function ChatConversationPage() {
 
   const [inputText, setInputText] = useState('');
   const [sentCount, setSentCount] = useState(0);
+  const [isPlus, setIsPlus] = useState(false);
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
   const [showSafetyNotice, setShowSafetyNotice] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
@@ -248,6 +249,14 @@ export default function ChatConversationPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (user) {
         setCurrentUserId(user.id);
+        const { data: myProf } = await supabase
+          .from('profiles')
+          .select('is_plus, membership_tier, tier')
+          .eq('id', user.id)
+          .maybeSingle();
+        if (myProf && (myProf.is_plus || myProf.membership_tier === 'plus' || myProf.tier === 'Plus')) {
+          setIsPlus(true);
+        }
       }
 
       const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(targetId);
@@ -377,7 +386,7 @@ export default function ChatConversationPage() {
 
     const nextCount = sentCount + 1;
     setSentCount(nextCount);
-    if (nextCount >= 5) {
+    if (nextCount >= 5 && !isPlus) {
       setCooldownSeconds(300);
     }
 
@@ -579,10 +588,10 @@ export default function ChatConversationPage() {
         </div>
 
         <UpgradeModal
-          isOpen={showUpgradeModal}
-          onClose={() => setShowUpgradeModal(false)}
-          onSelectPlan={(p) => alert('Plan selected: ' + p)}
-        />
+            isOpen={showUpgradeModal}
+            onClose={() => setShowUpgradeModal(false)}
+            triggerContext="chat"
+          />
         <ReputationModal
           isOpen={showRepModal}
           onClose={() => setShowRepModal(false)}

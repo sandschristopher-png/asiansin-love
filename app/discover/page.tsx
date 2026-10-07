@@ -32,6 +32,8 @@ const RELATIONSHIP_INTENTS = [
 ];
 
 export interface ProfileItem {
+  is_plus?: boolean;
+  membership_tier?: string;
   is_single_mom?: boolean;
   username?: string;
   id: string;
@@ -495,7 +497,7 @@ function DiscoverContent() {
 
         const { data, error } = await supabase
           .from('profiles')
-          .select('id, display_name, full_name, username, age, gender, city, country, avatar_url, photos, is_verified, reputation_score, last_active, intent:relationship_intent, occupation, bio, languages, height, latitude, longitude, location_source')
+          .select('id, display_name, full_name, username, age, gender, city, country, avatar_url, photos, is_verified, is_plus, membership_tier, reputation_score, last_active, intent:relationship_intent, occupation, bio, languages, height, latitude, longitude, location_source')
           .order('created_at', { ascending: false })
           .limit(120);
 
@@ -522,6 +524,8 @@ function DiscoverContent() {
               photos: Array.isArray(row.photos) && row.photos.length > 0 ? row.photos : [row.avatar_url || '/placeholder-avatar.svg'],
               repScore: row.reputation_score || 98,
               verified: Boolean(row.is_verified),
+              is_plus: Boolean(row.is_plus || row.membership_tier === 'plus' || row.tier === 'Plus'),
+              membership_tier: row.membership_tier,
                 latitude: row.latitude,
                 longitude: row.longitude,
                 location_source: row.location_source,
@@ -538,7 +542,8 @@ function DiscoverContent() {
           const liveIds = new Set(liveItems.map(p => p.id));
           const filteredLiveItems = currentAuthUser ? liveItems.filter(p => p.id !== currentAuthUser.id) : liveItems;
             const existingIds = new Set(filteredLiveItems.map(p => p.id));
-            const merged = [...filteredLiveItems, ...DUMMY_BOT_PROFILES.filter(b => !existingIds.has(b.id))];
+            const mergedRaw = [...filteredLiveItems, ...DUMMY_BOT_PROFILES.filter(b => !existingIds.has(b.id))];
+            const merged = mergedRaw.sort((a, b) => (b.is_plus ? 1 : 0) - (a.is_plus ? 1 : 0));
             setProfiles(merged);
         }
       } catch (err) {
@@ -921,6 +926,11 @@ function DiscoverContent() {
                       <h3 className="text-sm font-semibold text-white flex items-center gap-1.5 drop-shadow-md">
                         <span className="truncate max-w-[130px] sm:max-w-none">{displayName}{profile.age ? ', ' + profile.age : ''}</span>
                         {profile.verified && <CheckCircle className="w-3.5 h-3.5 text-[#B2A4D7] shrink-0" />}
+                        {profile.is_plus && (
+                          <span className="px-1.5 py-0.5 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-bold text-[9px] uppercase tracking-wider shadow-xs shrink-0 select-none">
+                            PLUS
+                          </span>
+                        )}
                       </h3>
                       <p className="flex items-center gap-1 text-[11px] sm:text-xs text-white/85 font-medium mt-0.5 drop-shadow-md truncate">
                         <MapPin
