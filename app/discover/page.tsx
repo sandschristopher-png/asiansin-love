@@ -1094,7 +1094,7 @@ function DiscoverContent() {
             <div>
               <label className="text-xs font-semibold text-[#756D82] uppercase tracking-wider block mb-2">Relationship Intent</label>
               <div className="grid grid-cols-2 gap-2">
-                {['All','Marriage','Serious Relationship','Casual Dating','Friendship'].map((intent) => (
+                {['All', 'Marriage & Kids', 'Marriage (Open to Kids)', 'Marriage (No Kids)', 'Life Partner'].map((intent) => (
                   <button key={intent} type="button" onClick={() => setSelectedIntent(intent)}
                     className={'py-2.5 px-3 rounded-xl border text-xs font-medium text-left transition ' + (selectedIntent === intent ? 'bg-[#6555b8] text-white border-[#6555b8]' : 'bg-white text-[#1C1924] border-[#E5E1EC] hover:bg-[#FAF8FD]')}>{intent}</button>
                 ))}
@@ -1120,6 +1120,7 @@ function DiscoverContent() {
             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
           </div>
         </div>
+      )}
 
         {/* Match Celebration Spring Modal */}
       {matchedModalProfile && (
