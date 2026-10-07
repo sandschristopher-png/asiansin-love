@@ -171,7 +171,7 @@ export function Navbar() {
   const pageTitle = getPageTitle();
 
   return (
-    <header className="sticky top-0 z-40 w-full bg-white/75 backdrop-blur-md backdrop-saturate-150 border-b border-[#DDD7E5]/40 shadow-[0_2px_12px_rgba(0,0,0,0.03)] transition-all">
+    <header className="sticky top-0 z-40 w-full bg-white/75 backdrop-blur-md backdrop-saturate-150 border-b border-[#DDD7E5]/40 shadow-[0_2px_12px_rgba(0,0,0,0.03)] transition-all pt-[env(safe-area-inset-top,0px)]">
       <div className="w-full px-4 h-14 flex items-center justify-between relative">
 
         <div className="flex items-center gap-2 min-w-0">
