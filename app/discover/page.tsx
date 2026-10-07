@@ -225,25 +225,7 @@ function DiscoverContent() {
       document.body.style.overflow = "";
     };
   }, [filtersOpen]);
-  const [drawerDragY, setDrawerDragY] = useState(0);
-  const [isDraggingDrawer, setIsDraggingDrawer] = useState(false);
-  const drawerStartY = useRef(0);
-
-  const handleDrawerTouchStart = (e: React.TouchEvent) => {
-    drawerStartY.current = e.touches[0].clientY;
-    setIsDraggingDrawer(true);
-  };
-
-  const handleDrawerTouchMove = (e: React.TouchEvent) => {
-    const deltaY = e.touches[0].clientY - drawerStartY.current;
-    if (deltaY > 0) setDrawerDragY(deltaY);
-  };
-
-  const handleDrawerTouchEnd = () => {
-    setIsDraggingDrawer(false);
-    if (drawerDragY > 90) setFiltersOpen(false);
-    setDrawerDragY(0);
-  };
+  // Drawer drag removed to prevent feed scroll hijacking
   const [isCountryOpen, setIsCountryOpen] = useState(false);
   const [countryFilterQuery, setCountryFilterQuery] = useState('');
   const countryDropdownRef = useRef<HTMLDivElement | null>(null);
@@ -651,7 +633,7 @@ function DiscoverContent() {
             )}
             <button
               type="button"
-              onClick={() => setFiltersOpen(true)}
+              onClick={(e) => { e.stopPropagation(); setFiltersOpen(true); }}
               aria-label="Open Filters"
               className="relative p-1.5 rounded-full text-[#6555b8] hover:bg-[#F3EFFC] transition shrink-0 ml-1"
             >
@@ -1060,11 +1042,16 @@ function DiscoverContent() {
       </main>
 
       {/* Filter Drawer */}
-        {/* Backdrop */}
-        <div className={'fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm transition-opacity duration-300 ' + (filtersOpen ? 'opacity-100 pointer-events-auto' : 'opacity-0 pointer-events-none')} onClick={() => setFiltersOpen(false)} />
-
-        {/* Sheet */}
-        <div className={'fixed inset-x-0 bottom-0 z-[101] w-full max-w-lg mx-auto bg-white rounded-t-3xl shadow-2xl flex flex-col max-h-[85vh] transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] pb-[max(1.25rem,env(safe-area-inset-bottom))] ' + (filtersOpen ? 'translate-y-0' : 'translate-y-full pointer-events-none')}>
+      {filtersOpen && (
+        <>
+          {/* Backdrop */}
+          <div 
+            className="fixed inset-0 z-[120] bg-black/60 backdrop-blur-sm transition-opacity duration-200" 
+            onClick={() => setFiltersOpen(false)} 
+            onTouchStart={() => setFiltersOpen(false)}
+          />
+          {/* Sheet */}
+          <div className="fixed inset-x-0 bottom-0 z-[121] w-full max-w-lg mx-auto bg-white rounded-t-3xl shadow-2xl flex flex-col max-h-[85vh] transition-transform duration-200 ease-out pb-[max(1.5rem,env(safe-area-inset-bottom))]">
           <div className="flex items-center justify-between p-5 pb-3 border-b border-[#E5E1EC] shrink-0">
             <div className="flex items-center gap-2">
               <SlidersHorizontal className="w-5 h-5 text-[#6555b8]" />
