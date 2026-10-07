@@ -3,6 +3,7 @@ export interface VerificationChallenge {
   title: string;
   instruction: string;
   badge: string;
+  image: string;
 }
 
 export const VERIFICATION_CHALLENGES: VerificationChallenge[] = [
@@ -10,25 +11,29 @@ export const VERIFICATION_CHALLENGES: VerificationChallenge[] = [
     id: 'three_fingers',
     title: 'Three Fingers Up',
     instruction: 'Hold up three fingers (index, middle, and ring) beside your cheek in good lighting.',
-    badge: '🤟 3 Fingers',
+    badge: '3 Fingers',
+    image: '/three-fingers.png',
   },
   {
     id: 'peace_sign',
     title: 'Peace Sign Beside Face',
     instruction: 'Make a clear peace sign (two fingers) next to your eyes or cheek with your face fully visible.',
-    badge: '✌️ Peace Sign',
+    badge: 'Peace Sign',
+    image: '/peace.png',
   },
   {
     id: 'thumbs_up_chin',
-    title: 'Thumbs-Up at Chin',
-    instruction: 'Hold a thumbs-up gesture directly alongside your chin facing the camera.',
-    badge: '👍 Thumbs Up',
+    title: 'Fingers at Chin',
+    instruction: 'Hold a hand gesture alongside your chin facing the camera with your face fully visible.',
+    badge: 'Hand at Chin',
+    image: '/chin.png',
   },
   {
     id: 'open_palm',
     title: 'Open Palm Facing Forward',
-    instruction: 'Hold an open flat palm next to your cheek, fingers straight up toward the ceiling.',
-    badge: '✋ Open Palm',
+    instruction: 'Hold an open flat palm next to your cheek, fingers straight up toward the camera.',
+    badge: 'Open Palm',
+    image: '/palm.png',
   },
 ];
 

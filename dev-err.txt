@@ -79,3 +79,6195 @@
     at JSON.parse (<anonymous>) {
   page: '/icon'
 }
+⨯ SyntaxError: Unexpected end of JSON input
+    at JSON.parse (<anonymous>) {
+  page: '/icon'
+}
+⨯ ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx
+⨯ ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⨯ ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⨯ ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⨯ ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⨯ ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⨯ ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⨯ ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⨯ ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⨯ ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⨯ ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⨯ ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⨯ ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⨯ ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error 
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx 
+⨯ ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error 
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx 
+⨯ ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error 
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx 
+⨯ ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error 
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx 
+⨯ ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error 
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⨯ ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx 
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error 
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx 
+⨯ ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error 
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx 
+⨯ ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error 
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx 
+⨯ ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error 
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx 
+⨯ ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error 
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx 
+⨯ ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error 
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx 
+⨯ ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error 
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx 
+⨯ ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error 
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx 
+⨯ ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error 
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx 
+⨯ ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error 
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx 
+⨯ ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error 
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx 
+⨯ ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error 
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx 
+⨯ ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error 
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⨯ ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx 
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error 
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx 
+⨯ ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error 
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx 
+⨯ ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error 
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx 
+⨯ ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error 
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⨯ ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx 
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error 
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx 
+⨯ ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error 
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx 
+⨯ ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error 
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx 
+⨯ ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error 
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx 
+⨯ ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] ./app/discover/page.tsx
+Error:   x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1181:1]
+ 1178 |           </div>
+ 1179 |         </div>
+ 1180 |       )}
+ 1181 |     </div>
+      :       ^^^
+ 1182 |   );
+ 1183 | }
+ 1183 | 
+      `----
+
+Caused by:
+    Syntax Error 
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+[browser] Image with src "/red-flags.png" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+⨯ The requested resource isn't a valid image for /hero-woman-boundary.png received null
+[browser] Image with src "/hero-couple.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/intention.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/verified-nobg.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/woman-stop.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/red-flags.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Can't perform a React state update on a component that hasn't mounted yet. This indicates that you have a side-effect in your render function that asynchronously tries to update the component. Move this work to useEffect instead. 
+⚠ Fast Refresh had to perform a full reload due to a runtime error.
+⨯ ./app/discover/page.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx
+⨯ ./app/discover/page.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx
+⨯ ./app/discover/page.tsx
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+Caused by:
+    Syntax Error
+
+Import trace for requested module:
+./app/discover/page.tsx
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+[browser] Uncaught ModuleBuildError: Module build failed (from ./node_modules/next/dist/build/webpack/loaders/next-swc-loader.js):
+Error:   x Unexpected token. Did you mean `{'}'}` or `&rbrace;`?
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1123:1]
+ 1120 |             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
+ 1121 |           </div>
+ 1122 |         </div>
+ 1123 |       )}
+      :        ^
+ 1124 | 
+ 1125 |         {/* Match Celebration Spring Modal */}
+ 1125 |       {matchedModalProfile && (
+      `----
+  x Expected '</', got 'ident'
+      ,-[C:\Users\sands\asiansin-love\app\discover\page.tsx:1182:1]
+ 1179 |           </div>
+ 1180 |         </div>
+ 1181 |       )}
+ 1182 |     </div>
+      :       ^^^
+ 1183 |   );
+ 1184 | }
+ 1184 | 
+      `----
+
+
+Caused by:
+    Syntax Error
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+⚠ Fast Refresh had to perform a full reload. Read more: https://nextjs.org/docs/messages/fast-refresh-reload
+[browser] Image with src "/intention.png" was detected as the Largest Contentful Paint (LCP). Please add the `loading="eager"` property if this image is above the fold.
+Read more: https://nextjs.org/docs/app/api-reference/components/image#loading
+[browser] Image with src "/hero-couple.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/intention.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/woman-no.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/red-flags.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/verified-nobg.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/hero-couple.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/intention.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/woman-no.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/red-flags.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/verified-nobg.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+⨯ SyntaxError: Unexpected end of JSON input
+    at JSON.parse (<anonymous>) {
+  page: '/icon'
+}
+[browser] Image with src "/hero-couple.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+⨯ Error: Manifest file is empty
+    at ignore-listed frames {
+  page: '/icon'
+}
+[browser] Image with src "/hero-couple.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/hero-couple.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/hero-couple.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/hero-couple.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+⨯ SyntaxError: Unexpected end of JSON input
+    at JSON.parse (<anonymous>) {
+  page: '/icon'
+}
+[browser] Image with src "/hero-couple.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+⨯ SyntaxError: Unexpected end of JSON input
+    at JSON.parse (<anonymous>) {
+  page: '/icon'
+}
+⨯ SyntaxError: Unexpected end of JSON input
+    at JSON.parse (<anonymous>) {
+  page: '/icon'
+}
+⨯ SyntaxError: Unexpected end of JSON input
+    at JSON.parse (<anonymous>) {
+  page: '/icon'
+}
+⨯ SyntaxError: Unexpected end of JSON input
+    at JSON.parse (<anonymous>) {
+  page: '/icon'
+}
+⨯ SyntaxError: Unexpected end of JSON input
+    at JSON.parse (<anonymous>) {
+  page: '/icon'
+}
+⨯ Error: Manifest file is empty
+    at ignore-listed frames {
+  page: '/icon'
+}
+[browser] Image with src "/woman-no.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/red-flags.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/intention.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/verified-nobg.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/hero-couple.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/intention.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/woman-no.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/red-flags.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+⨯ Error: Manifest file is empty
+    at ignore-listed frames {
+  page: '/icon'
+}
+[browser] Image with src "/verified-nobg.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/hero-couple.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/intention.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/woman-no.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/verified-nobg.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/red-flags.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+⨯ SyntaxError: Unexpected end of JSON input
+    at JSON.parse (<anonymous>) {
+  page: '/icon'
+}
+[browser] Image with src "/hero-couple.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/intention.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/woman-no.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/red-flags.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/verified-nobg.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Can't perform a React state update on a component that hasn't mounted yet. This indicates that you have a side-effect in your render function that asynchronously tries to update the component. Move this work to useEffect instead. 
+[browser] Image with src "/hero-couple.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/intention.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/woman-no.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/red-flags.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/verified-nobg.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+⨯ SyntaxError: Unexpected end of JSON input
+    at JSON.parse (<anonymous>) {
+  page: '/icon'
+}
+[browser] Image with src "/hero-couple.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/intention.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/woman-no.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/red-flags.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+[browser] Image with src "/verified-nobg.png" has "fill" but is missing "sizes" prop. Please add it to improve page performance. Read more: https://nextjs.org/docs/api-reference/next/image#sizes
+⨯ SyntaxError: Unexpected end of JSON input
+    at JSON.parse (<anonymous>) {
+  page: '/icon'
+}

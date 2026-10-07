@@ -1,20 +1,17 @@
-﻿import Footer from '@/components/Footer';
-import React from 'react';
-import Link from 'next/link';
-import Image from 'next/image';
-import { ArrowRight, Users, ShieldCheck, CheckCircle2 } from 'lucide-react';
+﻿import Image from "next/image";
+import Link from "next/link";
+import { ShieldCheck, ArrowRight, Users, CheckCircle2 } from "lucide-react";
 
 export default function HomePage() {
   return (
-    <div className="min-h-full flex flex-col bg-white text-[#1C1924]">
-      
+    <div className="min-h-screen bg-white text-[#181126] flex flex-col font-sans selection:bg-[#6555b8]/10 selection:text-[#6555b8]">
       {/* Main Single Column */}
-      <main className="flex-1 w-full max-w-md mx-auto px-5 pt-14 pb-12 flex flex-col space-y-6">
+      <main className="flex-1 w-full max-w-md mx-auto px-5 pt-4 pb-14 flex flex-col space-y-12">
         
-        {/* Story Slide 1: Hero Header with Gradient Flare */}
-        <section className="flex flex-col items-center text-center space-y-3 pt-2">
-          <div className="space-y-2 max-w-xs mx-auto">
-            <h1 className="text-3xl font-bold tracking-tight leading-tight text-[#181126]">
+        {/* Slide 1: Main Hero */}
+        <section className="flex flex-col items-center text-center">
+          <div className="space-y-2 max-w-sm mx-auto">
+            <h1 className="text-3xl font-extrabold tracking-tight leading-tight text-[#181126]">
               Real Partnership, <br />
               <span className="bg-gradient-to-r from-[#5a48ab] via-[#6555b8] to-[#8d75e0] bg-clip-text text-transparent">
                 No Hookup Culture
@@ -25,50 +22,50 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="relative w-64 h-52 sm:w-72 sm:h-60 mt-1">
+          <div className="relative w-64 h-52 sm:w-72 sm:h-56 mt-3 flex items-end justify-center">
             <Image
               src="/hero-couple.png"
               alt="Authentic courtship couple"
               fill
               priority
-              className="object-contain"
+              className="object-contain object-bottom"
             />
           </div>
 
-          <span className="text-[11px] font-semibold tracking-wider uppercase text-[#6555b8]">
+          <span className="text-[10px] font-bold tracking-widest uppercase text-[#6555b8] mt-2 block">
             Grounded Courtship • Real Commitment
           </span>
         </section>
 
         {/* Minimal Stats Strip */}
-        <section className="flex items-center justify-around py-3 border-y border-[#F0ECF5]">
-          <div className="text-center">
-            <div className="text-xl font-bold text-[#6555b8]">100%</div>
-            <div className="text-[11px] font-medium text-[#5B5569]">Pose-Verified Members</div>
+        <section className="flex items-center justify-around py-3.5 bg-[#FAF9FD] rounded-2xl border border-[#F0ECF5]">
+          <div className="text-center px-4">
+            <div className="text-xl font-black text-[#6555b8]">100%</div>
+            <div className="text-[11px] font-medium text-[#5B5569] mt-0.5">Pose-Verified Members</div>
           </div>
-          <div className="h-6 w-px bg-[#E8E2F2]" />
-          <div className="text-center">
-            <div className="text-xl font-bold text-[#6555b8]">Zero Flings</div>
-            <div className="text-[11px] font-medium text-[#5B5569]">Committed Courtship</div>
+          <div className="h-7 w-px bg-[#E8E2F2]" />
+          <div className="text-center px-4">
+            <div className="text-xl font-black text-[#6555b8]">Zero Flings</div>
+            <div className="text-[11px] font-medium text-[#5B5569] mt-0.5">Committed Courtship</div>
           </div>
         </section>
 
-        {/* Story Slide 2: Intention Character */}
-        <section className="flex flex-col items-center text-center space-y-2 pt-2">
-          <div className="relative w-44 h-44">
+        {/* Pillar 1: Clear Intentions */}
+        <section className="flex flex-col items-center text-center">
+          <div className="relative w-56 h-48 flex items-end justify-center">
             <Image
               src="/intention.png"
               alt="Hand over heart intention"
               fill
-              className="object-contain"
+              className="object-contain object-bottom"
             />
           </div>
 
-          <div className="space-y-1 max-w-xs">
-            <span className="text-[10px] font-semibold tracking-wider uppercase text-[#6555b8] block">
+          <div className="space-y-1 max-w-xs mt-2">
+            <span className="text-[10px] font-bold tracking-wider uppercase text-[#6555b8] block">
               Clear Intentions
             </span>
-            <h2 className="text-lg font-semibold text-[#181126]">
+            <h2 className="text-lg font-bold text-[#181126]">
               Connect on What Truly Matters
             </h2>
             <p className="text-xs text-[#5B5569] leading-relaxed">
@@ -77,22 +74,22 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Story Slide 3: Standing Woman Stop Illustration */}
-        <section className="flex flex-col items-center text-center space-y-2 pt-4 border-t border-[#F0ECF5]">
-          <div className="relative w-40 h-52">
+        {/* Pillar 2: Community Boundaries */}
+        <section className="flex flex-col items-center text-center">
+          <div className="relative w-56 h-48 flex items-end justify-center">
             <Image
-              src="/woman-stop.png"
+              src="/woman-no.png"
               alt="Community safety and boundaries"
               fill
-              className="object-contain"
+              className="object-contain object-bottom"
             />
           </div>
 
-          <div className="space-y-1 max-w-xs">
-            <span className="text-[10px] font-semibold tracking-wider uppercase text-rose-600 block">
+          <div className="space-y-1 max-w-xs mt-2">
+            <span className="text-[10px] font-bold tracking-wider uppercase text-rose-600 block">
               Community Boundaries
             </span>
-            <h2 className="text-lg font-semibold text-[#181126]">
+            <h2 className="text-lg font-bold text-[#181126]">
               Not Another Hookup Portal
             </h2>
             <p className="text-xs text-[#5B5569] leading-relaxed">
@@ -101,22 +98,22 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Story Slide: Male Hero Reputation & Red Flags */}
-        <section className="flex flex-col items-center text-center space-y-2 pt-4 border-t border-[#F0ECF5]">
-          <div className="relative w-48 h-52">
+        {/* Pillar 3: Mutual Reputation */}
+        <section className="flex flex-col items-center text-center">
+          <div className="relative w-56 h-48 flex items-end justify-center">
             <Image
               src="/red-flags.png"
               alt="Community reputation and red flag protection"
               fill
-              className="object-contain"
+              className="object-contain object-bottom"
             />
           </div>
 
-          <div className="space-y-1 max-w-xs">
-            <span className="text-[10px] font-semibold tracking-wider uppercase text-[#6555b8] block">
+          <div className="space-y-1 max-w-xs mt-2">
+            <span className="text-[10px] font-bold tracking-wider uppercase text-[#6555b8] block">
               Mutual Reputation
             </span>
-            <h2 className="text-lg font-semibold text-[#181126]">
+            <h2 className="text-lg font-bold text-[#181126]">
               Zero Sob Stories & Scams
             </h2>
             <p className="text-xs text-[#5B5569] leading-relaxed">
@@ -125,36 +122,36 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Story Slide 4: Verified Badge Character */}
-        <section className="flex flex-col items-center text-center space-y-2 pt-4 border-t border-[#F0ECF5]">
-          <div className="relative w-44 h-44">
+        {/* Pillar 4: Safety & Verification */}
+        <section className="flex flex-col items-center text-center">
+          <div className="relative w-56 h-48 flex items-end justify-center">
             <Image
               src="/verified-nobg.png"
               alt="Verified badge"
               fill
-              className="object-contain"
+              className="object-contain object-bottom"
             />
           </div>
 
-          <div className="space-y-1 max-w-xs">
-            <span className="text-[10px] font-semibold tracking-wider uppercase text-emerald-600 block">
+          <div className="space-y-1 max-w-xs mt-2">
+            <span className="text-[10px] font-bold tracking-wider uppercase text-emerald-600 block">
               Safety First
             </span>
-            <h2 className="text-lg font-semibold text-[#181126]">
+            <h2 className="text-lg font-bold text-[#181126]">
               Real People. Hand-Verified.
             </h2>
             <p className="text-xs text-[#5B5569] leading-relaxed">
               No catfishes, bots, or stolen photo sets. Every member completes dynamic pose verification before entering conversations, ensuring mutual trust from the first message.
             </p>
-            <div className="flex items-center justify-center gap-1.5 text-xs font-semibold text-emerald-700 pt-1">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
+            <div className="flex items-center justify-center gap-1.5 text-xs font-semibold text-emerald-700 pt-1.5">
+              <ShieldCheck className="w-4 h-4 text-emerald-600" />
               <span>100% Pose-Verified Standard</span>
             </div>
           </div>
         </section>
 
-        {/* Story Slide 5: Bottom Conversion Block */}
-        <section className="pt-6 border-t border-[#F0ECF5] text-center space-y-4">
+        {/* Bottom Conversion Block */}
+        <section className="pt-2 text-center space-y-4">
           <div className="space-y-1">
             <h3 className="text-xl font-bold tracking-tight text-[#181126]">
               Ready for a genuine connection?
@@ -167,7 +164,7 @@ export default function HomePage() {
           <div className="flex flex-col gap-2.5 w-full pt-1">
             <Link
               href="/login"
-              className="w-full py-3 rounded-full bg-[#6555b8] hover:bg-[#52449e] text-sm font-semibold text-white transition active:scale-95 shadow-md flex items-center justify-center gap-2"
+              className="w-full py-3.5 rounded-full bg-[#6555b8] hover:bg-[#52449e] text-sm font-semibold text-white transition active:scale-95 shadow-md flex items-center justify-center gap-2"
             >
               <span>Start with Intention</span>
               <ArrowRight className="w-4 h-4" />
@@ -175,7 +172,7 @@ export default function HomePage() {
 
             <Link
               href="/discover"
-              className="w-full py-3 rounded-full bg-[#FAF9FD] hover:bg-[#F2EFF8] border border-[#DDD7E5] text-sm font-semibold text-[#1C1924] transition active:scale-95 flex items-center justify-center gap-2"
+              className="w-full py-3.5 rounded-full bg-[#FAF9FD] hover:bg-[#F2EFF8] border border-[#DDD7E5] text-sm font-semibold text-[#1C1924] transition active:scale-95 flex items-center justify-center gap-2"
             >
               <Users className="w-4 h-4 text-[#6555b8]" />
               <span>Discover Who&apos;s Here</span>
@@ -183,14 +180,44 @@ export default function HomePage() {
           </div>
 
           <div className="flex items-center justify-center gap-1.5 text-[11px] text-[#716A82] pt-1">
-            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
+            <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
             <span>Live Gesture Verification • Zero Coin Paywalls</span>
           </div>
         </section>
 
       </main>
 
-      <Footer />
+      {/* Clean Footer */}
+      <footer className="w-full bg-[#181126] text-white py-12 px-6">
+        <div className="max-w-md mx-auto flex flex-col items-center text-center space-y-6">
+          <div className="space-y-1">
+            <span className="text-lg font-bold tracking-tight">asians in love</span>
+            <p className="text-xs text-white/70">
+              Intentional courtship for marriage and lifelong commitment.
+            </p>
+          </div>
+
+          <div className="flex flex-wrap items-center justify-center gap-2 text-[10px] text-white/60">
+            <span className="px-2.5 py-1 rounded-full bg-white/10">Verified Profiles</span>
+            <span className="px-2.5 py-1 rounded-full bg-white/10">Zero Microtransactions</span>
+            <span className="px-2.5 py-1 rounded-full bg-white/10">High Intent</span>
+          </div>
+
+          <div className="flex items-center justify-center gap-4 text-xs text-white/70">
+            <Link href="/pricing" className="hover:text-white transition">Pricing</Link>
+            <span>•</span>
+            <Link href="/community-standards" className="hover:text-white transition">Community Standards</Link>
+            <span>•</span>
+            <Link href="/terms" className="hover:text-white transition">Terms of Use</Link>
+            <span>•</span>
+            <Link href="/privacy" className="hover:text-white transition">Privacy Policy</Link>
+          </div>
+
+          <p className="text-[10px] text-white/40 pt-2">
+            © 2026 Asians in Love. All rights reserved.
+          </p>
+        </div>
+      </footer>
     </div>
   );
 }
