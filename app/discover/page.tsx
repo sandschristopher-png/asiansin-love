@@ -1120,6 +1120,7 @@ function DiscoverContent() {
             <button type="button" onClick={applyFilters} className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow">Apply</button>
           </div>
         </div>
+        </>
       )}
 
         {/* Match Celebration Spring Modal */}
