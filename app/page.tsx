@@ -101,6 +101,30 @@ export default function HomePage() {
           </div>
         </section>
 
+        {/* Story Slide: Male Hero Reputation & Red Flags */}
+        <section className="flex flex-col items-center text-center space-y-2 pt-4 border-t border-[#F0ECF5]">
+          <div className="relative w-48 h-52">
+            <Image
+              src="/red-flags.png"
+              alt="Community reputation and red flag protection"
+              fill
+              className="object-contain"
+            />
+          </div>
+
+          <div className="space-y-1 max-w-xs">
+            <span className="text-[10px] font-semibold tracking-wider uppercase text-[#6555b8] block">
+              Mutual Reputation
+            </span>
+            <h2 className="text-lg font-semibold text-[#181126]">
+              Zero Sob Stories & Scams
+            </h2>
+            <p className="text-xs text-[#5B5569] leading-relaxed">
+              Accountability goes both ways. We actively screen and remove financial sob stories, money requests, allowance scams, and fake profiles—protecting sincere members from transactional games.
+            </p>
+          </div>
+        </section>
+
         {/* Story Slide 4: Verified Badge Character */}
         <section className="flex flex-col items-center text-center space-y-2 pt-4 border-t border-[#F0ECF5]">
           <div className="relative w-44 h-44">
