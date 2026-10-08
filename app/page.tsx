@@ -23,7 +23,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="relative w-56 h-48 flex items-end justify-center">
+          <div className="relative w-80 h-64 sm:w-96 sm:h-72 flex items-end justify-center">
             <Image
               src="/hero-couple.png"
               alt="Authentic courtship couple"
