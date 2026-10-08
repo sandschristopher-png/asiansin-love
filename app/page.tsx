@@ -1,3 +1,4 @@
+import { Footer } from '@/components/Footer';
 ﻿import Image from "next/image";
 import Link from "next/link";
 import { ShieldCheck, ArrowRight, Users, CheckCircle2 } from "lucide-react";
@@ -22,7 +23,7 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="relative w-64 h-52 sm:w-72 sm:h-56 mt-3 flex items-end justify-center">
+          <div className="relative w-56 h-48 flex items-end justify-center">
             <Image
               src="/hero-couple.png"
               alt="Authentic courtship couple"
@@ -124,7 +125,7 @@ export default function HomePage() {
 
         {/* Pillar 4: Safety & Verification */}
         <section className="flex flex-col items-center text-center">
-          <div className="relative w-56 h-48 flex items-end justify-center">
+          <div className="relative w-44 h-36 flex items-end justify-center">
             <Image
               src="/verified-nobg.png"
               alt="Verified badge"
@@ -187,37 +188,7 @@ export default function HomePage() {
 
       </main>
 
-      {/* Clean Footer */}
-      <footer className="w-full bg-[#181126] text-white py-12 px-6">
-        <div className="max-w-md mx-auto flex flex-col items-center text-center space-y-6">
-          <div className="space-y-1">
-            <span className="text-lg font-bold tracking-tight">asians in love</span>
-            <p className="text-xs text-white/70">
-              Intentional courtship for marriage and lifelong commitment.
-            </p>
-          </div>
-
-          <div className="flex flex-wrap items-center justify-center gap-2 text-[10px] text-white/60">
-            <span className="px-2.5 py-1 rounded-full bg-white/10">Verified Profiles</span>
-            <span className="px-2.5 py-1 rounded-full bg-white/10">Zero Microtransactions</span>
-            <span className="px-2.5 py-1 rounded-full bg-white/10">High Intent</span>
-          </div>
-
-          <div className="flex items-center justify-center gap-4 text-xs text-white/70">
-            <Link href="/pricing" className="hover:text-white transition">Pricing</Link>
-            <span>•</span>
-            <Link href="/community-standards" className="hover:text-white transition">Community Standards</Link>
-            <span>•</span>
-            <Link href="/terms" className="hover:text-white transition">Terms of Use</Link>
-            <span>•</span>
-            <Link href="/privacy" className="hover:text-white transition">Privacy Policy</Link>
-          </div>
-
-          <p className="text-[10px] text-white/40 pt-2">
-            © 2026 Asians in Love. All rights reserved.
-          </p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }
