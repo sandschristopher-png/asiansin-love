@@ -1,9 +1,9 @@
-﻿import type { Metadata, Viewport } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Comfortaa, Plus_Jakarta_Sans, Outfit } from 'next/font/google';
 
 const comfortaa = Comfortaa({
   subsets: ['latin'],
-  weight: ['600', '700'],
+  display: 'swap',
   variable: '--font-logo',
 });
 import './globals.css';
@@ -46,4 +46,5 @@ export default function RootLayout({
     </html>
   );
 }
+
 
