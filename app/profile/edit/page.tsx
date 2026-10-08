@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Save, UserCheck, ShieldCheck, Camera, Trash2, Loader2, Plus } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
+import { HandleUpgradeModal } from '@/components/HandleUpgradeModal';
 
 
 export default function EditProfilePage() {
@@ -17,6 +18,7 @@ export default function EditProfilePage() {
 
   const [initialHasUsername, setInitialHasUsername] = useState(false);
   const [username, setUsername] = useState('');
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [usernameStatus, setUsernameStatus] = useState<'idle' | 'checking' | 'available' | 'taken'>('idle');
 
   const [formData, setFormData] = useState({
@@ -382,9 +384,7 @@ export default function EditProfilePage() {
             {initialHasUsername ? (
               <div className="flex items-center justify-between">
                 <span className="font-mono text-sm text-[#1C1924] font-medium">@{username}</span>
-                <span className="text-xs px-2.5 py-1 rounded-lg bg-[#FFFFFF] border border-[#9A8CC3]/35 text-[#9A8CC3]">
-                  Handle Locked
-                </span>
+                <button type="button" onClick={() => setShowUpgradeModal(true)} className="text-xs px-2.5 py-1 rounded-lg bg-[#F3EFFC] border border-[#DDD7E5] text-[#6555b8] hover:bg-[#EAE0F5] transition flex items-center gap-1.5 font-medium cursor-pointer" title="Change handle with AIL+"><span>Handle Locked</span><span className="text-[10px] font-bold bg-[#6555b8] text-white px-1.5 py-[2px] rounded-full">AIL+</span></button>
               </div>
             ) : (
               <div>
@@ -515,6 +515,8 @@ export default function EditProfilePage() {
           </button>
         </form>
       </div>
+
+      <HandleUpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />
     </div>
   );
 }
