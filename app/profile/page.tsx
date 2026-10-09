@@ -86,6 +86,7 @@ export default function MyProfilePage() {
   const [verificationStatus, setVerificationStatus] = useState<'unverified' | 'pending' | 'verified'>('unverified');
   const [isPlus, setIsPlus] = useState<boolean>(false);
   const [repScore, setRepScore] = useState<number | null>(null);
+  const [isRepModalOpen, setIsRepModalOpen] = useState(false);
 
   // Vitals
   const [profession, setProfession] = useState('Software Developer');
@@ -468,13 +469,7 @@ export default function MyProfilePage() {
             </div>
 
                         {/* REPUTATION SCORE CARD */}
-            <RepScoreCard
-              score={repScore ?? undefined}
-              isVerified={verificationStatus === 'verified'}
-              isPlus={isPlus}
-              photoCount={photos.length}
-              hasBio={Boolean(bio && bio.length > 20)}
-            />
+            <RepScoreCard score={repScore ?? 100} />
 
             {/* ABOUT ME */}
             <div className="p-5 sm:p-6 rounded-3xl bg-white border border-[#E5E1EC] shadow-xs space-y-3">

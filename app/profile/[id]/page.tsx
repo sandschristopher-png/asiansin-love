@@ -9,6 +9,7 @@ import {
   Bookmark, User, Sparkles, HeartHandshake, Baby, Ruler, Wine, Cigarette
 } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
+import RepScoreCard from '@/components/RepScoreCard';
 
 
 export default function PublicProfilePage() {
@@ -82,29 +83,38 @@ export default function PublicProfilePage() {
     if (!message.trim() || sending) return;
 
     setSending(true);
+    setSentSuccess(false);
+
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
+      const res = await fetch('/api/messages', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          receiverId: profile.id,
+          content: message.trim(),
+        }),
+      });
+
+      if (res.status === 401) {
         router.push('/login');
         return;
       }
 
-      const { error } = await supabase.from('messages').insert({
-        sender_id: user.id,
-        receiver_id: profile.id,
-        content: message.trim(),
-      });
+      const data = await res.json();
 
-      if (error) throw error;
+      if (!res.ok) {
+        alert(data.error || 'Message could not be sent.');
+        return;
+      }
+
       setSentSuccess(true);
       setMessage('');
-    } catch (err) {
-      console.error('Failed to send message:', err);
+    } catch (err: any) {
+      console.error('Error sending message:', err);
     } finally {
       setSending(false);
     }
   };
-
   if (loading) {
     return (
       <div className="min-h-screen bg-[#F8F7FA] flex items-center justify-center p-6">
@@ -155,10 +165,7 @@ export default function PublicProfilePage() {
             <ArrowLeft className="w-4 h-4" />
             <span>Back to Discover</span>
           </Link>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F3EFFC] border border-[#DDD7E5] text-xs font-medium text-[#6555B8]">
-            <ShieldCheck className="w-3.5 h-3.5 text-[#6555B8]" />
-            <span>{profile.rep_score}% Reputation</span>
-          </div>
+          
         </div>
 
         {/* Hero Card: Photo + Identity + Direct Actions */}
@@ -324,7 +331,10 @@ export default function PublicProfilePage() {
           </form>
         </div>
 
-        {/* About Me Card */}
+        {/* Reputation Score Card */}
+          <RepScoreCard score={profile.rep_score ?? 100} />
+
+          {/* About Me Card */}
         <div className="p-4 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-1.5">
           <h2 className="text-xs font-medium uppercase tracking-wider text-[#756D82]">About Me</h2>
           <p className="text-xs sm:text-sm text-[#1C1924] leading-relaxed">

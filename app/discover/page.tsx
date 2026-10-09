@@ -117,9 +117,9 @@ function DiscoverCardPhotoCarousel({
       {/* Top Badges */}
       <div className="absolute top-2.5 inset-x-2.5 flex items-center justify-between z-20 pointer-events-none">
         {/* Rep Score Badge on Upper Left */}
-        <div className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-black/45 backdrop-blur-md border border-white/20 text-[10px] font-semibold text-[#E5DEFF] shadow-xs">
-          <ShieldCheck className="w-3 h-3 text-[#A78BFA] shrink-0" />
-          <span>{repScore || 100}%</span>
+        <div className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-black/45 backdrop-blur-md border border-white/20 text-[10px] font-semibold text-white/90 shadow-xs">
+          <ShieldCheck className="w-3 h-3 text-[#B2A4D7] shrink-0" />
+          <span>{repScore || 100} Rep</span>
         </div>
 
         {/* Breathing Online Dot */}
@@ -497,14 +497,15 @@ function DiscoverContent() {
 
         const { data, error } = await supabase
           .from('profiles')
-          .select('id, display_name, full_name, username, age, gender, city, country, avatar_url, photos, is_verified, is_plus, membership_tier, reputation_score, last_active, intent:relationship_intent, occupation, bio, languages, height, latitude, longitude, location_source')
+          .select('id, display_name, full_name, username, age, gender, city, country, avatar_url, photos, is_verified, is_plus, reputation_score, last_active, intent:relationship_intent, occupation, bio, languages, height, latitude, longitude, location_source')
           .order('created_at', { ascending: false })
           .limit(120);
 
         if (error) {
-          console.error('Error fetching live profiles:', error);
-          return;
-        }
+            console.error('Error fetching live profiles:', error);
+            setProfiles(DUMMY_BOT_PROFILES);
+            return;
+          }
 
         if (data && data.length > 0) {
           const liveItems: ProfileItem[] = data
@@ -524,8 +525,8 @@ function DiscoverContent() {
               photos: Array.isArray(row.photos) && row.photos.length > 0 ? row.photos : [row.avatar_url || '/placeholder-avatar.svg'],
               repScore: row.reputation_score || 98,
               verified: Boolean(row.is_verified),
-              is_plus: Boolean(row.is_plus || row.membership_tier === 'plus' || row.tier === 'Plus'),
-              membership_tier: row.membership_tier,
+              is_plus: Boolean(row.is_plus),
+              
                 latitude: row.latitude,
                 longitude: row.longitude,
                 location_source: row.location_source,
@@ -545,7 +546,9 @@ function DiscoverContent() {
             const mergedRaw = [...filteredLiveItems, ...DUMMY_BOT_PROFILES.filter(b => !existingIds.has(b.id))];
             const merged = mergedRaw.sort((a, b) => (b.is_plus ? 1 : 0) - (a.is_plus ? 1 : 0));
             setProfiles(merged);
-        }
+          } else {
+            setProfiles(DUMMY_BOT_PROFILES);
+          }
       } catch (err) {
           console.error('Failed to load discovery profiles:', err);
         } finally {

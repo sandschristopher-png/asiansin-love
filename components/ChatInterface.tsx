@@ -1,9 +1,9 @@
-﻿'use client';
+'use client';
 
 import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabaseClient';
-import { CheckCircle, ArrowLeft, Send } from 'lucide-react';
+import { CheckCircle, ArrowLeft, Send, AlertTriangle } from 'lucide-react';
 
 export interface TargetUserProfile {
   id: string;
@@ -27,12 +27,13 @@ export interface TargetUserProfile {
 export interface MessageItem {
   id: string;
   sender_id: string;
+  receiver_id: string;
   recipient_id?: string;
-  receiver_id?: string;
   content: string;
   created_at: string;
   is_read?: boolean;
   read?: boolean;
+  is_quarantined?: boolean;
 }
 
 interface ChatInterfaceProps {
@@ -46,6 +47,7 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
   const [input, setInput] = useState('');
   const [isSending, setIsSending] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [warningMessage, setWarningMessage] = useState<string | null>(null);
   const [feedbackSuccess, setFeedbackSuccess] = useState<string | null>(null);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -64,17 +66,21 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
 
       const unreadIds = messages
         .filter((m) => {
-          const recId = m.recipient_id || m.receiver_id;
+          const recId = m.receiver_id || m.recipient_id;
           const readStatus = m.is_read ?? m.read;
           return m.sender_id === targetUser.id && recId === currentUserId && !readStatus;
         })
         .map((m) => m.id);
 
       if (unreadIds.length > 0) {
-        await supabase
-          .from('messages')
-          .update({ is_read: true, read: true })
-          .in('id', unreadIds);
+        try {
+          await supabase
+            .from('messages')
+            .update({ is_read: true })
+            .in('id', unreadIds);
+        } catch {
+          // Non-blocking catch
+        }
       }
     }
     markAsRead();
@@ -91,19 +97,28 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
           schema: 'public',
           table: 'messages',
         },
-        (payload) => {
-          if (payload.eventType === 'INSERT') {
+        (payload: any) => {
+          const eventType = payload.eventType || payload.event;
+
+          if (eventType === 'INSERT') {
             const rawMsg = payload.new as any;
-            const recId = rawMsg.recipient_id || rawMsg.receiver_id;
+
+            // Hide quarantined messages from the recipient, allow sender to view
+            if (rawMsg.is_quarantined && rawMsg.sender_id !== currentUserId) {
+              return;
+            }
+
+            const recId = rawMsg.receiver_id || rawMsg.recipient_id;
             const newMsg: MessageItem = {
               id: rawMsg.id,
               sender_id: rawMsg.sender_id,
-              recipient_id: recId,
               receiver_id: recId,
+              recipient_id: recId,
               content: rawMsg.content,
               created_at: rawMsg.created_at,
               is_read: rawMsg.is_read ?? rawMsg.read ?? false,
               read: rawMsg.is_read ?? rawMsg.read ?? false,
+              is_quarantined: rawMsg.is_quarantined ?? false,
             };
 
             const isRelevant =
@@ -116,16 +131,18 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
                 return [...prev, newMsg];
               });
             }
-          } else if (payload.eventType === 'UPDATE') {
+          } else if (eventType === 'UPDATE') {
             const updatedRaw = payload.new as any;
+            const recId = updatedRaw.receiver_id || updatedRaw.recipient_id;
+
             setMessages((prev) =>
               prev.map((m) =>
                 m.id === updatedRaw.id
                   ? {
                       ...m,
                       ...updatedRaw,
-                      recipient_id: updatedRaw.recipient_id || updatedRaw.receiver_id,
-                      receiver_id: updatedRaw.recipient_id || updatedRaw.receiver_id,
+                      receiver_id: recId,
+                      recipient_id: recId,
                       is_read: updatedRaw.is_read ?? updatedRaw.read,
                       read: updatedRaw.is_read ?? updatedRaw.read,
                     }
@@ -151,12 +168,12 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
     setErrorMessage(null);
 
     try {
-      const res = await fetch('/api/messages/send', {
+      const res = await fetch('/api/messages', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          senderId: currentUserId,
           receiverId: targetUser.id,
+          recipientId: targetUser.id,
           content: cleanContent,
         }),
       });
@@ -166,16 +183,27 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
         setErrorMessage(data.error || 'Message could not be sent.');
       } else {
         setInput('');
+
+        if (data.warning) {
+          setWarningMessage(data.warning);
+        } else {
+          setWarningMessage(null);
+        }
+
         if (data.message) {
+          const recId = data.message.receiver_id || data.message.recipient_id;
           const formatted: MessageItem = {
             id: data.message.id,
             sender_id: data.message.sender_id,
-            recipient_id: data.message.recipient_id || data.message.receiver_id,
-            receiver_id: data.message.recipient_id || data.message.receiver_id,
+            receiver_id: recId,
+            recipient_id: recId,
             content: data.message.content,
             created_at: data.message.created_at,
             is_read: data.message.is_read ?? data.message.read ?? false,
+            read: data.message.is_read ?? data.message.read ?? false,
+            is_quarantined: data.message.is_quarantined ?? false,
           };
+
           setMessages((prev) => {
             if (prev.some((m) => m.id === formatted.id)) return prev;
             return [...prev, formatted];
@@ -239,6 +267,22 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
             {errorMessage}
           </div>
         )}
+        {warningMessage && (
+          <div className="p-3 bg-amber-50 border border-amber-200 rounded-2xl text-amber-850 text-xs font-medium shadow-xs flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+              <span>{warningMessage}</span>
+            </div>
+            <button
+              type="button"
+              onClick={() => setWarningMessage(null)}
+              className="text-amber-700 hover:text-amber-950 font-bold px-1.5 text-sm"
+              aria-label="Dismiss warning"
+            >
+              ×
+            </button>
+          </div>
+        )}
         {feedbackSuccess && (
           <div className="p-3 bg-emerald-50 border border-emerald-200 rounded-2xl text-emerald-700 text-xs text-center font-medium shadow-xs">
             {feedbackSuccess}
@@ -255,11 +299,15 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
           messages.map((msg) => {
             const isMe = msg.sender_id === currentUserId;
             return (
-              <div key={msg.id} className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} animate-[pairsPageIn_240ms_cubic-bezier(0.16,1,0.3,1)_both] will-change-transform`}>
+              <div
+                key={msg.id}
+                className={`flex flex-col ${isMe ? 'items-end' : 'items-start'} animate-[pairsPageIn_240ms_cubic-bezier(0.16,1,0.3,1)_both] will-change-transform`}
+              >
                 <div
                   className={`max-w-[78%] px-4 py-2.5 rounded-2xl text-xs sm:text-sm leading-relaxed shadow-xs ${
                     isMe
-                      ? 'bg-[#6555B8] text-white rounded-br-xs shadow-[0_2px_10px_rgba(101,85,184,0.22)] active:scale-[0.99] transition-transform' : 'bg-white text-[#1C1924] border border-[#E5E1EC] rounded-bl-xs shadow-[0_2px_8px_rgba(0,0,0,0.04)] active:scale-[0.99] transition-transform'
+                      ? 'bg-[#6555B8] text-white rounded-br-xs shadow-[0_2px_10px_rgba(101,85,184,0.22)] active:scale-[0.99] transition-transform'
+                      : 'bg-white text-[#1C1924] border border-[#E5E1EC] rounded-bl-xs shadow-[0_2px_8px_rgba(0,0,0,0.04)] active:scale-[0.99] transition-transform'
                   }`}
                 >
                   {msg.content}
@@ -300,4 +348,3 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
 }
 
 export default ChatInterface;
-
