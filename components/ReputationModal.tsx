@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React from 'react';
 import { 
@@ -154,7 +154,7 @@ export default function ReputationModal({
             {peerTags.map((tag, idx) => (
               <span
                 key={idx}
-                className="px-2.5 py-1 rounded-full bg-[#2D2F4C]/80 border border-[#9A8CC3]/25 text-[11px] text-[#1C1924]"
+                className="px-2.5 py-1 rounded-full bg-[#2D2F4C]/80 border border-[#9A8CC3]/25 text-[11px] text-[#D5CEE5]"
               >
                 {tag}
               </span>
