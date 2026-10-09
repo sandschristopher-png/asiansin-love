@@ -1152,8 +1152,8 @@ function DiscoverContent() {
               isModalClosing ? 'scale-90 opacity-0' : 'scale-100 opacity-100'
             }`}
           >
-            <div className="w-12 h-12 rounded-full bg-rose-50 flex items-center justify-center text-2xl mb-3 shadow-inner">
-              ÃƒÆ’Ã‚Â¢Ãƒâ€¦Ã¢â‚¬Å“Ãƒâ€šÃ‚Â¨
+            <div className="w-12 h-12 rounded-full bg-rose-50 flex items-center justify-center mb-3 shadow-inner">
+              <Heart className="w-6 h-6 text-rose-500 fill-rose-500" />
             </div>
             
             <h3 className="text-xl font-bold text-[#1C1924] tracking-tight">
