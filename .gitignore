@@ -47,3 +47,11 @@ next-env.d.ts
 dev-*.txt
 check_discover.cjs
 stripe.exe
+
+# Playwright & Midscene Artifacts
+test-results/
+playwright-report/
+blob-report/
+.cache/
+
+midscene_run/
