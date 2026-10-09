@@ -297,13 +297,13 @@ export default function ChatConversationPage() {
 
         const { data: remoteMsgs } = await supabase
           .from('messages')
-          .select('id, sender_id, receiver_id, content, created_at')
+          .select('id, sender_id, receiver_id, content, created_at, is_quarantined')
           .or(`and(sender_id.eq.${user.id},receiver_id.eq.${targetUuid}),and(sender_id.eq.${targetUuid},receiver_id.eq.${user.id})`)
           .order('created_at', { ascending: true });
 
         if (remoteMsgs && remoteMsgs.length > 0) {
           setMessages(
-            remoteMsgs.map((m) => ({
+            remoteMsgs.filter((m: any) => m.sender_id === user.id || !m.is_quarantined).map((m: any) => ({
               id: m.id,
               sender: m.sender_id === user.id ? 'me' : 'them',
               text: m.content,
@@ -335,6 +335,7 @@ export default function ChatConversationPage() {
           const isFromTarget = newRow.sender_id === resolvedTargetUuid && recId === currentUserId;
 
           if (isFromTarget) {
+            if (newRow.is_quarantined) return;
             setMessages((prev) => {
               if (prev.some((m) => m.id === newRow.id)) return prev;
               return [
@@ -392,11 +393,18 @@ export default function ChatConversationPage() {
 
     if (resolvedTargetUuid && currentUserId !== 'guest-user') {
       try {
-        await supabase.from('messages').insert({
-          sender_id: currentUserId,
-          receiver_id: resolvedTargetUuid,
-          content: sanitized,
+        const res = await fetch('/api/messages', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            receiverId: resolvedTargetUuid,
+            content: sanitized,
+          }),
         });
+        if (!res.ok) {
+          const errData = await res.json().catch(() => ({}));
+          console.error('Message delivery failed:', errData.error);
+        }
       } catch (err) {
         console.error('Failed to save message to Supabase:', err);
       }
