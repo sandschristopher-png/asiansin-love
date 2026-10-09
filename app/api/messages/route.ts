@@ -52,9 +52,18 @@ export async function POST(req: Request) {
     const senderId = user.id;
 
     // Service client for atomic RPCs and quarantine writes
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!serviceRoleKey) {
+      console.error('Server configuration error: SUPABASE_SERVICE_ROLE_KEY is missing.');
+      return NextResponse.json(
+        { error: 'Unable to deliver message right now. Please try again in a moment.' },
+        { status: 500 }
+      );
+    }
+
     const serviceClient = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
-      process.env.SUPABASE_SERVICE_ROLE_KEY!
+      serviceRoleKey
     );
 
     // 2. Moderation Evaluation

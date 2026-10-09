@@ -22,6 +22,7 @@ export default function PublicProfilePage() {
   const [message, setMessage] = useState('');
   const [sending, setSending] = useState(false);
   const [sentSuccess, setSentSuccess] = useState(false);
+  const [sendError, setSendError] = useState<string | null>(null);
   const [isSaved, setIsSaved] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [currentPhotoIdx, setCurrentPhotoIdx] = useState(0);
@@ -314,6 +315,11 @@ export default function PublicProfilePage() {
               {sentSuccess ? (
                 <span className="text-xs font-medium text-emerald-600 flex items-center gap-1">
                   <ShieldCheck className="w-3.5 h-3.5" /> Sent successfully!
+                </span>
+              ) : sendError ? (
+                <span className="text-xs font-medium text-rose-500 flex items-center gap-1 max-w-[200px] truncate" title={sendError}>
+                  <svg className="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  {sendError}
                 </span>
               ) : (
                 <span className="text-[11px] text-[#756D82]">Polite intros build trust</span>
