@@ -5,6 +5,7 @@ import { CheckCircle2, AlertCircle, Loader2, Crown, User, LogOut } from 'lucide-
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
+import { HandleUpgradeModal } from '@/components/HandleUpgradeModal';
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -14,6 +15,7 @@ export default function SettingsPage() {
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
+  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
 
   useEffect(() => {
     async function loadUserProfile() {
@@ -48,7 +50,6 @@ export default function SettingsPage() {
   const handleSaveHandle = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage(null);
-    setSavedSuccess(false);
 
     if (!userId) {
       setErrorMessage('You must be signed in to update your handle.');
@@ -86,8 +87,8 @@ export default function SettingsPage() {
       if (!res.ok) {
         if (res.status === 409 || data.error?.includes('taken')) {
           setErrorMessage('That username handle is already taken. Please pick another.');
-        } else if (res.status === 403 && data.requires_payment) {
-          setErrorMessage(data.error || 'Changing an established handle requires Asians in Love Plus.');
+        } else if (res.status === 403 && (data.requires_payment || data.error?.includes('Plus') || data.error?.includes('AIL+'))) {
+          setShowUpgradeModal(true);
         } else {
           setErrorMessage(data.error || 'Failed to update username handle.');
         }
@@ -171,18 +172,23 @@ export default function SettingsPage() {
             <Crown className="w-4 h-4 text-amber-500" />
           </div>
           <div className="space-y-1 flex-1">
-            <h3 className="text-xs sm:text-sm font-medium text-[#1C1924]">
-              Premium Member Features
-            </h3>
+            <div className="flex items-center gap-1.5">
+              <h3 className="text-xs sm:text-sm font-bold text-[#1C1924]">
+                AIL+ Membership
+              </h3>
+              <span className="text-[9px] font-bold uppercase tracking-wider bg-[#6555B8] text-white px-1.5 py-0.2 rounded-full">
+                $19.99/mo
+              </span>
+            </div>
             <p className="text-xs text-[#524B5E] leading-relaxed">
-              Direct international translation, prioritized introduction badges, and unlimited verified passport filters.
+              Travel Passport Mode, custom profile handles, verified badges, and unlimited direct messaging.
             </p>
             <div className="pt-1.5">
               <Link
                 href="/pricing"
                 className="inline-block px-3.5 py-1 rounded-full bg-white border border-[#DDD7E5] hover:border-[#6555b8] text-xs font-semibold text-[#6555b8] hover:bg-[#F3EFFC] transition shadow-xs"
               >
-                View Membership Tiers &rarr;
+                Explore AIL+ Privileges &rarr;
               </Link>
             </div>
           </div>
@@ -207,6 +213,12 @@ export default function SettingsPage() {
           </button>
         </div>
       </div>
+
+      {/* Handle Upgrade Fallback Modal */}
+      <HandleUpgradeModal
+        isOpen={showUpgradeModal}
+        onClose={() => setShowUpgradeModal(false)}
+      />
     </main>
   );
 }

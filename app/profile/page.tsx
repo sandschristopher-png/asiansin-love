@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 import { Footer } from '@/components/Footer';
+import RepScoreCard from '@/components/RepScoreCard';
 
 const QUICK_LANGUAGES = ['English', 'Tagalog', 'Thai', 'Japanese', 'Vietnamese', 'Mandarin', 'Spanish', 'Korean'];
 
@@ -84,6 +85,7 @@ export default function MyProfilePage() {
   // Verification State
   const [verificationStatus, setVerificationStatus] = useState<'unverified' | 'pending' | 'verified'>('unverified');
   const [isPlus, setIsPlus] = useState<boolean>(false);
+  const [repScore, setRepScore] = useState<number | null>(null);
 
   // Vitals
   const [profession, setProfession] = useState('Software Developer');
@@ -146,6 +148,7 @@ export default function MyProfilePage() {
         if (data.relocation) setRelocation(data.relocation);
         if (data.languages) setUserLanguages(data.languages);
         if (data.is_plus || data.membership_tier === 'plus' || data.tier === 'Plus') setIsPlus(true);
+        if (typeof data.reputation_score === 'number') setRepScore(data.reputation_score);
         if (data.height) {
             const raw = data.height.trim();
             const cmMatch = raw.match(/(d+)s*cm/i);
@@ -463,6 +466,15 @@ export default function MyProfilePage() {
                 </button>
               )}
             </div>
+
+                        {/* REPUTATION SCORE CARD */}
+            <RepScoreCard
+              score={repScore ?? undefined}
+              isVerified={verificationStatus === 'verified'}
+              isPlus={isPlus}
+              photoCount={photos.length}
+              hasBio={Boolean(bio && bio.length > 20)}
+            />
 
             {/* ABOUT ME */}
             <div className="p-5 sm:p-6 rounded-3xl bg-white border border-[#E5E1EC] shadow-xs space-y-3">

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, Save, UserCheck, ShieldCheck, Camera, Trash2, Loader2, Plus } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
-import { HandleUpgradeModal } from '@/components/HandleUpgradeModal';
+import UpgradeModal from '@/components/UpgradeModal';
 
 
 export default function EditProfilePage() {
@@ -516,7 +516,7 @@ export default function EditProfilePage() {
         </form>
       </div>
 
-      <HandleUpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} />
+      <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} triggerContext='handle' />
     </div>
   );
 }

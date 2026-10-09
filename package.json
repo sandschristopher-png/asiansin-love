@@ -21,6 +21,8 @@
     "stripe": "^22.6.2"
   },
   "devDependencies": {
+    "@midscene/web": "^1.14.0",
+    "@playwright/test": "^1.64.0",
     "@tailwindcss/postcss": "^4.3.3",
     "@types/node": "^20",
     "@types/react": "^19",
