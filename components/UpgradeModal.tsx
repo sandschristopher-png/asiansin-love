@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React from 'react';
 import { X, MessageSquare, Zap, ShieldCheck, Sparkles, Check, Lock } from 'lucide-react';
@@ -73,15 +73,9 @@ export default function UpgradeModal({
         <div className="relative w-full pt-4 px-4 flex justify-center items-center">
           <div className="relative w-full h-44 sm:h-48 rounded-2xl overflow-hidden bg-white flex items-center justify-center border border-neutral-100 shadow-xs">
             <img
-              src="/plus-upgrade.png"
+              src="/ail-plus.png"
               alt="Asians in Love Plus Upgrade"
               className="w-full h-full object-contain"
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                if (!target.src.endsWith('/plus-upgrade.jpg')) {
-                  target.src = '/plus-upgrade.jpg';
-                }
-              }}
             />
           </div>
         </div>

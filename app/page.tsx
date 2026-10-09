@@ -1,6 +1,6 @@
-import { Footer } from '@/components/Footer';
-﻿import Image from "next/image";
+import Image from "next/image";
 import Link from "next/link";
+import { Footer } from "@/components/Footer";
 import { ShieldCheck, ArrowRight, Users, CheckCircle2 } from "lucide-react";
 
 export default function HomePage() {
