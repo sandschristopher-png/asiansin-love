@@ -42,3 +42,8 @@ next-env.d.ts
 
 *.bak
 *.sent_tab_bak
+
+# Local Dev & Tooling Binaries
+dev-*.txt
+check_discover.cjs
+stripe.exe
