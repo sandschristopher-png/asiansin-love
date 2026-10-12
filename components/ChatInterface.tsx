@@ -135,20 +135,38 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
             const updatedRaw = payload.new as any;
             const recId = updatedRaw.receiver_id || updatedRaw.recipient_id;
 
-            setMessages((prev) =>
-              prev.map((m) =>
-                m.id === updatedRaw.id
-                  ? {
-                      ...m,
-                      ...updatedRaw,
-                      receiver_id: recId,
-                      recipient_id: recId,
-                      is_read: updatedRaw.is_read ?? updatedRaw.read,
-                      read: updatedRaw.is_read ?? updatedRaw.read,
-                    }
-                  : m
-              )
-            );
+            const isRelevant =
+              (updatedRaw.sender_id === currentUserId && recId === targetUser.id) ||
+              (updatedRaw.sender_id === targetUser.id && recId === currentUserId);
+
+            if (!isRelevant) return;
+
+            if (updatedRaw.is_quarantined && updatedRaw.sender_id !== currentUserId) {
+              setMessages((prev) => prev.filter((m) => m.id !== updatedRaw.id));
+              return;
+            }
+
+            const formattedMsg: MessageItem = {
+              id: updatedRaw.id,
+              sender_id: updatedRaw.sender_id,
+              receiver_id: recId,
+              recipient_id: recId,
+              content: updatedRaw.content,
+              created_at: updatedRaw.created_at,
+              is_read: updatedRaw.is_read ?? updatedRaw.read ?? false,
+              read: updatedRaw.is_read ?? updatedRaw.read ?? false,
+              is_quarantined: updatedRaw.is_quarantined ?? false,
+            };
+
+            setMessages((prev) => {
+              const exists = prev.some((m) => m.id === updatedRaw.id);
+              if (exists) {
+                return prev.map((m) => (m.id === updatedRaw.id ? formattedMsg : m));
+              }
+              return [...prev, formattedMsg].sort(
+                (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+              );
+            });
           }
         }
       )

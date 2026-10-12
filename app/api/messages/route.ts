@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+﻿import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
 import { createClient } from '@supabase/supabase-js';
@@ -74,7 +74,7 @@ export async function POST(req: Request) {
         p_user_id: senderId,
         p_deduction: mod.totalDeduction,
         p_action: mod.recommendedAction,
-        p_category: mod.violations.map((v) => v.category).join(','),
+        p_category: mod.violations.map((v: any) => v.category).join(','),
         p_flagged: mod.flaggedPhrases.join(' | ').slice(0, 300),
       });
 
