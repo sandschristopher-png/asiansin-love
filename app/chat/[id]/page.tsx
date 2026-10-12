@@ -143,6 +143,7 @@ interface ChatMessage {
   sender: 'me' | 'them';
   text: string;
   time: string;
+  warning?: string;
 }
 
 function sanitizeMessage(text: string): { sanitized: string; wasMasked: boolean } {
@@ -404,6 +405,21 @@ export default function ChatConversationPage() {
         if (!res.ok) {
           const errData = await res.json().catch(() => ({}));
           console.error('Message delivery failed:', errData.error);
+        } else {
+          const resData = await res.json().catch(() => null);
+          if (resData?.warning) {
+            setMessages((prev) =>
+              prev.map((m) =>
+                m.id === tempId
+                  ? { ...m, warning: resData.warning, id: resData.message?.id || m.id }
+                  : m
+              )
+            );
+          } else if (resData?.message?.id) {
+            setMessages((prev) =>
+              prev.map((m) => (m.id === tempId ? { ...m, id: resData.message.id } : m))
+            );
+          }
         }
       } catch (err) {
         console.error('Failed to save message to Supabase:', err);
