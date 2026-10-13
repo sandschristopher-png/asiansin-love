@@ -144,6 +144,7 @@ interface ChatMessage {
   text: string;
   time: string;
   warning?: string;
+  read?: boolean;
 }
 
 function sanitizeMessage(text: string): { sanitized: string; wasMasked: boolean } {
