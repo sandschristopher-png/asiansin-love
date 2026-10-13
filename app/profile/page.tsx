@@ -79,8 +79,8 @@ export default function MyProfilePage() {
   const [longitude, setLongitude] = useState<number | null>(null);
   const [isLocating, setIsLocating] = useState<boolean>(false);
   const [locError, setLocError] = useState<string | null>(null);
-  const [bio, setBio] = useState('Down-to-earth tech professional with a passion for creative projects, travel, and honest conversations. Looking for someone grounded who values intentional courtship and a genuine future.');
-  const [lookingFor, setLookingFor] = useState('A sincere, patient, and grounded partner who values family, communicates openly, and is ready for an intentional cross-border commitment.');
+  const [bio, setBio] = useState('');
+  const [lookingFor, setLookingFor] = useState('');
   
   // Verification State
   const [verificationStatus, setVerificationStatus] = useState<'unverified' | 'pending' | 'verified'>('unverified');
@@ -449,7 +449,7 @@ export default function MyProfilePage() {
                   <button
                     type="button"
                     onClick={handleSave}
-                    disabled={saving}
+                    disabled={saving || bio.trim().length < 50}
                     className="flex-1 py-2.5 rounded-2xl bg-[#6555B8] text-white text-xs font-semibold hover:bg-[#5243A3] transition active:scale-98 flex items-center justify-center gap-1.5"
                   >
                     {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
@@ -476,7 +476,7 @@ export default function MyProfilePage() {
               <div className="flex items-center justify-between">
                 <span className="text-[11px] font-bold text-[#6555B8] uppercase tracking-wider">About Me</span>
                 {isEditing && (
-                  <span className="text-[11px] font-medium text-[#8C849B]">{bio.length} / 500</span>
+                  <span className="text-[11px] font-medium text-[#8C849B]">{bio.trim().length < 50 ? `${bio.trim().length} / 50 min characters` : `${bio.length} / 500`}</span>
                 )}
               </div>
               {isEditing ? (
