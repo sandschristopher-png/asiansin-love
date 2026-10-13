@@ -18,25 +18,25 @@ const POSES: Record<VerificationPose, PoseMetadata> = {
     id: 'peace',
     label: 'Peace Sign Beside Cheek',
     instruction: 'Hold up two fingers in a V sign right beside your cheek or temple.',
-    imageSrc: '/images/verification/pose-peace.jpg',
+    imageSrc: '/images/verification/pose-peace.png',
   },
   chin: {
     id: 'chin',
     label: 'Finger on Chin',
     instruction: 'Rest your index finger under your chin while looking directly into the camera.',
-    imageSrc: '/images/verification/pose-chin.jpg',
+    imageSrc: '/images/verification/pose-chin.png',
   },
   palm: {
     id: 'palm',
     label: 'Open Palm Facing Forward',
     instruction: 'Hold up an open palm facing forward next to your ear.',
-    imageSrc: '/images/verification/pose-palm.jpg',
+    imageSrc: '/images/verification/pose-palm.png',
   },
   three: {
     id: 'three',
     label: 'Three Fingers Up',
     instruction: 'Hold up three fingers (index, middle, ring) upright beside your face.',
-    imageSrc: '/images/verification/pose-three.jpg',
+    imageSrc: '/images/verification/pose-three.png',
   },
 };
 
@@ -220,7 +220,7 @@ export default function GestureVerifyModal({ isOpen, onClose, onSuccess }: Gestu
           <div className="py-6 text-center space-y-4">
             <div className="relative w-36 h-36 mx-auto rounded-2xl overflow-hidden border border-[#DDD7E5] bg-white shadow-xs">
               <Image
-                src="/images/verification/status-approved.jpg"
+                src="/images/verification/status-approved.png"
                 alt="Verification Approved"
                 fill
                 className="object-contain"
@@ -244,7 +244,7 @@ export default function GestureVerifyModal({ isOpen, onClose, onSuccess }: Gestu
           <div className="py-6 text-center space-y-4">
             <div className="relative w-36 h-36 mx-auto rounded-2xl overflow-hidden border border-[#E05375]/30 bg-white shadow-xs">
               <Image
-                src="/images/verification/status-denied.jpg"
+                src="/images/verification/status-denied.png"
                 alt="Verification Denied"
                 fill
                 className="object-contain"
