@@ -4,7 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
-import { ArrowLeft, Send, Zap, ShieldAlert, CheckCheck, Clock } from 'lucide-react';
+import { ArrowLeft, Send, Zap, ShieldAlert, Check, CheckCheck, Clock } from 'lucide-react';
 import UpgradeModal from '@/components/UpgradeModal';
 import ReputationModal from '@/components/ReputationModal';
 import { supabase } from '@/lib/supabaseClient';
@@ -225,22 +225,24 @@ export default function ChatConversationPage() {
   useEffect(() => {
     const markMessagesAsRead = async () => {
       const { data: { session } } = await supabase.auth.getSession();
-      if (!session || !(routeParams)) return;
+      if (!session || !resolvedTargetUuid) return;
 
       try {
         await supabase
           .from('messages')
           .update({ read: true, read_at: new Date().toISOString() })
-          .eq('recipient_id', session.user.id)
-          .eq('sender_id', routeParams)
+          .eq('receiver_id', session.user.id)
+          .eq('sender_id', resolvedTargetUuid)
           .eq('read', false);
       } catch (err) {
         // Silent catch for read receipt updates
       }
     };
 
-    markMessagesAsRead();
-  }, [routeParams, messages.length]);
+    if (resolvedTargetUuid) {
+      markMessagesAsRead();
+    }
+  }, [resolvedTargetUuid, messages.length]);
 
   return () => clearInterval(interval);
   }, [cooldownSeconds]);
@@ -298,7 +300,7 @@ export default function ChatConversationPage() {
 
         const { data: remoteMsgs } = await supabase
           .from('messages')
-          .select('id, sender_id, receiver_id, content, created_at, is_quarantined')
+          .select('id, sender_id, receiver_id, content, created_at, is_quarantined, read')
           .or(`and(sender_id.eq.${user.id},receiver_id.eq.${targetUuid}),and(sender_id.eq.${targetUuid},receiver_id.eq.${user.id})`)
           .order('created_at', { ascending: true });
 
@@ -309,6 +311,7 @@ export default function ChatConversationPage() {
               sender: m.sender_id === user.id ? 'me' : 'them',
               text: m.content,
               time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              read: Boolean(m.read),
             }))
           );
         }
@@ -328,9 +331,16 @@ export default function ChatConversationPage() {
       .channel(channelName)
       .on(
         'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'messages' },
+        { event: '*', schema: 'public', table: 'messages' },
         (payload) => {
           if (!isMounted) return;
+          if (payload.eventType === 'UPDATE') {
+            const updated = payload.new as any;
+            setMessages((prev) =>
+              prev.map((m) => (m.id === updated.id ? { ...m, read: Boolean(updated.read) } : m))
+            );
+            return;
+          }
           const newRow = payload.new as any;
           const recId = newRow.recipient_id || newRow.receiver_id;
           const isFromTarget = newRow.sender_id === resolvedTargetUuid && recId === currentUserId;
@@ -381,6 +391,7 @@ export default function ChatConversationPage() {
       sender: 'me',
       text: sanitized,
       time: 'Just now',
+        read: false,
     };
 
     setMessages((prev) => [...prev, myNewMsg]);
@@ -565,7 +576,13 @@ export default function ChatConversationPage() {
               </div>
               <div className="flex items-center gap-1 mt-1 text-[10px] text-[#8B7E9F]">
                 <span>{msg.time}</span>
-                {msg.sender === 'me' && <CheckCheck className="w-3 h-3 text-[#653C87]" />}
+                {msg.sender === 'me' && (
+                    msg.read ? (
+                      <CheckCheck className="w-3 h-3 text-[#6555B8]" />
+                    ) : (
+                      <Check className="w-3 h-3 text-[#8B7E9F]" />
+                    )
+                  )}
               </div>
             </div>
           ))}

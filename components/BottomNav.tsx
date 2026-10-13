@@ -47,7 +47,7 @@ export function BottomNav() {
       const { count } = await supabase
         .from('messages')
         .select('*', { count: 'exact', head: true })
-        .eq('recipient_id', uid)
+        .eq('receiver_id', uid)
         .eq('read', false);
 
       if (isCancelled) return;
@@ -62,14 +62,14 @@ export function BottomNav() {
             event: '*',
             schema: 'public',
             table: 'messages',
-            filter: `recipient_id=eq.${uid}`,
+            filter: `receiver_id=eq.${uid}`,
           },
           async () => {
             if (isCancelled) return;
             const { count: freshCount } = await supabase
               .from('messages')
               .select('*', { count: 'exact', head: true })
-              .eq('recipient_id', uid)
+              .eq('receiver_id', uid)
               .eq('read', false);
             if (!isCancelled) {
               setUnreadCount(freshCount || 0);
