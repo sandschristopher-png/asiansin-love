@@ -34,19 +34,13 @@ export default function MessagesPage() {
           return;
         }
 
-        const { data, error } = await supabase
-          .from('conversations')
-          .select(`
-            id,
-            last_message,
-            updated_at,
-            participant_1,
-            participant_2
-          `)
-          .or(`participant_1.eq.${user.id},participant_2.eq.${user.id}`)
-          .order('updated_at', { ascending: false });
+        const { data: msgs, error } = await supabase
+          .from('messages')
+          .select('id, sender_id, receiver_id, content, created_at')
+          .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
+          .order('created_at', { ascending: false });
 
-        if (error || !data || data.length === 0) {
+        if (error || !msgs || msgs.length === 0) {
           if (isMounted) {
             setConversations([]);
             setLoading(false);
@@ -54,13 +48,27 @@ export default function MessagesPage() {
           return;
         }
 
-        const partnerIds = Array.from(
-          new Set(
-            data.map((c: any) =>
-              c.participant_1 === user.id ? c.participant_2 : c.participant_1
-            )
-          )
-        );
+        const partnerMap = new Map();
+        for (const m of (msgs as any[])) {
+          const partnerId = m.sender_id === user.id ? m.receiver_id : m.sender_id;
+          if (!partnerId) continue;
+          if (!partnerMap.has(partnerId)) {
+            partnerMap.set(partnerId, {
+              lastMessage: m.content || 'Sent a message',
+              lastMessageAt: m.created_at,
+              messageId: m.id,
+            });
+          }
+        }
+
+        const partnerIds = Array.from(partnerMap.keys());
+        if (partnerIds.length === 0) {
+          if (isMounted) {
+            setConversations([]);
+            setLoading(false);
+          }
+          return;
+        }
 
         const { data: profilesData } = await supabase
           .from('profiles')
@@ -69,17 +77,17 @@ export default function MessagesPage() {
 
         const profileMap = new Map((profilesData || []).map((p: any) => [p.id, p]));
 
-        const formatted: ConversationItem[] = data.map((conv: any) => {
-          const partnerId = conv.participant_1 === user.id ? conv.participant_2 : conv.participant_1;
+        const formatted: ConversationItem[] = partnerIds.map((partnerId) => {
+          const info = partnerMap.get(partnerId)!;
           const partner = profileMap.get(partnerId) as any;
           return {
-            id: conv.id,
+            id: info.messageId,
             recipientId: partnerId,
             name: partner?.display_name || partner?.full_name || partner?.username || 'Member',
             avatarUrl: partner?.avatar_url || '/placeholder-avatar.svg',
             repScore: partner?.reputation_score || 95,
-            lastMessage: conv.last_message || 'Started a conversation',
-            lastMessageAt: conv.updated_at,
+            lastMessage: info.lastMessage,
+            lastMessageAt: info.lastMessageAt,
             unreadCount: 0,
           };
         });
@@ -110,7 +118,7 @@ export default function MessagesPage() {
         .channel(channelName)
         .on(
           'postgres_changes',
-          { event: '*', schema: 'public', table: 'conversations' },
+          { event: '*', schema: 'public', table: 'messages' },
           () => {
             if (isMounted) loadConversations();
           }
