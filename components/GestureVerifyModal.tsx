@@ -1,244 +1,364 @@
-﻿'use client';
+'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Image from 'next/image';
-import { supabase } from '@/lib/supabaseClient';
-import { validateAndCompressVerificationImage } from '@/lib/verification';
-import { Camera, RefreshCw, X, ShieldCheck } from 'lucide-react';
+import { Camera, RefreshCw, X, ShieldCheck, AlertCircle } from 'lucide-react';
+
+export type VerificationPose = 'peace' | 'chin' | 'palm' | 'three';
+
+interface PoseMetadata {
+  id: VerificationPose;
+  label: string;
+  instruction: string;
+  imageSrc: string;
+}
+
+const POSES: Record<VerificationPose, PoseMetadata> = {
+  peace: {
+    id: 'peace',
+    label: 'Peace Sign Beside Cheek',
+    instruction: 'Hold up two fingers in a V sign right beside your cheek or temple.',
+    imageSrc: '/images/verification/pose-peace.jpg',
+  },
+  chin: {
+    id: 'chin',
+    label: 'Finger on Chin',
+    instruction: 'Rest your index finger under your chin while looking directly into the camera.',
+    imageSrc: '/images/verification/pose-chin.jpg',
+  },
+  palm: {
+    id: 'palm',
+    label: 'Open Palm Facing Forward',
+    instruction: 'Hold up an open palm facing forward next to your ear.',
+    imageSrc: '/images/verification/pose-palm.jpg',
+  },
+  three: {
+    id: 'three',
+    label: 'Three Fingers Up',
+    instruction: 'Hold up three fingers (index, middle, ring) upright beside your face.',
+    imageSrc: '/images/verification/pose-three.jpg',
+  },
+};
+
+const POSE_KEYS: VerificationPose[] = ['peace', 'chin', 'palm', 'three'];
 
 interface GestureVerifyModalProps {
   isOpen: boolean;
-  userId: string;
-  userFullName: string;
   onClose: () => void;
-  onSuccess: () => void;
+  onSuccess?: () => void;
 }
 
-interface GestureOption {
-  text: string;
-  image: string;
-}
+export default function GestureVerifyModal({ isOpen, onClose, onSuccess }: GestureVerifyModalProps) {
+  const [currentPose, setCurrentPose] = useState<PoseMetadata>(POSES.peace);
+  const [stream, setStream] = useState<MediaStream | null>(null);
+  const [cameraError, setCameraError] = useState<string | null>(null);
+  const [capturedBlob, setCapturedBlob] = useState<Blob | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(null);
+  const [status, setStatus] = useState<'idle' | 'submitting' | 'approved' | 'denied'>('idle');
+  const [statusMessage, setStatusMessage] = useState('');
 
-// Exactly matches backend route ALLOWED_POSES whitelist
-const VERIFICATION_GESTURES: GestureOption[] = [
-  { text: 'Touch your left index finger to your chin', image: '/chin.png' },
-  { text: 'Make a peace sign next to your right eye', image: '/peace.png' },
-  { text: 'Hold 3 fingers up beside your left ear', image: '/three-fingers.png' },
-  { text: 'Touch your thumb to the tip of your nose', image: '/palm.png' }
-];
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
 
-export function GestureVerifyModal({
-  isOpen,
-  userId,
-  userFullName,
-  onClose,
-  onSuccess,
-}: GestureVerifyModalProps) {
-  const [selectedGesture] = useState<GestureOption>(() => 
-    VERIFICATION_GESTURES[Math.floor(Math.random() * VERIFICATION_GESTURES.length)]
-  );
-  const [file, setFile] = useState<File | null>(null);
-  const [preview, setPreview] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [validationError, setValidationError] = useState<string | null>(null);
+  // Pick a random pose on open
+  useEffect(() => {
+    if (isOpen) {
+      const randomPose = POSE_KEYS[Math.floor(Math.random() * POSE_KEYS.length)];
+      setCurrentPose(POSES[randomPose]);
+      setCapturedBlob(null);
+      setPreviewUrl(null);
+      setStatus('idle');
+      setStatusMessage('');
+      startCamera();
+    } else {
+      stopCamera();
+    }
+  }, [isOpen]);
+
+  const stopCamera = useCallback(() => {
+    if (stream) {
+      stream.getTracks().forEach((track) => track.stop());
+      setStream(null);
+    }
+  }, [stream]);
+
+  const startCamera = useCallback(async () => {
+    setCameraError(null);
+    try {
+      if (stream) {
+        stream.getTracks().forEach((track) => track.stop());
+      }
+
+      const mediaStream = await navigator.mediaDevices.getUserMedia({
+        video: {
+          facingMode: 'user',
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+        },
+        audio: false,
+      });
+
+      setStream(mediaStream);
+      if (videoRef.current) {
+        videoRef.current.srcObject = mediaStream;
+      }
+    } catch (err: any) {
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+        setCameraError('Camera permission was denied. Please allow camera access in your browser to verify.');
+      } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+        setCameraError('No camera found on this device. Live camera is required for verification.');
+      } else {
+        setCameraError('Unable to open camera stream. Please check browser permissions.');
+      }
+    }
+  }, [stream]);
+
+  useEffect(() => {
+    return () => {
+      stopCamera();
+      if (previewUrl) {
+        URL.revokeObjectURL(previewUrl);
+      }
+    };
+  }, [stopCamera, previewUrl]);
+
+  // Capture frame directly from WebRTC video stream (Zero File Upload)
+  const takePhoto = () => {
+    if (!videoRef.current || !canvasRef.current) return;
+
+    const video = videoRef.current;
+    const canvas = canvasRef.current;
+
+    canvas.width = video.videoWidth || 640;
+    canvas.height = video.videoHeight || 480;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Flip horizontally to mirror the natural camera reflection
+    ctx.translate(canvas.width, 0);
+    ctx.scale(-1, 1);
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+    canvas.toBlob(
+      (blob) => {
+        if (blob) {
+          setCapturedBlob(blob);
+          setPreviewUrl(URL.createObjectURL(blob));
+        }
+      },
+      'image/jpeg',
+      0.92
+    );
+  };
+
+  const retakePhoto = () => {
+    if (previewUrl) {
+      URL.revokeObjectURL(previewUrl);
+    }
+    setCapturedBlob(null);
+    setPreviewUrl(null);
+    setStatus('idle');
+    setStatusMessage('');
+  };
+
+  const submitVerification = async () => {
+    if (!capturedBlob) return;
+
+    setStatus('submitting');
+    try {
+      const formData = new FormData();
+      formData.append('photo', capturedBlob, 'verification.jpg');
+      formData.append('pose', currentPose.id);
+
+      const res = await fetch('/api/verify', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (res.ok && data.success) {
+        setStatus('approved');
+        setStatusMessage(data.message || 'Pose confirmed! Your profile is now verified.');
+        stopCamera();
+        if (onSuccess) {
+          setTimeout(onSuccess, 1800);
+        }
+      } else {
+        setStatus('denied');
+        setStatusMessage(data.error || 'The gesture could not be matched. Please match the pose illustration and try again.');
+      }
+    } catch {
+      setStatus('denied');
+      setStatusMessage('Verification request failed. Please check your connection and retry.');
+    }
+  };
 
   if (!isOpen) return null;
 
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selected = e.target.files?.[0];
-    if (selected) {
-      setFile(selected);
-      setPreview(URL.createObjectURL(selected));
-      setValidationError(null);
-    }
-  };
-
-  const handleRetake = () => {
-    setFile(null);
-    setPreview(null);
-    setValidationError(null);
-  };
-
-  const handleUpload = async () => {
-    if (!file) {
-      alert('Please take or upload a photo matching the pose.');
-      return;
-    }
-
-    setIsSubmitting(true);
-    setValidationError(null);
-
-    try {
-      // 1. Client-side quality & luminance validation + compression
-      const validation = await validateAndCompressVerificationImage(file);
-      if (!validation.valid || !validation.blob) {
-        setValidationError(validation.error || 'Image does not meet quality requirements.');
-        setIsSubmitting(false);
-        return;
-      }
-
-      // 2. Upload compressed image directly to Supabase avatars bucket
-      const filePath = `verifications/${userId}/${Date.now()}.jpg`;
-      const { error: uploadErr } = await supabase.storage
-        .from('avatars')
-        .upload(filePath, validation.blob, {
-          contentType: 'image/jpeg',
-          upsert: true,
-        });
-
-      if (uploadErr) {
-        throw new Error(`Upload failed: ${uploadErr.message}`);
-      }
-
-      const { data: publicUrlData } = supabase.storage
-        .from('avatars')
-        .getPublicUrl(filePath);
-
-      const selfieUrl = publicUrlData.publicUrl;
-
-      // 3. Post JSON payload to backend verification submission route
-      const res = await fetch('/api/verify/submit', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          poseRequested: selectedGesture.text,
-          selfieUrl,
-        }),
-      });
-
-      if (res.ok) {
-        onSuccess();
-        onClose();
-      } else {
-        const data = await res.json().catch(() => ({}));
-        alert(data.error || 'Submission failed.');
-      }
-    } catch (err: any) {
-      alert(err.message || 'Network error submitting verification.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-      {/* Constrained Dialog Shell */}
-      <div className="relative w-full max-w-sm rounded-3xl bg-[#1F2036] border border-[#3E4066] shadow-2xl flex flex-col max-h-[88dvh] overflow-hidden text-white">
-        
-        {/* Pinned Header */}
-        <div className="shrink-0 px-6 pt-5 pb-3 border-b border-[#303354] flex items-center justify-between">
-          <div>
-            <div className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wider text-[#A798D6]">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Live Verification</span>
-            </div>
-            <h2 className="text-lg font-bold text-white mt-0.5">
-              Confirm Your Identity
-            </h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+      <div className="relative w-full max-w-md bg-white rounded-3xl border border-[#DDD7E5] shadow-2xl overflow-hidden p-5 space-y-4">
+        {/* Modal Header */}
+        <div className="flex items-center justify-between pb-3 border-b border-[#F0EDF5]">
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="w-5 h-5 text-[#6555B8]" />
+            <h2 className="text-sm font-bold text-[#1C1924]">Member Pose Verification</h2>
           </div>
           <button
+            type="button"
             onClick={onClose}
-            className="p-1.5 rounded-full hover:bg-white/10 text-white/60 hover:text-white transition"
+            className="p-1 text-[#8C849B] hover:text-[#1C1924] rounded-full hover:bg-[#FAF8FD] transition"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
-        {/* Scrollable Midsection */}
-        <div className="flex-1 overflow-y-auto px-6 py-4 space-y-4">
-          
-          {/* Pose Instruction Card with Illustration */}
-          <div className="p-3.5 rounded-2xl bg-[#292B48] border border-[#3E426D] flex items-center gap-3">
-            <div className="relative w-14 h-14 shrink-0 rounded-xl bg-white/5 border border-white/10 overflow-hidden flex items-center justify-center">
+        {/* Status: Approved View */}
+        {status === 'approved' ? (
+          <div className="py-6 text-center space-y-4">
+            <div className="relative w-36 h-36 mx-auto rounded-2xl overflow-hidden border border-[#DDD7E5] bg-white shadow-xs">
               <Image
-                src={selectedGesture.image}
-                alt={selectedGesture.text}
+                src="/images/verification/status-approved.jpg"
+                alt="Verification Approved"
                 fill
-                className="object-contain p-1"
+                className="object-contain"
+                priority
               />
             </div>
-            <div className="flex-1">
-              <span className="text-[10px] uppercase font-semibold text-[#A798D6] block">
-                Match This Pose
-              </span>
-              <p className="text-xs font-medium text-white leading-snug mt-0.5">
-                {selectedGesture.text}
-              </p>
+            <div className="space-y-1">
+              <h3 className="text-base font-bold text-[#1C1924]">Verification Complete</h3>
+              <p className="text-xs text-[#524B5E] max-w-xs mx-auto">{statusMessage}</p>
             </div>
+            <button
+              type="button"
+              onClick={onClose}
+              className="w-full py-3 rounded-2xl bg-[#6555B8] text-white text-xs font-bold hover:bg-[#53449E] transition"
+            >
+              Done
+            </button>
           </div>
-
-          {/* Selfie Capture Box */}
-          <div className="relative w-full h-44 rounded-2xl bg-[#171828] border border-dashed border-[#474A75] overflow-hidden flex flex-col items-center justify-center">
-            {preview ? (
-              <>
-                <img
-                  src={preview}
-                  alt="Selfie preview"
-                  className="w-full h-full object-cover"
+        ) : status === 'denied' ? (
+          /* Status: Denied View */
+          <div className="py-6 text-center space-y-4">
+            <div className="relative w-36 h-36 mx-auto rounded-2xl overflow-hidden border border-[#E05375]/30 bg-white shadow-xs">
+              <Image
+                src="/images/verification/status-denied.jpg"
+                alt="Verification Denied"
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
+            <div className="space-y-1">
+              <h3 className="text-base font-bold text-[#1C1924]">Pose Not Recognized</h3>
+              <p className="text-xs text-[#524B5E] max-w-xs mx-auto">{statusMessage}</p>
+            </div>
+            <button
+              type="button"
+              onClick={retakePhoto}
+              className="w-full flex items-center justify-center gap-1.5 py-3 rounded-2xl bg-[#6555B8] text-white text-xs font-bold hover:bg-[#53449E] transition"
+            >
+              <RefreshCw className="w-4 h-4" />
+              Try Again
+            </button>
+          </div>
+        ) : (
+          /* Active Verification Flow */
+          <>
+            {/* Pose Instruction Card */}
+            <div className="flex items-center gap-3 bg-[#FAF8FD] border border-[#DDD7E5] rounded-2xl p-3">
+              <div className="relative w-20 h-20 shrink-0 rounded-xl overflow-hidden bg-white border border-[#DDD7E5]">
+                <Image
+                  src={currentPose.imageSrc}
+                  alt={currentPose.label}
+                  fill
+                  className="object-contain"
+                  priority
                 />
+              </div>
+              <div className="space-y-1 text-left">
+                <span className="inline-block bg-[#6555B8] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
+                  Required Pose
+                </span>
+                <p className="text-xs font-bold text-[#1C1924]">{currentPose.label}</p>
+                <p className="text-[11px] text-[#524B5E] leading-snug">{currentPose.instruction}</p>
+              </div>
+            </div>
+
+            {/* Camera Viewport / Photo Snapshot */}
+            <div className="relative w-full aspect-4/3 rounded-2xl overflow-hidden bg-black flex items-center justify-center border border-[#DDD7E5]">
+              {cameraError ? (
+                <div className="p-6 text-center text-white space-y-3">
+                  <AlertCircle className="w-8 h-8 text-[#E05375] mx-auto" />
+                  <p className="text-xs text-gray-200">{cameraError}</p>
+                  <button
+                    type="button"
+                    onClick={startCamera}
+                    className="px-4 py-2 bg-[#6555B8] text-white text-xs font-bold rounded-xl"
+                  >
+                    Retry Camera
+                  </button>
+                </div>
+              ) : capturedBlob && previewUrl ? (
+                <img src={previewUrl} alt="Captured verification" className="w-full h-full object-cover" />
+              ) : (
+                <>
+                  <video
+                    ref={videoRef}
+                    autoPlay
+                    playsInline
+                    muted
+                    className="w-full h-full object-cover -scale-x-100"
+                  />
+                  <div className="absolute inset-0 border-2 border-dashed border-white/40 rounded-2xl pointer-events-none m-3 flex items-center justify-center">
+                    <span className="text-[11px] text-white/90 bg-black/50 px-3 py-1 rounded-full backdrop-blur-xs">
+                      Align head & match gesture
+                    </span>
+                  </div>
+                </>
+              )}
+            </div>
+
+            <canvas ref={canvasRef} className="hidden" />
+
+            {/* Action Buttons */}
+            <div className="pt-1">
+              {capturedBlob ? (
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={retakePhoto}
+                    disabled={status === 'submitting'}
+                    className="flex-1 flex items-center justify-center gap-1.5 py-3 rounded-2xl border border-[#DDD7E5] text-xs font-bold text-[#524B5E] hover:bg-[#FAF8FD] transition disabled:opacity-50"
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                    Retake
+                  </button>
+                  <button
+                    type="button"
+                    onClick={submitVerification}
+                    disabled={status === 'submitting'}
+                    className="flex-1 flex items-center justify-center gap-1.5 py-3 rounded-2xl bg-[#6555B8] text-white text-xs font-bold hover:bg-[#53449E] transition disabled:opacity-50"
+                  >
+                    {status === 'submitting' ? 'Verifying...' : 'Submit Verification'}
+                  </button>
+                </div>
+              ) : (
                 <button
                   type="button"
-                  onClick={handleRetake}
-                  className="absolute bottom-2.5 right-2.5 px-3 py-1.5 rounded-xl bg-black/70 hover:bg-black text-[11px] font-medium text-white backdrop-blur-md flex items-center gap-1.5 border border-white/20 transition"
+                  onClick={takePhoto}
+                  disabled={Boolean(cameraError)}
+                  className="w-full flex items-center justify-center gap-2 py-3.5 rounded-2xl bg-[#6555B8] text-white text-xs font-bold hover:bg-[#53449E] transition shadow-md disabled:opacity-50"
                 >
-                  <RefreshCw className="w-3 h-3" />
-                  <span>Retake</span>
+                  <Camera className="w-4 h-4" />
+                  Take Photo Now
                 </button>
-              </>
-            ) : (
-              <label className="cursor-pointer w-full h-full flex flex-col items-center justify-center p-4 hover:bg-white/5 transition text-center">
-                <div className="w-11 h-11 rounded-full bg-[#6555b8]/20 flex items-center justify-center text-[#9B89D8] mb-2 border border-[#6555b8]/40">
-                  <Camera className="w-5 h-5" />
-                </div>
-                <span className="text-xs font-semibold text-white block">
-                  Tap to Take Live Selfie
-                </span>
-                <span className="text-[10px] text-white/50 block mt-0.5">
-                  Ensure your face and hand pose are clear
-                </span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  capture="user"
-                  onChange={handleFileChange}
-                  className="hidden"
-                />
-              </label>
-            )}
-          </div>
-
-          {validationError && (
-            <div className="p-3 rounded-xl bg-rose-500/20 border border-rose-500/30 text-rose-200 text-xs text-center leading-relaxed">
-              {validationError}
+              )}
             </div>
-          )}
-        </div>
-
-        {/* Pinned Action Footer */}
-        <div className="shrink-0 px-6 py-4 border-t border-[#303354] bg-[#1F2036] flex flex-col gap-2">
-          <button
-            onClick={handleUpload}
-            disabled={!file || isSubmitting}
-            className="w-full py-3 rounded-xl bg-[#6555b8] hover:bg-[#52449e] disabled:opacity-40 disabled:hover:bg-[#6555b8] text-white font-semibold text-xs transition active:scale-[0.98] shadow-md flex items-center justify-center gap-2"
-          >
-            {isSubmitting ? (
-              <>
-                <RefreshCw className="w-4 h-4 animate-spin" />
-                <span>Verifying & Uploading...</span>
-              </>
-            ) : (
-              <span>Submit Verification</span>
-            )}
-          </button>
-          
-          <button
-            onClick={onClose}
-            className="w-full py-2 text-center text-xs font-medium text-white/50 hover:text-white transition"
-          >
-            Cancel
-          </button>
-        </div>
-
+          </>
+        )}
       </div>
     </div>
   );
