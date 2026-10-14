@@ -33,9 +33,9 @@ const RELATIONSHIP_INTENTS = [
 
 const DISCOVERY_MODES = [
   { id: 'all', label: 'All' },
-  { id: 'marriage', label: '💍 Marriage-Minded' },
-  { id: 'verified', label: '🛡️ Verified Only' },
-  { id: 'new', label: '✨ New Members' },
+  { id: 'marriage', label: '💍 Marriage' },
+  { id: 'verified', label: '🛡️ Verified' },
+  { id: 'new', label: '✨ New' },
 ] as const;
 type DiscoveryModeId = (typeof DISCOVERY_MODES)[number]['id'];
 
@@ -194,6 +194,46 @@ function DiscoverCardPhotoCarousel({
 
 function DiscoverContent() {
   const [discoveryMode, setDiscoveryMode] = useState<DiscoveryModeId>('all');
+
+  // Mouse wheel and drag-to-scroll handlers for horizontal pill track
+  const pillTrackRef = useRef<HTMLDivElement>(null);
+  const isPillDraggingRef = useRef(false);
+  const pillStartXRef = useRef(0);
+  const pillScrollLeftRef = useRef(0);
+  const [hasPillDragged, setHasPillDragged] = useState(false);
+
+  const handlePillMouseDown = (e: React.MouseEvent) => {
+    const slider = pillTrackRef.current;
+    if (!slider) return;
+    isPillDraggingRef.current = true;
+    setHasPillDragged(false);
+    pillStartXRef.current = e.pageX - slider.offsetLeft;
+    pillScrollLeftRef.current = slider.scrollLeft;
+  };
+
+  const handlePillMouseLeaveOrUp = () => {
+    isPillDraggingRef.current = false;
+  };
+
+  const handlePillMouseMove = (e: React.MouseEvent) => {
+    if (!isPillDraggingRef.current) return;
+    const slider = pillTrackRef.current;
+    if (!slider) return;
+    const x = e.pageX - slider.offsetLeft;
+    const walk = (x - pillStartXRef.current) * 1.4;
+    if (Math.abs(walk) > 5) {
+      setHasPillDragged(true);
+    }
+    slider.scrollLeft = pillScrollLeftRef.current - walk;
+  };
+
+  const handlePillWheel = (e: React.WheelEvent) => {
+    const slider = pillTrackRef.current;
+    if (!slider) return;
+    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+      slider.scrollLeft += e.deltaY;
+    }
+  };
   const router = useRouter();
   const searchParams = useSearchParams();
   const [currentUserCoords, setCurrentUserCoords] = useState<{ lat: number; lon: number } | null>(null);
@@ -692,7 +732,7 @@ function DiscoverContent() {
           {/* Clean Pairs-Style Country Scroll Strip & Location Dropdown */}
           <div className="relative z-30 flex items-center justify-between gap-2 w-full py-1 select-none">
             {/* Scrollable Country Pills Track */}
-            <div className="flex-1 min-w-0 overflow-x-auto no-scrollbar touch-pan-x">
+            <div ref={pillTrackRef} onMouseDown={handlePillMouseDown} onMouseLeave={handlePillMouseLeaveOrUp} onMouseUp={handlePillMouseLeaveOrUp} onMouseMove={handlePillMouseMove} onWheel={handlePillWheel} className="cursor-grab active:cursor-grabbing select-none flex-1 min-w-0 overflow-x-auto no-scrollbar touch-pan-x">
               <div className="flex items-center gap-1.5 w-max px-0.5">
               {/* Curated Discovery Channel Sub-Tabs */}
               <div className="flex items-center gap-1 shrink-0 pr-2 mr-1 border-r border-[#E5E1EC]">
@@ -702,7 +742,7 @@ function DiscoverContent() {
                     <button
                       key={mode.id}
                       type="button"
-                      onClick={() => setDiscoveryMode(mode.id)}
+                      onClick={() => { if (!hasPillDragged) setDiscoveryMode(mode.id); }}
                       className={`px-3.5 py-1 text-xs font-semibold rounded-full transition-all whitespace-nowrap active:scale-95 ${
                         active
                           ? 'bg-[#6555b8] text-white shadow-xs'
@@ -726,7 +766,7 @@ function DiscoverContent() {
                     <button
                       key={id}
                       type="button"
-                      onClick={() => setSelectedCountry(id)}
+                      onClick={() => { if (!pillDraggedRef.current) setSelectedCountry(id); }}
                       className={`shrink-0 px-3.5 py-1 text-xs font-semibold rounded-full transition-all whitespace-nowrap active:scale-95 ${
                         active
                           ? "bg-[#6555b8] text-white shadow-xs"
