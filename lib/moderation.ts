@@ -1,6 +1,6 @@
-/**
+﻿/**
  * Hardened Moderation & Reputation Engine for asiansin.love
- * Tuned with contextual lookback and strict SEA phone pattern matching.
+ * Tuned with contextual lookback, zero-cost edge verification, and mutual substantive exchange gates.
  */
 
 export type ModerationAction = 'allow' | 'warn' | 'shadowban' | 'suspend';
@@ -63,29 +63,106 @@ export const MODERATION_RULES = {
   },
 
   // 6. Premature Off-Platform Funneling
-  // Anchored to (+ or 0) for phone numbers within 20 chars of app name
   off_platform_early: {
     penalty: 15,
     action: 'warn' as ModerationAction,
-    regex: /\b((add|message|chat|dm|pm|text|contact)\s*me\s*(on|via|at)?\s*(whatsapp|telegram|viber|line|tg|wa)|here('?s|\s+is)\s+(my\s+)?(whatsapp|telegram|viber|line|tg|wa)|(my|your)\s*(tg|viber|whatsapp|line)\s*(is|:)?|\b(whatsapp|telegram|viber|line|\btg\b)\s*[:#@]\s*[\w\+\.\-_]{4,}|\b(whatsapp|telegram|viber)\b[^.\n]{0,20}\b(\+|0)[\d\s-]{7,14}\b)\b/i,
-  }
+    regex: /\b((add|message|chat|dm|pm|text|contact)\s*me\s*(on|via|at)?\s*(whatsapp|telegram|viber|line|tg|wa|wechat)|here('?s|\s+is)\s+(my\s+)?(whatsapp|telegram|viber|line|tg|wa|wechat)|(my|your)\s*(tg|viber|whatsapp|line|wechat)\s*(is|:)?|\b(whatsapp|telegram|viber|line|wechat|\btg\b)\s*[:#@]\s*[\w\+\.\-_]{4,}|\b(whatsapp|telegram|viber)\b[^.\n]{0,20}\b(\+|0)[\d\s-]{7,14}\b)\b/i,
+  },
 };
+
+// Patterns for detecting external contact info sharing
+export const CONTACT_DETECTION_PATTERNS = [
+  /\b(whatsapp|telegram|viber|line|wechat|snapchat|signal|kakaotalk)\b/i,
+  /\b(wa\.me|t\.me|telegram\.me|ig:|instagram\.com)\b/i,
+  /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/,
+  /(?:(?:\+|00)[1-9]\d{0,2}[\s.-]?)?(?:\(?\d{2,4}\)?[\s.-]?)?\d{3,4}[\s.-]?\d{3,4}\b/,
+  /\b(?:\d[\s.-]*){8,14}\d\b/,
+  /\b((add|message|chat|text|contact)\s*me\s*(on|via|at)?\s*(ig|tg|wa)|my\s*(ig|tg|wa)\s*(is|:)?)\b/i,
+];
+
+export function hasContactSharingIntent(text: string): boolean {
+  if (!text || typeof text !== 'string') return false;
+  return CONTACT_DETECTION_PATTERNS.some((pattern) => pattern.test(text));
+}
+
+/**
+ * Validates whether a message has meaningful substance.
+ * Rejects single-word filler ("hi", "hey", "yo", "blah"), keysmashes, and repetitive loops.
+ */
+export function isSubstantiveMessage(text: string, minChars = 15): boolean {
+  if (!text || typeof text !== 'string') return false;
+  const trimmed = text.trim();
+  if (trimmed.length < minChars) return false;
+
+  const words = trimmed.toLowerCase().split(/\s+/).filter(Boolean);
+  if (words.length < 3) return false;
+
+  // Single repetitive word loops like "hi hi hi hi" or "blah blah blah blah"
+  const uniqueWords = new Set(words);
+  if (uniqueWords.size < 2) return false;
+
+  const fillerRegex = /^(hi|hey|yo|hello|sup|blah|ok|k|cool|yes|no|good|haha|lol|nice|morning|night|test|asdf)[.!\s]*$/i;
+  if (fillerRegex.test(trimmed)) return false;
+
+  return true;
+}
+
+export interface SubstantiveTurnCheck {
+  isUnlocked: boolean;
+  senderSubstantiveCount: number;
+  receiverSubstantiveCount: number;
+  requiredTurns: number;
+  minChars: number;
+}
+
+export function evaluateSubstantiveConversation(
+  messages: Array<{ sender_id: string; content?: string }>,
+  currentUserId: string,
+  recipientId: string,
+  minChars = 15,
+  requiredTurns = 3
+): SubstantiveTurnCheck {
+  const validFromSender = new Set<string>();
+  const validFromReceiver = new Set<string>();
+
+  for (const m of messages) {
+    const raw = (m.content || '').trim();
+    if (!isSubstantiveMessage(raw, minChars)) continue;
+
+    const normalized = raw.toLowerCase().replace(/\s+/g, ' ');
+
+    if (m.sender_id === currentUserId) {
+      validFromSender.add(normalized);
+    } else if (m.sender_id === recipientId) {
+      validFromReceiver.add(normalized);
+    }
+  }
+
+  const senderSubstantiveCount = validFromSender.size;
+  const receiverSubstantiveCount = validFromReceiver.size;
+  const isUnlocked = senderSubstantiveCount >= requiredTurns && receiverSubstantiveCount >= requiredTurns;
+
+  return {
+    isUnlocked,
+    senderSubstantiveCount,
+    receiverSubstantiveCount,
+    requiredTurns,
+    minChars,
+  };
+}
 
 const MAX_PER_MESSAGE_PENALTY = 45;
 
-/**
- * Checks if a specific "sugar baby/daddy" match is preceded by a direct negation within 35 characters
- */
 function isSugarMatchNegated(text: string, matchIndex: number): boolean {
   const windowStart = Math.max(0, matchIndex - 35);
   const precedingSnippet = text.slice(windowStart, matchIndex).toLowerCase().trim();
   return /\b(not|never|no|don't|dont|not\s*looking\s*for|hate)\s*(looking\s*for\s*)?(a\s*)?$/i.test(precedingSnippet);
 }
 
-/**
- * Server-side evaluation of inbound text
- */
-export function evaluateMessageModeration(text: string): ModerationResult {
+export function evaluateMessageModeration(
+  text: string,
+  isUnlocked = false
+): ModerationResult {
   if (!text || typeof text !== 'string') {
     return { isClean: true, violations: [], totalDeduction: 0, recommendedAction: 'allow', flaggedPhrases: [] };
   }
@@ -94,6 +171,11 @@ export function evaluateMessageModeration(text: string): ModerationResult {
   const allMatchedPhrases: string[] = [];
 
   for (const [key, rule] of Object.entries(MODERATION_RULES)) {
+    // If the conversation is mature/unlocked, suppress off_platform_early warnings
+    if (key === 'off_platform_early' && isUnlocked) {
+      continue;
+    }
+
     const globalRegex = new RegExp(rule.regex.source, 'gi');
     let match: RegExpExecArray | null;
     const matchedPhrases: string[] = [];
@@ -102,7 +184,6 @@ export function evaluateMessageModeration(text: string): ModerationResult {
       const phrase = match[0];
       const matchIndex = match.index;
 
-      // Apply contextual proximity negation check for sugar daddy/baby
       if (key === 'solicitation_sexpat' && /sugar\s*(baby|daddy)/i.test(phrase)) {
         if (isSugarMatchNegated(text, matchIndex)) {
           continue;
@@ -120,7 +201,7 @@ export function evaluateMessageModeration(text: string): ModerationResult {
         category: key as ModerationViolation['category'],
         penalty: rule.penalty,
         matchedKeywords: uniqueMatches,
-        action: rule.action
+        action: rule.action,
       });
     }
   }
@@ -129,8 +210,8 @@ export function evaluateMessageModeration(text: string): ModerationResult {
     return { isClean: true, violations: [], totalDeduction: 0, recommendedAction: 'allow', flaggedPhrases: [] };
   }
 
-  const hasSuspend = violations.some(v => v.action === 'suspend');
-  const hasShadowban = violations.some(v => v.action === 'shadowban');
+  const hasSuspend = violations.some((v) => v.action === 'suspend');
+  const hasShadowban = violations.some((v) => v.action === 'shadowban');
 
   const rawDeduction = violations.reduce((acc, v) => acc + v.penalty, 0);
   const totalDeduction = hasSuspend ? 100 : Math.min(MAX_PER_MESSAGE_PENALTY, rawDeduction);
@@ -146,7 +227,7 @@ export function evaluateMessageModeration(text: string): ModerationResult {
     violations,
     totalDeduction,
     recommendedAction,
-    flaggedPhrases: allMatchedPhrases
+    flaggedPhrases: allMatchedPhrases,
   };
 }
 
@@ -154,9 +235,6 @@ export function applyPenaltyToScore(currentScore: number, deduction: number): nu
   return Math.max(0, Math.min(100, currentScore - deduction));
 }
 
-/**
- * Backward compatibility export for legacy route imports
- */
 export function detectFinancialSolicitation(text: string): {
   hasViolation: boolean;
   matchedKeywords: string[];
@@ -165,7 +243,7 @@ export function detectFinancialSolicitation(text: string): {
   penalty: number;
 } {
   const result = evaluateMessageModeration(text);
-  const violation = result.violations.find(v =>
+  const violation = result.violations.find((v) =>
     v.category === 'wallet_remittance' ||
     v.category === 'financial_begging' ||
     v.category === 'crypto_pig_butchering'

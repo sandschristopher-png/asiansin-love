@@ -2,7 +2,7 @@
 import { cookies } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
 import { createClient } from '@supabase/supabase-js';
-import { evaluateMessageModeration } from '@/lib/moderation';
+import { evaluateMessageModeration, hasContactSharingIntent, evaluateSubstantiveConversation } from '@/lib/moderation';
 
 const isUUID = (str: unknown) =>
   typeof str === 'string' &&
@@ -66,8 +66,42 @@ export async function POST(req: Request) {
       serviceRoleKey
     );
 
+        // 1.5 Substantive Courtship & Contact Gate Check
+    const { data: threadHistory } = await serviceClient
+      .from('messages')
+      .select('sender_id, content')
+      .in('sender_id', [senderId, receiverId])
+      .in('receiver_id', [senderId, receiverId])
+      .eq('is_quarantined', false)
+      .order('created_at', { ascending: false })
+      .limit(40);
+
+    const substantiveCheck = evaluateSubstantiveConversation(
+      threadHistory || [],
+      senderId,
+      receiverId,
+      15,
+      3
+    );
+
+    // If message contains contact sharing (phone, WA, TG, socials) and threshold is not met:
+    if (hasContactSharingIntent(content) && !substantiveCheck.isUnlocked) {
+      return NextResponse.json(
+        {
+          error: `To protect our members from impersonation and off-platform scams, external contact sharing unlocks after both of you have exchanged at least 3 substantive messages (15+ characters). Progress: You (${substantiveCheck.senderSubstantiveCount}/3) • Partner (${substantiveCheck.receiverSubstantiveCount}/3).`,
+          courtshipLocked: true,
+          progress: {
+            sender: substantiveCheck.senderSubstantiveCount,
+            partner: substantiveCheck.receiverSubstantiveCount,
+            required: 3,
+          },
+        },
+        { status: 400 }
+      );
+    }
+
     // 2. Moderation Evaluation
-    const mod = evaluateMessageModeration(content);
+    const mod = evaluateMessageModeration(content, substantiveCheck.isUnlocked);
 
     if (!mod.isClean) {
       const { error: penErr } = await serviceClient.rpc('apply_moderation_penalty', {
