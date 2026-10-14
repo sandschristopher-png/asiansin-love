@@ -6,7 +6,7 @@ import { ShieldCheck } from 'lucide-react';
 
 export function Footer() {
   return (
-    <footer className="w-full shrink-0 bg-gradient-to-b from-[#564592] to-[#3d2e6b] text-white pt-12 pb-24 px-6 select-none">
+    <footer className="w-full shrink-0 bg-gradient-to-b from-transparent via-[#4B3B85] to-[#3d2e6b] text-white pt-16 pb-24 px-6 select-none mt-4">
       <div className="max-w-md mx-auto flex flex-col items-center text-center space-y-6">
         
         {/* Brand Header */}
