@@ -51,7 +51,7 @@ export default function HomePage() {
                 <span className="text-xs font-bold text-[#181126] truncate">Verified Members</span>
                 <CheckCircle2 className="w-3.5 h-3.5 text-[#6555b8] shrink-0" />
               </div>
-              <p className="text-[10px] text-[#756D82] truncate">Cebu � Chiang Mai � Khon Kaen</p>
+              <p className="text-[10px] text-[#756D82] truncate">Cebu &bull; Chiang Mai &bull; Khon Kaen</p>
             </div>
 
             <div className="text-right shrink-0">
@@ -87,7 +87,7 @@ export default function HomePage() {
               <Link href="/login" className="font-semibold text-[#6555b8] hover:underline">
                 Already a member? Sign In
               </Link>
-              <span>�</span>
+              <span>&bull;</span>
               <Link href="/discover" className="hover:underline">
                 Browse Directory
               </Link>
