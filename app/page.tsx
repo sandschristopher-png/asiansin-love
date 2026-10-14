@@ -1,7 +1,7 @@
 ﻿import Image from "next/image";
 import Link from "next/link";
 import { Footer } from "@/components/Footer";
-import { ShieldCheck, ArrowRight, CheckCircle2, Sparkles, Shield } from "lucide-react";
+import { ShieldCheck, ArrowRight, CheckCircle2, Sparkles } from "lucide-react";
 
 export default function HomePage() {
   return (
@@ -27,12 +27,12 @@ export default function HomePage() {
                 No Hookup Games.
               </span>
             </h1>
-            <p className="text-xs text-[#5B5569] leading-relaxed max-w-xs mx-auto">
+            <p className="text-xs sm:text-sm text-[#5B5569] leading-relaxed max-w-xs mx-auto">
               Connecting sincere Southeast Asian women with marriage-minded partners for genuine, lifelong commitment.
             </p>
           </div>
 
-          {/* Sleek Floating Social Proof Pill */}
+          {/* Floating Social Proof Pill */}
           <div className="w-full bg-white/90 backdrop-blur-xs rounded-2xl border border-[#EDE8F5] p-3 shadow-xs flex items-center justify-between gap-3 text-left">
             <div className="flex -space-x-2 overflow-hidden py-0.5">
               <div className="relative w-9 h-9 rounded-full ring-2 ring-white overflow-hidden bg-gray-100 shrink-0 shadow-xs">
@@ -54,7 +54,7 @@ export default function HomePage() {
               <p className="text-[10px] text-[#756D82] truncate">Cebu • Chiang Mai • Bangkok</p>
             </div>
 
-            <span className="text-[10px] font-extrabold text-[#6555b8] bg-[#6555b8]/10 px-2 py-0.5 rounded-full shrink-0">
+            <span className="text-[10px] font-extrabold text-[#6555b8] bg-[#6555b8]/10 px-2.5 py-1 rounded-full shrink-0">
               100% Real
             </span>
           </div>
@@ -93,20 +93,20 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* ===================== FOUR VALUE PILLARS (TIGHTENED) ===================== */}
-        <section className="space-y-2.5 pt-1">
+        {/* ===================== FOUR VALUE PILLARS (STANDARDS) ===================== */}
+        <section className="space-y-3 pt-2">
           <div className="flex items-center justify-between px-1">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-[#756D82]">
+            <span className="text-xs font-bold uppercase tracking-wider text-[#756D82]">
               The Sanctuary Standard
             </span>
-            <span className="text-[10px] text-[#6555b8] font-semibold flex items-center gap-1">
-              <Sparkles className="w-3 h-3" /> 4 Principles
+            <span className="text-xs text-[#6555b8] font-bold flex items-center gap-1">
+              <Sparkles className="w-3.5 h-3.5" /> 4 Principles
             </span>
           </div>
 
           {/* Pillar 1: Clear Intentions */}
-          <div className="flex items-center gap-3.5 p-3 rounded-2xl bg-white border border-[#EDE8F5] shadow-xs hover:border-[#6555b8]/30 transition">
-            <div className="relative w-16 h-16 shrink-0 flex items-center justify-center">
+          <div className="flex items-center gap-4 p-4 rounded-2xl bg-white border border-[#EDE8F5] shadow-xs hover:border-[#6555b8]/30 transition">
+            <div className="relative w-20 h-20 sm:w-24 sm:h-24 shrink-0 flex items-center justify-center">
               <Image
                 src="/intention.png"
                 alt="Clear relationship intentions"
@@ -114,22 +114,22 @@ export default function HomePage() {
                 className="object-contain"
               />
             </div>
-            <div className="flex-1 min-w-0">
-              <span className="text-[9px] font-bold text-[#6555b8] uppercase tracking-wider block">
+            <div className="flex-1 min-w-0 space-y-1">
+              <span className="text-[10px] font-bold text-[#6555b8] uppercase tracking-wider block">
                 01 • Clarity
               </span>
-              <h2 className="text-xs font-bold text-[#181126] leading-tight">
+              <h2 className="text-sm font-bold text-[#181126] leading-snug">
                 Clear Intentions Upfront
               </h2>
-              <p className="text-[11px] text-[#5B5569] leading-relaxed line-clamp-2 mt-0.5">
+              <p className="text-xs text-[#5B5569] leading-relaxed">
                 Marriage timeline and family goals stated openly. No guessing games or casual ambiguity.
               </p>
             </div>
           </div>
 
           {/* Pillar 2: Zero Exploitation */}
-          <div className="flex items-center gap-3.5 p-3 rounded-2xl bg-white border border-[#EDE8F5] shadow-xs hover:border-[#6555b8]/30 transition">
-            <div className="relative w-16 h-16 shrink-0 flex items-center justify-center">
+          <div className="flex items-center gap-4 p-4 rounded-2xl bg-white border border-[#EDE8F5] shadow-xs hover:border-[#6555b8]/30 transition">
+            <div className="relative w-20 h-20 sm:w-24 sm:h-24 shrink-0 flex items-center justify-center">
               <Image
                 src="/woman-no.png"
                 alt="Community safety and boundaries"
@@ -137,22 +137,22 @@ export default function HomePage() {
                 className="object-contain"
               />
             </div>
-            <div className="flex-1 min-w-0">
-              <span className="text-[9px] font-bold text-rose-600 uppercase tracking-wider block">
+            <div className="flex-1 min-w-0 space-y-1">
+              <span className="text-[10px] font-bold text-rose-600 uppercase tracking-wider block">
                 02 • Respect
               </span>
-              <h2 className="text-xs font-bold text-[#181126] leading-tight">
+              <h2 className="text-sm font-bold text-[#181126] leading-snug">
                 Zero Tourism & Exploitation
               </h2>
-              <p className="text-[11px] text-[#5B5569] leading-relaxed line-clamp-2 mt-0.5">
+              <p className="text-xs text-[#5B5569] leading-relaxed">
                 Proactive filters screen out sex tourists and transactional agencies. Women are treated with genuine dignity.
               </p>
             </div>
           </div>
 
           {/* Pillar 3: Anti-Scam Reputation */}
-          <div className="flex items-center gap-3.5 p-3 rounded-2xl bg-white border border-[#EDE8F5] shadow-xs hover:border-[#6555b8]/30 transition">
-            <div className="relative w-16 h-16 shrink-0 flex items-center justify-center">
+          <div className="flex items-center gap-4 p-4 rounded-2xl bg-white border border-[#EDE8F5] shadow-xs hover:border-[#6555b8]/30 transition">
+            <div className="relative w-20 h-20 sm:w-24 sm:h-24 shrink-0 flex items-center justify-center">
               <Image
                 src="/red-flags.png"
                 alt="Anti-scam reputation system"
@@ -160,22 +160,22 @@ export default function HomePage() {
                 className="object-contain"
               />
             </div>
-            <div className="flex-1 min-w-0">
-              <span className="text-[9px] font-bold text-[#6555b8] uppercase tracking-wider block">
+            <div className="flex-1 min-w-0 space-y-1">
+              <span className="text-[10px] font-bold text-[#6555b8] uppercase tracking-wider block">
                 03 • Accountability
               </span>
-              <h2 className="text-xs font-bold text-[#181126] leading-tight">
+              <h2 className="text-sm font-bold text-[#181126] leading-snug">
                 Zero Financial Traps
               </h2>
-              <p className="text-[11px] text-[#5B5569] leading-relaxed line-clamp-2 mt-0.5">
+              <p className="text-xs text-[#5B5569] leading-relaxed">
                 Automated detection flags crypto schemes, remit requests, and sob stories to protect members.
               </p>
             </div>
           </div>
 
           {/* Pillar 4: Location Verification */}
-          <div className="flex items-center gap-3.5 p-3 rounded-2xl bg-white border border-[#EDE8F5] shadow-xs hover:border-[#6555b8]/30 transition">
-            <div className="relative w-16 h-16 shrink-0 flex items-center justify-center">
+          <div className="flex items-center gap-4 p-4 rounded-2xl bg-white border border-[#EDE8F5] shadow-xs hover:border-[#6555b8]/30 transition">
+            <div className="relative w-20 h-20 sm:w-24 sm:h-24 shrink-0 flex items-center justify-center">
               <Image
                 src="/status-approved.png"
                 alt="Location verified badge"
@@ -183,14 +183,14 @@ export default function HomePage() {
                 className="object-contain"
               />
             </div>
-            <div className="flex-1 min-w-0">
-              <span className="text-[9px] font-bold text-emerald-600 uppercase tracking-wider block">
+            <div className="flex-1 min-w-0 space-y-1">
+              <span className="text-[10px] font-bold text-emerald-600 uppercase tracking-wider block">
                 04 • Authenticity
               </span>
-              <h2 className="text-xs font-bold text-[#181126] leading-tight">
+              <h2 className="text-sm font-bold text-[#181126] leading-snug">
                 100% Location Verified
               </h2>
-              <p className="text-[11px] text-[#5B5569] leading-relaxed line-clamp-2 mt-0.5">
+              <p className="text-xs text-[#5B5569] leading-relaxed">
                 Zero location spoofing. Edge network headers cross-reference physical location to block VPN deception.
               </p>
             </div>
