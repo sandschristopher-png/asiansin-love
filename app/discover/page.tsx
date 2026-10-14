@@ -84,9 +84,8 @@ function DiscoverCardPhotoCarousel({
   const rawList = (photos && photos.length > 0 ? photos : [avatarUrl]).filter(
     (p): p is string => typeof p === 'string' && p.trim().length > 0 && p !== '/placeholder-avatar.svg'
   );
-  // Deduplicate and fallback
-  const displayPhotos = Array.from(new Set(rawList)).length > 0 
-    ? Array.from(new Set(rawList)) 
+  const displayPhotos = Array.from(new Set(rawList)).length > 0
+    ? Array.from(new Set(rawList))
     : [avatarUrl || '/placeholder-avatar.svg'];
   const hasMultiple = displayPhotos.length > 1;
 
@@ -108,63 +107,64 @@ function DiscoverCardPhotoCarousel({
         <img
           src={displayPhotos[currentIdx]}
           alt={name}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+          className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500 ease-out"
           loading="lazy"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-[#2d2f4c] via-transparent to-transparent opacity-80" />
       </Link>
 
-      {/* Top Badges */}
-      <div className="absolute top-2.5 inset-x-2.5 flex items-center justify-between z-20 pointer-events-none">
-        {/* Rep Score Badge on Upper Left */}
-        <div className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-black/45 backdrop-blur-md border border-white/20 text-[10px] font-semibold text-white/90 shadow-xs">
-          <ShieldCheck className="w-3 h-3 text-[#B2A4D7] shrink-0" />
-          <span>{repScore || 100} Rep</span>
-        </div>
-
-        {/* Breathing Online Dot */}
-        {online && (
-          <span className="presence-dot h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white/90 shadow" />
-        )}
-      </div>
-
-      {/* Story Progress Dashes */}
+      {/* Micro Story Progress Dashes across top edge */}
       {hasMultiple && (
-        <div className="absolute top-8 inset-x-3 z-20 flex gap-1 pointer-events-none">
-          {hasMultiple && displayPhotos.map((_, i) => (
+        <div className="absolute top-2 inset-x-2.5 z-20 flex gap-1 pointer-events-none">
+          {displayPhotos.map((_, i) => (
             <div
               key={i}
               className={'h-1 flex-1 rounded-full transition-all duration-200 ' + (
-                i === currentIdx ? 'bg-white shadow-sm' : 'bg-white/30 backdrop-blur-sm'
+                i === currentIdx ? 'bg-white shadow-xs' : 'bg-white/35 backdrop-blur-xs'
               )}
             />
           ))}
         </div>
       )}
 
-      {/* Mobile 50/50 Tap Zones */}
+      {/* Top Badges: Prominent Rep Score & Presence Indicator */}
+      <div className={`absolute ${hasMultiple ? 'top-4.5' : 'top-2.5'} inset-x-2.5 flex items-center justify-between z-20 pointer-events-none`}>
+        {/* Rep Score Badge */}
+        <div className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-black/45 backdrop-blur-md border border-white/20 text-[10px] font-bold text-amber-300 shadow-xs">
+          <ShieldCheck className="w-3 h-3 text-amber-300 shrink-0" />
+          <span>{repScore ? `${repScore}% Rep` : '100% Rep'}</span>
+        </div>
+
+        {/* Live Presence Indicator */}
+        {online ? (
+          <span className="presence-dot h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white/90 shadow-xs" />
+        ) : recentlyActive ? (
+          <span className="h-2 w-2 rounded-full bg-amber-400/90 ring-1.5 ring-white/80 shadow-xs" />
+        ) : null}
+      </div>
+
+      {/* Mobile Touch Tap Zones */}
       {hasMultiple && (
         <>
           <div
             onClick={handlePrev}
-            className="absolute top-0 left-0 w-1/2 h-20 z-10 cursor-pointer"
+            className="absolute top-0 left-0 w-1/3 h-28 z-10 cursor-pointer"
             aria-label="Previous photo"
           />
           <div
             onClick={handleNext}
-            className="absolute top-0 right-0 w-1/2 h-20 z-10 cursor-pointer"
+            className="absolute top-0 right-0 w-1/3 h-28 z-10 cursor-pointer"
             aria-label="Next photo"
           />
         </>
       )}
 
-      {/* Desktop Chevrons on Hover */}
+      {/* Desktop Navigation Chevrons on Hover */}
       {hasMultiple && (
-        <div className="hidden sm:flex items-center justify-between absolute inset-x-2 top-1/2 -translate-y-1/2 z-20 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
+        <div className="hidden sm:flex items-center justify-between absolute inset-x-2 top-1/2 -translate-y-1/2 z-20 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-200">
           <button
             type="button"
             onClick={handlePrev}
-            className="pointer-events-auto p-1.5 rounded-full bg-black/50 hover:bg-black/80 text-white backdrop-blur-sm transition"
+            className="pointer-events-auto p-1.5 rounded-full bg-black/40 hover:bg-black/70 text-white backdrop-blur-xs transition active:scale-90"
             aria-label="Previous photo"
           >
             <ChevronLeft className="w-4 h-4" />
@@ -172,7 +172,7 @@ function DiscoverCardPhotoCarousel({
           <button
             type="button"
             onClick={handleNext}
-            className="pointer-events-auto p-1.5 rounded-full bg-black/50 hover:bg-black/80 text-white backdrop-blur-sm transition"
+            className="pointer-events-auto p-1.5 rounded-full bg-black/40 hover:bg-black/70 text-white backdrop-blur-xs transition active:scale-90"
             aria-label="Next photo"
           >
             <ChevronRight className="w-4 h-4" />
@@ -929,11 +929,20 @@ function DiscoverContent() {
 
                 
 
-                  {/* Bottom Overlay: Info Left + Frosted Heart Lower Right */}
-                  <div className="absolute bottom-0 inset-x-0 p-3 sm:p-3.5 z-20 pointer-events-none bg-gradient-to-t from-black/80 via-black/40 to-transparent flex items-end justify-between gap-2">
+                  {/* Bottom Overlay: Courtship Pill, Info Left + Frosted Heart Lower Right */}
+                  <div className="absolute bottom-0 inset-x-0 pt-12 pb-3 px-3 sm:px-3.5 z-20 pointer-events-none bg-gradient-to-t from-black/90 via-black/45 to-transparent flex items-end justify-between gap-2">
                     <Link href={'/profile/' + profile.id} className="min-w-0 flex-1 pointer-events-auto">
-                      <h3 className="text-sm font-semibold text-white flex items-center gap-1.5 drop-shadow-md">
-                        <span className="truncate max-w-[130px] sm:max-w-none">{displayName}{profile.age ? ', ' + profile.age : ''}</span>
+                      {/* Courtship Intention Pill */}
+                      {Boolean((profile as any).intentions || (profile as any).looking_for) && (
+                        <div className="mb-1">
+                          <span className="inline-block px-2 py-0.5 rounded-full bg-white/20 backdrop-blur-md text-[9px] font-semibold text-white/95 border border-white/20 truncate max-w-[120px] sm:max-w-none">
+                            {(profile as any).intentions || (profile as any).looking_for}
+                          </span>
+                        </div>
+                      )}
+
+                      <h3 className="text-sm font-bold text-white flex items-center gap-1.5 drop-shadow-sm leading-tight">
+                        <span className="truncate max-w-[110px] sm:max-w-[145px]">{displayName}{profile.age ? ', ' + profile.age : ''}</span>
                         {profile.verified && <CheckCircle className="w-3.5 h-3.5 text-[#B2A4D7] shrink-0" />}
                         {profile.is_plus && (
                           <span className="px-1.5 py-0.5 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-bold text-[9px] uppercase tracking-wider shadow-xs shrink-0 select-none">
@@ -941,7 +950,8 @@ function DiscoverContent() {
                           </span>
                         )}
                       </h3>
-                      <p className="flex items-center gap-1 text-[11px] sm:text-xs text-white/85 font-medium mt-0.5 drop-shadow-md truncate">
+
+                      <p className="flex items-center gap-1 text-[11px] sm:text-xs text-white/80 font-medium mt-0.5 drop-shadow-sm truncate">
                         <MapPin
                           className={'w-3 h-3 shrink-0 ' + (
                             profile.location_source === 'gps_verified' ? 'text-emerald-400' : 'text-[#B2A4D7]'
@@ -960,14 +970,14 @@ function DiscoverContent() {
                         e.preventDefault();
                         triggerAction(profile.id, 'like', displayName, profile.avatarUrl || (profile.photos && profile.photos[0]));
                       }}
-                      className={`w-10 h-10 rounded-full flex items-center justify-center border transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-75 active:rotate-[-12deg] shadow-lg backdrop-blur-md shrink-0 pointer-events-auto select-none cursor-pointer ${
+                      className={`w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-75 active:rotate-[-12deg] shadow-lg backdrop-blur-md shrink-0 pointer-events-auto select-none cursor-pointer ${
                         isLiked
                           ? 'bg-[#6555b8] border-[#8b7bd9] text-white shadow-[0_0_20px_rgba(101,85,184,0.55)] scale-105'
                           : 'bg-black/35 hover:bg-black/60 border-white/25 text-white/90 hover:text-white hover:scale-105'
                       }`}
                     >
                       <Heart
-                        className={`w-5 h-5 transition-transform duration-300 ease-out ${
+                        className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform duration-300 ease-out ${
                           isLiked ? 'fill-white scale-110' : 'hover:scale-110'
                         }`}
                       />
