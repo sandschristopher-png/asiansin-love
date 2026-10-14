@@ -28,6 +28,17 @@ export default function EditProfilePage() {
     country: '',
     profession: '',
     relationship_goal: 'Marriage',
+    marriage_timeline: 'Within 1–2 years',
+    relocation: 'Open to relocation',
+    marital_status: 'Never Married',
+    wants_kids: 'Wants children',
+    has_kids: 'No',
+    living_situation: 'Lives independently',
+    religion: 'Christian (Catholic)',
+    languages: 'English, Tagalog',
+    height: '',
+    drinking: 'Socially',
+    smoking: 'No',
     bio: '',
   });
 
@@ -51,8 +62,19 @@ export default function EditProfilePage() {
           age: data.age ? String(data.age) : '',
           city: data.city || '',
           country: data.country || '',
-          profession: data.profession || '',
-          relationship_goal: data.relationship_goal || 'Marriage',
+          profession: data.profession || data.occupation || '',
+          relationship_goal: data.relationship_goal || data.intent || 'Marriage',
+          marriage_timeline: data.marriage_timeline || 'Within 1–2 years',
+          relocation: data.relocation || 'Open to relocation',
+          marital_status: data.marital_status || 'Never Married',
+          wants_kids: data.wants_kids || 'Wants children',
+          has_kids: data.has_kids || 'No',
+          living_situation: data.living_situation || 'Lives independently',
+          religion: data.religion || 'Christian (Catholic)',
+          languages: Array.isArray(data.languages) ? data.languages.join(', ') : (data.languages || 'English, Tagalog'),
+          height: data.height ? String(data.height) : '',
+          drinking: data.drinking || 'Socially',
+          smoking: data.smoking || 'No',
           bio: data.bio || '',
         });
 
@@ -488,6 +510,197 @@ export default function EditProfilePage() {
                 <option value="Long-Term Dating">Long-Term Dating</option>
                 <option value="Casual Dating">Casual Dating</option>
               </select>
+            </div>
+          </div>
+
+          {/* --- Courtship Dossier Section 1: Courtship & Timeline --- */}
+          <div className="pt-2 border-t border-[#9A8CC3]/20 space-y-3">
+            <h3 className="text-xs font-bold text-[#6555b8] uppercase tracking-wider flex items-center gap-1.5">
+              <span>💍</span> Courtship Alignment & Timeline
+            </h3>
+            
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div className="space-y-1.5">
+                <label className="block text-xs font-medium uppercase tracking-wider text-[#9A8CC3]">
+                  Marriage Timeline
+                </label>
+                <select
+                  value={formData.marriage_timeline}
+                  onChange={(e) => setFormData({ ...formData, marriage_timeline: e.target.value })}
+                  className="w-full px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#9A8CC3]/35 text-[#1C1924] text-sm focus:outline-none focus:border-[#9A8CC3]"
+                >
+                  <option value="Within 6 months">Within 6 months</option>
+                  <option value="Within 1–2 years">Within 1–2 years</option>
+                  <option value="Within 2–3 years">Within 2–3 years</option>
+                  <option value="When the time is right">When the time is right</option>
+                </select>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-xs font-medium uppercase tracking-wider text-[#9A8CC3]">
+                  Relocation Flexibility
+                </label>
+                <select
+                  value={formData.relocation}
+                  onChange={(e) => setFormData({ ...formData, relocation: e.target.value })}
+                  className="w-full px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#9A8CC3]/35 text-[#1C1924] text-sm focus:outline-none focus:border-[#9A8CC3]"
+                >
+                  <option value="Open to relocation">Open to relocation</option>
+                  <option value="Willing to relocate internationally">Willing to relocate internationally</option>
+                  <option value="Willing to relocate domestically">Willing to relocate domestically</option>
+                  <option value="Prefer partner to relocate">Prefer partner to relocate</option>
+                  <option value="Not open to relocation">Not open to relocation</option>
+                </select>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-xs font-medium uppercase tracking-wider text-[#9A8CC3]">
+                  Marital Status
+                </label>
+                <select
+                  value={formData.marital_status}
+                  onChange={(e) => setFormData({ ...formData, marital_status: e.target.value })}
+                  className="w-full px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#9A8CC3]/35 text-[#1C1924] text-sm focus:outline-none focus:border-[#9A8CC3]"
+                >
+                  <option value="Never Married">Never Married</option>
+                  <option value="Divorced">Divorced</option>
+                  <option value="Widowed">Widowed</option>
+                  <option value="Separated">Separated</option>
+                </select>
+              </div>
+            </div>
+          </div>
+
+          {/* --- Courtship Dossier Section 2: Family & Values --- */}
+          <div className="pt-2 border-t border-[#9A8CC3]/20 space-y-3">
+            <h3 className="text-xs font-bold text-[#E05375] uppercase tracking-wider flex items-center gap-1.5">
+              <span>🏡</span> Family & Values
+            </h3>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              <div className="space-y-1.5">
+                <label className="block text-xs font-medium uppercase tracking-wider text-[#9A8CC3]">
+                  Desires Children
+                </label>
+                <select
+                  value={formData.wants_kids}
+                  onChange={(e) => setFormData({ ...formData, wants_kids: e.target.value })}
+                  className="w-full px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#9A8CC3]/35 text-[#1C1924] text-sm focus:outline-none focus:border-[#9A8CC3]"
+                >
+                  <option value="Wants children">Wants children</option>
+                  <option value="Open to children">Open to children</option>
+                  <option value="Does not want children">Does not want children</option>
+                  <option value="Not sure yet">Not sure yet</option>
+                </select>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-xs font-medium uppercase tracking-wider text-[#9A8CC3]">
+                  Has Children
+                </label>
+                <select
+                  value={formData.has_kids}
+                  onChange={(e) => setFormData({ ...formData, has_kids: e.target.value })}
+                  className="w-full px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#9A8CC3]/35 text-[#1C1924] text-sm focus:outline-none focus:border-[#9A8CC3]"
+                >
+                  <option value="No">No</option>
+                  <option value="Yes, living with me">Yes, living with me</option>
+                  <option value="Yes, not living with me">Yes, not living with me</option>
+                </select>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-xs font-medium uppercase tracking-wider text-[#9A8CC3]">
+                  Living Situation
+                </label>
+                <select
+                  value={formData.living_situation}
+                  onChange={(e) => setFormData({ ...formData, living_situation: e.target.value })}
+                  className="w-full px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#9A8CC3]/35 text-[#1C1924] text-sm focus:outline-none focus:border-[#9A8CC3]"
+                >
+                  <option value="Lives independently">Lives independently</option>
+                  <option value="Lives with family">Lives with family</option>
+                  <option value="Lives with roommates">Lives with roommates</option>
+                </select>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-xs font-medium uppercase tracking-wider text-[#9A8CC3]">
+                  Faith & Beliefs
+                </label>
+                <input
+                  type="text"
+                  value={formData.religion}
+                  onChange={(e) => setFormData({ ...formData, religion: e.target.value })}
+                  placeholder="e.g. Christian (Catholic)"
+                  className="w-full px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#9A8CC3]/35 text-[#1C1924] text-sm focus:outline-none focus:border-[#9A8CC3]"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* --- Courtship Dossier Section 3: Lifestyle & Background --- */}
+          <div className="pt-2 border-t border-[#9A8CC3]/20 space-y-3">
+            <h3 className="text-xs font-bold text-[#6555b8] uppercase tracking-wider flex items-center gap-1.5">
+              <span>💼</span> Lifestyle & Background
+            </h3>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              <div className="space-y-1.5">
+                <label className="block text-xs font-medium uppercase tracking-wider text-[#9A8CC3]">
+                  Languages (Comma Separated)
+                </label>
+                <input
+                  type="text"
+                  value={formData.languages}
+                  onChange={(e) => setFormData({ ...formData, languages: e.target.value })}
+                  placeholder="English, Tagalog, Japanese"
+                  className="w-full px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#9A8CC3]/35 text-[#1C1924] text-sm focus:outline-none focus:border-[#9A8CC3]"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-xs font-medium uppercase tracking-wider text-[#9A8CC3]">
+                  Height
+                </label>
+                <input
+                  type="text"
+                  value={formData.height}
+                  onChange={(e) => setFormData({ ...formData, height: e.target.value })}
+                  placeholder="e.g. 165 cm or 5ft 5in"
+                  className="w-full px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#9A8CC3]/35 text-[#1C1924] text-sm focus:outline-none focus:border-[#9A8CC3]"
+                />
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-xs font-medium uppercase tracking-wider text-[#9A8CC3]">
+                  Drinks
+                </label>
+                <select
+                  value={formData.drinking}
+                  onChange={(e) => setFormData({ ...formData, drinking: e.target.value })}
+                  className="w-full px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#9A8CC3]/35 text-[#1C1924] text-sm focus:outline-none focus:border-[#9A8CC3]"
+                >
+                  <option value="Never">Never</option>
+                  <option value="Socially">Socially</option>
+                  <option value="Regularly">Regularly</option>
+                </select>
+              </div>
+
+              <div className="space-y-1.5">
+                <label className="block text-xs font-medium uppercase tracking-wider text-[#9A8CC3]">
+                  Smokes
+                </label>
+                <select
+                  value={formData.smoking}
+                  onChange={(e) => setFormData({ ...formData, smoking: e.target.value })}
+                  className="w-full px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#9A8CC3]/35 text-[#1C1924] text-sm focus:outline-none focus:border-[#9A8CC3]"
+                >
+                  <option value="No">No</option>
+                  <option value="Socially">Socially</option>
+                  <option value="Yes">Yes</option>
+                </select>
+              </div>
             </div>
           </div>
 
