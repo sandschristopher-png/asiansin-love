@@ -12,24 +12,24 @@ const PILLARS = [
     alt: "Clear relationship intentions",
   },
   {
-    title: "Zero Casual Games & Exploitation",
+    title: "Serious Members Only",
     description:
       "We proactively filter out casual hookups, commercial agencies, and transactional solicitation. Every member is treated with genuine respect.",
     image: "/woman-no.png",
     alt: "Community safety and boundaries",
   },
   {
-    title: "Zero Scams & Misrepresentation",
+    title: "Scam Screening That Works Both Ways",
     description:
       "Accountability goes both ways. We screen out financial sob stories and lock external contact sharing until both of you exchange 3 meaningful replies.",
     image: "/red-flags.png",
     alt: "Anti-scam reputation system",
   },
   {
-    title: "Real People. Edge-Verified.",
+    title: "Real People, Real Locations",
     description:
-      "No location spoofing or VPN syndicates. Every verified member confirms their real physical network edge to earn their Verified shield.",
-    image: "/status-approved.png",
+      "No location spoofing or VPN tricks. Every verified member confirms their actual location with GPS, and VPN or proxy users can't fake it.",
+    image: "/secured.png",
     alt: "Verified badge illustration",
   },
 ];
@@ -39,7 +39,7 @@ export default function HomePage() {
     <div className="min-h-screen bg-[#FAF9FD] text-[#181126] flex flex-col font-sans antialiased selection:bg-[#6555b8]/15 selection:text-[#6555b8]">
       
       {/* Mobile-First App Shell (Identical on Phone & Desktop) */}
-      <main className="flex-1 w-full max-w-md mx-auto bg-white min-h-screen px-5 pt-6 pb-0 flex flex-col space-y-10 sm:my-6 sm:rounded-3xl sm:border sm:border-[#EDE8F5] sm:shadow-xl sm:p-6 sm:pb-0 overflow-hidden">
+      <main className="flex-1 w-full max-w-md mx-auto bg-white min-h-screen px-5 pt-6 pb-12 flex flex-col space-y-10 sm:my-6 sm:rounded-3xl sm:border sm:border-[#EDE8F5] sm:shadow-xl sm:p-6">
         
         {/* ===================== HERO SECTION ===================== */}
         <section className="rounded-[28px] bg-gradient-to-b from-[#E5DDFB] via-[#F2EEFC] to-[#FAF9FD] p-5 pt-6 flex flex-col items-center text-center space-y-4">
@@ -47,7 +47,7 @@ export default function HomePage() {
           {/* Top Trust Badge */}
           <div className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-white/90 text-[#6555b8] text-[11px] font-bold tracking-wide shadow-2xs">
             <ShieldCheck className="w-3.5 h-3.5 text-[#6555b8]" />
-            <span>Verified International Courtship</span>
+            <span>GPS-Verified, Scam-Free Matching</span>
           </div>
 
           {/* Headline */}
@@ -59,7 +59,7 @@ export default function HomePage() {
               </span>
             </h1>
             <p className="text-xs sm:text-[13px] text-[#5B5569] leading-relaxed max-w-xs mx-auto">
-              Connecting sincere Southeast Asian women with marriage-minded partners for genuine, lifelong commitment.
+              Meet sincere Southeast Asian women looking for marriage, not money or games.
             </p>
           </div>
 
@@ -79,7 +79,7 @@ export default function HomePage() {
             
             <div className="flex-1 min-w-0 pr-1">
               <div className="flex items-center gap-1">
-                <span className="text-xs font-bold text-[#181126] truncate">Verified Profiles</span>
+                <span className="text-xs font-bold text-[#181126] truncate">GPS-Verified Members</span>
                 <CheckCircle2 className="w-3.5 h-3.5 text-[#6555b8] shrink-0" />
               </div>
               <p className="text-[10.5px] text-[#756D82] truncate">Cebu &bull; Chiang Mai &bull; Bangkok</p>
@@ -87,7 +87,7 @@ export default function HomePage() {
 
             <div className="text-right shrink-0">
               <span className="text-[10px] font-extrabold text-[#6555b8] bg-[#F3EFFC] px-2.5 py-1 rounded-full">
-                100% Real
+                Scam-Filtered
               </span>
             </div>
           </div>
@@ -98,7 +98,7 @@ export default function HomePage() {
               href="/signup"
               className="w-full py-3.5 px-6 rounded-full bg-gradient-to-r from-[#5a48ab] via-[#6555b8] to-[#8d75e0] text-white text-sm font-bold flex items-center justify-center gap-2 shadow-md shadow-[#6555b8]/25 hover:opacity-95 active:scale-[0.99] transition cursor-pointer"
             >
-              <span>Start Intentional Matching</span>
+              <span>Create Your Free Profile</span>
               <ArrowRight className="w-4 h-4" />
             </Link>
             
@@ -125,47 +125,50 @@ export default function HomePage() {
             </h2>
           </div>
 
-          {/* Unboxed Stack with Transparent Illustrations */}
+          {/* Uniform Stack: Centered Illustrations (like with.is) */}
           <div className="space-y-8">
-            {PILLARS.map(({ title, description, image, alt }) => (
-              <div key={title} className="space-y-3.5">
-                
-                {/* Purple Gradient Stage */}
-                <div className="relative w-full h-52 rounded-[28px] bg-gradient-to-b from-[#E3DAFA] via-[#EDE6FC] to-[#F5F2FD] flex items-end justify-center pt-4 overflow-hidden shadow-2xs">
-                  <div className="relative w-60 h-44">
-                    <Image
-                      src={image}
-                      alt={alt}
-                      fill
-                      sizes="240px"
-                      className="object-contain object-bottom"
-                    />
+            {PILLARS.map(({ title, description, image, alt }) => {
+              return (
+                <div key={title} className="space-y-3.5">
+                  
+                  {/* Purple Gradient Stage - Centered content like with.is */}
+                  <div className="relative w-full h-52 rounded-[28px] bg-gradient-to-b from-[#E3DAFA] via-[#EDE6FC] to-[#F5F2FD] flex items-center justify-center px-4 overflow-hidden shadow-2xs">
+                    <div className="relative w-60 h-44">
+                      <Image
+                        src={image}
+                        alt={alt}
+                        fill
+                        sizes="240px"
+                        className="object-contain"
+                        priority
+                      />
+                    </div>
                   </div>
-                </div>
 
-                {/* Left-Aligned Title in Brand Purple + Crisp Body Copy */}
-                <div className="space-y-1.5 px-1">
-                  <h3 className="text-xl font-extrabold text-[#6555b8] leading-snug tracking-tight">
-                    {title}
-                  </h3>
-                  <p className="text-[13.5px] text-[#4A4458] leading-relaxed">
-                    {description}
-                  </p>
-                </div>
+                  {/* Left-Aligned Title in Brand Purple + Crisp Body Copy */}
+                  <div className="space-y-1.5 px-1">
+                    <h3 className="text-xl font-extrabold text-[#6555b8] leading-snug tracking-tight">
+                      {title}
+                    </h3>
+                    <p className="text-[13.5px] text-[#4A4458] leading-relaxed">
+                      {description}
+                    </p>
+                  </div>
 
-              </div>
-            ))}
+                </div>
+              );
+            })}
           </div>
         </section>
 
         {/* ===================== BOTTOM CONVERSION ===================== */}
-        <section className="rounded-[28px] bg-gradient-to-br from-[#5a48ab] via-[#6555b8] to-[#8d75e0] p-6 text-center text-white space-y-4 shadow-md shadow-[#6555b8]/20 mx-1">
+        <section className="rounded-[28px] bg-gradient-to-br from-[#5a48ab] via-[#6555b8] to-[#8d75e0] p-6 text-center text-white space-y-4 shadow-md shadow-[#6555b8]/20">
           <div className="space-y-1">
             <h3 className="text-lg font-extrabold tracking-tight">
               Ready for an intentional connection?
             </h3>
             <p className="text-xs text-white/85 leading-relaxed">
-              Join founding members committed to genuine courtship.
+              Join founding members committed to genuine courtship (free while we&apos;re new).
             </p>
           </div>
 
@@ -173,7 +176,7 @@ export default function HomePage() {
             href="/signup"
             className="w-full py-3.5 px-6 rounded-full bg-white text-[#6555b8] text-sm font-extrabold flex items-center justify-center gap-2 shadow-sm hover:bg-[#FAF9FD] active:scale-[0.99] transition cursor-pointer"
           >
-            <span>Create Free Profile</span>
+            <span>Create Your Free Profile</span>
             <ArrowRight className="w-4 h-4" />
           </Link>
         </section>
