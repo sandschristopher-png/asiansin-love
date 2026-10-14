@@ -1,3 +1,4 @@
+'use client';
 
 function getPartnerLocalTime(city?: string, country?: string): string {
   const loc = ((city || '') + ' ' + (country || '')).toLowerCase();
@@ -21,7 +22,6 @@ function getPartnerLocalTime(city?: string, country?: string): string {
     return '';
   }
 }
-'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';

@@ -31,6 +31,15 @@ const RELATIONSHIP_INTENTS = [
   'Friendship',
 ];
 
+const DISCOVERY_MODES = [
+  { id: 'all', label: 'All' },
+  { id: 'marriage', label: '💍 Marriage-Minded' },
+  { id: 'verified', label: '🛡️ Verified Only' },
+  { id: 'new', label: '✨ New Members' },
+] as const;
+type DiscoveryModeId = (typeof DISCOVERY_MODES)[number]['id'];
+
+
 export interface ProfileItem {
   is_plus?: boolean;
   membership_tier?: string;
@@ -184,6 +193,7 @@ function DiscoverCardPhotoCarousel({
 }
 
 function DiscoverContent() {
+  const [discoveryMode, setDiscoveryMode] = useState<DiscoveryModeId>('all');
   const router = useRouter();
   const searchParams = useSearchParams();
   const [currentUserCoords, setCurrentUserCoords] = useState<{ lat: number; lon: number } | null>(null);
@@ -325,6 +335,7 @@ function DiscoverContent() {
   };
 
   const resetFilters = () => {
+    setDiscoveryMode('all');
     setSelectedGenders([]);
     setSelectedCountry('All');
     setSearchQuery('');
@@ -581,7 +592,7 @@ function DiscoverContent() {
     return ['All', ...SEA_COUNTRIES];
   }, [isUserInSEA, currentUserProfile]);
 
-  const filteredProfiles = profiles.filter((profile) => {
+  const baseFilteredProfiles = profiles.filter((profile) => {
     const matchesCountry = (() => {
     if (selectedCountry.toLowerCase() === 'all') return true;
     if (selectedCountry.toLowerCase() === 'other') {
@@ -608,8 +619,32 @@ function DiscoverContent() {
     const matchesOnline = !activeNowOnly || profile.online;
 
     const isPassed = cardActions[profile.id] === 'pass';
-    return matchesCountry && matchesGender && matchesQuery && matchesAge && matchesIntent && matchesVerified && matchesOnline;
+    const matchesDiscoveryMode = (() => {
+      if (discoveryMode === 'marriage') {
+        const intent = String((profile as any).intentions || (profile as any).looking_for || '').toLowerCase();
+        return intent.includes('marriage') || intent.includes('serious');
+      }
+      if (discoveryMode === 'verified') {
+        return Boolean(profile.verified);
+      }
+      if (discoveryMode === 'new') {
+        const createdAt = (profile as any).created_at ? new Date((profile as any).created_at).getTime() : 0;
+        const thirtyDaysAgo = Date.now() - 30 * 24 * 60 * 60 * 1000;
+        return createdAt > thirtyDaysAgo || Boolean((profile as any).is_new);
+      }
+      return true;
+    })();
+
+    return matchesCountry && matchesGender && matchesQuery && matchesDiscoveryMode && matchesAge && matchesIntent && matchesVerified && matchesOnline;
   });
+
+  const filteredProfiles = discoveryMode === 'new'
+    ? [...baseFilteredProfiles].sort((a, b) => {
+        const tA = (a as any).created_at ? new Date((a as any).created_at).getTime() : 0;
+        const tB = (b as any).created_at ? new Date((b as any).created_at).getTime() : 0;
+        return tB - tA;
+      })
+    : baseFilteredProfiles;
 
   const visibleProfiles = filteredProfiles.slice(0, visibleLimit);
   const hasMore = visibleLimit < filteredProfiles.length;
@@ -659,6 +694,27 @@ function DiscoverContent() {
             {/* Scrollable Country Pills Track */}
             <div className="flex-1 min-w-0 overflow-x-auto no-scrollbar touch-pan-x">
               <div className="flex items-center gap-1.5 w-max px-0.5">
+              {/* Curated Discovery Channel Sub-Tabs */}
+              <div className="flex items-center gap-1 shrink-0 pr-2 mr-1 border-r border-[#E5E1EC]">
+                {DISCOVERY_MODES.map((mode) => {
+                  const active = discoveryMode === mode.id;
+                  return (
+                    <button
+                      key={mode.id}
+                      type="button"
+                      onClick={() => setDiscoveryMode(mode.id)}
+                      className={`px-3.5 py-1 text-xs font-semibold rounded-full transition-all whitespace-nowrap active:scale-95 ${
+                        active
+                          ? 'bg-[#6555b8] text-white shadow-xs'
+                          : 'bg-[#F2EEF7] text-[#524B5E] hover:bg-[#E9E4F0] hover:text-[#1C1924]'
+                      }`}
+                    >
+                      {mode.label}
+                    </button>
+                  );
+                })}
+              </div>
+
                 {[
                   { id: 'All', label: 'All' },
                   { id: 'Philippines', label: 'Philippines' },
