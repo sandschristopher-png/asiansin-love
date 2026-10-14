@@ -651,7 +651,7 @@ function DiscoverContent() {
 
   return (
     <div className="w-full min-h-full bg-[#FAFAFD] text-[#1C1924] flex flex-col">
-      <main className="w-full px-3.5 sm:px-4 pt-3 pb-8 space-y-3.5">
+      <main className="w-full px-3.5 sm:px-4 pt-3 pb-24 space-y-3.5">
         
         {/* Top Control Bar */}
         <section aria-label="Search and Filters" className="w-full space-y-3">
