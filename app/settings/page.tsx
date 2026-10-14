@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { CheckCircle2, AlertCircle, Loader2, Crown, User, LogOut } from 'lucide-react';
+import { CheckCircle2, AlertCircle, Loader2, Crown, User, LogOut, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabaseClient';
@@ -16,6 +16,28 @@ export default function SettingsPage() {
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [userId, setUserId] = useState<string | null>(null);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  const handleDeleteAccount = async () => {
+    setIsDeleting(true);
+    setDeleteError(null);
+    try {
+      const res = await fetch('/api/account/delete', { method: 'POST' });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setDeleteError(data.error || 'Failed to delete account. Please try again.');
+        setIsDeleting(false);
+        return;
+      }
+      router.push('/');
+      router.refresh();
+    } catch (err: any) {
+      setDeleteError(err.message || 'An unexpected error occurred.');
+      setIsDeleting(false);
+    }
+  };
 
   useEffect(() => {
     async function loadUserProfile() {
@@ -213,6 +235,67 @@ export default function SettingsPage() {
           </button>
         </div>
       </div>
+
+      {/* Danger Zone */}
+      <div className="bg-white rounded-2xl border border-red-200/80 p-4 sm:p-5 shadow-xs space-y-3">
+        <div className="space-y-1">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-red-600">Danger Zone</h3>
+          <p className="text-xs text-[#524B5E] leading-relaxed">
+            Permanently delete your profile, photos, matches, and courtship notes. This action is irreversible.
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={() => setShowDeleteModal(true)}
+          className="w-full sm:w-auto px-4 py-2 rounded-xl bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer"
+        >
+          <Trash2 className="w-3.5 h-3.5" />
+          <span>Delete Profile & Account</span>
+        </button>
+      </div>
+
+      {/* Delete Confirmation Modal */}
+      {showDeleteModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+          <div className="relative w-full max-w-sm bg-white rounded-3xl border border-[#DDD7E5] shadow-2xl p-5 space-y-4">
+            <div className="space-y-1.5 text-center">
+              <div className="w-10 h-10 rounded-full bg-red-100 text-red-600 mx-auto flex items-center justify-center mb-2">
+                <Trash2 className="w-5 h-5" />
+              </div>
+              <h3 className="text-sm font-bold text-[#1C1924]">Delete Profile & Account?</h3>
+              <p className="text-xs text-[#524B5E] leading-relaxed">
+                This will permanently delete your photos, matches, verification status, and all conversations. You cannot undo this action.
+              </p>
+            </div>
+
+            {deleteError && (
+              <p className="text-xs text-red-600 bg-red-50 p-2.5 rounded-xl border border-red-200 text-center">
+                {deleteError}
+              </p>
+            )}
+
+            <div className="flex flex-col gap-2 pt-1">
+              <button
+                type="button"
+                disabled={isDeleting}
+                onClick={handleDeleteAccount}
+                className="w-full py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold transition disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+              >
+                {isDeleting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                <span>{isDeleting ? 'Deleting Profile...' : 'Yes, Permanently Delete'}</span>
+              </button>
+              <button
+                type="button"
+                disabled={isDeleting}
+                onClick={() => { setShowDeleteModal(false); setDeleteError(null); }}
+                className="w-full py-2.5 rounded-xl border border-[#DDD7E5] text-xs font-semibold text-[#524B5E] hover:bg-[#FAF8FD] transition cursor-pointer"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Handle Upgrade Fallback Modal */}
       <HandleUpgradeModal

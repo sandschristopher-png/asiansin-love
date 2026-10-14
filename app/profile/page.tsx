@@ -265,6 +265,20 @@ export default function MyProfilePage() {
   return (
     <div className="flex-1 flex flex-col w-full bg-[#F8F7FA] text-[#1C1924]">
       <main className="flex-1 max-w-6xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-6 pb-32 space-y-6">
+        {/* Top Header with Settings Link */}
+        <div className="flex items-center justify-between pb-3 border-b border-[#E5E1EC]">
+          <div>
+            <h1 className="text-lg font-bold text-[#1C1924]">My Profile</h1>
+            <p className="text-xs text-[#524B5E]">Manage your courtship vitals, photos, and preferences</p>
+          </div>
+          <Link
+            href="/settings"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl border border-[#DDD7E5] bg-white hover:bg-[#FAF8FD] text-xs font-semibold text-[#524B5E] hover:text-[#1C1924] transition shadow-xs"
+          >
+            <Settings className="w-3.5 h-3.5 text-[#6555b8]" />
+            <span>Settings</span>
+          </Link>
+        </div>
         {/* Main Grid: Left preview photo card & Right vitals */}
         <div className="flex flex-col gap-4 w-full" ref={dropdownRef}>
           

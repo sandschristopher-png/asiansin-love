@@ -654,35 +654,37 @@ function DiscoverContent() {
             </button>
           </div>
 
-          {/* Unified Compact Filter Row: Gender & Location */}
-          <div className="relative z-30 flex items-center justify-between gap-1.5 w-full py-0.5 select-none">
-            {/* Left Group: Quick Country Filters */}
-            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 shrink min-w-0">
-              {[
-                { id: 'All', label: 'All' },
-                { id: 'Philippines', label: '🇵🇭 Philippines' },
-                { id: 'Thailand', label: '🇹🇭 Thailand' },
-                { id: 'Vietnam', label: '🇻🇳 Vietnam' }
-              ].map(({ id, label }) => {
-                const active = selectedCountry.toLowerCase() === id.toLowerCase();
-                return (
-                  <button
-                    key={id}
-                    type="button"
-                    onClick={() => setSelectedCountry(id)}
-                    className={`shrink-0 px-3 py-1 text-xs font-semibold rounded-full transition-all whitespace-nowrap active:scale-95 ${
-                      active
-                        ? "bg-[#6555b8] text-white shadow-sm hover:bg-[#5646a3]"
-                        : "bg-[#F2EEF7] text-[#524B5E] hover:bg-[#E9E4F0] hover:text-[#1C1924]"
-                    }`}
-                  >
-                    {label}
-                  </button>
-                );
-              })}
+          {/* Clean Pairs-Style Country Scroll Strip & Location Dropdown */}
+          <div className="relative z-30 flex items-center justify-between gap-2 w-full py-1 select-none">
+            {/* Scrollable Country Pills Track */}
+            <div className="flex-1 min-w-0 overflow-x-auto no-scrollbar touch-pan-x">
+              <div className="flex items-center gap-1.5 w-max px-0.5">
+                {[
+                  { id: 'All', label: 'All' },
+                  { id: 'Philippines', label: 'Philippines' },
+                  { id: 'Thailand', label: 'Thailand' },
+                  { id: 'Vietnam', label: 'Vietnam' }
+                ].map(({ id, label }) => {
+                  const active = selectedCountry.toLowerCase() === id.toLowerCase();
+                  return (
+                    <button
+                      key={id}
+                      type="button"
+                      onClick={() => setSelectedCountry(id)}
+                      className={`shrink-0 px-3.5 py-1 text-xs font-semibold rounded-full transition-all whitespace-nowrap active:scale-95 ${
+                        active
+                          ? "bg-[#6555b8] text-white shadow-xs"
+                          : "bg-[#F3EFFC] text-[#524B5E] hover:bg-[#EBE4F7] hover:text-[#1C1924]"
+                      }`}
+                    >
+                      {label}
+                    </button>
+                  );
+                })}
+              </div>
             </div>
 
-            {/* Right Group: Locations Pill & Dropdown */}
+            {/* More Locations Dropdown */}
             <div ref={countryDropdownRef} className="relative shrink-0">
               <button
                 type="button"
