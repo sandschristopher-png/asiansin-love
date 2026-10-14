@@ -1,3 +1,26 @@
+
+function getPartnerLocalTime(city?: string, country?: string): string {
+  const loc = ((city || '') + ' ' + (country || '')).toLowerCase();
+  let timeZone = 'Asia/Manila';
+  if (loc.includes('thailand') || loc.includes('bangkok') || loc.includes('chiang mai') || loc.includes('vietnam') || loc.includes('da nang')) {
+    timeZone = 'Asia/Bangkok';
+  }
+  try {
+    const formattedTime = new Intl.DateTimeFormat('en-US', {
+      timeZone,
+      hour: 'numeric',
+      minute: '2-digit',
+      hour12: true,
+    }).format(new Date());
+    const isNight = (() => {
+      const h = parseInt(new Intl.DateTimeFormat('en-US', { timeZone, hour: 'numeric', hour12: false }).format(new Date()), 10);
+      return h < 6 || h >= 22;
+    })();
+    return `${isNight ? '??' : '??'} ${formattedTime} local time`;
+  } catch {
+    return '';
+  }
+}
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';

@@ -171,7 +171,7 @@ export default function HomePage() {
           <div className="w-full bg-white rounded-3xl border border-[#EDE8F5] p-5 shadow-xs flex flex-col items-center text-center space-y-3">
             <div className="relative w-36 h-28 flex items-end justify-center">
               <Image
-                src="/verified-nobg.png"
+                src="/status-approved.png"
                 alt="Hand verified badge"
                 fill
                 className="object-contain object-bottom"

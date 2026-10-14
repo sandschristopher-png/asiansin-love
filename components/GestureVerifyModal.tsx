@@ -267,9 +267,9 @@ export default function GestureVerifyModal({ isOpen, onClose, onSuccess }: Gestu
         ) : (
           /* Active Verification Flow */
           <>
-            {/* Pose Instruction Card */}
-            <div className="flex items-center gap-3 bg-[#FAF8FD] border border-[#DDD7E5] rounded-2xl p-3">
-              <div className="relative w-20 h-20 shrink-0 rounded-xl overflow-hidden bg-white border border-[#DDD7E5]">
+            {/* Compact Pose Instruction Strip */}
+            <div className="flex items-center gap-2.5 bg-[#FAF8FD] border border-[#DDD7E5] rounded-xl p-2 select-none">
+              <div className="relative w-12 h-12 shrink-0 rounded-lg overflow-hidden bg-white border border-[#DDD7E5] p-0.5">
                 <Image
                   src={currentPose.imageSrc}
                   alt={currentPose.label}
@@ -278,25 +278,27 @@ export default function GestureVerifyModal({ isOpen, onClose, onSuccess }: Gestu
                   priority
                 />
               </div>
-              <div className="space-y-1 text-left">
-                <span className="inline-block bg-[#6555B8] text-white text-[10px] font-bold px-2 py-0.5 rounded-full">
-                  Required Pose
-                </span>
-                <p className="text-xs font-bold text-[#1C1924]">{currentPose.label}</p>
-                <p className="text-[11px] text-[#524B5E] leading-snug">{currentPose.instruction}</p>
+              <div className="min-w-0 flex-1 text-left">
+                <div className="flex items-center gap-1.5">
+                  <span className="inline-block bg-[#6555B8] text-white text-[9px] font-bold px-1.5 py-0.2 rounded-full uppercase tracking-wider">
+                    Required Pose
+                  </span>
+                  <p className="text-xs font-bold text-[#1C1924] truncate">{currentPose.label}</p>
+                </div>
+                <p className="text-[10px] text-[#524B5E] leading-tight line-clamp-2 mt-0.5">{currentPose.instruction}</p>
               </div>
             </div>
 
-            {/* Camera Viewport / Photo Snapshot */}
-            <div className="relative w-full aspect-4/3 rounded-2xl overflow-hidden bg-black flex items-center justify-center border border-[#DDD7E5]">
+            {/* Camera Viewport / Photo Snapshot (Centered 240px frame with Oval Face Guide) */}
+            <div className="relative w-full max-w-[240px] aspect-square mx-auto rounded-2xl overflow-hidden bg-black flex items-center justify-center border border-[#DDD7E5] shadow-inner">
               {cameraError ? (
-                <div className="p-6 text-center text-white space-y-3">
-                  <AlertCircle className="w-8 h-8 text-[#E05375] mx-auto" />
-                  <p className="text-xs text-gray-200">{cameraError}</p>
+                <div className="p-4 text-center text-white space-y-2">
+                  <AlertCircle className="w-6 h-6 text-[#E05375] mx-auto" />
+                  <p className="text-[11px] text-gray-200">{cameraError}</p>
                   <button
                     type="button"
                     onClick={startCamera}
-                    className="px-4 py-2 bg-[#6555B8] text-white text-xs font-bold rounded-xl"
+                    className="px-3 py-1.5 bg-[#6555B8] text-white text-xs font-bold rounded-xl"
                   >
                     Retry Camera
                   </button>
@@ -312,9 +314,11 @@ export default function GestureVerifyModal({ isOpen, onClose, onSuccess }: Gestu
                     muted
                     className="w-full h-full object-cover -scale-x-100"
                   />
-                  <div className="absolute inset-0 border-2 border-dashed border-white/40 rounded-2xl pointer-events-none m-3 flex items-center justify-center">
-                    <span className="text-[11px] text-white/90 bg-black/50 px-3 py-1 rounded-full backdrop-blur-xs">
-                      Align head & match gesture
+                  {/* Subtle Oval Face Guide */}
+                  <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
+                    <div className="w-[170px] h-[210px] rounded-[50%] border-2 border-white/50 border-dashed" />
+                    <span className="absolute bottom-2 text-[10px] font-medium text-white/90 bg-black/60 px-2.5 py-0.5 rounded-full backdrop-blur-xs">
+                      Align face & match hand pose
                     </span>
                   </div>
                 </>

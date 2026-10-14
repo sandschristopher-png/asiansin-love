@@ -656,17 +656,21 @@ function DiscoverContent() {
 
           {/* Unified Compact Filter Row: Gender & Location */}
           <div className="relative z-30 flex items-center justify-between gap-1.5 w-full py-0.5 select-none">
-            {/* Left Group: Gender Pills */}
-            <div className="flex items-center gap-1.5 shrink-0">
-              {(["woman", "trans", "man"]).map((gender) => {
-                const label = gender === "woman" ? "Women" : gender === "trans" ? "Trans" : "Men";
-                const active = selectedGenders.includes(gender);
+            {/* Left Group: Quick Country Filters */}
+            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-0.5 shrink min-w-0">
+              {[
+                { id: 'All', label: 'All' },
+                { id: 'Philippines', label: '🇵🇭 Philippines' },
+                { id: 'Thailand', label: '🇹🇭 Thailand' },
+                { id: 'Vietnam', label: '🇻🇳 Vietnam' }
+              ].map(({ id, label }) => {
+                const active = selectedCountry.toLowerCase() === id.toLowerCase();
                 return (
                   <button
-                    key={gender}
+                    key={id}
                     type="button"
-                    onClick={() => toggleGender(gender)}
-                    className={`shrink-0 px-3.5 py-1 text-xs font-semibold rounded-full transition-all whitespace-nowrap active:scale-95 ${
+                    onClick={() => setSelectedCountry(id)}
+                    className={`shrink-0 px-3 py-1 text-xs font-semibold rounded-full transition-all whitespace-nowrap active:scale-95 ${
                       active
                         ? "bg-[#6555b8] text-white shadow-sm hover:bg-[#5646a3]"
                         : "bg-[#F2EEF7] text-[#524B5E] hover:bg-[#E9E4F0] hover:text-[#1C1924]"
