@@ -6,8 +6,8 @@ import { ShieldCheck } from 'lucide-react';
 
 export function Footer() {
   return (
-    <footer className="w-full shrink-0 bg-gradient-to-b from-transparent via-[#4B3B85] to-[#3d2e6b] text-white pt-16 pb-24 px-6 select-none mt-4">
-      <div className="max-w-md mx-auto flex flex-col items-center text-center space-y-6">
+    <footer className="w-full shrink-0 bg-gradient-to-b from-[#5a48ab] via-[#4E3BA6] to-[#36276B] text-white pt-10 pb-20 px-6 select-none mt-2 rounded-b-[28px]">
+      <div className="max-w-md mx-auto flex flex-col items-center text-center space-y-5">
         
         {/* Brand Header */}
         <div className="space-y-1">
@@ -23,7 +23,7 @@ export function Footer() {
         </div>
 
         {/* Trust & Safety Pill */}
-        <div className="inline-flex items-center gap-2 text-[11px] font-medium px-4 py-1.5 rounded-full bg-white/10 backdrop-blur-xs border border-white/20 text-[#FAF8FF]">
+        <div className="inline-flex items-center gap-2 text-[11px] font-medium px-3.5 py-1.5 rounded-full bg-white/10 backdrop-blur-xs border border-white/20 text-[#FAF8FF]">
           <ShieldCheck className="w-3.5 h-3.5 text-emerald-300" />
           <span>Verified Profiles • Zero Microtransactions • High Intent</span>
         </div>
