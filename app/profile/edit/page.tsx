@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, Save, UserCheck, ShieldCheck, Camera, Trash2, Loader2, Plus } from 'lucide-react';
+import { ArrowLeft, MapPin, Save, UserCheck, ShieldCheck, Camera, Trash2, Loader2, Plus } from 'lucide-react';
 import { supabase } from '@/lib/supabaseClient';
 import UpgradeModal from '@/components/UpgradeModal';
 
@@ -43,6 +43,8 @@ export default function EditProfilePage() {
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [isLocationVerified, setIsLocationVerified] = useState(false);
+  const [verifyingLocation, setVerifyingLocation] = useState(false);
   const [photos, setPhotos] = useState<string[]>([]);
   const [uploadingIdx, setUploadingIdx] = useState<number | null>(null);
 
@@ -122,6 +124,40 @@ export default function EditProfilePage() {
     }
     loadProfile();
   }, [router]);
+
+  
+  const handleVerifyLocation = async () => {
+    setVerifyingLocation(true);
+    setStatusMsg(null);
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('You must be signed in to verify location.');
+
+      const res = await fetch('/api/verify/location', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user.id }),
+      });
+
+      const result = await res.json();
+      if (!res.ok) {
+        setStatusMsg({
+          type: 'error',
+          text: result.message || result.error || 'Location verification failed.',
+        });
+      } else {
+        setIsLocationVerified(true);
+        setStatusMsg({
+          type: 'success',
+          text: result.message || 'Location verified successfully! Badge awarded.',
+        });
+      }
+    } catch (err: any) {
+      setStatusMsg({ type: 'error', text: err.message || 'Verification failed.' });
+    } finally {
+      setVerifyingLocation(false);
+    }
+  };
 
   const handleUsernameChange = async (val: string) => {
     const clean = val.toLowerCase().replace(/[^a-z0-9_]/g, '');
@@ -599,6 +635,71 @@ export default function EditProfilePage() {
                 </select>
               </div>
             </div>
+          </div>
+
+          {/* Location Verification Status Card */}
+          <div className="rounded-2xl border transition-all p-3.5 bg-white shadow-xs">
+            {isLocationVerified ? (
+              <div className="flex items-center justify-between gap-3">
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+                    <ShieldCheck className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold text-emerald-700 flex items-center gap-1">
+                      <span>🛡️ Location Confirmed</span>
+                      <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-emerald-100 text-emerald-800 font-semibold">GPS Edge</span>
+                    </span>
+                    <p className="text-[11px] text-[#756D82]">
+                      Your connection matches your declared location. Qualifies for the Verified filter.
+                    </p>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={handleVerifyLocation}
+                  disabled={verifyingLocation}
+                  className="text-[11px] font-semibold text-[#6555b8] hover:underline shrink-0"
+                >
+                  {verifyingLocation ? 'Checking...' : 'Re-verify'}
+                </button>
+              </div>
+            ) : (
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="flex items-start sm:items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-full bg-[#F3EFFC] text-[#6555b8] flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
+                    <MapPin className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <span className="text-xs font-bold text-[#1C1924]">
+                      Confirm Your Physical Location
+                    </span>
+                    <p className="text-[11px] text-[#756D82]">
+                      1-click check against your network edge. Awards the 🛡️ Verified badge and +3 Rep.
+                    </p>
+                  </div>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={handleVerifyLocation}
+                  disabled={verifyingLocation}
+                  className="px-4 py-2 rounded-xl bg-[#6555B8] hover:bg-[#5242a3] text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition active:scale-95 disabled:opacity-50 shrink-0 shadow-xs"
+                >
+                  {verifyingLocation ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Checking Edge...</span>
+                    </>
+                  ) : (
+                    <>
+                      <ShieldCheck className="w-3.5 h-3.5" />
+                      <span>Verify Location</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            )}
           </div>
 
           {/* --- Courtship Dossier Section 2: Family & Values --- */}
