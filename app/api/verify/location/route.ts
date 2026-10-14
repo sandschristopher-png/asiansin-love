@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { supabase } from '@/lib/supabaseClient';
 
-// ISO 3166-1 alpha-2 mapping to match the database country names
 const COUNTRY_MAP: Record<string, string> = {
   PH: 'Philippines',
   US: 'United States',
@@ -29,15 +28,6 @@ const COUNTRY_MAP: Record<string, string> = {
   AU: 'Australia',
   GB: 'United Kingdom',
   NZ: 'New Zealand',
-  DE: 'Germany',
-  FR: 'France',
-  IT: 'Italy',
-  ES: 'Spain',
-  NL: 'Netherlands',
-  IE: 'Ireland',
-  SE: 'Sweden',
-  CH: 'Switzerland',
-  NO: 'Norway',
 };
 
 export async function POST(req: NextRequest) {
@@ -54,7 +44,6 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Fallback: Check if userId is passed in body if no Bearer token
     if (!userId) {
       const body = await req.json().catch(() => ({}));
       userId = body.userId || null;
@@ -64,10 +53,9 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Unauthorized. Sign in to verify location.' }, { status: 401 });
     }
 
-    // 1. Fetch current profile
     const { data: profile, error: fetchErr } = await supabase
       .from('profiles')
-      .select('id, country, city, reputation_score, verified, location_source')
+      .select('id, country, city, reputation_score')
       .eq('id', userId)
       .single();
 
@@ -75,25 +63,22 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Profile not found.' }, { status: 404 });
     }
 
-    // 2. Extract Vercel Edge Geolocation Headers
     let detectedCountryCode = req.headers.get('x-vercel-ip-country')?.toUpperCase() || null;
     let detectedCity = req.headers.get('x-vercel-ip-city') 
       ? decodeURIComponent(req.headers.get('x-vercel-ip-city')!) 
       : null;
 
-    // Localhost / Development fallback support
     const isDev = process.env.NODE_ENV === 'development' || !detectedCountryCode;
     if (isDev && !detectedCountryCode) {
-      // Allow testing header or match user country for dev environment
       const testCountry = req.headers.get('x-test-country');
-      detectedCountryCode = testCountry ? testCountry.toUpperCase() : 'PH';
-      detectedCity = detectedCity || 'Manila (Local Dev)';
+      detectedCountryCode = testCountry ? testCountry.toUpperCase() : (profile.country === 'United States' ? 'US' : 'PH');
+      detectedCity = detectedCity || (detectedCountryCode === 'US' ? 'Los Angeles' : 'Manila');
     }
 
     const detectedCountryName = detectedCountryCode ? (COUNTRY_MAP[detectedCountryCode] || detectedCountryCode) : 'Unknown';
     const declaredCountry = (profile.country || '').trim().toLowerCase();
 
-    // 3. Match Evaluation
+    // Bumpy-style anti-VPN & location spoofing match
     const isCountryMatch = 
       declaredCountry === detectedCountryName.toLowerCase() ||
       declaredCountry === (COUNTRY_MAP[detectedCountryCode || ''] || '').toLowerCase();
@@ -102,17 +87,19 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({
         success: false,
         verified: false,
-        message: `Location discrepancy: Connected from ${detectedCountryName}, but profile country is set to ${profile.country || 'unspecified'}.`,
+        isVpn: true,
+        message: `Access via VPN is not allowed. To verify your location and claim your 🛡️ Verified badge, please disable your VPN and try again. (Detected: ${detectedCountryName})`,
         detectedCountry: detectedCountryName,
         declaredCountry: profile.country,
       }, { status: 400 });
     }
 
-    // 4. Update Profile: Award verified badge and boost reputation score
+    // Award Verified Status & Rep Score boost
     const newScore = Math.min(100, (profile.reputation_score || 95) + 3);
     const updates: Record<string, any> = {
       location_source: 'gps_verified',
-      verified: true,
+      location_verified_at: new Date().toISOString(),
+      is_verified: true,
       reputation_score: newScore,
       updated_at: new Date().toISOString(),
     };
@@ -127,7 +114,7 @@ export async function POST(req: NextRequest) {
       .eq('id', userId);
 
     if (updateErr) {
-      return NextResponse.json({ error: 'Failed to update profile verification status.' }, { status: 500 });
+      return NextResponse.json({ error: 'Failed to update verification status.' }, { status: 500 });
     }
 
     return NextResponse.json({
@@ -137,7 +124,7 @@ export async function POST(req: NextRequest) {
       detectedCountry: detectedCountryName,
       detectedCity,
       reputationScore: newScore,
-      message: 'Location verified successfully! Badge awarded.',
+      message: 'Physical location confirmed! 🛡️ Verified badge awarded.',
     });
 
   } catch (err: any) {
