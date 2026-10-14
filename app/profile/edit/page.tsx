@@ -8,6 +8,36 @@ import { supabase } from '@/lib/supabaseClient';
 import UpgradeModal from '@/components/UpgradeModal';
 
 
+
+function cleanHeightForDb(input: string): string | null {
+  if (!input || !input.trim()) return null;
+  const raw = input.trim();
+
+  // If already matches "XXX cm", return trimmed
+  const cmMatch = raw.match(/^(d{2,3})s*cm$/i);
+  if (cmMatch) return `${cmMatch[1]} cm`;
+
+  // If user entered just numbers (e.g. 165 or 170)
+  const numOnlyMatch = raw.match(/^(d{2,3})$/);
+  if (numOnlyMatch) return `${numOnlyMatch[1]} cm`;
+
+  // If user entered imperial like 5'5", 5ft 5, 5'5
+  const imperialMatch = raw.match(/^(d)['’fts]+(d{1,2})["”ins]*$/i);
+  if (imperialMatch) {
+    const feet = parseInt(imperialMatch[1], 10);
+    const inches = parseInt(imperialMatch[2], 10);
+    const totalInches = feet * 12 + inches;
+    const cm = Math.round(totalInches * 2.54);
+    return `${cm} cm`;
+  }
+
+  // Fallback: extract any 2-3 digit number found
+  const anyNum = raw.match(/(d{2,3})/);
+  if (anyNum) return `${anyNum[1]} cm`;
+
+  return null;
+}
+
 export default function EditProfilePage() {
   const router = useRouter();
   const [loading, setLoading] = useState(true);
@@ -667,7 +697,7 @@ export default function EditProfilePage() {
                   type="text"
                   value={formData.height}
                   onChange={(e) => setFormData({ ...formData, height: e.target.value })}
-                  placeholder="e.g. 165 cm or 5ft 5in"
+                  placeholder="e.g. 165 cm or 5'5"
                   className="w-full px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#9A8CC3]/35 text-[#1C1924] text-sm focus:outline-none focus:border-[#9A8CC3]"
                 />
               </div>
