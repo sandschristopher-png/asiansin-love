@@ -356,68 +356,195 @@ export default function PublicProfilePage() {
           </p>
         </div>
 
-        {/* Vitals & Lifestyle Card */}
-          <div className="p-5 rounded-3xl bg-white border border-[#DDD7E5]/70 shadow-sm space-y-4">
-            <h2 className="text-[11px] font-bold text-[#6555B8] uppercase tracking-wider">
-              Vitals & Lifestyle
-            </h2>
+        {/* Courtship Dossier: 3-Tier Compatibility Architecture */}
+        <div className="space-y-4">
+          {/* 1. Courtship Alignment & Timeline */}
+          <div className="p-4 sm:p-5 rounded-3xl bg-white border border-[#DDD7E5]/70 shadow-xs space-y-3">
+            <div className="flex items-center justify-between pb-2 border-b border-[#F0ECF5]">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-full bg-[#F3EFFC] text-[#6555b8] flex items-center justify-center">
+                  <HeartHandshake className="w-4 h-4" />
+                </div>
+                <h2 className="text-xs font-bold text-[#1C1924] uppercase tracking-wider">
+                  Courtship Alignment & Timeline
+                </h2>
+              </div>
+              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#F3EFFC] text-[#6555b8]">
+                Intent
+              </span>
+            </div>
 
             <div className="space-y-0 text-xs divide-y divide-[#F0ECF5]">
-              {profile.intent && (
-                <div className="flex items-center justify-between py-2.5">
-                  <span className="font-medium text-[#756D82]">Relationship Intent</span>
-                  <span className="font-semibold text-[#1C1924] text-right">{profile.intent}</span>
+              <div className="flex items-center justify-between py-2.5">
+                <span className="font-medium text-[#756D82] flex items-center gap-2">
+                  <Heart className="w-3.5 h-3.5 text-[#8C849B]" />
+                  Relationship Intent
+                </span>
+                <span className="font-semibold text-[#1C1924] text-right">
+                  {profile.intent || profile.intentions || profile.looking_for || 'Marriage / Serious'}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between py-2.5">
+                <span className="font-medium text-[#756D82] flex items-center gap-2">
+                  <Sparkles className="w-3.5 h-3.5 text-[#8C849B]" />
+                  Marriage Timeline
+                </span>
+                <span className="font-semibold text-[#1C1924] text-right">
+                  {profile.marriage_timeline || 'Within 1–2 years'}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between py-2.5">
+                <span className="font-medium text-[#756D82] flex items-center gap-2">
+                  <Globe className="w-3.5 h-3.5 text-[#8C849B]" />
+                  Relocation Flexibility
+                </span>
+                <span className="font-semibold text-[#1C1924] text-right">
+                  {profile.relocation || 'Open to relocation'}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between py-2.5">
+                <span className="font-medium text-[#756D82] flex items-center gap-2">
+                  <ShieldCheck className="w-3.5 h-3.5 text-[#8C849B]" />
+                  Marital Status
+                </span>
+                <span className="font-semibold text-[#1C1924] text-right">
+                  {profile.marital_status || 'Never Married'}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* 2. Family & Values */}
+          <div className="p-4 sm:p-5 rounded-3xl bg-white border border-[#DDD7E5]/70 shadow-xs space-y-3">
+            <div className="flex items-center justify-between pb-2 border-b border-[#F0ECF5]">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-full bg-[#FFF0F4] text-[#E05375] flex items-center justify-center">
+                  <Baby className="w-4 h-4" />
                 </div>
-              )}
+                <h2 className="text-xs font-bold text-[#1C1924] uppercase tracking-wider">
+                  Family & Values
+                </h2>
+              </div>
+              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#FFF0F4] text-[#E05375]">
+                Family
+              </span>
+            </div>
 
+            <div className="space-y-0 text-xs divide-y divide-[#F0ECF5]">
               <div className="flex items-center justify-between py-2.5">
-                <span className="font-medium text-[#756D82]">Occupation</span>
-                <span className="font-semibold text-[#1C1924] text-right">{profile.occupation || 'Not specified'}</span>
+                <span className="font-medium text-[#756D82] flex items-center gap-2">
+                  <Baby className="w-3.5 h-3.5 text-[#8C849B]" />
+                  Desires Children
+                </span>
+                <span className="font-semibold text-[#1C1924] text-right">
+                  {profile.wants_kids || 'Wants children'}
+                </span>
               </div>
 
               <div className="flex items-center justify-between py-2.5">
-                <span className="font-medium text-[#756D82]">Marital Status</span>
-                <span className="font-semibold text-[#1C1924] text-right">{profile.marital_status || 'Never Married'}</span>
+                <span className="font-medium text-[#756D82] flex items-center gap-2">
+                  <User className="w-3.5 h-3.5 text-[#8C849B]" />
+                  Has Children
+                </span>
+                <span className="font-semibold text-[#1C1924] text-right">
+                  {profile.has_kids || 'No'}
+                </span>
               </div>
 
               <div className="flex items-center justify-between py-2.5">
-                <span className="font-medium text-[#756D82]">Height</span>
+                <span className="font-medium text-[#756D82] flex items-center gap-2">
+                  <Sparkles className="w-3.5 h-3.5 text-[#8C849B]" />
+                  Faith & Beliefs
+                </span>
+                <span className="font-semibold text-[#1C1924] text-right">
+                  {profile.religion || 'Christian (Catholic)'}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between py-2.5">
+                <span className="font-medium text-[#756D82] flex items-center gap-2">
+                  <MapPin className="w-3.5 h-3.5 text-[#8C849B]" />
+                  Living Situation
+                </span>
+                <span className="font-semibold text-[#1C1924] text-right">
+                  {profile.living_situation || 'Lives independently'}
+                </span>
+              </div>
+            </div>
+          </div>
+
+          {/* 3. Lifestyle & Background */}
+          <div className="p-4 sm:p-5 rounded-3xl bg-white border border-[#DDD7E5]/70 shadow-xs space-y-3">
+            <div className="flex items-center justify-between pb-2 border-b border-[#F0ECF5]">
+              <div className="flex items-center gap-2">
+                <div className="w-7 h-7 rounded-full bg-[#F3EFFC] text-[#6555b8] flex items-center justify-center">
+                  <Briefcase className="w-4 h-4" />
+                </div>
+                <h2 className="text-xs font-bold text-[#1C1924] uppercase tracking-wider">
+                  Lifestyle & Background
+                </h2>
+              </div>
+              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#F3EFFC] text-[#6555b8]">
+                Rhythm
+              </span>
+            </div>
+
+            <div className="space-y-0 text-xs divide-y divide-[#F0ECF5]">
+              <div className="flex items-center justify-between py-2.5">
+                <span className="font-medium text-[#756D82] flex items-center gap-2">
+                  <Briefcase className="w-3.5 h-3.5 text-[#8C849B]" />
+                  Occupation
+                </span>
+                <span className="font-semibold text-[#1C1924] text-right">
+                  {profile.occupation || 'Professional'}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between py-2.5">
+                <span className="font-medium text-[#756D82] flex items-center gap-2">
+                  <Languages className="w-3.5 h-3.5 text-[#8C849B]" />
+                  Languages
+                </span>
+                <span className="font-semibold text-[#1C1924] text-right">
+                  {Array.isArray(profile.languages) ? profile.languages.join(', ') : (profile.languages || 'English, Tagalog')}
+                </span>
+              </div>
+
+              <div className="flex items-center justify-between py-2.5">
+                <span className="font-medium text-[#756D82] flex items-center gap-2">
+                  <Ruler className="w-3.5 h-3.5 text-[#8C849B]" />
+                  Height
+                </span>
                 <span className="font-semibold text-[#1C1924] text-right">
                   {formattedHeight && formattedHeight !== 'Not specified' ? formattedHeight : '—'}
                 </span>
               </div>
 
               <div className="flex items-center justify-between py-2.5">
-                <span className="font-medium text-[#756D82]">Beliefs</span>
-                <span className="font-semibold text-[#1C1924] text-right">{profile.religion || 'None'}</span>
+                <span className="font-medium text-[#756D82] flex items-center gap-2">
+                  <Wine className="w-3.5 h-3.5 text-[#8C849B]" />
+                  Drinks
+                </span>
+                <span className="font-semibold text-[#1C1924] text-right">
+                  {profile.drinking || 'Socially'}
+                </span>
               </div>
 
               <div className="flex items-center justify-between py-2.5">
-                <span className="font-medium text-[#756D82]">Relocation</span>
-                <span className="font-semibold text-[#1C1924] text-right">{profile.relocation || 'Open'}</span>
-              </div>
-
-              <div className="flex items-center justify-between py-2.5">
-                <span className="font-medium text-[#756D82]">Drinks</span>
-                <span className="font-semibold text-[#1C1924] text-right">{profile.drinking || 'Socially'}</span>
-              </div>
-
-              <div className="flex items-center justify-between py-2.5">
-                <span className="font-medium text-[#756D82]">Smokes</span>
-                <span className="font-semibold text-[#1C1924] text-right">{profile.smoking || 'No'}</span>
-              </div>
-
-              <div className="flex items-center justify-between py-2.5">
-                <span className="font-medium text-[#756D82]">Has Children</span>
-                <span className="font-semibold text-[#1C1924] text-right">{profile.has_kids || 'No'}</span>
-              </div>
-
-              <div className="flex items-center justify-between py-2.5">
-                <span className="font-medium text-[#756D82]">Wants Children</span>
-                <span className="font-semibold text-[#1C1924] text-right">{profile.wants_kids || 'Yes'}</span>
+                <span className="font-medium text-[#756D82] flex items-center gap-2">
+                  <Cigarette className="w-3.5 h-3.5 text-[#8C849B]" />
+                  Smokes
+                </span>
+                <span className="font-semibold text-[#1C1924] text-right">
+                  {profile.smoking || 'No'}
+                </span>
               </div>
             </div>
           </div>
+        </div>
 
           {/* Languages Spoken Card */}
           <div className="p-5 rounded-3xl bg-white border border-[#DDD7E5]/70 shadow-sm space-y-3">

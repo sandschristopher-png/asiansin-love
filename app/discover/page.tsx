@@ -197,40 +197,43 @@ function DiscoverContent() {
 
   // Mouse wheel and drag-to-scroll handlers for horizontal pill track
   const pillTrackRef = useRef<HTMLDivElement>(null);
-  const isPillDraggingRef = useRef(false);
+  const pillIsDraggingRef = useRef(false);
   const pillStartXRef = useRef(0);
   const pillScrollLeftRef = useRef(0);
-  const [hasPillDragged, setHasPillDragged] = useState(false);
+  const pillDraggedRef = useRef(false);
 
   const handlePillMouseDown = (e: React.MouseEvent) => {
     const slider = pillTrackRef.current;
     if (!slider) return;
-    isPillDraggingRef.current = true;
-    setHasPillDragged(false);
+    pillIsDraggingRef.current = true;
+    pillDraggedRef.current = false;
     pillStartXRef.current = e.pageX - slider.offsetLeft;
     pillScrollLeftRef.current = slider.scrollLeft;
   };
 
-  const handlePillMouseLeaveOrUp = () => {
-    isPillDraggingRef.current = false;
-  };
-
   const handlePillMouseMove = (e: React.MouseEvent) => {
-    if (!isPillDraggingRef.current) return;
+    if (!pillIsDraggingRef.current || !pillTrackRef.current) return;
+    e.preventDefault();
     const slider = pillTrackRef.current;
-    if (!slider) return;
     const x = e.pageX - slider.offsetLeft;
-    const walk = (x - pillStartXRef.current) * 1.4;
-    if (Math.abs(walk) > 5) {
-      setHasPillDragged(true);
+    const walk = (x - pillStartXRef.current) * 1.3;
+    if (Math.abs(walk) > 4) {
+      pillDraggedRef.current = true;
     }
     slider.scrollLeft = pillScrollLeftRef.current - walk;
+  };
+
+  const handlePillMouseUp = () => {
+    pillIsDraggingRef.current = false;
+    setTimeout(() => {
+      pillDraggedRef.current = false;
+    }, 60);
   };
 
   const handlePillWheel = (e: React.WheelEvent) => {
     const slider = pillTrackRef.current;
     if (!slider) return;
-    if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+    if (e.deltaY !== 0) {
       slider.scrollLeft += e.deltaY;
     }
   };
@@ -732,7 +735,7 @@ function DiscoverContent() {
           {/* Clean Pairs-Style Country Scroll Strip & Location Dropdown */}
           <div className="relative z-30 flex items-center justify-between gap-2 w-full py-1 select-none">
             {/* Scrollable Country Pills Track */}
-            <div ref={pillTrackRef} onMouseDown={handlePillMouseDown} onMouseLeave={handlePillMouseLeaveOrUp} onMouseUp={handlePillMouseLeaveOrUp} onMouseMove={handlePillMouseMove} onWheel={handlePillWheel} className="cursor-grab active:cursor-grabbing select-none flex-1 min-w-0 overflow-x-auto no-scrollbar touch-pan-x">
+            <div ref={pillTrackRef} onMouseDown={handlePillMouseDown} onMouseLeave={handlePillMouseUp} onMouseUp={handlePillMouseUp} onMouseMove={handlePillMouseMove} onWheel={handlePillWheel} className="cursor-grab active:cursor-grabbing select-none flex-1 min-w-0 overflow-x-auto no-scrollbar touch-pan-x">
               <div className="flex items-center gap-1.5 w-max px-0.5">
               {/* Curated Discovery Channel Sub-Tabs */}
               <div className="flex items-center gap-1 shrink-0 pr-2 mr-1 border-r border-[#E5E1EC]">
@@ -742,7 +745,7 @@ function DiscoverContent() {
                     <button
                       key={mode.id}
                       type="button"
-                      onClick={() => { if (!hasPillDragged) setDiscoveryMode(mode.id); }}
+                      onClick={() => { if (!pillDraggedRef.current) setDiscoveryMode(mode.id); }}
                       className={`px-3.5 py-1 text-xs font-semibold rounded-full transition-all whitespace-nowrap active:scale-95 ${
                         active
                           ? 'bg-[#6555b8] text-white shadow-xs'
