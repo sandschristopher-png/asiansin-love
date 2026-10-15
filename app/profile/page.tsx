@@ -14,7 +14,6 @@ import {
   Camera,
   X,
   ChevronDown,
-  Sparkles,
   Loader2,
   Navigation,
   Clock,
@@ -87,9 +86,26 @@ const WEIGHT_OPTIONS = [
 ];
 
 const HOBBY_TAGS = [
-  'Cooking & Food', 'Beach & Ocean', 'Family First', 'Travel', 'Movies & Cinema',
-  'Music & Karaoke', 'Fitness & Gym', 'Coffee & Cafes', 'Nature Walks', 'Faith & Church',
-  'Homebody', 'Photography', 'Pets & Animals', 'Gaming', 'Art & Design', 'Entrepreneurship'
+  'Cooking & Food',
+  'Beach & Ocean',
+  'Island Hopping',
+  'Family First',
+  'Travel',
+  'Movies & Cinema',
+  'Music & Karaoke',
+  'Fitness & Gym',
+  'Health & Wellness',
+  'Coffee & Cafes',
+  'Hiking & Outdoors',
+  'Faith & Church',
+  'Homebody',
+  'Nightlife & Bars',
+  'Shopping & Malls',
+  'Photography',
+  'Pets & Animals',
+  'Mobile Gaming & Esports',
+  'Art & Design',
+  'Business & Career'
 ];
 
 export default function MyProfilePage() {
@@ -166,7 +182,10 @@ export default function MyProfilePage() {
         if (data.longitude) setLongitude(data.longitude);
         if (data.bio) setBio(data.bio);
         if (data.looking_for) setLookingFor(data.looking_for);
-        if (Array.isArray(data.interests)) setInterests(data.interests);
+        if (Array.isArray(data.interests)) {
+          const retired = new Set(['nature walks', 'gaming', 'entrepreneurship']);
+          setInterests(data.interests.filter((t: string) => !retired.has(String(t || '').trim().toLowerCase())));
+        }
         if (data.occupation) setProfession(data.occupation);
         if (data.relationship_intent || data.intentions) setIntent(toIntentChipValue(data.relationship_intent || data.intentions));
         if (data.religion) setReligion(data.religion);
@@ -508,11 +527,10 @@ export default function MyProfilePage() {
         <div className="p-5 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-3">
           <div className="flex items-center justify-between">
             <span
-              className="text-xs font-bold text-[#6555B8] uppercase tracking-wider flex items-center gap-1.5"
+              className="text-xs font-bold text-[#6555B8] uppercase tracking-wider"
               style={{ fontFamily: 'var(--font-brand)' }}
             >
-              <Sparkles className="w-3.5 h-3.5" />
-              <span>Interests &amp; Hobbies</span>
+              Interests &amp; Hobbies
             </span>
           </div>
 
