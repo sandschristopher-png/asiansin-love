@@ -267,7 +267,8 @@ export default function ChatConversationPage() {
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     const clean = inputText.trim();
-    if (!clean || cooldownSeconds > 0 || !resolvedTargetUuid) return;
+    const finalTargetId = resolvedTargetUuid || (/^[0-9a-f]{8}-/i.test(targetId) ? targetId : null);
+    if (!clean || cooldownSeconds > 0 || !finalTargetId) return;
 
     setErrorBanner(null);
     const { sanitized, wasMasked } = sanitizeMessage(clean);
@@ -291,7 +292,7 @@ export default function ChatConversationPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          receiverId: resolvedTargetUuid,
+          receiverId: finalTargetId,
           content: sanitized,
         }),
       });
