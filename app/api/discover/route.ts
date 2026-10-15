@@ -108,6 +108,25 @@ export async function GET() {
       .filter((row: any) => {
         if (user && row.id === user.id) return false;
         if (blockedUserIds.has(row.id)) return false;
+
+        // Evict seed/test profiles by name
+        const lowerName = String(row.username || row.display_name || row.full_name || row.name || '').toLowerCase().trim();
+        if (lowerName === 'bobby') return false;
+
+        // Require at least one real (non-placeholder) photo
+        const isPlaceholder = (u: any) =>
+          !u ||
+          typeof u !== 'string' ||
+          u.trim() === '' ||
+          u.includes('placeholder') ||
+          u.includes('default') ||
+          u.endsWith('.svg');
+
+        const photoPool: any[] = Array.isArray(row.photos) ? row.photos.filter(Boolean) : [];
+        const hasRealAvatar = !isPlaceholder(row.avatar_url);
+        const hasRealGalleryPhoto = photoPool.some((p: any) => !isPlaceholder(p));
+        if (!hasRealAvatar && !hasRealGalleryPhoto) return false;
+
         return Boolean(row.username || row.display_name || row.full_name || row.name || row.avatar_url);
       })
       .map((row: any) => {

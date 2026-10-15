@@ -133,8 +133,7 @@ export default function SettingsPage() {
     } catch (err) {
       console.error('Sign out error:', err);
     } finally {
-      router.push('/login');
-      router.refresh();
+      window.location.href = '/';
     }
   };
 

@@ -1,33 +1,45 @@
+'use client';
+
 import React from 'react';
 import Link from 'next/link';
 
 interface BrandLogoProps {
+  className?: string;
   href?: string;
   size?: 'sm' | 'md' | 'lg';
-  className?: string;
+  textSize?: string;
 }
 
-export function BrandLogo({ href, size = 'md', className = '' }: BrandLogoProps) {
-  const sizeClasses = {
-    sm: 'text-[19px] sm:text-[20px]',
-    md: 'text-[22px] sm:text-[24px]',
-    lg: 'text-[26px] sm:text-[30px]',
-  }[size];
+const SIZE_CLASS: Record<'sm' | 'md' | 'lg', string> = {
+  sm: 'text-[15px]',
+  md: 'text-[17px]',
+  lg: 'text-[20px]',
+};
 
-  const content = (
+export function BrandLogo({ className = '', href = '/discover', size = 'md', textSize = '' }: BrandLogoProps) {
+  const wordmark = (
     <span
-      className={`inline-flex items-baseline select-none lowercase whitespace-nowrap leading-none tracking-[-0.035em] text-[#4C3B75] ${sizeClasses} ${className}`}
-      style={{ fontFamily: 'var(--font-logo)', fontWeight: 600 }}
-    ><span className="text-[20px] leading-none font-black tracking-[-0.035em] lowercase select-none inline-flex items-baseline" style={{ fontFamily: 'var(--font-brand)', fontWeight: 900 }}><span className="text-[#1C1924]">asians</span><span className="text-[#6555B8]">inlove</span></span></span>
+      className={[
+        textSize || SIZE_CLASS[size],
+        'leading-none font-bold lowercase select-none inline-flex items-baseline',
+        className,
+      ].filter(Boolean).join(' ')}
+      style={{ fontFamily: 'var(--font-logo), sans-serif', fontWeight: 700, letterSpacing: '-0.02em' }}
+    >
+      <span className="text-[#1C1924]">asians</span>
+      <span className="text-[#6555B8]">inlove</span>
+    </span>
   );
 
   if (href) {
     return (
-      <Link href={href} className="inline-flex items-center shrink-0 active:opacity-75 transition-opacity py-1">
-        {content}
+      <Link href={href} className="inline-flex items-center focus:outline-none">
+        {wordmark}
       </Link>
     );
   }
 
-  return content;
+  return wordmark;
 }
+
+export default BrandLogo;

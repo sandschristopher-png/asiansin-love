@@ -150,8 +150,7 @@ export function Navbar() {
     setUser(null);
     setProfile(null);
     setHasUnread(false);
-    router.push('/login');
-    router.refresh();
+    window.location.href = '/';
   };
 
   const displayName = profile?.username || 'Member';

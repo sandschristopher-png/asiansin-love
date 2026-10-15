@@ -30,8 +30,7 @@ export function UserMenu({ displayName, avatarUrl, userId }: UserMenuProps) {
 
   const handleSignOut = async () => {
     await supabase.auth.signOut()
-    router.push('/')
-    router.refresh()
+    window.location.href = '/'
   }
 
   return (

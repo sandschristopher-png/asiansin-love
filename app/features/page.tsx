@@ -60,7 +60,7 @@ export default function FeaturesPage() {
       {/* Header */}
       <header className="sticky top-0 z-40 border-b border-[#9A8CC3]/25 bg-[#FFFFFF]/90 px-4 sm:px-6 py-3.5 backdrop-blur-md flex items-center justify-between">
         <Link href="/" className="hover:opacity-90 transition">
-          <Logo className="h-6 w-6" textSize="text-base sm:text-lg" />
+          <Logo textSize="text-base sm:text-lg" />
         </Link>
         <div className="flex items-center gap-3">
           <Link

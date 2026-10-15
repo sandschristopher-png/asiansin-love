@@ -97,8 +97,7 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     closeWithAnimation();
-    router.push('/login');
-    router.refresh();
+    window.location.href = '/';
   };
 
   if (!isOpen && !mounted) return null;
