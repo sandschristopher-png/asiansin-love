@@ -817,24 +817,6 @@ function DiscoverContent() {
                     >
                       <Heart className={'w-5 h-5 ' + (isLiked ? 'fill-white' : '')} />
                     </button>
-
-                    <button
-                      type="button"
-                      aria-label={isStarred ? 'Unstar' : 'Star'}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        triggerAction(profile.id, 'star', displayName, profile.avatarUrl);
-                      }}
-                      className={
-                        'w-11 h-11 min-w-[44px] min-h-[44px] rounded-full flex items-center justify-center border transition-all duration-200 active:scale-90 backdrop-blur-xs select-none cursor-pointer ' +
-                        (isStarred
-                          ? 'bg-amber-400 border-amber-300 text-slate-950 shadow-md'
-                          : 'bg-black/35 hover:bg-black/55 border-white/25 text-white')
-                      }
-                    >
-                      <Star className={'w-4 h-4 ' + (isStarred ? 'fill-slate-950' : '')} />
-                    </button>
                   </div>
 
                   {/* Subtle Bottom-Only Gradient with Full-Width Non-Overlapping Text */}
