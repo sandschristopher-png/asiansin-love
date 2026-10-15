@@ -2,7 +2,7 @@
 
 import { useEffect } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabase/client';
 
 export function OnboardingGuard({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();

@@ -4,7 +4,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { Heart, MapPin, CheckCircle, ShieldCheck, Loader2, Sparkles } from 'lucide-react';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabase/client';
 
 interface FavoriteProfile {
   id: string;

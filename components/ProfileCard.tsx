@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React from 'react';
 import Link from 'next/link';
@@ -42,7 +42,7 @@ export function ProfileCard({
 }: ProfileCardProps) {
   const displayName = profile.name || 'Member';
   const displayAge = profile.age ? `, ${profile.age}` : '';
-  const displayAvatar = profile.avatarUrl || profile.image_url || profile.photo_url || '/dummy-1.jpg';
+  const displayAvatar = profile.avatarUrl || profile.image_url || profile.photo_url || '/placeholder-avatar.svg';
 
   const locationLabel = profile.city && profile.country
     ? `${profile.city}, ${profile.country}`
@@ -133,7 +133,7 @@ export function ProfileCard({
                 : 'text-[#1C1924] hover:text-rose-400 hover:bg-rose-500/10'
             }`}
           >
-            <Heart className={`w-4 h-4 ${isLiked ? 'fill sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"-rose-400' : ''}`} />
+            <Heart className={`w-4 h-4 ${isLiked ? 'fill-rose-400' : ''}`} />
           </button>
 
           <button
@@ -145,7 +145,7 @@ export function ProfileCard({
                 : 'text-[#1C1924] hover:text-amber-400 hover:bg-amber-500/10'
             }`}
           >
-            <Star className={`w-4 h-4 ${isSaved ? 'fill sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"-amber-400' : ''}`} />
+            <Star className={`w-4 h-4 ${isSaved ? 'fill-amber-400' : ''}`} />
           </button>
 
           <Link

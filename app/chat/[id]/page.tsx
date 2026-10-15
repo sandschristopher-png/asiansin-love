@@ -30,7 +30,7 @@ import Image from 'next/image';
 import { ArrowLeft, Send, Zap, ShieldAlert, Check, CheckCheck, Clock } from 'lucide-react';
 import UpgradeModal from '@/components/UpgradeModal';
 import ReputationModal from '@/components/ReputationModal';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabase/client';
 
 
 interface Persona {
@@ -244,7 +244,9 @@ export default function ChatConversationPage() {
     const interval = setInterval(() => {
       setCooldownSeconds((prev) => (prev > 0 ? prev - 1 : 0));
     }, 1000);
-    
+    return () => clearInterval(interval);
+  }, [cooldownSeconds]);
+
   // Auto-mark incoming unread messages as read upon viewing thread
   useEffect(() => {
     const markMessagesAsRead = async () => {
@@ -254,10 +256,10 @@ export default function ChatConversationPage() {
       try {
         await supabase
           .from('messages')
-          .update({ read: true, read_at: new Date().toISOString() })
+          .update({ is_read: true })
           .eq('receiver_id', session.user.id)
           .eq('sender_id', resolvedTargetUuid)
-          .eq('read', false);
+          .eq('is_read', false);
       } catch (err) {
         // Silent catch for read receipt updates
       }
@@ -267,9 +269,6 @@ export default function ChatConversationPage() {
       markMessagesAsRead();
     }
   }, [resolvedTargetUuid, messages.length]);
-
-  return () => clearInterval(interval);
-  }, [cooldownSeconds]);
 
   useEffect(() => {
     async function initUserAndTarget() {

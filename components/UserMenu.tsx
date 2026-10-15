@@ -1,9 +1,9 @@
-﻿'use client'
+'use client'
 
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
-import { createClient } from '@/utils/supabase/client'
+import { createClient } from '@/lib/supabase/client'
 import { User, Settings, LogOut, ChevronDown, ShieldCheck, Heart } from 'lucide-react'
 
 interface UserMenuProps {

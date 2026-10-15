@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabase/client';
 
 const COUNTRY_MAP: Record<string, string> = {
   PH: 'Philippines',
@@ -78,23 +78,11 @@ export async function POST(req: NextRequest) {
     const detectedCountryName = detectedCountryCode ? (COUNTRY_MAP[detectedCountryCode] || detectedCountryCode) : 'Unknown';
     const declaredCountry = (profile.country || '').trim().toLowerCase();
 
-    // Bumpy-style anti-VPN & location spoofing match
-    const isCountryMatch = 
+    const isCountryMatch =
       declaredCountry === detectedCountryName.toLowerCase() ||
       declaredCountry === (COUNTRY_MAP[detectedCountryCode || ''] || '').toLowerCase();
 
-    if (!isCountryMatch) {
-      return NextResponse.json({
-        success: false,
-        verified: false,
-        isVpn: true,
-        message: `Access via VPN is not allowed. To verify your location and claim your 🛡️ Verified badge, please disable your VPN and try again. (Detected: ${detectedCountryName})`,
-        detectedCountry: detectedCountryName,
-        declaredCountry: profile.country,
-      }, { status: 400 });
-    }
-
-    // Award Verified Status & Rep Score boost
+    // Award Verified Status & Rep Score boost (do not block travelers on country mismatch)
     const newScore = Math.min(100, (profile.reputation_score || 95) + 3);
     const updates: Record<string, any> = {
       location_source: 'gps_verified',
@@ -120,11 +108,15 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       verified: true,
+      locationMismatch: !isCountryMatch,
       locationSource: 'gps_verified',
       detectedCountry: detectedCountryName,
       detectedCity,
+      declaredCountry: profile.country,
       reputationScore: newScore,
-      message: 'Physical location confirmed! 🛡️ Verified badge awarded.',
+      message: isCountryMatch
+        ? 'Physical location confirmed! 🛡️ Verified badge awarded.'
+        : `Location verified (network detected ${detectedCountryName} while profile lists ${profile.country || 'another country'}). If you are traveling, no action is needed; otherwise update your profile country or retry on your local connection.`,
     });
 
   } catch (err: any) {

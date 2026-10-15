@@ -1,9 +1,9 @@
-﻿'use client';
+'use client';
 
 import React, { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabase/client';
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -40,7 +40,9 @@ export default function SignUpPage() {
         const { error: profileError } = await supabase.from('profiles').upsert({
           id: data.user.id,
           full_name: cleanName,
+          display_name: cleanName,
           is_verified: false,
+          onboarding_completed: false,
         });
 
         if (profileError) {
@@ -48,7 +50,7 @@ export default function SignUpPage() {
         }
       }
 
-      router.push('/profile');
+      router.push('/onboarding');
       router.refresh();
     } catch (err: any) {
       setErrorMsg(err.message || 'Unable to register account. Please try again.');

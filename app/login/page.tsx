@@ -1,300 +1,205 @@
-﻿'use client';
+"use client";
 
-import React, { useState } from 'react';
-import Link from 'next/link';
-import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabaseClient';
-import { Mail, Lock, User, AlertCircle, CheckCircle2, Loader2, Eye, EyeOff } from 'lucide-react';
-
+import { useState } from "react";
+import Link from "next/link";
+import { createBrowserClient } from "@supabase/ssr";
+import { Eye, EyeOff, Loader2, LogIn } from "lucide-react";
 
 export default function LoginPage() {
-  const router = useRouter();
-  const [mode, setMode] = useState<'signin' | 'signup' | 'forgot'>('signin');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [username, setUsername] = useState('');
+  const [supabase] = useState(() =>
+    createBrowserClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+    )
+  );
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
-  const [errorMsg, setErrorMsg] = useState('');
-  const [successMsg, setSuccessMsg] = useState('');
   const [loading, setLoading] = useState(false);
+  const [googleLoading, setGoogleLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const resetFormState = (newMode: 'signin' | 'signup' | 'forgot') => {
-    setErrorMsg('');
-    setSuccessMsg('');
-    setMode(newMode);
-  };
-
-  const handleGoogleSignIn = async () => {
-    try {
-      setErrorMsg('');
-      setLoading(true);
-      const { error } = await supabase.auth.signInWithOAuth({
-        provider: 'google',
-        options: {
-          redirectTo: `${window.location.origin}/auth/callback?next=/discover`,
-        },
-      });
-      if (error) throw error;
-    } catch (err: any) {
-      setErrorMsg(err.message || 'Google sign-in failed.');
-      setLoading(false);
+  async function handleGoogleSignIn() {
+    setGoogleLoading(true);
+    setError(null);
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: { redirectTo: `${window.location.origin}/auth/callback` },
+    });
+    if (error) {
+      setError(error.message);
+      setGoogleLoading(false);
     }
-  };
+  }
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  async function handleEmailSignIn(e: React.FormEvent) {
     e.preventDefault();
-    setErrorMsg('');
-    setSuccessMsg('');
+    if (!email || !password) return;
     setLoading(true);
-
-    try {
-      if (mode === 'forgot') {
-        const { error } = await supabase.auth.resetPasswordForEmail(email.trim(), {
-          redirectTo: `${window.location.origin}/login`,
-        });
-        if (error) throw error;
-        setSuccessMsg('Password reset link sent! Check your inbox.');
-        return;
-      }
-
-      if (mode === 'signup') {
-        const cleanedUsername = username.trim().replace(/[^a-zA-Z0-9_.]/g, '');
-        if (cleanedUsername.length < 3 || cleanedUsername.length > 20) {
-          setErrorMsg('Username must be 3-20 characters.');
-          setLoading(false);
-          return;
-        }
-
-        const { data: existingUser } = await supabase
-          .from('profiles')
-          .select('username')
-          .ilike('username', cleanedUsername)
-          .maybeSingle();
-
-        if (existingUser) {
-          setErrorMsg('Username is already taken.');
-          setLoading(false);
-          return;
-        }
-
-        const { data, error } = await supabase.auth.signUp({
-          email: email.trim(),
-          password,
-          options: {
-            data: {
-              username: cleanedUsername,
-            },
-          },
-        });
-
-        if (error) throw error;
-
-        if (data.session) {
-          router.push('/discover');
-        } else {
-          setSuccessMsg('Account created! Please check your email to verify your account.');
-        }
-      } else {
-        const { error } = await supabase.auth.signInWithPassword({
-          email: email.trim(),
-          password,
-        });
-
-        if (error) throw error;
-        router.push('/discover');
-      }
-    } catch (err: any) {
-      setErrorMsg(err.message || 'Authentication failed.');
-    } finally {
+    setError(null);
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      setError(
+        error.message === "Invalid login credentials"
+          ? "Incorrect email or password. Please try again."
+          : error.message
+      );
       setLoading(false);
+      return;
     }
-  };
+    if (data?.user) {
+      const { data: profile } = await supabase
+        .from("profiles")
+        .select("onboarding_completed")
+        .eq("id", data.user.id)
+        .maybeSingle();
+
+      window.location.href = profile?.onboarding_completed ? "/discover" : "/onboarding";
+    }
+  }
 
   return (
-    <div className="min-h-screen bg-[#F8F7FA] text-[#1C1924] flex flex-col justify-between selection:bg-[#6555B8] selection:text-white">
-      <main className="flex-1 flex items-center justify-center p-4">
-        <div className="w-full max-w-sm rounded-3xl bg-[#FFFFFF] border border-[#DDD7E5]/25 p-7 shadow-2xl">
-          <div className="text-center mb-6">
-            <h2 className="text-2xl font-medium text-[#1C1924] ">
-              {mode === 'signup' && 'Create Account'}
-              {mode === 'signin' && 'Sign In'}
-              {mode === 'forgot' && 'Reset Password'}
-            </h2>
-            <p className="text-xs text-[#1C1924]/75 mt-1.5 font-medium">
-              {mode === 'signup' && 'Join asiansin.love'}
-              {mode === 'signin' && 'Welcome back'}
-              {mode === 'forgot' && 'Enter your email to receive a reset link'}
-            </p>
-          </div>
+    <div className="min-h-screen bg-[#FAF9FD] flex flex-col font-sans antialiased selection:bg-[#6555b8]/15 selection:text-[#6555b8]">
+      {/* Mobile-First App Shell — matches homepage */}
+      <main className="flex-1 w-full max-w-md mx-auto bg-white min-h-screen px-6 pt-12 pb-8 flex flex-col justify-center sm:my-6 sm:rounded-3xl sm:border sm:border-[#EDE8F5] sm:shadow-xl sm:p-8 sm:min-h-0">
 
-          {errorMsg && (
-            <div className="mb-4 p-3 rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-start gap-2 text-rose-300 text-xs leading-relaxed">
-              <AlertCircle className="w-4 h-4 shrink-0 text-rose-400 mt-0.5" />
-              <span>{errorMsg}</span>
-            </div>
-          )}
-
-          {successMsg && (
-            <div className="mb-4 p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-start gap-2 text-emerald-300 text-xs leading-relaxed">
-              <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-400 mt-0.5" />
-              <span>{successMsg}</span>
-            </div>
-          )}
-
-          {mode !== 'forgot' && (
-            <>
-              <button
-                type="button"
-                onClick={handleGoogleSignIn}
-                disabled={loading}
-                className="w-full py-2.5 px-4 rounded-2xl bg-[#FFFFFF] hover:bg-[#FFFFFF] border border-[#DDD7E5]/40 text-[#1C1924] text-xs font-semibold flex items-center justify-center gap-2.5 transition active:scale-[0.98] disabled:opacity-50 cursor-pointer shadow-sm"
-              >
-                <svg className="w-4 h-4" viewBox="0 0 24 24">
-                  <path
-                    fill="#EA4335"
-                    d="M12 5c1.6 0 3 .6 4.1 1.7l3.1-3.1C17.3 1.8 14.8 1 12 1 7.5 1 3.7 3.6 1.9 7.3l3.7 2.9C6.5 7.4 9 5 12 5z"
-                  />
-                  <path
-                    fill="#4285F4"
-                    d="M23.5 12.3c0-.8-.1-1.6-.2-2.3H12v4.6h6.5c-.3 1.5-1.1 2.8-2.4 3.7l3.7 2.9c2.2-2 3.7-5 3.7-8.9z"
-                  />
-                  <path
-                    fill="#FBBC05"
-                    d="M5.6 14.8c-.2-.7-.4-1.5-.4-2.3s.2-1.6.4-2.3L1.9 7.3C.7 9.7 0 12.3 0 15.1s.7 5.4 1.9 7.8l3.7-2.9c-.2-.7-.4-1.5-.4-2.3z"
-                  />
-                  <path
-                    fill="#34A853"
-                    d="M12 23.5c3.2 0 6-1.1 8-3l-3.7-2.9c-1.1.7-2.5 1.2-4.3 1.2-3 0-5.5-2-6.4-4.8L1.9 17c1.8 3.7 5.6 6.5 10.1 6.5z"
-                  />
-                </svg>
-                Continue with Google
-              </button>
-
-              <div className="relative my-4">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-[#DDD7E5]/25" />
-                </div>
-                <div className="relative flex justify-center text-[10px] uppercase font-medium tracking-wider">
-                  <span className="bg-[#FFFFFF] px-2 text-[#1C1924]/60">or with email</span>
-                </div>
-              </div>
-            </>
-          )}
-
-          <form onSubmit={handleSubmit} className="space-y-3.5">
-            {mode === 'signup' && (
-              <div className="relative">
-                <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#1C1924]/60" />
-                <input
-                  type="text"
-                  required
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
-                  placeholder="Username"
-                  className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-[#FFFFFF] border border-[#DDD7E5]/40 text-[#1C1924] placeholder-[#1C1924]/50 text-sm focus:outline-none focus:border-[#B2A4D7] focus:ring-1 focus:ring-[#B2A4D7] transition"
-                />
-              </div>
-            )}
-
-            <div className="relative">
-              <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#1C1924]/60" />
-              <input
-                type="email"
-                required
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Email address"
-                className="w-full pl-10 pr-4 py-2.5 rounded-2xl bg-[#FFFFFF] border border-[#DDD7E5]/40 text-[#1C1924] placeholder-[#1C1924]/50 text-sm focus:outline-none focus:border-[#B2A4D7] focus:ring-1 focus:ring-[#B2A4D7] transition"
-              />
-            </div>
-
-            {mode !== 'forgot' && (
-              <>
-                <div className="relative">
-                  <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#1C1924]/60" />
-                  <input
-                    type={showPassword ? 'text' : 'password'}
-                    required
-                    minLength={6}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Password"
-                    className="w-full pl-10 pr-10 py-2.5 rounded-2xl bg-[#FFFFFF] border border-[#DDD7E5]/40 text-[#1C1924] placeholder-[#1C1924]/50 text-sm focus:outline-none focus:border-[#B2A4D7] focus:ring-1 focus:ring-[#B2A4D7] transition"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#1C1924]/60 hover:text-[#1C1924] transition cursor-pointer"
-                    tabIndex={-1}
-                  >
-                    {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
-                  </button>
-                </div>
-
-                {mode === 'signin' && (
-                  <div className="flex justify-end pr-1">
-                    <button
-                      type="button"
-                      onClick={() => resetFormState('forgot')}
-                      className="text-xs text-[#1C1924]/80 hover:text-[#1C1924] transition cursor-pointer font-medium"
-                    >
-                      Forgot password?
-                    </button>
-                  </div>
-                )}
-              </>
-            )}
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full mt-1.5 py-3 rounded-2xl bg-[#7D4B9F] hover:bg-[#7D4B9F] text-[#1C1924] font-medium text-sm tracking-wide shadow-lg shadow-[#7D4B9F]/30 transition active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2 cursor-pointer"
-            >
-              {loading && <Loader2 className="w-4 h-4 animate-spin text-[#1C1924]" />}
-              {mode === 'signup' && 'Sign Up'}
-              {mode === 'signin' && 'Sign In'}
-              {mode === 'forgot' && 'Send Reset Link'}
-            </button>
-          </form>
-
-          <div className="mt-5 text-center">
-            {mode === 'forgot' ? (
-              <button
-                type="button"
-                onClick={() => resetFormState('signin')}
-                className="text-xs text-[#1C1924]/80 hover:text-[#1C1924] transition cursor-pointer"
-              >
-                Back to <span className="text-[#1C1924] font-medium">Sign In</span>
-              </button>
-            ) : (
-              <button
-                type="button"
-                onClick={() => resetFormState(mode === 'signin' ? 'signup' : 'signin')}
-                className="text-xs text-[#1C1924]/80 hover:text-[#1C1924] transition cursor-pointer"
-              >
-                {mode === 'signin' ? (
-                  <>
-                    Need an account? <span className="text-[#1C1924] font-medium">Sign Up</span>
-                  </>
-                ) : (
-                  <>
-                    Already have an account? <span className="text-[#1C1924] font-medium">Sign In</span>
-                  </>
-                )}
-              </button>
-            )}
-          </div>
-
-          <p className="mt-6 text-[10px] text-center text-[#1C1924]/50 leading-relaxed">
-            By continuing, you agree to our{' '}
-            <Link href="/terms" className="text-[#1C1924]/80 hover:text-[#1C1924] transition">Terms</Link>
-            {' '}&{' '}
-            <Link href="/privacy" className="text-[#1C1924]/80 hover:text-[#1C1924] transition">Privacy Policy</Link>.
+        {/* Heading only — header owns the branding */}
+        <div className="mb-10 text-center">
+          <h1 className="text-xl font-extrabold text-[#181126]">Welcome back</h1>
+          <p className="mt-1 text-[13px] text-[#756D82]">
+            Sign in to continue your courtship journey.
           </p>
         </div>
+
+        {/* Google Sign-In */}
+        <button
+          onClick={handleGoogleSignIn}
+          disabled={googleLoading}
+          className="w-full py-3.5 px-6 rounded-full bg-white border border-[#EDE8F5] text-[#181126] text-sm font-bold flex items-center justify-center gap-2.5 shadow-sm hover:bg-[#FAF9FD] active:scale-[0.99] transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+        >
+          {googleLoading ? (
+            <Loader2 className="w-4.5 h-4.5 animate-spin text-[#6555b8]" />
+          ) : (
+            <svg className="w-4.5 h-4.5" viewBox="0 0 24 24" aria-hidden="true">
+              <path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58v3h3.86c2.26-2.09 3.56-5.17 3.56-8.82z" />
+              <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.86-3c-1.08.72-2.45 1.16-4.07 1.16-3.13 0-5.78-2.11-6.73-4.96H1.29v3.09C3.26 21.3 7.31 24 12 24z" />
+              <path fill="#FBBC05" d="M5.27 14.29c-.25-.72-.38-1.49-.38-2.29s.14-1.57.38-2.29V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.98-3.09z" />
+              <path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.31 0 3.26 2.7 1.29 6.62l3.98 3.09C6.22 6.86 8.87 4.75 12 4.75z" />
+            </svg>
+          )}
+          <span>{googleLoading ? "Redirecting..." : "Continue with Google"}</span>
+        </button>
+
+        {/* Divider */}
+        <div className="my-6 flex items-center gap-3">
+          <div className="flex-1 h-px bg-[#EDE8F5]" />
+          <span className="text-[10px] font-bold uppercase tracking-widest text-[#CBC4DA]">
+            or with email
+          </span>
+          <div className="flex-1 h-px bg-[#EDE8F5]" />
+        </div>
+
+        {/* Email Sign-In Form */}
+        <form onSubmit={handleEmailSignIn} className="space-y-3.5">
+          <div className="space-y-1.5">
+            <label htmlFor="email" className="text-xs font-bold text-[#4A4458] block">
+              Email address
+            </label>
+            <input
+              id="email"
+              type="email"
+              autoComplete="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="you@example.com"
+              className="w-full py-3.5 px-4 rounded-2xl bg-white border border-[#EDE8F5] text-sm text-[#181126] placeholder:text-[#CBC4DA] focus:outline-none focus:border-[#6555b8] focus:ring-2 focus:ring-[#6555b8]/15 transition"
+            />
+          </div>
+
+          <div className="space-y-1.5">
+            <div className="flex items-center justify-between">
+              <label htmlFor="password" className="text-xs font-bold text-[#4A4458] block">
+                Password
+              </label>
+              <Link href="/forgot-password" className="text-xs font-semibold text-[#6555b8] hover:underline">
+                Forgot?
+              </Link>
+            </div>
+            <div className="relative">
+              <input
+                id="password"
+                type={showPassword ? "text" : "password"}
+                autoComplete="current-password"
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Your password"
+                className="w-full py-3.5 px-4 pr-12 rounded-2xl bg-white border border-[#EDE8F5] text-sm text-[#181126] placeholder:text-[#CBC4DA] focus:outline-none focus:border-[#6555b8] focus:ring-2 focus:ring-[#6555b8]/15 transition"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                aria-label={showPassword ? "Hide password" : "Show password"}
+                className="absolute right-4 top-1/2 -translate-y-1/2 text-[#CBC4DA] hover:text-[#756D82] transition cursor-pointer"
+              >
+                {showPassword ? <EyeOff className="w-4.5 h-4.5" /> : <Eye className="w-4.5 h-4.5" />}
+              </button>
+            </div>
+          </div>
+
+          {/* Error Message */}
+          {error && (
+            <p className="text-xs font-semibold text-red-600 bg-red-50 border border-red-100 rounded-xl px-3.5 py-2.5">
+              {error}
+            </p>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3.5 px-6 rounded-full bg-gradient-to-r from-[#5a48ab] via-[#6555b8] to-[#8d75e0] text-white text-sm font-bold flex items-center justify-center gap-2 shadow-md shadow-[#6555b8]/25 hover:opacity-95 active:scale-[0.99] transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="w-4.5 h-4.5 animate-spin" />
+                <span>Signing in...</span>
+              </>
+            ) : (
+              <>
+                <LogIn className="w-4.5 h-4.5" />
+                <span>Sign In</span>
+              </>
+            )}
+          </button>
+        </form>
+
+        {/* Sign Up CTA — upgraded from text link */}
+        <div className="mt-7 text-center space-y-2">
+          <p className="text-xs text-[#756D82]">New to Asians in Love?</p>
+          <Link
+            href="/signup"
+            className="block w-full py-3.5 px-6 rounded-full bg-white border border-[#6555b8]/30 text-[#6555b8] text-sm font-extrabold flex items-center justify-center gap-2 hover:bg-[#F3EFFC] active:scale-[0.99] transition cursor-pointer"
+          >
+            <span>Create Your Free Profile</span>
+          </Link>
+        </div>
+
+        {/* Legal — legible */}
+        <p className="mt-8 text-center text-[11px] leading-relaxed text-[#756D82]">
+          By continuing, you agree to our{" "}
+          <Link href="/terms" className="font-semibold text-[#6555b8] hover:underline">
+            Terms of Service
+          </Link>{" "}
+          and{" "}
+          <Link href="/privacy" className="font-semibold text-[#6555b8] hover:underline">
+            Privacy Policy
+          </Link>
+          .
+        </p>
+
+        {/* Future: Facebook / Apple buttons slot in above the Google button, same style */}
       </main>
     </div>
   );
 }
-
-

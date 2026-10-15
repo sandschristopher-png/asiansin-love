@@ -18,10 +18,11 @@ export async function createClient() {
               cookieStore.set(name, value, options)
             );
           } catch {
-            // Can be ignored in Server Components or standard API reads
           }
         },
       },
     }
   );
 }
+
+export const createServerSupabaseClient = createClient;

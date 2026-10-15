@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabaseServer';
+import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { sendTelegramVerificationAlert } from '@/lib/adminAlerts';
 import { evaluateImageWithAI } from '@/lib/aiVision';
 

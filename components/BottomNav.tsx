@@ -9,7 +9,7 @@ import {
   MessageCircle, 
   User 
 } from 'lucide-react';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabase/client';
 
 const PUBLIC_ROUTES = [
   '/',
@@ -48,7 +48,7 @@ export function BottomNav() {
         .from('messages')
         .select('*', { count: 'exact', head: true })
         .eq('receiver_id', uid)
-        .eq('read', false);
+        .eq('is_read', false);
 
       if (isCancelled) return;
       setUnreadCount(count || 0);
@@ -70,7 +70,7 @@ export function BottomNav() {
               .from('messages')
               .select('*', { count: 'exact', head: true })
               .eq('receiver_id', uid)
-              .eq('read', false);
+              .eq('is_read', false);
             if (!isCancelled) {
               setUnreadCount(freshCount || 0);
             }

@@ -11,7 +11,7 @@ import {
   Baby, Sparkles, HeartHandshake, Ruler, Wine, Cigarette, Loader2, 
   Navigation, CheckCircle2, Clock, ShieldAlert 
 } from 'lucide-react';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabase/client';
 import { Footer } from '@/components/Footer';
 import RepScoreCard from '@/components/RepScoreCard';
 
@@ -66,13 +66,13 @@ export default function MyProfilePage() {
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
-  const [name, setName] = useState('Christopher');
-  const [username, setUsername] = useState('chris');
+  const [name, setName] = useState('');
+  const [username, setUsername] = useState('');
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [photos, setPhotos] = useState<string[]>([]);
   const [currentPhotoIdx, setCurrentPhotoIdx] = useState(0);
-  const [age, setAge] = useState(30);
-  const [location, setLocation] = useState('Las Vegas, NV');
+  const [age, setAge] = useState(25);
+  const [location, setLocation] = useState('');
   const [locationSource, setLocationSource] = useState<'gps_verified' | 'self_reported'>('self_reported');
   const [locationVerifiedAt, setLocationVerifiedAt] = useState<string | null>(null);
   const [latitude, setLatitude] = useState<number | null>(null);
@@ -98,6 +98,7 @@ export default function MyProfilePage() {
   const [relocation, setRelocation] = useState('Can Relocate');
   const [userLanguages, setUserLanguages] = useState('English');
   const [height, setHeight] = useState(`5'10" (178 cm)`);
+  const [weight, setWeight] = useState('');
   const [drinking, setDrinking] = useState('Socially');
   const [smoking, setSmoking] = useState('No');
   
@@ -152,7 +153,7 @@ export default function MyProfilePage() {
         if (typeof data.reputation_score === 'number') setRepScore(data.reputation_score);
         if (data.height) {
             const raw = data.height.trim();
-            const cmMatch = raw.match(/(d+)s*cm/i);
+            const cmMatch = raw.match(/(\d+)\s*cm/i);
             if (cmMatch) {
               const matchedOption = HEIGHT_OPTIONS.find(opt => opt.includes(`(${cmMatch[1]} cm)`));
               setHeight(matchedOption || raw);
@@ -160,6 +161,7 @@ export default function MyProfilePage() {
               setHeight(raw);
             }
           }
+        if (data.weight) setWeight(data.weight);
         if (data.drinking) setDrinking(data.drinking);
         if (data.smoking) setSmoking(data.smoking);
         if (data.avatar_url) setAvatarUrl(data.avatar_url);
@@ -229,10 +231,11 @@ export default function MyProfilePage() {
         languages: userLanguages,
           height: (() => {
             if (!height) return null;
-            const cmMatch = height.match(/(d+)s*cm/i);
+            const cmMatch = height.match(/(\d+)\s*cm/i);
             return cmMatch ? `${cmMatch[1]} cm` : height.trim();
           })(),
 
+        weight: weight || null,
         drinking,
         smoking,
         updated_at: new Date().toISOString()
@@ -618,6 +621,22 @@ export default function MyProfilePage() {
                     </div>
                   ) : (
                     <span className="text-xs font-semibold text-[#1C1924]">{height || 'Not specified'}</span>
+                  )}
+                </div>
+
+                {/* Weight */}
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 pb-3 border-b border-[#F0ECF5]">
+                  <span className="text-xs font-semibold text-[#6C637B]">Weight</span>
+                  {isEditing ? (
+                    <input
+                      type="text"
+                      value={weight}
+                      onChange={(e) => setWeight(e.target.value)}
+                      placeholder="e.g. 52 kg (115 lbs)"
+                      className="px-3 py-1.5 rounded-xl bg-[#F3EFFC] border border-[#6555B8]/20 text-xs font-semibold text-[#1C1924] focus:outline-none focus:ring-2 focus:ring-[#6555B8]/30 transition"
+                    />
+                  ) : (
+                    <span className="text-xs font-semibold text-[#1C1924]">{weight || 'Not specified'}</span>
                   )}
                 </div>
 

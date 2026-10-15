@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, MapPin, Save, UserCheck, ShieldCheck, Camera, Trash2, Loader2, Plus } from 'lucide-react';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabase/client';
 import UpgradeModal from '@/components/UpgradeModal';
 
 
@@ -14,11 +14,11 @@ function cleanHeightForDb(input: string): string | null {
   const raw = input.trim();
 
   // If already matches "XXX cm", return trimmed
-  const cmMatch = raw.match(/^(d{2,3})s*cm$/i);
+  const cmMatch = raw.match(/^(\d{2,3})\s*cm$/i);
   if (cmMatch) return `${cmMatch[1]} cm`;
 
   // If user entered just numbers (e.g. 165 or 170)
-  const numOnlyMatch = raw.match(/^(d{2,3})$/);
+  const numOnlyMatch = raw.match(/^(\d{2,3})$/);
   if (numOnlyMatch) return `${numOnlyMatch[1]} cm`;
 
   // If user entered imperial like 5'5", 5ft 5, 5'5
@@ -32,7 +32,7 @@ function cleanHeightForDb(input: string): string | null {
   }
 
   // Fallback: extract any 2-3 digit number found
-  const anyNum = raw.match(/(d{2,3})/);
+  const anyNum = raw.match(/(\d{2,3})/);
   if (anyNum) return `${anyNum[1]} cm`;
 
   return null;

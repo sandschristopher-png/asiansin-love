@@ -1,9 +1,9 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { MessageCircle, Search, ChevronRight, Clock } from 'lucide-react';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabase/client';
 
 interface ConversationItem {
   id: string;

@@ -1,6 +1,6 @@
-﻿'use client';
+'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { notificationService } from '@/lib/notificationService';
 
@@ -13,13 +13,40 @@ export interface ToastPayload {
   icon?: string;
 }
 
+export function emitNotificationToast(payload: ToastPayload) {
+  if (typeof window === 'undefined') return;
+  window.dispatchEvent(new CustomEvent<ToastPayload>('ail-toast', { detail: payload }));
+}
+
 export function NotificationToast() {
   const [showPermissionPrompt, setShowPermissionPrompt] = useState(false);
   const [activeToast, setActiveToast] = useState<ToastPayload | null>(null);
   const [isExiting, setIsExiting] = useState(false);
+  const autoDismissRef = useRef<NodeJS.Timeout | null>(null);
+
+  const dismissToast = useCallback(() => {
+    setIsExiting(true);
+    setTimeout(() => {
+      setActiveToast(null);
+      setIsExiting(false);
+    }, 300);
+  }, []);
+
+  const dispatchToast = useCallback((toast: ToastPayload) => {
+    notificationService.playChime();
+    notificationService.triggerSystemNotification(toast.title, toast.description);
+    setIsExiting(false);
+    setActiveToast(toast);
+
+    if (autoDismissRef.current) {
+      clearTimeout(autoDismissRef.current);
+    }
+    autoDismissRef.current = setTimeout(() => {
+      dismissToast();
+    }, 5500);
+  }, [dismissToast]);
 
   useEffect(() => {
-    // Check if permission prompt is needed
     if (typeof window !== 'undefined' && 'Notification' in window) {
       const dismissed = localStorage.getItem('ail_notif_prompt_dismissed');
       if (Notification.permission === 'default' && !dismissed) {
@@ -29,44 +56,22 @@ export function NotificationToast() {
     }
   }, []);
 
-  // Demo listener: simulate a welcome incoming message 8s after load to demonstrate the chime & toast
   useEffect(() => {
-    const hasSimulated = sessionStorage.getItem('ail_simulated_arrival');
-    if (!hasSimulated) {
-      const demoTimer = setTimeout(() => {
-        dispatchToast({
-          id: 'toast-1',
-          title: 'Camille sent a message',
-          description: '"Good morning! Thank you for the warm message..."',
-          linkUrl: '/chat/demo-1',
-          avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?q=80&w=800&auto=format&fit=crop',
-          icon: '💬',
-        });
-        sessionStorage.setItem('ail_simulated_arrival', 'true');
-      }, 7000);
-      return () => clearTimeout(demoTimer);
-    }
-  }, []);
+    const handleToastEvent = (e: Event) => {
+      const customEvent = e as CustomEvent<ToastPayload>;
+      if (customEvent.detail) {
+        dispatchToast(customEvent.detail);
+      }
+    };
 
-  const dispatchToast = (toast: ToastPayload) => {
-    notificationService.playChime();
-    notificationService.triggerSystemNotification(toast.title, toast.description);
-    setIsExiting(false);
-    setActiveToast(toast);
-
-    // Auto-dismiss after 5 seconds
-    setTimeout(() => {
-      dismissToast();
-    }, 5500);
-  };
-
-  const dismissToast = () => {
-    setIsExiting(true);
-    setTimeout(() => {
-      setActiveToast(null);
-      setIsExiting(false);
-    }, 300);
-  };
+    window.addEventListener('ail-toast', handleToastEvent);
+    return () => {
+      window.removeEventListener('ail-toast', handleToastEvent);
+      if (autoDismissRef.current) {
+        clearTimeout(autoDismissRef.current);
+      }
+    };
+  }, [dispatchToast]);
 
   const handleEnablePermissions = async () => {
     const res = await notificationService.requestPermission();
@@ -83,7 +88,6 @@ export function NotificationToast() {
 
   return (
     <>
-      {/* 1. Global Subtle Permission Prompt Bar */}
       {showPermissionPrompt && (
         <aside
           aria-label="Notification permissions"
@@ -118,15 +122,15 @@ export function NotificationToast() {
         </aside>
       )}
 
-      {/* 2. Floating In-App Toast (Lower-Right Slide Up Animation) */}
       {activeToast && (
         <aside
           aria-label="Incoming notification alert"
-          className={`fixed bottom-4 left-3 right-3 sm:left-auto sm:right-6 z-50 max-w-sm rounded-2xl bg-[#2D2F4C] border border-[#9A8CC3]/50 shadow-2xl p-3.5 transition-all duration-300 ${
-            isExiting
+          className={
+            'fixed bottom-4 left-3 right-3 sm:left-auto sm:right-6 z-50 max-w-sm rounded-2xl bg-[#2D2F4C] border border-[#9A8CC3]/50 shadow-2xl p-3.5 transition-all duration-300 ' +
+            (isExiting
               ? 'opacity-0 translate-y-4 scale-95'
-              : 'opacity-100 translate-y-0 scale-100 animate-in fade-in slide-in-from-bottom-5 duration-300'
-          }`}
+              : 'opacity-100 translate-y-0 scale-100 animate-in fade-in slide-in-from-bottom-5 duration-300')
+          }
         >
           <Link
             href={activeToast.linkUrl}
@@ -149,7 +153,7 @@ export function NotificationToast() {
 
             <div className="flex-1 min-w-0 pr-2">
               <div className="flex items-center justify-between">
-                <h3 className="text-xs sm:text-sm font-medium text-white group-hover:text-[#1C1924] transition-colors truncate">
+                <h3 className="text-xs sm:text-sm font-medium text-white group-hover:text-[#B2A4D7] transition-colors truncate">
                   {activeToast.title}
                 </h3>
                 <span className="text-[10px] text-[#978FA8]">Just now</span>
@@ -178,3 +182,4 @@ export function NotificationToast() {
   );
 }
 
+export default NotificationToast;

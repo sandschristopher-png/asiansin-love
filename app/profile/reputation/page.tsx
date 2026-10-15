@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, ShieldCheck, ExternalLink } from 'lucide-react';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabase/client';
 
 export default function ReputationScreen() {
   const [score, setScore] = useState<number>(100);

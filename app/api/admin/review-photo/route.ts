@@ -1,5 +1,5 @@
 // app/api/admin/review-photo/route.ts
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabase/client';
 import { verifyAdminActionSignature } from '@/lib/adminSecurity';
 
 export async function GET(req: Request) {

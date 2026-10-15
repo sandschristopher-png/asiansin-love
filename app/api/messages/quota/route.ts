@@ -1,5 +1,5 @@
-﻿import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabaseClient';
+import { NextResponse } from 'next/server';
+import { supabase } from '@/lib/supabase/client';
 
 const isUUID = (str: string) =>
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
@@ -22,8 +22,8 @@ export async function GET(req: Request) {
 
     const isPlus = profile?.membership_tier === 'plus';
     const isVerifiedWoman =
-      profile?.is_verified &&
-      (profile?.gender?.toLowerCase() === 'female' || profile?.gender?.toLowerCase() === 'woman');
+      Boolean(profile?.is_verified) &&
+      profile?.gender?.toLowerCase() === 'woman';
 
     if (isPlus) {
       return NextResponse.json({ type: 'plus', unlimited: true, label: 'Plus Member - Unlimited' });

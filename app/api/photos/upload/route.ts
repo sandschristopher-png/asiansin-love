@@ -56,7 +56,7 @@ export async function POST(req: Request) {
     }
 
     const formData = await req.formData();
-    const file = formData.get('photo') as File | null;
+    const file = (formData.get('photo') || formData.get('file')) as File | null;
     const isPrimaryAvatar = formData.get('isPrimary') !== 'false';
 
     if (!file) {
@@ -92,7 +92,7 @@ export async function POST(req: Request) {
 
     // 5. Upload under authenticated caller context (satisfies RLS)
     const { error: uploadError } = await authenticatedClient.storage
-      .from('photos')
+      .from('user_photos')
       .upload(filePath, buffer, {
         contentType: file.type,
         upsert: false,
@@ -108,7 +108,7 @@ export async function POST(req: Request) {
 
     // 6. Public URL resolution
     const { data: publicUrlData } = authenticatedClient.storage
-      .from('photos')
+      .from('user_photos')
       .getPublicUrl(filePath);
 
     const photoUrl = publicUrlData?.publicUrl;

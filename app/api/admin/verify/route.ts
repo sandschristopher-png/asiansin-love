@@ -1,6 +1,6 @@
 // app/api/admin/verify/route.ts
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabase/client';
 import { verifyAdminActionSignature } from '@/lib/adminSecurity';
 
 export async function GET(req: Request) {

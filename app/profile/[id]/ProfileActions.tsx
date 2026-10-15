@@ -1,9 +1,9 @@
-﻿'use client'
+'use client'
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import { Sparkles, MessageSquare, ShieldAlert, Loader2, Check } from 'lucide-react'
-import { createClient } from '@/utils/supabase/client'
+import { createClient } from '@/lib/supabase/client'
 
 interface ProfileActionsProps {
   targetUserId: string

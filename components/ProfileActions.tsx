@@ -1,7 +1,7 @@
-﻿'use client'
+'use client'
 
 import { useState } from 'react'
-import { createClient } from '@/utils/supabase/client'
+import { createClient } from '@/lib/supabase/client'
 import { Sparkles, Heart, Check, Loader2 } from 'lucide-react'
 
 interface ProfileActionsProps {

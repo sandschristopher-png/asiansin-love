@@ -12,7 +12,7 @@ import {
   SunMedium, 
   AlertCircle 
 } from 'lucide-react';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabase/client';
 import { 
 
   VERIFICATION_CHALLENGES, 

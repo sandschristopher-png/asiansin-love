@@ -7,7 +7,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { User, Settings, LogOut, Bell, ArrowLeft, Share2, Check } from 'lucide-react';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabase/client';
 
 export function Navbar() {
   const [user, setUser] = useState<any>(null);
@@ -53,7 +53,7 @@ export function Navbar() {
       .from('notifications')
       .select('*', { count: 'exact', head: true })
       .eq('user_id', userId)
-      .eq('read', false);
+      .eq('is_read', false);
     setHasUnread((count ?? 0) > 0);
   }
 

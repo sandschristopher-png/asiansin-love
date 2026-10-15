@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { CheckCircle2, AlertCircle, Loader2, Crown, User, LogOut, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabase/client';
 import { HandleUpgradeModal } from '@/components/HandleUpgradeModal';
 
 export default function SettingsPage() {

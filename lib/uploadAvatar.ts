@@ -1,5 +1,5 @@
-﻿// lib/uploadAvatar.ts
-import { supabase } from './supabaseClient';
+// lib/uploadAvatar.ts
+import { supabase } from '@/lib/supabase/client';
 import { compressProfileImage } from './imageUtils';
 
 export interface UploadAvatarResponse {

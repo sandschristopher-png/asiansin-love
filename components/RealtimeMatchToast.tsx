@@ -1,9 +1,9 @@
-﻿'use client';
+'use client';
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Sparkles, MessageCircle, X } from 'lucide-react';
-import { supabase } from '@/lib/supabaseClient';
+import { supabase } from '@/lib/supabase/client';
 import { playMatchChime } from '@/lib/sound';
 
 interface MatchEvent {
