@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { MessageCircle, Search, ChevronRight, Clock, ShieldCheck, Loader2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 
@@ -17,6 +18,7 @@ interface ConversationItem {
 }
 
 export default function MessagesPage() {
+  const router = useRouter();
   const [conversations, setConversations] = useState<ConversationItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<'all' | 'unread'>('all');
@@ -29,8 +31,8 @@ export default function MessagesPage() {
     async function loadConversations() {
       try {
         const { data: { user } } = await supabase.auth.getUser();
-        if (!user || !isMounted) {
-          if (isMounted) setLoading(false);
+        if (!user) {
+          if (isMounted) router.replace('/');
           return;
         }
 
@@ -52,7 +54,7 @@ export default function MessagesPage() {
         for (const m of (msgs as any[])) {
           if (m.is_quarantined && m.sender_id !== user.id) continue;
           const partnerId = m.sender_id === user.id ? m.receiver_id : m.sender_id;
-          if (!partnerId) continue;
+          if (!partnerId || String(partnerId).startsWith('00000000')) continue;
 
           const isUnreadIncoming = m.receiver_id === user.id && !m.is_read;
 
@@ -85,26 +87,28 @@ export default function MessagesPage() {
 
         const profileMap = new Map((profilesData || []).map((p: any) => [p.id, p]));
 
-        const formatted: ConversationItem[] = partnerIds.map((partnerId) => {
-          const info = partnerMap.get(partnerId)!;
-          const partner = profileMap.get(partnerId) as any;
-          const cleanName =
-            (partner?.username && !partner.username.startsWith('user_') ? partner.username.replace(/^@/, '') : '') ||
-            partner?.display_name ||
-            partner?.full_name ||
-            'Member';
+        const formatted: ConversationItem[] = partnerIds
+          .filter((partnerId) => profileMap.has(partnerId))
+          .map((partnerId) => {
+            const info = partnerMap.get(partnerId)!;
+            const partner = profileMap.get(partnerId) as any;
+            const cleanName =
+              (partner?.username && !partner.username.startsWith('user_') ? partner.username.replace(/^@/, '') : '') ||
+              partner?.display_name ||
+              partner?.full_name ||
+              'Member';
 
-          return {
-            id: info.messageId,
-            recipientId: partnerId,
-            name: cleanName,
-            avatarUrl: partner?.avatar_url || '/placeholder-avatar.svg',
-            repScore: partner?.reputation_score ?? 100,
-            lastMessage: info.lastMessage,
-            lastMessageAt: info.lastMessageAt,
-            unreadCount: info.unreadCount,
-          };
-        });
+            return {
+              id: info.messageId,
+              recipientId: partnerId,
+              name: cleanName,
+              avatarUrl: partner?.avatar_url || '/placeholder-avatar.svg',
+              repScore: partner?.reputation_score ?? 100,
+              lastMessage: info.lastMessage,
+              lastMessageAt: info.lastMessageAt,
+              unreadCount: info.unreadCount,
+            };
+          });
 
         if (isMounted) {
           setConversations(formatted);
@@ -147,7 +151,7 @@ export default function MessagesPage() {
         supabase.removeChannel(channel);
       }
     };
-  }, []);
+  }, [router]);
 
   const filteredConversations = conversations.filter((c) => {
     if (activeTab === 'unread' && c.unreadCount === 0) return false;
@@ -157,7 +161,7 @@ export default function MessagesPage() {
 
   return (
     <div className="w-full min-h-full bg-[#F8F7FA] text-[#1C1924] flex flex-col font-sans">
-      <main className="flex-1 w-full px-4 pt-4 pb-24 space-y-4">
+      <main className="flex-1 w-full px-4 pt-4 pb-40 space-y-4">
         {/* Subtitle + All/Unread Tabs */}
         <div className="flex items-center justify-between gap-2">
           <p className="text-xs text-[#6C637B]">

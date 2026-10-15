@@ -47,9 +47,10 @@ function sanitizeMessage(text: string): { sanitized: string; wasMasked: boolean 
 export default function ChatConversationPage() {
   const routeParams = useParams();
   const router = useRouter();
-  const targetId = (Array.isArray(routeParams?.id) ? routeParams.id[0] : (routeParams?.id as string)) || '';
+  const rawParam = (Array.isArray(routeParams?.id) ? routeParams.id[0] : (routeParams?.id as string)) || '';
 
   const [currentUserId, setCurrentUserId] = useState<string>('');
+  const [resolvedTargetUuid, setResolvedTargetUuid] = useState<string | null>(null);
   const [targetInfo, setTargetInfo] = useState({
     name: 'Member',
     avatar: '/placeholder-avatar.svg',
@@ -72,7 +73,6 @@ export default function ChatConversationPage() {
   const [showReportModal, setShowReportModal] = useState(false);
   const [actionDoneMsg, setActionDoneMsg] = useState<string | null>(null);
   const [errorBanner, setErrorBanner] = useState<string | null>(null);
-  const [resolvedTargetUuid, setResolvedTargetUuid] = useState<string | null>(null);
   const chatEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -98,9 +98,7 @@ export default function ChatConversationPage() {
           .eq('receiver_id', currentUserId)
           .eq('sender_id', resolvedTargetUuid)
           .eq('is_read', false);
-      } catch {
-        // Non-blocking read receipt update
-      }
+      } catch {}
     };
 
     markMessagesAsRead();
@@ -110,7 +108,12 @@ export default function ChatConversationPage() {
     async function initUserAndTarget() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) {
-        router.push('/login');
+        router.replace('/');
+        return;
+      }
+
+      if (!rawParam || rawParam.startsWith('00000000')) {
+        router.replace('/messages');
         return;
       }
 
@@ -126,34 +129,58 @@ export default function ChatConversationPage() {
       }
       const myInterests: string[] = Array.isArray(myProf?.interests) ? myProf.interests : [];
 
-      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(targetId);
-      let targetUuid = isUuid ? targetId : null;
-
-      let query = supabase
-        .from('profiles')
-        .select('id, username, display_name, full_name, avatar_url, reputation_score, city, country, interests, looking_for');
+      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(rawParam);
+      let targetUuid: string | null = null;
+      let profData: any = null;
 
       if (isUuid) {
-        query = query.eq('id', targetId);
+        targetUuid = rawParam;
+        const { data } = await supabase
+          .from('profiles')
+          .select('id, username, display_name, full_name, avatar_url, reputation_score, city, country, interests')
+          .eq('id', rawParam)
+          .maybeSingle();
+        profData = data;
       } else {
-        query = query.ilike('username', targetId);
+        const { data } = await supabase
+          .from('profiles')
+          .select('id, username, display_name, full_name, avatar_url, reputation_score, city, country, interests')
+          .ilike('username', rawParam)
+          .maybeSingle();
+        if (data) {
+          targetUuid = data.id;
+          profData = data;
+        } else {
+          const { data: dataByName } = await supabase
+            .from('profiles')
+            .select('id, username, display_name, full_name, avatar_url, reputation_score, city, country, interests')
+            .ilike('display_name', rawParam)
+            .maybeSingle();
+          if (dataByName) {
+            targetUuid = dataByName.id;
+            profData = dataByName;
+          }
+        }
       }
 
-      const { data: prof } = await query.maybeSingle();
+      if (!targetUuid) {
+        router.replace('/messages');
+        return;
+      }
 
-      if (prof) {
-        targetUuid = prof.id;
-        setResolvedTargetUuid(prof.id);
-        const cleanHandle = (prof.username || prof.display_name || prof.full_name || 'Member').replace(/^@/, '');
+      setResolvedTargetUuid(targetUuid);
+
+      if (profData) {
+        const cleanHandle = (profData.username || profData.display_name || profData.full_name || 'Member').replace(/^@/, '');
         setTargetInfo({
           name: cleanHandle,
-          avatar: prof.avatar_url || '/placeholder-avatar.svg',
-          rep: typeof prof.reputation_score === 'number' ? prof.reputation_score : 100,
-          city: prof.city || '',
-          country: prof.country || '',
+          avatar: profData.avatar_url || '/placeholder-avatar.svg',
+          rep: typeof profData.reputation_score === 'number' ? profData.reputation_score : 100,
+          city: profData.city || '',
+          country: profData.country || '',
         });
 
-        const theirInterests: string[] = Array.isArray(prof.interests) ? prof.interests : [];
+        const theirInterests: string[] = Array.isArray(profData.interests) ? profData.interests : [];
         const shared = theirInterests.filter((t) =>
           myInterests.some((m) => m.toLowerCase() === t.toLowerCase())
         );
@@ -164,53 +191,49 @@ export default function ChatConversationPage() {
           );
         } else if (theirInterests.length > 0) {
           setIcebreakerPrompt(
-            'Hi @' + cleanHandle + '! I saw on your profile that you enjoy ' + theirInterests[0] + '—how is your week going' + (prof.city ? ' in ' + prof.city : '') + '?'
+            'Hi @' + cleanHandle + '! I saw on your profile that you enjoy ' + theirInterests[0] + '—how is your week going' + (profData.city ? ' in ' + profData.city : '') + '?'
           );
         } else {
           setIcebreakerPrompt(
             'Hi @' + cleanHandle + '! I really appreciated your profile and would love to get to know you. How is your day going?'
           );
         }
-      } else if (isUuid) {
-        setResolvedTargetUuid(targetId);
       }
 
-      if (targetUuid) {
-        const { data: existingBlock } = await supabase
-          .from('user_blocks')
-          .select('id')
-          .or('and(blocker_id.eq.' + user.id + ',blocked_id.eq.' + targetUuid + '),and(blocker_id.eq.' + targetUuid + ',blocked_id.eq.' + user.id + ')')
-          .maybeSingle();
+      const { data: existingBlock } = await supabase
+        .from('user_blocks')
+        .select('id')
+        .or('and(blocker_id.eq.' + user.id + ',blocked_id.eq.' + targetUuid + '),and(blocker_id.eq.' + targetUuid + ',blocked_id.eq.' + user.id + ')')
+        .maybeSingle();
 
-        if (existingBlock) {
-          router.push('/messages');
-          return;
-        }
+      if (existingBlock) {
+        router.replace('/messages');
+        return;
+      }
 
-        const { data: remoteMsgs } = await supabase
-          .from('messages')
-          .select('id, sender_id, receiver_id, content, created_at, is_quarantined, is_read')
-          .or('and(sender_id.eq.' + user.id + ',receiver_id.eq.' + targetUuid + '),and(sender_id.eq.' + targetUuid + ',receiver_id.eq.' + user.id + ')')
-          .order('created_at', { ascending: true });
+      const { data: remoteMsgs } = await supabase
+        .from('messages')
+        .select('id, sender_id, receiver_id, content, created_at, is_quarantined, is_read')
+        .or('and(sender_id.eq.' + user.id + ',receiver_id.eq.' + targetUuid + '),and(sender_id.eq.' + targetUuid + ',receiver_id.eq.' + user.id + ')')
+        .order('created_at', { ascending: true });
 
-        if (remoteMsgs) {
-          setMessages(
-            remoteMsgs
-              .filter((m: any) => m.sender_id === user.id || !m.is_quarantined)
-              .map((m: any) => ({
-                id: m.id,
-                sender: m.sender_id === user.id ? 'me' : 'them',
-                text: m.content,
-                time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                read: Boolean(m.is_read),
-              }))
-          );
-        }
+      if (remoteMsgs) {
+        setMessages(
+          remoteMsgs
+            .filter((m: any) => m.sender_id === user.id || !m.is_quarantined)
+            .map((m: any) => ({
+              id: m.id,
+              sender: m.sender_id === user.id ? 'me' : 'them',
+              text: m.content,
+              time: new Date(m.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+              read: Boolean(m.is_read),
+            }))
+        );
       }
     }
 
     initUserAndTarget();
-  }, [targetId, router]);
+  }, [rawParam, router]);
 
   useEffect(() => {
     if (!resolvedTargetUuid || !currentUserId) return;
@@ -267,8 +290,7 @@ export default function ChatConversationPage() {
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     const clean = inputText.trim();
-    const finalTargetId = resolvedTargetUuid || (/^[0-9a-f]{8}-/i.test(targetId) ? targetId : null);
-    if (!clean || cooldownSeconds > 0 || !finalTargetId) return;
+    if (!clean || cooldownSeconds > 0 || !resolvedTargetUuid) return;
 
     setErrorBanner(null);
     const { sanitized, wasMasked } = sanitizeMessage(clean);
@@ -292,7 +314,7 @@ export default function ChatConversationPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          receiverId: finalTargetId,
+          receiverId: resolvedTargetUuid,
           content: sanitized,
         }),
       });
@@ -330,7 +352,7 @@ export default function ChatConversationPage() {
   };
 
   const handleBlockUser = async () => {
-    const target = resolvedTargetUuid || targetId;
+    const target = resolvedTargetUuid || rawParam;
     try {
       const res = await fetch('/api/users/block', {
         method: 'POST',
@@ -351,7 +373,7 @@ export default function ChatConversationPage() {
   };
 
   const handleReportUser = async (reason: string = 'harassment') => {
-    const target = resolvedTargetUuid || targetId;
+    const target = resolvedTargetUuid || rawParam;
     try {
       const res = await fetch('/api/users/report', {
         method: 'POST',
@@ -377,35 +399,35 @@ export default function ChatConversationPage() {
   };
 
   return (
-    <main className="flex flex-col h-[100dvh] bg-[#F8F7FA] text-[#1C1924] font-sans relative overflow-hidden">
-      {/* Sticky Header */}
-      <div className="sticky top-0 z-30 flex items-center justify-between px-4 py-3 bg-white/95 backdrop-blur-md border-b border-[#DDD7E5] shrink-0">
-        <div className="flex items-center gap-3">
-          <Link href="/messages" className="p-1 -ml-1 text-[#524B5E] hover:text-[#6555b8] transition rounded-full hover:bg-[#F3EFFC]">
+    <main className="w-full min-h-[calc(100dvh-64px)] flex flex-col bg-[#F8F7FA] text-[#1C1924] font-sans relative">
+      {/* Pristine Dating App Chat Header */}
+      <div className="flex items-center justify-between px-4 py-3 bg-white border-b border-[#DDD7E5] shrink-0">
+        <div className="flex items-center gap-3 min-w-0">
+          <Link href="/messages" className="p-1.5 -ml-1 text-[#524B5E] hover:text-[#6555B8] transition rounded-full hover:bg-[#F3EFFC] shrink-0">
             <ArrowLeft className="w-5 h-5" />
           </Link>
-          <Link href={'/profile/' + (resolvedTargetUuid || targetId)} className="flex items-center gap-2.5">
-            <div className="relative w-9 h-9 rounded-full overflow-hidden border border-[#DDD7E5]">
-              <Image src={targetInfo.avatar} alt={targetInfo.name} fill className="object-cover object-[50%_20%]" />
+          <Link href={'/profile/' + (resolvedTargetUuid || rawParam)} className="flex items-center gap-2.5 min-w-0">
+            <div className="relative w-10 h-10 rounded-full overflow-hidden border border-[#DDD7E5] shrink-0 bg-[#F3EFFC]">
+              <Image src={targetInfo.avatar} alt={targetInfo.name} fill sizes="40px" className="object-cover" />
             </div>
-            <div className="flex flex-col">
+            <div className="flex flex-col min-w-0">
               <span
-                className="text-sm font-bold text-[#1C1924] leading-tight"
+                className="text-sm font-bold text-[#1C1924] leading-tight truncate"
                 style={{ fontFamily: 'var(--font-brand)' }}
               >
                 @{targetInfo.name}
               </span>
               <div className="flex items-center gap-1.5 mt-0.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block animate-pulse" />
-                <span className="text-[10px] text-[#6C637B] font-medium">
-                  {targetInfo.city ? targetInfo.city : 'Direct Chat'}
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block shrink-0" />
+                <span className="text-[11px] text-[#6C637B] font-medium truncate">
+                  {targetInfo.city ? targetInfo.city : 'Active now'}
                 </span>
               </div>
             </div>
           </Link>
         </div>
 
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           <button
             type="button"
             onClick={() => setShowRepModal(true)}
@@ -413,7 +435,7 @@ export default function ChatConversationPage() {
               'px-2.5 py-1 rounded-full text-[10px] font-semibold transition active:scale-95 cursor-pointer border ' +
               (targetInfo.rep < 60
                 ? 'bg-amber-50 border-amber-300 text-amber-800'
-                : 'bg-[#F3EFFC] border-[#DDD7E5] text-[#6555b8] hover:bg-[#EAE0F5]')
+                : 'bg-[#F3EFFC] border-[#DDD7E5] text-[#6555B8] hover:bg-[#EAE0F5]')
             }
           >
             {targetInfo.rep}% Rep
@@ -430,13 +452,12 @@ export default function ChatConversationPage() {
       </div>
 
       {/* Message Stream */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-3">
-        {/* with-Style "Talk Advice" Icebreaker Banner */}
+      <div className="flex-1 overflow-y-auto p-4 pb-44 space-y-3">
         {showIcebreaker && icebreakerPrompt && messages.length < 3 && (
           <div className="p-3.5 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-2">
             <div className="flex items-center justify-between">
-              <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-[#6555b8]">
-                <Sparkles className="w-3.5 h-3.5 text-[#6555b8]" />
+              <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-[#6555B8]">
+                <Sparkles className="w-3.5 h-3.5 text-[#6555B8]" />
                 <span>Talk Advice • Conversation Starter</span>
               </span>
               <button
@@ -454,7 +475,7 @@ export default function ChatConversationPage() {
             <button
               type="button"
               onClick={() => setInputText(icebreakerPrompt)}
-              className="text-[11px] font-bold text-[#6555b8] hover:underline cursor-pointer"
+              className="text-[11px] font-bold text-[#6555B8] hover:underline cursor-pointer"
             >
               Tap to use this icebreaker &rarr;
             </button>
@@ -477,8 +498,8 @@ export default function ChatConversationPage() {
         )}
 
         {showSafetyNotice && (
-          <div className="p-3.5 rounded-2xl bg-[#F3EFFC] border border-[#DDD7E5] text-xs text-[#6555b8] flex items-start gap-2.5 shadow-xs">
-            <ShieldAlert className="w-4 h-4 text-[#6555b8] shrink-0 mt-0.5" />
+          <div className="p-3.5 rounded-2xl bg-[#F3EFFC] border border-[#DDD7E5] text-xs text-[#6555B8] flex items-start gap-2.5 shadow-xs">
+            <ShieldAlert className="w-4 h-4 text-[#6555B8] shrink-0 mt-0.5" />
             <p className="leading-relaxed">
               <strong className="font-semibold">Safety Gate:</strong> External contact handles and phone digits unlock after 3 substantive replies from both members.
             </p>
@@ -494,7 +515,7 @@ export default function ChatConversationPage() {
               className={
                 'max-w-[82%] px-4 py-2.5 rounded-2xl text-xs leading-relaxed shadow-xs select-text ' +
                 (msg.sender === 'me'
-                  ? 'bg-[#6555b8] text-white font-normal rounded-br-xs'
+                  ? 'bg-[#6555B8] text-white font-normal rounded-br-xs'
                   : 'bg-white text-[#1C1924] border border-[#DDD7E5] rounded-bl-xs')
               }
             >
@@ -504,7 +525,7 @@ export default function ChatConversationPage() {
               <span>{msg.time}</span>
               {msg.sender === 'me' && (
                 msg.read ? (
-                  <CheckCheck className="w-3 h-3 text-[#6555b8]" />
+                  <CheckCheck className="w-3 h-3 text-[#6555B8]" />
                 ) : (
                   <Check className="w-3 h-3 text-[#8C849B]" />
                 )
@@ -515,8 +536,8 @@ export default function ChatConversationPage() {
         <div ref={chatEndRef} />
       </div>
 
-      {/* Input Bar / Cooldown */}
-      <div className="sticky bottom-0 z-30 bg-white/95 backdrop-blur-md border-t border-[#DDD7E5] p-3 pb-[76px] w-full shrink-0 shadow-xs">
+      {/* Input Bar pinned cleanly above BottomNav */}
+      <div className="fixed bottom-[84px] inset-x-0 z-30 max-w-[430px] mx-auto bg-white/95 backdrop-blur-md border-t border-[#DDD7E5] p-3">
         {cooldownSeconds > 0 ? (
           <div className="p-3.5 rounded-2xl bg-[#F8F7FA] border border-[#DDD7E5] flex flex-col items-center gap-2 shadow-xs text-center">
             <div className="flex items-center gap-1.5 text-xs text-[#524B5E]">
@@ -528,7 +549,7 @@ export default function ChatConversationPage() {
             </span>
             <button
               onClick={() => setShowUpgradeModal(true)}
-              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-full bg-[#6555b8] hover:bg-[#52449e] text-white font-semibold text-xs shadow-md transition"
+              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-full bg-[#6555B8] hover:bg-[#52449e] text-white font-semibold text-xs shadow-md transition"
             >
               <Zap className="w-3.5 h-3.5 fill-current" />
               Skip the Wait with Plus
@@ -541,12 +562,12 @@ export default function ChatConversationPage() {
               placeholder="Write a message..."
               value={inputText}
               onChange={(e) => setInputText(e.target.value)}
-              className="flex-1 bg-[#F8F7FA] border border-[#DDD7E5] focus:border-[#6555b8] focus:bg-white text-[#1C1924] placeholder-[#8C849B] rounded-full px-4 py-2.5 text-xs outline-none transition-all focus:ring-2 focus:ring-[#6555b8]/15"
+              className="flex-1 bg-[#F8F7FA] border border-[#DDD7E5] focus:border-[#6555B8] focus:bg-white text-[#1C1924] placeholder-[#8C849B] rounded-full px-4 py-2.5 text-xs outline-none transition-all focus:ring-2 focus:ring-[#6555B8]/15"
             />
             <button
               type="submit"
               disabled={!inputText.trim()}
-              className="p-2.5 rounded-full bg-[#6555b8] hover:bg-[#52449e] active:scale-90 disabled:opacity-40 text-white transition-all shadow-sm cursor-pointer"
+              className="p-2.5 rounded-full bg-[#6555B8] hover:bg-[#52449e] active:scale-90 disabled:opacity-40 text-white transition-all shadow-sm cursor-pointer"
             >
               <Send className="w-4 h-4" />
             </button>
