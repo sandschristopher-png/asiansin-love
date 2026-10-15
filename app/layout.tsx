@@ -12,13 +12,13 @@ import { GlobalNotificationListener } from '@/components/GlobalNotificationListe
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800', '900'],
+  weight: ['400', '500', '600', '700', '800'],
   variable: '--font-sans',
 });
 
 const outfit = Outfit({
   subsets: ['latin'],
-  weight: ['400', '500', '600', '700', '800', '900'],
+  weight: ['400','500','600','700','800','900'],
   variable: '--font-brand',
 });
 
