@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React from 'react';
 import Link from 'next/link';
@@ -13,9 +13,7 @@ export function Footer() {
         <div className="space-y-1">
           <div className="flex items-center justify-center gap-2">
             <span className="w-2 h-2 rounded-full bg-[#6555b8]" />
-            <h2 className="font-logo text-base font-bold tracking-tight text-[#181126]">
-              asians in love
-            </h2>
+            <h2 className="font-logo text-base font-bold tracking-tight text-[#181126]"><span className="text-[20px] leading-none font-black tracking-[-0.035em] lowercase select-none inline-flex items-baseline" style={{ fontFamily: 'var(--font-brand)', fontWeight: 900 }}><span className="text-[#1C1924]">asians</span><span className="text-[#6555B8]">inlove</span></span></h2>
           </div>
           <p className="text-[11.5px] text-[#6E677F]">
             Intentional courtship for marriage and lifelong commitment.

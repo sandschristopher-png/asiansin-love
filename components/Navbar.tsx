@@ -25,7 +25,7 @@ export function Navbar() {
 
   const handleInviteShare = async () => {
     const shareData = {
-      title: 'Asians in Love',
+      title: `asiansinlove`,
       text: 'Find meaningful connections on Asians in Love:',
       url: typeof window !== 'undefined' ? window.location.origin : 'https://asiansin.love',
     };
@@ -93,7 +93,7 @@ export function Navbar() {
               if (payload.eventType === 'INSERT' && payload.new) {
                 const n = payload.new;
                 notifyUser({
-                  senderName: n.title || 'Asians in Love',
+                  senderName: n.title || `asiansinlove`,
                   avatarUrl: '',
                   message: n.description || 'You have a new update.',
                   chatUrl: n.link_url || '/notifications',

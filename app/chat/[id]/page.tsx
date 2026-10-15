@@ -29,8 +29,9 @@ function sanitizeMessage(text: string): { sanitized: string; wasMasked: boolean 
 
   const offPlatformKeywords = ['whatsapp', 'telegram', 'viber', 'lineid', 'wechat', 'snapchat', 'instagram'];
   const hasOffPlatformWord = offPlatformKeywords.some((kw) => normalized.includes(kw));
+  const digitClusterTest = /(?:\+?\d[\s.\-_()]*){7,}/;
   const digitClusterRegex = /(?:\+?\d[\s.\-_()]*){7,}/g;
-  const hasPhoneDigits = digitClusterRegex.test(text);
+  const hasPhoneDigits = digitClusterTest.test(text);
 
   if (hasOffPlatformWord || hasPhoneDigits) {
     let masked = text.replace(digitClusterRegex, '[contact info hidden for safety]');
@@ -180,7 +181,9 @@ export default function ChatConversationPage() {
           country: profData.country || '',
         });
 
-        const theirInterests: string[] = Array.isArray(profData.interests) ? profData.interests : [];
+        const retiredTags = new Set(['nature walks', 'gaming', 'entrepreneurship']);
+        const theirInterests: string[] = (Array.isArray(profData.interests) ? profData.interests : [])
+          .filter((t: string) => !retiredTags.has(String(t || '').trim().toLowerCase()));
         const shared = theirInterests.filter((t) =>
           myInterests.some((m) => m.toLowerCase() === t.toLowerCase())
         );
@@ -239,7 +242,7 @@ export default function ChatConversationPage() {
     if (!resolvedTargetUuid || !currentUserId) return;
 
     let isMounted = true;
-    const channelName = 'chat_' + resolvedTargetUuid + '_' + currentUserId;
+    const channelName = 'chat_' + [resolvedTargetUuid, currentUserId].sort().join('_');
 
     const channel = supabase
       .channel(channelName)

@@ -1,4 +1,4 @@
-﻿import React from 'react';
+import React from 'react';
 import Link from 'next/link';
 
 interface BrandLogoProps {
@@ -18,9 +18,7 @@ export function BrandLogo({ href, size = 'md', className = '' }: BrandLogoProps)
     <span
       className={`inline-flex items-baseline select-none lowercase whitespace-nowrap leading-none tracking-[-0.035em] text-[#4C3B75] ${sizeClasses} ${className}`}
       style={{ fontFamily: 'var(--font-logo)', fontWeight: 600 }}
-    >
-      asians in love
-    </span>
+    ><span className="text-[20px] leading-none font-black tracking-[-0.035em] lowercase select-none inline-flex items-baseline" style={{ fontFamily: 'var(--font-brand)', fontWeight: 900 }}><span className="text-[#1C1924]">asians</span><span className="text-[#6555B8]">inlove</span></span></span>
   );
 
   if (href) {
