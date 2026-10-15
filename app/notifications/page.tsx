@@ -4,11 +4,10 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase/client';
 
-
 interface NotificationItem {
   id: string;
   user_id: string;
-  type: 'message' | 'verification' | 'favorite' | 'system';
+  type: 'message' | 'match' | 'visit' | 'spark' | 'favorite' | 'verification' | 'system';
   title: string;
   description: string;
   link_url: string;
@@ -58,6 +57,25 @@ export default function NotificationsPage() {
     }
 
     fetchNotifications();
+
+    let channel: any = null;
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (!user) return;
+      channel = supabase
+        .channel(`notifications-page-${user.id}`)
+        .on(
+          'postgres_changes',
+          { event: 'INSERT', schema: 'public', table: 'notifications', filter: `user_id=eq.${user.id}` },
+          (payload) => {
+            setNotifications((prev) => [payload.new as NotificationItem, ...prev]);
+          }
+        )
+        .subscribe();
+    });
+
+    return () => {
+      if (channel) supabase.removeChannel(channel);
+    };
   }, []);
 
   const markAllRead = async () => {
@@ -83,28 +101,17 @@ export default function NotificationsPage() {
   };
 
   return (
-    <main className="max-w-2xl mx-auto px-4 sm:px-6 py-6 pb-28 space-y-5">
-      {/* Header */}
-      <div className="flex items-center justify-between">
-
-        <div>
-          <h1 className="text-xl sm:text-[22px] font-semibold text-[#1C1924] ">
-              Notifications
-            </h1>
-            <p className="text-xs sm:text-sm text-[#756D82] mt-0.5">
-            Activity updates, messages, and security notices.
-          </p>
-        </div>
-
-        {notifications.some((n) => !n.is_read) && (
+    <main className="max-w-2xl mx-auto w-full px-4 sm:px-6 py-6 pb-24 space-y-5">
+      {notifications.some((n) => !n.is_read) && (
+        <div className="flex items-center justify-end">
           <button
             onClick={markAllRead}
             className="text-xs font-medium text-[#B2A4D7] hover:text-[#1C1924] active:scale-95 transition-all"
           >
             Mark all read
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Notifications List */}
       <div className="space-y-3">
@@ -157,4 +164,3 @@ export default function NotificationsPage() {
     </main>
   );
 }
-

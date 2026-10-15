@@ -1,4 +1,4 @@
-﻿@import "tailwindcss";
+@import "tailwindcss";
 
 @keyframes slideDown {
   0% {
@@ -103,4 +103,12 @@ a:active,
 
 .font-logo {
   font-family: var(--font-logo), var(--font-brand), sans-serif;
+}
+
+/* Hide Next.js bottom-left N / Issue dev indicator badge */
+nextjs-portal,
+[data-nextjs-toast],
+[data-next-badge-root],
+[data-nextjs-dev-tools-button] {
+  display: none !important;
 }

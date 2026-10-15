@@ -26,6 +26,8 @@ export default function PublicProfilePage() {
   const [isSaved, setIsSaved] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
   const [currentPhotoIdx, setCurrentPhotoIdx] = useState(0);
+  const [viewerInterests, setViewerInterests] = useState<string[]>([]);
+  const [viewerIntent, setViewerIntent] = useState<string>('');
 
   useEffect(() => {
     async function loadData() {
@@ -45,6 +47,19 @@ export default function PublicProfilePage() {
         if (error) throw error;
 
         if (data) {
+          const { data: { user: currentUser } } = await supabase.auth.getUser();
+          if (currentUser) {
+            if (currentUser.id !== data.id) {
+              supabase.from('profile_views').insert({ viewer_id: currentUser.id, viewed_id: data.id }).then(() => {});
+            }
+            const { data: myProf } = await supabase
+              .from('profiles')
+              .select('*')
+              .eq('id', currentUser.id)
+              .maybeSingle();
+            if (Array.isArray(myProf?.interests)) setViewerInterests(myProf.interests);
+            if (myProf?.relationship_intent) setViewerIntent(myProf.relationship_intent);
+          }
           let calculatedAge = data.age;
           if (!calculatedAge && (data.birthdate || data.date_of_birth)) {
             const dob = new Date(data.birthdate || data.date_of_birth);
@@ -339,6 +354,77 @@ export default function PublicProfilePage() {
 
         {/* Reputation Score Card */}
           <RepScoreCard score={profile.rep_score ?? 100} />
+
+          {/* with-Style "Things in Common" & Interests Card */}
+        {(() => {
+          const profileTags: string[] = Array.isArray(profile.interests) ? profile.interests : [];
+          const sharedTags = profileTags.filter((t) =>
+            viewerInterests.some((v) => v.toLowerCase() === t.toLowerCase())
+          );
+          const sameIntent = Boolean(
+            viewerIntent &&
+            (profile.relationship_intent || profile.intent) &&
+            viewerIntent.toLowerCase() === String(profile.relationship_intent || profile.intent).toLowerCase()
+          );
+          const totalCommon = sharedTags.length + (sameIntent ? 1 : 0);
+
+          if (profileTags.length === 0 && totalCommon === 0) return null;
+
+          return (
+            <div className="p-4 sm:p-5 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-3">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="w-7 h-7 rounded-full bg-[#F3EFFC] text-[#6555b8] flex items-center justify-center">
+                    <Sparkles className="w-4 h-4" />
+                  </span>
+                  <div>
+                    <h2
+                      className="text-xs font-bold uppercase tracking-wider text-[#1C1924]"
+                      style={{ fontFamily: 'var(--font-brand)' }}
+                    >
+                      Interests &amp; Things in Common
+                    </h2>
+                    <p className="text-[11px] text-[#6C637B]">
+                      {totalCommon > 0
+                        ? `You share ${totalCommon} interest${totalCommon > 1 ? 's' : ''} & values`
+                        : 'Hobbies & lifestyle tags'}
+                    </p>
+                  </div>
+                </div>
+                {totalCommon > 0 && (
+                  <span className="px-2.5 py-1 rounded-full bg-[#6555b8] text-white text-[11px] font-bold shadow-2xs">
+                    {totalCommon} Shared
+                  </span>
+                )}
+              </div>
+
+              <div className="flex flex-wrap gap-1.5 pt-1">
+                {sameIntent && (
+                  <span className="px-3 py-1 rounded-full bg-[#F3EFFC] border border-[#6555b8] text-[#6555b8] text-xs font-bold flex items-center gap-1">
+                    <Heart className="w-3 h-3 fill-[#6555b8]" />
+                    <span>Both want {profile.relationship_intent || profile.intent}</span>
+                  </span>
+                )}
+                {profileTags.map((tag: string) => {
+                  const isShared = sharedTags.includes(tag);
+                  return (
+                    <span
+                      key={tag}
+                      className={
+                        'px-3 py-1 rounded-full text-xs font-semibold border transition ' +
+                        (isShared
+                          ? 'bg-[#F3EFFC] border-[#6555b8] text-[#6555b8]'
+                          : 'bg-[#F8F7FA] border-[#DDD7E5] text-[#524B5E]')
+                      }
+                    >
+                      {isShared ? '✨ ' + tag : tag}
+                    </span>
+                  );
+                })}
+              </div>
+            </div>
+          );
+        })()}
 
           {/* About Me Card */}
         <div className="p-4 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-1.5">

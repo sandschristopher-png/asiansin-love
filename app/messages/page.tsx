@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { MessageCircle, Search, ChevronRight, Clock } from 'lucide-react';
+import { MessageCircle, Search, ChevronRight, Clock, ShieldCheck, Loader2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 
 interface ConversationItem {
@@ -36,8 +36,8 @@ export default function MessagesPage() {
 
         const { data: msgs, error } = await supabase
           .from('messages')
-          .select('id, sender_id, receiver_id, content, created_at')
-          .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
+          .select('id, sender_id, receiver_id, content, created_at, is_read, is_quarantined')
+          .or('sender_id.eq.' + user.id + ',receiver_id.eq.' + user.id)
           .order('created_at', { ascending: false });
 
         if (error || !msgs || msgs.length === 0) {
@@ -48,16 +48,24 @@ export default function MessagesPage() {
           return;
         }
 
-        const partnerMap = new Map();
+        const partnerMap = new Map<string, { lastMessage: string; lastMessageAt: string; messageId: string; unreadCount: number }>();
         for (const m of (msgs as any[])) {
+          if (m.is_quarantined && m.sender_id !== user.id) continue;
           const partnerId = m.sender_id === user.id ? m.receiver_id : m.sender_id;
           if (!partnerId) continue;
+
+          const isUnreadIncoming = m.receiver_id === user.id && !m.is_read;
+
           if (!partnerMap.has(partnerId)) {
             partnerMap.set(partnerId, {
               lastMessage: m.content || 'Sent a message',
               lastMessageAt: m.created_at,
               messageId: m.id,
+              unreadCount: isUnreadIncoming ? 1 : 0,
             });
+          } else if (isUnreadIncoming) {
+            const current = partnerMap.get(partnerId)!;
+            current.unreadCount += 1;
           }
         }
 
@@ -80,15 +88,21 @@ export default function MessagesPage() {
         const formatted: ConversationItem[] = partnerIds.map((partnerId) => {
           const info = partnerMap.get(partnerId)!;
           const partner = profileMap.get(partnerId) as any;
+          const cleanName =
+            (partner?.username && !partner.username.startsWith('user_') ? partner.username.replace(/^@/, '') : '') ||
+            partner?.display_name ||
+            partner?.full_name ||
+            'Member';
+
           return {
             id: info.messageId,
             recipientId: partnerId,
-            name: partner?.display_name || partner?.full_name || partner?.username || 'Member',
+            name: cleanName,
             avatarUrl: partner?.avatar_url || '/placeholder-avatar.svg',
-            repScore: partner?.reputation_score || 95,
+            repScore: partner?.reputation_score ?? 100,
             lastMessage: info.lastMessage,
             lastMessageAt: info.lastMessageAt,
-            unreadCount: 0,
+            unreadCount: info.unreadCount,
           };
         });
 
@@ -108,8 +122,8 @@ export default function MessagesPage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user || !isMounted) return;
 
-      const channelName = `user_inbox_${user.id}`;
-      const existingChannel = supabase.getChannels().find((ch: any) => ch.topic === `realtime:${channelName}`);
+      const channelName = 'user_inbox_' + user.id;
+      const existingChannel = supabase.getChannels().find((ch: any) => ch.topic === 'realtime:' + channelName);
       if (existingChannel) {
         supabase.removeChannel(existingChannel);
       }
@@ -142,95 +156,121 @@ export default function MessagesPage() {
   });
 
   return (
-    <div className="flex-1 flex flex-col min-h-0 bg-[#F8F7FA] text-[#1C1924]">
-      <main className="flex-1 w-full px-4 pt-4 pb-6 space-y-4">
-        {/* Page Title */}
-        <div className="flex items-center justify-between">
-          
-          <div className="flex gap-1.5 bg-white border border-[#DDD7E5] p-1 rounded-2xl">
+    <div className="w-full min-h-full bg-[#F8F7FA] text-[#1C1924] flex flex-col font-sans">
+      <main className="flex-1 w-full px-4 pt-4 pb-24 space-y-4">
+        {/* Subtitle + All/Unread Tabs */}
+        <div className="flex items-center justify-between gap-2">
+          <p className="text-xs text-[#6C637B]">
+            Direct messages with your connections
+          </p>
+
+          <div className="flex items-center gap-1.5 bg-white border border-[#DDD7E5] p-1 rounded-full shadow-2xs shrink-0">
             <button
+              type="button"
               onClick={() => setActiveTab('all')}
-              className={`px-3 py-1 rounded-xl text-xs font-semibold transition ${
-                activeTab === 'all'
-                  ? 'bg-[#6555b8] text-white shadow-xs'
-                  : 'text-[#524B5E] hover:text-[#1C1924]'
-              }`}
+              className={
+                'px-3 py-1.5 rounded-full text-xs font-semibold transition cursor-pointer ' +
+                (activeTab === 'all'
+                  ? 'bg-[#6555B8] text-white shadow-xs'
+                  : 'text-[#524B5E] hover:text-[#1C1924]')
+              }
             >
               All
             </button>
             <button
+              type="button"
               onClick={() => setActiveTab('unread')}
-              className={`px-3 py-1 rounded-xl text-xs font-semibold transition ${
-                activeTab === 'unread'
-                  ? 'bg-[#6555b8] text-white shadow-xs'
-                  : 'text-[#524B5E] hover:text-[#1C1924]'
-              }`}
+              className={
+                'px-3 py-1.5 rounded-full text-xs font-semibold transition cursor-pointer ' +
+                (activeTab === 'unread'
+                  ? 'bg-[#6555B8] text-white shadow-xs'
+                  : 'text-[#524B5E] hover:text-[#1C1924]')
+              }
             >
               Unread
             </button>
           </div>
         </div>
 
-        {/* Search Input */}
-        <div className="relative">
-          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-[#8C849B]" />
+        {/* Search Input aligned to px-4 */}
+        <div className="w-full px-4 py-2.5 bg-white border border-[#DDD7E5] hover:border-[#CFC8DC] focus-within:border-[#6555B8] focus-within:ring-2 focus-within:ring-[#6555B8]/15 rounded-full shadow-2xs transition-all flex items-center gap-2.5">
+          <Search className="w-4 h-4 text-[#8C849B] shrink-0 pointer-events-none" />
           <input
             type="text"
-            placeholder="Search conversations..."
+            placeholder="Search conversations by username..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-white border border-[#DDD7E5] rounded-2xl text-xs text-[#1C1924] placeholder-[#8C849B] focus:outline-none focus:border-[#6555b8] focus:ring-1 focus:ring-[#6555b8]/20 transition shadow-xs"
+            className="w-full bg-transparent text-xs sm:text-sm text-[#1C1924] placeholder-[#8C849B] focus:outline-none min-w-0"
           />
+          {searchQuery && (
+            <button
+              type="button"
+              onClick={() => setSearchQuery('')}
+              className="text-xs text-[#8C849B] hover:text-[#1C1924] shrink-0"
+            >
+              Clear
+            </button>
+          )}
         </div>
 
         {/* List of Conversations */}
-        <div className="space-y-2">
+        <div className="space-y-2.5">
           {loading ? (
-            <div className="py-16 text-center text-xs text-[#8C849B]">
-              Loading conversations...
+            <div className="py-20 text-center space-y-2">
+              <Loader2 className="w-6 h-6 text-[#6555B8] animate-spin mx-auto" />
+              <p className="text-xs text-[#6C637B]">Loading conversations...</p>
             </div>
           ) : filteredConversations.length === 0 ? (
-            <div className="bg-white border border-[#DDD7E5] rounded-2xl p-8 text-center space-y-3 shadow-xs">
-              <div className="w-12 h-12 bg-[#F3EFFC] text-[#6555b8] rounded-2xl flex items-center justify-center mx-auto">
+            <div className="bg-white border border-[#DDD7E5] rounded-3xl px-4 py-8 text-center space-y-3 shadow-xs">
+              <div className="w-12 h-12 bg-[#F3EFFC] text-[#6555B8] rounded-2xl flex items-center justify-center mx-auto">
                 <MessageCircle className="w-6 h-6" />
               </div>
               <div className="space-y-1">
-                <h3 className="text-sm font-semibold text-[#1C1924]">No conversations yet</h3>
-                <p className="text-xs text-[#524B5E]">
-                  Discover new members and start an introduction.
+                <h2
+                  className="text-base font-bold text-[#1C1924]"
+                  style={{ fontFamily: 'var(--font-brand)' }}
+                >
+                  No conversations yet
+                </h2>
+                <p className="text-xs text-[#6C637B] max-w-xs mx-auto leading-relaxed">
+                  Explore the Discover feed and send a thoughtful hello to start a conversation.
                 </p>
               </div>
               <Link
                 href="/discover"
-                className="inline-block px-4 py-2 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#52449e] transition shadow-xs"
+                className="inline-block px-5 py-2.5 rounded-full bg-[#6555B8] text-white text-xs font-semibold hover:bg-[#52449e] transition shadow-sm"
               >
-                Find Connections
+                Explore Discover Feed
               </Link>
             </div>
           ) : (
             filteredConversations.map((conv) => (
               <Link
                 key={conv.id}
-                href={`/chat/${conv.recipientId}`}
-                className="flex items-center gap-3.5 p-3.5 bg-white border border-[#DDD7E5] rounded-2xl hover:border-[#6555b8]/30 hover:bg-[#FAF8FD] transition shadow-xs"
+                href={'/chat/' + conv.recipientId}
+                className="flex items-center gap-3.5 px-4 py-3.5 bg-white border border-[#DDD7E5] rounded-3xl hover:border-[#6555B8]/40 hover:bg-[#FAF8FD] transition shadow-xs"
               >
-                <div className="relative shrink-0">
+                <div className="relative w-11 h-11 shrink-0">
                   <img
                     src={conv.avatarUrl}
                     alt={conv.name}
-                    className="w-12 h-12 rounded-full object-cover border border-[#DDD7E5]"
+                    className="rounded-full object-cover w-11 h-11 border border-[#DDD7E5]"
                   />
                   {conv.repScore !== undefined && (
-                    <span className="absolute -bottom-1 -right-1 bg-white px-1.5 py-0.5 rounded-full text-[10px] font-bold text-[#6555b8] border border-[#DDD7E5] shadow-xs">
+                    <span className="absolute -bottom-1 -right-1 bg-[#F3EFFC] px-1.5 py-0.5 rounded-full text-[9px] font-bold text-[#6555B8] border border-[#DDD7E5] shadow-2xs flex items-center gap-0.5">
+                      <ShieldCheck className="w-2.5 h-2.5 text-[#6555B8]" />
                       {conv.repScore}%
                     </span>
                   )}
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between gap-1 mb-1">
-                    <h2 className="text-xs sm:text-sm font-semibold text-[#1C1924] truncate">
-                      {conv.name}
+                  <div className="flex items-center justify-between gap-1 mb-0.5">
+                    <h2
+                      className="text-sm font-bold text-[#1C1924] truncate"
+                      style={{ fontFamily: 'var(--font-brand)' }}
+                    >
+                      @{conv.name}
                     </h2>
                     {conv.lastMessageAt && (
                       <span className="text-[10px] text-[#8C849B] flex items-center gap-1 shrink-0">
@@ -242,9 +282,21 @@ export default function MessagesPage() {
                       </span>
                     )}
                   </div>
-                  <p className="text-xs text-[#524B5E] truncate">
-                    {conv.lastMessage}
-                  </p>
+                  <div className="flex items-center justify-between gap-2">
+                    <p
+                      className={
+                        'text-xs truncate ' +
+                        (conv.unreadCount > 0 ? 'font-semibold text-[#1C1924]' : 'text-[#6C637B]')
+                      }
+                    >
+                      {conv.lastMessage}
+                    </p>
+                    {conv.unreadCount > 0 && (
+                      <span className="px-2 py-0.5 rounded-full bg-[#6555B8] text-white text-[10px] font-bold shrink-0">
+                        {conv.unreadCount}
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 <ChevronRight className="w-4 h-4 text-[#8C849B] shrink-0" />

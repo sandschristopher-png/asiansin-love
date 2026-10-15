@@ -3,35 +3,92 @@
 import { playMatchChime } from '@/lib/sound';
 import { getDistanceLabel } from '@/lib/location';
 import React, { useState, useEffect, useMemo, useRef, Suspense } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
 import {
-  X,
   ChevronLeft,
   ChevronRight,
   Search,
   Heart,
   X as XIcon,
   Star,
-  MapPin,
   ShieldCheck,
   CheckCircle,
   SlidersHorizontal,
   RotateCcw,
-  Loader2,
   Check,
-  ChevronDown
+  ChevronDown,
+  Sparkles
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { ActionType, getLocalCardActions, persistCardAction } from '@/lib/interactions';
 
 const DISCOVERY_MODES = [
   { id: 'all', label: 'All' },
-  { id: 'marriage', label: '💍 Marriage' },
-  { id: 'verified', label: '🛡️ Verified' },
-  { id: 'new', label: '✨ New' },
+  { id: 'online', label: 'Online' },
+  { id: 'near_me', label: 'Near Me' },
+  { id: 'new', label: 'New' },
 ] as const;
 type DiscoveryModeId = (typeof DISCOVERY_MODES)[number]['id'];
+
+const INTENT_LABELS: Record<string, string> = {
+  the_real_thing: 'The Real Thing',
+  marriage: 'The Real Thing',
+  'marriage & kids': 'The Real Thing',
+  'marriage (no kids)': 'The Real Thing',
+  marriage_minded: 'The Real Thing',
+  'marriage-minded': 'The Real Thing',
+  serious: 'The Real Thing',
+  'serious relationship': 'The Real Thing',
+  long_term: 'Long-Term',
+  'long-term': 'Long-Term',
+  long_term_relationship: 'Long-Term',
+  'long-term relationship': 'Long-Term',
+  'long-term partner': 'Long-Term',
+  'life partner': 'Long-Term',
+  keeping_it_light: 'Keeping It Light',
+  dating: 'Keeping It Light',
+  casual: 'Keeping It Light',
+  'casual dating': 'Keeping It Light',
+};
+const toIntentLabel = (v: unknown) =>
+  INTENT_LABELS[String(v || '').trim().toLowerCase()] || String(v || '').trim();
+
+const COUNTRY_FLAGS: Record<string, string> = {
+  philippines: '🇵🇭',
+  thailand: '🇹🇭',
+  vietnam: '🇻🇳',
+  indonesia: '🇮🇩',
+  cambodia: '🇰🇭',
+  malaysia: '🇲🇾',
+  singapore: '🇸🇬',
+  laos: '🇱🇦',
+  myanmar: '🇲🇲',
+  'united states': '🇺🇸',
+  canada: '🇨🇦',
+  australia: '🇦🇺',
+  'united kingdom': '🇬🇧',
+  japan: '🇯🇵',
+  'south korea': '🇰🇷',
+  taiwan: '🇹🇼',
+  'hong kong': '🇭🇰',
+  'united arab emirates': '🇦🇪',
+  'new zealand': '🇳🇿',
+};
+
+function getCountryFlag(country?: string): string {
+  if (!country) return '🌏';
+  return COUNTRY_FLAGS[country.toLowerCase().trim()] || '🌏';
+}
+
+const GENDER_LABELS: Record<string, string> = {
+  woman: 'Women',
+  man: 'Men',
+  trans_woman: 'Trans Women',
+  trans_man: 'Trans Men',
+  non_binary: 'Non-Binary',
+};
 
 export interface ProfileItem {
   id: string;
@@ -56,6 +113,7 @@ export interface ProfileItem {
   bio?: string;
   occupation?: string;
   languages?: string | string[];
+  interests?: string[];
   height?: string;
   weight?: string;
   created_at?: string;
@@ -67,6 +125,7 @@ interface DiscoverCardPhotoCarouselProps {
   avatarUrl: string;
   name: string;
   repScore: number;
+  sharedCount: number;
   online: boolean;
   recentlyActive?: boolean;
 }
@@ -77,6 +136,7 @@ function DiscoverCardPhotoCarousel({
   avatarUrl,
   name,
   repScore,
+  sharedCount,
   online,
   recentlyActive,
 }: DiscoverCardPhotoCarouselProps) {
@@ -102,7 +162,7 @@ function DiscoverCardPhotoCarousel({
   };
 
   return (
-    <div className="relative block aspect-[4/5] w-full overflow-hidden bg-[#F2EEF7] select-none">
+    <div className="relative block h-full w-full overflow-hidden bg-[#F2EEF7] select-none">
       <Link href={'/profile/' + profileId} className="absolute inset-0 z-0">
         <img
           src={displayPhotos[currentIdx]}
@@ -126,36 +186,36 @@ function DiscoverCardPhotoCarousel({
         </div>
       )}
 
+      {/* Fixed Top-Left Consistent Reputation Pill */}
       <div
         className={
           'absolute ' +
-          (hasMultiple ? 'top-4.5' : 'top-2.5') +
-          ' inset-x-2.5 flex items-center justify-between z-20 pointer-events-none'
+          (hasMultiple ? 'top-4' : 'top-2.5') +
+          ' left-2.5 flex items-center gap-1.5 z-20 pointer-events-none'
         }
       >
-        <div className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-black/45 backdrop-blur-md border border-white/20 text-[10px] font-bold text-amber-300 shadow-xs">
-          <ShieldCheck className="w-3 h-3 text-amber-300 shrink-0" />
+        <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/50 backdrop-blur-xs text-[10px] font-medium text-white">
           <span>{repScore ? repScore + '% Rep' : '100% Rep'}</span>
         </div>
 
         {online ? (
-          <span className="presence-dot h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white/90 shadow-xs" />
+          <span className="presence-dot h-2 w-2 rounded-full bg-emerald-500 ring-2 ring-white/90 shadow-xs shrink-0" />
         ) : recentlyActive ? (
-          <span className="h-2 w-2 rounded-full bg-amber-400/90 ring-1.5 ring-white/80 shadow-xs" />
+          <span className="h-2 w-2 rounded-full bg-amber-400 ring-1.5 ring-white/80 shadow-xs shrink-0" />
         ) : null}
       </div>
 
-      {/* Split-Touch Photo Carousel Zones (left half = prev photo, right half = next photo) */}
+      {/* Split-Touch Photo Carousel Zones */}
       {hasMultiple && (
         <>
           <div
             onClick={handlePrev}
-            className="absolute top-0 bottom-16 left-0 w-1/2 z-10 cursor-pointer"
+            className="absolute top-12 bottom-20 left-0 w-1/2 z-10 cursor-pointer"
             aria-label="Previous photo"
           />
           <div
             onClick={handleNext}
-            className="absolute top-0 bottom-16 right-0 w-1/2 z-10 cursor-pointer"
+            className="absolute top-12 bottom-20 right-0 w-1/2 z-10 cursor-pointer"
             aria-label="Next photo"
           />
         </>
@@ -186,26 +246,24 @@ function DiscoverCardPhotoCarousel({
 }
 
 function normalizeGenderValue(raw?: string | null): 'woman' | 'man' | 'trans_woman' | 'trans_man' | 'non_binary' {
-  const val = (raw || '').toLowerCase().trim();
-  if (val === 'man' || val === 'male' || val === 'men') return 'man';
-  if (val === 'woman' || val === 'female' || val === 'women') return 'woman';
-  if (val === 'trans_woman' || val === 'trans_women' || val === 'trans woman' || val === 'trans') return 'trans_woman';
-  if (val === 'trans_man' || val === 'trans_men' || val === 'trans man') return 'trans_man';
-  if (val === 'non_binary' || val === 'non-binary' || val === 'nonbinary') return 'non_binary';
+  const val = String(raw || '').toLowerCase().trim().replace(/[\s-]+/g, '_');
+  if (['man', 'men', 'male', 'm', 'guy', 'guys'].includes(val)) return 'man';
+  if (['woman', 'women', 'female', 'f', 'lady', 'ladies', 'girl', 'girls'].includes(val)) return 'woman';
+  if (['trans_woman', 'trans_women', 'transgender_woman', 'transgender_women', 'trans', 'mtf', 'transfemale'].includes(val)) return 'trans_woman';
+  if (['trans_man', 'trans_men', 'transgender_man', 'transgender_men', 'ftm', 'transmale'].includes(val)) return 'trans_man';
+  if (['non_binary', 'nonbinary', 'nb', 'enby'].includes(val)) return 'non_binary';
   return 'woman';
 }
 
-function normalizeInterestedInList(raw: unknown): string[] {
-  if (Array.isArray(raw)) {
-    return raw.map((item) => normalizeGenderValue(String(item)));
-  }
-  if (typeof raw === 'string' && raw.trim()) {
-    if (raw.toLowerCase().trim() === 'everyone') {
-      return ['man', 'woman', 'trans_woman', 'trans_man', 'non_binary'];
-    }
-    return raw.split(',').map((s) => normalizeGenderValue(s));
-  }
-  return [];
+function formatConciseIntent(raw?: string | null): string {
+  if (!raw) return toIntentLabel('serious');
+  const mapped = toIntentLabel(raw);
+  if (mapped !== String(raw).trim()) return mapped;
+  const lower = mapped.toLowerCase();
+  if (lower.includes('marriage') || lower.includes('serious')) return 'The Real Thing';
+  if (lower.includes('long-term') || lower.includes('long term') || lower.includes('life partner')) return 'Long-Term';
+  if (lower.includes('casual') || lower.includes('dating')) return 'Keeping It Light';
+  return mapped.length <= 24 ? mapped : mapped.slice(0, 22);
 }
 
 function DiscoverContent() {
@@ -256,6 +314,9 @@ function DiscoverContent() {
   };
 
   const [currentUserCoords, setCurrentUserCoords] = useState<{ lat: number; lon: number } | null>(null);
+  const [viewerInterests, setViewerInterests] = useState<string[]>([]);
+  const [viewerIntent, setViewerIntent] = useState<string>('');
+  const [viewerSavedGenders, setViewerSavedGenders] = useState<string[]>([]);
   const [profiles, setProfiles] = useState<ProfileItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -285,11 +346,11 @@ function DiscoverContent() {
 
   const [minAge, setMinAge] = useState<number>(() => {
     const val = Number(searchParams.get('minAge'));
-    return !isNaN(val) && val >= 18 && val <= 65 ? val : 18;
+    return !isNaN(val) && val >= 18 && val <= 80 ? val : 18;
   });
   const [maxAge, setMaxAge] = useState<number>(() => {
     const val = Number(searchParams.get('maxAge'));
-    return !isNaN(val) && val >= 18 && val <= 65 ? val : 65;
+    return !isNaN(val) && val >= 18 && val <= 80 ? val : 65;
   });
   const [draftMinAge, setDraftMinAge] = useState<number>(minAge);
   const [draftMaxAge, setDraftMaxAge] = useState<number>(maxAge);
@@ -354,134 +415,47 @@ function DiscoverContent() {
     async function loadFeed() {
       setIsLoading(true);
       try {
-        const { data: { user } } = await supabase.auth.getUser();
-        const blockedUserIds = new Set<string>();
-        let userInterestedIn: string[] = [];
+        const res = await fetch('/api/discover', { cache: 'no-store' });
+        if (res.ok) {
+          const payload = await res.json();
+          const v = payload.viewer;
 
-        if (user) {
-          const [profileRes, blocksRes, favsRes] = await Promise.all([
-            supabase
-              .from('profiles')
-              .select('latitude, longitude, gender, country, interested_in, seeking_gender, onboarding_completed')
-              .eq('id', user.id)
-              .maybeSingle(),
-            supabase
-              .from('user_blocks')
-              .select('blocker_id, blocked_id')
-              .or('blocker_id.eq.' + user.id + ',blocked_id.eq.' + user.id),
-            supabase
-              .from('favorites')
-              .select('favorite_profile_id')
-              .eq('user_id', user.id),
-          ]);
-
-          const userProfile = profileRes.data;
-          if (userProfile) {
-            if (!userProfile.onboarding_completed) {
+          if (v) {
+            if (v.onboarding_completed === false) {
               router.push('/onboarding');
               return;
             }
-            if (userProfile.latitude && userProfile.longitude) {
-              setCurrentUserCoords({ lat: userProfile.latitude, lon: userProfile.longitude });
+            if (v.latitude && v.longitude) {
+              setCurrentUserCoords({ lat: v.latitude, lon: v.longitude });
             }
-            userInterestedIn = normalizeInterestedInList(
-              userProfile.interested_in && userProfile.interested_in.length > 0
-                ? userProfile.interested_in
-                : userProfile.seeking_gender
-            );
-            if (!userSelectedGenderManually.current && userInterestedIn.length > 0) {
-              setSelectedGenders(userInterestedIn);
+            if (Array.isArray(v.interests)) {
+              setViewerInterests(v.interests);
+            }
+            if (v.intent) {
+              setViewerIntent(v.intent);
+            }
+            if (Array.isArray(v.interested_in) && v.interested_in.length > 0) {
+              setViewerSavedGenders(v.interested_in);
+              if (!userSelectedGenderManually.current) {
+                setSelectedGenders(v.interested_in);
+              }
             }
           }
 
-          blocksRes.data?.forEach((b: any) => {
-            if (b.blocker_id === user.id) blockedUserIds.add(b.blocked_id);
-            if (b.blocked_id === user.id) blockedUserIds.add(b.blocker_id);
-          });
-
-          if (favsRes.data) {
+          if (Array.isArray(payload.favoriteIds)) {
             setCardActions((prev) => {
               const merged = { ...prev };
-              favsRes.data.forEach((fav: { favorite_profile_id: string }) => {
-                merged[fav.favorite_profile_id] = 'like';
+              payload.favoriteIds.forEach((fid: string) => {
+                merged[fid] = 'like';
               });
               return merged;
             });
           }
+
+          if (Array.isArray(payload.profiles)) {
+            setProfiles(payload.profiles);
+          }
         }
-
-        let query = supabase
-          .from('profiles')
-          .select('id, display_name, full_name, username, age, birthdate, gender, city, country, avatar_url, photos, is_verified, is_plus, reputation_score, last_active, relationship_intent, looking_for, occupation, bio, languages, height, weight, latitude, longitude, location_source, created_at')
-          .eq('onboarding_completed', true)
-          .order('created_at', { ascending: false })
-          .limit(150);
-
-        if (user) {
-          query = query.neq('id', user.id);
-        }
-
-        const { data, error } = await query;
-
-        if (error) {
-          console.error('Error fetching profiles:', error.message);
-          setProfiles([]);
-          return;
-        }
-
-        const items: ProfileItem[] = (data || [])
-          .filter((row: any) => {
-            if (user && row.id === user.id) return false;
-            if (blockedUserIds.has(row.id)) return false;
-            return true;
-          })
-          .map((row: any) => {
-            const countryVal = row.country || 'Philippines';
-            const cityVal = row.city ? row.city + ', ' + countryVal : countryVal;
-            const normGender = normalizeGenderValue(row.gender);
-
-            let computedAge = row.age;
-            if (!computedAge && row.birthdate) {
-              const dob = new Date(row.birthdate);
-              computedAge = Math.max(18, Math.floor((Date.now() - dob.getTime()) / (1000 * 60 * 60 * 24 * 365.25)));
-            }
-
-            const cleanName =
-              (row.username && !row.username.startsWith('user_') ? row.username.replace(/^@/, '') : '') ||
-              row.display_name ||
-              row.full_name ||
-              'Member';
-
-            return {
-              id: row.id,
-              username: row.username,
-              name: cleanName,
-              age: computedAge || 25,
-              gender: normGender,
-              location: cityVal,
-              country: countryVal,
-              avatarUrl: row.avatar_url || '/placeholder-avatar.svg',
-              photos: Array.isArray(row.photos) && row.photos.length > 0 ? row.photos : [row.avatar_url || '/placeholder-avatar.svg'],
-              repScore: row.reputation_score ?? 100,
-              verified: Boolean(row.is_verified),
-              is_plus: Boolean(row.is_plus),
-              latitude: row.latitude,
-              longitude: row.longitude,
-              location_source: row.location_source,
-              online: Boolean(row.last_active && Date.now() - new Date(row.last_active).getTime() < 1000 * 60 * 15),
-              intent: row.relationship_intent || 'Marriage',
-              looking_for: row.looking_for,
-              bio: row.bio,
-              occupation: row.occupation,
-              languages: row.languages,
-              height: row.height,
-              weight: row.weight,
-              created_at: row.created_at,
-            };
-          });
-
-        items.sort((a, b) => (b.is_plus ? 1 : 0) - (a.is_plus ? 1 : 0));
-        setProfiles(items);
       } catch (err) {
         console.error('Failed to load discovery profiles:', err);
       } finally {
@@ -491,6 +465,20 @@ function DiscoverContent() {
 
     loadFeed();
   }, [router]);
+
+  const computeSharedCount = (profile: ProfileItem): number => {
+    let count = 0;
+    if (viewerInterests.length > 0 && Array.isArray(profile.interests)) {
+      const viewerSet = new Set(viewerInterests.map((i) => i.toLowerCase()));
+      profile.interests.forEach((tag) => {
+        if (viewerSet.has(tag.toLowerCase())) count++;
+      });
+    }
+    if (viewerIntent && profile.intent && viewerIntent.toLowerCase() === profile.intent.toLowerCase()) {
+      count++;
+    }
+    return count;
+  };
 
   const closeModalWithAnimation = () => {
     setIsModalClosing(true);
@@ -558,13 +546,14 @@ function DiscoverContent() {
 
   const activeFiltersCount = useMemo(() => {
     let count = 0;
-    if (selectedGenders.length > 0) count++;
+    if (selectedCountry.toLowerCase() !== 'all') count++;
     if (minAge > 18 || maxAge < 65) count++;
     if (selectedIntent !== 'All') count++;
     if (verifiedOnly) count++;
     if (activeNowOnly) count++;
+    if (discoveryMode !== 'all') count++;
     return count;
-  }, [selectedGenders, minAge, maxAge, selectedIntent, verifiedOnly, activeNowOnly]);
+  }, [selectedCountry, minAge, maxAge, selectedIntent, verifiedOnly, activeNowOnly, discoveryMode]);
 
   const applyFilters = () => {
     setMinAge(draftMinAge);
@@ -574,14 +563,28 @@ function DiscoverContent() {
 
   const resetFilters = () => {
     setDiscoveryMode('all');
-    setSelectedGenders([]);
+    setSelectedGenders(viewerSavedGenders.length > 0 ? viewerSavedGenders : []);
     setSelectedCountry('All');
     setSearchQuery('');
     setMinAge(18);
     setMaxAge(65);
+    setDraftMinAge(18);
+    setDraftMaxAge(65);
     setSelectedIntent('All');
     setVerifiedOnly(false);
     setActiveNowOnly(false);
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.removeItem('ail_passed_ids');
+      } catch {}
+    }
+    setCardActions((prev) => {
+      const cleaned: Record<string, ActionType> = {};
+      Object.entries(prev).forEach(([k, v]) => {
+        if (v !== 'pass') cleaned[k] = v;
+      });
+      return cleaned;
+    });
   };
 
   const filteredProfiles = useMemo(() => {
@@ -608,11 +611,25 @@ function DiscoverContent() {
       const matchesOnline = !activeNowOnly || profile.online;
 
       const matchesDiscoveryMode = (() => {
-        if (discoveryMode === 'marriage') {
-          const intentStr = ((profile.intent || '') + ' ' + (profile.looking_for || '')).toLowerCase();
-          return intentStr.includes('marriage') || intentStr.includes('serious');
+        if (discoveryMode === 'online') {
+          return Boolean(profile.online || profile.recentlyActive);
         }
-        if (discoveryMode === 'verified') return Boolean(profile.verified);
+        if (discoveryMode === 'near_me') {
+          if (currentUserCoords && profile.latitude && profile.longitude) {
+            const R = 6371;
+            const dLat = ((profile.latitude - currentUserCoords.lat) * Math.PI) / 180;
+            const dLon = ((profile.longitude - currentUserCoords.lon) * Math.PI) / 180;
+            const a =
+              Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+              Math.cos((currentUserCoords.lat * Math.PI) / 180) *
+                Math.cos((profile.latitude * Math.PI) / 180) *
+                Math.sin(dLon / 2) *
+                Math.sin(dLon / 2);
+            const distKm = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+            return distKm <= 500;
+          }
+          return true;
+        }
         if (discoveryMode === 'new') {
           const createdAt = profile.created_at ? new Date(profile.created_at).getTime() : 0;
           return createdAt > Date.now() - 30 * 24 * 60 * 60 * 1000;
@@ -652,18 +669,20 @@ function DiscoverContent() {
     verifiedOnly,
     activeNowOnly,
     discoveryMode,
+    currentUserCoords,
   ]);
 
   const visibleProfiles = filteredProfiles.slice(0, visibleLimit);
   const hasMore = visibleLimit < filteredProfiles.length;
 
   return (
-    <div className="w-full min-h-full bg-[#FAFAFD] text-[#1C1924] flex flex-col">
-      <main className="w-full px-3.5 sm:px-4 pt-3 pb-24 space-y-3.5">
+    <div className="w-full min-h-full bg-[#F8F7FA] text-[#1C1924] flex flex-col font-sans">
+      <main className="w-full px-3.5 sm:px-4 pt-4 pb-24">
         
         {/* Top Control Bar */}
-        <section aria-label="Search and Filters" className="w-full space-y-3">
-          <div className="w-full bg-white border border-[#E5E1EC] hover:border-[#CFC8DC] focus-within:border-[#6555b8] focus-within:ring-2 focus-within:ring-[#6555b8]/15 rounded-full shadow-[0_1px_3px_rgba(28,25,36,0.03)] transition-all flex items-center pl-3.5 pr-1.5 py-1">
+        <section aria-label="Search and Filters" className="w-full">
+          {/* Search Bar */}
+          <div className="w-full mb-4 bg-white border border-[#DDD7E5] hover:border-[#CFC8DC] focus-within:border-[#6555B8] focus-within:ring-2 focus-within:ring-[#6555B8]/15 rounded-full shadow-2xs transition-all flex items-center pl-3.5 pr-1.5 py-1.5">
             <Search className="w-4 h-4 text-[#8C849B] shrink-0 pointer-events-none" />
             <input
               type="text"
@@ -688,133 +707,63 @@ function DiscoverContent() {
                 setFiltersOpen(true);
               }}
               aria-label="Open Filters"
-              className="relative p-1.5 rounded-full text-[#6555b8] hover:bg-[#F3EFFC] transition shrink-0 ml-1"
+              className="relative p-1.5 rounded-full text-[#6555B8] hover:bg-[#F3EFFC] transition shrink-0 ml-1"
             >
               <SlidersHorizontal className="w-4 h-4" />
               {activeFiltersCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-[#6555b8] text-white text-[9px] font-medium rounded-full flex items-center justify-center">
+                <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-[#6555B8] text-white text-[9px] font-bold rounded-full flex items-center justify-center">
                   {activeFiltersCount}
                 </span>
               )}
             </button>
           </div>
 
-          <div className="relative z-30 flex items-center justify-between gap-2 w-full py-1 select-none">
-            <div
-              ref={pillTrackRef}
-              onMouseDown={handlePillMouseDown}
-              onMouseLeave={handlePillMouseUp}
-              onMouseUp={handlePillMouseUp}
-              onMouseMove={handlePillMouseMove}
-              onWheel={handlePillWheel}
-              className="cursor-grab active:cursor-grabbing select-none flex-1 min-w-0 overflow-x-auto no-scrollbar touch-pan-x"
-            >
-              <div className="flex items-center gap-1.5 w-max px-0.5">
-                <div className="flex items-center gap-1 shrink-0 pr-2 mr-1 border-r border-[#E5E1EC]">
-                  {DISCOVERY_MODES.map((mode) => {
-                    const active = discoveryMode === mode.id;
-                    return (
-                      <button
-                        key={mode.id}
-                        type="button"
-                        onClick={() => {
-                          if (!pillDraggedRef.current) setDiscoveryMode(mode.id);
-                        }}
-                        className={
-                          'px-3.5 py-1 text-xs font-semibold rounded-full transition-all whitespace-nowrap active:scale-95 ' +
-                          (active
-                            ? 'bg-[#6555b8] text-white shadow-xs'
-                            : 'bg-[#F2EEF7] text-[#524B5E] hover:bg-[#E9E4F0] hover:text-[#1C1924]')
-                        }
-                      >
-                        {mode.label}
-                      </button>
-                    );
-                  })}
-                </div>
-
-                {[
-                  { id: 'All', label: 'All' },
-                  { id: 'Philippines', label: 'Philippines' },
-                  { id: 'Thailand', label: 'Thailand' },
-                  { id: 'Vietnam', label: 'Vietnam' },
-                ].map(({ id, label }) => {
-                  const active = selectedCountry.toLowerCase() === id.toLowerCase();
-                  return (
-                    <button
-                      key={id}
-                      type="button"
-                      onClick={() => {
-                        if (!pillDraggedRef.current) setSelectedCountry(id);
-                      }}
-                      className={
-                        'shrink-0 px-3.5 py-1 text-xs font-semibold rounded-full transition-all whitespace-nowrap active:scale-95 ' +
-                        (active
-                          ? 'bg-[#6555b8] text-white shadow-xs'
-                          : 'bg-[#F3EFFC] text-[#524B5E] hover:bg-[#EBE4F7] hover:text-[#1C1924]')
-                      }
-                    >
-                      {label}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
-
-            <div ref={countryDropdownRef} className="relative shrink-0">
-              <button
-                type="button"
-                onClick={() => setIsCountryOpen((prev) => !prev)}
-                className={
-                  'flex items-center gap-1 shrink-0 px-3.5 py-1 text-xs font-semibold rounded-full transition-all whitespace-nowrap active:scale-95 max-w-[150px] sm:max-w-none ' +
-                  (selectedCountry.toLowerCase() !== 'all'
-                    ? 'bg-[#6555b8] text-white shadow-sm hover:bg-[#5646a3]'
-                    : 'bg-[#F2EEF7] text-[#524B5E] hover:bg-[#E9E4F0] hover:text-[#1C1924]')
-                }
-              >
-                <span className="truncate">{selectedCountry.toLowerCase() === 'all' ? 'Locations' : selectedCountry}</span>
-                <ChevronDown className={'w-3 h-3 shrink-0 transition-transform duration-200 ' + (isCountryOpen ? 'rotate-180' : '')} />
-              </button>
-
-              {isCountryOpen && (
-                <div className="absolute right-0 mt-2 w-64 bg-white border border-[#E5E1EC] rounded-2xl shadow-2xl p-2 z-50 max-h-80 overflow-y-auto space-y-1">
-                  {['All', 'Philippines', 'Thailand', 'Vietnam', 'Indonesia', 'Cambodia', 'Malaysia', 'Singapore', 'Laos', 'United States', 'Canada', 'Australia', 'United Kingdom', 'Japan', 'South Korea'].map((cName) => {
-                    const active = selectedCountry.toLowerCase() === cName.toLowerCase();
-                    return (
-                      <button
-                        key={cName}
-                        type="button"
-                        onClick={() => {
-                          setSelectedCountry(cName);
-                          setIsCountryOpen(false);
-                        }}
-                        className={
-                          'w-full text-left px-3 py-1.5 text-xs rounded-xl flex items-center justify-between transition ' +
-                          (active ? 'bg-[#F3EFFC] text-[#6555b8] font-semibold' : 'text-[#524B5E] hover:bg-[#F8F7FA]')
-                        }
-                      >
-                        <span>{cName === 'All' ? 'All Locations (Worldwide)' : cName}</span>
-                        {active && <Check className="w-3.5 h-3.5 text-[#6555b8]" />}
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
+          {/* Simplified Filter Pills Row: All, Online, Near Me, New */}
+          <div
+            ref={pillTrackRef}
+            onMouseDown={handlePillMouseDown}
+            onMouseLeave={handlePillMouseUp}
+            onMouseUp={handlePillMouseUp}
+            onMouseMove={handlePillMouseMove}
+            onWheel={handlePillWheel}
+            className="w-full mb-4 overflow-x-auto no-scrollbar touch-pan-x select-none"
+          >
+            <div className="flex items-center gap-2 w-max">
+              {DISCOVERY_MODES.map((mode) => {
+                const active = discoveryMode === mode.id;
+                return (
+                  <button
+                    key={mode.id}
+                    type="button"
+                    onClick={() => {
+                      if (!pillDraggedRef.current) setDiscoveryMode(mode.id);
+                    }}
+                    className={
+                      'px-3 py-1.5 rounded-full text-xs font-semibold border transition-all whitespace-nowrap active:scale-95 cursor-pointer ' +
+                      (active
+                        ? 'bg-[#6555B8] border-[#6555B8] text-white'
+                        : 'bg-white border-[#DDD7E5] text-[#524B5E] hover:border-[#6555B8]/40 hover:text-[#1C1924]')
+                    }
+                  >
+                    {mode.label}
+                  </button>
+                );
+              })}
             </div>
           </div>
         </section>
 
-        {/* Discovery Grid: Mobile 2-col, Desktop wider 3-4 col, 4:5 cards */}
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 w-full">
+        {/* 2-Column Mobile Feed Grid */}
+        <div className="grid grid-cols-2 gap-2.5 sm:gap-3 w-full">
           {isLoading ? (
             Array.from({ length: 8 }).map((_, i) => (
               <div
                 key={i}
-                className="rounded-2xl sm:rounded-3xl overflow-hidden aspect-[4/5] w-full bg-[#EAE8F0] animate-pulse border border-[#E5E1EC] relative"
+                className="rounded-2xl overflow-hidden aspect-[4/5] w-full bg-[#EAE8F0] animate-pulse border border-[#DDD7E5] relative"
               >
-                <div className="absolute inset-x-0 bottom-0 p-3 sm:p-3.5 space-y-2">
+                <div className="absolute inset-x-0 bottom-0 p-3 space-y-2">
                   <div className="h-4 bg-white/40 rounded-full w-2/3" />
-                  <div className="h-3 bg-white/30 rounded-full w-1/3" />
+                  <div className="h-3 bg-white/30 rounded-full w-1/2" />
                 </div>
               </div>
             ))
@@ -824,18 +773,19 @@ function DiscoverContent() {
               const isLiked = state === 'like';
               const isStarred = state === 'star';
               const displayName = profile.username || profile.name || 'Member';
-              const distanceLabel = currentUserCoords
-                ? getDistanceLabel(currentUserCoords.lat, currentUserCoords.lon, profile.latitude, profile.longitude)
-                : null;
-              const vitalsLine = [
-                profile.height ? profile.height.split('(')[0].trim() : null,
-                profile.weight ? profile.weight.split('(')[0].trim() : null,
-              ].filter(Boolean).join(' • ');
+              const sharedCount = computeSharedCount(profile);
+              const cityPart = profile.location ? profile.location.split(',')[0].trim() : '';
+              const countryPart = profile.country || '';
+              const formattedLocation =
+                cityPart && countryPart && cityPart.toLowerCase() !== countryPart.toLowerCase()
+                  ? `${cityPart}, ${countryPart}`
+                  : cityPart || countryPart || 'Unknown';
+              const conciseGoal = toIntentLabel(formatConciseIntent(profile.intent || profile.looking_for));
 
               return (
                 <div
                   key={profile.id}
-                  className="group relative rounded-2xl sm:rounded-3xl overflow-hidden aspect-[4/5] w-full bg-[#181926] border border-[#E5E1EC]/20 shadow-[0_2px_8px_rgba(28,25,36,0.06)] hover:shadow-[0_12px_32px_rgba(28,25,36,0.16)] transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-y-1 active:scale-[0.985] select-none"
+                  className="group relative rounded-2xl overflow-hidden aspect-[4/5] w-full bg-[#F2EEF7] border border-[#DDD7E5]/60 shadow-xs hover:shadow-md transition-all duration-300 select-none"
                 >
                   <DiscoverCardPhotoCarousel
                     profileId={profile.id}
@@ -843,94 +793,84 @@ function DiscoverContent() {
                     avatarUrl={profile.avatarUrl}
                     name={displayName}
                     repScore={profile.repScore}
+                    sharedCount={sharedCount}
                     online={profile.online}
                     recentlyActive={profile.recentlyActive}
                   />
 
-                  <div className="absolute bottom-0 inset-x-0 pt-12 pb-3 px-3 sm:px-3.5 z-20 pointer-events-none bg-gradient-to-t from-black/90 via-black/45 to-transparent flex items-end justify-between gap-2">
-                    <Link href={'/profile/' + profile.id} className="min-w-0 flex-1 pointer-events-auto">
-                      {Boolean(profile.looking_for || profile.intent) && (
-                        <div className="mb-1">
-                          <span className="inline-block px-2 py-0.5 rounded-full bg-white/20 backdrop-blur-md text-[9px] font-semibold text-white/95 border border-white/20 truncate max-w-[120px] sm:max-w-none">
-                            {profile.looking_for || profile.intent}
-                          </span>
-                        </div>
-                      )}
+                  {/* Top-Right Action Icons (44x44px touch targets) */}
+                  <div className="absolute top-2 right-2 z-20 flex flex-col gap-1.5 pointer-events-auto">
+                    <button
+                      type="button"
+                      aria-label={isLiked ? 'Unlike' : 'Like'}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        triggerAction(profile.id, 'like', displayName, profile.avatarUrl);
+                      }}
+                      className={
+                        'w-11 h-11 min-w-[44px] min-h-[44px] rounded-full flex items-center justify-center border transition-all duration-200 active:scale-90 backdrop-blur-xs select-none cursor-pointer ' +
+                        (isLiked
+                          ? 'bg-[#6555B8] border-[#6555B8] text-white shadow-md'
+                          : 'bg-black/35 hover:bg-black/55 border-white/25 text-white')
+                      }
+                    >
+                      <Heart className={'w-5 h-5 ' + (isLiked ? 'fill-white' : '')} />
+                    </button>
 
-                      <h3 className="text-sm font-bold text-white flex items-center gap-1.5 drop-shadow-sm leading-tight">
-                        <span className="truncate max-w-[110px] sm:max-w-[145px]">
-                          {displayName}{profile.age ? ', ' + profile.age : ''}
-                        </span>
-                        {profile.verified && <CheckCircle className="w-3.5 h-3.5 text-[#B2A4D7] shrink-0" />}
-                        {profile.is_plus && (
-                          <span className="px-1.5 py-0.5 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-bold text-[9px] uppercase tracking-wider shadow-xs shrink-0 select-none">
-                            PLUS
+                    <button
+                      type="button"
+                      aria-label={isStarred ? 'Unstar' : 'Star'}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        e.preventDefault();
+                        triggerAction(profile.id, 'star', displayName, profile.avatarUrl);
+                      }}
+                      className={
+                        'w-11 h-11 min-w-[44px] min-h-[44px] rounded-full flex items-center justify-center border transition-all duration-200 active:scale-90 backdrop-blur-xs select-none cursor-pointer ' +
+                        (isStarred
+                          ? 'bg-amber-400 border-amber-300 text-slate-950 shadow-md'
+                          : 'bg-black/35 hover:bg-black/55 border-white/25 text-white')
+                      }
+                    >
+                      <Star className={'w-4 h-4 ' + (isStarred ? 'fill-slate-950' : '')} />
+                    </button>
+                  </div>
+
+                  {/* Subtle Bottom-Only Gradient with Full-Width Non-Overlapping Text */}
+                  <div className="absolute bottom-0 inset-x-0 pt-10 pb-2.5 px-3 z-10 pointer-events-none bg-gradient-to-t from-black/60 via-black/25 to-transparent">
+                    <Link href={'/profile/' + profile.id} className="block min-w-0 pointer-events-auto">
+                      {/* Line 1: Name + Age + Verified Check */}
+                      <div className="flex items-center gap-1 min-w-0">
+                        <h3
+                          className="text-sm font-bold text-white leading-tight truncate"
+                          style={{ fontFamily: 'var(--font-brand)' }}
+                        >
+                          {displayName}
+                        </h3>
+                        {profile.age ? (
+                          <span
+                            className="text-sm font-bold text-white leading-tight shrink-0"
+                            style={{ fontFamily: 'var(--font-brand)' }}
+                          >
+                            , {profile.age}
                           </span>
+                        ) : null}
+                        {profile.verified && (
+                          <CheckCircle className="w-3.5 h-3.5 text-white shrink-0 ml-0.5" />
                         )}
-                      </h3>
+                      </div>
 
-                      <p className="flex items-center gap-1 text-[11px] sm:text-xs text-white/80 font-medium mt-0.5 drop-shadow-sm truncate">
-                        <MapPin
-                          className={
-                            'w-3 h-3 shrink-0 ' +
-                            (profile.location_source === 'gps_verified' ? 'text-emerald-400' : 'text-[#B2A4D7]')
-                          }
-                        />
-                        <span className="truncate">
-                          {profile.location ? profile.location.split(',')[0] : 'Unknown'}
-                          {distanceLabel ? ' • ' + distanceLabel : ''}
-                        </span>
+                      {/* Line 2: Location (City, Country) */}
+                      <p className="text-[11px] text-white/90 font-medium mt-0.5 truncate">
+                        {formattedLocation}
                       </p>
 
-                      {vitalsLine && (
-                        <p className="text-[10px] text-white/65 font-medium mt-0.5 truncate">
-                          {vitalsLine}
-                        </p>
-                      )}
+                      {/* Line 3: Single Clean Line for Intent / Relationship Goal */}
+                      <p className="text-[10.5px] text-white/80 font-normal mt-0.5 truncate">
+                        {conciseGoal}
+                      </p>
                     </Link>
-
-                    <div className="flex items-center gap-1.5 shrink-0 pointer-events-auto">
-                      <button
-                        type="button"
-                        aria-label={isStarred ? 'Unstar' : 'Star'}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          e.preventDefault();
-                          triggerAction(profile.id, 'star', displayName, profile.avatarUrl);
-                        }}
-                        className={
-                          'w-8 h-8 rounded-full flex items-center justify-center border transition-all duration-200 active:scale-75 shadow-md backdrop-blur-md select-none cursor-pointer ' +
-                          (isStarred
-                            ? 'bg-amber-400 border-amber-300 text-slate-950 scale-105'
-                            : 'bg-black/35 hover:bg-black/60 border-white/25 text-white/85 hover:text-white')
-                        }
-                      >
-                        <Star className={'w-3.5 h-3.5 ' + (isStarred ? 'fill-slate-950' : '')} />
-                      </button>
-
-                      <button
-                        type="button"
-                        aria-label={isLiked ? 'Unlike' : 'Like'}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          e.preventDefault();
-                          triggerAction(profile.id, 'like', displayName, profile.avatarUrl);
-                        }}
-                        className={
-                          'w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center border transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-75 active:rotate-[-12deg] shadow-lg backdrop-blur-md shrink-0 select-none cursor-pointer ' +
-                          (isLiked
-                            ? 'bg-[#6555b8] border-[#8b7bd9] text-white shadow-[0_0_20px_rgba(101,85,184,0.55)] scale-105'
-                            : 'bg-black/35 hover:bg-black/60 border-white/25 text-white/90 hover:text-white hover:scale-105')
-                        }
-                      >
-                        <Heart
-                          className={
-                            'w-4 h-4 sm:w-5 sm:h-5 transition-transform duration-300 ease-out ' +
-                            (isLiked ? 'fill-white scale-110' : 'hover:scale-110')
-                          }
-                        />
-                      </button>
-                    </div>
                   </div>
                 </div>
               );
@@ -939,21 +879,41 @@ function DiscoverContent() {
         </div>
 
         {!isLoading && filteredProfiles.length === 0 && (
-          <div className="py-16 text-center space-y-3">
-            <div className="w-12 h-12 mx-auto rounded-full bg-[#F3EFFC] flex items-center justify-center text-[#6555b8]">
+          <div className="mt-4 p-8 rounded-2xl bg-white border border-[#DDD7E5] text-center space-y-3 shadow-xs">
+            <div className="w-12 h-12 mx-auto rounded-2xl bg-[#F3EFFC] flex items-center justify-center text-[#6555B8]">
               <Search className="w-5 h-5" />
             </div>
-            <p className="text-sm font-semibold text-[#1C1924]">No members match your current filters</p>
-            <p className="text-xs text-[#756D82] max-w-xs mx-auto">
-              Try widening your age, country, or gender preferences to see more profiles.
-            </p>
-            <button
-              type="button"
-              onClick={resetFilters}
-              className="mt-2 inline-flex items-center px-4 py-2 text-xs font-semibold rounded-full bg-[#6555b8] text-white hover:bg-[#5242a3] transition shadow-xs"
+            <p
+              className="text-base font-bold text-[#1C1924]"
+              style={{ fontFamily: 'var(--font-brand)' }}
             >
-              Reset All Filters
-            </button>
+              No profiles match your current filters
+            </p>
+            <p className="text-xs text-[#6C637B] max-w-xs mx-auto leading-relaxed">
+              Tap below to reset your filters to your saved preference ({viewerSavedGenders.map((g) => GENDER_LABELS[g] || g).join(', ') || 'All'}), or open Filters to adjust who you are looking for.
+            </p>
+            <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
+              <button
+                type="button"
+                onClick={resetFilters}
+                className="inline-flex items-center gap-1.5 px-5 py-2.5 text-xs font-semibold rounded-full bg-[#6555B8] text-white hover:bg-[#52449e] transition shadow-sm cursor-pointer"
+              >
+                <RotateCcw className="w-3.5 h-3.5" />
+                <span>Reset Filters</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  userSelectedGenderManually.current = true;
+                  setSelectedGenders([]);
+                  setSelectedCountry('All');
+                  setDiscoveryMode('all');
+                }}
+                className="inline-flex items-center gap-1.5 px-5 py-2.5 text-xs font-semibold rounded-full bg-white border border-[#DDD7E5] text-[#524B5E] hover:bg-[#F3EFFC] hover:text-[#6555B8] transition cursor-pointer"
+              >
+                <span>Show Everyone</span>
+              </button>
+            </div>
           </div>
         )}
 
@@ -962,7 +922,7 @@ function DiscoverContent() {
             <button
               type="button"
               onClick={() => setVisibleLimit((prev) => prev + BATCH_SIZE)}
-              className="px-6 py-2.5 rounded-full bg-white border border-[#9a8cc3]/40 text-[#1C1924] hover:border-[#6555b8] text-xs font-semibold transition shadow-sm"
+              className="px-6 py-2.5 rounded-full bg-white border border-[#DDD7E5] text-[#1C1924] hover:border-[#6555B8] text-xs font-semibold transition shadow-xs"
             >
               Load More Profiles ({filteredProfiles.length - visibleLimit} remaining)
             </button>
@@ -970,12 +930,12 @@ function DiscoverContent() {
         )}
 
         {lastPassed && (
-          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3 px-4 py-2.5 rounded-full bg-white/95 border border-[#9a8cc3]/40 shadow-2xl backdrop-blur-md">
+          <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-[60] flex items-center gap-3 px-4 py-2.5 rounded-full bg-white/95 border border-[#DDD7E5] shadow-2xl backdrop-blur-md">
             <span className="text-xs text-[#1C1924]">Passed <strong>{lastPassed.name}</strong></span>
             <button
               type="button"
               onClick={undoLastPass}
-              className="px-3 py-1 rounded-full bg-[#6555b8] hover:bg-[#7D4B9F] text-white text-xs font-semibold flex items-center gap-1 transition shadow-sm"
+              className="px-3 py-1 rounded-full bg-[#6555B8] hover:bg-[#52449e] text-white text-xs font-semibold flex items-center gap-1 transition shadow-sm"
             >
               <RotateCcw className="w-3 h-3" />
               Undo
@@ -984,148 +944,175 @@ function DiscoverContent() {
         )}
       </main>
 
-      {/* Filter Drawer */}
-      {filtersOpen && (
-        <>
-          <div
-            className="fixed inset-0 z-[120] bg-black/60 backdrop-blur-sm transition-opacity duration-200"
-            onClick={() => setFiltersOpen(false)}
-          />
-          <div className="fixed inset-x-0 bottom-0 z-[121] w-full max-w-lg mx-auto bg-white rounded-t-3xl shadow-2xl flex flex-col max-h-[85vh] pb-[max(1.5rem,env(safe-area-inset-bottom))]">
-            <div className="flex items-center justify-between p-5 pb-3 border-b border-[#E5E1EC] shrink-0">
-              <div className="flex items-center gap-2">
-                <SlidersHorizontal className="w-5 h-5 text-[#6555b8]" />
-                <h2 className="text-base font-semibold text-[#1C1924]">Refine Discover Feed</h2>
+      {/* Filter Drawer rendered via Portal to document.body at z-[999] so it sits above BottomNav */}
+      {filtersOpen &&
+        typeof document !== 'undefined' &&
+        createPortal(
+          <div className="fixed inset-0 z-[999] flex items-end justify-center">
+            <div
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-200"
+              onClick={() => setFiltersOpen(false)}
+            />
+            <div
+              role="dialog"
+              aria-modal="true"
+              aria-label="Refine Discover Feed"
+              className="relative z-10 w-full max-w-[430px] mx-auto bg-white rounded-t-3xl shadow-2xl flex flex-col max-h-[85dvh] overflow-hidden"
+            >
+              <div className="flex items-center justify-between p-5 pb-3 border-b border-[#DDD7E5] shrink-0 bg-white">
+                <div className="flex items-center gap-2">
+                  <SlidersHorizontal className="w-5 h-5 text-[#6555B8]" />
+                  <h2
+                    className="text-base font-bold text-[#1C1924]"
+                    style={{ fontFamily: 'var(--font-brand)' }}
+                  >
+                    Refine Discover Feed
+                  </h2>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setFiltersOpen(false)}
+                  className="p-1.5 rounded-full text-[#524B5E] hover:bg-[#F3EFFC] transition cursor-pointer"
+                  aria-label="Close filters"
+                >
+                  <XIcon className="w-5 h-5" />
+                </button>
               </div>
-              <button
-                type="button"
-                onClick={() => setFiltersOpen(false)}
-                className="p-1.5 rounded-full text-[#524B5E] hover:bg-[#F3EFFC] transition"
-                aria-label="Close filters"
-              >
-                <XIcon className="w-5 h-5" />
-              </button>
-            </div>
 
-            <div className="flex-1 overflow-y-auto px-5 py-4 space-y-6">
-              <div>
-                <label className="text-xs font-semibold text-[#756D82] uppercase tracking-wider block mb-2">
-                  Interested In
-                </label>
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
-                  {[
-                    { id: 'woman', label: 'Women' },
-                    { id: 'man', label: 'Men' },
-                    { id: 'trans_woman', label: 'Trans Women' },
-                    { id: 'trans_man', label: 'Trans Men' },
-                    { id: 'non_binary', label: 'Non-Binary' },
-                  ].map((item) => {
-                    const isSelected = selectedGenders.includes(item.id);
-                    return (
+              <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-5 py-4 space-y-6">
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-xs font-semibold text-[#6C637B] uppercase tracking-wider">
+                      Interested In
+                    </label>
+                    {selectedGenders.length > 0 && (
                       <button
-                        key={item.id}
                         type="button"
-                        onClick={() => toggleGender(item.id)}
-                        className={
-                          'py-2.5 px-3 rounded-xl border text-xs font-medium transition ' +
-                          (isSelected
-                            ? 'bg-[#6555b8] text-white border-[#6555b8]'
-                            : 'bg-white text-[#1C1924] border-[#E5E1EC] hover:bg-[#FAF8FD]')
-                        }
+                        onClick={() => {
+                          userSelectedGenderManually.current = true;
+                          setSelectedGenders([]);
+                        }}
+                        className="text-[11px] font-semibold text-[#6555B8] hover:underline cursor-pointer"
                       >
-                        {item.label}
+                        Show Everyone
                       </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              <div>
-                <div className="flex items-center justify-between mb-2">
-                  <label className="text-xs font-semibold text-[#756D82] uppercase tracking-wider">Age Range</label>
-                  <span className="text-xs font-semibold text-[#6555b8] bg-[#F3EFFC] px-2.5 py-0.5 rounded-full">
-                    {draftMinAge} - {draftMaxAge} yrs
-                  </span>
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <span className="text-[10px] text-[#756D82] block mb-1">Min Age ({draftMinAge})</span>
-                    <input
-                      type="range"
-                      min={18}
-                      max={65}
-                      value={draftMinAge}
-                      onChange={(e) => setDraftMinAge(Math.min(Number(e.target.value), draftMaxAge - 1))}
-                      className="w-full accent-[#6555b8]"
-                    />
+                    )}
                   </div>
-                  <div>
-                    <span className="text-[10px] text-[#756D82] block mb-1">Max Age ({draftMaxAge})</span>
-                    <input
-                      type="range"
-                      min={18}
-                      max={65}
-                      value={draftMaxAge}
-                      onChange={(e) => setDraftMaxAge(Math.max(Number(e.target.value), draftMinAge + 1))}
-                      className="w-full accent-[#6555b8]"
-                    />
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {[
+                      { id: 'woman', label: 'Women' },
+                      { id: 'man', label: 'Men' },
+                      { id: 'trans_woman', label: 'Trans Women' },
+                      { id: 'trans_man', label: 'Trans Men' },
+                      { id: 'non_binary', label: 'Non-Binary' },
+                    ].map((item) => {
+                      const isSelected = selectedGenders.includes(item.id);
+                      return (
+                        <button
+                          key={item.id}
+                          type="button"
+                          onClick={() => toggleGender(item.id)}
+                          className={
+                            'py-2.5 px-3 rounded-2xl border text-xs font-semibold transition cursor-pointer ' +
+                            (isSelected
+                              ? 'bg-[#6555B8] text-white border-[#6555B8]'
+                              : 'bg-white text-[#1C1924] border-[#DDD7E5] hover:bg-[#F8F7FA]')
+                          }
+                        >
+                          {item.label}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
+
+                <div>
+                  <div className="flex items-center justify-between mb-2">
+                    <label className="text-xs font-semibold text-[#6C637B] uppercase tracking-wider">Age Range</label>
+                    <span className="text-xs font-semibold text-[#6555B8] bg-[#F3EFFC] px-2.5 py-0.5 rounded-full">
+                      {draftMinAge} - {draftMaxAge} yrs
+                    </span>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <span className="text-[10px] text-[#6C637B] block mb-1">Min Age ({draftMinAge})</span>
+                      <input
+                        type="range"
+                        min={18}
+                        max={65}
+                        value={draftMinAge}
+                        onChange={(e) => setDraftMinAge(Math.min(Number(e.target.value), draftMaxAge - 1))}
+                        className="w-full accent-[#6555B8]"
+                      />
+                    </div>
+                    <div>
+                      <span className="text-[10px] text-[#6C637B] block mb-1">Max Age ({draftMaxAge})</span>
+                      <input
+                        type="range"
+                        min={18}
+                        max={65}
+                        value={draftMaxAge}
+                        onChange={(e) => setDraftMaxAge(Math.max(Number(e.target.value), draftMinAge + 1))}
+                        className="w-full accent-[#6555B8]"
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-3 pt-1 border-t border-[#DDD7E5]/60">
+                  <label className="flex items-center justify-between cursor-pointer py-1">
+                    <span className="text-xs font-medium text-[#1C1924]">Verified Members Only</span>
+                    <input
+                      type="checkbox"
+                      checked={verifiedOnly}
+                      onChange={(e) => setVerifiedOnly(e.target.checked)}
+                      className="sr-only peer"
+                    />
+                    <span className="w-10 h-6 rounded-full bg-[#DDD7E5] peer-checked:bg-[#6555B8] relative transition">
+                      <span className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition peer-checked:translate-x-4" />
+                    </span>
+                  </label>
+                  <label className="flex items-center justify-between cursor-pointer py-1">
+                    <span className="text-xs font-medium text-[#1C1924]">Active Now</span>
+                    <input
+                      type="checkbox"
+                      checked={activeNowOnly}
+                      onChange={(e) => setActiveNowOnly(e.target.checked)}
+                      className="sr-only peer"
+                    />
+                    <span className="w-10 h-6 rounded-full bg-[#DDD7E5] peer-checked:bg-[#6555B8] relative transition">
+                      <span className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition peer-checked:translate-x-4" />
+                    </span>
+                  </label>
+                </div>
               </div>
 
-              <div className="space-y-3 pt-1 border-t border-[#E5E1EC]/60">
-                <label className="flex items-center justify-between cursor-pointer py-1">
-                  <span className="text-xs font-medium text-[#1C1924]">Verified Members Only</span>
-                  <input
-                    type="checkbox"
-                    checked={verifiedOnly}
-                    onChange={(e) => setVerifiedOnly(e.target.checked)}
-                    className="sr-only peer"
-                  />
-                  <span className="w-10 h-6 rounded-full bg-[#E5E1EC] peer-checked:bg-[#6555b8] relative transition">
-                    <span className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition peer-checked:translate-x-4" />
-                  </span>
-                </label>
-                <label className="flex items-center justify-between cursor-pointer py-1">
-                  <span className="text-xs font-medium text-[#1C1924]">Active Now</span>
-                  <input
-                    type="checkbox"
-                    checked={activeNowOnly}
-                    onChange={(e) => setActiveNowOnly(e.target.checked)}
-                    className="sr-only peer"
-                  />
-                  <span className="w-10 h-6 rounded-full bg-[#E5E1EC] peer-checked:bg-[#6555b8] relative transition">
-                    <span className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition peer-checked:translate-x-4" />
-                  </span>
-                </label>
+              <div className="p-4 pb-[max(1rem,env(safe-area-inset-bottom))] bg-white border-t border-[#DDD7E5] flex items-center gap-3 shrink-0">
+                <button
+                  type="button"
+                  onClick={resetFilters}
+                  className="flex-1 py-3 rounded-2xl border border-[#DDD7E5] text-xs font-semibold text-[#524B5E] hover:bg-[#F8F7FA] transition cursor-pointer"
+                >
+                  Reset Filters
+                </button>
+                <button
+                  type="button"
+                  onClick={applyFilters}
+                  className="flex-1 py-3 rounded-2xl bg-[#6555B8] text-white text-xs font-semibold hover:bg-[#52449e] transition shadow cursor-pointer"
+                >
+                  Apply Filters
+                </button>
               </div>
             </div>
-
-            <div className="p-4 bg-white border-t border-[#E5E1EC] flex items-center gap-3 shrink-0">
-              <button
-                type="button"
-                onClick={resetFilters}
-                className="flex-1 py-3 rounded-xl border border-[#E5E1EC] text-xs font-semibold text-[#524B5E] hover:bg-[#FAF8FD] transition"
-              >
-                Reset
-              </button>
-              <button
-                type="button"
-                onClick={applyFilters}
-                className="flex-1 py-3 rounded-xl bg-[#6555b8] text-white text-xs font-semibold hover:bg-[#5444a6] transition shadow"
-              >
-                Apply
-              </button>
-            </div>
-          </div>
-        </>
-      )}
+          </div>,
+          document.body
+        )}
 
       {matchedModalProfile && (
         <div
           onClick={closeModalWithAnimation}
           className={
-            'fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-opacity duration-200 ' +
+            'fixed inset-0 z-[999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-opacity duration-200 ' +
             (isModalClosing ? 'opacity-0 pointer-events-none' : 'opacity-100')
           }
         >
@@ -1142,15 +1129,18 @@ function DiscoverContent() {
               <Heart className="w-6 h-6 text-rose-500 fill-rose-500" />
             </div>
 
-            <h3 className="text-xl font-bold text-[#1C1924] tracking-tight">
+            <h3
+              className="text-xl font-bold text-[#1C1924] tracking-tight"
+              style={{ fontFamily: 'var(--font-brand)' }}
+            >
               It&apos;s a Match!
             </h3>
-            <p className="text-xs text-[#6E6481] mt-1.5 max-w-[240px]">
+            <p className="text-xs text-[#6C637B] mt-1.5 max-w-[240px]">
               You and <span className="font-semibold text-[#1C1924]">{matchedModalProfile.name}</span> connected.
             </p>
 
             <div className="my-5 relative flex items-center justify-center">
-              <div className="w-20 h-20 rounded-full border-4 border-[#6555b8]/20 overflow-hidden shadow-md">
+              <div className="w-20 h-20 rounded-full border-4 border-[#6555B8]/20 overflow-hidden shadow-md">
                 <img
                   src={matchedModalProfile.avatarUrl || '/placeholder-avatar.svg'}
                   alt={matchedModalProfile.name}
@@ -1162,14 +1152,14 @@ function DiscoverContent() {
             <div className="w-full flex flex-col gap-2 mt-1">
               <Link
                 href={'/chat/' + matchedModalProfile.id}
-                className="w-full py-3 px-4 rounded-full bg-[#6555b8] hover:bg-[#5748a3] text-white text-xs font-semibold shadow-md transition flex items-center justify-center gap-2"
+                className="w-full py-3 px-4 rounded-full bg-[#6555B8] hover:bg-[#52449e] text-white text-xs font-semibold shadow-md transition flex items-center justify-center gap-2"
               >
                 Say Hello
               </Link>
               <button
                 type="button"
                 onClick={closeModalWithAnimation}
-                className="w-full py-2.5 px-4 rounded-full text-xs font-semibold text-[#6E6481] hover:text-[#1C1924] hover:bg-[#F3EFFC] transition"
+                className="w-full py-2.5 px-4 rounded-full text-xs font-semibold text-[#6C637B] hover:text-[#1C1924] hover:bg-[#F3EFFC] transition"
               >
                 Keep Browsing
               </button>
@@ -1183,7 +1173,7 @@ function DiscoverContent() {
 
 export default function DiscoverPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#FAFAFD] text-[#1C1924] p-8 text-center text-xs">Loading discover feed...</div>}>
+    <Suspense fallback={<div className="min-h-screen bg-[#F8F7FA] text-[#1C1924] p-8 text-center text-xs">Loading discover feed...</div>}>
       <DiscoverContent />
     </Suspense>
   );

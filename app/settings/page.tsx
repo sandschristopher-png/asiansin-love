@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { CheckCircle2, AlertCircle, Loader2, Crown, User, LogOut, Trash2 } from 'lucide-react';
+import { CheckCircle2, AlertCircle, Loader2, Crown, User, LogOut, Trash2, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
@@ -78,7 +78,7 @@ export default function SettingsPage() {
       return;
     }
 
-    const cleanUsername = username.trim().toLowerCase().replace(/^@/, '');
+    const cleanUsername = username.trim().replace(/^@/, '');
 
     if (!cleanUsername) {
       setErrorMessage('Username cannot be empty.');
@@ -90,8 +90,8 @@ export default function SettingsPage() {
       return;
     }
 
-    if (!/^[a-z0-9_.]+$/.test(cleanUsername)) {
-      setErrorMessage('Only lowercase letters, numbers, underscores, and periods are allowed.');
+    if (!/^[a-zA-Z0-9_]+$/.test(cleanUsername)) {
+      setErrorMessage('Only letters, numbers, and underscores are allowed.');
       return;
     }
 
@@ -139,169 +139,208 @@ export default function SettingsPage() {
   };
 
   return (
-    <main className="flex-1 max-w-md mx-auto w-full px-4 pt-4 pb-20 space-y-4">
-      {/* Account Settings Card */}
-      <div className="bg-white rounded-2xl border border-[#DDD7E5]/70 p-4 sm:p-5 shadow-xs space-y-5">
-        <form onSubmit={handleSaveHandle} className="space-y-3">
-          <div className="space-y-1.5">
-            <label className="text-[11px] font-semibold uppercase tracking-wider text-[#524B5E]">
-              Username Handle
-            </label>
-            <div className="relative flex items-center">
-              <span className="absolute left-3 text-sm text-[#8C849B]">@</span>
-              <input
-                type="text"
-                value={username}
-                maxLength={20}
-                onChange={(e) => {
-                  setUsername(e.target.value);
-                  if (errorMessage) setErrorMessage(null);
-                }}
-                disabled={initialLoading || isSaving}
-                className="w-full pl-7 pr-20 py-2 bg-white border border-[#DDD7E5] rounded-xl text-sm font-semibold text-[#1C1924] focus:outline-none focus:border-[#6555b8] focus:ring-2 focus:ring-[#6555b8]/15 transition shadow-xs disabled:opacity-60"
-                placeholder={initialLoading ? 'Loading handle...' : 'username'}
-              />
-              <button
-                type="submit"
-                disabled={initialLoading || isSaving}
-                className="absolute right-1 px-3 py-1 rounded-lg bg-[#6555b8] hover:bg-[#52449e] disabled:opacity-50 text-white text-xs font-semibold transition active:scale-95 shadow-xs flex items-center gap-1 cursor-pointer"
-              >
-                {isSaving && <Loader2 className="w-3 h-3 animate-spin" />}
-                <span>Save</span>
-              </button>
-            </div>
-            <p className="text-[11px] text-[#8C849B]">
-              Lowercase letters, numbers, underscores, and periods (3–20 characters).
-            </p>
-
-            {errorMessage && (
-              <p className="text-xs font-medium text-red-600 flex items-center gap-1.5 pt-0.5">
-                <AlertCircle className="w-3.5 h-3.5 shrink-0" /> {errorMessage}
-              </p>
-            )}
-
-            {savedSuccess && (
-              <p className="text-xs font-semibold text-emerald-600 flex items-center gap-1 pt-0.5">
-                <CheckCircle2 className="w-3.5 h-3.5 shrink-0" /> Handle updated successfully!
-              </p>
-            )}
-          </div>
-        </form>
-
-        {/* Premium Member Features */}
-        <div className="p-4 rounded-xl bg-[#FAF8FD] border border-[#DDD7E5]/70 flex items-start gap-3.5">
-          <div className="w-9 h-9 rounded-xl bg-[#F3EFFC] text-[#6555b8] flex items-center justify-center shrink-0">
-            <Crown className="w-4 h-4 text-amber-500" />
-          </div>
-          <div className="space-y-1 flex-1">
-            <div className="flex items-center gap-1.5">
-              <h3 className="text-xs sm:text-sm font-bold text-[#1C1924]">
-                AIL+ Membership
-              </h3>
-              <span className="text-[9px] font-bold uppercase tracking-wider bg-[#6555B8] text-white px-1.5 py-0.2 rounded-full">
-                $19.99/mo
-              </span>
-            </div>
-            <p className="text-xs text-[#524B5E] leading-relaxed">
-              Travel Passport Mode, custom profile handles, verified badges, and unlimited direct messaging.
-            </p>
-            <div className="pt-1.5">
-              <Link
-                href="/pricing"
-                className="inline-block px-3.5 py-1 rounded-full bg-white border border-[#DDD7E5] hover:border-[#6555b8] text-xs font-semibold text-[#6555b8] hover:bg-[#F3EFFC] transition shadow-xs"
-              >
-                Explore AIL+ Privileges &rarr;
-              </Link>
-            </div>
-          </div>
-        </div>
-
-        {/* Quick Account Links */}
-        <div className="border-t border-[#F0ECF5] pt-3 flex flex-col gap-1">
-          <Link
-            href="/profile"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium text-[#524B5E] hover:bg-[#FAF8FD] hover:text-[#1C1924] transition"
+    <div className="w-full min-h-full bg-[#F8F7FA] text-[#1C1924] flex flex-col font-sans">
+      <main className="flex-1 w-full px-4 pt-4 pb-28 space-y-5">
+        {/* Top Header matching Onboarding & Discover */}
+        <div className="pb-3 border-b border-[#DDD7E5]">
+          <h1
+            className="text-lg font-bold text-[#1C1924] tracking-tight"
+            style={{ fontFamily: 'var(--font-brand)' }}
           >
-            <User className="w-4 h-4 text-[#6555b8]" />
-            <span>Manage Profile & Photos</span>
-          </Link>
-          <button
-            type="button"
-            onClick={handleSignOut}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-xs font-medium text-rose-600 hover:bg-rose-50 transition text-left cursor-pointer"
-          >
-            <LogOut className="w-4 h-4" />
-            <span>Sign Out</span>
-          </button>
-        </div>
-      </div>
-
-      {/* Danger Zone */}
-      <div className="bg-white rounded-2xl border border-red-200/80 p-4 sm:p-5 shadow-xs space-y-3">
-        <div className="space-y-1">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-red-600">Danger Zone</h3>
-          <p className="text-xs text-[#524B5E] leading-relaxed">
-            Permanently delete your profile, photos, matches, and courtship notes. This action is irreversible.
+            Account Settings
+          </h1>
+          <p className="text-xs text-[#6C637B]">
+            Manage your member handle, membership tier, and account privacy
           </p>
         </div>
-        <button
-          type="button"
-          onClick={() => setShowDeleteModal(true)}
-          className="w-full sm:w-auto px-4 py-2 rounded-xl bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer"
-        >
-          <Trash2 className="w-3.5 h-3.5" />
-          <span>Delete Profile & Account</span>
-        </button>
-      </div>
 
-      {/* Delete Confirmation Modal */}
-      {showDeleteModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
-          <div className="relative w-full max-w-sm bg-white rounded-3xl border border-[#DDD7E5] shadow-2xl p-5 space-y-4">
-            <div className="space-y-1.5 text-center">
-              <div className="w-10 h-10 rounded-full bg-red-100 text-red-600 mx-auto flex items-center justify-center mb-2">
-                <Trash2 className="w-5 h-5" />
+        {/* Account Settings Card */}
+        <div className="bg-white rounded-3xl border border-[#DDD7E5] p-5 shadow-xs space-y-5">
+          <form onSubmit={handleSaveHandle} className="space-y-3">
+            <div>
+              <label
+                className="text-xs font-bold uppercase tracking-wider text-[#6555b8] block mb-1"
+                style={{ fontFamily: 'var(--font-brand)' }}
+              >
+                Member Handle
+              </label>
+              <p className="text-[11px] text-[#6C637B] mb-2">
+                3 to 20 characters, letters, numbers, and underscores.
+              </p>
+              <div className="flex items-center gap-2">
+                <div className="relative flex-1 flex items-center">
+                  <span className="absolute left-3.5 text-sm font-medium text-[#8C849B]">@</span>
+                  <input
+                    type="text"
+                    value={username}
+                    maxLength={20}
+                    onChange={(e) => {
+                      setUsername(e.target.value.replace(/[^a-zA-Z0-9_]/g, ''));
+                      if (errorMessage) setErrorMessage(null);
+                    }}
+                    disabled={initialLoading || isSaving}
+                    className="w-full pl-8 pr-4 py-2.5 bg-[#F8F7FA] border border-[#DDD7E5] rounded-2xl text-sm font-semibold text-[#1C1924] focus:outline-none focus:bg-white focus:border-[#6555b8] focus:ring-2 focus:ring-[#6555b8]/15 transition disabled:opacity-60"
+                    placeholder={initialLoading ? 'Loading handle...' : 'username'}
+                  />
+                </div>
+                <button
+                  type="submit"
+                  disabled={initialLoading || isSaving}
+                  className="px-4 py-2.5 rounded-2xl bg-[#6555b8] hover:bg-[#52449e] disabled:opacity-50 text-white text-xs font-semibold transition active:scale-95 shadow-xs flex items-center gap-1.5 cursor-pointer shrink-0"
+                >
+                  {isSaving && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                  <span>Save</span>
+                </button>
               </div>
-              <h3 className="text-sm font-bold text-[#1C1924]">Delete Profile & Account?</h3>
-              <p className="text-xs text-[#524B5E] leading-relaxed">
-                This will permanently delete your photos, matches, verification status, and all conversations. You cannot undo this action.
-              </p>
+
+              {errorMessage && (
+                <p className="text-xs font-semibold text-rose-600 flex items-center gap-1.5 pt-2">
+                  <AlertCircle className="w-3.5 h-3.5 shrink-0" /> {errorMessage}
+                </p>
+              )}
+
+              {savedSuccess && (
+                <p className="text-xs font-semibold text-emerald-600 flex items-center gap-1.5 pt-2">
+                  <CheckCircle2 className="w-3.5 h-3.5 shrink-0" /> Handle updated!
+                </p>
+              )}
             </div>
+          </form>
 
-            {deleteError && (
-              <p className="text-xs text-red-600 bg-red-50 p-2.5 rounded-xl border border-red-200 text-center">
-                {deleteError}
+          {/* AIL+ Membership Card */}
+          <div className="p-4 rounded-2xl bg-[#F8F7FA] border border-[#DDD7E5] flex items-start gap-3.5">
+            <div className="w-9 h-9 rounded-2xl bg-[#F3EFFC] text-[#6555b8] flex items-center justify-center shrink-0">
+              <Crown className="w-4 h-4 text-amber-500" />
+            </div>
+            <div className="space-y-1 flex-1">
+              <div className="flex items-center gap-1.5">
+                <h2
+                  className="text-xs sm:text-sm font-bold text-[#1C1924]"
+                  style={{ fontFamily: 'var(--font-brand)' }}
+                >
+                  AIL+ Membership
+                </h2>
+                <span className="text-[9px] font-bold uppercase tracking-wider bg-[#6555b8] text-white px-2 py-0.5 rounded-full">
+                  $19.99/mo
+                </span>
+              </div>
+              <p className="text-xs text-[#6C637B] leading-relaxed">
+                Travel Passport Mode, custom profile handles, priority placement, and unlimited direct messaging.
               </p>
-            )}
-
-            <div className="flex flex-col gap-2 pt-1">
-              <button
-                type="button"
-                disabled={isDeleting}
-                onClick={handleDeleteAccount}
-                className="w-full py-2.5 rounded-xl bg-red-600 hover:bg-red-700 text-white text-xs font-bold transition disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
-              >
-                {isDeleting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                <span>{isDeleting ? 'Deleting Profile...' : 'Yes, Permanently Delete'}</span>
-              </button>
-              <button
-                type="button"
-                disabled={isDeleting}
-                onClick={() => { setShowDeleteModal(false); setDeleteError(null); }}
-                className="w-full py-2.5 rounded-xl border border-[#DDD7E5] text-xs font-semibold text-[#524B5E] hover:bg-[#FAF8FD] transition cursor-pointer"
-              >
-                Cancel
-              </button>
+              <div className="pt-1.5">
+                <Link
+                  href="/pricing"
+                  className="inline-block px-4 py-1.5 rounded-full bg-white border border-[#DDD7E5] hover:border-[#6555b8] text-xs font-semibold text-[#6555b8] hover:bg-[#F3EFFC] transition shadow-2xs"
+                >
+                  Explore AIL+ Privileges &rarr;
+                </Link>
+              </div>
             </div>
           </div>
-        </div>
-      )}
 
-      {/* Handle Upgrade Fallback Modal */}
-      <HandleUpgradeModal
-        isOpen={showUpgradeModal}
-        onClose={() => setShowUpgradeModal(false)}
-      />
-    </main>
+          {/* Quick Account Links */}
+          <div className="border-t border-[#F0EDF5] pt-3 flex flex-col gap-1">
+            <Link
+              href="/profile"
+              className="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-semibold text-[#524B5E] hover:bg-[#F8F7FA] hover:text-[#1C1924] transition"
+            >
+              <User className="w-4 h-4 text-[#6555b8]" />
+              <span>View &amp; Edit My Profile</span>
+            </Link>
+            <Link
+              href="/verify"
+              className="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-semibold text-[#524B5E] hover:bg-[#F8F7FA] hover:text-[#1C1924] transition"
+            >
+              <ShieldCheck className="w-4 h-4 text-[#6555b8]" />
+              <span>Identity &amp; Pose Verification</span>
+            </Link>
+            <button
+              type="button"
+              onClick={handleSignOut}
+              className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-semibold text-rose-600 hover:bg-rose-50 transition text-left cursor-pointer"
+            >
+              <LogOut className="w-4 h-4" />
+              <span>Sign Out</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Danger Zone */}
+        <div className="bg-white rounded-3xl border border-rose-200 p-5 shadow-xs space-y-3">
+          <div className="space-y-1">
+            <h3
+              className="text-xs font-bold uppercase tracking-wider text-rose-600"
+              style={{ fontFamily: 'var(--font-brand)' }}
+            >
+              Danger Zone
+            </h3>
+            <p className="text-xs text-[#6C637B] leading-relaxed">
+              Permanently delete your profile, photos, matches, and messages. This action is irreversible.
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowDeleteModal(true)}
+            className="w-full sm:w-auto px-4 py-2.5 rounded-2xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600 text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer"
+          >
+            <Trash2 className="w-3.5 h-3.5" />
+            <span>Delete Profile &amp; Account</span>
+          </button>
+        </div>
+
+        {/* Delete Confirmation Modal */}
+        {showDeleteModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+            <div className="relative w-full max-w-sm bg-white rounded-3xl border border-[#DDD7E5] shadow-2xl p-6 space-y-4">
+              <div className="space-y-1.5 text-center">
+                <div className="w-11 h-11 rounded-2xl bg-rose-50 border border-rose-200 text-rose-600 mx-auto flex items-center justify-center mb-2">
+                  <Trash2 className="w-5 h-5" />
+                </div>
+                <h3
+                  className="text-base font-bold text-[#1C1924]"
+                  style={{ fontFamily: 'var(--font-brand)' }}
+                >
+                  Delete Profile &amp; Account?
+                </h3>
+                <p className="text-xs text-[#6C637B] leading-relaxed">
+                  This will permanently delete your photos, matches, verification status, and all conversations. You cannot undo this action.
+                </p>
+              </div>
+
+              {deleteError && (
+                <p className="text-xs text-rose-600 bg-rose-50 p-2.5 rounded-2xl border border-rose-200 text-center">
+                  {deleteError}
+                </p>
+              )}
+
+              <div className="flex flex-col gap-2 pt-1">
+                <button
+                  type="button"
+                  disabled={isDeleting}
+                  onClick={handleDeleteAccount}
+                  className="w-full py-3 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+                >
+                  {isDeleting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                  <span>{isDeleting ? 'Deleting Profile...' : 'Yes, Permanently Delete'}</span>
+                </button>
+                <button
+                  type="button"
+                  disabled={isDeleting}
+                  onClick={() => { setShowDeleteModal(false); setDeleteError(null); }}
+                  className="w-full py-3 rounded-2xl border border-[#DDD7E5] text-xs font-semibold text-[#524B5E] hover:bg-[#F8F7FA] transition cursor-pointer"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        <HandleUpgradeModal
+          isOpen={showUpgradeModal}
+          onClose={() => setShowUpgradeModal(false)}
+        />
+      </main>
+    </div>
   );
 }

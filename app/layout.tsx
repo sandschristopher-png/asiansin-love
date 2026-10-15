@@ -23,7 +23,7 @@ const outfit = Outfit({
 });
 
 export const metadata: Metadata = {
-  title: 'Asians in Love - Serious Courtship',
+  title: 'Asians in Love - Real Connections',
   description: 'A thoughtful platform dedicated to intentional courtship, values-first compatibility, and lifelong marriage.',
 };
 

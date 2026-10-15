@@ -117,7 +117,7 @@ export default function OnboardingPage() {
 
       const { data: profile } = await supabase
         .from('profiles')
-        .select('username, gender, interested_in, birthdate, city, country, height, weight, bio, looking_for, interests, photos, avatar_url, onboarding_completed')
+        .select('*')
         .eq('id', user.id)
         .maybeSingle();
 
