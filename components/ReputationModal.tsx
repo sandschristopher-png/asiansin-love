@@ -38,7 +38,7 @@ export default function ReputationModal({
 
   return createPortal(
     <div
-      className="fixed inset-0 z-[9999] flex items-end justify-center bg-black/60 backdrop-blur-xs transition-opacity"
+      className="fixed inset-0 z-[9999] flex items-end justify-center bg-black/60 backdrop-blur-xs transition-opacity duration-200"
       onClick={onClose}
     >
       {/* Mobile Drawer (Constrained to the app's max-w-md column) */}

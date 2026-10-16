@@ -1,9 +1,9 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { MessageCircle, Search, ChevronRight, Clock, ShieldCheck, Loader2 } from 'lucide-react';
+import { MessageCircle, Search, ChevronRight, ShieldCheck, Loader2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 
 interface ConversationItem {
@@ -17,6 +17,29 @@ interface ConversationItem {
   unreadCount: number;
 }
 
+function formatConversationTimestamp(iso?: string): string {
+  if (!iso) return '';
+  try {
+    const date = new Date(iso);
+    const now = new Date();
+    const diffMs = now.getTime() - date.getTime();
+    const diffMins = Math.floor(diffMs / 60000);
+
+    if (diffMins < 1) return 'Just now';
+    if (diffMins < 60) return diffMins + 'm';
+    if (date.toDateString() === now.toDateString()) {
+      return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+    }
+    const yesterday = new Date(now);
+    yesterday.setDate(now.getDate() - 1);
+    if (date.toDateString() === yesterday.toDateString()) return 'Yesterday';
+
+    return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+  } catch {
+    return '';
+  }
+}
+
 export default function MessagesPage() {
   const router = useRouter();
   const [conversations, setConversations] = useState<ConversationItem[]>([]);
@@ -24,39 +47,34 @@ export default function MessagesPage() {
   const [activeTab, setActiveTab] = useState<'all' | 'unread'>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
-  useEffect(() => {
-    let channel: any = null;
-    let isMounted = true;
-
-    async function loadConversations() {
+  const loadConversations = useCallback(
+    async (userId: string, isMountedRef: { current: boolean }) => {
       try {
-        const { data: { user } } = await supabase.auth.getUser();
-        if (!user) {
-          if (isMounted) router.replace('/');
-          return;
-        }
-
         const { data: msgs, error } = await supabase
           .from('messages')
           .select('id, sender_id, receiver_id, content, created_at, is_read, is_quarantined')
-          .or('sender_id.eq.' + user.id + ',receiver_id.eq.' + user.id)
+          .or('sender_id.eq.' + userId + ',receiver_id.eq.' + userId)
           .order('created_at', { ascending: false });
 
         if (error || !msgs || msgs.length === 0) {
-          if (isMounted) {
+          if (isMountedRef.current) {
             setConversations([]);
             setLoading(false);
           }
           return;
         }
 
-        const partnerMap = new Map<string, { lastMessage: string; lastMessageAt: string; messageId: string; unreadCount: number }>();
-        for (const m of (msgs as any[])) {
-          if (m.is_quarantined && m.sender_id !== user.id) continue;
-          const partnerId = m.sender_id === user.id ? m.receiver_id : m.sender_id;
+        const partnerMap = new Map<
+          string,
+          { lastMessage: string; lastMessageAt: string; messageId: string; unreadCount: number }
+        >();
+
+        for (const m of msgs as any[]) {
+          if (m.is_quarantined && m.sender_id !== userId) continue;
+          const partnerId = m.sender_id === userId ? m.receiver_id : m.sender_id;
           if (!partnerId || String(partnerId).startsWith('00000000')) continue;
 
-          const isUnreadIncoming = m.receiver_id === user.id && !m.is_read;
+          const isUnreadIncoming = m.receiver_id === userId && !m.is_read;
 
           if (!partnerMap.has(partnerId)) {
             partnerMap.set(partnerId, {
@@ -73,7 +91,7 @@ export default function MessagesPage() {
 
         const partnerIds = Array.from(partnerMap.keys());
         if (partnerIds.length === 0) {
-          if (isMounted) {
+          if (isMountedRef.current) {
             setConversations([]);
             setLoading(false);
           }
@@ -93,7 +111,9 @@ export default function MessagesPage() {
             const info = partnerMap.get(partnerId)!;
             const partner = profileMap.get(partnerId) as any;
             const cleanName =
-              (partner?.username && !partner.username.startsWith('user_') ? partner.username.replace(/^@/, '') : '') ||
+              (partner?.username && !partner.username.startsWith('user_')
+                ? partner.username.replace(/^@/, '')
+                : '') ||
               partner?.display_name ||
               partner?.full_name ||
               'Member';
@@ -110,48 +130,54 @@ export default function MessagesPage() {
             };
           });
 
-        if (isMounted) {
+        if (isMountedRef.current) {
           setConversations(formatted);
         }
       } catch (err) {
         console.error('Error loading conversations:', err);
       } finally {
-        if (isMounted) setLoading(false);
+        if (isMountedRef.current) setLoading(false);
       }
-    }
+    },
+    []
+  );
 
-    loadConversations();
+  useEffect(() => {
+    const isMountedRef = { current: true };
+    let channel: any = null;
 
-    const channelSetup = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user || !isMounted) return;
+    async function init() {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+      if (!user) {
+        if (isMountedRef.current) router.replace('/');
+        return;
+      }
+
+      await loadConversations(user.id, isMountedRef);
+      if (!isMountedRef.current) return;
 
       const channelName = 'user_inbox_' + user.id;
-      const existingChannel = supabase.getChannels().find((ch: any) => ch.topic === 'realtime:' + channelName);
-      if (existingChannel) {
-        supabase.removeChannel(existingChannel);
-      }
-
       channel = supabase
         .channel(channelName)
-        .on(
-          'postgres_changes',
-          { event: '*', schema: 'public', table: 'messages' },
-          () => {
-            if (isMounted) loadConversations();
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, (payload: any) => {
+          if (!isMountedRef.current) return;
+          const row = (payload.new || payload.old) as any;
+          if (row && (row.sender_id === user.id || row.receiver_id === user.id)) {
+            loadConversations(user.id, isMountedRef);
           }
-        )
+        })
         .subscribe();
-    };
-    channelSetup();
+    }
+
+    init();
 
     return () => {
-      isMounted = false;
-      if (channel) {
-        supabase.removeChannel(channel);
-      }
+      isMountedRef.current = false;
+      if (channel) supabase.removeChannel(channel);
     };
-  }, [router]);
+  }, [router, loadConversations]);
 
   const filteredConversations = conversations.filter((c) => {
     if (activeTab === 'unread' && c.unreadCount === 0) return false;
@@ -160,23 +186,18 @@ export default function MessagesPage() {
   });
 
   return (
-    <div className="w-full min-h-full bg-[#F8F7FA] text-[#1C1924] flex flex-col font-sans">
-      <main className="flex-1 w-full px-4 pt-4 pb-40 space-y-4">
-        {/* Subtitle + All/Unread Tabs */}
+    <div className="w-full min-h-full bg-[#F9F8FC] text-[#1C1924] flex flex-col font-sans">
+      <main className="flex-1 w-full px-4 pt-3.5 pb-32 space-y-3.5">
         <div className="flex items-center justify-between gap-2">
-          <p className="text-xs text-[#6C637B]">
-            Direct messages with your connections
-          </p>
+          <p className="text-xs text-[#6C637B] font-medium">Direct messages with your connections</p>
 
-          <div className="flex items-center gap-1.5 bg-white border border-[#DDD7E5] p-1 rounded-full shadow-2xs shrink-0">
+          <div className="flex items-center gap-1 bg-white border border-[#E5DFEE] p-1 rounded-full shrink-0">
             <button
               type="button"
               onClick={() => setActiveTab('all')}
               className={
-                'px-3 py-1.5 rounded-full text-xs font-semibold transition cursor-pointer ' +
-                (activeTab === 'all'
-                  ? 'bg-[#6555B8] text-white shadow-xs'
-                  : 'text-[#524B5E] hover:text-[#1C1924]')
+                'px-3 py-1 rounded-full text-xs font-semibold transition cursor-pointer ' +
+                (activeTab === 'all' ? 'bg-[#6555B8] text-white shadow-2xs' : 'text-[#524B5E] hover:text-[#1C1924]')
               }
             >
               All
@@ -185,10 +206,8 @@ export default function MessagesPage() {
               type="button"
               onClick={() => setActiveTab('unread')}
               className={
-                'px-3 py-1.5 rounded-full text-xs font-semibold transition cursor-pointer ' +
-                (activeTab === 'unread'
-                  ? 'bg-[#6555B8] text-white shadow-xs'
-                  : 'text-[#524B5E] hover:text-[#1C1924]')
+                'px-3 py-1 rounded-full text-xs font-semibold transition cursor-pointer ' +
+                (activeTab === 'unread' ? 'bg-[#6555B8] text-white shadow-2xs' : 'text-[#524B5E] hover:text-[#1C1924]')
               }
             >
               Unread
@@ -196,12 +215,11 @@ export default function MessagesPage() {
           </div>
         </div>
 
-        {/* Search Input aligned to px-4 */}
-        <div className="w-full px-4 py-2.5 bg-white border border-[#DDD7E5] hover:border-[#CFC8DC] focus-within:border-[#6555B8] focus-within:ring-2 focus-within:ring-[#6555B8]/15 rounded-full shadow-2xs transition-all flex items-center gap-2.5">
+        <div className="w-full px-3.5 py-2 bg-white border border-[#E5DFEE] focus-within:border-[#6555B8] focus-within:ring-2 focus-within:ring-[#6555B8]/15 rounded-full transition-all flex items-center gap-2.5">
           <Search className="w-4 h-4 text-[#8C849B] shrink-0 pointer-events-none" />
           <input
             type="text"
-            placeholder="Search conversations by username..."
+            placeholder="Search conversations..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full bg-transparent text-xs sm:text-sm text-[#1C1924] placeholder-[#8C849B] focus:outline-none min-w-0"
@@ -210,39 +228,35 @@ export default function MessagesPage() {
             <button
               type="button"
               onClick={() => setSearchQuery('')}
-              className="text-xs text-[#8C849B] hover:text-[#1C1924] shrink-0"
+              className="text-xs text-[#8C849B] hover:text-[#1C1924] shrink-0 cursor-pointer"
             >
               Clear
             </button>
           )}
         </div>
 
-        {/* List of Conversations */}
-        <div className="space-y-2.5">
+        <div className="space-y-2">
           {loading ? (
-            <div className="py-20 text-center space-y-2">
-              <Loader2 className="w-6 h-6 text-[#6555B8] animate-spin mx-auto" />
+            <div className="py-16 text-center space-y-2">
+              <Loader2 className="w-5 h-5 text-[#6555B8] animate-spin mx-auto" />
               <p className="text-xs text-[#6C637B]">Loading conversations...</p>
             </div>
           ) : filteredConversations.length === 0 ? (
-            <div className="bg-white border border-[#DDD7E5] rounded-3xl px-4 py-8 text-center space-y-3 shadow-xs">
-              <div className="w-12 h-12 bg-[#F3EFFC] text-[#6555B8] rounded-2xl flex items-center justify-center mx-auto">
-                <MessageCircle className="w-6 h-6" />
+            <div className="bg-white border border-[#E5DFEE] rounded-3xl px-4 py-8 text-center space-y-3">
+              <div className="w-11 h-11 bg-[#F3EFFC] text-[#6555B8] rounded-2xl flex items-center justify-center mx-auto">
+                <MessageCircle className="w-5 h-5" />
               </div>
               <div className="space-y-1">
-                <h2
-                  className="text-base font-bold text-[#1C1924]"
-                  style={{ fontFamily: 'var(--font-brand)' }}
-                >
+                <h2 className="text-sm font-bold text-[#1C1924]" style={{ fontFamily: 'var(--font-brand)' }}>
                   No conversations yet
                 </h2>
                 <p className="text-xs text-[#6C637B] max-w-xs mx-auto leading-relaxed">
-                  Explore the Discover feed and send a thoughtful hello to start a conversation.
+                  Explore the Discover feed and send a friendly hello to start a conversation.
                 </p>
               </div>
               <Link
                 href="/discover"
-                className="inline-block px-5 py-2.5 rounded-full bg-[#6555B8] text-white text-xs font-semibold hover:bg-[#52449e] transition shadow-sm"
+                className="inline-block px-5 py-2.5 rounded-full bg-[#6555B8] text-white text-xs font-semibold hover:bg-[#52449e] transition"
               >
                 Explore Discover Feed
               </Link>
@@ -252,16 +266,21 @@ export default function MessagesPage() {
               <Link
                 key={conv.id}
                 href={'/chat/' + conv.recipientId}
-                className="flex items-center gap-3.5 px-4 py-3.5 bg-white border border-[#DDD7E5] rounded-3xl hover:border-[#6555B8]/40 hover:bg-[#FAF8FD] transition shadow-xs"
+                className={
+                  'flex items-center gap-3.5 px-3.5 py-3 bg-white border rounded-2xl transition ' +
+                  (conv.unreadCount > 0
+                    ? 'border-[#6555B8]/40 bg-[#FAF8FF]'
+                    : 'border-[#EAE5F3] hover:border-[#6555B8]/30 hover:bg-[#FAF9FC]')
+                }
               >
-                <div className="relative w-11 h-11 shrink-0">
+                <div className="relative w-12 h-12 shrink-0">
                   <img
                     src={conv.avatarUrl}
                     alt={conv.name}
-                    className="rounded-full object-cover w-11 h-11 border border-[#DDD7E5]"
+                    className="rounded-full object-cover w-12 h-12 border border-[#E5DFEE]"
                   />
                   {conv.repScore !== undefined && (
-                    <span className="absolute -bottom-1 -right-1 bg-[#F3EFFC] px-1.5 py-0.5 rounded-full text-[9px] font-bold text-[#6555B8] border border-[#DDD7E5] shadow-2xs flex items-center gap-0.5">
+                    <span className="absolute -bottom-0.5 -right-0.5 bg-[#F5F2FC] px-1.5 py-0.2 rounded-full text-[9px] font-bold text-[#6555B8] border border-[#E2DBF0] flex items-center gap-0.5">
                       <ShieldCheck className="w-2.5 h-2.5 text-[#6555B8]" />
                       {conv.repScore}%
                     </span>
@@ -269,20 +288,21 @@ export default function MessagesPage() {
                 </div>
 
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center justify-between gap-1 mb-0.5">
+                  <div className="flex items-center justify-between gap-2 mb-0.5">
                     <h2
-                      className="text-sm font-bold text-[#1C1924] truncate"
+                      className="text-[13.5px] font-bold text-[#1C1924] truncate"
                       style={{ fontFamily: 'var(--font-brand)' }}
                     >
                       @{conv.name}
                     </h2>
                     {conv.lastMessageAt && (
-                      <span className="text-[10px] text-[#8C849B] flex items-center gap-1 shrink-0">
-                        <Clock className="w-2.5 h-2.5" />
-                        {new Date(conv.lastMessageAt).toLocaleDateString([], {
-                          month: 'short',
-                          day: 'numeric',
-                        })}
+                      <span
+                        className={
+                          'text-[10.5px] shrink-0 ' +
+                          (conv.unreadCount > 0 ? 'text-[#6555B8] font-semibold' : 'text-[#8C849B]')
+                        }
+                      >
+                        {formatConversationTimestamp(conv.lastMessageAt)}
                       </span>
                     )}
                   </div>
@@ -296,14 +316,14 @@ export default function MessagesPage() {
                       {conv.lastMessage}
                     </p>
                     {conv.unreadCount > 0 && (
-                      <span className="px-2 py-0.5 rounded-full bg-[#6555B8] text-white text-[10px] font-bold shrink-0">
+                      <span className="min-w-[18px] h-[18px] px-1.5 rounded-full bg-[#6555B8] text-white text-[10px] font-bold flex items-center justify-center shrink-0">
                         {conv.unreadCount}
                       </span>
                     )}
                   </div>
                 </div>
 
-                <ChevronRight className="w-4 h-4 text-[#8C849B] shrink-0" />
+                <ChevronRight className="w-4 h-4 text-[#A098B0] shrink-0" />
               </Link>
             ))
           )}

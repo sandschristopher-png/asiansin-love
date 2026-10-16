@@ -660,7 +660,7 @@ function DiscoverContent() {
 
   return (
     <div className="w-full min-h-full bg-[#F8F7FA] text-[#1C1924] flex flex-col font-sans">
-      <main className="w-full px-3.5 sm:px-4 pt-4 pb-24">
+      <main className="w-full px-4 pt-3.5 pb-36">
         
         {/* Top Control Bar */}
         <section aria-label="Search and Filters" className="w-full">
@@ -1156,7 +1156,7 @@ function HeroGate() {
 
   if (authState === 'loading') {
     return (
-      <div className="min-h-screen bg-[#0d0b14] flex items-center justify-center">
+      <div className="min-h-screen bg-[#F8F7FA] flex items-center justify-center">
         <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#6555B8] border-t-transparent"></div>
       </div>
     );
