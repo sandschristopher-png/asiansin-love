@@ -11,7 +11,6 @@ import {
   Search,
   Heart,
   X as XIcon,
-  Star,
   ShieldCheck,
   CheckCircle,
   SlidersHorizontal,
@@ -22,6 +21,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { ActionType, getLocalCardActions, persistCardAction } from '@/lib/interactions';
+import { HeroLanding } from '@/components/HeroLanding';
 
 const DISCOVERY_MODES = [
   { id: 'all', label: 'All' },
@@ -493,7 +493,7 @@ function DiscoverContent() {
 
     await persistCardAction(supabase, id, action, isCurrentlyActive);
 
-    if ((action === 'like' || action === 'star') && !isCurrentlyActive) {
+    if (action === 'like' && !isCurrentlyActive) {
       try {
         const res = await fetch('/api/spark', {
           method: 'POST',
@@ -754,7 +754,7 @@ function DiscoverContent() {
             visibleProfiles.map((profile) => {
               const state = cardActions[profile.id];
               const isLiked = state === 'like';
-              const isStarred = state === 'star';
+              const isStarred = false;
               const displayName = profile.username || profile.name || 'Member';
               const sharedCount = computeSharedCount(profile);
               const cityPart = profile.location ? profile.location.split(',')[0].trim() : '';
@@ -1146,10 +1146,34 @@ function DiscoverContent() {
   );
 }
 
-export default function DiscoverPage() {
+function DiscoverFeed() {
   return (
     <Suspense fallback={<div className="min-h-screen bg-[#F8F7FA] text-[#1C1924] p-8 text-center text-xs">Loading discover feed...</div>}>
       <DiscoverContent />
     </Suspense>
   );
 }
+function HeroGate() {
+  const [authState, setAuthState] = useState('loading' | 'signedOut' | 'member');
+  useEffect(() => {
+    let mounted = true;
+    supabase.auth.getUser().then(({ data }) => {
+      if (!mounted) return;
+      setAuthState(data?.user ? 'member' : 'signedOut');
+    });
+    return () => { mounted = false; };
+  }, []);
+
+  if (authState === 'loading') {
+    return (
+      <div className="min-h-screen bg-[#0d0b14] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#6555B8] border-t-transparent"></div>
+      </div>
+    );
+  }
+
+  if (authState === 'signedOut') return <HeroLanding />;
+  return <DiscoverFeed />;
+}
+
+export default HeroGate;

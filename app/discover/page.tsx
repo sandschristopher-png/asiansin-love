@@ -7,12 +7,13 @@ import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
 import {
+  Camera,
+  Zap,
   ChevronLeft,
   ChevronRight,
   Search,
   Heart,
   X as XIcon,
-  Star,
   ShieldCheck,
   CheckCircle,
   SlidersHorizontal,
@@ -172,18 +173,11 @@ function DiscoverCardPhotoCarousel({
         />
       </Link>
 
-      {hasMultiple && (
-        <div className="absolute top-2 inset-x-2.5 z-20 flex gap-1 pointer-events-none">
-          {displayPhotos.map((_, i) => (
-            <div
-              key={i}
-              className={
-                'h-1 flex-1 rounded-full transition-all duration-200 ' +
-                (i === currentIdx ? 'bg-white shadow-xs' : 'bg-white/35 backdrop-blur-xs')
-              }
-            />
-          ))}
-        </div>
+      {(displayPhotos.length > 1) && (
+        <span className="absolute bottom-1.5 right-1.5 z-10 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-black/55 text-white text-[10px] font-semibold pointer-events-none">
+          <Camera className="w-3 h-3" />
+          {displayPhotos.length}
+        </span>
       )}
 
       {/* Fixed Top-Left Consistent Reputation Pill */}
@@ -510,7 +504,7 @@ function DiscoverContent() {
 
     await persistCardAction(supabase, id, action, isCurrentlyActive);
 
-    if ((action === 'like' || action === 'star') && !isCurrentlyActive) {
+    if (action === 'like' && !isCurrentlyActive) {
       try {
         const res = await fetch('/api/spark', {
           method: 'POST',
@@ -754,7 +748,7 @@ function DiscoverContent() {
         </section>
 
         {/* 2-Column Mobile Feed Grid */}
-        <div className="grid grid-cols-2 gap-2.5 sm:gap-3 w-full">
+        <div className="grid grid-cols-2 gap-2.5 w-full">
           {isLoading ? (
             Array.from({ length: 8 }).map((_, i) => (
               <div
@@ -771,7 +765,7 @@ function DiscoverContent() {
             visibleProfiles.map((profile) => {
               const state = cardActions[profile.id];
               const isLiked = state === 'like';
-              const isStarred = state === 'star';
+              const isStarred = false;
               const displayName = profile.username || profile.name || 'Member';
               const sharedCount = computeSharedCount(profile);
               const cityPart = profile.location ? profile.location.split(',')[0].trim() : '';
@@ -780,7 +774,6 @@ function DiscoverContent() {
                 cityPart && countryPart && cityPart.toLowerCase() !== countryPart.toLowerCase()
                   ? `${cityPart}, ${countryPart}`
                   : cityPart || countryPart || 'Unknown';
-              const conciseGoal = toIntentLabel(formatConciseIntent(profile.intent || profile.looking_for));
 
               return (
                 <div
@@ -798,26 +791,24 @@ function DiscoverContent() {
                     recentlyActive={profile.recentlyActive}
                   />
 
-                  {/* Top-Right Action Icons (44x44px touch targets) */}
-                  <div className="absolute top-2 right-2 z-20 flex flex-col gap-1.5 pointer-events-auto">
-                    <button
-                      type="button"
-                      aria-label={isLiked ? 'Unlike' : 'Like'}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        e.preventDefault();
-                        triggerAction(profile.id, 'like', displayName, profile.avatarUrl);
-                      }}
-                      className={
-                        'w-11 h-11 min-w-[44px] min-h-[44px] rounded-full flex items-center justify-center border transition-all duration-200 active:scale-90 backdrop-blur-xs select-none cursor-pointer ' +
-                        (isLiked
-                          ? 'bg-[#6555B8] border-[#6555B8] text-white shadow-md'
-                          : 'bg-black/35 hover:bg-black/55 border-white/25 text-white')
-                      }
-                    >
-                      <Heart className={'w-5 h-5 ' + (isLiked ? 'fill-white' : '')} />
-                    </button>
-                  </div>
+                  {/* Send Spark - small zap, bottom-left */}
+                  <button
+                    type="button"
+                    aria-label={isLiked ? 'Remove Spark' : 'Send Spark'}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      e.preventDefault();
+                      triggerAction(profile.id, 'like', displayName, profile.avatarUrl);
+                    }}
+                    className={
+                      'absolute top-2 right-2 z-20 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 active:scale-90 cursor-pointer ' +
+                      (isLiked
+                        ? 'bg-[#6555B8] text-white shadow-md'
+                        : 'bg-black/45 text-white hover:bg-black/65 backdrop-blur-xs')
+                    }
+                  >
+                    <Zap className={'w-4 h-4 ' + (isLiked ? 'fill-white' : '')} />
+                  </button>
 
                   {/* Subtle Bottom-Only Gradient with Full-Width Non-Overlapping Text */}
                   <div className="absolute bottom-0 inset-x-0 pt-10 pb-2.5 px-3 z-10 pointer-events-none bg-gradient-to-t from-black/60 via-black/25 to-transparent">
@@ -848,10 +839,7 @@ function DiscoverContent() {
                         {formattedLocation}
                       </p>
 
-                      {/* Line 3: Single Clean Line for Intent / Relationship Goal */}
-                      <p className="text-[10.5px] text-white/80 font-normal mt-0.5 truncate">
-                        {conciseGoal}
-                      </p>
+
                     </Link>
                   </div>
                 </div>
@@ -1153,10 +1141,38 @@ function DiscoverContent() {
   );
 }
 
-export default function DiscoverPage() {
+function DiscoverFeed() {
   return (
     <Suspense fallback={<div className="min-h-screen bg-[#F8F7FA] text-[#1C1924] p-8 text-center text-xs">Loading discover feed...</div>}>
       <DiscoverContent />
     </Suspense>
   );
 }
+function AuthGate() {
+  const router = useRouter();
+  const [authState, setAuthState] = useState('loading' | 'member');
+  useEffect(() => {
+    let mounted = true;
+    supabase.auth.getUser().then(({ data }) => {
+      if (!mounted) return;
+      if (data?.user) {
+        setAuthState('member');
+      } else {
+        router.replace('/');
+      }
+    });
+    return () => { mounted = false; };
+  }, [router]);
+
+  if (authState === 'loading') {
+    return (
+      <div className="min-h-screen bg-[#0d0b14] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#6555B8] border-t-transparent"></div>
+      </div>
+    );
+  }
+
+  return <DiscoverFeed />;
+}
+
+export default AuthGate;

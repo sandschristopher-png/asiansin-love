@@ -5,7 +5,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { 
   Compass, 
-  Heart, 
+  Heart,
+  Zap, 
   MessageCircle, 
   User 
 } from 'lucide-react';
@@ -120,7 +121,7 @@ export function BottomNav() {
 
   const navItems = [
     { href: '/discover', label: 'Discover', icon: Compass },
-    { href: '/favorites', label: 'Sparks', icon: Heart },
+    { href: '/favorites', label: 'Sparks', icon: Zap },
     { href: '/messages', label: 'Messages', icon: MessageCircle, badge: unreadCount },
     { href: '/profile', label: 'Profile', icon: User },
   ];
