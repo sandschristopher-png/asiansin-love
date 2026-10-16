@@ -36,7 +36,7 @@ export default function FavoritesPage() {
 
         const { data: favRecords, error: favErr } = await supabase
           .from('favorites')
-          .select('favorite_profile_id')
+          .select('favorite_id')
           .eq('user_id', user.id);
 
         if (favErr) throw favErr;
@@ -47,7 +47,7 @@ export default function FavoritesPage() {
           return;
         }
 
-        const profileIds = favRecords.map((r: { favorite_profile_id: string }) => r.favorite_profile_id);
+        const profileIds = favRecords.map((r: { favorite_id: string }) => r.favorite_id);
 
         const { data: profs, error: profErr } = await supabase
           .from('profiles')
@@ -95,7 +95,7 @@ export default function FavoritesPage() {
         .from('favorites')
         .delete()
         .eq('user_id', userId)
-        .eq('favorite_profile_id', profileId);
+        .eq('favorite_id', profileId);
     } catch (err) {
       console.error('Failed to remove favorite:', err);
     }

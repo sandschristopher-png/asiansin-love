@@ -1,4 +1,4 @@
-﻿import { SupabaseClient } from '@supabase/supabase-js';
+import { SupabaseClient } from '@supabase/supabase-js';
 
 export type ActionType = 'pass' | 'star' | 'like';
 
@@ -81,15 +81,15 @@ export async function persistCardAction(
         await supabase
           .from('favorites')
           .delete()
-          .match({ user_id: user.id, favorite_profile_id: targetId });
+          .match({ user_id: user.id, favorite_id: targetId });
       } else {
         // Add favorite
         const { error: favError } = await supabase
           .from('favorites')
           .upsert({
             user_id: user.id,
-            favorite_profile_id: targetId,
-          }, { onConflict: 'user_id,favorite_profile_id' });
+            favorite_id: targetId,
+          }, { onConflict: 'user_id,favorite_id' });
 
         if (!favError) {
           // Check for reciprocal like (Mutual Match)
@@ -98,7 +98,7 @@ export async function persistCardAction(
               .from('favorites')
               .select('id')
               .eq('user_id', targetId)
-              .eq('favorite_profile_id', user.id)
+              .eq('favorite_id', user.id)
               .maybeSingle();
 
             const isMutual = Boolean(reciprocal);
