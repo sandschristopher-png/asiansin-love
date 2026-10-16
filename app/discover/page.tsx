@@ -324,6 +324,15 @@ function DiscoverContent() {
     return g.split(',').map((s) => normalizeGenderValue(s));
   });
 
+  // Persist manual gender selection to localStorage
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      try {
+        localStorage.setItem('discover_gender_pref', JSON.stringify(selectedGenders));
+      } catch {}
+    }
+  }, [selectedGenders]);
+
   const toggleGender = (gender: string) => {
     userSelectedGenderManually.current = true;
     setSelectedGenders((prev) =>
