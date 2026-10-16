@@ -708,7 +708,7 @@ function DiscoverContent() {
                       type="text"
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
-                      onBlur={() => !searchQuery && setSearchOpen(false)}
+                      
                       placeholder="City or username"
                       aria-label="Search"
                       className="w-28 sm:w-36 bg-transparent px-1 text-xs text-[#1C1924] placeholder-[#8C849B] focus:outline-none"
@@ -716,7 +716,7 @@ function DiscoverContent() {
                     {searchQuery ? (
                       <button
                         type="button"
-                        onClick={() => setSearchQuery('')}
+                        onClick={() => { setSearchQuery(''); setSearchOpen(false); }}
                         className="text-[#8C849B] hover:text-[#1C1924] text-xs px-1"
                         aria-label="Clear search"
                       >
@@ -1190,7 +1190,7 @@ function DiscoverFeed() {
 }
 function AuthGate() {
   const router = useRouter();
-  const [authState, setAuthState] = useState('loading' | 'member');
+  const [authState, setAuthState] = useState<'loading' | 'member'>('loading');
   useEffect(() => {
     let mounted = true;
     supabase.auth.getUser().then(({ data }) => {

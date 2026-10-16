@@ -1137,7 +1137,8 @@ function DiscoverFeed() {
   );
 }
 function HeroGate() {
-  const [authState, setAuthState] = useState('loading' | 'signedOut' | 'member');
+  const router = useRouter();
+  const [authState, setAuthState] = useState<'loading' | 'signedOut' | 'member'>('loading');
   useEffect(() => {
     let mounted = true;
     supabase.auth.getUser().then(({ data }) => {
@@ -1146,6 +1147,12 @@ function HeroGate() {
     });
     return () => { mounted = false; };
   }, []);
+
+  // Signed-in members get the real feed at /discover - redirect instead of
+  // rendering the legacy duplicate feed from this file.
+  useEffect(() => {
+    if (authState === 'member') router.replace('/discover');
+  }, [authState, router]);
 
   if (authState === 'loading') {
     return (
@@ -1156,11 +1163,6 @@ function HeroGate() {
   }
 
   if (authState === 'signedOut') return <HeroLanding />;
-
-  const router = useRouter();
-  useEffect(() => {
-    if (authState === 'member') router.replace('/discover');
-  }, [authState, router]);
   return null;
 }
 
