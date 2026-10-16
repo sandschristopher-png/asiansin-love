@@ -966,10 +966,11 @@ function DiscoverContent() {
               aria-modal="true"
               aria-label="Refine Discover Feed"
               className="relative z-10 w-full max-w-[430px] mx-auto bg-white rounded-t-3xl shadow-2xl flex flex-col overflow-hidden will-change-transform"
-              style={{
-                transform: filtersClosing ? 'translateY(100%)' : 'translateY(0)',
-                transition: 'transform 0.24s cubic-bezier(0.16, 1, 0.3, 1)'
-              }}
+              style={
+                filtersClosing
+                  ? { transform: 'translateY(100%)', transition: 'transform 0.24s cubic-bezier(0.16, 1, 0.3, 1)' }
+                  : { animation: 'filterSheetIn 0.26s cubic-bezier(0.16, 1, 0.3, 1) both' }
+              }
             >
               <div className="flex items-center justify-between px-4 py-3 border-b border-[#DDD7E5] shrink-0 bg-white">
                 <div className="flex items-center gap-2">
