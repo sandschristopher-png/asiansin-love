@@ -362,6 +362,7 @@ function DiscoverContent() {
 
   const [matchedModalProfile, setMatchedModalProfile] = useState<{ id: string; name: string; avatarUrl?: string } | null>(null);
   const [isModalClosing, setIsModalClosing] = useState(false);
+  const [filtersClosing, setFiltersClosing] = useState(false);
   const [cardActions, setCardActions] = useState<Record<string, ActionType>>({});
   const [lastPassed, setLastPassed] = useState<{ id: string; name: string } | null>(null);
 
@@ -493,6 +494,14 @@ function DiscoverContent() {
       setMatchedModalProfile(null);
       setIsModalClosing(false);
     }, 220);
+  };
+
+  const closeFiltersWithAnimation = () => {
+    setFiltersClosing(true);
+    setTimeout(() => {
+      setFiltersOpen(false);
+      setFiltersClosing(false);
+    }, 240);
   };
 
   const triggerAction = async (id: string, action: ActionType, name?: string, avatarUrl?: string) => {
@@ -940,26 +949,33 @@ function DiscoverContent() {
         )}
       </main>
 
-      {/* Filter Drawer rendered via Portal to document.body at z-[999] so it sits above BottomNav */}
+      {/* Filter Drawer */}
       {filtersOpen &&
         typeof document !== 'undefined' &&
         createPortal(
           <div className="fixed inset-0 z-[999] flex items-end justify-center">
             <div
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-200"
-              onClick={() => setFiltersOpen(false)}
+              className={
+                'fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-200 ' +
+                (filtersClosing ? 'opacity-0' : 'opacity-100')
+              }
+              onClick={closeFiltersWithAnimation}
             />
             <div
               role="dialog"
               aria-modal="true"
               aria-label="Refine Discover Feed"
-              className="relative z-10 w-full max-w-[430px] mx-auto bg-white rounded-t-3xl shadow-2xl flex flex-col overflow-hidden"
+              className="relative z-10 w-full max-w-[430px] mx-auto bg-white rounded-t-3xl shadow-2xl flex flex-col overflow-hidden will-change-transform"
+              style={{
+                transform: filtersClosing ? 'translateY(100%)' : 'translateY(0)',
+                transition: 'transform 0.24s cubic-bezier(0.16, 1, 0.3, 1)'
+              }}
             >
-              <div className="flex items-center justify-between p-5 pb-3 border-b border-[#DDD7E5] shrink-0 bg-white">
+              <div className="flex items-center justify-between px-4 py-3 border-b border-[#DDD7E5] shrink-0 bg-white">
                 <div className="flex items-center gap-2">
-                  <SlidersHorizontal className="w-5 h-5 text-[#6555B8]" />
+                  <SlidersHorizontal className="w-4 h-4 text-[#6555B8]" />
                   <h2
-                    className="text-base font-bold text-[#1C1924]"
+                    className="text-sm font-bold text-[#1C1924]"
                     style={{ fontFamily: 'var(--font-brand)' }}
                   >
                     Refine Discover Feed
@@ -967,18 +983,18 @@ function DiscoverContent() {
                 </div>
                 <button
                   type="button"
-                  onClick={() => setFiltersOpen(false)}
+                  onClick={closeFiltersWithAnimation}
                   className="p-1.5 rounded-full text-[#524B5E] hover:bg-[#F3EFFC] transition cursor-pointer"
                   aria-label="Close filters"
                 >
-                  <XIcon className="w-5 h-5" />
+                  <XIcon className="w-4 h-4" />
                 </button>
               </div>
 
-              <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-5 py-4 space-y-6">
+              <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 py-3 space-y-4">
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <label className="text-xs font-semibold text-[#6C637B] uppercase tracking-wider">
+                    <label className="text-[11px] font-semibold text-[#6C637B] uppercase tracking-wider">
                       Interested In
                     </label>
                     {selectedGenders.length > 0 && (
@@ -994,15 +1010,14 @@ function DiscoverContent() {
                       </button>
                     )}
                   </div>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="flex flex-wrap gap-1.5">
                     {[
                       { id: 'woman', label: 'Women' },
                       { id: 'man', label: 'Men' },
-                      { id: 'trans', label: 'Trans' }, // Matches trans_woman, trans_man, non_binary
+                      { id: 'trans', label: 'Trans' },
                     ].map((item) => {
-                      // Special logic for Trans pill: matches multiple DB values
                       const isTrans = item.id === 'trans';
-                      const isSelected = isTrans 
+                      const isSelected = isTrans
                         ? selectedGenders.some(g => ['trans_woman', 'trans_man', 'non_binary'].includes(g))
                         : selectedGenders.includes(item.id);
                       return (
@@ -1010,20 +1025,19 @@ function DiscoverContent() {
                           key={item.id}
                           type="button"
                           onClick={() => {
-                          if (isTrans) {
-                            // Toggle all trans values
-                            const hasAnyTrans = selectedGenders.some(g => ['trans_woman', 'trans_man', 'non_binary'].includes(g));
-                            if (hasAnyTrans) {
-                              setSelectedGenders(selectedGenders.filter(g => !['trans_woman', 'trans_man', 'non_binary'].includes(g)));
+                            if (isTrans) {
+                              const hasAnyTrans = selectedGenders.some(g => ['trans_woman', 'trans_man', 'non_binary'].includes(g));
+                              if (hasAnyTrans) {
+                                setSelectedGenders(selectedGenders.filter(g => !['trans_woman', 'trans_man', 'non_binary'].includes(g)));
+                              } else {
+                                setSelectedGenders([...selectedGenders, 'trans_woman', 'trans_man', 'non_binary']);
+                              }
                             } else {
-                              setSelectedGenders([...selectedGenders, 'trans_woman', 'trans_man', 'non_binary']);
+                              toggleGender(item.id);
                             }
-                          } else {
-                            toggleGender(item.id);
-                          }
-                        }}
+                          }}
                           className={
-                            'py-2 px-3.5 rounded-full border text-xs font-semibold transition cursor-pointer ' +
+                            'py-1.5 px-3 rounded-full border text-xs font-semibold transition cursor-pointer active:scale-95 ' +
                             (isSelected
                               ? 'bg-[#6555B8] text-white border-[#6555B8]'
                               : 'bg-white text-[#1C1924] border-[#DDD7E5] hover:bg-[#F8F7FA]')
@@ -1038,39 +1052,41 @@ function DiscoverContent() {
 
                 <div>
                   <div className="flex items-center justify-between mb-2">
-                    <label className="text-xs font-semibold text-[#6C637B] uppercase tracking-wider">Age Range</label>
-                    <span className="text-xs font-semibold text-[#6555B8] bg-[#F3EFFC] px-2.5 py-0.5 rounded-full">
-                      {draftMinAge} - {draftMaxAge} yrs
+                    <label className="text-[11px] font-semibold text-[#6C637B] uppercase tracking-wider">Age Range</label>
+                    <span className="text-[11px] font-semibold text-[#6555B8] bg-[#F3EFFC] px-2 py-0.5 rounded-full">
+                      {draftMinAge} - {draftMaxAge}
                     </span>
                   </div>
-                  <div className="space-y-3">
-                    <div>
-                      <span className="text-[10px] text-[#6C637B] block mb-1">Min Age ({draftMinAge})</span>
+                  <div className="space-y-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] text-[#6C637B] w-8 shrink-0">Min</span>
                       <input
                         type="range"
                         min={18}
                         max={65}
                         value={draftMinAge}
                         onChange={(e) => setDraftMinAge(Math.min(Number(e.target.value), draftMaxAge - 1))}
-                        className="w-full accent-[#6555B8]"
+                        className="w-full accent-[#6555B8] h-1.5 cursor-pointer"
                       />
+                      <span className="text-[10px] font-semibold text-[#1C1924] w-6 text-right shrink-0">{draftMinAge}</span>
                     </div>
-                    <div>
-                      <span className="text-[10px] text-[#6C637B] block mb-1">Max Age ({draftMaxAge})</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] text-[#6C637B] w-8 shrink-0">Max</span>
                       <input
                         type="range"
                         min={18}
                         max={65}
                         value={draftMaxAge}
                         onChange={(e) => setDraftMaxAge(Math.max(Number(e.target.value), draftMinAge + 1))}
-                        className="w-full accent-[#6555B8]"
+                        className="w-full accent-[#6555B8] h-1.5 cursor-pointer"
                       />
+                      <span className="text-[10px] font-semibold text-[#1C1924] w-6 text-right shrink-0">{draftMaxAge}</span>
                     </div>
                   </div>
                 </div>
 
-                <div className="space-y-3 pt-1 border-t border-[#DDD7E5]/60">
-                  <label className="flex items-center justify-between cursor-pointer py-1">
+                <div className="space-y-2.5 pt-2 border-t border-[#DDD7E5]/60">
+                  <label className="flex items-center justify-between cursor-pointer py-0.5">
                     <span className="text-xs font-medium text-[#1C1924]">Verified Members Only</span>
                     <input
                       type="checkbox"
@@ -1078,11 +1094,11 @@ function DiscoverContent() {
                       onChange={(e) => setVerifiedOnly(e.target.checked)}
                       className="sr-only peer"
                     />
-                    <span className="w-10 h-6 rounded-full bg-[#DDD7E5] peer-checked:bg-[#6555B8] relative transition">
-                      <span className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition peer-checked:translate-x-4" />
+                    <span className="w-9 h-5 rounded-full bg-[#DDD7E5] peer-checked:bg-[#6555B8] relative transition shrink-0">
+                      <span className="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition peer-checked:translate-x-4" />
                     </span>
                   </label>
-                  <label className="flex items-center justify-between cursor-pointer py-1">
+                  <label className="flex items-center justify-between cursor-pointer py-0.5">
                     <span className="text-xs font-medium text-[#1C1924]">Active Now</span>
                     <input
                       type="checkbox"
@@ -1090,25 +1106,25 @@ function DiscoverContent() {
                       onChange={(e) => setActiveNowOnly(e.target.checked)}
                       className="sr-only peer"
                     />
-                    <span className="w-10 h-6 rounded-full bg-[#DDD7E5] peer-checked:bg-[#6555B8] relative transition">
-                      <span className="absolute top-0.5 left-0.5 w-5 h-5 rounded-full bg-white shadow transition peer-checked:translate-x-4" />
+                    <span className="w-9 h-5 rounded-full bg-[#DDD7E5] peer-checked:bg-[#6555B8] relative transition shrink-0">
+                      <span className="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition peer-checked:translate-x-4" />
                     </span>
                   </label>
                 </div>
               </div>
 
-              <div className="p-4 pb-[max(1rem,env(safe-area-inset-bottom))] bg-white border-t border-[#DDD7E5] flex items-center gap-3 shrink-0">
+              <div className="px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] bg-white border-t border-[#DDD7E5] flex items-center gap-3 shrink-0">
                 <button
                   type="button"
                   onClick={resetFilters}
-                  className="py-3 px-4 rounded-full text-xs font-semibold text-[#524B5E] hover:text-[#1C1924] transition cursor-pointer"
+                  className="py-2 px-3 rounded-full text-xs font-semibold text-[#524B5E] hover:text-[#1C1924] transition cursor-pointer"
                 >
                   Reset
                 </button>
                 <button
                   type="button"
                   onClick={applyFilters}
-                  className="flex-1 py-3 rounded-full bg-[#6555B8] text-white text-xs font-semibold hover:bg-[#52449e] transition shadow cursor-pointer"
+                  className="flex-1 py-2.5 rounded-full bg-[#6555B8] text-white text-xs font-semibold hover:bg-[#52449e] active:scale-[0.98] transition shadow cursor-pointer"
                 >
                   Apply Filters
                 </button>
@@ -1117,7 +1133,6 @@ function DiscoverContent() {
           </div>,
           document.body
         )}
-
       {matchedModalProfile && (
         <div
           onClick={closeModalWithAnimation}
