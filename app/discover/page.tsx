@@ -1,11 +1,10 @@
 'use client';
 import { playMatchChime } from '@/lib/sound';
-import { getDistanceLabel } from '@/lib/location';
-import React, { useState, useEffect, useMemo, useRef, Suspense } from 'react';
+import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Camera, Zap, ChevronLeft, ChevronRight, Search, Heart, X as XIcon, ShieldCheck, CheckCircle, SlidersHorizontal, RotateCcw, Check, ChevronDown, Sparkles } from 'lucide-react';
+import { Camera, Zap, ChevronLeft, ChevronRight, Search, Heart, X as XIcon, CheckCircle, SlidersHorizontal, RotateCcw } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { ActionType, getLocalCardActions, persistCardAction } from '@/lib/interactions';
 
@@ -16,54 +15,6 @@ const DISCOVERY_MODES = [
   { id: 'new', label: 'New' },
 ] as const;
 type DiscoveryModeId = (typeof DISCOVERY_MODES)[number]['id'];
-
-const INTENT_LABELS: Record<string, string> = {
-  the_real_thing: 'The Real Thing',
-  marriage: 'The Real Thing',
-  'marriage & kids': 'The Real Thing',
-  'marriage (no kids)': 'The Real Thing',
-  marriage_minded: 'The Real Thing',
-  'marriage-minded': 'The Real Thing',
-  serious: 'The Real Thing',
-  'serious relationship': 'The Real Thing',
-  long_term: 'Long-Term',
-  'long-term': 'Long-Term',
-  long_term_relationship: 'Long-Term',
-  'long-term relationship': 'Long-Term',
-  'long-term partner': 'Long-Term',
-  'life partner': 'Long-Term',
-  keeping_it_light: 'Keeping It Light',
-  dating: 'Keeping It Light',
-  casual: 'Keeping It Light',
-  'casual dating': 'Keeping It Light',
-};
-const toIntentLabel = (v: unknown) => INTENT_LABELS[String(v || '').trim().toLowerCase()] || String(v || '').trim();
-
-const COUNTRY_FLAGS: Record<string, string> = {
-  philippines: '🇵🇭',
-  thailand: '🇹🇭',
-  vietnam: '🇻🇳',
-  indonesia: '🇮🇩',
-  cambodia: '🇰🇭',
-  malaysia: '🇲🇾',
-  singapore: '🇸🇬',
-  laos: '🇱🇦',
-  myanmar: '🇲🇲',
-  'united states': '🇺🇸',
-  canada: '🇨🇦',
-  australia: '🇦🇺',
-  'united kingdom': '🇬🇧',
-  japan: '🇯🇵',
-  'south korea': '🇰🇷',
-  taiwan: '🇹🇼',
-  'hong kong': '🇭🇰',
-  'united arab emirates': '🇦🇪',
-  'new zealand': '🇳🇿',
-};
-function getCountryFlag(country?: string): string {
-  if (!country) return '🏴';
-  return COUNTRY_FLAGS[country.toLowerCase().trim()] || '🏴';
-}
 
 const GENDER_LABELS: Record<string, string> = {
   woman: 'Women',
@@ -82,7 +33,6 @@ export interface ProfileItem {
   location: string;
   latitude?: number | null;
   longitude?: number | null;
-  location_source?: 'gps_verified' | 'self_reported' | null;
   country: string;
   avatarUrl: string;
   photos?: string[];
@@ -93,24 +43,8 @@ export interface ProfileItem {
   online: boolean;
   intent?: string;
   looking_for?: string;
-  bio?: string;
-  occupation?: string;
-  languages?: string | string[];
   interests?: string[];
-  height?: string;
-  weight?: string;
   created_at?: string;
-}
-
-interface DiscoverCardPhotoCarouselProps {
-  profileId: string;
-  photos?: string[];
-  avatarUrl: string;
-  name: string;
-  repScore: number;
-  sharedCount: number;
-  online: boolean;
-  recentlyActive?: boolean;
 }
 
 function DiscoverCardPhotoCarousel({
@@ -119,10 +53,17 @@ function DiscoverCardPhotoCarousel({
   avatarUrl,
   name,
   repScore,
-  sharedCount,
   online,
   recentlyActive,
-}: DiscoverCardPhotoCarouselProps) {
+}: {
+  profileId: string;
+  photos?: string[];
+  avatarUrl: string;
+  name: string;
+  repScore: number;
+  online: boolean;
+  recentlyActive?: boolean;
+}) {
   const [currentIdx, setCurrentIdx] = useState(0);
   const rawList = (photos && photos.length > 0 ? photos : [avatarUrl]).filter(
     (p): p is string => typeof p === 'string' && p.trim().length > 0 && p !== '/placeholder-avatar.svg'
@@ -152,34 +93,28 @@ function DiscoverCardPhotoCarousel({
           loading="lazy"
         />
       </Link>
-      {(displayPhotos.length > 1) && (
-        <span className="absolute bottom-1.5 right-1.5 z-10 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-black/55 text-white text-[10px] font-semibold pointer-events-none">
+      {displayPhotos.length > 1 && (
+        <span className="absolute bottom-2.5 right-2.5 z-20 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-black/55 backdrop-blur-2xs text-white text-[10px] font-semibold pointer-events-none">
           <Camera className="w-3 h-3" />
           {displayPhotos.length}
         </span>
       )}
-      {/* Fixed Top-Left Consistent Reputation Pill */}
-      <div
-        className={
-          'absolute ' + (hasMultiple ? 'top-4' : 'top-2.5') + ' left-2.5 flex items-center gap-1.5 z-20 pointer-events-none'
-        }
-      >
-        <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/50 backdrop-blur-xs text-[10px] font-medium text-white">
+      <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 z-20 pointer-events-none">
+        <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-black/50 backdrop-blur-xs text-[10px] font-semibold text-white">
           <span>{repScore ? repScore + '% Rep' : '100% Rep'}</span>
         </div>
         {online ? (
-          <span className="presence-dot h-2 w-2 rounded-full bg-emerald-500 ring-2 ring-white/90 shadow-xs shrink-0" />
+          <span className="h-2 w-2 rounded-full bg-emerald-500 ring-2 ring-white/90 shadow-xs shrink-0" />
         ) : recentlyActive ? (
           <span className="h-2 w-2 rounded-full bg-amber-400 ring-1.5 ring-white/80 shadow-xs shrink-0" />
         ) : null}
       </div>
-      {/* Split-Touch Photo Carousel Zones */}
       {hasMultiple && (
-        <div className="flex items-center justify-between absolute inset-x-1.5 top-1/2 -translate-y-1/2 z-20 pointer-events-none">
+        <div className="flex items-center justify-between absolute inset-x-1.5 top-1/2 -translate-y-1/2 z-20 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
           <button
             type="button"
             onClick={handlePrev}
-            className="pointer-events-auto p-1.5 rounded-full bg-black/40 hover:bg-black/70 text-white backdrop-blur-xs transition active:scale-90"
+            className="pointer-events-auto p-1.5 rounded-full bg-black/40 hover:bg-black/70 text-white backdrop-blur-xs transition active:scale-90 cursor-pointer"
             aria-label="Previous photo"
           >
             <ChevronLeft className="w-4 h-4" />
@@ -187,7 +122,7 @@ function DiscoverCardPhotoCarousel({
           <button
             type="button"
             onClick={handleNext}
-            className="pointer-events-auto p-1.5 rounded-full bg-black/40 hover:bg-black/70 text-white backdrop-blur-xs transition active:scale-90"
+            className="pointer-events-auto p-1.5 rounded-full bg-black/40 hover:bg-black/70 text-white backdrop-blur-xs transition active:scale-90 cursor-pointer"
             aria-label="Next photo"
           >
             <ChevronRight className="w-4 h-4" />
@@ -209,73 +144,20 @@ function normalizeGenderValue(raw?: string | null): 'woman' | 'man' | 'trans_wom
   return 'woman';
 }
 
-function formatConciseIntent(raw?: string | null): string {
-  if (!raw) return toIntentLabel('serious');
-  const mapped = toIntentLabel(raw);
-  if (mapped !== String(raw).trim()) return mapped;
-  const lower = mapped.toLowerCase();
-  if (lower.includes('marriage') || lower.includes('serious')) return 'The Real Thing';
-  if (lower.includes('long-term') || lower.includes('long term') || lower.includes('life partner')) return 'Long-Term';
-  if (lower.includes('casual') || lower.includes('dating')) return 'Keeping It Light';
-  return mapped.length <= 24 ? mapped : mapped.slice(0, 22);
-}
-
 function DiscoverContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
   const [discoveryMode, setDiscoveryMode] = useState<DiscoveryModeId>('all');
-  const pillTrackRef = useRef<HTMLDivElement>(null);
-  const pillIsDraggingRef = useRef(false);
-  const pillStartXRef = useRef(0);
-  const pillScrollLeftRef = useRef(0);
-  const pillDraggedRef = useRef(false);
-
-  const handlePillMouseDown = (e: React.MouseEvent) => {
-    const slider = pillTrackRef.current;
-    if (!slider) return;
-    pillIsDraggingRef.current = true;
-    pillDraggedRef.current = false;
-    pillStartXRef.current = e.pageX - slider.offsetLeft;
-    pillScrollLeftRef.current = slider.scrollLeft;
-  };
-  const handlePillMouseMove = (e: React.MouseEvent) => {
-    if (!pillIsDraggingRef.current || !pillTrackRef.current) return;
-    e.preventDefault();
-    const slider = pillTrackRef.current;
-    const x = e.pageX - slider.offsetLeft;
-    const walk = (x - pillStartXRef.current) * 1.3;
-    if (Math.abs(walk) > 4) {
-      pillDraggedRef.current = true;
-    }
-    slider.scrollLeft = pillScrollLeftRef.current - walk;
-  };
-  const handlePillMouseUp = () => {
-    pillIsDraggingRef.current = false;
-    setTimeout(() => {
-      pillDraggedRef.current = false;
-    }, 60);
-  };
-  const handlePillWheel = (e: React.WheelEvent) => {
-    const slider = pillTrackRef.current;
-    if (!slider) return;
-    if (e.deltaY !== 0) {
-      slider.scrollLeft += e.deltaY;
-    }
-  };
-
   const [currentUserCoords, setCurrentUserCoords] = useState<{ lat: number; lon: number } | null>(null);
-  const [viewerInterests, setViewerInterests] = useState<string[]>([]);
-  const [viewerIntent, setViewerIntent] = useState<string>('');
   const [viewerSavedGenders, setViewerSavedGenders] = useState<string[]>([]);
   const [profiles, setProfiles] = useState<ProfileItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState(() => searchParams.get('q') || '');
-  const [selectedCountry, setSelectedCountry] = useState(() => {
-    const c = searchParams.get('country');
-    return c && c.toLowerCase() !== 'all' ? c : 'All';
-  });
-  const userSelectedGenderManually = useRef(Boolean(searchParams.get('gender')));
+  const [selectedCountry, setSelectedCountry] = useState('All');
+  const [searchOpen, setSearchOpen] = useState(false);
+  const [searchAnimating, setSearchAnimating] = useState(false);
+
   const [selectedGenders, setSelectedGenders] = useState<string[]>(() => {
     if (typeof window !== 'undefined') {
       const stored = localStorage.getItem('discover_gender_pref');
@@ -286,9 +168,7 @@ function DiscoverContent() {
         } catch {}
       }
     }
-    const g = searchParams.get('gender');
-    if (!g || g.toLowerCase() === 'all') return [];
-    return g.split(',').map((s) => normalizeGenderValue(s));
+    return [];
   });
 
   useEffect(() => {
@@ -300,31 +180,19 @@ function DiscoverContent() {
   }, [selectedGenders]);
 
   const toggleGender = (gender: string) => {
-    userSelectedGenderManually.current = true;
     setSelectedGenders((prev) =>
       prev.includes(gender) ? prev.filter((g) => g !== gender) : [...prev, gender]
     );
   };
 
   const [filtersOpen, setFiltersOpen] = useState(false);
-  const [searchOpen, setSearchOpen] = useState(false);
-  const [isCountryOpen, setIsCountryOpen] = useState(false);
-  const countryDropdownRef = useRef<HTMLDivElement | null>(null);
-
-  const [minAge, setMinAge] = useState<number>(() => {
-    const val = Number(searchParams.get('minAge'));
-    return !isNaN(val) && val >= 18 && val <= 80 ? val : 18;
-  });
-  const [maxAge, setMaxAge] = useState<number>(() => {
-    const val = Number(searchParams.get('maxAge'));
-    return !isNaN(val) && val >= 18 && val <= 80 ? val : 65;
-  });
-  const [draftMinAge, setDraftMinAge] = useState<number>(minAge);
-  const [draftMaxAge, setDraftMaxAge] = useState<number>(maxAge);
-
-  const [selectedIntent, setSelectedIntent] = useState<string>(() => searchParams.get('intent') || 'All');
-  const [verifiedOnly, setVerifiedOnly] = useState<boolean>(() => searchParams.get('verified') === 'true');
-  const [activeNowOnly, setActiveNowOnly] = useState<boolean>(() => searchParams.get('active') === 'true');
+  const [minAge, setMinAge] = useState<number>(18);
+  const [maxAge, setMaxAge] = useState<number>(65);
+  const [draftMinAge, setDraftMinAge] = useState<number>(18);
+  const [draftMaxAge, setDraftMaxAge] = useState<number>(65);
+  const [selectedIntent, setSelectedIntent] = useState<string>('All');
+  const [verifiedOnly, setVerifiedOnly] = useState<boolean>(false);
+  const [activeNowOnly, setActiveNowOnly] = useState<boolean>(false);
 
   const [matchedModalProfile, setMatchedModalProfile] = useState<{ id: string; name: string; avatarUrl?: string } | null>(null);
   const [isModalClosing, setIsModalClosing] = useState(false);
@@ -347,18 +215,6 @@ function DiscoverContent() {
       document.body.style.overflow = '';
     };
   }, [filtersOpen, minAge, maxAge]);
-
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (countryDropdownRef.current && !countryDropdownRef.current.contains(event.target as Node)) {
-        setIsCountryOpen(false);
-      }
-    }
-    if (isCountryOpen) {
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-    return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [isCountryOpen]);
 
   useEffect(() => {
     const handleMutualMatch = (e: CustomEvent<{ targetId: string }>) => {
@@ -391,20 +247,9 @@ function DiscoverContent() {
             if (v.latitude && v.longitude) {
               setCurrentUserCoords({ lat: v.latitude, lon: v.longitude });
             }
-            if (Array.isArray(v.interests)) {
-              setViewerInterests(v.interests);
-            }
-            if (v.intent) {
-              setViewerIntent(v.intent);
-            }
             if (Array.isArray(v.interested_in) && v.interested_in.length > 0) {
               setViewerSavedGenders(v.interested_in);
-              let hasManualChoice = false;
-              if (typeof window !== 'undefined') {
-                const stored = localStorage.getItem('discover_gender_pref');
-                if (stored !== null) hasManualChoice = true;
-              }
-              if (!hasManualChoice) {
+              if (!localStorage.getItem('discover_gender_pref')) {
                 setSelectedGenders(v.interested_in);
               }
             }
@@ -430,20 +275,6 @@ function DiscoverContent() {
     }
     loadFeed();
   }, [router]);
-
-  const computeSharedCount = (profile: ProfileItem): number => {
-    let count = 0;
-    if (viewerInterests.length > 0 && Array.isArray(profile.interests)) {
-      const viewerSet = new Set(viewerInterests.map((i) => i.toLowerCase()));
-      profile.interests.forEach((tag) => {
-        if (viewerSet.has(tag.toLowerCase())) count++;
-      });
-    }
-    if (viewerIntent && profile.intent && viewerIntent.toLowerCase() === profile.intent.toLowerCase()) {
-      count++;
-    }
-    return count;
-  };
 
   const closeModalWithAnimation = () => {
     setIsModalClosing(true);
@@ -494,9 +325,7 @@ function DiscoverContent() {
           playMatchChime();
           setMatchedModalProfile({ id, name: name || 'Member', avatarUrl: avatarUrl || '/placeholder-avatar.svg' });
         }
-      } catch {
-        // Non-blocking spark check
-      }
+      } catch {}
     }
   };
 
@@ -531,7 +360,7 @@ function DiscoverContent() {
 
   const resetFilters = () => {
     setDiscoveryMode('all');
-    setSelectedGenders(viewerSavedGenders.length > 0 ? viewerSavedGenders : []);
+    setSelectedGenders(viewerSavedGenders);
     setSelectedCountry('All');
     setSearchQuery('');
     setMinAge(18);
@@ -541,53 +370,25 @@ function DiscoverContent() {
     setSelectedIntent('All');
     setVerifiedOnly(false);
     setActiveNowOnly(false);
-    if (typeof window !== 'undefined') {
-      try {
-        localStorage.removeItem('ail_passed_ids');
-      } catch {}
-    }
-    setCardActions((prev) => {
-      const cleaned: Record<string, ActionType> = {};
-      Object.entries(prev).forEach(([k, v]) => {
-        if (v !== 'pass') cleaned[k] = v;
-      });
-      return cleaned;
-    });
   };
 
   const filteredProfiles = useMemo(() => {
-    const base = profiles.filter((profile) => {
+    return profiles.filter((profile) => {
       if (cardActions[profile.id] === 'pass') return false;
       const matchesCountry =
         selectedCountry.toLowerCase() === 'all' ||
         (profile.country || '').toLowerCase() === selectedCountry.toLowerCase();
       const matchesGender = selectedGenders.length === 0 || selectedGenders.includes(profile.gender);
       const q = searchQuery.toLowerCase().trim();
-      const matchesQuery = !q || profile.name.toLowerCase().includes(q) || profile.location.toLowerCase().includes(q);
+      const searchableName = (profile.username || profile.name || '').toLowerCase();
+      const matchesQuery = !q || searchableName.includes(q) || profile.location.toLowerCase().includes(q);
       const matchesAge = profile.age >= minAge && profile.age <= maxAge;
       const matchesIntent = selectedIntent === 'All' || !profile.intent || profile.intent === selectedIntent;
       const matchesVerified = !verifiedOnly || profile.verified;
       const matchesOnline = !activeNowOnly || profile.online;
       const matchesDiscoveryMode = (() => {
-        if (discoveryMode === 'online') {
-          return Boolean(profile.online || profile.recentlyActive);
-        }
-        if (discoveryMode === 'near_me') {
-          if (currentUserCoords && profile.latitude && profile.longitude) {
-            const R = 6371;
-            const dLat = ((profile.latitude - currentUserCoords.lat) * Math.PI) / 180;
-            const dLon = ((profile.longitude - currentUserCoords.lon) * Math.PI) / 180;
-            const a =
-              Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-              Math.cos((currentUserCoords.lat * Math.PI) / 180) *
-                Math.cos((profile.latitude * Math.PI) / 180) *
-                Math.sin(dLon / 2) *
-                Math.sin(dLon / 2);
-            const distKm = R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-            return distKm <= 500;
-          }
-          return true;
-        }
+        if (discoveryMode === 'online') return Boolean(profile.online || profile.recentlyActive);
+        if (discoveryMode === 'near_me') return true;
         if (discoveryMode === 'new') {
           const createdAt = profile.created_at ? new Date(profile.created_at).getTime() : 0;
           return createdAt > Date.now() - 30 * 24 * 60 * 60 * 1000;
@@ -605,112 +406,85 @@ function DiscoverContent() {
         matchesDiscoveryMode
       );
     });
-
-    if (discoveryMode === 'new') {
-      return [...base].sort((a, b) => {
-        const tA = a.created_at ? new Date(a.created_at).getTime() : 0;
-        const tB = b.created_at ? new Date(b.created_at).getTime() : 0;
-        return tB - tA;
-      });
-    }
-    return base;
-  }, [
-    profiles,
-    cardActions,
-    selectedCountry,
-    selectedGenders,
-    searchQuery,
-    minAge,
-    maxAge,
-    selectedIntent,
-    verifiedOnly,
-    activeNowOnly,
-    discoveryMode,
-    currentUserCoords,
-  ]);
+  }, [profiles, cardActions, selectedCountry, selectedGenders, searchQuery, minAge, maxAge, selectedIntent, verifiedOnly, activeNowOnly, discoveryMode]);
 
   const visibleProfiles = filteredProfiles.slice(0, visibleLimit);
   const hasMore = visibleLimit < filteredProfiles.length;
 
   return (
-    <div className="w-full min-h-full bg-[#F8F7FA] text-[#1C1924] flex flex-col font-sans">
-      <main className="w-full px-3 sm:px-4 pt-3 pb-28 relative">
-        {/* Top Control Bar */}
-        <section aria-label="Search and Filters" className="w-full">
-          {/* Simplified Filter Pills Row: All, Online, Near Me, New */}
-          <div
-            ref={pillTrackRef}
-            onMouseDown={handlePillMouseDown}
-            onMouseLeave={handlePillMouseUp}
-            onMouseUp={handlePillMouseUp}
-            onMouseMove={handlePillMouseMove}
-            onWheel={handlePillWheel}
-            className="w-full overflow-x-auto no-scrollbar touch-pan-x select-none"
-          >
-            <div className="flex items-center gap-1.5 w-max">
-              {/* Compact Search + Gear Pills */}
-              {searchOpen || searchQuery ? (
-                <div className="shrink-0 flex items-center gap-1 bg-white border border-[#DDD7E5] focus-within:border-[#6555B8] rounded-full pl-3 pr-1.5 py-1.5 shadow-xs">
-                  <Search className="w-3.5 h-3.5 text-[#8C849B] shrink-0 pointer-events-none" />
-                  <input
-                    autoFocus
-                    type="text"
-                    value={searchQuery}
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="City or username"
-                    aria-label="Search"
-                    className="w-28 sm:w-36 bg-transparent px-1 text-xs text-[#1C1924] placeholder-[#8C849B] focus:outline-none"
-                  />
-                  {searchQuery ? (
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setSearchQuery('');
-                        setSearchOpen(false);
-                      }}
-                      className="text-[#8C849B] hover:text-[#1C1924] text-xs px-1"
-                      aria-label="Clear search"
-                    >
-                      Clear
-                    </button>
-                  ) : null}
-                </div>
-              ) : (
-                <div className="shrink-0 flex items-center gap-2">
-                  <button
-                    type="button"
-                    onClick={() => setSearchOpen(true)}
-                    aria-label="Open Search"
-                    className="p-2 rounded-full bg-white border border-[#DDD7E5] text-[#8C849B] hover:text-[#6555B8] hover:border-[#CFC8DC] transition shadow-xs"
-                  >
-                    <Search className="w-3.5 h-3.5" />
-                  </button>
-                  <button
-                    type="button"
-                    onClick={() => setFiltersOpen(true)}
-                    aria-label="Open Filters"
-                    className="relative p-2 rounded-full bg-white border border-[#DDD7E5] text-[#6555B8] hover:border-[#CFC8DC] transition shadow-xs"
-                  >
-                    <SlidersHorizontal className="w-3.5 h-3.5" />
-                    {activeFiltersCount > 0 && (
-                      <span className="absolute -top-1 -right-1 w-2.5 h-2.5 rounded-full bg-[#6555B8] border-2 border-white" />
-                    )}
-                  </button>
-                </div>
+    <div className="w-full min-h-full bg-[#F8F7FA] text-[#1C1924] flex flex-col font-sans animate-[fadeIn_200ms_cubic-bezier(0.16,1,0.3,1)]">
+      <main className="w-full max-w-md mx-auto px-4 pt-4 pb-36 relative">
+        {/* Static Pinned Search & Filter Controls on Left + Horizontally Scrolling Categories on Right */}
+        <section aria-label="Search and Filters" className="w-full mb-4 flex items-center gap-2">
+          <div className="shrink-0 flex items-center gap-1.5">
+            {searchOpen || searchQuery ? (
+              <div className={`h-9 flex items-center gap-1 bg-white border border-[#DDD7E5] focus-within:border-[#6555B8] rounded-full pl-3 pr-2 shadow-2xs transition-all ${searchAnimating ? 'animate-[slideIn_200ms_cubic-bezier(0.16,1,0.3,1)]' : ''}`}>
+                <Search className="w-3.5 h-3.5 text-[#8C849B] shrink-0" />
+                <input
+                  autoFocus
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="City or username"
+                  className="w-28 bg-transparent text-xs text-[#1C1924] placeholder-[#8C849B] focus:outline-none"
+                />
+                <button
+                  type="button"
+                  onClick={() => {
+                  setSearchAnimating(true);
+                  setTimeout(() => {
+                    setSearchQuery('');
+                    setSearchOpen(false);
+                    setSearchAnimating(false);
+                  }, 200);
+                }}
+                  className="text-[#8C849B] hover:text-[#1C1924] text-xs px-1 cursor-pointer"
+                >
+                  ×
+                </button>
+              </div>
+            ) : (
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchAnimating(true);
+                  setTimeout(() => setSearchOpen(true), 10);
+                  setTimeout(() => setSearchAnimating(false), 200);
+                }}
+                aria-label="Open Search"
+                className="w-9 h-9 rounded-full bg-white border border-[#DDD7E5] text-[#6C637B] hover:text-[#6555B8] hover:border-[#CFC8DC] flex items-center justify-center transition shadow-2xs cursor-pointer"
+              >
+                <Search className="w-4 h-4" />
+              </button>
+            )}
+
+            <button
+              type="button"
+              onClick={() => setFiltersOpen(true)}
+              aria-label="Open Filters"
+              className="relative w-9 h-9 rounded-full bg-white border border-[#DDD7E5] text-[#6555B8] hover:border-[#CFC8DC] flex items-center justify-center transition shadow-2xs cursor-pointer"
+            >
+              <SlidersHorizontal className="w-4 h-4" />
+              {activeFiltersCount > 0 && (
+                <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#6555B8] ring-2 ring-white" />
               )}
+            </button>
+          </div>
+
+          {/* Horizontally Scrolling Category Pills */}
+          <div className="flex-1 min-w-0 overflow-x-auto no-scrollbar touch-pan-x select-none cursor-grab active:cursor-grabbing" onWheel={(e) => { if (e.deltaY !== 0) { e.currentTarget.scrollLeft += e.deltaY; } }} onMouseDown={(e) => { const el = e.currentTarget; el.dataset.dragging = "1"; el.dataset.startX = String(e.pageX); el.dataset.scrollLeft = String(el.scrollLeft); }} onMouseMove={(e) => { const el = e.currentTarget; if (el.dataset.dragging !== "1") return; e.preventDefault(); el.scrollLeft = Number(el.dataset.scrollLeft) - (e.pageX - Number(el.dataset.startX)) * 1.3; }} onMouseUp={(e) => { e.currentTarget.dataset.dragging = "0"; }} onMouseLeave={(e) => { e.currentTarget.dataset.dragging = "0"; }}>
+            <div className="flex items-center gap-1.5 w-max">
               {DISCOVERY_MODES.map((mode) => {
                 const active = discoveryMode === mode.id;
                 return (
                   <button
                     key={mode.id}
                     type="button"
-                    onClick={() => {
-                      if (!pillDraggedRef.current) setDiscoveryMode(mode.id);
-                    }}
+                    onClick={() => setDiscoveryMode(mode.id)}
                     className={
-                      'px-2.5 py-1.25 rounded-full text-xs font-semibold border transition-all whitespace-nowrap active:scale-95 cursor-pointer ' +
+                      'h-9 px-4 rounded-full text-xs font-semibold border inline-flex items-center justify-center transition-all whitespace-nowrap active:scale-95 cursor-pointer ' +
                       (active
-                        ? 'bg-[#6555B8] border-[#6555B8] text-white'
+                        ? 'bg-[#6555B8] border-[#6555B8] text-white shadow-2xs'
                         : 'bg-white border-[#DDD7E5] text-[#524B5E] hover:border-[#6555B8]/40 hover:text-[#1C1924]')
                     }
                   >
@@ -722,13 +496,13 @@ function DiscoverContent() {
           </div>
         </section>
 
-        {/* 2-Column Mobile Feed Grid */}
-        <div className="grid grid-cols-2 gap-2.5 w-full">
+        {/* 2-Column Feed Grid */}
+        <div className="grid grid-cols-2 gap-3.5 w-full">
           {isLoading ? (
             Array.from({ length: 8 }).map((_, i) => (
               <div
                 key={i}
-                className="rounded-2xl overflow-hidden aspect-[4/5] w-full bg-[#EAE8F0] animate-pulse border border-[#DDD7E5] relative pt-2"
+                className="rounded-2xl overflow-hidden aspect-[4/5] w-full bg-[#EAE8F0] animate-pulse border border-[#DDD7E5] relative"
               >
                 <div className="absolute inset-x-0 bottom-0 p-3 space-y-2">
                   <div className="h-4 bg-white/40 rounded-full w-2/3" />
@@ -740,9 +514,7 @@ function DiscoverContent() {
             visibleProfiles.map((profile) => {
               const state = cardActions[profile.id];
               const isLiked = state === 'like';
-              const isStarred = false;
               const displayName = profile.username || profile.name || 'Member';
-              const sharedCount = computeSharedCount(profile);
               const cityPart = profile.location ? profile.location.split(',')[0].trim() : '';
               const countryPart = profile.country || '';
               const formattedLocation =
@@ -752,7 +524,7 @@ function DiscoverContent() {
               return (
                 <div
                   key={profile.id}
-                  className="group relative rounded-2xl overflow-hidden aspect-[4/5] w-full bg-[#F2EEF7] border border-[#DDD7E5]/60 shadow-xs hover:shadow-md transition-all duration-300 select-none"
+                  className="group relative rounded-2xl overflow-hidden aspect-[4/5] w-full bg-[#F2EEF7] border border-[#DDD7E5]/70 shadow-xs hover:shadow-md transition-all duration-300 select-none"
                 >
                   <DiscoverCardPhotoCarousel
                     profileId={profile.id}
@@ -760,11 +532,9 @@ function DiscoverContent() {
                     avatarUrl={profile.avatarUrl}
                     name={displayName}
                     repScore={profile.repScore}
-                    sharedCount={sharedCount}
                     online={profile.online}
                     recentlyActive={profile.recentlyActive}
                   />
-                  {/* Send Spark - small zap, top-right */}
                   <button
                     type="button"
                     aria-label={isLiked ? 'Remove Spark' : 'Send Spark'}
@@ -774,7 +544,7 @@ function DiscoverContent() {
                       triggerAction(profile.id, 'like', displayName, profile.avatarUrl);
                     }}
                     className={
-                      'absolute top-2 right-2 z-20 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 active:scale-90 cursor-pointer ' +
+                      'absolute top-2.5 right-2.5 z-20 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 active:scale-90 cursor-pointer ' +
                       (isLiked
                         ? 'bg-[#6555B8] text-white shadow-md'
                         : 'bg-black/45 text-white hover:bg-black/65 backdrop-blur-xs')
@@ -782,11 +552,9 @@ function DiscoverContent() {
                   >
                     <Zap className={'w-4 h-4 ' + (isLiked ? 'fill-white' : '')} />
                   </button>
-                  {/* Subtle Bottom-Only Gradient with Full-Width Non-Overlapping Text */}
-                  <div className="absolute bottom-0 inset-x-0 pt-10 pb-2.5 px-3 z-10 pointer-events-none bg-gradient-to-t from-black/60 via-black/25 to-transparent">
+                  <div className="absolute bottom-0 inset-x-0 pt-10 pb-3 px-3 z-10 pointer-events-none bg-gradient-to-t from-black/65 via-black/25 to-transparent">
                     <Link href={'/profile/' + profile.id} className="block min-w-0 pointer-events-auto">
-                      {/* Line 1: Name + Age + Verified Check */}
-                      <div className="flex items-center gap-1 min-w-0">
+                      <div className="flex items-center min-w-0">
                         <h3
                           className="text-sm font-bold text-white leading-tight truncate"
                           style={{ fontFamily: 'var(--font-brand)' }}
@@ -798,13 +566,12 @@ function DiscoverContent() {
                             className="text-sm font-bold text-white leading-tight shrink-0"
                             style={{ fontFamily: 'var(--font-brand)' }}
                           >
-                            , {profile.age}
+                            {', ' + profile.age}
                           </span>
                         ) : null}
-                        {profile.verified && <CheckCircle className="w-3.5 h-3.5 text-white shrink-0 ml-0.5" />}
+                        {profile.verified && <CheckCircle className="w-3.5 h-3.5 text-white shrink-0 ml-1" />}
                       </div>
-                      {/* Line 2: Location (City, Country) */}
-                      <p className="text-[11px] text-white/90 font-medium mt-0.5 truncate">
+                      <p className="text-[11px] text-white/90 font-medium mt-0.5 truncate pr-7">
                         {formattedLocation}
                       </p>
                     </Link>
@@ -823,42 +590,23 @@ function DiscoverContent() {
             <p className="text-base font-bold text-[#1C1924]" style={{ fontFamily: 'var(--font-brand)' }}>
               No profiles match your current filters
             </p>
-            <p className="text-xs text-[#6C637B] max-w-xs mx-auto leading-relaxed">
-              Tap below to reset your filters to your saved preference (
-              {viewerSavedGenders.map((g) => GENDER_LABELS[g] || g).join(', ') || 'All'}), or open Filters to adjust who you
-              are looking for.
-            </p>
-            <div className="flex flex-wrap items-center justify-center gap-2 pt-2">
-              <button
-                type="button"
-                onClick={resetFilters}
-                className="inline-flex items-center gap-1.5 px-5 py-2.5 text-xs font-semibold rounded-full bg-[#6555B8] text-white hover:bg-[#52449e] transition shadow-sm cursor-pointer"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-                <span>Reset Filters</span>
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  userSelectedGenderManually.current = true;
-                  setSelectedGenders([]);
-                  setSelectedCountry('All');
-                  setDiscoveryMode('all');
-                }}
-                className="inline-flex items-center gap-1.5 px-5 py-2.5 text-xs font-semibold rounded-full bg-white border border-[#DDD7E5] text-[#524B5E] hover:bg-[#F3EFFC] hover:text-[#6555B8] transition cursor-pointer"
-              >
-                <span>Show Everyone</span>
-              </button>
-            </div>
+            <button
+              type="button"
+              onClick={resetFilters}
+              className="inline-flex items-center gap-1.5 px-5 py-2.5 text-xs font-semibold rounded-full bg-[#6555B8] text-white hover:bg-[#52449e] transition shadow-sm cursor-pointer"
+            >
+              <RotateCcw className="w-3.5 h-3.5" />
+              <span>Reset Filters</span>
+            </button>
           </div>
         )}
 
         {hasMore && (
-          <div className="pt-4 pb-2 flex justify-center">
+          <div className="pt-5 pb-2 flex justify-center">
             <button
               type="button"
               onClick={() => setVisibleLimit((prev) => prev + BATCH_SIZE)}
-              className="px-6 py-2.5 rounded-full bg-white border border-[#DDD7E5] text-[#1C1924] hover:border-[#6555B8] text-xs font-semibold transition shadow-xs"
+              className="px-6 py-2.5 rounded-full bg-white border border-[#DDD7E5] text-[#1C1924] hover:border-[#6555B8] text-xs font-semibold transition shadow-xs cursor-pointer"
             >
               Load More Profiles ({filteredProfiles.length - visibleLimit} remaining)
             </button>
@@ -866,14 +614,14 @@ function DiscoverContent() {
         )}
 
         {lastPassed && (
-          <div className="fixed bottom-20 left-1/2 -translate-x-1/2 z-[60] flex items-center gap-3 px-4 py-2.5 rounded-full bg-white/95 border border-[#DDD7E5] shadow-2xl backdrop-blur-md">
+          <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[60] flex items-center gap-3 px-4 py-2.5 rounded-full bg-white/95 border border-[#DDD7E5] shadow-2xl backdrop-blur-md">
             <span className="text-xs text-[#1C1924]">
               Passed <strong>{lastPassed.name}</strong>
             </span>
             <button
               type="button"
               onClick={undoLastPass}
-              className="px-3 py-1 rounded-full bg-[#6555B8] hover:bg-[#52449e] text-white text-xs font-semibold flex items-center gap-1 transition shadow-sm"
+              className="px-3 py-1 rounded-full bg-[#6555B8] hover:bg-[#52449e] text-white text-xs font-semibold flex items-center gap-1 transition shadow-sm cursor-pointer"
             >
               <RotateCcw className="w-3 h-3" />
               Undo
@@ -896,7 +644,6 @@ function DiscoverContent() {
             <div
               role="dialog"
               aria-modal="true"
-              aria-label="Refine Discover Feed"
               className="relative z-10 w-full max-w-[430px] mx-auto bg-white rounded-t-3xl shadow-2xl flex flex-col overflow-hidden will-change-transform"
               style={
                 filtersClosing
@@ -907,9 +654,7 @@ function DiscoverContent() {
               <div className="flex items-center justify-between px-4 py-3 border-b border-[#DDD7E5] shrink-0 bg-white">
                 <div className="flex items-center gap-2">
                   <SlidersHorizontal className="w-4 h-4 text-[#6555B8]" />
-                  <h2 className="text-sm font-bold text-[#1C1924]" style={{ fontFamily: 'var(--font-brand)' }}>
-                    Refine Discover Feed
-                  </h2>
+                  <h2 className="text-sm font-bold text-[#1C1924]">Refine Discover Feed</h2>
                 </div>
                 <button
                   type="button"
@@ -920,25 +665,11 @@ function DiscoverContent() {
                   <XIcon className="w-4 h-4" />
                 </button>
               </div>
-              <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-4 py-3 space-y-4">
+              <div className="flex-1 min-h-0 overflow-y-auto px-4 py-3 space-y-4">
                 <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <label className="text-[11px] font-semibold text-[#6C637B] uppercase tracking-wider">
-                      Interested In
-                    </label>
-                    {selectedGenders.length > 0 && (
-                      <button
-                        type="button"
-                        onClick={() => {
-                          userSelectedGenderManually.current = true;
-                          setSelectedGenders([]);
-                        }}
-                        className="text-[11px] font-semibold text-[#6555B8] hover:underline cursor-pointer"
-                      >
-                        Show Everyone
-                      </button>
-                    )}
-                  </div>
+                  <label className="text-[11px] font-semibold text-[#6C637B] uppercase tracking-wider block mb-2">
+                    Interested In
+                  </label>
                   <div className="flex flex-wrap gap-1.5">
                     {[
                       { id: 'woman', label: 'Women' },
@@ -971,9 +702,7 @@ function DiscoverContent() {
                           }}
                           className={
                             'py-1.5 px-3 rounded-full border text-xs font-semibold transition cursor-pointer active:scale-95 ' +
-                            (isSelected
-                              ? 'bg-[#6555B8] text-white border-[#6555B8]'
-                              : 'bg-white text-[#1C1924] border-[#DDD7E5] hover:bg-[#F8F7FA]')
+                            (isSelected ? 'bg-[#6555B8] text-white border-[#6555B8]' : 'bg-white text-[#1C1924] border-[#DDD7E5]')
                           }
                         >
                           {item.label}
@@ -982,85 +711,19 @@ function DiscoverContent() {
                     })}
                   </div>
                 </div>
-                <div>
-                  <div className="flex items-center justify-between mb-2">
-                    <label className="text-[11px] font-semibold text-[#6C637B] uppercase tracking-wider">
-                      Age Range
-                    </label>
-                    <span className="text-[11px] font-semibold text-[#6555B8] bg-[#F3EFFC] px-2 py-0.5 rounded-full">
-                      {draftMinAge} - {draftMaxAge}
-                    </span>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] text-[#6C637B] w-8 shrink-0">Min</span>
-                      <input
-                        type="range"
-                        min={18}
-                        max={65}
-                        value={draftMinAge}
-                        onChange={(e) => setDraftMinAge(Math.min(Number(e.target.value), draftMaxAge - 1))}
-                        className="w-full accent-[#6555B8] h-1.5 cursor-pointer"
-                      />
-                      <span className="text-[10px] font-semibold text-[#1C1924] w-6 text-right shrink-0">
-                        {draftMinAge}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] text-[#6C637B] w-8 shrink-0">Max</span>
-                      <input
-                        type="range"
-                        min={18}
-                        max={65}
-                        value={draftMaxAge}
-                        onChange={(e) => setDraftMaxAge(Math.max(Number(e.target.value), draftMinAge + 1))}
-                        className="w-full accent-[#6555B8] h-1.5 cursor-pointer"
-                      />
-                      <span className="text-[10px] font-semibold text-[#1C1924] w-6 text-right shrink-0">
-                        {draftMaxAge}
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                <div className="space-y-2.5 pt-2 border-t border-[#DDD7E5]/60">
-                  <label className="flex items-center justify-between cursor-pointer py-0.5">
-                    <span className="text-xs font-medium text-[#1C1924]">Verified Members Only</span>
-                    <input
-                      type="checkbox"
-                      checked={verifiedOnly}
-                      onChange={(e) => setVerifiedOnly(e.target.checked)}
-                      className="sr-only peer"
-                    />
-                    <span className="w-9 h-5 rounded-full bg-[#DDD7E5] peer-checked:bg-[#6555B8] relative transition shrink-0">
-                      <span className="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition peer-checked:translate-x-4" />
-                    </span>
-                  </label>
-                  <label className="flex items-center justify-between cursor-pointer py-0.5">
-                    <span className="text-xs font-medium text-[#1C1924]">Active Now</span>
-                    <input
-                      type="checkbox"
-                      checked={activeNowOnly}
-                      onChange={(e) => setActiveNowOnly(e.target.checked)}
-                      className="sr-only peer"
-                    />
-                    <span className="w-9 h-5 rounded-full bg-[#DDD7E5] peer-checked:bg-[#6555B8] relative transition shrink-0">
-                      <span className="absolute top-0.5 left-0.5 w-4 h-4 rounded-full bg-white shadow transition peer-checked:translate-x-4" />
-                    </span>
-                  </label>
-                </div>
               </div>
               <div className="px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] bg-white border-t border-[#DDD7E5] flex items-center gap-3 shrink-0">
                 <button
                   type="button"
                   onClick={resetFilters}
-                  className="py-2 px-3 rounded-full text-xs font-semibold text-[#524B5E] hover:text-[#1C1924] transition cursor-pointer"
+                  className="py-2 px-3 rounded-full text-xs font-semibold text-[#524B5E] hover:text-[#1C1924] cursor-pointer"
                 >
                   Reset
                 </button>
                 <button
                   type="button"
                   onClick={applyFilters}
-                  className="flex-1 py-2.5 rounded-full bg-[#6555B8] text-white text-xs font-semibold hover:bg-[#52449e] active:scale-[0.98] transition shadow cursor-pointer"
+                  className="flex-1 py-2.5 rounded-full bg-[#6555B8] text-white text-xs font-semibold hover:bg-[#52449e] cursor-pointer"
                 >
                   Apply Filters
                 </button>
@@ -1087,23 +750,15 @@ function DiscoverContent() {
               (isModalClosing ? 'scale-90 opacity-0' : 'scale-100 opacity-100')
             }
           >
-            <div className="w-12 h-12 rounded-full bg-rose-50 flex items-center justify-center mb-3 shadow-inner">
+            <div className="w-12 h-12 rounded-full bg-rose-50 flex items-center justify-center mb-3">
               <Heart className="w-6 h-6 text-rose-500 fill-rose-500" />
             </div>
-            <h3 className="text-xl font-bold text-[#1C1924] tracking-tight" style={{ fontFamily: 'var(--font-brand)' }}>
+            <h3 className="text-xl font-bold text-[#1C1924]" style={{ fontFamily: 'var(--font-brand)' }}>
               It&apos;s a Match!
             </h3>
-            <p className="text-xs text-[#6C637B] mt-1.5 max-w-[240px]">
-              You and <span className="font-semibold text-[#1C1924]">{matchedModalProfile.name}</span> connected.
-            </p>
-            <div className="my-5 relative flex items-center justify-center">
-              <div className="w-20 h-20 rounded-full border-4 border-[#6555B8]/20 overflow-hidden shadow-md">
-                <img
-                  src={matchedModalProfile.avatarUrl || '/placeholder-avatar.svg'}
-                  alt={matchedModalProfile.name}
-                  className="w-full h-full object-cover"
-                />
-              </div>
+            <p className="text-xs text-[#6C637B] mt-1.5">You and <span className="font-semibold text-[#1C1924]">{matchedModalProfile.name}</span> connected.</p>
+            <div className="my-5 w-20 h-20 rounded-full border-4 border-[#6555B8]/20 overflow-hidden shadow-md">
+              <img src={matchedModalProfile.avatarUrl || '/placeholder-avatar.svg'} alt="" className="w-full h-full object-cover" />
             </div>
             <div className="w-full flex flex-col gap-2 mt-1">
               <Link
@@ -1115,7 +770,7 @@ function DiscoverContent() {
               <button
                 type="button"
                 onClick={closeModalWithAnimation}
-                className="w-full py-2.5 px-4 rounded-full text-xs font-semibold text-[#6C637B] hover:text-[#1C1924] hover:bg-[#F3EFFC] transition"
+                className="w-full py-2.5 px-4 rounded-full text-xs font-semibold text-[#6C637B] hover:text-[#1C1924] hover:bg-[#F3EFFC] transition cursor-pointer"
               >
                 Keep Browsing
               </button>
@@ -1135,31 +790,27 @@ function DiscoverFeed() {
   );
 }
 
-function AuthGate() {
+export default function AuthGate() {
   const router = useRouter();
   const [authState, setAuthState] = useState<'loading' | 'member'>('loading');
   useEffect(() => {
     let mounted = true;
     supabase.auth.getUser().then(({ data }) => {
       if (!mounted) return;
-      if (data?.user) {
-        setAuthState('member');
-      } else {
-        router.replace('/');
-      }
+      if (data?.user) setAuthState('member');
+      else router.replace('/');
     });
     return () => {
       mounted = false;
     };
   }, [router]);
+
   if (authState === 'loading') {
     return (
-      <div className="min-h-screen bg-[#0d0b14] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#6555B8] border-t-transparent"></div>
+      <div className="min-h-screen bg-[#F8F7FA] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-10 w-10 border-4 border-[#6555B8] border-t-transparent"></div>
       </div>
     );
   }
   return <DiscoverFeed />;
 }
-
-export default AuthGate;
