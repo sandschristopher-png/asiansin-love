@@ -14,7 +14,7 @@ export default function TermsPage() {
         </Link>
         <div>
           <h1 className="text-sm font-semibold text-[#1C1924]">Community Guidelines</h1>
-          <p className="text-[11px] text-[#756D82]">Standards of Courtship & Trust</p>
+          <p className="text-[11px] text-[#756D82]">Standards of Respect & Trust</p>
         </div>
       </header>
 
@@ -25,7 +25,7 @@ export default function TermsPage() {
           </div>
           <h2 className="text-base font-bold text-[#1C1924]">1. Authentic Intentions Only</h2>
           <p className="text-xs text-[#524B5E] leading-relaxed">
-            Asians in Love is built exclusively for individuals seeking genuine courtship, dating, and marriage. We actively remove accounts created for casual commercial encounters, content promotion, or deceptive representation.
+            Asians in Love is built exclusively for individuals seeking genuine relationships, dating, and partnership. We actively remove accounts created for casual commercial encounters, content promotion, or deceptive representation.
           </p>
         </div>
 

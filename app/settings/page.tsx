@@ -140,18 +140,6 @@ export default function SettingsPage() {
   return (
     <div className="w-full min-h-full bg-[#F8F7FA] text-[#1C1924] flex flex-col font-sans">
       <main className="flex-1 w-full px-4 pt-4 pb-28 space-y-5">
-        {/* Top Header matching Onboarding & Discover */}
-        <div className="pb-3 border-b border-[#DDD7E5]">
-          <h1
-            className="text-lg font-bold text-[#1C1924] tracking-tight"
-            style={{ fontFamily: 'var(--font-brand)' }}
-          >
-            Account Settings
-          </h1>
-          <p className="text-xs text-[#6C637B]">
-            Manage your member handle, membership tier, and account privacy
-          </p>
-        </div>
 
         {/* Account Settings Card */}
         <div className="bg-white rounded-3xl border border-[#DDD7E5] p-5 shadow-xs space-y-5">

@@ -67,7 +67,7 @@ export default function LoginPage() {
         <div className="mb-10 text-center">
           <h1 className="text-xl font-extrabold text-[#181126]">Welcome back</h1>
           <p className="mt-1 text-[13px] text-[#756D82]">
-            Sign in to continue your courtship journey.
+            Sign in to continue your journey.
           </p>
         </div>
 

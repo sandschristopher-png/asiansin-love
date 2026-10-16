@@ -200,23 +200,10 @@ function DiscoverCardPhotoCarousel({
       </div>
 
       {/* Split-Touch Photo Carousel Zones */}
-      {hasMultiple && (
-        <>
-          <div
-            onClick={handlePrev}
-            className="absolute top-12 bottom-20 left-0 w-1/2 z-10 cursor-pointer"
-            aria-label="Previous photo"
-          />
-          <div
-            onClick={handleNext}
-            className="absolute top-12 bottom-20 right-0 w-1/2 z-10 cursor-pointer"
-            aria-label="Next photo"
-          />
-        </>
-      )}
+
 
       {hasMultiple && (
-        <div className="hidden sm:flex items-center justify-between absolute inset-x-2 top-1/2 -translate-y-1/2 z-20 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+        <div className="flex items-center justify-between absolute inset-x-1.5 top-1/2 -translate-y-1/2 z-20 pointer-events-none">
           <button
             type="button"
             onClick={handlePrev}
@@ -322,6 +309,16 @@ function DiscoverContent() {
 
   const userSelectedGenderManually = useRef(Boolean(searchParams.get('gender')));
   const [selectedGenders, setSelectedGenders] = useState<string[]>(() => {
+    // Priority: localStorage manual choice > URL param > server/default
+    if (typeof window !== 'undefined') {
+      const stored = localStorage.getItem('discover_gender_pref');
+      if (stored !== null) {
+        try {
+          const parsed = JSON.parse(stored);
+          if (Array.isArray(parsed)) return parsed;
+        } catch {}
+      }
+    }
     const g = searchParams.get('gender');
     if (!g || g.toLowerCase() === 'all') return [];
     return g.split(',').map((s) => normalizeGenderValue(s));
@@ -335,6 +332,7 @@ function DiscoverContent() {
   };
 
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const [isCountryOpen, setIsCountryOpen] = useState(false);
   const countryDropdownRef = useRef<HTMLDivElement | null>(null);
 
@@ -430,7 +428,13 @@ function DiscoverContent() {
             }
             if (Array.isArray(v.interested_in) && v.interested_in.length > 0) {
               setViewerSavedGenders(v.interested_in);
-              if (!userSelectedGenderManually.current) {
+              // Only apply server preference if user has NEVER made a manual choice (nothing in localStorage)
+              let hasManualChoice = false;
+              if (typeof window !== 'undefined') {
+                const stored = localStorage.getItem('discover_gender_pref');
+                if (stored !== null) hasManualChoice = true;
+              }
+              if (!hasManualChoice) {
                 setSelectedGenders(v.interested_in);
               }
             }
@@ -675,43 +679,6 @@ function DiscoverContent() {
         
         {/* Top Control Bar */}
         <section aria-label="Search and Filters" className="w-full">
-          {/* Search Bar */}
-          <div className="w-full mb-4 bg-white border border-[#DDD7E5] hover:border-[#CFC8DC] focus-within:border-[#6555B8] focus-within:ring-2 focus-within:ring-[#6555B8]/15 rounded-full shadow-2xs transition-all flex items-center pl-3.5 pr-1.5 py-1.5">
-            <Search className="w-4 h-4 text-[#8C849B] shrink-0 pointer-events-none" />
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search city, username..."
-              className="w-full bg-transparent px-2 text-xs sm:text-sm text-[#1C1924] placeholder-[#8C849B] focus:outline-none min-w-0"
-            />
-            {searchQuery && (
-              <button
-                type="button"
-                onClick={() => setSearchQuery('')}
-                className="text-[#8C849B] hover:text-[#1C1924] text-xs px-1.5 py-0.5 shrink-0"
-              >
-                Clear
-              </button>
-            )}
-            <button
-              type="button"
-              onClick={(e) => {
-                e.stopPropagation();
-                setFiltersOpen(true);
-              }}
-              aria-label="Open Filters"
-              className="relative p-1.5 rounded-full text-[#6555B8] hover:bg-[#F3EFFC] transition shrink-0 ml-1"
-            >
-              <SlidersHorizontal className="w-4 h-4" />
-              {activeFiltersCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-[#6555B8] text-white text-[9px] font-bold rounded-full flex items-center justify-center">
-                  {activeFiltersCount}
-                </span>
-              )}
-            </button>
-          </div>
-
           {/* Simplified Filter Pills Row: All, Online, Near Me, New */}
           <div
             ref={pillTrackRef}
@@ -723,6 +690,56 @@ function DiscoverContent() {
             className="w-full mb-4 overflow-x-auto no-scrollbar touch-pan-x select-none"
           >
             <div className="flex items-center gap-2 w-max">
+                {/* Compact Search + Gear Pills */}
+                {searchOpen || searchQuery ? (
+                  <div className="shrink-0 flex items-center gap-1 bg-white border border-[#DDD7E5] focus-within:border-[#6555B8] rounded-full pl-3 pr-1.5 py-1.5 shadow-xs">
+                    <Search className="w-3.5 h-3.5 text-[#8C849B] shrink-0 pointer-events-none" />
+                    <input
+                      autoFocus
+                      type="text"
+                      value={searchQuery}
+                      onChange={(e) => setSearchQuery(e.target.value)}
+                      onBlur={() => !searchQuery && setSearchOpen(false)}
+                      placeholder="City or username"
+                      aria-label="Search"
+                      className="w-28 sm:w-36 bg-transparent px-1 text-xs text-[#1C1924] placeholder-[#8C849B] focus:outline-none"
+                    />
+                    {searchQuery ? (
+                      <button
+                        type="button"
+                        onClick={() => setSearchQuery('')}
+                        className="text-[#8C849B] hover:text-[#1C1924] text-xs px-1"
+                        aria-label="Clear search"
+                      >
+                        Clear
+                      </button>
+                    ) : null}
+                  </div>
+                ) : (
+                  <div className="shrink-0 flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => setSearchOpen(true)}
+                      aria-label="Open Search"
+                      className="p-2 rounded-full bg-white border border-[#DDD7E5] text-[#8C849B] hover:text-[#6555B8] hover:border-[#CFC8DC] transition shadow-xs"
+                    >
+                      <Search className="w-3.5 h-3.5" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setFiltersOpen(true)}
+                      aria-label="Open Filters"
+                      className="relative p-2 rounded-full bg-white border border-[#DDD7E5] text-[#6555B8] hover:border-[#CFC8DC] transition shadow-xs"
+                    >
+                      <SlidersHorizontal className="w-3.5 h-3.5" />
+                      {activeFiltersCount > 0 && (
+                        <span className="absolute -top-0.5 -right-0.5 w-3.5 h-3.5 bg-[#6555B8] text-white text-[9px] font-bold rounded-full flex items-center justify-center">
+                          {activeFiltersCount}
+                        </span>
+                      )}
+                    </button>
+                  </div>
+                )}
               {DISCOVERY_MODES.map((mode) => {
                 const active = discoveryMode === mode.id;
                 return (
@@ -927,7 +944,7 @@ function DiscoverContent() {
               role="dialog"
               aria-modal="true"
               aria-label="Refine Discover Feed"
-              className="relative z-10 w-full max-w-[430px] mx-auto bg-white rounded-t-3xl shadow-2xl flex flex-col max-h-[85dvh] overflow-hidden"
+              className="relative z-10 w-full max-w-[430px] mx-auto bg-white rounded-t-3xl shadow-2xl flex flex-col overflow-hidden"
             >
               <div className="flex items-center justify-between p-5 pb-3 border-b border-[#DDD7E5] shrink-0 bg-white">
                 <div className="flex items-center gap-2">
@@ -968,22 +985,36 @@ function DiscoverContent() {
                       </button>
                     )}
                   </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                  <div className="flex flex-wrap gap-2">
                     {[
                       { id: 'woman', label: 'Women' },
                       { id: 'man', label: 'Men' },
-                      { id: 'trans_woman', label: 'Trans Women' },
-                      { id: 'trans_man', label: 'Trans Men' },
-                      { id: 'non_binary', label: 'Non-Binary' },
+                      { id: 'trans', label: 'Trans' }, // Matches trans_woman, trans_man, non_binary
                     ].map((item) => {
-                      const isSelected = selectedGenders.includes(item.id);
+                      // Special logic for Trans pill: matches multiple DB values
+                      const isTrans = item.id === 'trans';
+                      const isSelected = isTrans 
+                        ? selectedGenders.some(g => ['trans_woman', 'trans_man', 'non_binary'].includes(g))
+                        : selectedGenders.includes(item.id);
                       return (
                         <button
                           key={item.id}
                           type="button"
-                          onClick={() => toggleGender(item.id)}
+                          onClick={() => {
+                          if (isTrans) {
+                            // Toggle all trans values
+                            const hasAnyTrans = selectedGenders.some(g => ['trans_woman', 'trans_man', 'non_binary'].includes(g));
+                            if (hasAnyTrans) {
+                              setSelectedGenders(selectedGenders.filter(g => !['trans_woman', 'trans_man', 'non_binary'].includes(g)));
+                            } else {
+                              setSelectedGenders([...selectedGenders, 'trans_woman', 'trans_man', 'non_binary']);
+                            }
+                          } else {
+                            toggleGender(item.id);
+                          }
+                        }}
                           className={
-                            'py-2.5 px-3 rounded-2xl border text-xs font-semibold transition cursor-pointer ' +
+                            'py-2 px-3.5 rounded-full border text-xs font-semibold transition cursor-pointer ' +
                             (isSelected
                               ? 'bg-[#6555B8] text-white border-[#6555B8]'
                               : 'bg-white text-[#1C1924] border-[#DDD7E5] hover:bg-[#F8F7FA]')
@@ -1003,7 +1034,7 @@ function DiscoverContent() {
                       {draftMinAge} - {draftMaxAge} yrs
                     </span>
                   </div>
-                  <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-3">
                     <div>
                       <span className="text-[10px] text-[#6C637B] block mb-1">Min Age ({draftMinAge})</span>
                       <input
@@ -1061,14 +1092,14 @@ function DiscoverContent() {
                 <button
                   type="button"
                   onClick={resetFilters}
-                  className="flex-1 py-3 rounded-2xl border border-[#DDD7E5] text-xs font-semibold text-[#524B5E] hover:bg-[#F8F7FA] transition cursor-pointer"
+                  className="py-3 px-4 rounded-full text-xs font-semibold text-[#524B5E] hover:text-[#1C1924] transition cursor-pointer"
                 >
-                  Reset Filters
+                  Reset
                 </button>
                 <button
                   type="button"
                   onClick={applyFilters}
-                  className="flex-1 py-3 rounded-2xl bg-[#6555B8] text-white text-xs font-semibold hover:bg-[#52449e] transition shadow cursor-pointer"
+                  className="flex-1 py-3 rounded-full bg-[#6555B8] text-white text-xs font-semibold hover:bg-[#52449e] transition shadow cursor-pointer"
                 >
                   Apply Filters
                 </button>

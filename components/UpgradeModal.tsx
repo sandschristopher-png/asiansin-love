@@ -25,7 +25,7 @@ export default function UpgradeModal({
       case 'handle':
         return 'Custom Handle Included';
       default:
-        return 'Serious Courtship, Unlimited Access';
+        return 'Serious Relationships, Unlimited Access';
     }
   };
 

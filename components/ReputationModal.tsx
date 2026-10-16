@@ -57,7 +57,7 @@ export default function ReputationModal({
             </div>
             <div>
               <h3 className="text-sm font-bold text-stone-900 leading-tight">Community Trust & Reputation</h3>
-              <p className="text-[11px] text-stone-500">Transparent standards for intentional courtship</p>
+              <p className="text-[11px] text-stone-500">Transparent standards for intentional dating</p>
             </div>
           </div>
           <button

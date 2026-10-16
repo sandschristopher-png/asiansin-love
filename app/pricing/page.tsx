@@ -68,7 +68,7 @@ export default function PricingPage() {
       desc: "Verified member status and prioritized profile discovery.",
     },
     {
-      title: "Serious Courtship Filters",
+      title: "Serious Relationship Filters",
       desc: "Filter by marriage timeline, values, and lifestyle.",
     },
     {
@@ -185,7 +185,7 @@ export default function PricingPage() {
             <span>Encrypted 256-bit checkout powered by Stripe</span>
           </div>
           <p className="text-[10px] text-[#A69BB9]">
-            Real people &bull; Honest courtship &bull; No coin schemes or hidden fees
+            Real people &bull; Honest intentions &bull; No coin schemes or hidden fees
           </p>
         </div>
       </main>

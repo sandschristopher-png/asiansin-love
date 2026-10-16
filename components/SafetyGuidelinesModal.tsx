@@ -33,7 +33,7 @@ export function SafetyGuidelinesModal({ isOpen, onClose, onAcknowledge }: Safety
           <div className="p-3.5 rounded-2xl bg-[#2D2F4C] border border-[#9A8CC3]/20 flex gap-3">
             <span className="text-xs font-mono font-medium text-[#9A8CC3] shrink-0">01</span>
             <div>
-              <h4 className="text-xs font-semibold text-white">Genuine Courtship Only</h4>
+              <h4 className="text-xs font-semibold text-white">Genuine Intentions Only</h4>
               <p className="text-[11px] text-[#B2A4D7] mt-0.5 leading-relaxed">
                 Asking for or offering allowances, emergency funds, GCash, or gifts is strictly prohibited.
               </p>

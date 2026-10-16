@@ -248,6 +248,11 @@ export default function MyProfilePage() {
     setUserLanguages(updated);
   };
 
+  const extractUnit = (label: string, unit: string): string | null => {
+    const m = String(label).match(new RegExp('\\((\\d+) ' + unit + '\\)'));
+    return m ? m[1] : null;
+  };
+
   const toggleHobby = (tag: string) => {
     setInterests((prev) =>
       prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
@@ -278,8 +283,8 @@ export default function MyProfilePage() {
       wants_kids: wantsKids,
       relocation,
       languages: userLanguages,
-      height: height || null,
-      weight: weight || null,
+      height: (() => { const cm = extractUnit(height, 'cm') || (/^\\d+$/.test(String(height)) ? String(height) : null); return cm ? cm + ' cm' : null; })(),
+weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(weight)) ? String(weight) : null); return kg ? Number(kg) : null; })(),
       drinking,
       smoking,
       updated_at: new Date().toISOString(),
