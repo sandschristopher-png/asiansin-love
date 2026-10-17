@@ -418,7 +418,7 @@ function DiscoverContent() {
         <section aria-label="Search and Filters" className="w-full mb-4 flex items-center gap-2">
           <div className="shrink-0 flex items-center gap-1.5">
             {searchOpen || searchQuery ? (
-              <div className={`h-9 flex items-center gap-1 bg-white border border-[#DDD7E5] focus-within:border-[#6555B8] rounded-full pl-3 pr-2 shadow-2xs transition-all ${searchAnimating ? 'animate-[slideIn_200ms_cubic-bezier(0.16,1,0.3,1)]' : ''}`}>
+              <div className={`flex-1 min-w-0 h-9 flex items-center gap-1 bg-white border border-[#DDD7E5] focus-within:border-[#6555B8] rounded-full pl-3 pr-2 shadow-2xs transition-all ${searchAnimating ? 'animate-[slideIn_200ms_cubic-bezier(0.16,1,0.3,1)]' : ''}`}>
                 <Search className="w-3.5 h-3.5 text-[#8C849B] shrink-0" />
                 <input
                   autoFocus
@@ -426,7 +426,7 @@ function DiscoverContent() {
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="City or username"
-                  className="w-28 bg-transparent text-xs text-[#1C1924] placeholder-[#8C849B] focus:outline-none"
+                  className="flex-1 w-full bg-transparent text-xs text-[#1C1924] placeholder-[#8C849B] focus:outline-none"
                 />
                 <button
                   type="button"
@@ -472,6 +472,7 @@ function DiscoverContent() {
           </div>
 
           {/* Horizontally Scrolling Category Pills */}
+          {!(searchOpen || searchQuery) && (
           <div className="flex-1 min-w-0 overflow-x-auto no-scrollbar touch-pan-x select-none cursor-grab active:cursor-grabbing" onWheel={(e) => { if (e.deltaY !== 0) { e.currentTarget.scrollLeft += e.deltaY; } }} onMouseDown={(e) => { const el = e.currentTarget; el.dataset.dragging = "1"; el.dataset.startX = String(e.pageX); el.dataset.scrollLeft = String(el.scrollLeft); }} onMouseMove={(e) => { const el = e.currentTarget; if (el.dataset.dragging !== "1") return; e.preventDefault(); el.scrollLeft = Number(el.dataset.scrollLeft) - (e.pageX - Number(el.dataset.startX)) * 1.3; }} onMouseUp={(e) => { e.currentTarget.dataset.dragging = "0"; }} onMouseLeave={(e) => { e.currentTarget.dataset.dragging = "0"; }}>
             <div className="flex items-center gap-1.5 w-max">
               {DISCOVERY_MODES.map((mode) => {
@@ -494,6 +495,7 @@ function DiscoverContent() {
               })}
             </div>
           </div>
+          )}
         </section>
 
         {/* 2-Column Feed Grid */}
