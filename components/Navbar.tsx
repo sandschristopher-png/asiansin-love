@@ -158,7 +158,7 @@ export function Navbar() {
 
   const getPageTitle = () => {
     if (!pathname || pathname === '/' || pathname === '/discover') return null;
-    if (pathname.startsWith('/favorites') || pathname.startsWith('/saved')) return 'Saved Profiles';
+    if (pathname.startsWith('/favorites') || pathname.startsWith('/saved')) return 'Sparks';
     if (pathname.startsWith('/chat') || pathname.startsWith('/messages')) return 'Messages';
     if (pathname === '/notifications') return 'Notifications';
     if (pathname === '/settings') return 'Settings';

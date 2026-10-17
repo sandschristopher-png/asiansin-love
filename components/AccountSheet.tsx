@@ -68,7 +68,7 @@ export function AccountSheet({ isOpen, onClose }: AccountSheetProps) {
             onClick={onClose}
             className="p-3.5 rounded-2xl bg-[#2D2F4C] border border-[#9A8CC3]/25 text-white flex items-center justify-between touch-press"
           >
-            <span>Saved Profiles</span>
+            <span>Sparks</span>
             <span className="text-[#9A8CC3]">â†’</span>
           </Link>
 
