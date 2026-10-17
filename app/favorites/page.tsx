@@ -3,7 +3,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { Heart, MapPin, CheckCircle, ShieldCheck, Loader2, Sparkles } from 'lucide-react';
+import { CheckCircle, Loader2, Zap } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 
 interface FavoriteProfile {
@@ -115,12 +115,12 @@ export default function FavoritesPage() {
         <div className="py-16 sm:py-24 text-center">
           <div className="space-y-4 max-w-sm mx-auto">
             <div className="w-14 h-14 rounded-2xl bg-[#F0EBF8] text-[#6555b8] flex items-center justify-center mx-auto transition-transform">
-              <Sparkles className="w-6 h-6" />
+              <Zap className="w-6 h-6 fill-[#6555B8]" />
             </div>
             <div className="space-y-1.5">
               <h2 className="text-base sm:text-lg font-medium text-[#1C1924]">No saved profiles yet</h2>
               <p className="text-xs sm:text-sm text-[#756D82] leading-relaxed">
-                When you discover someone who stands out, tap the bookmark or heart on their profile to save them here.
+                When you discover someone who stands out, tap the spark button on their profile card to save them here.
               </p>
             </div>
             <div className="pt-2">
@@ -153,7 +153,7 @@ export default function FavoritesPage() {
                 {/* Reputation Badge */}
                 {profile.repScore !== undefined && (
                   <div className="absolute top-2.5 left-2.5 z-10 flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/55 backdrop-blur-md border border-white/20 text-[10px] font-semibold text-[#E5DEFF]">
-                    <ShieldCheck className="w-3 h-3 text-[#A78BFA] shrink-0" />
+                    
                     <span>{profile.repScore}%</span>
                   </div>
                 )}
@@ -174,7 +174,7 @@ export default function FavoritesPage() {
                     className="w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center bg-rose-500 hover:bg-rose-600 border border-rose-400 text-white shadow-md transition-all active:scale-90"
                     title="Remove from bookmarks"
                   >
-                    <Heart className="w-4 h-4 sm:w-5 sm:h-5 fill-white" />
+                    <Zap className="w-4 h-4 sm:w-5 sm:h-5 fill-white" />
                   </button>
                 </div>
               </div>
@@ -189,11 +189,7 @@ export default function FavoritesPage() {
                     </h3>
                   </div>
                   <p className="text-xs font-medium text-[#756D82] flex items-center gap-1.5 truncate">
-                    <MapPin
-                      className={'w-3 h-3 shrink-0 ' + (
-                        profile.location_source === 'gps_verified' ? 'text-emerald-500' : 'text-[#8C849B]'
-                      )}
-                    />
+                    
                     <span className="truncate">{profile.location ? profile.location.split(',')[0] : 'Unknown'}</span>
                   </p>
                 </Link>
