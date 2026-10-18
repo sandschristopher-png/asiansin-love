@@ -13,12 +13,9 @@ export async function GET(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const { data, error } = await supabase
+  const { data: rows, error } = await supabase
     .from('notifications')
-    .select(`
-      id, type, payload, is_read, created_at,
-      actor:actor_id (id, username, avatar_url)
-    `)
+    .select('id, user_id, actor_id, type, payload, is_read, created_at')
     .eq('user_id', user.id)
     .order('created_at', { ascending: false })
     .limit(30);
@@ -28,8 +25,23 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Failed to load notifications' }, { status: 500 });
   }
 
-  const unread_count = data.filter((n: any) => !n.is_read).length;
-  return NextResponse.json({ notifications: data ?? [], unread_count });
+  const actorIds = [...new Set((rows ?? []).filter((r: any) => r.actor_id).map((r: any) => r.actor_id))];
+  const actorMap: Record<string, any> = {};
+  if (actorIds.length > 0) {
+    const { data: actors } = await supabase
+      .from('profiles')
+      .select('id, username, avatar_url')
+      .in('id', actorIds);
+    (actors ?? []).forEach((a: any) => { actorMap[a.id] = a; });
+  }
+
+  const notifications = (rows ?? []).map((r: any) => {
+    const { actor_id, ...rest } = r;
+    return { ...rest, actor: actor_id ? (actorMap[actor_id] ?? null) : null };
+  });
+
+  const unread_count = notifications.filter((n: any) => !n.is_read).length;
+  return NextResponse.json({ notifications, unread_count });
 }
 
 export async function POST(req: NextRequest) {

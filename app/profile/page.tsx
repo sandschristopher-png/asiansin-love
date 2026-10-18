@@ -414,7 +414,7 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
                 className="text-xl sm:text-[22px] font-bold text-[#1C1924] tracking-tight"
                 style={{ fontFamily: 'var(--font-brand)' }}
               >
-                @{username}{age ? ', ' + age : ''}
+                {username.replace(/^@/, '')}{age ? ', ' + age : ''}
               </h2>
               <div className="flex items-center gap-1.5 mt-0.5">
                 <MapPin className="w-3.5 h-3.5 text-[#6555B8]" />
