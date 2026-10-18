@@ -90,6 +90,10 @@ export function BottomNav() {
         setUnreadCount(0);
       }
     });
+  if (pathname?.startsWith('/chat')) return null;
+
+    
+
 
     return () => {
       isCancelled = true;

@@ -123,7 +123,7 @@ export default function PricingPage() {
             </div>
             <div className="text-right">
               <div className="text-2xl font-black text-[#181126] tracking-tight leading-none">
-                $19.99
+                $14.99
               </div>
               <div className="text-[10px] text-[#8B7E9F] mt-0.5">/ month</div>
             </div>
@@ -172,7 +172,7 @@ export default function PricingPage() {
             ) : (
               <>
                 <HeartHandshake className="w-4 h-4" />
-                Upgrade to AIL+ &bull; $19.99/mo
+                Upgrade to AIL+ &bull; $14.99/mo
               </>
             )}
           </button>

@@ -18,6 +18,7 @@ export function Navbar() {
   const menuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const pathname = usePathname();
+  const isChatThread = pathname?.startsWith('/chat');
 
   useEffect(() => {
     setMenuOpen(false);
@@ -136,10 +137,10 @@ export function Navbar() {
         setMenuOpen(false);
       }
     }
-    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('pointerdown', handleClickOutside);
     document.addEventListener('touchstart', handleClickOutside);
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('pointerdown', handleClickOutside);
       document.removeEventListener('touchstart', handleClickOutside);
     };
   }, []);
@@ -169,9 +170,11 @@ export function Navbar() {
 
   const pageTitle = getPageTitle();
 
+  if (isChatThread) return null;
+
   return (
-    <header className="sticky top-0 z-40 w-full bg-white/75 backdrop-blur-md backdrop-saturate-150 border-b border-[#DDD7E5]/40 shadow-[0_2px_12px_rgba(0,0,0,0.03)] transition-all pt-[env(safe-area-inset-top,0px)]">
-      <div className="w-full px-4 h-14 flex items-center justify-between relative">
+    <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md backdrop-saturate-150 border-b border-[#DDD7E5]/40 shadow-[0_2px_12px_rgba(0,0,0,0.03)] transition-all border-[#ECE8F4]/80">
+      <div className="w-full px-4 h-12 flex items-center justify-between relative">
 
         <div className="flex items-center gap-2 min-w-0">
           <div
@@ -180,7 +183,7 @@ export function Navbar() {
             style={{ animation: 'fadeInTitle 220ms ease-out forwards' }}
           >
             {!pageTitle ? (
-              <BrandLogo href={user ? "/discover" : "/"} size="sm" />
+              <BrandLogo href={user ? "/discover" : "/"} size="md" />
             ) : (
               <div className="flex items-center gap-2.5">
                 <button

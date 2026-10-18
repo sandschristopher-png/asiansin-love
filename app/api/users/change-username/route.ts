@@ -52,7 +52,7 @@ export async function POST(req: Request) {
     // Check if user has an unlocked username credit or Plus access
     if (profile.username && !isPlusOrPremium && !body.bypass_token) {
       return NextResponse.json({
-        error: 'Changing an established handle requires Asians in Love Plus or a $19.99 handle change fee.',
+        error: 'Changing an established handle requires Asians in Love Plus or a $14.99 handle change fee.',
         requires_payment: true,
         fee_cents: 1999,
       }, { status: 403 });

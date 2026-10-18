@@ -152,7 +152,7 @@ export default function UpgradeModal({
             </div>
             <div className="text-right">
               <div className="text-xl font-bold text-neutral-900 tracking-tight">
-                $19.99
+                $14.99
                 <span className="text-xs font-normal text-neutral-500 ml-0.5">/mo</span>
               </div>
             </div>

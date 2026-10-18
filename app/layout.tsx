@@ -8,7 +8,6 @@ const comfortaa = Comfortaa({
 });
 import './globals.css';
 import { LayoutShell } from '@/components/LayoutShell';
-import { GlobalNotificationListener } from '@/components/GlobalNotificationListener';
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -43,7 +42,6 @@ export default function RootLayout({
     <html lang="en" className={`h-full ${plusJakarta.variable} ${outfit.variable} ${comfortaa.variable}`}>
       <body className="font-sans bg-[#ECE9F1] text-[#1C1924] h-full selection:bg-[#6555B8] selection:text-white antialiased overflow-hidden">
         <LayoutShell>{children}</LayoutShell>
-        <GlobalNotificationListener />
       </body>
     </html>
   );

@@ -208,7 +208,7 @@ export default function SettingsPage() {
                   AIL+ Membership
                 </h2>
                 <span className="text-[9px] font-bold uppercase tracking-wider bg-[#6555b8] text-white px-2 py-0.5 rounded-full">
-                  $19.99/mo
+                  $14.99/mo
                 </span>
               </div>
               <p className="text-xs text-[#6C637B] leading-relaxed">

@@ -1,0 +1,4303 @@
+=== 1. GIT STATUS (MODIFIED / UNTRACKED FILES) ===
+M app/chat/[id]/page.tsx
+ M app/globals.css
+ M app/layout.tsx
+ M build-output.txt
+ M components/BottomNav.tsx
+ M components/Navbar.tsx
+?? readonly-dump.cjs
+
+=== 2. TYPESCRIPT CHECK (READ-ONLY) ===
+TSC OUTPUT:
+components/BottomNav.tsx(38,13): error TS2345: Argument of type '() => (() => void) | null' is not assignable to parameter of type 'EffectCallback'.
+  Type '(() => void) | null' is not assignable to type 'void | Destructor'.
+    Type 'null' is not assignable to type 'void | Destructor'.
+
+
+======================================================
+FILE: app/layout.tsx (EXISTS)
+======================================================
+Total Lines: 51
+1: import type { Metadata, Viewport } from 'next';
+2: import { Comfortaa, Plus_Jakarta_Sans, Outfit } from 'next/font/google';
+3: 
+4: const comfortaa = Comfortaa({
+5:   subsets: ['latin'],
+6:   display: 'swap',
+7:   variable: '--font-logo',
+8: });
+9: import './globals.css';
+10: import { LayoutShell } from '@/components/LayoutShell';
+11: 
+12: const plusJakarta = Plus_Jakarta_Sans({
+13:   subsets: ['latin'],
+14:   weight: ['400','500','600','700','800'],
+15:   variable: '--font-sans',
+16: });
+17: 
+18: const outfit = Outfit({
+19:   subsets: ['latin'],
+20:   weight: ['400','500','600','700','800','900'],
+21:   variable: '--font-brand',
+22: });
+23: 
+24: export const metadata: Metadata = {
+25:   title: 'Asians in Love - Real Connections',
+26:   description: 'A thoughtful platform dedicated to intentional courtship, values-first compatibility, and lifelong marriage.',
+27: };
+28: 
+29: export const viewport: Viewport = {
+30:   width: 'device-width',
+31:   initialScale: 1,
+32:   maximumScale: 1,
+33:   userScalable: false,
+34: };
+35: 
+36: export default function RootLayout({
+37:   children,
+38: }: {
+39:   children: React.ReactNode;
+40: }) {
+41:   return (
+42:     <html lang="en" className={`h-full ${plusJakarta.variable} ${outfit.variable} ${comfortaa.variable}`}>
+43:       <body className="font-sans bg-[#ECE9F1] text-[#1C1924] h-full selection:bg-[#6555B8] selection:text-white antialiased overflow-hidden">
+44:         <LayoutShell>{children}</LayoutShell>
+45:       </body>
+46:     </html>
+47:   );
+48: }
+49: 
+50: 
+51: 
+
+======================================================
+FILE: app/globals.css (EXISTS)
+======================================================
+Total Lines: 142
+1: @import "tailwindcss";
+2: 
+3: @keyframes slideDown {
+4:   0% {
+5:     opacity: 0;
+6:     transform: translateY(-24px);
+7:   }
+8:   100% {
+9:     opacity: 1;
+10:     transform: translateY(0);
+11:   }
+12: }
+13: 
+14: .animate-slide-down {
+15:   animation: slideDown 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+16: }
+17: 
+18: @keyframes pairsPageIn {
+19:   from {
+20:     opacity: 0;
+21:     transform: translateY(6px);
+22:   }
+23:   to {
+24:     opacity: 1;
+25:     transform: translateY(0);
+26:   }
+27: }
+28: 
+29: main {
+30:   animation: pairsPageIn 260ms cubic-bezier(0.16, 1, 0.3, 1) both;
+31: }
+32: 
+33: @keyframes breathe {
+34:   0%, 100% { opacity: 1; transform: scale(1); }
+35:   50% { opacity: 0.45; transform: scale(0.85); }
+36: }
+37: 
+38: .presence-dot {
+39:   animation: breathe 2.6s ease-in-out infinite;
+40: }
+41: 
+42: /* Touch and momentum scrolling */
+43: *, *::before, *::after {
+44:   -webkit-tap-highlight-color: transparent;
+45: }
+46: 
+47: html, body {
+48:   scroll-behavior: smooth;
+49:   -webkit-overflow-scrolling: touch;
+50: }
+51: 
+52: body {
+53:   background-color: #F2EEF7 !important;
+54:   color: #1C1924;
+55: }
+56: 
+57: .smooth-scroll {
+58:   scroll-behavior: smooth;
+59:   -webkit-overflow-scrolling: touch;
+60:   overscroll-behavior-y: contain;
+61: }
+62: 
+63: /* Micro-press transitions for interactive elements */
+64: button,
+65: a,
+66: [role="button"],
+67: input[type="button"],
+68: input[type="submit"] {
+69:   transition: transform 140ms cubic-bezier(0.2, 0, 0, 1),
+70:               opacity 140ms ease,
+71:               box-shadow 180ms ease,
+72:               background-color 150ms ease,
+73:               border-color 150ms ease,
+74:               color 150ms ease;
+75:   will-change: transform;
+76: }
+77: 
+78: button:active:not(:disabled),
+79: a:active,
+80: [role="button"]:active {
+81:   transform: scale(0.972);
+82: }
+83: 
+84: .rounded-3xl,
+85: .rounded-2xl {
+86:   transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
+87:               box-shadow 220ms cubic-bezier(0.16, 1, 0.3, 1);
+88: }
+89: 
+90: /* Scrollbar suppression */
+91: .no-scrollbar::-webkit-scrollbar {
+92:   display: none;
+93:   width: 0;
+94:   height: 0;
+95:   background: transparent;
+96: }
+97: 
+98: .no-scrollbar {
+99:   -ms-overflow-style: none;
+100:   scrollbar-width: none;
+101: }
+102: 
+103: 
+104: .font-logo {
+105:   font-family: var(--font-logo), var(--font-brand), sans-serif;
+106: }
+107: 
+108: /* Hide Next.js bottom-left N / Issue dev indicator badge */
+109: nextjs-portal,
+110: [data-nextjs-toast],
+111: [data-next-badge-root],
+112: [data-nextjs-dev-tools-button] {
+113:   display: none !important;
+114: }
+115: 
+116: @keyframes filterSheetIn {
+117:   from { transform: translateY(100%); }
+118:   to { transform: translateY(0); }
+119: }
+120: 
+121: @keyframes slideIn { from { opacity: 0; transform: translateX(-10px); } to { opacity: 1; transform: translateX(0); } }
+122: 
+123: @keyframes slideOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(-12px); } }
+124: 
+125: /* Launch Polish: Fluid Spring Animations & Scrollbars */
+126: @keyframes fadeInUp {
+127:   from { opacity: 0; transform: translateY(8px) scale(0.985); }
+128:   to   { opacity: 1; transform: translateY(0) scale(1); }
+129: }
+130: @keyframes slideIn {
+131:   from { opacity: 0; transform: translateX(-8px) scale(0.97); }
+132:   to   { opacity: 1; transform: translateX(0) scale(1); }
+133: }
+134: @keyframes scaleIn {
+135:   from { opacity: 0; transform: scale(0.95); }
+136:   to   { opacity: 1; transform: scale(1); }
+137: }
+138: .animate-fade-in-up { animation: fadeInUp 260ms cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+139: .animate-scale-in   { animation: scaleIn 180ms cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+140: .no-scrollbar::-webkit-scrollbar { display: none; }
+141: .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+142: 
+
+======================================================
+FILE: components/LayoutShell.tsx (EXISTS)
+======================================================
+Total Lines: 27
+1: 'use client';
+2: 
+3: import React from 'react';
+4: import { usePathname } from 'next/navigation';
+5: import { Navbar } from '@/components/Navbar';
+6: import { BottomNav } from '@/components/BottomNav';
+7: import { RealtimeMatchToast } from '@/components/RealtimeMatchToast';
+8: 
+9: export function LayoutShell({ children }: { children: React.ReactNode }) {
+10:   const pathname = usePathname();
+11:   const isMarketingOrAuth = pathname === '/' || pathname?.startsWith('/login') || pathname?.startsWith('/onboarding');
+12: 
+13:   return (
+14:     <div className="w-full max-w-[430px] h-screen h-[100dvh] mx-auto bg-white flex flex-col sm:shadow-[0_0_50px_rgba(0,0,0,0.12)] relative sm:border-x sm:border-black/[0.06] overflow-hidden">
+15:       <div className="flex-1 flex flex-col min-h-0 relative overflow-y-auto overscroll-y-contain smooth-scroll no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+16:         {!isMarketingOrAuth && <Navbar />}
+17:         <main className="flex-1 flex flex-col w-full min-h-0">
+18:           {children}
+19:         </main>
+20:         <RealtimeMatchToast />
+21:       </div>
+22:       {!isMarketingOrAuth && <BottomNav />}
+23:     </div>
+24:   );
+25: }
+26: 
+27: export default LayoutShell;
+
+======================================================
+FILE: components/Navbar.tsx (EXISTS)
+======================================================
+Total Lines: 317
+1: 'use client';
+2: 
+3: import { BrandLogo } from '@/components/BrandLogo';
+4: import { notifyUser } from '@/components/InAppToast';
+5: import { notificationService } from '@/lib/notificationService';
+6: import React, { useEffect, useState, useRef } from 'react';
+7: import Link from 'next/link';
+8: import { useRouter, usePathname } from 'next/navigation';
+9: import { User, Settings, LogOut, Bell, ArrowLeft, Share2, Check } from 'lucide-react';
+10: import { supabase } from '@/lib/supabase/client';
+11: 
+12: export function Navbar() {
+13:   const [user, setUser] = useState<any>(null);
+14:   const [profile, setProfile] = useState<any>(null);
+15:   const [menuOpen, setMenuOpen] = useState(false);
+16:   const [inviteCopied, setInviteCopied] = useState(false);
+17:   const [hasUnread, setHasUnread] = useState(false);
+18:   const menuRef = useRef<HTMLDivElement>(null);
+19:   const router = useRouter();
+20:   const pathname = usePathname();
+21:   const isChatThread = pathname?.startsWith('/chat');
+22: 
+23:   useEffect(() => {
+24:     setMenuOpen(false);
+25:   }, [pathname]);
+26: 
+27:   const handleInviteShare = async () => {
+28:     const shareData = {
+29:       title: `asiansinlove`,
+30:       text: 'Find meaningful connections on Asians in Love:',
+31:       url: typeof window !== 'undefined' ? window.location.origin : 'https://asiansin.love',
+32:     };
+33:     if (typeof navigator !== 'undefined' && navigator.share) {
+34:       try {
+35:         await navigator.share(shareData);
+36:         setMenuOpen(false);
+37:         return;
+38:       } catch (e: any) {
+39:         if (e.name === 'AbortError') return;
+40:       }
+41:     }
+42:     try {
+43:       await navigator.clipboard.writeText(shareData.url);
+44:       setInviteCopied(true);
+45:       setTimeout(() => {
+46:         setInviteCopied(false);
+47:         setMenuOpen(false);
+48:       }, 1500);
+49:     } catch {}
+50:   };
+51: 
+52:   async function checkUnread(userId: string) {
+53:     const { count } = await supabase
+54:       .from('notifications')
+55:       .select('*', { count: 'exact', head: true })
+56:       .eq('user_id', userId)
+57:       .eq('is_read', false);
+58:     setHasUnread((count ?? 0) > 0);
+59:   }
+60: 
+61:   useEffect(() => {
+62:     let channel: any;
+63: 
+64:     async function loadUser() {
+65:       const { data: { user } } = await supabase.auth.getUser();
+66:       setUser(user);
+67: 
+68:       if (user) {
+69:         checkUnread(user.id);
+70:         const { data } = await supabase
+71:           .from('profiles')
+72:           .select('username, display_name, avatar_url')
+73:           .eq('id', user.id)
+74:           .single();
+75:         if (data) setProfile(data);
+76: 
+77:         const channelTopic = `user-notifications-${user.id}`;
+78:         const existingChannel = supabase.getChannels().find((c: any) => c.topic === `realtime:${channelTopic}`);
+79:         if (existingChannel) {
+80:           await supabase.removeChannel(existingChannel);
+81:         }
+82:         channel = supabase.channel(channelTopic)
+83:           .on(
+84:             'postgres_changes',
+85:             {
+86:               event: '*',
+87:               schema: 'public',
+88:               table: 'notifications',
+89:               filter: `user_id=eq.${user.id}`,
+90:             },
+91:             (payload: any) => {
+92:               checkUnread(user.id);
+93: 
+94:               if (payload.eventType === 'INSERT' && payload.new) {
+95:                 const n = payload.new;
+96:                 notifyUser({
+97:                   senderName: n.title || `asiansinlove`,
+98:                   avatarUrl: '',
+99:                   message: n.description || 'You have a new update.',
+100:                   chatUrl: n.link_url || '/notifications',
+101:                 });
+102:                 notificationService.playChime();
+103:               }
+104:             }
+105:           )
+106:           .subscribe();
+107:       }
+108:     }
+109:     loadUser();
+110: 
+111:     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
+112:       const currentUser = session?.user ?? null;
+113:       setUser(currentUser);
+114:       if (currentUser) {
+115:         checkUnread(currentUser.id);
+116:         const { data } = await supabase
+117:           .from('profiles')
+118:           .select('username, display_name, avatar_url')
+119:           .eq('id', currentUser.id)
+120:           .single();
+121:         if (data) setProfile(data);
+122:       } else {
+123:         setProfile(null);
+124:         setHasUnread(false);
+125:       }
+126:     });
+127: 
+128:     return () => {
+129:       subscription.unsubscribe();
+130:       if (channel) supabase.removeChannel(channel);
+131:     };
+132:   }, []);
+133: 
+134:   useEffect(() => {
+135:     function handleClickOutside(event: MouseEvent | TouchEvent) {
+136:       if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
+137:         setMenuOpen(false);
+138:       }
+139:     }
+140:     document.addEventListener('pointerdown', handleClickOutside);
+141:     document.addEventListener('touchstart', handleClickOutside);
+142:     return () => {
+143:       document.removeEventListener('pointerdown', handleClickOutside);
+144:       document.removeEventListener('touchstart', handleClickOutside);
+145:     };
+146:   }, []);
+147: 
+148:   const handleSignOut = async () => {
+149:     setMenuOpen(false);
+150:     await supabase.auth.signOut();
+151:     setUser(null);
+152:     setProfile(null);
+153:     setHasUnread(false);
+154:     window.location.href = '/';
+155:   };
+156: 
+157:   const displayName = profile?.username || 'Member';
+158:   const avatarUrl = profile?.avatar_url || user?.user_metadata?.avatar_url || null;
+159: 
+160:   const getPageTitle = () => {
+161:     if (!pathname || pathname === '/' || pathname === '/discover') return null;
+162:     if (pathname.startsWith('/favorites') || pathname.startsWith('/saved')) return 'Sparks';
+163:     if (pathname.startsWith('/chat') || pathname.startsWith('/messages')) return 'Messages';
+164:     if (pathname === '/notifications') return 'Notifications';
+165:     if (pathname === '/settings') return 'Settings';
+166:     if (pathname === '/profile') return 'My Profile';
+167:     if (pathname.startsWith('/profile/')) return 'Profile';
+168:     return null;
+169:   };
+170: 
+171:   const pageTitle = getPageTitle();
+172: 
+173:   if (isChatThread) return null;
+174: 
+175:   return (
+176:     <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md backdrop-saturate-150 border-b border-[#DDD7E5]/40 shadow-[0_2px_12px_rgba(0,0,0,0.03)] transition-all sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-[#ECE8F4]/80">
+177:       <div className="w-full px-4 h-12 flex items-center justify-between relative">
+178: 
+179:         <div className="flex items-center gap-2 min-w-0">
+180:           <div
+181:             key={pageTitle || 'brand-home'}
+182:             className="transition-all duration-200 ease-out flex items-center"
+183:             style={{ animation: 'fadeInTitle 220ms ease-out forwards' }}
+184:           >
+185:             {!pageTitle ? (
+186:               <BrandLogo href={user ? "/discover" : "/"} size="sm" />
+187:             ) : (
+188:               <div className="flex items-center gap-2.5">
+189:                 <button
+190:                   type="button"
+191:                   onClick={() => router.back()}
+192:                   className="w-8 h-8 rounded-full flex items-center justify-center text-[#4C3B75] hover:bg-black/5 transition-colors -ml-1 sm:hidden"
+193:                   aria-label="Back"
+194:                 >
+195:                   <ArrowLeft className="w-5 h-5" />
+196:                 </button>
+197:                 <h1
+198:                   className="text-[19px] sm:text-[21px] font-semibold text-[#4C3B75] tracking-[-0.025em] leading-snug pb-0.5 select-none truncate"
+199:                   style={{ fontFamily: 'var(--font-brand)' }}
+200:                 >
+201:                   {pageTitle}
+202:                 </h1>
+203:               </div>
+204:             )}
+205:           </div>
+206:         </div>
+207: 
+208:         <div className="flex items-center gap-2">
+209:           {user ? (
+210:             <>
+211:               <Link
+212:                 href="/notifications"
+213:                 className="relative h-9 w-9 rounded-full bg-transparent hover:bg-gray-100 flex items-center justify-center text-gray-600 transition-colors"
+214:                 title="Notifications"
+215:               >
+216:                 <Bell className="w-5 h-5 stroke-[1.8]" />
+217:                 {hasUnread && (
+218:                   <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-[#6555B8] ring-2 ring-white" />
+219:                 )}
+220:               </Link>
+221: 
+222:               <div className="relative" ref={menuRef}>
+223:                 <button
+224:                   type="button"
+225:                   onClick={() => setMenuOpen(!menuOpen)}
+226:                   className="w-8 h-8 rounded-full overflow-hidden bg-purple-100 border border-black/10 flex items-center justify-center transition-transform active:scale-95"
+227:                   title="Account Menu"
+228:                 >
+229:                   {avatarUrl ? (
+230:                     <img src={avatarUrl} alt={displayName} className="w-full h-full object-cover" />
+231:                   ) : (
+232:                     <User className="w-4 h-4 text-[#6555B8]" />
+233:                   )}
+234:                 </button>
+235: 
+236:                 {menuOpen && (
+237:                   <div className="absolute right-0 mt-2.5 w-56 rounded-2xl bg-white border border-black/10 shadow-xl py-2 z-[200] animate-in fade-in zoom-in-95 duration-100">
+238:                     <div className="px-4 py-2 border-b border-gray-100">
+239:                       <p className="text-[11px] uppercase font-medium tracking-wider text-gray-400">Signed In As</p>
+240:                       <p className="text-sm font-semibold text-gray-900 truncate">@{profile?.username || displayName}</p>
+241:                     </div>
+242: 
+243:                     <div className="py-1">
+244:                       <Link
+245:                         href="/profile"
+246:                         onClick={() => setMenuOpen(false)}
+247:                         className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+248:                       >
+249:                         <User className="w-4 h-4 text-[#6555B8]" />
+250:                         <span>My Profile</span>
+251:                       </Link>
+252: 
+253:                       <Link
+254:                         href="/settings"
+255:                         onClick={() => setMenuOpen(false)}
+256:                         className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+257:                       >
+258:                         <Settings className="w-4 h-4 text-[#6555B8]" />
+259:                         <span>Settings</span>
+260:                       </Link>
+261: 
+262:                       <button
+263:                         type="button"
+264:                         onClick={handleInviteShare}
+265:                         className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left"
+266:                       >
+267:                         {inviteCopied ? (
+268:                           <Check className="w-4 h-4 text-emerald-600" />
+269:                         ) : (
+270:                           <Share2 className="w-4 h-4 text-[#6555B8]" />
+271:                         )}
+272:                         <span className={inviteCopied ? "text-emerald-600 font-medium" : ""}>
+273:                           {inviteCopied ? "Link Copied!" : "Invite Friends"}
+274:                         </span>
+275:                       </button>
+276:                     </div>
+277: 
+278:                     <div className="border-t border-gray-100 pt-1">
+279:                       <button
+280:                         type="button"
+281:                         onClick={handleSignOut}
+282:                         className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-rose-600 hover:bg-rose-50 transition-colors text-left"
+283:                       >
+284:                         <LogOut className="w-4 h-4" />
+285:                         <span>Sign Out</span>
+286:                       </button>
+287:                     </div>
+288:                   </div>
+289:                 )}
+290:               </div>
+291:             </>
+292:           ) : (
+293:             <Link
+294:               href="/login"
+295:               className="px-4 py-1.5 rounded-full bg-[#6555B8] hover:bg-[#5343A3] text-white text-xs font-semibold tracking-wide transition shadow-sm"
+296:             >
+297:               Sign In
+298:             </Link>
+299:           )}
+300:         </div>
+301: 
+302:       </div>
+303:       <style jsx global>{`
+304:         @keyframes fadeInTitle {
+305:           from {
+306:             opacity: 0;
+307:             transform: translateX(-4px);
+308:           }
+309:           to {
+310:             opacity: 1;
+311:             transform: translateX(0);
+312:           }
+313:         }
+314:       `}</style>
+315:     </header>
+316:   );
+317: }
+
+======================================================
+FILE: components/BottomNav.tsx (EXISTS)
+======================================================
+Total Lines: 179
+1: 'use client';
+2: 
+3: import React, { useState, useEffect } from 'react';
+4: import Link from 'next/link';
+5: import { usePathname } from 'next/navigation';
+6: import { 
+7:   Compass, 
+8:   Heart,
+9:   Zap, 
+10:   MessageCircle, 
+11:   User 
+12: } from 'lucide-react';
+13: import { supabase } from '@/lib/supabase/client';
+14: 
+15: const PUBLIC_ROUTES = [
+16:   '/',
+17:   '/login',
+18:   '/signup',
+19:   '/forgot-password',
+20:   '/terms',
+21:   '/privacy',
+22:   '/standards',
+23:   '/pricing'
+24: ];
+25: 
+26: export function BottomNav() {
+27:   const [unreadCount, setUnreadCount] = useState(0);
+28:   const [user, setUser] = useState<any>(null);
+29:   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
+30:   const pathname = usePathname();
+31: 
+32:   const isActive = (path: string) => {
+33:     if (!pathname) return false;
+34:     if (path === '/discover') return pathname === '/discover';
+35:     return pathname === path || pathname.startsWith(`${path}/`);
+36:   };
+37: 
+38:   useEffect(() => {
+39:     let channel: any = null;
+40:     let isCancelled = false;
+41: 
+42:     const fetchAndSubscribeUnread = async () => {
+43:       const { data: { session } } = await supabase.auth.getSession();
+44:       if (!session || isCancelled) return;
+45:       const uid = session.user.id;
+46:       setUser(session.user);
+47: 
+48:       const { count } = await supabase
+49:         .from('messages')
+50:         .select('*', { count: 'exact', head: true })
+51:         .eq('receiver_id', uid)
+52:         .eq('is_read', false);
+53: 
+54:       if (isCancelled) return;
+55:       setUnreadCount(count || 0);
+56: 
+57:       const channelName = `nav-unread-${uid}-${Date.now()}`;
+58:       channel = supabase
+59:         .channel(channelName)
+60:         .on(
+61:           'postgres_changes',
+62:           {
+63:             event: '*',
+64:             schema: 'public',
+65:             table: 'messages',
+66:             filter: `receiver_id=eq.${uid}`,
+67:           },
+68:           async () => {
+69:             if (isCancelled) return;
+70:             const { count: freshCount } = await supabase
+71:               .from('messages')
+72:               .select('*', { count: 'exact', head: true })
+73:               .eq('receiver_id', uid)
+74:               .eq('is_read', false);
+75:             if (!isCancelled) {
+76:               setUnreadCount(freshCount || 0);
+77:             }
+78:           }
+79:         )
+80:         .subscribe();
+81:     };
+82: 
+83:     fetchAndSubscribeUnread();
+84: 
+85:     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event: any, session: any) => {
+86:       setUser(session?.user ?? null);
+87:       if (session?.user) {
+88:         fetchAndSubscribeUnread();
+89:       } else {
+90:         setUnreadCount(0);
+91:       }
+92:     });
+93: 
+94:     if (pathname?.startsWith('/chat')) return null;
+95: 
+96: 
+97:     return () => {
+98:       isCancelled = true;
+99:       if (channel) {
+100:         supabase.removeChannel(channel);
+101:       }
+102:       subscription.unsubscribe();
+103:     };
+104:   }, []);
+105: 
+106:   useEffect(() => {
+107:     if (typeof window === 'undefined' || !window.visualViewport) return;
+108: 
+109:     const handleResize = () => {
+110:       if (!window.visualViewport) return;
+111:       const isKeyboard = window.visualViewport.height < window.innerHeight * 0.82;
+112:       setIsKeyboardOpen(isKeyboard);
+113:     };
+114: 
+115:     window.visualViewport.addEventListener('resize', handleResize);
+116:     return () => {
+117:       window.visualViewport?.removeEventListener('resize', handleResize);
+118:     };
+119:   }, []);
+120: 
+121:   if (!user || PUBLIC_ROUTES.includes(pathname) || pathname?.startsWith('/onboarding')) {
+122:     return null;
+123:   }
+124: 
+125:   const navItems = [
+126:     { href: '/discover', label: 'Discover', icon: Compass },
+127:     { href: '/favorites', label: 'Sparks', icon: Zap },
+128:     { href: '/messages', label: 'Messages', icon: MessageCircle, badge: unreadCount },
+129:     { href: '/profile', label: 'Profile', icon: User },
+130:   ];
+131: 
+132:   return (
+133:     <div 
+134:       className={`fixed bottom-3.5 left-1/2 -translate-x-1/2 w-[calc(100%-1.75rem)] max-w-[390px] z-50 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+135:         isKeyboardOpen ? 'translate-y-24 opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'
+136:       }`}
+137:     >
+138:       <nav className="bg-white/92 backdrop-blur-2xl border border-[#E5E1EC]/80 shadow-[0_12px_36px_rgba(101,85,184,0.14),0_2px_8px_rgba(0,0,0,0.04)] rounded-full px-2 py-1.5 flex items-center justify-around select-none">
+139:         {navItems.map((item) => {
+140:           const active = isActive(item.href);
+141:           const Icon = item.icon;
+142: 
+143:           return (
+144:             <Link
+145:               key={item.href}
+146:               href={item.href}
+147:               className={`relative flex-1 flex flex-col items-center justify-center py-1 px-2 rounded-2xl transition-all duration-200 ease-out active:scale-95 select-none cursor-pointer ${
+148:                 active 
+149:                   ? 'text-[#6555B8]' 
+150:                   : 'text-[#8C849B] hover:text-[#524B5E]'
+151:               }`}
+152:               aria-label={item.label}
+153:             >
+154:               <div className="relative">
+155:                 <Icon 
+156:                   className={`w-5 h-5 transition-transform duration-200 ${active ? 'scale-110' : ''}`} 
+157:                   strokeWidth={active ? 2.3 : 1.75} 
+158:                 />
+159:                 {Boolean(item.badge && item.badge > 0) && (
+160:                   <span className="absolute -top-1 -right-2.5 min-w-[16px] h-4 px-1 rounded-full bg-[#E05375] text-[10px] font-bold text-white flex items-center justify-center shadow-xs pointer-events-none">
+161:                     {item.badge! > 9 ? '9+' : item.badge}
+162:                   </span>
+163:                 )}
+164:               </div>
+165:               <span className={`text-[10px] tracking-tight mt-0.5 leading-tight transition-colors duration-200 ${
+166:                 active ? 'font-bold text-[#6555B8]' : 'font-medium text-[#8C849B]'
+167:               }`}>
+168:                 {item.label}
+169:               </span>
+170:             </Link>
+171:           );
+172:         })}
+173:       </nav>
+174:     </div>
+175:   );
+176: }
+177: 
+178: export default BottomNav;
+179: 
+
+======================================================
+FILE: app/discover/page.tsx (EXISTS)
+======================================================
+Total Lines: 817
+1: 'use client';
+2: import { playMatchChime } from '@/lib/sound';
+3: import React, { useState, useEffect, useMemo, Suspense } from 'react';
+4: import { createPortal } from 'react-dom';
+5: import Link from 'next/link';
+6: import { useSearchParams, useRouter } from 'next/navigation';
+7: import { Camera, Zap, ChevronLeft, ChevronRight, Search, Heart, X as XIcon, CheckCircle, SlidersHorizontal, RotateCcw } from 'lucide-react';
+8: import { supabase } from '@/lib/supabase/client';
+9: import { ActionType, getLocalCardActions, persistCardAction } from '@/lib/interactions';
+10: 
+11: const DISCOVERY_MODES = [
+12:   { id: 'all', label: 'All' },
+13:   { id: 'online', label: 'Online' },
+14:   { id: 'near_me', label: 'Near Me' },
+15:   { id: 'new', label: 'New' },
+16: ] as const;
+17: type DiscoveryModeId = (typeof DISCOVERY_MODES)[number]['id'];
+18: 
+19: const GENDER_LABELS: Record<string, string> = {
+20:   woman: 'Women',
+21:   man: 'Men',
+22:   trans_woman: 'Trans Women',
+23:   trans_man: 'Trans Men',
+24:   non_binary: 'Non-Binary',
+25: };
+26: 
+27: export interface ProfileItem {
+28:   id: string;
+29:   username?: string;
+30:   name: string;
+31:   age: number;
+32:   gender: 'woman' | 'man' | 'trans_woman' | 'trans_man' | 'non_binary';
+33:   location: string;
+34:   latitude?: number | null;
+35:   longitude?: number | null;
+36:   country: string;
+37:   avatarUrl: string;
+38:   photos?: string[];
+39:   recentlyActive?: boolean;
+40:   repScore: number;
+41:   verified: boolean;
+42:   is_plus?: boolean;
+43:   online: boolean;
+44:   intent?: string;
+45:   looking_for?: string;
+46:   interests?: string[];
+47:   created_at?: string;
+48: }
+49: 
+50: function DiscoverCardPhotoCarousel({
+51:   profileId,
+52:   photos,
+53:   avatarUrl,
+54:   name,
+55:   repScore,
+56:   online,
+57:   recentlyActive,
+58: }: {
+59:   profileId: string;
+60:   photos?: string[];
+61:   avatarUrl: string;
+62:   name: string;
+63:   repScore: number;
+64:   online: boolean;
+65:   recentlyActive?: boolean;
+66: }) {
+67:   const [currentIdx, setCurrentIdx] = useState(0);
+68:   const rawList = (photos && photos.length > 0 ? photos : [avatarUrl]).filter(
+69:     (p): p is string => typeof p === 'string' && p.trim().length > 0 && p !== '/placeholder-avatar.svg'
+70:   );
+71:   const uniqueList = Array.from(new Set(rawList));
+72:   const displayPhotos = uniqueList.length > 0 ? uniqueList : [avatarUrl || '/placeholder-avatar.svg'];
+73:   const hasMultiple = displayPhotos.length > 1;
+74: 
+75:   const handlePrev = (e: React.MouseEvent) => {
+76:     e.preventDefault();
+77:     e.stopPropagation();
+78:     setCurrentIdx((prev) => (prev === 0 ? displayPhotos.length - 1 : prev - 1));
+79:   };
+80:   const handleNext = (e: React.MouseEvent) => {
+81:     e.preventDefault();
+82:     e.stopPropagation();
+83:     setCurrentIdx((prev) => (prev === displayPhotos.length - 1 ? 0 : prev + 1));
+84:   };
+85: 
+86:   return (
+87:     <div className="relative block h-full w-full overflow-hidden bg-[#F2EEF7] select-none">
+88:       <Link href={'/profile/' + profileId} className="absolute inset-0 z-0">
+89:         <img
+90:           src={displayPhotos[currentIdx]}
+91:           alt={name}
+92:           className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500 ease-out"
+93:           loading="lazy"
+94:         />
+95:       </Link>
+96:       {displayPhotos.length > 1 && (
+97:         <span className="absolute bottom-2.5 right-2.5 z-20 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-black/55 backdrop-blur-2xs text-white text-[10px] font-semibold pointer-events-none">
+98:           <Camera className="w-3 h-3" />
+99:           {displayPhotos.length}
+100:         </span>
+101:       )}
+102:       <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 z-20 pointer-events-none">
+103:         <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-black/50 backdrop-blur-xs text-[10px] font-semibold text-white">
+104:           <span>{repScore ? repScore + '% Rep' : '100% Rep'}</span>
+105:         </div>
+106:         {online ? (
+107:           <span className="h-2 w-2 rounded-full bg-emerald-500 ring-2 ring-white/90 shadow-xs shrink-0" />
+108:         ) : recentlyActive ? (
+109:           <span className="h-2 w-2 rounded-full bg-amber-400 ring-1.5 ring-white/80 shadow-xs shrink-0" />
+110:         ) : null}
+111:       </div>
+112:       {hasMultiple && (
+113:         <div className="flex items-center justify-between absolute inset-x-1.5 top-1/2 -translate-y-1/2 z-20 pointer-events-none opacity-0 group-hover:opacity-100 transition-opacity">
+114:           <button
+115:             type="button"
+116:             onClick={handlePrev}
+117:             className="pointer-events-auto p-1.5 rounded-full bg-black/40 hover:bg-black/70 text-white backdrop-blur-xs transition active:scale-90 cursor-pointer"
+118:             aria-label="Previous photo"
+119:           >
+120:             <ChevronLeft className="w-4 h-4" />
+121:           </button>
+122:           <button
+123:             type="button"
+124:             onClick={handleNext}
+125:             className="pointer-events-auto p-1.5 rounded-full bg-black/40 hover:bg-black/70 text-white backdrop-blur-xs transition active:scale-90 cursor-pointer"
+126:             aria-label="Next photo"
+127:           >
+128:             <ChevronRight className="w-4 h-4" />
+129:           </button>
+130:         </div>
+131:       )}
+132:     </div>
+133:   );
+134: }
+135: 
+136: function normalizeGenderValue(raw?: string | null): 'woman' | 'man' | 'trans_woman' | 'trans_man' | 'non_binary' {
+137:   const val = String(raw || '').toLowerCase().trim().replace(/[\s-]+/g, '_');
+138:   if (['man', 'men', 'male', 'm', 'guy', 'guys'].includes(val)) return 'man';
+139:   if (['woman', 'women', 'female', 'f', 'lady', 'ladies', 'girl', 'girls'].includes(val)) return 'woman';
+140:   if (['trans_woman', 'trans_women', 'transgender_woman', 'transgender_women', 'trans', 'mtf', 'transfemale'].includes(val))
+141:     return 'trans_woman';
+142:   if (['trans_man', 'trans_men', 'transgender_man', 'transgender_men', 'ftm', 'transmale'].includes(val)) return 'trans_man';
+143:   if (['non_binary', 'nonbinary', 'nb', 'enby'].includes(val)) return 'non_binary';
+144:   return 'woman';
+145: }
+146: 
+147: function DiscoverContent() {
+148:   const router = useRouter();
+149:   const searchParams = useSearchParams();
+150: 
+151:   const [discoveryMode, setDiscoveryMode] = useState<DiscoveryModeId>('all');
+152:   const [currentUserCoords, setCurrentUserCoords] = useState<{ lat: number; lon: number } | null>(null);
+153:   const [viewerSavedGenders, setViewerSavedGenders] = useState<string[]>([]);
+154:   const [profiles, setProfiles] = useState<ProfileItem[]>([]);
+155:   const [isLoading, setIsLoading] = useState(true);
+156:   const [searchQuery, setSearchQuery] = useState(() => searchParams.get('q') || '');
+157:   const [selectedCountry, setSelectedCountry] = useState('All');
+158:   const [searchOpen, setSearchOpen] = useState(false);
+159:   const [searchAnimating, setSearchAnimating] = useState(false);
+160:   const [searchClosing, setSearchClosing] = useState(false);
+161: 
+162:   const [selectedGenders, setSelectedGenders] = useState<string[]>(() => {
+163:     if (typeof window !== 'undefined') {
+164:       const stored = localStorage.getItem('discover_gender_pref');
+165:       if (stored !== null) {
+166:         try {
+167:           const parsed = JSON.parse(stored);
+168:           if (Array.isArray(parsed)) return parsed;
+169:         } catch {}
+170:       }
+171:     }
+172:     return [];
+173:   });
+174: 
+175:   useEffect(() => {
+176:     if (typeof window !== 'undefined') {
+177:       try {
+178:         localStorage.setItem('discover_gender_pref', JSON.stringify(selectedGenders));
+179:       } catch {}
+180:     }
+181:   }, [selectedGenders]);
+182: 
+183:   const toggleGender = (gender: string) => {
+184:     setSelectedGenders((prev) =>
+185:       prev.includes(gender) ? prev.filter((g) => g !== gender) : [...prev, gender]
+186:     );
+187:   };
+188: 
+189:   const [filtersOpen, setFiltersOpen] = useState(false);
+190:   const [minAge, setMinAge] = useState<number>(18);
+191:   const [maxAge, setMaxAge] = useState<number>(65);
+192:   const [draftMinAge, setDraftMinAge] = useState<number>(18);
+193:   const [draftMaxAge, setDraftMaxAge] = useState<number>(65);
+194:   const [selectedIntent, setSelectedIntent] = useState<string>('All');
+195:   const [verifiedOnly, setVerifiedOnly] = useState<boolean>(false);
+196:   const [activeNowOnly, setActiveNowOnly] = useState<boolean>(false);
+197: 
+198:   const [matchedModalProfile, setMatchedModalProfile] = useState<{ id: string; name: string; avatarUrl?: string } | null>(null);
+199:   const [isModalClosing, setIsModalClosing] = useState(false);
+200:   const [filtersClosing, setFiltersClosing] = useState(false);
+201:   const [cardActions, setCardActions] = useState<Record<string, ActionType>>({});
+202:   const [lastPassed, setLastPassed] = useState<{ id: string; name: string } | null>(null);
+203: 
+204:   const BATCH_SIZE = 12;
+205:   const [visibleLimit, setVisibleLimit] = useState(BATCH_SIZE);
+206: 
+207:   useEffect(() => {
+208:     if (filtersOpen) {
+209:       setDraftMinAge(minAge);
+210:       setDraftMaxAge(maxAge);
+211:       document.body.style.overflow = 'hidden';
+212:     } else {
+213:       document.body.style.overflow = '';
+214:     }
+215:     return () => {
+216:       document.body.style.overflow = '';
+217:     };
+218:   }, [filtersOpen, minAge, maxAge]);
+219: 
+220:   useEffect(() => {
+221:     const handleMutualMatch = (e: CustomEvent<{ targetId: string }>) => {
+222:       const target = profiles.find((p) => p.id === e.detail.targetId);
+223:       if (target) {
+224:         playMatchChime();
+225:         setMatchedModalProfile({ id: target.id, name: target.name, avatarUrl: target.avatarUrl });
+226:       }
+227:     };
+228:     window.addEventListener('ail-mutual-match' as any, handleMutualMatch);
+229:     return () => window.removeEventListener('ail-mutual-match' as any, handleMutualMatch);
+230:   }, [profiles]);
+231: 
+232:   useEffect(() => {
+233:     const local = getLocalCardActions();
+234:     setCardActions(local);
+235: 
+236:     async function loadFeed() {
+237:       setIsLoading(true);
+238:       try {
+239:         const res = await fetch('/api/discover', { cache: 'no-store' });
+240:         if (res.ok) {
+241:           const payload = await res.json();
+242:           const v = payload.viewer;
+243:           if (v) {
+244:             if (v.onboarding_completed === false) {
+245:               router.push('/onboarding');
+246:               return;
+247:             }
+248:             if (v.latitude && v.longitude) {
+249:               setCurrentUserCoords({ lat: v.latitude, lon: v.longitude });
+250:             }
+251:             if (Array.isArray(v.interested_in) && v.interested_in.length > 0) {
+252:               setViewerSavedGenders(v.interested_in);
+253:               if (!localStorage.getItem('discover_gender_pref')) {
+254:                 setSelectedGenders(v.interested_in);
+255:               }
+256:             }
+257:           }
+258:           if (Array.isArray(payload.favoriteIds)) {
+259:             setCardActions((prev) => {
+260:               const merged = { ...prev };
+261:               payload.favoriteIds.forEach((fid: string) => {
+262:                 merged[fid] = 'like';
+263:               });
+264:               return merged;
+265:             });
+266:           }
+267:           if (Array.isArray(payload.profiles)) {
+268:             setProfiles(payload.profiles);
+269:           }
+270:         }
+271:       } catch (err) {
+272:         console.error('Failed to load discovery profiles:', err);
+273:       } finally {
+274:         setIsLoading(false);
+275:       }
+276:     }
+277:     loadFeed();
+278:   }, [router]);
+279: 
+280:   const closeModalWithAnimation = () => {
+281:     setIsModalClosing(true);
+282:     setTimeout(() => {
+283:       setMatchedModalProfile(null);
+284:       setIsModalClosing(false);
+285:     }, 220);
+286:   };
+287: 
+288:   const closeFiltersWithAnimation = () => {
+289:     setFiltersClosing(true);
+290:     setTimeout(() => {
+291:       setFiltersOpen(false);
+292:       setFiltersClosing(false);
+293:     }, 240);
+294:   };
+295: 
+296:   const triggerAction = async (id: string, action: ActionType, name?: string, avatarUrl?: string) => {
+297:     const currentAction = cardActions[id];
+298:     const isCurrentlyActive = currentAction === action;
+299:     setCardActions((prev) => {
+300:       const next = { ...prev };
+301:       if (isCurrentlyActive) {
+302:         delete next[id];
+303:       } else {
+304:         next[id] = action;
+305:       }
+306:       return next;
+307:     });
+308: 
+309:     if (action === 'pass' && !isCurrentlyActive && name) {
+310:       setLastPassed({ id, name });
+311:     } else if (lastPassed?.id === id) {
+312:       setLastPassed(null);
+313:     }
+314: 
+315:     await persistCardAction(supabase, id, action, isCurrentlyActive);
+316: 
+317:     if (action === 'like' && !isCurrentlyActive) {
+318:       try {
+319:         const res = await fetch('/api/spark', {
+320:           method: 'POST',
+321:           headers: { 'Content-Type': 'application/json' },
+322:           body: JSON.stringify({ targetUserId: id }),
+323:         });
+324:         const data = await res.json().catch(() => ({}));
+325:         if (data?.mutual) {
+326:           playMatchChime();
+327:           setMatchedModalProfile({ id, name: name || 'Member', avatarUrl: avatarUrl || '/placeholder-avatar.svg' });
+328:         }
+329:       } catch {}
+330:     }
+331:   };
+332: 
+333:   const undoLastPass = () => {
+334:     if (!lastPassed) return;
+335:     const targetId = lastPassed.id;
+336:     setCardActions((prev) => {
+337:       const next = { ...prev };
+338:       delete next[targetId];
+339:       return next;
+340:     });
+341:     persistCardAction(supabase, targetId, 'pass', true);
+342:     setLastPassed(null);
+343:   };
+344: 
+345:   const activeFiltersCount = useMemo(() => {
+346:     let count = 0;
+347:     if (selectedCountry.toLowerCase() !== 'all') count++;
+348:     if (minAge > 18 || maxAge < 65) count++;
+349:     if (selectedIntent !== 'All') count++;
+350:     if (verifiedOnly) count++;
+351:     if (activeNowOnly) count++;
+352:     if (discoveryMode !== 'all') count++;
+353:     return count;
+354:   }, [selectedCountry, minAge, maxAge, selectedIntent, verifiedOnly, activeNowOnly, discoveryMode]);
+355: 
+356:   const applyFilters = () => {
+357:     setMinAge(draftMinAge);
+358:     setMaxAge(draftMaxAge);
+359:     setFiltersOpen(false);
+360:   };
+361: 
+362:   const resetFilters = () => {
+363:     setDiscoveryMode('all');
+364:     setSelectedGenders(viewerSavedGenders);
+365:     setSelectedCountry('All');
+366:     setSearchQuery('');
+367:     setMinAge(18);
+368:     setMaxAge(65);
+369:     setDraftMinAge(18);
+370:     setDraftMaxAge(65);
+371:     setSelectedIntent('All');
+372:     setVerifiedOnly(false);
+373:     setActiveNowOnly(false);
+374:   };
+375: 
+376:   const filteredProfiles = useMemo(() => {
+377:     return profiles.filter((profile) => {
+378:       if (cardActions[profile.id] === 'pass') return false;
+379:       const matchesCountry =
+380:         selectedCountry.toLowerCase() === 'all' ||
+381:         (profile.country || '').toLowerCase() === selectedCountry.toLowerCase();
+382:       const matchesGender = selectedGenders.length === 0 || selectedGenders.includes(profile.gender);
+383:       const q = searchQuery.toLowerCase().trim();
+384:       const searchableName = (profile.username || profile.name || '').toLowerCase();
+385:       const matchesQuery = !q || searchableName.includes(q) || profile.location.toLowerCase().includes(q);
+386:       const matchesAge = profile.age >= minAge && profile.age <= maxAge;
+387:       const matchesIntent = selectedIntent === 'All' || !profile.intent || profile.intent === selectedIntent;
+388:       const matchesVerified = !verifiedOnly || profile.verified;
+389:       const matchesOnline = !activeNowOnly || profile.online;
+390:       const matchesDiscoveryMode = (() => {
+391:         if (discoveryMode === 'online') return Boolean(profile.online || profile.recentlyActive);
+392:         if (discoveryMode === 'near_me') return true;
+393:         if (discoveryMode === 'new') {
+394:           const createdAt = profile.created_at ? new Date(profile.created_at).getTime() : 0;
+395:           return createdAt > Date.now() - 30 * 24 * 60 * 60 * 1000;
+396:         }
+397:         return true;
+398:       })();
+399:       return (
+400:         matchesCountry &&
+401:         matchesGender &&
+402:         matchesQuery &&
+403:         matchesAge &&
+404:         matchesIntent &&
+405:         matchesVerified &&
+406:         matchesOnline &&
+407:         matchesDiscoveryMode
+408:       );
+409:     });
+410:   }, [profiles, cardActions, selectedCountry, selectedGenders, searchQuery, minAge, maxAge, selectedIntent, verifiedOnly, activeNowOnly, discoveryMode]);
+411: 
+412:   const visibleProfiles = filteredProfiles.slice(0, visibleLimit);
+413:   const hasMore = visibleLimit < filteredProfiles.length;
+414: 
+415:   return (
+416:     <div className="w-full min-h-full bg-[#F8F7FA] text-[#1C1924] flex flex-col font-sans animate-[fadeIn_200ms_cubic-bezier(0.16,1,0.3,1)]">
+417:       <main className="w-full max-w-md mx-auto px-4 pt-4 pb-36 relative">
+418:         {/* Static Pinned Search & Filter Controls on Left + Horizontally Scrolling Categories on Right */}
+419:         <section aria-label="Search and Filters" className="w-full mb-4 flex items-center gap-3">
+420:           <div className="shrink-0 flex items-center gap-1.5">
+421:             {searchOpen || searchQuery ? (
+422:               <div className={`flex-1 min-w-0 h-9 flex items-center gap-1 bg-white border border-[#DDD7E5] focus-within:border-[#6555B8] rounded-full pl-3 pr-2 shadow-2xs transition-all ${searchAnimating ? 'animate-[slideIn_200ms_cubic-bezier(0.16,1,0.3,1)]' : ''} ${searchClosing ? 'animate-[slideOut_180ms_ease-in_forwards]' : ''}`}>
+423:                 <Search className="w-3.5 h-3.5 text-[#8C849B] shrink-0" />
+424:                 <input
+425:                   autoFocus
+426:                   type="text"
+427:                   value={searchQuery}
+428:                   onChange={(e) => setSearchQuery(e.target.value)}
+429:                   placeholder="City or username"
+430:                   className="flex-1 w-full bg-transparent text-xs text-[#1C1924] placeholder-[#8C849B] focus:outline-none"
+431:                 />
+432:                 <button
+433:                   type="button"
+434:                   onClick={() => {
+435:                   setSearchClosing(true);
+436:                   setTimeout(() => {
+437:                     setSearchQuery('');
+438:                     setSearchOpen(false);
+439:                     setSearchClosing(false);
+440:                   }, 180);
+441:                 }}
+442:                   className="text-[#8C849B] hover:text-[#1C1924] text-xs px-1 cursor-pointer"
+443:                 >
+444:                   ×
+445:                 </button>
+446:               </div>
+447:             ) : (
+448:               <button
+449:                 type="button"
+450:                 onClick={() => {
+451:                   setSearchAnimating(true);
+452:                   setTimeout(() => setSearchOpen(true), 10);
+453:                   setTimeout(() => setSearchAnimating(false), 200);
+454:                 }}
+455:                 aria-label="Open Search"
+456:                 className="w-9 h-9 rounded-full bg-white border border-[#DDD7E5] text-[#6C637B] hover:text-[#6555B8] hover:border-[#CFC8DC] flex items-center justify-center transition shadow-2xs cursor-pointer"
+457:               >
+458:                 <Search className="w-4 h-4" />
+459:               </button>
+460:             )}
+461: 
+462:             <button
+463:               type="button"
+464:               onClick={() => setFiltersOpen(true)}
+465:               aria-label="Open Filters"
+466:               className="relative w-9 h-9 rounded-full bg-white border border-[#DDD7E5] text-[#6555B8] hover:border-[#CFC8DC] flex items-center justify-center transition shadow-2xs cursor-pointer"
+467:             >
+468:               <SlidersHorizontal className="w-4 h-4" />
+469:               {activeFiltersCount > 0 && (
+470:                 <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#6555B8] ring-2 ring-white" />
+471:               )}
+472:             </button>
+473:           </div>
+474: 
+475:           {/* Horizontally Scrolling Category Pills */}
+476:           {!(searchOpen || searchQuery) && (
+477:           <div className="flex-1 min-w-0 overflow-x-auto no-scrollbar touch-pan-x select-none cursor-grab active:cursor-grabbing" onWheel={(e) => { if (e.deltaY !== 0) { e.currentTarget.scrollLeft += e.deltaY; } }} onMouseDown={(e) => { const el = e.currentTarget; el.dataset.dragging = "1"; el.dataset.startX = String(e.pageX); el.dataset.scrollLeft = String(el.scrollLeft); }} onMouseMove={(e) => { const el = e.currentTarget; if (el.dataset.dragging !== "1") return; e.preventDefault(); el.scrollLeft = Number(el.dataset.scrollLeft) - (e.pageX - Number(el.dataset.startX)) * 1.3; }} onMouseUp={(e) => { e.currentTarget.dataset.dragging = "0"; }} onMouseLeave={(e) => { e.currentTarget.dataset.dragging = "0"; }}>
+478:             <div className="flex items-center gap-5 w-max">
+479:               {DISCOVERY_MODES.map((mode) => {
+480:                 const active = discoveryMode === mode.id;
+481:                 return (
+482:                   <button
+483:                     key={mode.id}
+484:                     type="button"
+485:                     onClick={() => setDiscoveryMode(mode.id)}
+486:                     className={`shrink-0 text-sm transition-colors ${
+487:                       active ? 'text-[#6555B8] font-bold' : 'text-black/40 font-medium'
+488:                     }`}
+489:                     
+490:                   >
+491:                     {mode.label}
+492:                   </button>
+493:                 );
+494:               })}
+495:             </div>
+496:           </div>
+497:           )}
+498:         </section>
+499: 
+500:         {/* 2-Column Feed Grid */}
+501:         <div className="grid grid-cols-2 gap-3.5 w-full">
+502:           {isLoading ? (
+503:             Array.from({ length: 8 }).map((_, i) => (
+504:               <div
+505:                 key={i}
+506:                 className="rounded-2xl overflow-hidden aspect-[4/5] w-full bg-[#EAE8F0] animate-pulse border border-[#DDD7E5] relative"
+507:               >
+508:                 <div className="absolute inset-x-0 bottom-0 p-3 space-y-2">
+509:                   <div className="h-4 bg-white/40 rounded-full w-2/3" />
+510:                   <div className="h-3 bg-white/30 rounded-full w-1/2" />
+511:                 </div>
+512:               </div>
+513:             ))
+514:           ) : (
+515:             visibleProfiles.map((profile) => {
+516:               const state = cardActions[profile.id];
+517:               const isLiked = state === 'like';
+518:               const displayName = profile.username || profile.name || 'Member';
+519:               const cityPart = profile.location ? profile.location.split(',')[0].trim() : '';
+520:               const countryPart = profile.country || '';
+521:               const formattedLocation =
+522:                 cityPart && countryPart && cityPart.toLowerCase() !== countryPart.toLowerCase()
+523:                   ? `${cityPart}, ${countryPart}`
+524:                   : cityPart || countryPart || 'Unknown';
+525:               return (
+526:                 <div
+527:                   key={profile.id}
+528:                   className="group relative rounded-2xl overflow-hidden aspect-[4/5] w-full bg-[#F2EEF7] border border-[#DDD7E5]/70 shadow-xs hover:shadow-md transition-all duration-300 select-none"
+529:                 >
+530:                   <DiscoverCardPhotoCarousel
+531:                     profileId={profile.id}
+532:                     photos={profile.photos}
+533:                     avatarUrl={profile.avatarUrl}
+534:                     name={displayName}
+535:                     repScore={profile.repScore}
+536:                     online={profile.online}
+537:                     recentlyActive={profile.recentlyActive}
+538:                   />
+539:                   <button
+540:                     type="button"
+541:                     aria-label={isLiked ? 'Remove Spark' : 'Send Spark'}
+542:                     onClick={(e) => {
+543:                       e.stopPropagation();
+544:                       e.preventDefault();
+545:                       triggerAction(profile.id, 'like', displayName, profile.avatarUrl);
+546:                     }}
+547:                     className={
+548:                       'absolute top-2.5 right-2.5 z-20 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 active:scale-90 cursor-pointer ' +
+549:                       (isLiked
+550:                         ? 'bg-[#6555B8] text-white shadow-md'
+551:                         : 'bg-black/45 text-white hover:bg-black/65 backdrop-blur-xs')
+552:                     }
+553:                   >
+554:                     <Zap className={'w-4 h-4 ' + (isLiked ? 'fill-white' : '')} />
+555:                   </button>
+556:                   <div className="absolute bottom-0 inset-x-0 pt-10 pb-3 px-3 z-10 pointer-events-none bg-gradient-to-t from-black/65 via-black/25 to-transparent">
+557:                     <Link href={'/profile/' + profile.id} className="block min-w-0 pointer-events-auto">
+558:                       <div className="flex items-center min-w-0">
+559:                         <h3
+560:                           className="text-sm font-bold text-white leading-tight truncate"
+561:                           style={{ fontFamily: 'var(--font-brand)' }}
+562:                         >
+563:                           {displayName}
+564:                         </h3>
+565:                         {profile.age ? (
+566:                           <span
+567:                             className="text-sm font-bold text-white leading-tight shrink-0"
+568:                             style={{ fontFamily: 'var(--font-brand)' }}
+569:                           >
+570:                             {', ' + profile.age}
+571:                           </span>
+572:                         ) : null}
+573:                         {profile.verified && <CheckCircle className="w-3.5 h-3.5 text-white shrink-0 ml-1" />}
+574:                       </div>
+575:                       <p className="text-[11px] text-white/90 font-medium mt-0.5 truncate pr-7">
+576:                         {formattedLocation}
+577:                       </p>
+578:                     </Link>
+579:                   </div>
+580:                 </div>
+581:               );
+582:             })
+583:           )}
+584:         </div>
+585: 
+586:         {!isLoading && filteredProfiles.length === 0 && (
+587:           <div className="mt-4 p-8 rounded-2xl bg-white border border-[#DDD7E5] text-center space-y-3 shadow-xs">
+588:             <div className="w-12 h-12 mx-auto rounded-2xl bg-[#F3EFFC] flex items-center justify-center text-[#6555B8]">
+589:               <Search className="w-5 h-5" />
+590:             </div>
+591:             <p className="text-base font-bold text-[#1C1924]" style={{ fontFamily: 'var(--font-brand)' }}>
+592:               No profiles match your current filters
+593:             </p>
+594:             <button
+595:               type="button"
+596:               onClick={resetFilters}
+597:               className="inline-flex items-center gap-1.5 px-5 py-2.5 text-xs font-semibold rounded-full bg-[#6555B8] text-white hover:bg-[#52449e] transition shadow-sm cursor-pointer"
+598:             >
+599:               <RotateCcw className="w-3.5 h-3.5" />
+600:               <span>Reset Filters</span>
+601:             </button>
+602:           </div>
+603:         )}
+604: 
+605:         {hasMore && (
+606:           <div className="pt-5 pb-2 flex justify-center">
+607:             <button
+608:               type="button"
+609:               onClick={() => setVisibleLimit((prev) => prev + BATCH_SIZE)}
+610:               className="px-6 py-2.5 rounded-full bg-white border border-[#DDD7E5] text-[#1C1924] hover:border-[#6555B8] text-xs font-semibold transition shadow-xs cursor-pointer"
+611:             >
+612:               Load More Profiles ({filteredProfiles.length - visibleLimit} remaining)
+613:             </button>
+614:           </div>
+615:         )}
+616: 
+617:         {lastPassed && (
+618:           <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[60] flex items-center gap-3 px-4 py-2.5 rounded-full bg-white/95 border border-[#DDD7E5] shadow-2xl backdrop-blur-md">
+619:             <span className="text-xs text-[#1C1924]">
+620:               Passed <strong>{lastPassed.name}</strong>
+621:             </span>
+622:             <button
+623:               type="button"
+624:               onClick={undoLastPass}
+625:               className="px-3 py-1 rounded-full bg-[#6555B8] hover:bg-[#52449e] text-white text-xs font-semibold flex items-center gap-1 transition shadow-sm cursor-pointer"
+626:             >
+627:               <RotateCcw className="w-3 h-3" />
+628:               Undo
+629:             </button>
+630:           </div>
+631:         )}
+632:       </main>
+633: 
+634:       {/* Filter Drawer */}
+635:       {filtersOpen && typeof document !== 'undefined' &&
+636:         createPortal(
+637:           <div className="fixed inset-0 z-[999] flex items-end justify-center">
+638:             <div
+639:               className={
+640:                 'fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-200 ' +
+641:                 (filtersClosing ? 'opacity-0' : 'opacity-100')
+642:               }
+643:               onClick={closeFiltersWithAnimation}
+644:             />
+645:             <div
+646:               role="dialog"
+647:               aria-modal="true"
+648:               className="relative z-10 w-full max-w-[430px] mx-auto bg-white rounded-t-3xl shadow-2xl flex flex-col overflow-hidden will-change-transform"
+649:               style={
+650:                 filtersClosing
+651:                   ? { transform: 'translateY(100%)', transition: 'transform 0.24s cubic-bezier(0.16, 1, 0.3, 1)' }
+652:                   : { animation: 'filterSheetIn 0.26s cubic-bezier(0.16, 1, 0.3, 1) both' }
+653:               }
+654:             >
+655:               <div className="flex items-center justify-between px-4 py-3 border-b border-[#DDD7E5] shrink-0 bg-white">
+656:                 <div className="flex items-center gap-2">
+657:                   <SlidersHorizontal className="w-4 h-4 text-[#6555B8]" />
+658:                   <h2 className="text-sm font-bold text-[#1C1924]">Refine Discover Feed</h2>
+659:                 </div>
+660:                 <button
+661:                   type="button"
+662:                   onClick={closeFiltersWithAnimation}
+663:                   className="p-1.5 rounded-full text-[#524B5E] hover:bg-[#F3EFFC] transition cursor-pointer"
+664:                   aria-label="Close filters"
+665:                 >
+666:                   <XIcon className="w-4 h-4" />
+667:                 </button>
+668:               </div>
+669:               <div className="flex-1 min-h-0 overflow-y-auto px-4 py-3 space-y-4">
+670:                 <div>
+671:                   <label className="text-[11px] font-semibold text-[#6C637B] uppercase tracking-wider block mb-2">
+672:                     Interested In
+673:                   </label>
+674:                   <div className="flex flex-wrap gap-1.5">
+675:                     {[
+676:                       { id: 'woman', label: 'Women' },
+677:                       { id: 'man', label: 'Men' },
+678:                       { id: 'trans', label: 'Trans' },
+679:                     ].map((item) => {
+680:                       const isTrans = item.id === 'trans';
+681:                       const isSelected = isTrans
+682:                         ? selectedGenders.some((g) => ['trans_woman', 'trans_man', 'non_binary'].includes(g))
+683:                         : selectedGenders.includes(item.id);
+684:                       return (
+685:                         <button
+686:                           key={item.id}
+687:                           type="button"
+688:                           onClick={() => {
+689:                             if (isTrans) {
+690:                               const hasAnyTrans = selectedGenders.some((g) =>
+691:                                 ['trans_woman', 'trans_man', 'non_binary'].includes(g)
+692:                               );
+693:                               if (hasAnyTrans) {
+694:                                 setSelectedGenders(
+695:                                   selectedGenders.filter((g) => !['trans_woman', 'trans_man', 'non_binary'].includes(g))
+696:                                 );
+697:                               } else {
+698:                                 setSelectedGenders([...selectedGenders, 'trans_woman', 'trans_man', 'non_binary']);
+699:                               }
+700:                             } else {
+701:                               toggleGender(item.id);
+702:                             }
+703:                           }}
+704:                           className={
+705:                             'py-1.5 px-3 rounded-full border text-xs font-semibold transition cursor-pointer active:scale-95 ' +
+706:                             (isSelected ? 'bg-[#6555B8] text-white border-[#6555B8]' : 'bg-white text-[#1C1924] border-[#DDD7E5]')
+707:                           }
+708:                         >
+709:                           {item.label}
+710:                         </button>
+711:                       );
+712:                     })}
+713:                   </div>
+714:                 </div>
+715:               </div>
+716:               <div className="px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] bg-white border-t border-[#DDD7E5] flex items-center gap-3 shrink-0">
+717:                 <button
+718:                   type="button"
+719:                   onClick={resetFilters}
+720:                   className="py-2 px-3 rounded-full text-xs font-semibold text-[#524B5E] hover:text-[#1C1924] cursor-pointer"
+721:                 >
+722:                   Reset
+723:                 </button>
+724:                 <button
+725:                   type="button"
+726:                   onClick={applyFilters}
+727:                   className="flex-1 py-2.5 rounded-full bg-[#6555B8] text-white text-xs font-semibold hover:bg-[#52449e] cursor-pointer"
+728:                 >
+729:                   Apply Filters
+730:                 </button>
+731:               </div>
+732:             </div>
+733:           </div>,
+734:           document.body
+735:         )}
+736: 
+737:       {matchedModalProfile && (
+738:         <div
+739:           onClick={closeModalWithAnimation}
+740:           className={
+741:             'fixed inset-0 z-[999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-opacity duration-200 ' +
+742:             (isModalClosing ? 'opacity-0 pointer-events-none' : 'opacity-100')
+743:           }
+744:         >
+745:           <div
+746:             role="dialog"
+747:             aria-modal="true"
+748:             onClick={(e) => e.stopPropagation()}
+749:             className={
+750:               'w-full max-w-sm rounded-3xl bg-white border border-[#DDD7E5]/70 p-6 shadow-2xl flex flex-col items-center text-center transform transition-all duration-200 ' +
+751:               (isModalClosing ? 'scale-90 opacity-0' : 'scale-100 opacity-100')
+752:             }
+753:           >
+754:             <div className="w-12 h-12 rounded-full bg-rose-50 flex items-center justify-center mb-3">
+755:               <Heart className="w-6 h-6 text-rose-500 fill-rose-500" />
+756:             </div>
+757:             <h3 className="text-xl font-bold text-[#1C1924]" style={{ fontFamily: 'var(--font-brand)' }}>
+758:               It&apos;s a Match!
+759:             </h3>
+760:             <p className="text-xs text-[#6C637B] mt-1.5">You and <span className="font-semibold text-[#1C1924]">{matchedModalProfile.name}</span> connected.</p>
+761:             <div className="my-5 w-20 h-20 rounded-full border-4 border-[#6555B8]/20 overflow-hidden shadow-md">
+762:               <img src={matchedModalProfile.avatarUrl || '/placeholder-avatar.svg'} alt="" className="w-full h-full object-cover" />
+763:             </div>
+764:             <div className="w-full flex flex-col gap-2 mt-1">
+765:               <Link
+766:                 href={'/chat/' + matchedModalProfile.id}
+767:                 className="w-full py-3 px-4 rounded-full bg-[#6555B8] hover:bg-[#52449e] text-white text-xs font-semibold shadow-md transition flex items-center justify-center gap-2"
+768:               >
+769:                 Say Hello
+770:               </Link>
+771:               <button
+772:                 type="button"
+773:                 onClick={closeModalWithAnimation}
+774:                 className="w-full py-2.5 px-4 rounded-full text-xs font-semibold text-[#6C637B] hover:text-[#1C1924] hover:bg-[#F3EFFC] transition cursor-pointer"
+775:               >
+776:                 Keep Browsing
+777:               </button>
+778:             </div>
+779:           </div>
+780:         </div>
+781:       )}
+782:     </div>
+783:   );
+784: }
+785: 
+786: function DiscoverFeed() {
+787:   return (
+788:     <Suspense fallback={<div className="min-h-screen bg-[#F8F7FA] text-[#1C1924] p-8 text-center text-xs">Loading discover feed...</div>}>
+789:       <DiscoverContent />
+790:     </Suspense>
+791:   );
+792: }
+793: 
+794: export default function AuthGate() {
+795:   const router = useRouter();
+796:   const [authState, setAuthState] = useState<'loading' | 'member'>('loading');
+797:   useEffect(() => {
+798:     let mounted = true;
+799:     supabase.auth.getUser().then(({ data }) => {
+800:       if (!mounted) return;
+801:       if (data?.user) setAuthState('member');
+802:       else router.replace('/');
+803:     });
+804:     return () => {
+805:       mounted = false;
+806:     };
+807:   }, [router]);
+808: 
+809:   if (authState === 'loading') {
+810:     return (
+811:       <div className="min-h-screen bg-[#F8F7FA] flex items-center justify-center">
+812:         <div className="animate-spin rounded-full h-10 w-10 border-4 border-[#6555B8] border-t-transparent"></div>
+813:       </div>
+814:     );
+815:   }
+816:   return <DiscoverFeed />;
+817: }
+
+======================================================
+FILE: app/favorites/page.tsx (EXISTS)
+======================================================
+Total Lines: 215
+1: // app/favorites/page.tsx — Sparks Hub
+2: 'use client';
+3: 
+4: import { useEffect, useState, useCallback } from 'react';
+5: import Link from 'next/link';
+6: import { Zap, Lock, Eye } from 'lucide-react';
+7: import { createBrowserClient } from '@supabase/ssr';
+8: 
+9: type SubTab = 'you-sparked' | 'sparked-you' | 'mutual' | 'visited-you';
+10: 
+11: type SparkCard = {
+12:   id: string;
+13:   display_name?: string | null;
+14:   username?: string | null;
+15:   age?: number | null;
+16:   city?: string | null;
+17:   avatar_url?: string | null;
+18:   last_active?: string | null;
+19: };
+20: 
+21: export default function SparksPage() {
+22:   const [tab, setTab] = useState<SubTab>('you-sparked');
+23:   const [cards, setCards] = useState<SparkCard[]>([]);
+24:   const [loading, setLoading] = useState(true);
+25:   const [isPlus, setIsPlus] = useState(false);
+26:   const [myGender, setMyGender] = useState<string | null>(null);
+27: 
+28:   const fetchAll = useCallback(async () => {
+29:     const supabase = createBrowserClient(
+30:       process.env.NEXT_PUBLIC_SUPABASE_URL!,
+31:       process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+32:     );
+33:     setLoading(true);
+34:     try {
+35:       const { data: { user } } = await supabase.auth.getUser();
+36:       if (!user) { setCards([]); setLoading(false); return; }
+37: 
+38:       const { data: me } = await supabase
+39:         .from('profiles')
+40:         .select('is_plus, gender')
+41:         .eq('id', user.id)
+42:         .single();
+43:       setIsPlus(!!me?.is_plus);
+44:       setMyGender(me?.gender ?? null);
+45: 
+46:       // Blocked users excluded everywhere
+47:       const { data: blocks } = await supabase
+48:         .from('user_blocks')
+49:         .select('blocker_id, blocked_id')
+50:         .or(`blocker_id.eq.${user.id},blocked_id.eq.${user.id}`);
+51:       const blocked = new Set<string>();
+52:       (blocks || []).forEach((b: any) => {
+53:         blocked.add(b.blocker_id); blocked.add(b.blocked_id);
+54:       });
+55:       blocked.delete(user.id);
+56: 
+57:       // All sparks involving me
+58:       const { data: mySparks } = await supabase
+59:         .from('sparks')
+60:         .select('sender_id, receiver_id, created_at')
+61:         .or(`sender_id.eq.${user.id},receiver_id.eq.${user.id}`)
+62:         .order('created_at', { ascending: false });
+63: 
+64:       const sent = new Set((mySparks || []).filter((s: any) => s.sender_id === user.id).map((s: any) => s.receiver_id));
+65:       const receivedIds = (mySparks || []).filter((s: any) => s.receiver_id === user.id).map((s: any) => s.sender_id);
+66:       const mutualIds = receivedIds.filter((id: string) => sent.has(id));
+67: 
+68:       let targetIds: string[] = [];
+69:       if (tab === 'you-sparked') targetIds = [...sent];
+70:       else if (tab === 'sparked-you') targetIds = receivedIds;
+71:       else if (tab === 'mutual') targetIds = mutualIds;
+72:       else if (tab === 'visited-you') {
+73:         const { data: views } = await supabase
+74:           .from('profile_views')
+75:           .select('viewer_id, created_at')
+76:           .eq('viewed_id', user.id)
+77:           .order('created_at', { ascending: false })
+78:           .limit(60);
+79:         targetIds = [...new Set((views || []).map((v: any) => v.viewer_id))];
+80:       }
+81: 
+82:       targetIds = targetIds.filter((id) => !blocked.has(id));
+83:       if (targetIds.length === 0) { setCards([]); setLoading(false); return; }
+84: 
+85:       const { data: profiles } = await supabase
+86:         .from('profiles')
+87:         .select('id, display_name, username, age, city, avatar_url, last_active')
+88:         .in('id', targetIds);
+89:       setCards(profiles || []);
+90:     } catch (e) {
+91:       console.error('Sparks page load error:', e);
+92:       setCards([]);
+93:     } finally {
+94:       setLoading(false);
+95:     }
+96:   }, [tab]);
+97: 
+98:   useEffect(() => { fetchAll(); }, [fetchAll]);
+99: 
+100:   const blurred = tab === 'sparked-you' && !isPlus;
+101:   const locked = tab === 'visited-you' && !isPlus;
+102: 
+103:   const TABS: { key: SubTab; label: string }[] = [
+104:     { key: 'you-sparked', label: 'You Sparked' },
+105:     { key: 'sparked-you', label: 'Sparked You' },
+106:     { key: 'mutual', label: 'Mutual' },
+107:     { key: 'visited-you', label: 'Visited' },
+108:   ];
+109: 
+110:   const emptyImg = myGender === 'woman' ? '/nomatch-f.png' : '/nomatch-m.png';
+111:   const emptyCopy: Record<SubTab, string> = {
+112:     'you-sparked': 'You have not sparked anyone yet',
+113:     'sparked-you': 'No one has sparked you yet. Check back soon!',
+114:     'mutual': 'No mutual sparks yet. Keep exploring!',
+115:     'visited-you': 'No profile visits yet.',
+116:   };
+117: 
+118:   return (
+119:     <div className="w-full px-3.5 sm:px-4 pt-3 pb-28">
+120:       {/* Compact sub-tab pills, sticky, no redundant big header */}
+121:       <div className="sticky top-0 z-30 -mx-3.5 sm:-mx-4 px-3.5 sm:px-4 py-2 bg-white">
+122:         <div className="flex gap-4 overflow-x-auto no-scrollbar">
+123:           {TABS.map((t) => (
+124:             <button
+125:               key={t.key}
+126:               onClick={() => setTab(t.key)}
+127:               className={`shrink-0 text-sm transition-colors ${
+128:                 tab === t.key ? 'text-[#6555B8] font-bold' : 'text-black/40 font-medium'
+129:               }`}
+130:             >
+131:               {t.label}
+132:             </button>
+133:           ))}
+134:         </div>
+135:       </div>
+136: 
+137:       {locked ? (
+138:         <div className="flex flex-col items-center justify-center py-16 px-6 text-center">
+139:           <div className="w-14 h-14 rounded-full bg-[#F3EFFC] flex items-center justify-center mb-4">
+140:             <Lock className="w-6 h-6 text-[#6555B8]" />
+141:           </div>
+142:           <h2 className="text-lg font-semibold text-[#4C3B75]">See who visited you</h2>
+143:           <p className="text-sm text-black/60 mt-1 mb-5">Upgrade to AIL+ to unlock your full visitor history.</p>
+144:           <Link href="/settings" className="px-5 py-2.5 rounded-full bg-[#6555B8] text-white text-sm font-semibold">
+145:             Upgrade to AIL+ · $14.99/mo
+146:           </Link>
+147:         </div>
+148:       ) : loading ? (
+149:         <div className="grid grid-cols-2 gap-2.5 pt-4">
+150:           {[0, 1, 2, 3].map((i) => (
+151:             <div key={i} className="aspect-[4/5] rounded-xl bg-black/5 animate-pulse" />
+152:           ))}
+153:         </div>
+154:       ) : cards.length === 0 ? (
+155:         <div className="flex flex-col items-center justify-center py-16 text-center">
+156:           <img src={emptyImg} alt="" className="w-36 h-36 mx-auto mb-3 object-contain" />
+157:           <p className="text-sm text-black/60">{emptyCopy[tab]}</p>
+158:           {tab === 'you-sparked' && (
+159:             <Link href="/discover" className="mt-4 px-5 py-2.5 rounded-full bg-[#6555B8] text-white text-sm font-semibold">
+160:               Discover People
+161:             </Link>
+162:           )}
+163:         </div>
+164:       ) : (
+165:         <>
+166:           <div className="grid grid-cols-2 gap-2.5 pt-4">
+167:             {cards.map((p) => (
+168:               <Link
+169:                 key={p.id}
+170:                 href={`/profile/${p.username || p.id}`}
+171:                 className="relative rounded-xl overflow-hidden bg-[#F3EFFC]"
+172:               >
+173:                 <div className={`aspect-[4/5] ${blurred ? 'blur-md' : ''}`}>
+174:                   {p.avatar_url ? (
+175:                     <img src={p.avatar_url} alt="" className="w-full h-full object-cover" />
+176:                   ) : (
+177:                     <img src="/placeholder-avatar.svg" alt="" className="w-full h-full object-cover opacity-40" />
+178:                   )}
+179:                 </div>
+180:                 {!blurred && p.last_active && isRecent(p.last_active) && (
+181:                   <span className="absolute top-2 right-2 w-2.5 h-2.5 rounded-full bg-amber-400 ring-2 ring-white" />
+182:                 )}
+183:                 <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-black/60 to-transparent p-2.5">
+184:                   <p className="text-white text-sm font-semibold truncate">
+185:                     {p.display_name || p.username || 'Anonymous'}
+186:                     {p.age ? `, ${p.age}` : ''}
+187:                   </p>
+188:                   {p.city && <p className="text-white/70 text-xs truncate">{p.city}</p>}
+189:                 </div>
+190:               </Link>
+191:             ))}
+192:           </div>
+193: 
+194:           {blurred && (
+195:             <div className="mt-4 flex flex-col items-center px-6 py-4 rounded-2xl bg-[#F3EFFC] text-center">
+196:               <Eye className="w-5 h-5 text-[#6555B8] mb-1" />
+197:               <p className="text-sm text-[#4C3B75] font-medium">
+198:                 {cards.length} {cards.length === 1 ? 'person has' : 'people have'} sparked you
+199:               </p>
+200:               <p className="text-xs text-black/60 mb-3">Upgrade to AIL+ to reveal who.</p>
+201:               <Link href="/settings" className="px-5 py-2 rounded-full bg-[#6555B8] text-white text-sm font-semibold">
+202:                 Unlock with AIL+
+203:               </Link>
+204:             </div>
+205:           )}
+206:         </>
+207:       )}
+208:     </div>
+209:   );
+210: }
+211: 
+212: function isRecent(lastActive: string): boolean {
+213:   const t = new Date(lastActive).getTime();
+214:   return Date.now() - t < 15 * 60 * 1000;
+215: }
+
+======================================================
+FILE: app/messages/page.tsx (EXISTS)
+======================================================
+Total Lines: 334
+1: 'use client';
+2: 
+3: import React, { useState, useEffect, useCallback } from 'react';
+4: import Link from 'next/link';
+5: import { useRouter } from 'next/navigation';
+6: import { MessageCircle, Search, ChevronRight, ShieldCheck, Loader2 } from 'lucide-react';
+7: import { supabase } from '@/lib/supabase/client';
+8: 
+9: interface ConversationItem {
+10:   id: string;
+11:   recipientId: string;
+12:   name: string;
+13:   avatarUrl?: string;
+14:   repScore?: number;
+15:   lastMessage: string;
+16:   lastMessageAt: string;
+17:   unreadCount: number;
+18: }
+19: 
+20: function formatConversationTimestamp(iso?: string): string {
+21:   if (!iso) return '';
+22:   try {
+23:     const date = new Date(iso);
+24:     const now = new Date();
+25:     const diffMs = now.getTime() - date.getTime();
+26:     const diffMins = Math.floor(diffMs / 60000);
+27: 
+28:     if (diffMins < 1) return 'Just now';
+29:     if (diffMins < 60) return diffMins + 'm';
+30:     if (date.toDateString() === now.toDateString()) {
+31:       return date.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+32:     }
+33:     const yesterday = new Date(now);
+34:     yesterday.setDate(now.getDate() - 1);
+35:     if (date.toDateString() === yesterday.toDateString()) return 'Yesterday';
+36: 
+37:     return date.toLocaleDateString([], { month: 'short', day: 'numeric' });
+38:   } catch {
+39:     return '';
+40:   }
+41: }
+42: 
+43: export default function MessagesPage() {
+44:   const router = useRouter();
+45:   const [conversations, setConversations] = useState<ConversationItem[]>([]);
+46:   const [loading, setLoading] = useState(true);
+47:   const [activeTab, setActiveTab] = useState<'all' | 'unread'>('all');
+48:   const [searchQuery, setSearchQuery] = useState('');
+49: 
+50:   const loadConversations = useCallback(
+51:     async (userId: string, isMountedRef: { current: boolean }) => {
+52:       try {
+53:         const { data: msgs, error } = await supabase
+54:           .from('messages')
+55:           .select('id, sender_id, receiver_id, content, created_at, is_read, is_quarantined')
+56:           .or('sender_id.eq.' + userId + ',receiver_id.eq.' + userId)
+57:           .order('created_at', { ascending: false });
+58: 
+59:         if (error || !msgs || msgs.length === 0) {
+60:           if (isMountedRef.current) {
+61:             setConversations([]);
+62:             setLoading(false);
+63:           }
+64:           return;
+65:         }
+66: 
+67:         const partnerMap = new Map<
+68:           string,
+69:           { lastMessage: string; lastMessageAt: string; messageId: string; unreadCount: number }
+70:         >();
+71: 
+72:         for (const m of msgs as any[]) {
+73:           if (m.is_quarantined && m.sender_id !== userId) continue;
+74:           const partnerId = m.sender_id === userId ? m.receiver_id : m.sender_id;
+75:           if (!partnerId || String(partnerId).startsWith('00000000')) continue;
+76: 
+77:           const isUnreadIncoming = m.receiver_id === userId && !m.is_read;
+78: 
+79:           if (!partnerMap.has(partnerId)) {
+80:             partnerMap.set(partnerId, {
+81:               lastMessage: m.content || 'Sent a message',
+82:               lastMessageAt: m.created_at,
+83:               messageId: m.id,
+84:               unreadCount: isUnreadIncoming ? 1 : 0,
+85:             });
+86:           } else if (isUnreadIncoming) {
+87:             const current = partnerMap.get(partnerId)!;
+88:             current.unreadCount += 1;
+89:           }
+90:         }
+91: 
+92:         const partnerIds = Array.from(partnerMap.keys());
+93:         if (partnerIds.length === 0) {
+94:           if (isMountedRef.current) {
+95:             setConversations([]);
+96:             setLoading(false);
+97:           }
+98:           return;
+99:         }
+100: 
+101:         const { data: profilesData } = await supabase
+102:           .from('profiles')
+103:           .select('id, display_name, full_name, username, avatar_url, reputation_score')
+104:           .in('id', partnerIds);
+105: 
+106:         const profileMap = new Map((profilesData || []).map((p: any) => [p.id, p]));
+107: 
+108:         const formatted: ConversationItem[] = partnerIds
+109:           .filter((partnerId) => profileMap.has(partnerId))
+110:           .map((partnerId) => {
+111:             const info = partnerMap.get(partnerId)!;
+112:             const partner = profileMap.get(partnerId) as any;
+113:             const cleanName =
+114:               (partner?.username && !partner.username.startsWith('user_')
+115:                 ? partner.username.replace(/^@/, '')
+116:                 : '') ||
+117:               partner?.display_name ||
+118:               partner?.full_name ||
+119:               'Member';
+120: 
+121:             return {
+122:               id: info.messageId,
+123:               recipientId: partnerId,
+124:               name: cleanName,
+125:               avatarUrl: partner?.avatar_url || '/placeholder-avatar.svg',
+126:               repScore: partner?.reputation_score ?? 100,
+127:               lastMessage: info.lastMessage,
+128:               lastMessageAt: info.lastMessageAt,
+129:               unreadCount: info.unreadCount,
+130:             };
+131:           });
+132: 
+133:         if (isMountedRef.current) {
+134:           setConversations(formatted);
+135:         }
+136:       } catch (err) {
+137:         console.error('Error loading conversations:', err);
+138:       } finally {
+139:         if (isMountedRef.current) setLoading(false);
+140:       }
+141:     },
+142:     []
+143:   );
+144: 
+145:   useEffect(() => {
+146:     const isMountedRef = { current: true };
+147:     let channel: any = null;
+148: 
+149:     async function init() {
+150:       const {
+151:         data: { user },
+152:       } = await supabase.auth.getUser();
+153:       if (!user) {
+154:         if (isMountedRef.current) router.replace('/');
+155:         return;
+156:       }
+157: 
+158:       await loadConversations(user.id, isMountedRef);
+159:       if (!isMountedRef.current) return;
+160: 
+161:       const channelName = 'user_inbox_' + user.id;
+162:       channel = supabase
+163:         .channel(channelName)
+164:         .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, (payload: any) => {
+165:           if (!isMountedRef.current) return;
+166:           const row = (payload.new || payload.old) as any;
+167:           if (row && (row.sender_id === user.id || row.receiver_id === user.id)) {
+168:             loadConversations(user.id, isMountedRef);
+169:           }
+170:         })
+171:         .subscribe();
+172:     }
+173: 
+174:     init();
+175: 
+176:     return () => {
+177:       isMountedRef.current = false;
+178:       if (channel) supabase.removeChannel(channel);
+179:     };
+180:   }, [router, loadConversations]);
+181: 
+182:   const filteredConversations = conversations.filter((c) => {
+183:     if (activeTab === 'unread' && c.unreadCount === 0) return false;
+184:     if (searchQuery.trim() && !c.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+185:     return true;
+186:   });
+187: 
+188:   return (
+189:     <div className="w-full min-h-full bg-[#F9F8FC] text-[#1C1924] flex flex-col font-sans">
+190:       <main className="flex-1 w-full px-4 pt-3.5 pb-32 space-y-3.5">
+191:         <div className="flex items-center justify-between gap-2">
+192:           <p className="text-xs text-[#6C637B] font-medium">Direct messages with your connections</p>
+193: 
+194:           <div className="flex items-center gap-1 bg-white border border-[#E5DFEE] p-1 rounded-full shrink-0">
+195:             <button
+196:               type="button"
+197:               onClick={() => setActiveTab('all')}
+198:               className={
+199:                 'px-3 py-1 rounded-full text-xs font-semibold transition cursor-pointer ' +
+200:                 (activeTab === 'all' ? 'bg-[#6555B8] text-white shadow-2xs' : 'text-[#524B5E] hover:text-[#1C1924]')
+201:               }
+202:             >
+203:               All
+204:             </button>
+205:             <button
+206:               type="button"
+207:               onClick={() => setActiveTab('unread')}
+208:               className={
+209:                 'px-3 py-1 rounded-full text-xs font-semibold transition cursor-pointer ' +
+210:                 (activeTab === 'unread' ? 'bg-[#6555B8] text-white shadow-2xs' : 'text-[#524B5E] hover:text-[#1C1924]')
+211:               }
+212:             >
+213:               Unread
+214:             </button>
+215:           </div>
+216:         </div>
+217: 
+218:         <div className="w-full px-3.5 py-2 bg-white border border-[#E5DFEE] focus-within:border-[#6555B8] focus-within:ring-2 focus-within:ring-[#6555B8]/15 rounded-full transition-all flex items-center gap-2.5">
+219:           <Search className="w-4 h-4 text-[#8C849B] shrink-0 pointer-events-none" />
+220:           <input
+221:             type="text"
+222:             placeholder="Search conversations..."
+223:             value={searchQuery}
+224:             onChange={(e) => setSearchQuery(e.target.value)}
+225:             className="w-full bg-transparent text-xs sm:text-sm text-[#1C1924] placeholder-[#8C849B] focus:outline-none min-w-0"
+226:           />
+227:           {searchQuery && (
+228:             <button
+229:               type="button"
+230:               onClick={() => setSearchQuery('')}
+231:               className="text-xs text-[#8C849B] hover:text-[#1C1924] shrink-0 cursor-pointer"
+232:             >
+233:               Clear
+234:             </button>
+235:           )}
+236:         </div>
+237: 
+238:         <div className="space-y-2">
+239:           {loading ? (
+240:             <div className="py-16 text-center space-y-2">
+241:               <Loader2 className="w-5 h-5 text-[#6555B8] animate-spin mx-auto" />
+242:               <p className="text-xs text-[#6C637B]">Loading conversations...</p>
+243:             </div>
+244:           ) : filteredConversations.length === 0 ? (
+245:             <div className="bg-white border border-[#E5DFEE] rounded-3xl px-4 py-8 text-center space-y-3">
+246:               <div className="w-11 h-11 bg-[#F3EFFC] text-[#6555B8] rounded-2xl flex items-center justify-center mx-auto">
+247:                 <MessageCircle className="w-5 h-5" />
+248:               </div>
+249:               <div className="space-y-1">
+250:                 <h2 className="text-sm font-bold text-[#1C1924]" style={{ fontFamily: 'var(--font-brand)' }}>
+251:                   No conversations yet
+252:                 </h2>
+253:                 <p className="text-xs text-[#6C637B] max-w-xs mx-auto leading-relaxed">
+254:                   Explore the Discover feed and send a friendly hello to start a conversation.
+255:                 </p>
+256:               </div>
+257:               <Link
+258:                 href="/discover"
+259:                 className="inline-block px-5 py-2.5 rounded-full bg-[#6555B8] text-white text-xs font-semibold hover:bg-[#52449e] transition"
+260:               >
+261:                 Explore Discover Feed
+262:               </Link>
+263:             </div>
+264:           ) : (
+265:             filteredConversations.map((conv) => (
+266:               <Link
+267:                 key={conv.id}
+268:                 href={'/chat/' + conv.recipientId}
+269:                 className={
+270:                   'flex items-center gap-3.5 px-3.5 py-3 bg-white border rounded-2xl transition ' +
+271:                   (conv.unreadCount > 0
+272:                     ? 'border-[#6555B8]/40 bg-[#FAF8FF]'
+273:                     : 'border-[#EAE5F3] hover:border-[#6555B8]/30 hover:bg-[#FAF9FC]')
+274:                 }
+275:               >
+276:                 <div className="relative w-12 h-12 shrink-0">
+277:                   <img
+278:                     src={conv.avatarUrl}
+279:                     alt={conv.name}
+280:                     className="rounded-full object-cover w-12 h-12 border border-[#E5DFEE]"
+281:                   />
+282:                   {conv.repScore !== undefined && (
+283:                     <span className="absolute -bottom-0.5 -right-0.5 bg-[#F5F2FC] px-1.5 py-0.2 rounded-full text-[9px] font-bold text-[#6555B8] border border-[#E2DBF0] flex items-center gap-0.5">
+284:                       <ShieldCheck className="w-2.5 h-2.5 text-[#6555B8]" />
+285:                       {conv.repScore}%
+286:                     </span>
+287:                   )}
+288:                 </div>
+289: 
+290:                 <div className="flex-1 min-w-0">
+291:                   <div className="flex items-center justify-between gap-2 mb-0.5">
+292:                     <h2
+293:                       className="text-[13.5px] font-bold text-[#1C1924] truncate"
+294:                       style={{ fontFamily: 'var(--font-brand)' }}
+295:                     >
+296:                       @{conv.name}
+297:                     </h2>
+298:                     {conv.lastMessageAt && (
+299:                       <span
+300:                         className={
+301:                           'text-[10.5px] shrink-0 ' +
+302:                           (conv.unreadCount > 0 ? 'text-[#6555B8] font-semibold' : 'text-[#8C849B]')
+303:                         }
+304:                       >
+305:                         {formatConversationTimestamp(conv.lastMessageAt)}
+306:                       </span>
+307:                     )}
+308:                   </div>
+309:                   <div className="flex items-center justify-between gap-2">
+310:                     <p
+311:                       className={
+312:                         'text-xs truncate ' +
+313:                         (conv.unreadCount > 0 ? 'font-semibold text-[#1C1924]' : 'text-[#6C637B]')
+314:                       }
+315:                     >
+316:                       {conv.lastMessage}
+317:                     </p>
+318:                     {conv.unreadCount > 0 && (
+319:                       <span className="min-w-[18px] h-[18px] px-1.5 rounded-full bg-[#6555B8] text-white text-[10px] font-bold flex items-center justify-center shrink-0">
+320:                         {conv.unreadCount}
+321:                       </span>
+322:                     )}
+323:                   </div>
+324:                 </div>
+325: 
+326:                 <ChevronRight className="w-4 h-4 text-[#A098B0] shrink-0" />
+327:               </Link>
+328:             ))
+329:           )}
+330:         </div>
+331:       </main>
+332:     </div>
+333:   );
+334: }
+
+======================================================
+FILE: app/profile/page.tsx (EXISTS)
+======================================================
+Total Lines: 885
+1: 'use client';
+2: 
+3: import { captureCurrentLocation, formatVerifiedDate } from '@/lib/location';
+4: import React, { useEffect, useState } from 'react';
+5: import Link from 'next/link';
+6: import { useRouter } from 'next/navigation';
+7: import {
+8:   ShieldCheck,
+9:   MapPin,
+10:   Languages,
+11:   Edit3,
+12:   Settings,
+13:   Check,
+14:   Camera,
+15:   X,
+16:   ChevronDown,
+17:   Loader2,
+18:   Navigation,
+19:   Clock,
+20:   ShieldAlert
+21: } from 'lucide-react';
+22: import { supabase } from '@/lib/supabase/client';
+23: import RepScoreCard from '@/components/RepScoreCard';
+24: 
+25: const QUICK_LANGUAGES = ['English', 'Tagalog', 'Thai', 'Japanese', 'Vietnamese', 'Mandarin', 'Spanish', 'Korean'];
+26: 
+27: const INTENT_LABELS: Record<string, string> = {
+28:   the_real_thing: 'The Real Thing',
+29:   marriage: 'The Real Thing',
+30:   'marriage & kids': 'The Real Thing',
+31:   'marriage (no kids)': 'The Real Thing',
+32:   marriage_minded: 'The Real Thing',
+33:   'marriage-minded': 'The Real Thing',
+34:   serious: 'The Real Thing',
+35:   'serious relationship': 'The Real Thing',
+36:   long_term: 'Long-Term',
+37:   'long-term': 'Long-Term',
+38:   long_term_relationship: 'Long-Term',
+39:   'long-term relationship': 'Long-Term',
+40:   'life partner': 'Long-Term',
+41:   keeping_it_light: 'Keeping It Light',
+42:   dating: 'Keeping It Light',
+43:   casual: 'Keeping It Light',
+44:   'casual dating': 'Keeping It Light',
+45: };
+46: const toIntentLabel = (v: unknown) =>
+47:   INTENT_LABELS[String(v || '').trim().toLowerCase()] || String(v || '').trim();
+48: 
+49: const INTENT_CHIP_OPTIONS = [
+50:   { value: 'the_real_thing', label: 'The Real Thing' },
+51:   { value: 'long_term', label: 'Long-Term' },
+52:   { value: 'keeping_it_light', label: 'Keeping It Light' },
+53: ] as const;
+54: 
+55: const toIntentChipValue = (v: unknown): string => {
+56:   const raw = String(v || '').trim().toLowerCase();
+57:   if (raw === 'the_real_thing' || raw === 'long_term' || raw === 'keeping_it_light') return raw;
+58:   const mapped = toIntentLabel(v);
+59:   if (mapped === 'The Real Thing') return 'the_real_thing';
+60:   if (mapped === 'Long-Term') return 'long_term';
+61:   if (mapped === 'Keeping It Light') return 'keeping_it_light';
+62:   return 'the_real_thing';
+63: };
+64: 
+65: const RELIGION_OPTIONS = ['Catholic', 'Christian', 'Buddhist', 'Muslim', 'Spiritual', 'None', 'Other'];
+66: const MARITAL_OPTIONS = ['Never Married', 'Divorced', 'Widowed', 'Separated'];
+67: const RELOCATION_OPTIONS = ['Can Relocate', 'Open to Either', 'Cannot Relocate', 'Other'];
+68: 
+69: const HEIGHT_OPTIONS = [
+70:   '4\'8" (142 cm)', '4\'9" (145 cm)', '4\'10" (147 cm)', '4\'11" (150 cm)',
+71:   '5\'0" (152 cm)', '5\'1" (155 cm)', '5\'2" (157 cm)', '5\'3" (160 cm)',
+72:   '5\'4" (163 cm)', '5\'5" (165 cm)', '5\'6" (168 cm)', '5\'7" (170 cm)',
+73:   '5\'8" (173 cm)', '5\'9" (175 cm)', '5\'10" (178 cm)', '5\'11" (180 cm)',
+74:   '6\'0" (183 cm)', '6\'1" (185 cm)', '6\'2" (188 cm)', '6\'3" (191 cm)',
+75:   '6\'4" (193 cm)', '6\'5" (196 cm)', '6\'6" (198 cm)', '6\'7" (201 cm)'
+76: ];
+77: 
+78: const WEIGHT_OPTIONS = [
+79:   '40 kg (88 lbs)', '42 kg (93 lbs)', '45 kg (99 lbs)', '48 kg (106 lbs)',
+80:   '50 kg (110 lbs)', '52 kg (115 lbs)', '55 kg (121 lbs)', '58 kg (128 lbs)',
+81:   '60 kg (132 lbs)', '63 kg (139 lbs)', '65 kg (143 lbs)', '68 kg (150 lbs)',
+82:   '70 kg (154 lbs)', '73 kg (161 lbs)', '75 kg (165 lbs)', '78 kg (172 lbs)',
+83:   '80 kg (176 lbs)', '85 kg (187 lbs)', '90 kg (198 lbs)', '95 kg (209 lbs)',
+84:   '100 kg (220 lbs)', '105 kg (231 lbs)', '110 kg (243 lbs)', '115 kg (254 lbs)',
+85:   '120 kg (265 lbs)'
+86: ];
+87: 
+88: const HOBBY_TAGS = [
+89:   'Cooking & Food',
+90:   'Beach & Ocean',
+91:   'Island Hopping',
+92:   'Family First',
+93:   'Travel',
+94:   'Movies & Cinema',
+95:   'Music & Karaoke',
+96:   'Fitness & Gym',
+97:   'Health & Wellness',
+98:   'Coffee & Cafes',
+99:   'Hiking & Outdoors',
+100:   'Faith & Church',
+101:   'Homebody',
+102:   'Nightlife & Bars',
+103:   'Shopping & Malls',
+104:   'Photography',
+105:   'Pets & Animals',
+106:   'Mobile Gaming & Esports',
+107:   'Art & Design',
+108:   'Business & Career'
+109: ];
+110: 
+111: export default function MyProfilePage() {
+112:   const router = useRouter();
+113: 
+114:   const [loading, setLoading] = useState(true);
+115:   const [isEditing, setIsEditing] = useState(false);
+116:   const [saving, setSaving] = useState(false);
+117:   const [saveSuccess, setSaveSuccess] = useState(false);
+118: 
+119:   const [name, setName] = useState('');
+120:   const [username, setUsername] = useState('');
+121:   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
+122:   const [photos, setPhotos] = useState<string[]>([]);
+123:   const [currentPhotoIdx, setCurrentPhotoIdx] = useState(0);
+124:   const [age, setAge] = useState(25);
+125:   const [location, setLocation] = useState('');
+126:   const [locationSource, setLocationSource] = useState<'gps_verified' | 'self_reported'>('self_reported');
+127:   const [locationVerifiedAt, setLocationVerifiedAt] = useState<string | null>(null);
+128:   const [latitude, setLatitude] = useState<number | null>(null);
+129:   const [longitude, setLongitude] = useState<number | null>(null);
+130:   const [isLocating, setIsLocating] = useState<boolean>(false);
+131:   const [locError, setLocError] = useState<string | null>(null);
+132:   const [bio, setBio] = useState('');
+133:   const [lookingFor, setLookingFor] = useState('');
+134:   const [interests, setInterests] = useState<string[]>([]);
+135: 
+136:   const [verificationStatus, setVerificationStatus] = useState<'unverified' | 'pending' | 'verified'>('unverified');
+137:   const [isPlus, setIsPlus] = useState<boolean>(false);
+138:   const [repScore, setRepScore] = useState<number | null>(null);
+139: 
+140:   const [profession, setProfession] = useState('');
+141:   const [intent, setIntent] = useState('the_real_thing');
+142:   const [religion, setReligion] = useState('Christian');
+143:   const [maritalStatus, setMaritalStatus] = useState('Never Married');
+144:   const [hasKids, setHasKids] = useState('No');
+145:   const [wantsKids, setWantsKids] = useState('Yes');
+146:   const [relocation, setRelocation] = useState('Can Relocate');
+147:   const [userLanguages, setUserLanguages] = useState('English');
+148:   const [height, setHeight] = useState('');
+149:   const [weight, setWeight] = useState('');
+150:   const [drinking, setDrinking] = useState('No');
+151:   const [smoking, setSmoking] = useState('No');
+152:   const [langInput, setLangInput] = useState('');
+153: 
+154:   useEffect(() => {
+155:     async function loadUserData() {
+156:       const { data: { user } } = await supabase.auth.getUser();
+157:       if (!user) {
+158:         router.push('/login');
+159:         return;
+160:       }
+161: 
+162:       const { data } = await supabase
+163:         .from('profiles')
+164:         .select('*')
+165:         .eq('id', user.id)
+166:         .maybeSingle();
+167: 
+168:       if (data) {
+169:         const resolvedUsername =
+170:           (data.username && !data.username.startsWith('user_') ? data.username : '') ||
+171:           data.display_name ||
+172:           data.full_name ||
+173:           'Member';
+174:         setUsername(resolvedUsername);
+175:         setName(data.display_name || data.full_name || resolvedUsername);
+176:         if (data.age) setAge(data.age);
+177:         const locStr = data.location || [data.city, data.country].filter(Boolean).join(', ');
+178:         if (locStr) setLocation(locStr);
+179:         if (data.location_source) setLocationSource(data.location_source);
+180:         if (data.location_verified_at) setLocationVerifiedAt(data.location_verified_at);
+181:         if (data.latitude) setLatitude(data.latitude);
+182:         if (data.longitude) setLongitude(data.longitude);
+183:         if (data.bio) setBio(data.bio);
+184:         if (data.looking_for) setLookingFor(data.looking_for);
+185:         if (Array.isArray(data.interests)) {
+186:           const retired = new Set(['nature walks', 'gaming', 'entrepreneurship']);
+187:           setInterests(data.interests.filter((t: string) => !retired.has(String(t || '').trim().toLowerCase())));
+188:         }
+189:         if (data.occupation) setProfession(data.occupation);
+190:         if (data.relationship_intent || data.intentions) setIntent(toIntentChipValue(data.relationship_intent || data.intentions));
+191:         if (data.religion) setReligion(data.religion);
+192:         if (data.marital_status) setMaritalStatus(data.marital_status);
+193:         if (data.has_kids) setHasKids(data.has_kids);
+194:         if (data.wants_kids) setWantsKids(data.wants_kids);
+195:         if (data.relocation) setRelocation(data.relocation);
+196:         if (data.languages) {
+197:           setUserLanguages(Array.isArray(data.languages) ? data.languages.join(', ') : data.languages);
+198:         }
+199:         if (data.is_plus || data.plus_enabled || data.membership_tier === 'plus') setIsPlus(true);
+200:         if (typeof data.reputation_score === 'number') setRepScore(data.reputation_score);
+201: 
+202:         if (data.height) {
+203:           const raw = String(data.height).trim();
+204:           const cmMatch = raw.match(/(\d+)\s*cm/i);
+205:           if (cmMatch) {
+206:             const matchedOption = HEIGHT_OPTIONS.find((opt) => opt.includes('(' + cmMatch[1] + ' cm)'));
+207:             setHeight(matchedOption || raw);
+208:           } else {
+209:             setHeight(raw);
+210:           }
+211:         }
+212:         if (data.weight) setWeight(data.weight);
+213:         if (data.drinking) setDrinking(data.drinking);
+214:         if (data.smoking) setSmoking(data.smoking);
+215:         if (data.avatar_url) setAvatarUrl(data.avatar_url);
+216:         if (data.verification_status) {
+217:           setVerificationStatus(data.verification_status);
+218:         } else if (data.is_verified) {
+219:           setVerificationStatus('verified');
+220:         }
+221:         if (Array.isArray(data.photos) && data.photos.length > 0) {
+222:           setPhotos(data.photos.filter(Boolean));
+223:         } else if (data.avatar_url) {
+224:           setPhotos([data.avatar_url]);
+225:         }
+226:       }
+227:       setLoading(false);
+228:     }
+229:     loadUserData();
+230:   }, [router]);
+231: 
+232:   const currentLanguages = userLanguages
+233:     ? userLanguages.split(',').map((s: string) => s.trim()).filter(Boolean)
+234:     : [];
+235: 
+236:   const handleAddLanguage = (lang: string) => {
+237:     const trimmed = lang.trim();
+238:     if (!trimmed) return;
+239:     if (!currentLanguages.some((l: string) => l.toLowerCase() === trimmed.toLowerCase())) {
+240:       const updated = [...currentLanguages, trimmed].join(', ');
+241:       setUserLanguages(updated);
+242:     }
+243:     setLangInput('');
+244:   };
+245: 
+246:   const handleRemoveLanguage = (langToRemove: string) => {
+247:     const updated = currentLanguages.filter((l: string) => l.toLowerCase() !== langToRemove.toLowerCase()).join(', ');
+248:     setUserLanguages(updated);
+249:   };
+250: 
+251:   const extractUnit = (label: string, unit: string): string | null => {
+252:     const m = String(label).match(new RegExp('\\((\\d+) ' + unit + '\\)'));
+253:     return m ? m[1] : null;
+254:   };
+255: 
+256:   const toggleHobby = (tag: string) => {
+257:     setInterests((prev) =>
+258:       prev.includes(tag) ? prev.filter((t) => t !== tag) : [...prev, tag]
+259:     );
+260:   };
+261: 
+262:   const handleSave = async () => {
+263:     const { data: { user } } = await supabase.auth.getUser();
+264:     if (!user) return;
+265: 
+266:     const payload: Record<string, any> = {
+267:       id: user.id,
+268:       display_name: name || username,
+269:       full_name: name || username,
+270:       age: Number(age),
+271:       location,
+272:       location_source: locationSource,
+273:       location_verified_at: locationVerifiedAt,
+274:       bio: bio.trim(),
+275:       looking_for: lookingFor.trim(),
+276:       interests,
+277:       occupation: profession,
+278:       relationship_intent: intent,
+279:       intentions: intent,
+280:       religion,
+281:       marital_status: maritalStatus,
+282:       has_kids: hasKids,
+283:       wants_kids: wantsKids,
+284:       relocation,
+285:       languages: userLanguages,
+286:       height: (() => { const cm = extractUnit(height, 'cm') || (/^\\d+$/.test(String(height)) ? String(height) : null); return cm ? cm + ' cm' : null; })(),
+287: weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(weight)) ? String(weight) : null); return kg ? Number(kg) : null; })(),
+288:       drinking,
+289:       smoking,
+290:       updated_at: new Date().toISOString(),
+291:     };
+292: 
+293:     if (latitude) payload.latitude = latitude;
+294:     if (longitude) payload.longitude = longitude;
+295: 
+296:     setSaving(true);
+297:     const { error } = await supabase.from('profiles').upsert(payload);
+298:     setSaving(false);
+299: 
+300:     if (!error) {
+301:       setIsEditing(false);
+302:       setSaveSuccess(true);
+303:       setTimeout(() => setSaveSuccess(false), 2500);
+304:     } else {
+305:       alert('Could not update profile: ' + error.message);
+306:     }
+307:   };
+308: 
+309:   if (loading) {
+310:     return (
+311:       <div className="min-h-screen bg-[#F8F7FA] flex items-center justify-center">
+312:         <Loader2 className="w-8 h-8 animate-spin text-[#6555B8]" />
+313:       </div>
+314:     );
+315:   }
+316: 
+317:   const photoList = Array.isArray(photos) && photos.length > 0 ? photos : avatarUrl ? [avatarUrl] : [];
+318:   const currentImg = photoList[currentPhotoIdx] || avatarUrl;
+319:   const hasMultiple = photoList.length > 1;
+320: 
+321:   return (
+322:     <div className="flex-1 flex flex-col w-full bg-[#F8F7FA] text-[#1C1924] font-sans">
+323:       <main className="flex-1 w-full px-4 pt-4 pb-24 space-y-5">
+324:         {saveSuccess && (
+325:           <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center gap-2">
+326:             <Check className="w-4 h-4 text-emerald-600" />
+327:             <span>Profile changes saved!</span>
+328:           </div>
+329:         )}
+330: 
+331:         {/* Quick Actions Bar */}
+332:         <div className="flex items-center justify-end gap-2">
+333:           <Link
+334:             href="/profile/edit"
+335:             className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#DDD7E5] bg-white hover:bg-[#F3EFFC] text-xs font-semibold text-[#6555B8] transition shadow-2xs"
+336:           >
+337:             <Camera className="w-3.5 h-3.5" />
+338:             <span>Photos</span>
+339:           </Link>
+340:           <Link
+341:             href="/settings"
+342:             className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#DDD7E5] bg-white hover:bg-[#F8F7FA] text-xs font-semibold text-[#524B5E] hover:text-[#1C1924] transition shadow-2xs"
+343:           >
+344:             <Settings className="w-3.5 h-3.5 text-[#6555B8]" />
+345:             <span>Settings</span>
+346:           </Link>
+347:         </div>
+348: 
+349:         {/* Identity Bar */}
+350:         {isEditing ? (
+351:           <div className="p-5 rounded-3xl bg-white border border-[#DDD7E5] space-y-3.5 shadow-xs">
+352:             <div>
+353:               <label className="text-xs font-semibold text-[#1C1924] block mb-1">Display Name</label>
+354:               <input
+355:                 type="text"
+356:                 value={name}
+357:                 onChange={(e) => setName(e.target.value)}
+358:                 className="w-full px-4 py-2.5 rounded-2xl bg-white border border-[#DDD7E5] text-sm font-medium text-[#1C1924] focus:outline-none focus:border-[#6555B8] focus:ring-2 focus:ring-[#6555B8]/15"
+359:               />
+360:             </div>
+361:             <div className="grid grid-cols-2 gap-3">
+362:               <div>
+363:                 <label className="text-xs font-semibold text-[#1C1924] block mb-1">Age</label>
+364:                 <input
+365:                   type="number"
+366:                   value={age}
+367:                   onChange={(e) => setAge(Number(e.target.value))}
+368:                   className="w-full px-4 py-2.5 rounded-2xl bg-white border border-[#DDD7E5] text-sm font-medium text-[#1C1924] focus:outline-none focus:border-[#6555B8] focus:ring-2 focus:ring-[#6555B8]/15"
+369:                 />
+370:               </div>
+371:               <div>
+372:                 <label className="text-xs font-semibold text-[#1C1924] block mb-1">City &amp; Country</label>
+373:                 <input
+374:                   type="text"
+375:                   value={location}
+376:                   onChange={(e) => {
+377:                     setLocation(e.target.value);
+378:                     setLocationSource('self_reported');
+379:                   }}
+380:                   className="w-full px-4 py-2.5 rounded-2xl bg-white border border-[#DDD7E5] text-sm font-medium text-[#1C1924] focus:outline-none focus:border-[#6555B8] focus:ring-2 focus:ring-[#6555B8]/15"
+381:                 />
+382:               </div>
+383:             </div>
+384: 
+385:             <button
+386:               type="button"
+387:               disabled={isLocating}
+388:               onClick={async () => {
+389:                 setIsLocating(true);
+390:                 setLocError(null);
+391:                 const res = await captureCurrentLocation();
+392:                 setIsLocating(false);
+393:                 if (res.success && res.data) {
+394:                   setLocation(res.data.city + ', ' + res.data.country);
+395:                   setLocationSource('gps_verified');
+396:                   setLocationVerifiedAt(new Date().toISOString());
+397:                   setLatitude(res.data.latitude);
+398:                   setLongitude(res.data.longitude);
+399:                 } else if (res.error) {
+400:                   setLocError(res.error);
+401:                 }
+402:               }}
+403:               className="w-full py-2.5 px-3 rounded-2xl bg-[#F3EFFC] border border-[#6555B8]/25 hover:bg-[#EAE4F7] text-xs font-semibold text-[#6555B8] flex items-center justify-center gap-1.5 transition"
+404:             >
+405:               {isLocating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Navigation className="w-3.5 h-3.5" />}
+406:               <span>{isLocating ? 'Detecting GPS...' : 'Auto-Detect City with GPS'}</span>
+407:             </button>
+408:             {locError && <p className="text-[11px] text-rose-600 text-center">{locError}</p>}
+409:           </div>
+410:         ) : (
+411:           <div className="flex items-center justify-between gap-2 px-1">
+412:             <div>
+413:               <h2
+414:                 className="text-xl sm:text-[22px] font-bold text-[#1C1924] tracking-tight"
+415:                 style={{ fontFamily: 'var(--font-brand)' }}
+416:               >
+417:                 @{username}{age ? ', ' + age : ''}
+418:               </h2>
+419:               <div className="flex items-center gap-1.5 mt-0.5">
+420:                 <MapPin className="w-3.5 h-3.5 text-[#6555B8]" />
+421:                 <p className="text-xs font-medium text-[#6C637B]">
+422:                   {location || 'Location not set'}
+423:                 </p>
+424:                 {locationSource === 'gps_verified' && (
+425:                   <span
+426:                     title={locationVerifiedAt ? 'GPS Verified ' + formatVerifiedDate(locationVerifiedAt) : 'GPS Verified'}
+427:                     className="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-[10px] font-semibold text-emerald-700"
+428:                   >
+429:                     GPS
+430:                   </span>
+431:                 )}
+432:               </div>
+433:             </div>
+434: 
+435:             <div className="flex items-center gap-2">
+436:               {isPlus && (
+437:                 <span className="px-2.5 py-1 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-bold text-[10px] uppercase tracking-wider shadow-2xs">
+438:                   PLUS
+439:                 </span>
+440:               )}
+441:               {verificationStatus === 'verified' ? (
+442:                 <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold">
+443:                   <ShieldCheck className="w-4 h-4 text-emerald-600" />
+444:                   <span>Verified</span>
+445:                 </div>
+446:               ) : verificationStatus === 'pending' ? (
+447:                 <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-xs font-semibold">
+448:                   <Clock className="w-3.5 h-3.5 animate-pulse" />
+449:                   <span>Pending</span>
+450:                 </div>
+451:               ) : (
+452:                 <Link
+453:                   href="/verify"
+454:                   className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#F3EFFC] border border-[#DDD7E5] hover:border-[#6555B8] text-xs font-semibold text-[#6555B8] transition shadow-2xs"
+455:                 >
+456:                   <ShieldAlert className="w-3.5 h-3.5 text-[#6555B8]" />
+457:                   <span>Verify</span>
+458:                 </Link>
+459:               )}
+460:             </div>
+461:           </div>
+462:         )}
+463: 
+464:         {/* Framed 4:5 Portrait Card */}
+465:         <div className="relative aspect-[4/5] w-full rounded-3xl overflow-hidden bg-white border border-[#DDD7E5] flex items-center justify-center select-none shadow-xs">
+466:           {currentImg ? (
+467:             <img src={currentImg} alt={username} className="w-full h-full object-cover" />
+468:           ) : (
+469:             <Link href="/profile/edit" className="flex flex-col items-center justify-center text-[#6555B8] p-6 text-center">
+470:               <div className="w-14 h-14 rounded-2xl bg-[#F3EFFC] flex items-center justify-center mb-2">
+471:                 <Camera className="w-7 h-7" />
+472:               </div>
+473:               <span className="text-sm font-semibold text-[#1C1924]">Add Your Profile Photos</span>
+474:               <span className="text-xs text-[#6C637B] mt-0.5">Upload up to 6 photos</span>
+475:             </Link>
+476:           )}
+477: 
+478:           <div className="absolute top-4 left-4 z-10">
+479:             <span className="presence-dot h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white/90 shadow block" />
+480:           </div>
+481: 
+482:           {hasMultiple && (
+483:             <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-1.5 z-10">
+484:               {photoList.map((_, idx) => (
+485:                 <button
+486:                   key={idx}
+487:                   type="button"
+488:                   onClick={() => setCurrentPhotoIdx(idx)}
+489:                   className={'h-1.5 rounded-full transition-all ' + (idx === currentPhotoIdx ? 'w-6 bg-white' : 'w-1.5 bg-white/50')}
+490:                 />
+491:               ))}
+492:             </div>
+493:           )}
+494:         </div>
+495: 
+496:         {/* Edit / Save Action Bar */}
+497:         <div className="flex gap-2.5">
+498:           {isEditing ? (
+499:             <>
+500:               <button
+501:                 type="button"
+502:                 onClick={() => setIsEditing(false)}
+503:                 className="flex-1 py-3 rounded-2xl bg-white border border-[#DDD7E5] text-xs font-semibold text-[#524B5E] hover:bg-[#F8F7FA] transition"
+504:               >
+505:                 Cancel
+506:               </button>
+507:               <button
+508:                 type="button"
+509:                 onClick={handleSave}
+510:                 disabled={saving}
+511:                 className="flex-1 py-3 rounded-2xl bg-[#6555B8] text-white text-xs font-semibold hover:bg-[#52449e] transition flex items-center justify-center gap-1.5 shadow-md disabled:opacity-50"
+512:               >
+513:                 {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+514:                 <span>{saving ? 'Saving...' : 'Save Profile'}</span>
+515:               </button>
+516:             </>
+517:           ) : (
+518:             <button
+519:               type="button"
+520:               onClick={() => setIsEditing(true)}
+521:               className="w-full py-3 rounded-2xl bg-white border border-[#DDD7E5] text-xs font-semibold text-[#1C1924] hover:bg-[#F3EFFC] hover:border-[#6555B8]/40 transition flex items-center justify-center gap-2 shadow-xs cursor-pointer"
+522:             >
+523:               <Edit3 className="w-3.5 h-3.5 text-[#6555B8]" />
+524:               <span>Edit Profile Details</span>
+525:             </button>
+526:           )}
+527:         </div>
+528: 
+529:         <RepScoreCard score={repScore ?? 100} />
+530: 
+531:         {/* INTERESTS & HOBBIES */}
+532:         <div className="p-5 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-3">
+533:           <div className="flex items-center justify-between">
+534:             <span
+535:               className="text-xs font-bold text-[#6555B8] uppercase tracking-wider"
+536:               style={{ fontFamily: 'var(--font-brand)' }}
+537:             >
+538:               Interests &amp; Hobbies
+539:             </span>
+540:           </div>
+541: 
+542:           {isEditing ? (
+543:             <div className="flex flex-wrap gap-1.5">
+544:               {HOBBY_TAGS.map((tag) => {
+545:                 const selected = interests.includes(tag);
+546:                 return (
+547:                   <button
+548:                     key={tag}
+549:                     type="button"
+550:                     onClick={() => toggleHobby(tag)}
+551:                     className={
+552:                       'px-3 py-1.5 rounded-xl text-xs font-medium border transition ' +
+553:                       (selected
+554:                         ? 'bg-[#6555B8] border-[#6555B8] text-white shadow-2xs'
+555:                         : 'bg-white border-[#DDD7E5] text-[#524B5E] hover:bg-[#F3EFFC]')
+556:                     }
+557:                   >
+558:                     {tag}
+559:                   </button>
+560:                 );
+561:               })}
+562:             </div>
+563:           ) : (
+564:             <div className="flex flex-wrap gap-1.5">
+565:               {interests.length > 0 ? (
+566:                 interests.map((tag) => (
+567:                   <span
+568:                     key={tag}
+569:                     className="px-3 py-1 rounded-full bg-[#F3EFFC] border border-[#6555B8]/25 text-xs font-semibold text-[#6555B8]"
+570:                   >
+571:                     {tag}
+572:                   </span>
+573:                 ))
+574:               ) : (
+575:                 <span className="text-xs text-[#8C849B] italic">Tap Edit Profile Details to add your hobbies.</span>
+576:               )}
+577:             </div>
+578:           )}
+579:         </div>
+580: 
+581:         {/* ABOUT ME */}
+582:         <div className="p-5 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-2.5">
+583:           <div className="flex items-center justify-between">
+584:             <span
+585:               className="text-xs font-bold text-[#6555B8] uppercase tracking-wider"
+586:               style={{ fontFamily: 'var(--font-brand)' }}
+587:             >
+588:               About Me
+589:             </span>
+590:             {isEditing && (
+591:               <span className="text-[11px] font-medium text-[#8C849B]">{bio.length}/500</span>
+592:             )}
+593:           </div>
+594:           {isEditing ? (
+595:             <textarea
+596:               value={bio}
+597:               onChange={(e) => setBio(e.target.value.slice(0, 500))}
+598:               rows={4}
+599:               placeholder="Share your passions, daily life, and what makes you smile..."
+600:               className="w-full p-3.5 rounded-2xl bg-[#F8F7FA] border border-[#DDD7E5] text-xs sm:text-sm text-[#1C1924] leading-relaxed placeholder-[#8C849B] focus:outline-none focus:bg-white focus:border-[#6555B8] resize-none"
+601:             />
+602:           ) : (
+603:             <p className="text-xs sm:text-sm text-[#1C1924] leading-relaxed">
+604:               {bio || <span className="text-[#8C849B] italic">No bio written yet.</span>}
+605:             </p>
+606:           )}
+607:         </div>
+608: 
+609:         {/* WHAT THEY'RE LOOKING FOR */}
+610:         <div className="p-5 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-2.5">
+611:           <div className="flex items-center justify-between">
+612:             <span
+613:               className="text-xs font-bold text-[#6555B8] uppercase tracking-wider"
+614:               style={{ fontFamily: 'var(--font-brand)' }}
+615:             >
+616:               What They&apos;re Looking For
+617:             </span>
+618:             {isEditing ? (
+619:               <span className="text-[11px] font-medium text-[#8C849B]">{lookingFor.length}/200</span>
+620:             ) : (
+621:               <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#F3EFFC] text-[#6555B8]">
+622:                 Goals
+623:               </span>
+624:             )}
+625:           </div>
+626:           {isEditing ? (
+627:             <input
+628:               type="text"
+629:               value={lookingFor}
+630:               onChange={(e) => setLookingFor(e.target.value.slice(0, 200))}
+631:               placeholder="Describe the partner and relationship you are looking for..."
+632:               className="w-full px-4 py-3 rounded-2xl bg-[#F8F7FA] border border-[#DDD7E5] text-xs sm:text-sm text-[#1C1924] placeholder-[#8C849B] focus:outline-none focus:bg-white focus:border-[#6555B8]"
+633:             />
+634:           ) : (
+635:             <p className="text-xs sm:text-sm text-[#1C1924] leading-relaxed">
+636:               {lookingFor ? toIntentLabel(lookingFor) : <span className="text-[#8C849B] italic">No preferences added yet.</span>}
+637:             </p>
+638:           )}
+639:         </div>
+640: 
+641:         {/* VITALS & LIFESTYLE */}
+642:         <div className="p-5 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-4">
+643:           <h3
+644:             className="text-xs font-bold text-[#6555B8] uppercase tracking-wider"
+645:             style={{ fontFamily: 'var(--font-brand)' }}
+646:           >
+647:             Vitals &amp; Lifestyle
+648:           </h3>
+649: 
+650:           <div className="space-y-3.5 pt-1 text-xs">
+651:             {/* Future Plans (3-Chip Picker in Edit Mode) */}
+652:             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[#F0EDF5]">
+653:               <span className="font-semibold text-[#6C637B]">Future Plans</span>
+654:               {isEditing ? (
+655:                 <div className="flex flex-wrap items-center gap-1.5">
+656:                   {INTENT_CHIP_OPTIONS.map((chip) => {
+657:                     const selected = intent === chip.value;
+658:                     return (
+659:                       <button
+660:                         key={chip.value}
+661:                         type="button"
+662:                         onClick={() => setIntent(chip.value)}
+663:                         className={
+664:                           'px-3 py-1.5 rounded-xl border text-xs font-semibold transition cursor-pointer ' +
+665:                           (selected
+666:                             ? 'bg-[#6555B8] text-white border-[#6555B8]'
+667:                             : 'bg-white text-[#524B5E] border-[#DDD7E5]')
+668:                         }
+669:                       >
+670:                         {chip.label}
+671:                       </button>
+672:                     );
+673:                   })}
+674:                 </div>
+675:               ) : (
+676:                 <span className="font-semibold text-[#1C1924]">{toIntentLabel(intent) || 'Not specified'}</span>
+677:               )}
+678:             </div>
+679: 
+680:             {/* Height */}
+681:             <div className="flex items-center justify-between gap-2 pb-3 border-b border-[#F0EDF5]">
+682:               <span className="font-semibold text-[#6C637B]">Height</span>
+683:               {isEditing ? (
+684:                 <div className="relative">
+685:                   <select
+686:                     value={height}
+687:                     onChange={(e) => setHeight(e.target.value)}
+688:                     className="appearance-none pr-8 pl-3 py-1.5 rounded-xl bg-[#F3EFFC] border border-[#6555B8]/20 text-xs font-semibold text-[#6555B8] focus:outline-none"
+689:                   >
+690:                     <option value="">Select height</option>
+691:                     {HEIGHT_OPTIONS.map((opt) => (
+692:                       <option key={opt} value={opt}>{opt}</option>
+693:                     ))}
+694:                   </select>
+695:                   <ChevronDown className="w-3.5 h-3.5 text-[#6555B8] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+696:                 </div>
+697:               ) : (
+698:                 <span className="font-semibold text-[#1C1924]">{height || 'Not specified'}</span>
+699:               )}
+700:             </div>
+701: 
+702:             {/* Weight */}
+703:             <div className="flex items-center justify-between gap-2 pb-3 border-b border-[#F0EDF5]">
+704:               <span className="font-semibold text-[#6C637B]">Weight</span>
+705:               {isEditing ? (
+706:                 <div className="relative">
+707:                   <select
+708:                     value={weight}
+709:                     onChange={(e) => setWeight(e.target.value)}
+710:                     className="appearance-none pr-8 pl-3 py-1.5 rounded-xl bg-[#F3EFFC] border border-[#6555B8]/20 text-xs font-semibold text-[#6555B8] focus:outline-none"
+711:                   >
+712:                     <option value="">Select weight</option>
+713:                     {WEIGHT_OPTIONS.map((opt) => (
+714:                       <option key={opt} value={opt}>{opt}</option>
+715:                     ))}
+716:                   </select>
+717:                   <ChevronDown className="w-3.5 h-3.5 text-[#6555B8] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+718:                 </div>
+719:               ) : (
+720:                 <span className="font-semibold text-[#1C1924]">{weight || 'Not specified'}</span>
+721:               )}
+722:             </div>
+723: 
+724:             {/* Occupation */}
+725:             <div className="flex items-center justify-between gap-2 pb-3 border-b border-[#F0EDF5]">
+726:               <span className="font-semibold text-[#6C637B]">Occupation</span>
+727:               {isEditing ? (
+728:                 <input
+729:                   type="text"
+730:                   value={profession}
+731:                   onChange={(e) => setProfession(e.target.value)}
+732:                   placeholder="e.g. Nurse, Engineer"
+733:                   className="px-3 py-1.5 rounded-xl bg-[#F8F7FA] border border-[#DDD7E5] text-xs font-semibold text-[#1C1924] focus:outline-none focus:border-[#6555B8]"
+734:                 />
+735:               ) : (
+736:                 <span className="font-semibold text-[#1C1924]">{profession || 'Not specified'}</span>
+737:               )}
+738:             </div>
+739: 
+740:             {/* Marital Status */}
+741:             <div className="flex items-center justify-between gap-2 pb-3 border-b border-[#F0EDF5]">
+742:               <span className="font-semibold text-[#6C637B]">Marital Status</span>
+743:               {isEditing ? (
+744:                 <div className="relative">
+745:                   <select
+746:                     value={maritalStatus}
+747:                     onChange={(e) => setMaritalStatus(e.target.value)}
+748:                     className="appearance-none pr-8 pl-3 py-1.5 rounded-xl bg-[#F3EFFC] border border-[#6555B8]/20 text-xs font-semibold text-[#6555B8] focus:outline-none"
+749:                   >
+750:                     {MARITAL_OPTIONS.map((opt) => (
+751:                       <option key={opt} value={opt}>{opt}</option>
+752:                     ))}
+753:                   </select>
+754:                   <ChevronDown className="w-3.5 h-3.5 text-[#6555B8] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+755:                 </div>
+756:               ) : (
+757:                 <span className="font-semibold text-[#1C1924]">{maritalStatus || 'Not specified'}</span>
+758:               )}
+759:             </div>
+760: 
+761:             {/* Religion */}
+762:             <div className="flex items-center justify-between gap-2 pb-3 border-b border-[#F0EDF5]">
+763:               <span className="font-semibold text-[#6C637B]">Beliefs</span>
+764:               {isEditing ? (
+765:                 <div className="relative">
+766:                   <select
+767:                     value={religion}
+768:                     onChange={(e) => setReligion(e.target.value)}
+769:                     className="appearance-none pr-8 pl-3 py-1.5 rounded-xl bg-[#F3EFFC] border border-[#6555B8]/20 text-xs font-semibold text-[#6555B8] focus:outline-none"
+770:                   >
+771:                     {RELIGION_OPTIONS.map((opt) => (
+772:                       <option key={opt} value={opt}>{opt}</option>
+773:                     ))}
+774:                   </select>
+775:                   <ChevronDown className="w-3.5 h-3.5 text-[#6555B8] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+776:                 </div>
+777:               ) : (
+778:                 <span className="font-semibold text-[#1C1924]">{religion || 'Not specified'}</span>
+779:               )}
+780:             </div>
+781: 
+782:             {/* Relocation */}
+783:             <div className="flex items-center justify-between gap-2">
+784:               <span className="font-semibold text-[#6C637B]">Relocation</span>
+785:               {isEditing ? (
+786:                 <div className="relative">
+787:                   <select
+788:                     value={relocation}
+789:                     onChange={(e) => setRelocation(e.target.value)}
+790:                     className="appearance-none pr-8 pl-3 py-1.5 rounded-xl bg-[#F3EFFC] border border-[#6555B8]/20 text-xs font-semibold text-[#6555B8] focus:outline-none"
+791:                   >
+792:                     {RELOCATION_OPTIONS.map((opt) => (
+793:                       <option key={opt} value={opt}>{opt}</option>
+794:                     ))}
+795:                   </select>
+796:                   <ChevronDown className="w-3.5 h-3.5 text-[#6555B8] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+797:                 </div>
+798:               ) : (
+799:                 <span className="font-semibold text-[#1C1924]">{relocation || 'Not specified'}</span>
+800:               )}
+801:             </div>
+802:           </div>
+803:         </div>
+804: 
+805:         {/* LANGUAGES SPOKEN */}
+806:         <div className="p-5 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-3">
+807:           <h3
+808:             className="text-xs font-bold text-[#6555B8] uppercase tracking-wider flex items-center gap-1.5"
+809:             style={{ fontFamily: 'var(--font-brand)' }}
+810:           >
+811:             <Languages className="w-4 h-4 text-[#6555B8]" />
+812:             <span>Languages Spoken</span>
+813:           </h3>
+814: 
+815:           {isEditing ? (
+816:             <div className="space-y-3">
+817:               <div className="flex flex-wrap gap-1.5">
+818:                 {currentLanguages.map((lang) => (
+819:                   <span
+820:                     key={lang}
+821:                     className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#F3EFFC] border border-[#DDD7E5] text-xs font-semibold text-[#6555B8]"
+822:                   >
+823:                     {lang}
+824:                     <button
+825:                       type="button"
+826:                       onClick={() => handleRemoveLanguage(lang)}
+827:                       className="hover:text-rose-600 transition"
+828:                     >
+829:                       <X className="w-3 h-3" />
+830:                     </button>
+831:                   </span>
+832:                 ))}
+833:               </div>
+834: 
+835:               <div className="flex gap-2">
+836:                 <input
+837:                   type="text"
+838:                   placeholder="Add language"
+839:                   value={langInput}
+840:                   onChange={(e) => setLangInput(e.target.value)}
+841:                   className="flex-1 px-3.5 py-2 rounded-2xl bg-[#F8F7FA] border border-[#DDD7E5] text-xs font-semibold text-[#1C1924] focus:outline-none focus:border-[#6555B8]"
+842:                 />
+843:                 <button
+844:                   type="button"
+845:                   onClick={() => handleAddLanguage(langInput)}
+846:                   className="px-4 py-2 rounded-2xl bg-[#6555B8] text-white text-xs font-semibold hover:bg-[#52449e] transition"
+847:                 >
+848:                   Add
+849:                 </button>
+850:               </div>
+851: 
+852:               <div className="flex flex-wrap gap-1 pt-1">
+853:                 {QUICK_LANGUAGES.map((ql) => (
+854:                   <button
+855:                     key={ql}
+856:                     type="button"
+857:                     onClick={() => handleAddLanguage(ql)}
+858:                     className="px-2.5 py-1 rounded-xl bg-[#F8F7FA] border border-[#DDD7E5] text-[11px] font-medium text-[#524B5E] hover:border-[#6555B8] hover:text-[#6555B8] transition"
+859:                   >
+860:                     + {ql}
+861:                   </button>
+862:                 ))}
+863:               </div>
+864:             </div>
+865:           ) : (
+866:             <div className="flex flex-wrap gap-1.5">
+867:               {currentLanguages.length > 0 ? (
+868:                 currentLanguages.map((lang) => (
+869:                   <span
+870:                     key={lang}
+871:                     className="px-3 py-1 rounded-full bg-[#F8F7FA] border border-[#DDD7E5] text-xs font-semibold text-[#1C1924]"
+872:                   >
+873:                     {lang}
+874:                   </span>
+875:                 ))
+876:               ) : (
+877:                 <span className="text-xs text-[#8C849B]">English</span>
+878:               )}
+879:             </div>
+880:           )}
+881:         </div>
+882:       </main>
+883:     </div>
+884:   );
+885: }
+
+======================================================
+FILE: app/settings/page.tsx (EXISTS)
+======================================================
+Total Lines: 334
+1: 'use client';
+2: 
+3: import React, { useState, useEffect } from 'react';
+4: import { CheckCircle2, AlertCircle, Loader2, Crown, User, LogOut, Trash2, ShieldCheck } from 'lucide-react';
+5: import Link from 'next/link';
+6: import { useRouter } from 'next/navigation';
+7: import { supabase } from '@/lib/supabase/client';
+8: import { HandleUpgradeModal } from '@/components/HandleUpgradeModal';
+9: 
+10: export default function SettingsPage() {
+11:   const router = useRouter();
+12:   const [username, setUsername] = useState('');
+13:   const [initialLoading, setInitialLoading] = useState(true);
+14:   const [isSaving, setIsSaving] = useState(false);
+15:   const [savedSuccess, setSavedSuccess] = useState(false);
+16:   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+17:   const [userId, setUserId] = useState<string | null>(null);
+18:   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+19:   const [showDeleteModal, setShowDeleteModal] = useState(false);
+20:   const [isDeleting, setIsDeleting] = useState(false);
+21:   const [deleteError, setDeleteError] = useState<string | null>(null);
+22: 
+23:   const handleDeleteAccount = async () => {
+24:     setIsDeleting(true);
+25:     setDeleteError(null);
+26:     try {
+27:       const res = await fetch('/api/account/delete', { method: 'POST' });
+28:       const data = await res.json().catch(() => ({}));
+29:       if (!res.ok) {
+30:         setDeleteError(data.error || 'Failed to delete account. Please try again.');
+31:         setIsDeleting(false);
+32:         return;
+33:       }
+34:       router.push('/');
+35:       router.refresh();
+36:     } catch (err: any) {
+37:       setDeleteError(err.message || 'An unexpected error occurred.');
+38:       setIsDeleting(false);
+39:     }
+40:   };
+41: 
+42:   useEffect(() => {
+43:     async function loadUserProfile() {
+44:       try {
+45:         const { data: { session } } = await supabase.auth.getSession();
+46:         if (!session?.user) {
+47:           setInitialLoading(false);
+48:           return;
+49:         }
+50: 
+51:         setUserId(session.user.id);
+52: 
+53:         const { data, error } = await supabase
+54:           .from('profiles')
+55:           .select('username')
+56:           .eq('id', session.user.id)
+57:           .single();
+58: 
+59:         if (!error && data?.username) {
+60:           setUsername(data.username);
+61:         }
+62:       } catch (err: any) {
+63:         console.error('Failed to load profile:', err);
+64:       } finally {
+65:         setInitialLoading(false);
+66:       }
+67:     }
+68: 
+69:     loadUserProfile();
+70:   }, []);
+71: 
+72:   const handleSaveHandle = async (e: React.FormEvent) => {
+73:     e.preventDefault();
+74:     setErrorMessage(null);
+75: 
+76:     if (!userId) {
+77:       setErrorMessage('You must be signed in to update your handle.');
+78:       return;
+79:     }
+80: 
+81:     const cleanUsername = username.trim().replace(/^@/, '');
+82: 
+83:     if (!cleanUsername) {
+84:       setErrorMessage('Username cannot be empty.');
+85:       return;
+86:     }
+87: 
+88:     if (cleanUsername.length < 3 || cleanUsername.length > 20) {
+89:       setErrorMessage('Username must be between 3 and 20 characters.');
+90:       return;
+91:     }
+92: 
+93:     if (!/^[a-zA-Z0-9_]+$/.test(cleanUsername)) {
+94:       setErrorMessage('Only letters, numbers, and underscores are allowed.');
+95:       return;
+96:     }
+97: 
+98:     setIsSaving(true);
+99: 
+100:     try {
+101:       const res = await fetch('/api/users/change-username', {
+102:         method: 'POST',
+103:         headers: { 'Content-Type': 'application/json' },
+104:         body: JSON.stringify({ username: cleanUsername }),
+105:       });
+106: 
+107:       const data = await res.json().catch(() => ({}));
+108: 
+109:       if (!res.ok) {
+110:         if (res.status === 409 || data.error?.includes('taken')) {
+111:           setErrorMessage('That username handle is already taken. Please pick another.');
+112:         } else if (res.status === 403 && (data.requires_payment || data.error?.includes('Plus') || data.error?.includes('AIL+'))) {
+113:           setShowUpgradeModal(true);
+114:         } else {
+115:           setErrorMessage(data.error || 'Failed to update username handle.');
+116:         }
+117:         return;
+118:       }
+119: 
+120:       setUsername(cleanUsername);
+121:       setSavedSuccess(true);
+122:       setTimeout(() => setSavedSuccess(false), 3000);
+123:     } catch (err: any) {
+124:       setErrorMessage(err.message || 'An unexpected network error occurred.');
+125:     } finally {
+126:       setIsSaving(false);
+127:     }
+128:   };
+129: 
+130:   const handleSignOut = async () => {
+131:     try {
+132:       await supabase.auth.signOut();
+133:     } catch (err) {
+134:       console.error('Sign out error:', err);
+135:     } finally {
+136:       window.location.href = '/';
+137:     }
+138:   };
+139: 
+140:   return (
+141:     <div className="w-full min-h-full bg-[#F8F7FA] text-[#1C1924] flex flex-col font-sans">
+142:       <main className="flex-1 w-full px-4 pt-4 pb-28 space-y-5">
+143: 
+144:         {/* Account Settings Card */}
+145:         <div className="bg-white rounded-3xl border border-[#DDD7E5] p-5 shadow-xs space-y-5">
+146:           <form onSubmit={handleSaveHandle} className="space-y-3">
+147:             <div>
+148:               <label
+149:                 className="text-xs font-bold uppercase tracking-wider text-[#6555b8] block mb-1"
+150:                 style={{ fontFamily: 'var(--font-brand)' }}
+151:               >
+152:                 Member Handle
+153:               </label>
+154:               <p className="text-[11px] text-[#6C637B] mb-2">
+155:                 3 to 20 characters, letters, numbers, and underscores.
+156:               </p>
+157:               <div className="flex items-center gap-2">
+158:                 <div className="relative flex-1 flex items-center">
+159:                   <span className="absolute left-3.5 text-sm font-medium text-[#8C849B]">@</span>
+160:                   <input
+161:                     type="text"
+162:                     value={username}
+163:                     maxLength={20}
+164:                     onChange={(e) => {
+165:                       setUsername(e.target.value.replace(/[^a-zA-Z0-9_]/g, ''));
+166:                       if (errorMessage) setErrorMessage(null);
+167:                     }}
+168:                     disabled={initialLoading || isSaving}
+169:                     className="w-full pl-8 pr-4 py-2.5 bg-[#F8F7FA] border border-[#DDD7E5] rounded-2xl text-sm font-semibold text-[#1C1924] focus:outline-none focus:bg-white focus:border-[#6555b8] focus:ring-2 focus:ring-[#6555b8]/15 transition disabled:opacity-60"
+170:                     placeholder={initialLoading ? 'Loading handle...' : 'username'}
+171:                   />
+172:                 </div>
+173:                 <button
+174:                   type="submit"
+175:                   disabled={initialLoading || isSaving}
+176:                   className="px-4 py-2.5 rounded-2xl bg-[#6555b8] hover:bg-[#52449e] disabled:opacity-50 text-white text-xs font-semibold transition active:scale-95 shadow-xs flex items-center gap-1.5 cursor-pointer shrink-0"
+177:                 >
+178:                   {isSaving && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+179:                   <span>Save</span>
+180:                 </button>
+181:               </div>
+182: 
+183:               {errorMessage && (
+184:                 <p className="text-xs font-semibold text-rose-600 flex items-center gap-1.5 pt-2">
+185:                   <AlertCircle className="w-3.5 h-3.5 shrink-0" /> {errorMessage}
+186:                 </p>
+187:               )}
+188: 
+189:               {savedSuccess && (
+190:                 <p className="text-xs font-semibold text-emerald-600 flex items-center gap-1.5 pt-2">
+191:                   <CheckCircle2 className="w-3.5 h-3.5 shrink-0" /> Handle updated!
+192:                 </p>
+193:               )}
+194:             </div>
+195:           </form>
+196: 
+197:           {/* AIL+ Membership Card */}
+198:           <div className="p-4 rounded-2xl bg-[#F8F7FA] border border-[#DDD7E5] flex items-start gap-3.5">
+199:             <div className="w-9 h-9 rounded-2xl bg-[#F3EFFC] text-[#6555b8] flex items-center justify-center shrink-0">
+200:               <Crown className="w-4 h-4 text-amber-500" />
+201:             </div>
+202:             <div className="space-y-1 flex-1">
+203:               <div className="flex items-center gap-1.5">
+204:                 <h2
+205:                   className="text-xs sm:text-sm font-bold text-[#1C1924]"
+206:                   style={{ fontFamily: 'var(--font-brand)' }}
+207:                 >
+208:                   AIL+ Membership
+209:                 </h2>
+210:                 <span className="text-[9px] font-bold uppercase tracking-wider bg-[#6555b8] text-white px-2 py-0.5 rounded-full">
+211:                   $19.99/mo
+212:                 </span>
+213:               </div>
+214:               <p className="text-xs text-[#6C637B] leading-relaxed">
+215:                 Travel Passport Mode, custom profile handles, priority placement, and unlimited direct messaging.
+216:               </p>
+217:               <div className="pt-1.5">
+218:                 <Link
+219:                   href="/pricing"
+220:                   className="inline-block px-4 py-1.5 rounded-full bg-white border border-[#DDD7E5] hover:border-[#6555b8] text-xs font-semibold text-[#6555b8] hover:bg-[#F3EFFC] transition shadow-2xs"
+221:                 >
+222:                   Explore AIL+ Privileges &rarr;
+223:                 </Link>
+224:               </div>
+225:             </div>
+226:           </div>
+227: 
+228:           {/* Quick Account Links */}
+229:           <div className="border-t border-[#F0EDF5] pt-3 flex flex-col gap-1">
+230:             <Link
+231:               href="/profile"
+232:               className="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-semibold text-[#524B5E] hover:bg-[#F8F7FA] hover:text-[#1C1924] transition"
+233:             >
+234:               <User className="w-4 h-4 text-[#6555b8]" />
+235:               <span>View &amp; Edit My Profile</span>
+236:             </Link>
+237:             <Link
+238:               href="/verify"
+239:               className="flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-semibold text-[#524B5E] hover:bg-[#F8F7FA] hover:text-[#1C1924] transition"
+240:             >
+241:               <ShieldCheck className="w-4 h-4 text-[#6555b8]" />
+242:               <span>Identity &amp; Pose Verification</span>
+243:             </Link>
+244:             <button
+245:               type="button"
+246:               onClick={handleSignOut}
+247:               className="w-full flex items-center gap-3 px-3.5 py-2.5 rounded-2xl text-xs font-semibold text-rose-600 hover:bg-rose-50 transition text-left cursor-pointer"
+248:             >
+249:               <LogOut className="w-4 h-4" />
+250:               <span>Sign Out</span>
+251:             </button>
+252:           </div>
+253:         </div>
+254: 
+255:         {/* Danger Zone */}
+256:         <div className="bg-white rounded-3xl border border-rose-200 p-5 shadow-xs space-y-3">
+257:           <div className="space-y-1">
+258:             <h3
+259:               className="text-xs font-bold uppercase tracking-wider text-rose-600"
+260:               style={{ fontFamily: 'var(--font-brand)' }}
+261:             >
+262:               Danger Zone
+263:             </h3>
+264:             <p className="text-xs text-[#6C637B] leading-relaxed">
+265:               Permanently delete your profile, photos, matches, and messages. This action is irreversible.
+266:             </p>
+267:           </div>
+268:           <button
+269:             type="button"
+270:             onClick={() => setShowDeleteModal(true)}
+271:             className="w-full sm:w-auto px-4 py-2.5 rounded-2xl bg-rose-50 hover:bg-rose-100 border border-rose-200 text-rose-600 text-xs font-bold transition flex items-center justify-center gap-1.5 cursor-pointer"
+272:           >
+273:             <Trash2 className="w-3.5 h-3.5" />
+274:             <span>Delete Profile &amp; Account</span>
+275:           </button>
+276:         </div>
+277: 
+278:         {/* Delete Confirmation Modal */}
+279:         {showDeleteModal && (
+280:           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-xs">
+281:             <div className="relative w-full max-w-sm bg-white rounded-3xl border border-[#DDD7E5] shadow-2xl p-6 space-y-4">
+282:               <div className="space-y-1.5 text-center">
+283:                 <div className="w-11 h-11 rounded-2xl bg-rose-50 border border-rose-200 text-rose-600 mx-auto flex items-center justify-center mb-2">
+284:                   <Trash2 className="w-5 h-5" />
+285:                 </div>
+286:                 <h3
+287:                   className="text-base font-bold text-[#1C1924]"
+288:                   style={{ fontFamily: 'var(--font-brand)' }}
+289:                 >
+290:                   Delete Profile &amp; Account?
+291:                 </h3>
+292:                 <p className="text-xs text-[#6C637B] leading-relaxed">
+293:                   This will permanently delete your photos, matches, verification status, and all conversations. You cannot undo this action.
+294:                 </p>
+295:               </div>
+296: 
+297:               {deleteError && (
+298:                 <p className="text-xs text-rose-600 bg-rose-50 p-2.5 rounded-2xl border border-rose-200 text-center">
+299:                   {deleteError}
+300:                 </p>
+301:               )}
+302: 
+303:               <div className="flex flex-col gap-2 pt-1">
+304:                 <button
+305:                   type="button"
+306:                   disabled={isDeleting}
+307:                   onClick={handleDeleteAccount}
+308:                   className="w-full py-3 rounded-2xl bg-rose-600 hover:bg-rose-700 text-white text-xs font-bold transition disabled:opacity-50 flex items-center justify-center gap-1.5 cursor-pointer shadow-xs"
+309:                 >
+310:                   {isDeleting && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+311:                   <span>{isDeleting ? 'Deleting Profile...' : 'Yes, Permanently Delete'}</span>
+312:                 </button>
+313:                 <button
+314:                   type="button"
+315:                   disabled={isDeleting}
+316:                   onClick={() => { setShowDeleteModal(false); setDeleteError(null); }}
+317:                   className="w-full py-3 rounded-2xl border border-[#DDD7E5] text-xs font-semibold text-[#524B5E] hover:bg-[#F8F7FA] transition cursor-pointer"
+318:                 >
+319:                   Cancel
+320:                 </button>
+321:               </div>
+322:             </div>
+323:           </div>
+324:         )}
+325: 
+326:         <HandleUpgradeModal
+327:           isOpen={showUpgradeModal}
+328:           onClose={() => setShowUpgradeModal(false)}
+329:         />
+330:       </main>
+331:     </div>
+332:   );
+333: }
+334: 
+
+======================================================
+FILE: app/plus/page.tsx (MISSING)
+======================================================
+
+======================================================
+FILE: app/chat/[id]/page.tsx (EXISTS)
+======================================================
+Total Lines: 917
+1: 'use client';
+2: 
+3: import React, { useState, useEffect, useRef, useLayoutEffect, useCallback } from 'react';
+4: import Link from 'next/link';
+5: import { useParams, useRouter } from 'next/navigation';
+6: import Image from 'next/image';
+7: import {
+8:   ArrowLeft,
+9:   Send,
+10:   Zap,
+11:   ShieldAlert,
+12:   Check,
+13:   CheckCheck,
+14:   Clock,
+15:   Sparkles,
+16:   X,
+17:   ArrowDown,
+18: } from 'lucide-react';
+19: import UpgradeModal from '@/components/UpgradeModal';
+20: import ReputationModal from '@/components/ReputationModal';
+21: import { supabase } from '@/lib/supabase/client';
+22: 
+23: interface ChatMessage {
+24:   id: string;
+25:   sender: 'me' | 'them';
+26:   text: string;
+27:   createdAt: string;
+28:   time: string;
+29:   warning?: string;
+30:   read?: boolean;
+31:   pending?: boolean;
+32: }
+33: 
+34: function sanitizeMessage(text: string): { sanitized: string; wasMasked: boolean } {
+35:   const normalized = text
+36:     .toLowerCase()
+37:     .replace(/[@]/g, 'a')
+38:     .replace(/[$]/g, 's')
+39:     .replace(/[0]/g, 'o')
+40:     .replace(/[1]/g, 'i')
+41:     .replace(/[\s.\-_]/g, '');
+42: 
+43:   const offPlatformKeywords = ['whatsapp', 'telegram', 'viber', 'lineid', 'wechat', 'snapchat', 'instagram'];
+44:   const hasOffPlatformWord = offPlatformKeywords.some((kw) => normalized.includes(kw));
+45:   const digitClusterTest = /(?:\+?\d[\s.\-_()]*){7,}/;
+46:   const digitClusterRegex = /(?:\+?\d[\s.\-_()]*){7,}/g;
+47:   const hasPhoneDigits = digitClusterTest.test(text);
+48: 
+49:   if (hasOffPlatformWord || hasPhoneDigits) {
+50:     let masked = text.replace(digitClusterRegex, '[contact info hidden for safety]');
+51:     offPlatformKeywords.forEach((kw) => {
+52:       const reg = new RegExp('(' + kw.split('').join('[\\s.\\-_]*') + ')', 'gi');
+53:       masked = masked.replace(reg, '[contact info hidden for safety]');
+54:     });
+55:     return { sanitized: masked, wasMasked: true };
+56:   }
+57: 
+58:   return { sanitized: text, wasMasked: false };
+59: }
+60: 
+61: function formatTimeShort(iso: string): string {
+62:   try {
+63:     return new Date(iso).toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+64:   } catch {
+65:     return '';
+66:   }
+67: }
+68: 
+69: function formatDateDivider(iso: string): string {
+70:   try {
+71:     const d = new Date(iso);
+72:     const now = new Date();
+73:     const todayStr = now.toDateString();
+74:     const yest = new Date(now);
+75:     yest.setDate(now.getDate() - 1);
+76: 
+77:     if (d.toDateString() === todayStr) return 'Today';
+78:     if (d.toDateString() === yest.toDateString()) return 'Yesterday';
+79:     return d.toLocaleDateString([], { month: 'short', day: 'numeric' });
+80:   } catch {
+81:     return '';
+82:   }
+83: }
+84: 
+85: export default function ChatConversationPage() {
+86:   const routeParams = useParams();
+87:   const router = useRouter();
+88:   const rawParam = (Array.isArray(routeParams?.id) ? routeParams.id[0] : (routeParams?.id as string)) || '';
+89: 
+90:   const [currentUserId, setCurrentUserId] = useState<string>('');
+91:   const [resolvedTargetUuid, setResolvedTargetUuid] = useState<string | null>(null);
+92:   const [isInitialLoading, setIsInitialLoading] = useState(true);
+93:   const [targetInfo, setTargetInfo] = useState({
+94:     name: '',
+95:     avatar: '/placeholder-avatar.svg',
+96:     rep: 100,
+97:     city: '',
+98:     country: '',
+99:   });
+100: 
+101:   const [icebreakerPrompt, setIcebreakerPrompt] = useState<string | null>(null);
+102:   const [showIcebreaker, setShowIcebreaker] = useState(true);
+103: 
+104:   const [messages, setMessages] = useState<ChatMessage[]>([]);
+105:   const [inputText, setInputText] = useState('');
+106:   const [sentCount, setSentCount] = useState(0);
+107:   const [isPlus, setIsPlus] = useState(false);
+108:   const [cooldownSeconds, setCooldownSeconds] = useState(0);
+109:   const [showSafetyNotice, setShowSafetyNotice] = useState(false);
+110:   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
+111:   const [showRepModal, setShowRepModal] = useState(false);
+112:   const [showReportModal, setShowReportModal] = useState(false);
+113:   const [actionDoneMsg, setActionDoneMsg] = useState<string | null>(null);
+114:   const [errorBanner, setErrorBanner] = useState<string | null>(null);
+115:   const [showScrollPill, setShowScrollPill] = useState(false);
+116: 
+117:   const scrollContainerRef = useRef<HTMLDivElement>(null);
+118:   const textareaRef = useRef<HTMLTextAreaElement>(null);
+119:   const hasScrolledInitialRef = useRef(false);
+120:   const isNearBottomRef = useRef(true);
+121:   const forceScrollNextRef = useRef(false);
+122: 
+123:   const scrollToBottom = useCallback((behavior: ScrollBehavior = 'smooth') => {
+124:     const el = scrollContainerRef.current;
+125:     if (!el) return;
+126:     requestAnimationFrame(() => {
+127:       if (behavior === 'instant') {
+128:         el.scrollTop = el.scrollHeight;
+129:       } else {
+130:         el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' });
+131:       }
+132:       setShowScrollPill(false);
+133:     });
+134:   }, []);
+135: 
+136:   const handleContainerScroll = () => {
+137:     const el = scrollContainerRef.current;
+138:     if (!el) return;
+139:     const distanceFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight;
+140:     const near = distanceFromBottom < 120;
+141:     isNearBottomRef.current = near;
+142:     if (near && showScrollPill) {
+143:       setShowScrollPill(false);
+144:     }
+145:   };
+146: 
+147:   useLayoutEffect(() => {
+148:     if (isInitialLoading || messages.length === 0) return;
+149: 
+150:     if (!hasScrolledInitialRef.current) {
+151:       hasScrolledInitialRef.current = true;
+152:       scrollToBottom('instant');
+153:       return;
+154:     }
+155: 
+156:     if (forceScrollNextRef.current || isNearBottomRef.current) {
+157:       forceScrollNextRef.current = false;
+158:       scrollToBottom('smooth');
+159:     } else {
+160:       setShowScrollPill(true);
+161:     }
+162:   }, [messages, isInitialLoading, scrollToBottom]);
+163: 
+164:   useEffect(() => {
+165:     if (cooldownSeconds <= 0) return;
+166:     const interval = setInterval(() => {
+167:       setCooldownSeconds((prev) => (prev > 0 ? prev - 1 : 0));
+168:     }, 1000);
+169:     return () => clearInterval(interval);
+170:   }, [cooldownSeconds]);
+171: 
+172:   useEffect(() => {
+173:     if (!resolvedTargetUuid || !currentUserId || messages.length === 0) return;
+174:     const hasUnreadFromTarget = messages.some((m) => m.sender === 'them' && !m.read);
+175:     if (!hasUnreadFromTarget) return;
+176: 
+177:     supabase
+178:       .from('messages')
+179:       .update({ is_read: true })
+180:       .eq('receiver_id', currentUserId)
+181:       .eq('sender_id', resolvedTargetUuid)
+182:       .eq('is_read', false)
+183:       .then(() => {});
+184:   }, [resolvedTargetUuid, currentUserId, messages]);
+185: 
+186:   useEffect(() => {
+187:     let isMounted = true;
+188: 
+189:     async function initUserAndTarget() {
+190:       const {
+191:         data: { user },
+192:       } = await supabase.auth.getUser();
+193:       if (!user) {
+194:         router.replace('/');
+195:         return;
+196:       }
+197: 
+198:       if (!rawParam || rawParam.startsWith('00000000')) {
+199:         router.replace('/messages');
+200:         return;
+201:       }
+202: 
+203:       if (isMounted) setCurrentUserId(user.id);
+204: 
+205:       const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(rawParam);
+206: 
+207:       const [myProfRes, targetProfRes] = await Promise.all([
+208:         supabase
+209:           .from('profiles')
+210:           .select('is_plus, plus_enabled, membership_tier, interests')
+211:           .eq('id', user.id)
+212:           .maybeSingle(),
+213:         isUuid
+214:           ? supabase
+215:               .from('profiles')
+216:               .select('id, username, display_name, full_name, avatar_url, reputation_score, city, country, interests')
+217:               .eq('id', rawParam)
+218:               .maybeSingle()
+219:           : supabase
+220:               .from('profiles')
+221:               .select('id, username, display_name, full_name, avatar_url, reputation_score, city, country, interests')
+222:               .or('username.ilike.' + rawParam + ',display_name.ilike.' + rawParam)
+223:               .limit(1)
+224:               .maybeSingle(),
+225:       ]);
+226: 
+227:       const myProf = myProfRes.data;
+228:       if (myProf && (myProf.is_plus || myProf.plus_enabled || myProf.membership_tier === 'plus')) {
+229:         if (isMounted) setIsPlus(true);
+230:       }
+231:       const myInterests: string[] = Array.isArray(myProf?.interests) ? myProf.interests : [];
+232: 
+233:       const profData: any = targetProfRes.data;
+234:       const targetUuid: string | null = profData?.id || (isUuid ? rawParam : null);
+235: 
+236:       if (!targetUuid) {
+237:         router.replace('/messages');
+238:         return;
+239:       }
+240: 
+241:       const [blockRes, remoteMsgsRes] = await Promise.all([
+242:         supabase
+243:           .from('user_blocks')
+244:           .select('id')
+245:           .or(
+246:             'and(blocker_id.eq.' + user.id + ',blocked_id.eq.' + targetUuid + '),and(blocker_id.eq.' + targetUuid + ',blocked_id.eq.' + user.id + ')'
+247:           )
+248:           .maybeSingle(),
+249:         supabase
+250:           .from('messages')
+251:           .select('id, sender_id, receiver_id, content, created_at, is_quarantined, is_read')
+252:           .or(
+253:             'and(sender_id.eq.' + user.id + ',receiver_id.eq.' + targetUuid + '),and(sender_id.eq.' + targetUuid + ',receiver_id.eq.' + user.id + ')'
+254:           )
+255:           .order('created_at', { ascending: true }),
+256:       ]);
+257: 
+258:       if (blockRes.data) {
+259:         router.replace('/messages');
+260:         return;
+261:       }
+262: 
+263:       if (!isMounted) return;
+264: 
+265:       setResolvedTargetUuid(targetUuid);
+266: 
+267:       if (profData) {
+268:         const cleanHandle = (
+269:           profData.username ||
+270:           profData.display_name ||
+271:           profData.full_name ||
+272:           'Member'
+273:         ).replace(/^@/, '');
+274: 
+275:         setTargetInfo({
+276:           name: cleanHandle,
+277:           avatar: profData.avatar_url || '/placeholder-avatar.svg',
+278:           rep: typeof profData.reputation_score === 'number' ? profData.reputation_score : 100,
+279:           city: profData.city || '',
+280:           country: profData.country || '',
+281:         });
+282: 
+283:         const retiredTags = new Set(['nature walks', 'gaming', 'entrepreneurship']);
+284:         const theirInterests: string[] = (Array.isArray(profData.interests) ? profData.interests : []).filter(
+285:           (t: string) => !retiredTags.has(String(t || '').trim().toLowerCase())
+286:         );
+287:         const shared = theirInterests.filter((t) =>
+288:           myInterests.some((m) => m.toLowerCase() === t.toLowerCase())
+289:         );
+290: 
+291:         if (shared.length > 0) {
+292:           setIcebreakerPrompt(
+293:             'Hi @' + cleanHandle + '! I noticed we both enjoy ' + shared[0] + '—what is your favorite part about it?'
+294:           );
+295:         } else if (theirInterests.length > 0) {
+296:           setIcebreakerPrompt(
+297:             'Hi @' + cleanHandle + '! I saw on your profile that you enjoy ' + theirInterests[0] + '—how is your week going' + (profData.city ? ' in ' + profData.city : '') + '?'
+298:           );
+299:         } else {
+300:           setIcebreakerPrompt(
+301:             'Hi @' + cleanHandle + '! I really appreciated your profile and would love to get to know you. How is your day going?'
+302:           );
+303:         }
+304:       }
+305: 
+306:       if (remoteMsgsRes.data) {
+307:         setMessages(
+308:           remoteMsgsRes.data
+309:             .filter((m: any) => m.sender_id === user.id || !m.is_quarantined)
+310:             .map((m: any) => ({
+311:               id: m.id,
+312:               sender: m.sender_id === user.id ? 'me' : 'them',
+313:               text: m.content,
+314:               createdAt: m.created_at,
+315:               time: formatTimeShort(m.created_at),
+316:               read: Boolean(m.is_read),
+317:             }))
+318:         );
+319:       }
+320: 
+321:       setIsInitialLoading(false);
+322:     }
+323: 
+324:     initUserAndTarget();
+325:     return () => {
+326:       isMounted = false;
+327:     };
+328:   }, [rawParam, router]);
+329: 
+330:   useEffect(() => {
+331:     if (!resolvedTargetUuid || !currentUserId) return;
+332: 
+333:     let isMounted = true;
+334:     const channelName = 'chat_' + [resolvedTargetUuid, currentUserId].sort().join('_');
+335: 
+336:     const channel = supabase
+337:       .channel(channelName)
+338:       .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, (payload) => {
+339:         if (!isMounted) return;
+340:         if (payload.eventType === 'UPDATE') {
+341:           const updated = payload.new as any;
+342:           setMessages((prev) =>
+343:             prev.map((m) => (m.id === updated.id ? { ...m, read: Boolean(updated.is_read) } : m))
+344:           );
+345:           return;
+346:         }
+347: 
+348:         if (payload.eventType === 'INSERT') {
+349:           const newRow = payload.new as any;
+350:           const recId = newRow.receiver_id || newRow.recipient_id;
+351:           const isFromTarget = newRow.sender_id === resolvedTargetUuid && recId === currentUserId;
+352: 
+353:           if (isFromTarget && !newRow.is_quarantined) {
+354:             setMessages((prev) => {
+355:               if (prev.some((m) => m.id === newRow.id)) return prev;
+356:               return [
+357:                 ...prev,
+358:                 {
+359:                   id: newRow.id,
+360:                   sender: 'them',
+361:                   text: newRow.content,
+362:                   createdAt: newRow.created_at,
+363:                   time: formatTimeShort(newRow.created_at),
+364:                   read: true,
+365:                 },
+366:               ];
+367:             });
+368:           }
+369:         }
+370:       })
+371:       .subscribe();
+372: 
+373:     return () => {
+374:       isMounted = false;
+375:       supabase.removeChannel(channel);
+376:     };
+377:   }, [resolvedTargetUuid, currentUserId]);
+378: 
+379:   const submitMessage = async () => {
+380:     const clean = inputText.trim();
+381:     if (!clean || cooldownSeconds > 0 || !resolvedTargetUuid) return;
+382: 
+383:     setErrorBanner(null);
+384:     const { sanitized, wasMasked } = sanitizeMessage(clean);
+385:     if (wasMasked) setShowSafetyNotice(true);
+386: 
+387:     const nowIso = new Date().toISOString();
+388:     const tempId = 'temp-' + Date.now();
+389:     const myNewMsg: ChatMessage = {
+390:       id: tempId,
+391:       sender: 'me',
+392:       text: sanitized,
+393:       createdAt: nowIso,
+394:       time: formatTimeShort(nowIso),
+395:       read: false,
+396:       pending: true,
+397:     };
+398: 
+399:     forceScrollNextRef.current = true;
+400:     setMessages((prev) => [...prev, myNewMsg]);
+401:     setInputText('');
+402:     if (textareaRef.current) {
+403:       textareaRef.current.style.height = 'auto';
+404:     }
+405:     setShowIcebreaker(false);
+406: 
+407:     try {
+408:       const res = await fetch('/api/messages', {
+409:         method: 'POST',
+410:         headers: { 'Content-Type': 'application/json' },
+411:         body: JSON.stringify({
+412:           receiverId: resolvedTargetUuid,
+413:           content: sanitized,
+414:         }),
+415:       });
+416: 
+417:       const resData = await res.json().catch(() => ({}));
+418: 
+419:       if (!res.ok) {
+420:         setMessages((prev) => prev.filter((m) => m.id !== tempId));
+421:         setErrorBanner(resData.error || 'Message could not be delivered.');
+422:         if (resData.code === 'OUTREACH_LIMIT_REACHED') {
+423:           setShowUpgradeModal(true);
+424:         }
+425:         return;
+426:       }
+427: 
+428:       const nextCount = sentCount + 1;
+429:       setSentCount(nextCount);
+430:       if (nextCount >= 5 && !isPlus) {
+431:         setCooldownSeconds(300);
+432:       }
+433: 
+434:       if (resData?.message?.id) {
+435:         setMessages((prev) =>
+436:           prev.map((m) =>
+437:             m.id === tempId
+438:               ? {
+439:                   ...m,
+440:                   id: resData.message.id,
+441:                   createdAt: resData.message.created_at || m.createdAt,
+442:                   time: formatTimeShort(resData.message.created_at || m.createdAt),
+443:                   warning: resData.warning,
+444:                   pending: false,
+445:                 }
+446:               : m
+447:           )
+448:         );
+449:       } else {
+450:         setMessages((prev) => prev.map((m) => (m.id === tempId ? { ...m, pending: false } : m)));
+451:       }
+452:     } catch {
+453:       setMessages((prev) => prev.filter((m) => m.id !== tempId));
+454:       setErrorBanner('Network error while sending message.');
+455:     }
+456:   };
+457: 
+458:   const handleSendMessage = (e: React.FormEvent) => {
+459:     e.preventDefault();
+460:     submitMessage();
+461:   };
+462: 
+463:   const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+464:     if (e.key === 'Enter' && !e.shiftKey) {
+465:       e.preventDefault();
+466:       submitMessage();
+467:     }
+468:   };
+469: 
+470:   const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+471:     setInputText(e.target.value);
+472:     e.target.style.height = 'auto';
+473:     e.target.style.height = Math.min(e.target.scrollHeight, 108) + 'px';
+474:   };
+475: 
+476:   const handleBlockUser = async () => {
+477:     const target = resolvedTargetUuid || rawParam;
+478:     try {
+479:       const res = await fetch('/api/users/block', {
+480:         method: 'POST',
+481:         headers: { 'Content-Type': 'application/json' },
+482:         body: JSON.stringify({ blockedId: target }),
+483:       });
+484:       if (res.ok) {
+485:         setActionDoneMsg('User has been blocked. Redirecting to messages...');
+486:         setTimeout(() => {
+487:           setShowReportModal(false);
+488:           setActionDoneMsg(null);
+489:           router.push('/messages');
+490:         }, 1200);
+491:       }
+492:     } catch (err) {
+493:       console.error(err);
+494:     }
+495:   };
+496: 
+497:   const handleReportUser = async (reason: string = 'harassment') => {
+498:     const target = resolvedTargetUuid || rawParam;
+499:     try {
+500:       const res = await fetch('/api/users/report', {
+501:         method: 'POST',
+502:         headers: { 'Content-Type': 'application/json' },
+503:         body: JSON.stringify({ reportedId: target, reason }),
+504:       });
+505:       if (res.ok) {
+506:         setActionDoneMsg('Report submitted. Thank you for keeping Asians in Love safe.');
+507:         setTimeout(() => {
+508:           setShowReportModal(false);
+509:           setActionDoneMsg(null);
+510:         }, 1500);
+511:       }
+512:     } catch (err) {
+513:       console.error(err);
+514:     }
+515:   };
+516: 
+517:   const formatTimer = (secs: number) => {
+518:     const mins = Math.floor(secs / 60);
+519:     const remaining = secs % 60;
+520:     return mins + ':' + (remaining < 10 ? '0' : '') + remaining;
+521:   };
+522: 
+523:   return (
+524:     <main className="w-full h-[calc(100dvh-148px)] max-h-[calc(100dvh-148px)] flex flex-col bg-[#F9F8FC] text-[#1C1924] font-sans relative overflow-hidden">
+525:       {/* Sticky Header */}
+526:       <header className="flex items-center justify-between px-3.5 py-2.5 bg-white/95 backdrop-blur-md border-b border-[#ECE8F4] shrink-0 z-20">
+527:         <div className="flex items-center gap-2.5 min-w-0">
+528:           <Link
+529:             href="/messages"
+530:             className="w-8 h-8 rounded-full flex items-center justify-center text-[#524B5E] hover:text-[#6555B8] hover:bg-[#F3EFFC] transition shrink-0"
+531:             aria-label="Back to messages"
+532:           >
+533:             <ArrowLeft className="w-4 h-4" />
+534:           </Link>
+535: 
+536:           {isInitialLoading ? (
+537:             <div className="flex items-center gap-2.5 animate-pulse">
+538:               <div className="w-9 h-9 rounded-full bg-[#EAE6F3]" />
+539:               <div className="space-y-1.5">
+540:                 <div className="w-24 h-3.5 bg-[#EAE6F3] rounded-full" />
+541:                 <div className="w-16 h-2.5 bg-[#F2EFF8] rounded-full" />
+542:               </div>
+543:             </div>
+544:           ) : (
+545:             <Link
+546:               href={'/profile/' + (resolvedTargetUuid || rawParam)}
+547:               className="flex items-center gap-2.5 min-w-0 group"
+548:             >
+549:               <div className="relative w-9 h-9 rounded-full overflow-hidden border border-[#E5DFEE] shrink-0 bg-[#F3EFFC]">
+550:                 <Image
+551:                   src={targetInfo.avatar}
+552:                   alt={targetInfo.name || 'Member'}
+553:                   fill
+554:                   sizes="36px"
+555:                   className="object-cover"
+556:                 />
+557:               </div>
+558:               <div className="flex flex-col min-w-0">
+559:                 <span
+560:                   className="text-[13.5px] font-bold text-[#1C1924] group-hover:text-[#6555B8] transition leading-tight truncate"
+561:                   style={{ fontFamily: 'var(--font-brand)' }}
+562:                 >
+563:                   @{targetInfo.name || 'Member'}
+564:                 </span>
+565:                 <div className="flex items-center gap-1.5 mt-0.5">
+566:                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block shrink-0" />
+567:                   <span className="text-[11px] text-[#7A7289] font-medium truncate">
+568:                     {targetInfo.city ? targetInfo.city : 'Active recently'}
+569:                   </span>
+570:                 </div>
+571:               </div>
+572:             </Link>
+573:           )}
+574:         </div>
+575: 
+576:         <div className="flex items-center gap-1.5 shrink-0">
+577:           {!isInitialLoading && (
+578:             <button
+579:               type="button"
+580:               onClick={() => setShowRepModal(true)}
+581:               className={
+582:                 'px-2.5 py-1 rounded-full text-[10px] font-semibold transition active:scale-95 cursor-pointer border ' +
+583:                 (targetInfo.rep < 60
+584:                   ? 'bg-amber-50 border-amber-300 text-amber-800'
+585:                   : 'bg-[#F5F2FC] border-[#E4DDF2] text-[#6555B8] hover:bg-[#EAE3F8]')
+586:               }
+587:             >
+588:               {targetInfo.rep}% Rep
+589:             </button>
+590:           )}
+591:           <button
+592:             type="button"
+593:             onClick={() => setShowReportModal(true)}
+594:             className="w-8 h-8 flex items-center justify-center text-[#8C849B] hover:text-rose-600 hover:bg-rose-50 rounded-full transition cursor-pointer"
+595:             title="Safety & Moderation"
+596:           >
+597:             <ShieldAlert className="w-4 h-4" />
+598:           </button>
+599:         </div>
+600:       </header>
+601: 
+602:       {/* Isolated Auto-Scrolling Message Stream */}
+603:       <div
+604:         ref={scrollContainerRef}
+605:         onScroll={handleContainerScroll}
+606:         className="flex-1 overflow-y-auto px-3.5 py-4 space-y-1 overscroll-contain"
+607:       >
+608:         {isInitialLoading ? (
+609:           <div className="space-y-4 py-4 animate-pulse">
+610:             <div className="flex items-end gap-2">
+611:               <div className="w-6 h-6 rounded-full bg-[#EAE6F3] shrink-0" />
+612:               <div className="w-48 h-10 bg-white rounded-2xl rounded-bl-xs border border-[#ECE8F4]" />
+613:             </div>
+614:             <div className="flex justify-end">
+615:               <div className="w-52 h-11 bg-[#6555B8]/20 rounded-2xl rounded-br-xs" />
+616:             </div>
+617:             <div className="flex items-end gap-2">
+618:               <div className="w-6 h-6 rounded-full bg-[#EAE6F3] shrink-0" />
+619:               <div className="w-40 h-9 bg-white rounded-2xl rounded-bl-xs border border-[#ECE8F4]" />
+620:             </div>
+621:           </div>
+622:         ) : (
+623:           <>
+624:             {showIcebreaker && icebreakerPrompt && messages.length < 3 && (
+625:               <div className="mb-3 p-3.5 rounded-2xl bg-white border border-[#E5DFEE] shadow-[0_2px_10px_rgba(101,85,184,0.05)] space-y-2">
+626:                 <div className="flex items-center justify-between">
+627:                   <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-[#6555B8]">
+628:                     <Sparkles className="w-3.5 h-3.5 text-[#6555B8]" />
+629:                     <span>Conversation Starter</span>
+630:                   </span>
+631:                   <button
+632:                     type="button"
+633:                     onClick={() => setShowIcebreaker(false)}
+634:                     className="text-[#8C849B] hover:text-[#1C1924] p-0.5 cursor-pointer"
+635:                     aria-label="Dismiss icebreaker"
+636:                   >
+637:                     <X className="w-3.5 h-3.5" />
+638:                   </button>
+639:                 </div>
+640:                 <p className="text-xs text-[#4A4356] leading-relaxed bg-[#FAF9FC] p-2.5 rounded-xl border border-[#F0EDF6]">
+641:                   &ldquo;{icebreakerPrompt}&rdquo;
+642:                 </p>
+643:                 <button
+644:                   type="button"
+645:                   onClick={() => {
+646:                     setInputText(icebreakerPrompt);
+647:                     textareaRef.current?.focus();
+648:                   }}
+649:                   className="text-[11px] font-semibold text-[#6555B8] hover:underline cursor-pointer"
+650:                 >
+651:                   Tap to use this starter &rarr;
+652:                 </button>
+653:               </div>
+654:             )}
+655: 
+656:             {targetInfo.rep < 60 && (
+657:               <div className="mb-3 p-3 rounded-2xl bg-amber-50/90 border border-amber-200 text-xs text-amber-900 flex items-start gap-2.5">
+658:                 <ShieldAlert className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+659:                 <div className="leading-relaxed">
+660:                   <span className="font-semibold text-amber-950">Safety Caution:</span> This member has a low reputation score ({targetInfo.rep}%). Never send money or share financial details.
+661:                 </div>
+662:               </div>
+663:             )}
+664: 
+665:             {errorBanner && (
+666:               <div className="mb-3 p-3 rounded-2xl bg-rose-50 border border-rose-200 text-xs text-rose-700 font-medium text-center">
+667:                 {errorBanner}
+668:               </div>
+669:             )}
+670: 
+671:             {showSafetyNotice && (
+672:               <div className="mb-3 p-3 rounded-2xl bg-[#F5F2FC] border border-[#E2DBF0] text-xs text-[#6555B8] flex items-start gap-2.5">
+673:                 <ShieldAlert className="w-4 h-4 text-[#6555B8] shrink-0 mt-0.5" />
+674:                 <p className="leading-relaxed">
+675:                   <strong className="font-semibold">Safety Gate:</strong> External contact handles and phone digits unlock after 3 substantive replies from both members.
+676:                 </p>
+677:               </div>
+678:             )}
+679: 
+680:             {messages.length === 0 ? (
+681:               <div className="py-16 text-center space-y-2">
+682:                 <div className="w-12 h-12 rounded-full overflow-hidden mx-auto border border-[#E5DFEE] bg-[#F3EFFC] relative">
+683:                   <Image
+684:                     src={targetInfo.avatar}
+685:                     alt={targetInfo.name || 'Member'}
+686:                     fill
+687:                     sizes="48px"
+688:                     className="object-cover"
+689:                   />
+690:                 </div>
+691:                 <p className="text-xs font-semibold text-[#1C1924]">
+692:                   Start a conversation with @{targetInfo.name}
+693:                 </p>
+694:                 <p className="text-[11px] text-[#7A7289] max-w-[220px] mx-auto leading-relaxed">
+695:                   Send a friendly note to break the ice.
+696:                 </p>
+697:               </div>
+698:             ) : (
+699:               messages.map((msg, idx) => {
+700:                 const isMe = msg.sender === 'me';
+701:                 const prevMsg = idx > 0 ? messages[idx - 1] : null;
+702:                 const nextMsg = idx < messages.length - 1 ? messages[idx + 1] : null;
+703: 
+704:                 const currentDayLabel = formatDateDivider(msg.createdAt);
+705:                 const prevDayLabel = prevMsg ? formatDateDivider(prevMsg.createdAt) : null;
+706:                 const showDateHeader = currentDayLabel && currentDayLabel !== prevDayLabel;
+707: 
+708:                 const isSameSenderAsPrev =
+709:                   prevMsg &&
+710:                   prevMsg.sender === msg.sender &&
+711:                   !showDateHeader &&
+712:                   Math.abs(new Date(msg.createdAt).getTime() - new Date(prevMsg.createdAt).getTime()) < 120000;
+713: 
+714:                 const isSameSenderAsNext =
+715:                   nextMsg &&
+716:                   nextMsg.sender === msg.sender &&
+717:                   formatDateDivider(nextMsg.createdAt) === currentDayLabel &&
+718:                   Math.abs(new Date(nextMsg.createdAt).getTime() - new Date(msg.createdAt).getTime()) < 120000;
+719: 
+720:                 return (
+721:                   <React.Fragment key={msg.id}>
+722:                     {showDateHeader && (
+723:                       <div className="flex justify-center my-3 select-none">
+724:                         <span className="px-3 py-0.5 rounded-full bg-[#EFEBF7] text-[#6E657F] text-[10px] font-semibold tracking-wide">
+725:                           {currentDayLabel}
+726:                         </span>
+727:                       </div>
+728:                     )}
+729: 
+730:                     <div
+731:                       className={
+732:                         'flex flex-col ' +
+733:                         (isMe ? 'items-end ' : 'items-start ') +
+734:                         (isSameSenderAsPrev ? 'mt-0.5' : 'mt-2.5')
+735:                       }
+736:                     >
+737:                       <div className={'flex items-end gap-2 max-w-[84%] ' + (isMe ? 'flex-row-reverse' : 'flex-row')}>
+738:                         {!isMe && (
+739:                           <div className="w-6 h-6 shrink-0">
+740:                             {!isSameSenderAsNext ? (
+741:                               <div className="relative w-6 h-6 rounded-full overflow-hidden border border-[#E5DFEE] bg-[#F3EFFC]">
+742:                                 <Image
+743:                                   src={targetInfo.avatar}
+744:                                   alt={targetInfo.name}
+745:                                   fill
+746:                                   sizes="24px"
+747:                                   className="object-cover"
+748:                                 />
+749:                               </div>
+750:                             ) : null}
+751:                           </div>
+752:                         )}
+753: 
+754:                         <div
+755:                           className={
+756:                             'px-3.5 py-2 text-[13.5px] leading-[1.45] break-words select-text transition-opacity ' +
+757:                             (msg.pending ? 'opacity-75 ' : 'opacity-100 ') +
+758:                             (isMe
+759:                               ? 'bg-[#6555B8] text-white rounded-2xl ' +
+760:                                 (isSameSenderAsNext ? 'rounded-br-md' : 'rounded-br-xs') +
+761:                                 ' shadow-[0_1px_6px_rgba(101,85,184,0.18)]'
+762:                               : 'bg-white text-[#1C1924] border border-[#E6E1F0] rounded-2xl ' +
+763:                                 (isSameSenderAsNext ? 'rounded-bl-md' : 'rounded-bl-xs') +
+764:                                 ' shadow-[0_1px_3px_rgba(28,25,36,0.03)]')
+765:                           }
+766:                         >
+767:                           {msg.text}
+768:                         </div>
+769:                       </div>
+770: 
+771:                       {!isSameSenderAsNext && (
+772:                         <div
+773:                           className={
+774:                             'flex items-center gap-1 mt-1 text-[10px] text-[#8C849B] select-none ' +
+775:                             (isMe ? 'pr-0.5' : 'pl-8')
+776:                           }
+777:                         >
+778:                           <span>{msg.pending ? 'Sending...' : msg.time}</span>
+779:                           {isMe && !msg.pending && (
+780:                             msg.read ? (
+781:                               <CheckCheck className="w-3 h-3 text-[#6555B8]" />
+782:                             ) : (
+783:                               <Check className="w-3 h-3 text-[#9B93A8]" />
+784:                             )
+785:                           )}
+786:                         </div>
+787:                       )}
+788:                     </div>
+789:                   </React.Fragment>
+790:                 );
+791:               })
+792:             )}
+793:           </>
+794:         )}
+795:       </div>
+796: 
+797:       {/* Floating Scroll-to-Bottom Pill when scrolled up */}
+798:       {showScrollPill && (
+799:         <button
+800:           type="button"
+801:           onClick={() => scrollToBottom('smooth')}
+802:           className="absolute bottom-16 left-1/2 -translate-x-1/2 z-30 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#6555B8] text-white text-xs font-semibold shadow-lg hover:bg-[#52449e] transition cursor-pointer"
+803:         >
+804:           <span>New message</span>
+805:           <ArrowDown className="w-3.5 h-3.5" />
+806:         </button>
+807:       )}
+808: 
+809:       {/* Docked Flex Composer (Never overlaps message feed) */}
+810:       <div className="shrink-0 bg-white/95 backdrop-blur-md border-t border-[#ECE8F4] px-3 py-2.5 z-20">
+811:         {cooldownSeconds > 0 ? (
+812:           <div className="p-3 rounded-2xl bg-[#F8F7FA] border border-[#DDD7E5] flex flex-col items-center gap-2 shadow-xs text-center">
+813:             <div className="flex items-center gap-1.5 text-xs text-[#524B5E]">
+814:               <Clock className="w-4 h-4 text-amber-500" />
+815:               <span>Next free message unlocks in</span>
+816:             </div>
+817:             <span className="text-lg font-bold tracking-wider text-[#1C1924]">
+818:               {formatTimer(cooldownSeconds)}
+819:             </span>
+820:             <button
+821:               type="button"
+822:               onClick={() => setShowUpgradeModal(true)}
+823:               className="w-full flex items-center justify-center gap-2 py-2 rounded-full bg-[#6555B8] hover:bg-[#52449e] text-white font-semibold text-xs shadow-sm transition cursor-pointer"
+824:             >
+825:               <Zap className="w-3.5 h-3.5 fill-current" />
+826:               Skip the Wait with Plus
+827:             </button>
+828:           </div>
+829:         ) : (
+830:           <form onSubmit={handleSendMessage} className="flex items-end gap-2">
+831:             <div className="flex-1 bg-[#F6F4FA] border border-[#E2DCEB] focus-within:border-[#6555B8] focus-within:bg-white focus-within:ring-2 focus-within:ring-[#6555B8]/15 rounded-3xl px-3.5 py-2 transition-all flex items-center">
+832:               <textarea
+833:                 ref={textareaRef}
+834:                 rows={1}
+835:                 placeholder="Write a message..."
+836:                 value={inputText}
+837:                 onChange={handleTextareaChange}
+838:                 onKeyDown={handleKeyDown}
+839:                 className="w-full bg-transparent text-[#1C1924] placeholder-[#8C849B] text-[13.5px] leading-snug outline-none resize-none max-h-28 overflow-y-auto"
+840:               />
+841:             </div>
+842:             <button
+843:               type="submit"
+844:               disabled={!inputText.trim()}
+845:               aria-label="Send message"
+846:               className="w-9 h-9 rounded-full bg-[#6555B8] hover:bg-[#52449e] active:scale-90 disabled:opacity-35 text-white flex items-center justify-center transition-all shadow-xs shrink-0 cursor-pointer"
+847:             >
+848:               <Send className="w-4 h-4 translate-x-[0.5px]" />
+849:             </button>
+850:           </form>
+851:         )}
+852:       </div>
+853: 
+854:       <UpgradeModal
+855:         isOpen={showUpgradeModal}
+856:         onClose={() => setShowUpgradeModal(false)}
+857:         triggerContext="chat"
+858:       />
+859:       <ReputationModal
+860:         isOpen={showRepModal}
+861:         onClose={() => setShowRepModal(false)}
+862:         name={targetInfo.name}
+863:         score={targetInfo.rep}
+864:       />
+865:       {showReportModal && (
+866:         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs">
+867:           <div className="w-full max-w-sm rounded-3xl bg-white p-6 shadow-2xl border border-[#DDD7E5]">
+868:             <div className="flex items-center gap-2 text-rose-600">
+869:               <ShieldAlert className="h-5 w-5" />
+870:               <h3
+871:                 className="font-bold text-[#1C1924]"
+872:                 style={{ fontFamily: 'var(--font-brand)' }}
+873:               >
+874:                 Safety &amp; Moderation
+875:               </h3>
+876:             </div>
+877:             <p className="mt-2 text-xs text-[#6C637B] leading-relaxed">
+878:               Take action regarding this member. Reports are reviewed by moderators within 24 hours.
+879:             </p>
+880:             {actionDoneMsg ? (
+881:               <div className="mt-4 rounded-2xl bg-emerald-50 border border-emerald-200 p-3 text-center text-xs font-medium text-emerald-800">
+882:                 {actionDoneMsg}
+883:               </div>
+884:             ) : (
+885:               <div className="mt-5 space-y-2">
+886:                 <button
+887:                   type="button"
+888:                   onClick={handleBlockUser}
+889:                   className="w-full rounded-2xl border border-[#DDD7E5] py-2.5 text-xs font-semibold text-[#1C1924] hover:bg-[#F3EFFC] transition cursor-pointer"
+890:                 >
+891:                   Block Member
+892:                 </button>
+893:                 <button
+894:                   type="button"
+895:                   onClick={() => handleReportUser('harassment')}
+896:                   className="w-full rounded-2xl bg-rose-600 hover:bg-rose-700 py-2.5 text-xs font-semibold text-white shadow-sm transition cursor-pointer"
+897:                 >
+898:                   Report Violation / Scammer
+899:                 </button>
+900:               </div>
+901:             )}
+902:             <button
+903:               type="button"
+904:               onClick={() => {
+905:                 setShowReportModal(false);
+906:                 setActionDoneMsg(null);
+907:               }}
+908:               className="mt-3 w-full py-1.5 text-xs text-[#8C849B] hover:text-[#1C1924] transition cursor-pointer"
+909:             >
+910:               Cancel
+911:             </button>
+912:           </div>
+913:         </div>
+914:       )}
+915:     </main>
+916:   );
+917: }
+
+======================================================
+FILE: app/inbox/page.tsx (EXISTS)
+======================================================
+Total Lines: 6
+1: ﻿import { redirect } from 'next/navigation';
+2: 
+3: export default function InboxPage() {
+4:   redirect('/messages');
+5: }
+6: 
