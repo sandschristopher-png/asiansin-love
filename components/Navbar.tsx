@@ -1,12 +1,13 @@
 'use client';
 
 import { BrandLogo } from '@/components/BrandLogo';
+import NotificationsSection from '@/components/NotificationsSection';
 import { notifyUser } from '@/components/InAppToast';
 import { notificationService } from '@/lib/notificationService';
 import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { User, Settings, LogOut, Bell, ArrowLeft, Share2, Check } from 'lucide-react';
+import { User, Settings, LogOut, ArrowLeft, Share2, Check } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 
 export function Navbar() {
@@ -208,18 +209,7 @@ export function Navbar() {
         <div className="flex items-center gap-2">
           {user ? (
             <>
-              <Link
-                href="/notifications"
-                className="relative h-9 w-9 rounded-full bg-transparent hover:bg-gray-100 flex items-center justify-center text-gray-600 transition-colors"
-                title="Notifications"
-              >
-                <Bell className="w-5 h-5 stroke-[1.8]" />
-                {hasUnread && (
-                  <span className="absolute top-1.5 right-1.5 h-2 w-2 rounded-full bg-[#6555B8] ring-2 ring-white" />
-                )}
-              </Link>
-
-              <div className="relative" ref={menuRef}>
+<div className="relative" ref={menuRef}>
                 <button
                   type="button"
                   onClick={() => setMenuOpen(!menuOpen)}
@@ -239,6 +229,8 @@ export function Navbar() {
                       <p className="text-[11px] uppercase font-medium tracking-wider text-gray-400">Signed In As</p>
                       <p className="text-sm font-semibold text-gray-900 truncate">@{profile?.username || displayName}</p>
                     </div>
+
+                  <NotificationsSection onNavigate={() => setMenuOpen(false)} />
 
                     <div className="py-1">
                       <Link
