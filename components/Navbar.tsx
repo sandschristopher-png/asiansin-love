@@ -180,7 +180,7 @@ export function Navbar() {
             style={{ animation: 'fadeInTitle 220ms ease-out forwards' }}
           >
             {!pageTitle ? (
-              <BrandLogo href={user ? "/discover" : "/"} size="md" />
+              <BrandLogo href={user ? "/discover" : "/"} size="sm" />
             ) : (
               <div className="flex items-center gap-2.5">
                 <button

@@ -157,6 +157,7 @@ function DiscoverContent() {
   const [selectedCountry, setSelectedCountry] = useState('All');
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchAnimating, setSearchAnimating] = useState(false);
+  const [searchClosing, setSearchClosing] = useState(false);
 
   const [selectedGenders, setSelectedGenders] = useState<string[]>(() => {
     if (typeof window !== 'undefined') {
@@ -415,10 +416,10 @@ function DiscoverContent() {
     <div className="w-full min-h-full bg-[#F8F7FA] text-[#1C1924] flex flex-col font-sans animate-[fadeIn_200ms_cubic-bezier(0.16,1,0.3,1)]">
       <main className="w-full max-w-md mx-auto px-4 pt-4 pb-36 relative">
         {/* Static Pinned Search & Filter Controls on Left + Horizontally Scrolling Categories on Right */}
-        <section aria-label="Search and Filters" className="w-full mb-4 flex items-center gap-2">
+        <section aria-label="Search and Filters" className="w-full mb-4 flex items-center gap-3">
           <div className="shrink-0 flex items-center gap-1.5">
             {searchOpen || searchQuery ? (
-              <div className={`flex-1 min-w-0 h-9 flex items-center gap-1 bg-white border border-[#DDD7E5] focus-within:border-[#6555B8] rounded-full pl-3 pr-2 shadow-2xs transition-all ${searchAnimating ? 'animate-[slideIn_200ms_cubic-bezier(0.16,1,0.3,1)]' : ''}`}>
+              <div className={`flex-1 min-w-0 h-9 flex items-center gap-1 bg-white border border-[#DDD7E5] focus-within:border-[#6555B8] rounded-full pl-3 pr-2 shadow-2xs transition-all ${searchAnimating ? 'animate-[slideIn_200ms_cubic-bezier(0.16,1,0.3,1)]' : ''} ${searchClosing ? 'animate-[slideOut_180ms_ease-in_forwards]' : ''}`}>
                 <Search className="w-3.5 h-3.5 text-[#8C849B] shrink-0" />
                 <input
                   autoFocus
@@ -431,12 +432,12 @@ function DiscoverContent() {
                 <button
                   type="button"
                   onClick={() => {
-                  setSearchAnimating(true);
+                  setSearchClosing(true);
                   setTimeout(() => {
                     setSearchQuery('');
                     setSearchOpen(false);
-                    setSearchAnimating(false);
-                  }, 200);
+                    setSearchClosing(false);
+                  }, 180);
                 }}
                   className="text-[#8C849B] hover:text-[#1C1924] text-xs px-1 cursor-pointer"
                 >
@@ -474,7 +475,7 @@ function DiscoverContent() {
           {/* Horizontally Scrolling Category Pills */}
           {!(searchOpen || searchQuery) && (
           <div className="flex-1 min-w-0 overflow-x-auto no-scrollbar touch-pan-x select-none cursor-grab active:cursor-grabbing" onWheel={(e) => { if (e.deltaY !== 0) { e.currentTarget.scrollLeft += e.deltaY; } }} onMouseDown={(e) => { const el = e.currentTarget; el.dataset.dragging = "1"; el.dataset.startX = String(e.pageX); el.dataset.scrollLeft = String(el.scrollLeft); }} onMouseMove={(e) => { const el = e.currentTarget; if (el.dataset.dragging !== "1") return; e.preventDefault(); el.scrollLeft = Number(el.dataset.scrollLeft) - (e.pageX - Number(el.dataset.startX)) * 1.3; }} onMouseUp={(e) => { e.currentTarget.dataset.dragging = "0"; }} onMouseLeave={(e) => { e.currentTarget.dataset.dragging = "0"; }}>
-            <div className="flex items-center gap-1.5 w-max">
+            <div className="flex items-center gap-5 w-max">
               {DISCOVERY_MODES.map((mode) => {
                 const active = discoveryMode === mode.id;
                 return (
@@ -482,12 +483,10 @@ function DiscoverContent() {
                     key={mode.id}
                     type="button"
                     onClick={() => setDiscoveryMode(mode.id)}
-                    className={
-                      'h-9 px-4 rounded-full text-xs font-semibold border inline-flex items-center justify-center transition-all whitespace-nowrap active:scale-95 cursor-pointer ' +
-                      (active
-                        ? 'bg-[#6555B8] border-[#6555B8] text-white shadow-2xs'
-                        : 'bg-white border-[#DDD7E5] text-[#524B5E] hover:border-[#6555B8]/40 hover:text-[#1C1924]')
-                    }
+                    className={`shrink-0 text-sm transition-colors ${
+                      active ? 'text-[#6555B8] font-bold' : 'text-black/40 font-medium'
+                    }`}
+                    
                   >
                     {mode.label}
                   </button>
