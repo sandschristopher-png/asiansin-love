@@ -498,7 +498,7 @@ function DiscoverContent() {
         </section>
 
         {/* 2-Column Feed Grid */}
-        <div className="grid grid-cols-2 gap-3.5 w-full">
+        <div className="grid grid-cols-2 gap-3.5 w-full animate-fade-in-up">
           {isLoading ? (
             Array.from({ length: 8 }).map((_, i) => (
               <div

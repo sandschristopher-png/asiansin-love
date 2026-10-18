@@ -125,64 +125,58 @@ export default function SparksPage() {
           supabaseClient.from('profile_views').select('viewer_id, created_at').eq('viewed_id', user.id).order('created_at', { ascending: false })
         ]);
 
-        const statuses = ['fulfilled', 'fulfilled', 'fulfilled', 'fulfilled', 'fulfilled'];
-        const results = [meRes, outSparksRes, inSparksRes, favRes, viewsRes];
-        const profilesErr = results[0].status !== 'fulfilled' ? results[0].reason : null;
-        const outSparksErr = results[1].status !== 'fulfilled' ? results[1].reason : null;
-        const inSparksErr = results[2].status !== 'fulfilled' ? results[2].reason : null;
-        const favErr = results[3].status !== 'fulfilled' ? results[3].reason : null;
-        const viewsErr = results[4].status !== 'fulfilled' ? results[4].reason : null;
+                const unwrap = <T,>(r: PromiseSettledResult<T>): T | null =>
+          r.status === 'fulfilled' ? r.value : null;
 
-        // Graceful degradation: use what we have, skip failed queries
-        const me = profilesErr ? null : results[0].value.data;
-        const g = String(me?.gender || user.user_metadata?.gender || '').toLowerCase();
-        const look = String(me?.looking_for || me?.seeking || '').toLowerCase();
+        const meRow: any = unwrap(meRes)?.data ?? null;
+        const g = String(meRow?.gender || user.user_metadata?.gender || '').toLowerCase();
+        const look = String(meRow?.looking_for || meRow?.seeking || '').toLowerCase();
         const resolvedGender: 'male' | 'female' =
           g === 'female' || g === 'f' || g === 'woman' || look === 'male' || look === 'm' || look === 'men'
             ? 'female'
             : 'male';
-        const resolvedPlus = profilesErr ? false : Boolean(me?.is_plus);
+        const resolvedPlus = Boolean(meRow?.is_plus);
 
-        const outIds = outSparksErr ? [] : Array.from(new Set(
-          [(results[1].value.data || []).map((r: any) => r.receiver_id)]
-        ).filter(Boolean).flat());
+        const outSparkRows: any[] = (unwrap(outSparksRes)?.data as any[]) ?? [];
+        const inSparkRows: any[] = (unwrap(inSparksRes)?.data as any[]) ?? [];
+        const favRows: any[] = (unwrap(favRes)?.data as any[]) ?? [];
+        const viewRows: any[] = (unwrap(viewsRes)?.data as any[]) ?? [];
 
-        const inIds = inSparksErr ? [] : Array.from(new Set(
-          (results[2].value.data || []).map((r: any) => r.sender_id).filter(Boolean)
+        const outIds: string[] = Array.from(new Set<string>(
+          outSparkRows.map((r) => r.receiver_id).filter((x): x is string => typeof x === 'string')
+        ));
+        const favIds: string[] = Array.from(new Set<string>(
+          favRows.map((r) => r.favorite_id).filter((x): x is string => typeof x === 'string')
+        ));
+        const inIds: string[] = Array.from(new Set<string>(
+          inSparkRows.map((r) => r.sender_id).filter((x): x is string => typeof x === 'string')
+        ));
+        const viewerIds: string[] = Array.from(new Set<string>(
+          viewRows.map((r) => r.viewer_id).filter((x): x is string => typeof x === 'string' && x !== user.id)
         ));
 
-        const favIds = favErr ? [] : Array.from(new Set(
-          (results[3].value.data || []).map((r: any) => r.favorite_id).filter(Boolean)
-        ));
+        const mergedOutIds: string[] = Array.from(new Set<string>([...outIds, ...favIds]));
+        const outSet = new Set<string>(mergedOutIds);
+        const mutualIds: string[] = inIds.filter((id) => outSet.has(id));
 
-        const mergedOutIds = Array.from(new Set([...outIds, ...favIds]));
+        const fetchVisitorIds: string[] = resolvedPlus ? viewerIds : [];
+        const allUniqueIds: string[] = Array.from(new Set<string>([...mergedOutIds, ...inIds, ...fetchVisitorIds]));
 
-        const viewerIds = viewsErr ? [] : Array.from(new Set(
-          (results[4].value.data || []).map((r: any) => r.viewer_id).filter((id: any) => id && id !== user.id)
-        ));
-
-        const outSet = new Set(mergedOutIds);
-        const mutualIds = inIds.filter((id) => outSet.has(id));
-
-        const fetchVisitorIds = resolvedPlus ? viewerIds : [];
-        const allUniqueIds = Array.from(new Set([...mergedOutIds, ...inIds, ...fetchVisitorIds]));
-
-        let profileMap = new Map<string, ProfileCardData>();
+        const profileMap = new Map<string, ProfileCardData>();
         if (allUniqueIds.length > 0) {
-          const { data: profilesData } = await (supabaseClient)
+          const { data: profilesData } = await supabaseClient
             .from('profiles')
             .select('*')
             .in('id', allUniqueIds);
-
-          for (const p of (profilesData || []) as ProfileCardData[]) {
-            profileMap.set(p.id, p);
+          for (const pr of ((profilesData || []) as ProfileCardData[])) {
+            profileMap.set(pr.id, pr);
           }
         }
 
-        const sparkedProfiles = mergedOutIds.map((id) => profileMap.get(id)).filter(Boolean) as ProfileCardData[];
-        const sparkedYouProfiles = inIds.map((id) => profileMap.get(id)).filter(Boolean) as ProfileCardData[];
-        const mutualProfiles = mutualIds.map((id) => profileMap.get(id)).filter(Boolean) as ProfileCardData[];
-        const visitedProfiles = fetchVisitorIds.map((id) => profileMap.get(id)).filter(Boolean) as ProfileCardData[];
+        const sparkedProfiles = mergedOutIds.map((id) => profileMap.get(id)).filter((x): x is ProfileCardData => Boolean(x));
+        const sparkedYouProfiles = inIds.map((id) => profileMap.get(id)).filter((x): x is ProfileCardData => Boolean(x));
+        const mutualProfiles = mutualIds.map((id) => profileMap.get(id)).filter((x): x is ProfileCardData => Boolean(x));
+        const visitedProfiles = fetchVisitorIds.map((id) => profileMap.get(id)).filter((x): x is ProfileCardData => Boolean(x));
 
         if (!isMounted) return;
 

@@ -212,8 +212,6 @@ export default function AilPlusHubPage() {
                   onClick={() => handlePassport(dest.city, dest.country)}
                   className={`p-2.5 rounded-xl border text-left transition-all active:scale-95 cursor-pointer ${
                     active ? 'bg-[#6555B8] border-[#6555B8] text-white shadow-sm' : 'bg-[#FAF9FD] border-[#E6E1F0] text-[#1C1924] hover:border-[#6555B8]/50'
-                  }` ${
-                    active ? 'text-[13px]' : 'text-[13px]'
                   }`}>
                   <div className="text-xs font-bold truncate">{dest.city}</div>
                   <div className={`text-[10px] truncate ${active ? 'text-white/80' : 'text-[#6C637B]'}`}>
