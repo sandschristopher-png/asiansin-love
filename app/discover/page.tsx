@@ -463,7 +463,7 @@ function DiscoverContent() {
               type="button"
               onClick={() => setFiltersOpen(true)}
               aria-label="Open Filters"
-              className="relative w-9 h-9 rounded-full bg-white border border-[#DDD7E5] text-[#6555B8] hover:border-[#CFC8DC] flex items-center justify-center transition shadow-2xs cursor-pointer"
+              className="relative p-1.5 -m-1 text-[#6555B8] transition-colors cursor-pointer"
             >
               <SlidersHorizontal className="w-4 h-4" />
               {activeFiltersCount > 0 && (
