@@ -39,11 +39,17 @@ const TYPE_META: Record<string, { icon: any; line: (n: Notification) => string; 
     },
     route: (n) => `/profile/${n.actor?.username ?? n.actor?.id ?? ''}`
   },
-  photo_verified:  { icon: ShieldCheck, line: () => 'Photo verification approved', route: () => '/settings' },
+  photo_verified:  { icon: ShieldCheck, line: () => 'Photo verification approved', route: () =>'/settings' },
   location_verified:{ icon: BadgeCheck,  line: () => 'Location verified', route: () => '/settings' },
-  plus_activated:   { icon: ShieldCheck, line: () => 'AIL+ activated', route: () => '/settings' },
+  plus_activated:   { icon: ShieldCheck, line: () => 'AIL+ activated', route: () => '/settings'},
   moderation_warning:{ icon: ShieldAlert, line: (n) => String(n.payload.reason ?? 'Warning issued'), route: () => '/settings' }
 };
+
+// DB constraint uses favorite/match/spark/visit - alias them to the metas above
+TYPE_META['favorite'] = TYPE_META.spark_received;
+TYPE_META['spark'] = TYPE_META.spark_received;
+TYPE_META['match'] = TYPE_META.mutual_match;
+TYPE_META['visit'] = TYPE_META.profile_visit;
 
 function timeAgo(iso: string): string {
   const s = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
@@ -92,7 +98,7 @@ export default function NotificationsSection({ onNavigate }: NotificationsSectio
         </span>
         {unread > 0 && <span className="text-[10px] font-semibold text-[#6555B8]">{unread} new</span>}
       </div>
-      <div className="mx-2 mb-2 flex flex-col gap-1.5 rounded-xl border border-[#9A8CC3]/25 bg-white/70 p-1.5">
+      <div className="mx-2 mb-2 flex max-h-[240px] flex-col gap-1.5 overflow-y-auto rounded-xl border border-[#9A8CC3]/25 bg-white/70 p-1.5">
         {notifications.slice(0, 5).map(n => {
           const meta = TYPE_META[n.type];
           if (!meta) return null;
@@ -107,7 +113,7 @@ export default function NotificationsSection({ onNavigate }: NotificationsSectio
             >
               <Icon size={15} strokeWidth={2} className={`mt-0.5 shrink-0 ${n.is_read ? 'text-black/40' : 'text-[#6555B8]'}`} />
               <span className="min-w-0 flex-1">
-                <span className={`block truncate text-[12.5px] leading-tight ${n.is_read ? 'text-black/50' : 'text-black/80 font-medium'}`}>
+                <span className={`block text-[12.5px] leading-snug ${n.is_read ? 'text-black/50' : 'text-black/80 font-medium'}`}>
                   {meta.line(n)}
                 </span>
                 <span className="block text-[10px] text-black/35">{timeAgo(n.created_at)}</span>
