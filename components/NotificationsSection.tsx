@@ -88,6 +88,14 @@ export default function NotificationsSection({ initial, onNavigate }: { initial?
       .finally(() => setLoading(false));
   }, []);
 
+  useEffect(() => {
+    if (initial?.notifications) {
+      setNotifications(initial.notifications);
+      setUnread(initial.unread_count ?? 0);
+      setLoading(false);
+    }
+  }, [initial]);
+
   const handleOpen = (n: Notification) => {
     fetch('/api/notifications', { method: 'POST' }).catch(() => {});
     setUnread(0);
@@ -97,7 +105,15 @@ export default function NotificationsSection({ initial, onNavigate }: { initial?
     if (meta) router.push(meta.route(n));
   };
 
-  if (loading) return null;
+  if (loading) return (
+    <div className="flex items-center justify-between px-3 pt-2 pb-1">
+      <span className="flex items-center gap-1.5 text-[10px] font-bold uppercase tracking-widest text-[#9A79BA]">
+        <Bell size={13} strokeWidth={2} />
+        Notifications
+      </span>
+      <span className="mr-1 h-3 w-3 animate-spin rounded-full border border-[#6555B8] border-t-transparent" />
+    </div>
+  );
   if (notifications.length === 0) return null;
 
   return (

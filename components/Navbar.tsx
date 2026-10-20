@@ -95,17 +95,13 @@ export function Navbar() {
               checkUnread(user.id);
 
 
-              if (payload.eventType === 'INSERT' && payload.new) {
-                const n = payload.new;
-                notifyUser({
-                  senderName: n.title || `asiansinlove`,
-                  avatarUrl: '',
-                  message: n.description || 'You have a new update.',
-                  chatUrl: n.link_url || '/notifications',
-                });
-                notificationService.playChime();
-              }
-            }
+              if ((payload.eventType === 'INSERT' || payload.event === 'INSERT') && payload.new) {
+          // Toasts/chimes are handled by GlobalNotificationListener (single source)
+          // Here we only keep the dropdown list and unread state fresh:
+          checkUnread(user.id);
+          fetch('/api/notifications').then(r => r.ok ? r.json() : null).then(d => { if (d) setPrefetchedNotifs({ notifications: d.notifications, unread_count: d.unread_count }); }).catch(() => {});
+        }
+        }
           )
           .subscribe();
       }

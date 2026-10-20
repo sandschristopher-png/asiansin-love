@@ -8,6 +8,7 @@ const comfortaa = Comfortaa({
 });
 import './globals.css';
 import { LayoutShell } from '@/components/LayoutShell';
+import { GlobalNotificationListener } from '@/components/GlobalNotificationListener';
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
@@ -23,7 +24,7 @@ const outfit = Outfit({
 
 export const metadata: Metadata = {
   title: 'Asians in Love - Real Connections',
-  description: 'A thoughtful platform dedicated to intentional courtship, values-first compatibility, and lifelong marriage.',
+  description: 'Meet genuine singles across Southeast Asia. Safe, real connections with sparks, chats, and meaningful relationships.',
 };
 
 export const viewport: Viewport = {
@@ -41,6 +42,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`h-full ${plusJakarta.variable} ${outfit.variable} ${comfortaa.variable}`}>
       <body className="font-sans bg-[#ECE9F1] text-[#1C1924] h-full selection:bg-[#6555B8] selection:text-white antialiased overflow-hidden">
+        <GlobalNotificationListener />
         <LayoutShell>{children}</LayoutShell>
       </body>
     </html>
