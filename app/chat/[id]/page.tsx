@@ -559,8 +559,7 @@ export default function ChatConversationPage() {
                 <span
                   className="text-[13.5px] font-bold text-[#1C1924] group-hover:text-[#6555B8] transition leading-tight truncate"
                   style={{ fontFamily: 'var(--font-brand)' }}
-                >
-                  @{targetInfo.name || 'Member'}
+                > {targetInfo.name || 'Member'}
                 </span>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block shrink-0" />
@@ -603,7 +602,7 @@ export default function ChatConversationPage() {
       <div
         ref={scrollContainerRef}
         onScroll={handleContainerScroll}
-        className="flex-1 overflow-y-auto px-3.5 py-4 space-y-1 overscroll-contain"
+        className="flex-1 overflow-y-auto px-3.5 py-4 overscroll-contain"
       >
         {isInitialLoading ? (
           <div className="space-y-4 py-4 animate-pulse">
@@ -689,7 +688,7 @@ export default function ChatConversationPage() {
                   />
                 </div>
                 <p className="text-xs font-semibold text-[#1C1924]">
-                  Start a conversation with @{targetInfo.name}
+                  Start a conversation with  {targetInfo.name}
                 </p>
                 <p className="text-[11px] text-[#7A7289] max-w-[220px] mx-auto leading-relaxed">
                   Send a friendly note to break the ice.
@@ -720,7 +719,7 @@ export default function ChatConversationPage() {
                 return (
                   <React.Fragment key={msg.id}>
                     {showDateHeader && (
-                      <div className="flex justify-center my-3 select-none">
+                      <div className="flex justify-center my-1.5 select-none">
                         <span className="px-3 py-0.5 rounded-full bg-[#EFEBF7] text-[#6E657F] text-[10px] font-semibold tracking-wide">
                           {currentDayLabel}
                         </span>
@@ -731,7 +730,7 @@ export default function ChatConversationPage() {
                       className={
                         'flex flex-col ' +
                         (isMe ? 'items-end ' : 'items-start ') +
-                        (isSameSenderAsPrev ? 'mt-0.5' : 'mt-2.5')
+                        (isSameSenderAsPrev || showDateHeader ? 'mt-0.5' : 'mt-2.5')
                       }
                     >
                       <div className={'flex items-end gap-2 max-w-[84%] ' + (isMe ? 'flex-row-reverse' : 'flex-row')}>
