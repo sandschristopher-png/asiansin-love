@@ -505,7 +505,7 @@ export default function OnboardingPage() {
               {step === 5 && 'Add your profile photos'}
             </h1>
             <p className="text-xs sm:text-sm text-[#6C637B] mt-1 leading-relaxed">
-              {step === 1 && 'Claim your unique handle on Asians in Love (3 to 20 characters, letters, numbers, and underscores).'}
+              {step === 1 && 'Claim your unique username on Asians in Love (3 to 20 characters, letters, numbers, and underscores).'}
               {step === 2 && 'Select how you identify and who you are interested in meeting.'}
               {step === 3 && 'Use GPS or enter your city and country manually.'}
               {step === 4 && 'Share your height, weight, bio, what you are looking for, and your hobbies.'}

@@ -34,7 +34,7 @@ export default function UpgradeModal({
       case 'chat':
         return 'Connect directly with genuine matches without daily caps or cooldowns.';
       case 'handle':
-        return 'Update and personalize your public handle anytime with Plus.';
+        return 'Update and personalize your public username anytime with Plus.';
       default:
         return 'Stand out with verified intent, priority placement, and direct messaging.';
     }
@@ -133,8 +133,8 @@ export default function UpgradeModal({
                 <Check className="w-3.5 h-3.5 text-emerald-600 font-bold" />
               </div>
               <div className="text-left">
-                <p className="text-xs font-semibold text-neutral-900">Handle Modifications Included</p>
-                <p className="text-[11px] text-neutral-500 leading-tight">Update your public handle without restrictions</p>
+                <p className="text-xs font-semibold text-neutral-900">Username Modifications Included</p>
+                <p className="text-[11px] text-neutral-500 leading-tight">Update your public username without restrictions</p>
               </div>
             </div>
           </div>

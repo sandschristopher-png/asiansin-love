@@ -91,7 +91,7 @@ export default function HandleChangeCard() {
       if (data.available) { setAvailable(true); setStatusText('Available'); }
       else if (data.reason === 'taken') { setAvailable(false); setStatusText('Taken'); }
       else if (data.reason === 'reserved') { setAvailable(false); setStatusText('Reserved after recent release'); }
-      else { setAvailable(false); setStatusText('Invalid handle'); }
+      else { setAvailable(false); setStatusText('Invalid username'); }
     }, 450);
     return () => clearTimeout(t);
   }, [input, mode, profile, supabase]);
@@ -116,7 +116,7 @@ export default function HandleChangeCard() {
           username_free_change_used: data.first_claim ? false : true });
       }
       setAvailable(null); setStatusText('');
-      setMessage('Handle updated.');
+      setMessage('Username updated.');
     } else if (data) {
       if (data.error === 'cooldown') {
         if (profile && data.locked_until) setProfile({ ...profile, username_locked_until: data.locked_until });
@@ -124,18 +124,23 @@ export default function HandleChangeCard() {
       } else if (data.error === 'plus_required') {
         if (profile) setProfile({ ...profile, username_free_change_used: true });
         setMessage('AIL+ required to change again.');
-      } else if (data.error === 'taken') { setMessage('That handle is taken.'); }
-      else if (data.error === 'reserved') { setMessage('That handle is reserved.'); }
-      else if (data.error === 'account_too_new') { setMessage('Handles unlock 14 days after signup.'); }
-      else { setMessage('Could not update handle.'); }
+      } else if (data.error === 'taken') { setMessage('That username is taken.'); }
+      else if (data.error === 'reserved') { setMessage('That username is reserved.'); }
+      else if (data.error === 'account_too_new') { setMessage('Usernames unlock 14 days after signup.'); }
+      else if (data.error === 'unchanged') { setMessage('That is already your username.'); }
+      else if (data.error === 'invalid_format') { setMessage('3-20 characters: letters, numbers, underscores only.'); }
+      else if (data.error === 'not_authenticated') { setMessage('Please sign in again.'); }
+      else if (data.error === 'no_profile') { setMessage('Profile not found. Try refreshing.'); }
+      else if (data.error === 'rpc_failed') { setMessage('Server error: ' + (data.detail || 'unknown')); }
+      else { setMessage('Could not update username.' + (data.error ? ' (' + data.error + ')' : '')); }
     }
   };
 
   return (
     <div className="space-y-3">
       <div>
-        <label className="text-xs font-bold uppercase tracking-wider text-[#6555b8] block mb-1" style={{ fontFamily: 'var(--font-brand)' }}>Member Handle</label>
-        <p className="text-[11px] text-[#6C637B] mb-2">Your unique identifier across Asians in Love.</p>
+        <label className="text-xs font-bold uppercase tracking-wider text-[#6555b8] block mb-1" style={{ fontFamily: 'var(--font-brand)' }}>Username</label>
+        <p className="text-[11px] text-[#6C637B] mb-2">Your unique name across Asians in Love.</p>
       </div>
 
       {mode === 'loading' && (
@@ -148,7 +153,7 @@ export default function HandleChangeCard() {
             <span className="text-sm font-semibold text-[#1C1924]">{(profile?.username || '').replace(/^@/, '')}</span>
             <Lock className="w-3.5 h-3.5 text-[#9A8CC3]" />
           </div>
-          <p className="text-xs text-[#6C637B] mt-1.5">Handle changes unlock 14 days after signup — {daysUntilEligible} {daysUntilEligible === 1 ? 'day' : 'days'} to go.</p>
+          <p className="text-xs text-[#6C637B] mt-1.5">Username changes unlock 14 days after signup — {daysUntilEligible} {daysUntilEligible === 1 ? 'day' : 'days'} to go.</p>
         </div>
       )}
 
@@ -168,8 +173,8 @@ export default function HandleChangeCard() {
             <span className="text-sm font-semibold text-[#1C1924]">{(profile?.username || '').replace(/^@/, '')}</span>
             <Lock className="w-3.5 h-3.5 text-[#9A8CC3]" />
           </div>
-          <p className="text-xs text-[#6C637B]">You have used your free handle change.</p>
-          <Link href="/plus" className="block w-full py-2.5 rounded-2xl bg-[#6555b8] hover:bg-[#52449e] text-white text-xs font-semibold text-center transition">Unlock Handle Changes with AIL+</Link>
+          <p className="text-xs text-[#6C637B]">You have used your free username change.</p>
+          <Link href="/plus" className="block w-full py-2.5 rounded-2xl bg-[#6555b8] hover:bg-[#52449e] text-white text-xs font-semibold text-center transition">Unlock Username Changes with AIL+</Link>
         </div>
       )}
 
@@ -203,7 +208,7 @@ export default function HandleChangeCard() {
             <p className={'text-xs font-semibold ' + (available === true ? 'text-emerald-600' : checking ? 'text-[#9A8CC3]' : 'text-rose-600')}>{statusText}</p>
           )}
           {!isPlus && freebieLeft && (
-            <p className="text-[11px] text-[#9A8CC3]">One free change remaining — after that, AIL+ required.</p>
+            <p className="text-[11px] text-[#9A8CC3]">One free username change remaining — after that, AIL+ required.</p>
           )}
         </div>
       )}

@@ -75,7 +75,7 @@ export default function SettingsPage() {
     setErrorMessage(null);
 
     if (!userId) {
-      setErrorMessage('You must be signed in to update your handle.');
+      setErrorMessage('You must be signed in to update your username.');
       return;
     }
 
@@ -113,7 +113,7 @@ export default function SettingsPage() {
         } else if (res.status === 403 && (data.requires_payment || data.error?.includes('Plus') || data.error?.includes('AIL+'))) {
           setShowUpgradeModal(true);
         } else {
-          setErrorMessage(data.error || 'Failed to update username handle.');
+          setErrorMessage(data.error || 'Failed to update username.');
         }
         return;
       }
@@ -162,7 +162,7 @@ export default function SettingsPage() {
                 </span>
               </div>
               <p className="text-xs text-[#6C637B] leading-relaxed">
-                Travel Passport Mode, custom profile handles, priority placement, and unlimited direct messaging.
+                Travel Passport Mode, custom profile usernames, priority placement, and unlimited direct messaging.
               </p>
               <div className="pt-1.5">
                 <Link

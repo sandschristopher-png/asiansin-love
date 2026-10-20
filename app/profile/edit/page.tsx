@@ -467,7 +467,7 @@ export default function EditProfilePage() {
           {/* Handle Claim */}
           <div className="p-4 rounded-2xl bg-[#FFFFFF] border border-[#9A8CC3]/35 space-y-2">
             <label className="block text-xs font-medium uppercase tracking-wider text-[#9A8CC3]">
-              Member Handle
+              Username
             </label>
             {initialHasUsername ? (
               <div className="flex items-center justify-between">
@@ -490,7 +490,7 @@ export default function EditProfilePage() {
                   {usernameStatus === 'checking' && 'Checking availability...'}
                   {usernameStatus === 'available' && <span className="text-emerald-400">Handle is available.</span>}
                   {usernameStatus === 'taken' && <span className="text-rose-400">Handle is already taken.</span>}
-                  {usernameStatus === 'idle' && 'Claim your unique handle.'}
+                  {usernameStatus === 'idle' && 'Claim your unique username.'}
                 </p>
               </div>
             )}
