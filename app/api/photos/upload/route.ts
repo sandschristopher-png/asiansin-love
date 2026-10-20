@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createClient as createServerClient } from '@/lib/supabase/server';
 import { createClient } from '@supabase/supabase-js';
 import { sendTelegramPhotoReviewAlert } from '@/lib/adminAlerts';
+import crypto from 'crypto';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
@@ -85,17 +86,17 @@ export async function POST(req: Request) {
       'image/webp': 'webp',
     };
     const safeExt = mimeExtMap[file.type] || 'jpg';
-    const filePath = `${userId}/primary-${Date.now()}.${safeExt}`;
-
     const arrayBuffer = await file.arrayBuffer();
+
     const buffer = Buffer.from(arrayBuffer);
+    const filePath = `${userId}/${isPrimaryAvatar ? 'primary' : 'photo'}-${crypto.createHash('sha256').update(buffer).digest('hex').slice(0, 16)}.${safeExt}`;
 
     // 5. Upload under authenticated caller context (satisfies RLS)
     const { error: uploadError } = await authenticatedClient.storage
       .from('user_photos')
       .upload(filePath, buffer, {
         contentType: file.type,
-        upsert: false,
+        upsert: true,
       });
 
     if (uploadError) {
