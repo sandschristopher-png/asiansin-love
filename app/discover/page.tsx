@@ -433,7 +433,7 @@ function DiscoverContent() {
       <main className="w-full max-w-md mx-auto px-4 pt-4 pb-36 relative">
         {/* Static Pinned Search & Filter Controls on Left + Horizontally Scrolling Categories on Right */}
         <section aria-label="Search and Filters" className="w-full mb-4 flex items-center gap-3">
-          <div className="shrink-0 flex items-center gap-1.5">
+          <div className={`flex items-center gap-1.5 ${searchOpen || searchQuery ? 'flex-1 min-w-0' : 'hidden'}`}>
             {searchOpen || searchQuery ? (
               <div className={`flex-1 min-w-0 h-9 flex items-center gap-1 bg-white border border-[#DDD7E5] focus-within:border-[#6555B8] rounded-full pl-3 pr-2 shadow-2xs transition-all ${searchAnimating ? 'animate-[slideIn_200ms_cubic-bezier(0.16,1,0.3,1)]' : ''} ${searchClosing ? 'animate-[slideOut_180ms_ease-in_forwards]' : ''}`}>
                 <Search className="w-3.5 h-3.5 text-[#8C849B] shrink-0" />
@@ -461,31 +461,9 @@ function DiscoverContent() {
                 </button>
               </div>
             ) : (
-              <button
-                type="button"
-                onClick={() => {
-                  setSearchAnimating(true);
-                  setTimeout(() => setSearchOpen(true), 10);
-                  setTimeout(() => setSearchAnimating(false), 200);
-                }}
-                aria-label="Open Search"
-                className="w-9 h-9 rounded-full bg-white border border-[#DDD7E5] text-[#6C637B] hover:text-[#6555B8] hover:border-[#CFC8DC] flex items-center justify-center transition shadow-2xs cursor-pointer"
-              >
-                <Search className="w-4 h-4" />
-              </button>
+              null
             )}
 
-            <button
-              type="button"
-              onClick={() => setFiltersOpen(true)}
-              aria-label="Open Filters"
-              className="relative p-1.5 -m-1 text-[#6555B8] transition-colors cursor-pointer"
-            >
-              <SlidersHorizontal className="w-4 h-4" />
-              {activeFiltersCount > 0 && (
-                <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#6555B8] ring-2 ring-white" />
-              )}
-            </button>
           </div>
 
           {/* Horizontally Scrolling Category Pills */}
@@ -511,6 +489,33 @@ function DiscoverContent() {
             </div>
           </div>
           )}
+                        {(searchOpen || searchQuery) ? null : (
+            <div className="shrink-0 flex items-center gap-1.5">
+              <button
+                type="button"
+                onClick={() => {
+                  setSearchAnimating(true);
+                  setTimeout(() => setSearchOpen(true), 10);
+                  setTimeout(() => setSearchAnimating(false), 200);
+                }}
+                aria-label="Open Search"
+                className="relative p-1.5 -m-1 text-[#6C637B] hover:text-[#6555B8] transition-colors cursor-pointer"
+              >
+                <Search className="w-4 h-4" />
+              </button>
+              <button
+                type="button"
+                onClick={() => setFiltersOpen(true)}
+                aria-label="Open Filters"
+                className="relative p-1.5 -m-1 text-[#6555B8] transition-colors cursor-pointer"
+              >
+                <SlidersHorizontal className="w-4 h-4" />
+                {activeFiltersCount > 0 && (
+                  <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#6555B8] ring-2 ring-white" />
+                )}
+              </button>
+            </div>
+            )}
         </section>
 
         {/* 2-Column Feed Grid */}
