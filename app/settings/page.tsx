@@ -109,7 +109,7 @@ export default function SettingsPage() {
 
       if (!res.ok) {
         if (res.status === 409 || data.error?.includes('taken')) {
-          setErrorMessage('That username handle is already taken. Please pick another.');
+          setErrorMessage('That username is already taken. Please pick another.');
         } else if (res.status === 403 && (data.requires_payment || data.error?.includes('Plus') || data.error?.includes('AIL+'))) {
           setShowUpgradeModal(true);
         } else {

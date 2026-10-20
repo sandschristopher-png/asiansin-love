@@ -43,7 +43,7 @@ export function SideMenuDrawer({ isOpen, onClose, onOpenFilters }: SideMenuDrawe
   const prevPathnameRef = useRef(pathname);
   const [profile, setProfile] = useState<UserProfileSummary>({
     id: '',
-    username: 'your_handle',
+    username: 'your_username',
     displayName: 'Member',
     avatarUrl: '/placeholder-avatar.svg',
     reputationScore: 100,
@@ -90,7 +90,7 @@ export function SideMenuDrawer({ isOpen, onClose, onOpenFilters }: SideMenuDrawe
         .maybeSingle();
 
       if (prof && mounted) {
-        const cleanHandle = (prof.username || user.email?.split('@')[0] || 'your_handle').replace(/^@/, '');
+        const cleanHandle = (prof.username || user.email?.split('@')[0] || 'your_username').replace(/^@/, '');
         const cleanName = prof.display_name || prof.full_name || cleanHandle;
         setProfile({
           id: prof.id,
