@@ -181,7 +181,7 @@ export function SideMenuDrawer({ isOpen, onClose, onOpenFilters }: SideMenuDrawe
                     </span>
                   </div>
                   <span className="text-xs text-[#6C637B] truncate">
-                    @{profile.username}
+                    {profile.username}
                   </span>
                   <div className="flex items-center gap-1.5 mt-1">
                     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#F3EFFC] text-[#6555B8] border border-[#E2D9F3]">
@@ -365,7 +365,7 @@ export function SideMenuDrawer({ isOpen, onClose, onOpenFilters }: SideMenuDrawe
               <LogOut className="w-4 h-4" />
               <span>{signingOut ? 'Signing out...' : 'Sign Out'}</span>
             </span>
-            <span className="text-[11px] text-[#8C849B] font-normal">@{profile.username}</span>
+            <span className="text-[11px] text-[#8C849B] font-normal">{profile.username}</span>
           </button>
         </div>
       </aside>

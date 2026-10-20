@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
 import { HandleUpgradeModal } from '@/components/HandleUpgradeModal';
+import HandleChangeCard from '@/components/HandleChangeCard';
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -143,56 +144,7 @@ export default function SettingsPage() {
 
         {/* Account Settings Card */}
         <div className="bg-white rounded-3xl border border-[#DDD7E5] p-5 shadow-xs space-y-5">
-          <form onSubmit={handleSaveHandle} className="space-y-3">
-            <div>
-              <label
-                className="text-xs font-bold uppercase tracking-wider text-[#6555b8] block mb-1"
-                style={{ fontFamily: 'var(--font-brand)' }}
-              >
-                Member Handle
-              </label>
-              <p className="text-[11px] text-[#6C637B] mb-2">
-                3 to 20 characters, letters, numbers, and underscores.
-              </p>
-              <div className="flex items-center gap-2">
-                <div className="relative flex-1 flex items-center">
-                  <span className="absolute left-3.5 text-sm font-medium text-[#8C849B]">@</span>
-                  <input
-                    type="text"
-                    value={username}
-                    maxLength={20}
-                    onChange={(e) => {
-                      setUsername(e.target.value.replace(/[^a-zA-Z0-9_]/g, ''));
-                      if (errorMessage) setErrorMessage(null);
-                    }}
-                    disabled={initialLoading || isSaving}
-                    className="w-full pl-8 pr-4 py-2.5 bg-[#F8F7FA] border border-[#DDD7E5] rounded-2xl text-sm font-semibold text-[#1C1924] focus:outline-none focus:bg-white focus:border-[#6555b8] focus:ring-2 focus:ring-[#6555b8]/15 transition disabled:opacity-60"
-                    placeholder={initialLoading ? 'Loading handle...' : 'username'}
-                  />
-                </div>
-                <button
-                  type="submit"
-                  disabled={initialLoading || isSaving}
-                  className="px-4 py-2.5 rounded-2xl bg-[#6555b8] hover:bg-[#52449e] disabled:opacity-50 text-white text-xs font-semibold transition active:scale-95 shadow-xs flex items-center gap-1.5 cursor-pointer shrink-0"
-                >
-                  {isSaving && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                  <span>Save</span>
-                </button>
-              </div>
-
-              {errorMessage && (
-                <p className="text-xs font-semibold text-rose-600 flex items-center gap-1.5 pt-2">
-                  <AlertCircle className="w-3.5 h-3.5 shrink-0" /> {errorMessage}
-                </p>
-              )}
-
-              {savedSuccess && (
-                <p className="text-xs font-semibold text-emerald-600 flex items-center gap-1.5 pt-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 shrink-0" /> Handle updated!
-                </p>
-              )}
-            </div>
-          </form>
+                  <HandleChangeCard />
 
           {/* AIL+ Membership Card */}
           <div className="p-4 rounded-2xl bg-[#F8F7FA] border border-[#DDD7E5] flex items-start gap-3.5">
@@ -214,7 +166,7 @@ export default function SettingsPage() {
               </p>
               <div className="pt-1.5">
                 <Link
-                  href="/pricing"
+                  href="/plus"
                   className="inline-block px-4 py-1.5 rounded-full bg-white border border-[#DDD7E5] hover:border-[#6555b8] text-xs font-semibold text-[#6555b8] hover:bg-[#F3EFFC] transition shadow-2xs"
                 >
                   Explore AIL+ Privileges &rarr;

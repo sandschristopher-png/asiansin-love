@@ -293,7 +293,7 @@ export default function MessagesPage() {
                       className="text-[13.5px] font-bold text-[#1C1924] truncate"
                       style={{ fontFamily: 'var(--font-brand)' }}
                     >
-                      @{conv.name}
+                      {conv.name}
                     </h2>
                     {conv.lastMessageAt && (
                       <span

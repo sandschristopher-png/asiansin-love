@@ -471,13 +471,13 @@ export default function EditProfilePage() {
             </label>
             {initialHasUsername ? (
               <div className="flex items-center justify-between">
-                <span className="font-mono text-sm text-[#1C1924] font-medium">@{username}</span>
+                <span className="font-mono text-sm text-[#1C1924] font-medium">{username}</span>
                 <button type="button" onClick={() => setShowUpgradeModal(true)} className="text-xs px-2.5 py-1 rounded-lg bg-[#F3EFFC] border border-[#DDD7E5] text-[#6555b8] hover:bg-[#EAE0F5] transition flex items-center gap-1.5 font-medium cursor-pointer" title="Change handle with AIL+"><span>Handle Locked</span><span className="text-[10px] font-bold bg-[#6555b8] text-white px-1.5 py-[2px] rounded-full">AIL+</span></button>
               </div>
             ) : (
               <div>
                 <div className="relative">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9A8CC3] font-mono">@</span>
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9A8CC3] font-mono"></span>
                   <input
                     type="text"
                     value={username}

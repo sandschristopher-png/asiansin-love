@@ -531,7 +531,7 @@ export default function OnboardingPage() {
                 3 to 20 characters, alphanumeric and underscores only.
               </p>
               <div className="relative flex items-center">
-                <span className="absolute left-3.5 text-sm font-medium text-[#8C849B]">@</span>
+                <span className="absolute left-3.5 text-sm font-medium text-[#8C849B]"></span>
                 <input
                   type="text"
                   value={username}
@@ -562,7 +562,7 @@ export default function OnboardingPage() {
 
               {!isCheckingUsername && usernameStatus?.available === false && !usernameStatus?.error && (
                 <div className="mt-2.5 text-xs space-y-1.5">
-                  <span className="text-rose-600 font-semibold">@{username} is already taken.</span>
+                  <span className="text-rose-600 font-semibold">{username} is already taken.</span>
                   {usernameStatus.suggestions && usernameStatus.suggestions.length > 0 && (
                     <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
                       <span className="text-[#6C637B]">Suggestions:</span>
@@ -573,7 +573,7 @@ export default function OnboardingPage() {
                           onClick={() => setUsername(sug)}
                           className="px-2.5 py-1 rounded-xl bg-[#F3EFFC] border border-[#6555b8]/30 text-[#6555b8] font-medium text-xs hover:bg-[#6555b8] hover:text-white transition"
                         >
-                          @{sug}
+                          {sug}
                         </button>
                       ))}
                     </div>

@@ -129,7 +129,6 @@ export function BottomNav() {
     { href: '/profile', label: 'Profile', icon: User },
   ];
 
-  if (pathname?.startsWith('/chat')) return null;
   return (
     <div 
       className={`fixed bottom-3.5 left-1/2 -translate-x-1/2 w-[calc(100%-1.75rem)] max-w-[390px] z-50 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${

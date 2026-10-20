@@ -28,7 +28,7 @@ export function Footer() {
 
         {/* Navigation & Legal Links */}
         <nav aria-label="Footer Navigation" className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 text-xs font-semibold text-[#564F66]">
-          <Link href="/pricing" className="hover:text-[#6555b8] transition-colors">
+          <Link href="/plus" className="hover:text-[#6555b8] transition-colors">
             Pricing
           </Link>
           <span className="text-[#CBC4DA]">•</span>
