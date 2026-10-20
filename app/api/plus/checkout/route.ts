@@ -33,6 +33,7 @@ export async function POST(req: NextRequest) {
     success_url: origin + '/plus?success=1',
     cancel_url: origin + '/plus',
     client_reference_id: user.id,
+    subscription_data: { metadata: { userId: user.id } },
     metadata: { userId: user.id }
   });
 
