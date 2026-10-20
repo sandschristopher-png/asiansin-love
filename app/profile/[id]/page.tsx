@@ -5,8 +5,8 @@ import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import {
   ArrowLeft, ShieldCheck, MapPin, Briefcase, ChevronLeft, ChevronRight,
-  Heart, Languages, Globe, Send, MessageCircle,
-  Bookmark, User, Sparkles, HeartHandshake, Baby, Ruler, Wine, Cigarette
+  Heart, Zap, Languages, Globe, Send, MessageCircle,
+  User, Sparkles, HeartHandshake, Baby, Ruler, Wine, Cigarette
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import RepScoreCard from '@/components/RepScoreCard';
@@ -23,8 +23,43 @@ export default function PublicProfilePage() {
   const [sending, setSending] = useState(false);
   const [sentSuccess, setSentSuccess] = useState(false);
   const [sendError, setSendError] = useState<string | null>(null);
-  const [isSaved, setIsSaved] = useState(false);
-  const [isLiked, setIsLiked] = useState(false);
+
+  const [isSparked, setIsSparked] = useState(() => {
+    try {
+      const cached = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('ail_sparked_ids') || '[]') : [];
+      return Array.isArray(cached) && cached.includes(String(id));
+    } catch { return false; }
+  });
+
+  const [sparkBusy, setSparkBusy] = useState(false);
+
+  const toggleSpark = async () => {
+    if (sparkBusy || !id) return;
+    const targetId = String(id);
+    const next = !isSparked;
+    setSparkBusy(true);
+    setIsSparked(next);
+    try {
+      const res = await fetch('/api/spark', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ targetUserId: targetId }),
+      });
+      if (!res.ok) throw new Error('Spark request failed');
+      const data = await res.json();
+      const sparked = !!data.sparked;
+      setIsSparked(sparked);
+      const key = 'ail_sparked_ids';
+      const cached: string[] = JSON.parse(localStorage.getItem(key) || '[]');
+      const updated = sparked ? Array.from(new Set([...cached, targetId])) : cached.filter((x: string) => x !== targetId);
+      localStorage.setItem(key, JSON.stringify(updated));
+    } catch (err) {
+      console.error('Spark failed:', err);
+      setIsSparked(!next);
+    } finally {
+      setSparkBusy(false);
+    }
+  };
   const [currentPhotoIdx, setCurrentPhotoIdx] = useState(0);
   const [viewerInterests, setViewerInterests] = useState<string[]>([]);
   const [viewerIntent, setViewerIntent] = useState<string>('');
@@ -276,33 +311,17 @@ export default function PublicProfilePage() {
               </div>
             </div>
 
-            {/* Action Buttons: Like & Save */}
-            <div className="flex items-center gap-2 pt-1 border-t border-[#F0EDF5]">
-              <button
-                type="button"
-                onClick={() => setIsLiked(!isLiked)}
-                className={`flex-1 py-2.5 rounded-full border text-xs font-semibold flex items-center justify-center gap-1.5 transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-90 select-none cursor-pointer shadow-sm ${
-                  isLiked
-                    ? 'bg-[#6555b8] border-[#6555b8] text-white'
-                    : 'bg-white border-[#DDD7E5] text-[#1C1924] hover:bg-[#FAF8FD]'
-                }`}
-              >
-                <Heart className={`w-4 h-4 transition-transform duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] ${isLiked ? 'fill-white text-white scale-110' : 'text-[#6555b8] active:scale-75'}`} />
-                <span>{isLiked ? 'Liked' : 'Like'}</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setIsSaved(!isSaved)}
-                className={`flex-1 py-2.5 rounded-full border text-xs font-semibold flex items-center justify-center gap-1.5 transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-90 select-none cursor-pointer shadow-sm ${
-                  isSaved
-                    ? 'bg-[#6555b8] border-[#6555b8] text-white'
-                    : 'bg-white border-[#DDD7E5] text-[#1C1924] hover:bg-[#FAF8FD]'
-                }`}
-              >
-                <Bookmark className={`w-4 h-4 ${isSaved ? 'fill-white text-white' : 'text-[#6555b8]'}`} />
-                <span>{isSaved ? 'Saved' : 'Save'}</span>
-              </button>
+            {/* Action Buttons: Spark */}
+            <div className="flex items-center gap-2 pt-1 border-t border-[#F0EDF5]">
+              <button
+                type="button"
+                onClick={toggleSpark}
+                disabled={sparkBusy}
+                className={'flex-1 py-2.5 rounded-full border text-xs font-semibold flex items-center justify-center gap-1.5 transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-90 select-none cursor-pointer shadow-sm ' + (isSparked ? 'bg-[#6555b8] border-[#6555b8] text-white' : 'bg-white border-[#DDD7E5] text-[#1C1924] hover:bg-[#FAF8FD]')}
+              >
+                <Zap className={'w-4 h-4 transition-transform duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] ' + (isSparked ? 'fill-white text-white scale-110' : 'text-[#6555b8] active:scale-75')} />
+                <span>{isSparked ? 'Sparked' : 'Spark'}</span>
+              </button>
             </div>
           </div>
         </div>

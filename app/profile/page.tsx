@@ -196,7 +196,7 @@ export default function MyProfilePage() {
         if (data.languages) {
           setUserLanguages(Array.isArray(data.languages) ? data.languages.join(', ') : data.languages);
         }
-        if (data.is_plus || data.plus_enabled || data.membership_tier === 'plus') setIsPlus(true);
+        if (data.is_plus) setIsPlus(true);
         if (typeof data.reputation_score === 'number') setRepScore(data.reputation_score);
 
         if (data.height) {

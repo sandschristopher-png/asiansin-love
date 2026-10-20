@@ -162,7 +162,7 @@ export async function GET() {
             : [row.avatar_url || '/placeholder-avatar.svg'],
           repScore: row.reputation_score ?? 100,
           verified: Boolean(row.is_verified || row.verification_status === 'verified'),
-          is_plus: Boolean(row.is_plus || row.plus_enabled || row.membership_tier === 'plus'),
+          is_plus: Boolean(row.is_plus),
           latitude: row.latitude ?? null,
           longitude: row.longitude ?? null,
           location_source: row.location_source || 'self_reported',

@@ -63,16 +63,27 @@ interface NotificationsSectionProps {
   onNavigate?: () => void;
 }
 
-export default function NotificationsSection({ onNavigate }: NotificationsSectionProps) {
+export default function NotificationsSection({ initial, onNavigate }: { initial?: any; onNavigate?: () => void }) {
   const router = useRouter();
-  const [notifications, setNotifications] = useState<Notification[]>([]);
-  const [unread, setUnread] = useState(0);
-  const [loading, setLoading] = useState(true);
+  const readCache = () => {
+    try {
+      const raw = typeof window !== 'undefined' ? localStorage.getItem('ail_notifs_cache') : null;
+      return raw ? JSON.parse(raw) : null;
+    } catch { return null; }
+  };
+
+  const [notifications, setNotifications] = useState<Notification[]>(() => (initial ?? readCache())?.notifications ?? []);
+  const [unread, setUnread] = useState(() => (initial ?? readCache())?.unread_count ?? 0);
+  const [loading, setLoading] = useState(() => (initial ?? readCache()) == null);
 
   useEffect(() => {
     fetch('/api/notifications')
       .then(r => r.ok ? r.json() : { notifications: [], unread_count: 0 })
-      .then(d => { setNotifications(d.notifications); setUnread(d.unread_count); })
+      .then(d => {
+        setNotifications(d.notifications);
+        setUnread(d.unread_count);
+        try { localStorage.setItem('ail_notifs_cache', JSON.stringify({ notifications: d.notifications, unread_count: d.unread_count })); } catch {}
+      })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
@@ -99,7 +110,7 @@ export default function NotificationsSection({ onNavigate }: NotificationsSectio
         {unread > 0 && <span className="text-[10px] font-semibold text-[#6555B8]">{unread} new</span>}
       </div>
       <div className="mx-2 mb-2 flex max-h-[240px] flex-col gap-1.5 overflow-y-auto rounded-xl border border-[#9A8CC3]/25 bg-white/70 p-1.5">
-        {notifications.slice(0, 5).map(n => {
+        {notifications.slice(0, 8).map(n => {
           const meta = TYPE_META[n.type];
           if (!meta) return null;
           const Icon = meta.icon;

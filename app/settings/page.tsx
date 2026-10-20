@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { CheckCircle2, AlertCircle, Loader2, Crown, User, LogOut, Trash2, ShieldCheck } from 'lucide-react';
+import { CheckCircle2, AlertCircle, Loader2, User, LogOut, Trash2, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
@@ -196,9 +196,7 @@ export default function SettingsPage() {
 
           {/* AIL+ Membership Card */}
           <div className="p-4 rounded-2xl bg-[#F8F7FA] border border-[#DDD7E5] flex items-start gap-3.5">
-            <div className="w-9 h-9 rounded-2xl bg-[#F3EFFC] text-[#6555b8] flex items-center justify-center shrink-0">
-              <Crown className="w-4 h-4 text-amber-500" />
-            </div>
+            <img src="/ail-plus.png" alt="AIL+" className="w-9 h-9 rounded-2xl object-cover shrink-0" />
             <div className="space-y-1 flex-1">
               <div className="flex items-center gap-1.5">
                 <h2

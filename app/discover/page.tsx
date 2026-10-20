@@ -234,7 +234,18 @@ function DiscoverContent() {
     setCardActions(local);
 
     async function loadFeed() {
-      setIsLoading(true);
+      let hydrated = false;
+      try {
+        const cachedRaw = localStorage.getItem('ail_discover_cache');
+        if (cachedRaw) {
+          const cached = JSON.parse(cachedRaw);
+          if (Array.isArray(cached.profiles) && cached.profiles.length > 0) {
+            setProfiles(cached.profiles);
+            hydrated = true;
+          }
+        }
+      } catch {}
+      if (!hydrated) setIsLoading(true);
       try {
         const res = await fetch('/api/discover', { cache: 'no-store' });
         if (res.ok) {
@@ -266,6 +277,11 @@ function DiscoverContent() {
           }
           if (Array.isArray(payload.profiles)) {
             setProfiles(payload.profiles);
+            if (payload.profiles.length > 0) {
+              try {
+                localStorage.setItem('ail_discover_cache', JSON.stringify({ profiles: payload.profiles }));
+              } catch {}
+            }
           }
         }
       } catch (err) {

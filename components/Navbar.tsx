@@ -16,6 +16,7 @@ export function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [inviteCopied, setInviteCopied] = useState(false);
   const [hasUnread, setHasUnread] = useState(false);
+  const [prefetchedNotifs, setPrefetchedNotifs] = useState<any>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const pathname = usePathname();
@@ -68,6 +69,7 @@ export function Navbar() {
 
       if (user) {
         checkUnread(user.id);
+        fetch('/api/notifications').then(r => r.ok ? r.json() : null).then(d => { if (d) setPrefetchedNotifs({ notifications: d.notifications, unread_count: d.unread_count }); }).catch(() => {});
         const { data } = await supabase
           .from('profiles')
           .select('username, display_name, avatar_url')
@@ -91,6 +93,7 @@ export function Navbar() {
             },
             (payload: any) => {
               checkUnread(user.id);
+
 
               if (payload.eventType === 'INSERT' && payload.new) {
                 const n = payload.new;
@@ -224,13 +227,13 @@ export function Navbar() {
                 </button>
 
                 {menuOpen && (
-                  <div className="absolute right-0 mt-2.5 w-80 rounded-2xl bg-white border border-black/10 shadow-xl py-2 z-[200] animate-in fade-in zoom-in-95 duration-100">
-                    <div className="px-4 py-2 border-b border-gray-100">
+                  <div className="absolute right-0 mt-2.5 w-80 rounded-2xl bg-white border border-[#DDD7E5]/40 shadow-xl py-2 z-[200] animate-in fade-in zoom-in-95 duration-100">
+                    <div className="px-4 py-2 border-b border-[#DDD7E5]/40 bg-white/95 backdrop-blur-md backdrop-saturate-150 rounded-t-2xl">
                       <p className="text-[11px] uppercase font-medium tracking-wider text-gray-400">Signed In As</p>
                       <p className="text-sm font-semibold text-gray-900 truncate">{(profile?.username || displayName).replace(/^@/, '')}</p>
                     </div>
 
-                  <NotificationsSection onNavigate={() => setMenuOpen(false)} />
+                  <NotificationsSection initial={prefetchedNotifs} onNavigate={() => setMenuOpen(false)} />
 
                     <div className="py-1">
                       <Link

@@ -16,11 +16,11 @@ export async function GET(req: Request) {
 
     const { data: profile } = await supabase
       .from('profiles')
-      .select('membership_tier, gender, is_verified')
+      .select('is_plus, gender, is_verified')
       .eq('id', senderId)
       .maybeSingle();
 
-    const isPlus = profile?.membership_tier === 'plus';
+    const isPlus = Boolean(profile?.is_plus);
     const isVerifiedWoman =
       Boolean(profile?.is_verified) &&
       profile?.gender?.toLowerCase() === 'woman';

@@ -55,3 +55,5 @@ blob-report/
 .cache/
 
 midscene_run/
+current-code-dump.txt
+build-output.txt
