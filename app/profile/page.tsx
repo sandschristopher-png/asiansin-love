@@ -350,7 +350,7 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
         {isEditing ? (
           <div className="p-5 rounded-3xl bg-white border border-[#DDD7E5] space-y-3.5 shadow-xs">
             <div>
-              <label className="text-xs font-semibold text-[#1C1924] block mb-1">Display Name</label>
+              <label className="text-xs font-semibold text-[#1C1924] block mb-1">Username</label>
               <input
                 type="text"
                 value={name}

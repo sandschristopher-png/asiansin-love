@@ -496,10 +496,10 @@ export default function EditProfilePage() {
             )}
           </div>
 
-          {/* Display Name */}
+          {/* Username */}
           <div className="space-y-1.5">
             <label className="block text-xs font-medium uppercase tracking-wider text-[#9A8CC3]">
-              Display Name
+              Username
             </label>
             <input
               type="text"

@@ -23,7 +23,7 @@ export default function UpgradeModal({
       case 'chat':
         return 'Unlock Unlimited Messaging';
       case 'handle':
-        return 'Custom Handle Included';
+        return 'Custom Username Included';
       default:
         return 'Serious Relationships, Unlimited Access';
     }

@@ -80,7 +80,7 @@ export default function SignUpPage() {
         <form onSubmit={handleSignUp} className="space-y-4">
           <div>
             <label className="text-xs font-medium uppercase tracking-wider text-[#9A8CC3] block mb-1">
-              Your Name / Display Name
+              Your Name / Username
             </label>
             <input
               type="text"
