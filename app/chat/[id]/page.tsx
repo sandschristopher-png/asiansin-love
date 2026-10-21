@@ -246,13 +246,7 @@ export default function ChatConversationPage() {
             'and(blocker_id.eq.' + user.id + ',blocked_id.eq.' + targetUuid + '),and(blocker_id.eq.' + targetUuid + ',blocked_id.eq.' + user.id + ')'
           )
           .maybeSingle(),
-        supabase
-          .from('messages')
-          .select('id, sender_id, receiver_id, content, created_at, is_quarantined, is_read')
-          .or(
-            'and(sender_id.eq.' + user.id + ',receiver_id.eq.' + targetUuid + '),and(sender_id.eq.' + targetUuid + ',receiver_id.eq.' + user.id + ')'
-          )
-          .order('created_at', { ascending: true }),
+        fetch(`/api/messages?target_user_id=${targetUuid}`).then(r => r.ok ? r.json() : Promise.reject(new Error('Chat load failed'))),
       ]);
 
       if (blockRes.data) {
@@ -303,18 +297,17 @@ export default function ChatConversationPage() {
         }
       }
 
-      if (remoteMsgsRes.data) {
+      if (remoteMsgsRes.messages) {
         setMessages(
-          remoteMsgsRes.data
-            .filter((m: any) => m.sender_id === user.id || !m.is_quarantined)
-            .map((m: any) => ({
-              id: m.id,
-              sender: m.sender_id === user.id ? 'me' : 'them',
-              text: m.content,
-              createdAt: m.created_at,
-              time: formatTimeShort(m.created_at),
-              read: Boolean(m.is_read),
-            }))
+          remoteMsgsRes.messages.map((m: any) => ({
+            id: m.id,
+            sender: m.sender,
+            text: m.text,
+            createdAt: m.createdAt,
+            time: formatTimeShort(m.createdAt),
+            read: false,
+            wasMasked: m.wasMasked,
+          }))
         );
       }
 
