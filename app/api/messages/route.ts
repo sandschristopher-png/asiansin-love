@@ -3,10 +3,101 @@ import { cookies } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
 import { createClient } from '@supabase/supabase-js';
 import { evaluateMessageModeration, hasContactSharingIntent, evaluateSubstantiveConversation } from '@/lib/moderation';
+import { applyContactRevealMask } from '@/lib/safety';
+import { createClient as createSessionClient } from '@/lib/supabase/server';
 
 const isUUID = (str: unknown) =>
   typeof str === 'string' &&
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
+
+
+export async function GET(req: Request) {
+  try {
+    const sessionClient = await createSessionClient();
+    const {
+      data: { user },
+    } = await sessionClient.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized.' }, { status: 401 });
+    }
+
+    const { searchParams } = new URL(req.url);
+    const targetUserId = searchParams.get('target_user_id');
+
+    if (!targetUserId || !isUUID(targetUserId) || targetUserId === user.id) {
+      return NextResponse.json({ error: 'Invalid target.' }, { status: 400 });
+    }
+
+    const serviceRoleKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!serviceRoleKey) {
+      console.error('Server configuration error: SUPABASE_SERVICE_ROLE_KEY is missing.');
+      return NextResponse.json({ error: 'Unable to load messages right now.' }, { status: 500 });
+    }
+    const serviceClient = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, serviceRoleKey);
+
+    const pairFilter = [user.id, targetUserId];
+
+    // Count mutual substantive messages (15+ chars) between the pair
+    const { data: threadHistory, error: historyError } = await serviceClient
+      .from('messages')
+      .select('sender_id, content')
+      .in('sender_id', pairFilter)
+      .in('receiver_id', pairFilter)
+      .eq('is_quarantined', false)
+      .order('created_at', { ascending: false })
+      .limit(40);
+
+    if (historyError) {
+      return NextResponse.json({ error: historyError.message }, { status: 500 });
+    }
+
+    let senderCount = 0;
+    let receiverCount = 0;
+    for (const msg of threadHistory || []) {
+      if ((msg.content || '').trim().length >= 15) {
+        if (msg.sender_id === user.id) senderCount++;
+        else if (msg.sender_id === targetUserId) receiverCount++;
+      }
+    }
+    const mutualCount = Math.min(senderCount, receiverCount);
+
+    // Fetch the visible thread
+    const { data: messages, error: fetchError } = await serviceClient
+      .from('messages')
+      .select('id, sender_id, receiver_id, content, created_at, is_quarantined, is_read')
+      .in('sender_id', pairFilter)
+      .in('receiver_id', pairFilter)
+      .eq('is_quarantined', false)
+      .order('created_at', { ascending: true })
+      .limit(100);
+
+    if (fetchError) {
+      return NextResponse.json({ error: fetchError.message }, { status: 500 });
+    }
+
+    // Mask contact info server-side before dispatch
+    const maskedMessages = (messages || []).map((msg) => {
+      const maskResult = applyContactRevealMask(msg.content || '', mutualCount);
+      return {
+        id: msg.id,
+        sender: msg.sender_id === user.id ? 'me' : 'them',
+        text: maskResult.text,
+        createdAt: msg.created_at,
+        wasMasked: maskResult.hasBlockedContent,
+      };
+    });
+
+    return NextResponse.json({
+      success: true,
+      messages: maskedMessages,
+      mutualCount,
+    });
+  } catch (err: any) {
+    console.error('GET /api/messages error:', err);
+    return NextResponse.json({ error: 'Internal error.' }, { status: 500 });
+  }
+}
 
 export async function POST(req: Request) {
   try {
