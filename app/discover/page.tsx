@@ -3,8 +3,9 @@ import { playMatchChime } from '@/lib/sound';
 import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
+import VerifiedBadge from '@/components/VerifiedBadge';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Camera, Zap, ChevronLeft, ChevronRight, Search, Heart, X as XIcon, CheckCircle, SlidersHorizontal, RotateCcw } from 'lucide-react';
+import { Camera, Zap, ChevronLeft, ChevronRight, Search, Heart, X as XIcon, SlidersHorizontal, RotateCcw } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { ActionType, getLocalCardActions, persistCardAction } from '@/lib/interactions';
 
@@ -100,9 +101,6 @@ function DiscoverCardPhotoCarousel({
         </span>
       )}
       <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 z-20 pointer-events-none">
-        <div className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-black/50 backdrop-blur-xs text-[10px] font-semibold text-white">
-          <span>{repScore ? repScore + '% Rep' : '100% Rep'}</span>
-        </div>
         {online ? (
           <span className="h-2 w-2 rounded-full bg-emerald-500 ring-2 ring-white/90 shadow-xs shrink-0 animate-[pulse_3s_ease-in-out_infinite]" />
         ) : recentlyActive ? (
@@ -591,7 +589,7 @@ function DiscoverContent() {
                             {', ' + profile.age}
                           </span>
                         ) : null}
-                        {profile.verified && <CheckCircle className="w-3.5 h-3.5 text-white shrink-0 ml-1" />}
+                        {profile.verified && <VerifiedBadge size="sm" className="shrink-0 ml-1" />}
                       </div>
                       <p className="text-[11px] text-white/90 font-medium mt-0.5 truncate pr-7">
                         {formattedLocation}

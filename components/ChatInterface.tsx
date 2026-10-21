@@ -49,6 +49,18 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [warningMessage, setWarningMessage] = useState<string | null>(null);
 
+  // 1-tap contextual icebreakers (only shown before first message)
+  const firstName = targetUser.fullName ? targetUser.fullName.split(' ')[0] : '';
+  const icebreakers: string[] = [];
+  if (firstName) icebreakers.push(firstName + ', how has your week been going?');
+  if (targetUser.city) icebreakers.push("So what's " + targetUser.city + ' like these days?');
+  if (targetUser.jobTitle) icebreakers.push("What's being a " + targetUser.jobTitle + ' actually like day-to-day?');
+  if (targetUser.languages && targetUser.languages.length > 0)
+    icebreakers.push('You speak ' + targetUser.languages.slice(0, 2).join(' and ') + '? Teach me a phrase!');
+  icebreakers.push('What made you give a dating app a try?');
+  const displayIcebreakers = icebreakers.slice(0, 5);
+
+
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const hasScrolledInitialRef = useRef(false);
   const isNearBottomRef = useRef(true);
@@ -339,6 +351,21 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
           })
         )}
       </div>
+
+      {messages.length === 0 && displayIcebreakers.length > 0 && (
+        <div className="px-3 pb-1 pt-0.5 flex flex-wrap gap-1.5 shrink-0">
+          {displayIcebreakers.map((ice) => (
+            <button
+              key={ice}
+              type="button"
+              onClick={() => setInput(ice)}
+              className="px-2.5 py-1 rounded-full bg-[#F3EFFC] border border-[#6555B8]/25 text-[11px] font-medium text-[#6555B8] hover:bg-[#E9E4F5] transition-colors active:scale-95 cursor-pointer"
+            >
+              {ice}
+            </button>
+          ))}
+        </div>
+      )}
 
       <form
         onSubmit={handleSendMessage}
