@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import HeartbeatProvider from "./HeartbeatProvider";
 import { usePathname } from 'next/navigation';
 import { Navbar } from '@/components/Navbar';
 import { BottomNav } from '@/components/BottomNav';
@@ -17,6 +18,7 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
         <main className="flex-1 flex flex-col w-full min-h-0">
           {children}
         </main>
+        <HeartbeatProvider />
         <RealtimeMatchToast />
       </div>
       {!isMarketingOrAuth && <BottomNav />}
