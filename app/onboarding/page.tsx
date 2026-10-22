@@ -830,7 +830,7 @@ export default function OnboardingPage() {
             <div>
               <div className="flex items-center justify-between mb-1">
                 <label className="text-xs font-semibold text-[#1C1924]">About Me (Bio)</label>
-                <span className="text-[11px] text-[#8C849B]">{bio.trim().length}/500</span>
+                <span className={"text-[11px] " + (bio.trim().length < 20 ? "text-rose-600 font-semibold" : "text-[#8C849B]")}>{bio.trim().length}/500</span>
               </div>
               <textarea
                 rows={3}
@@ -879,7 +879,6 @@ export default function OnboardingPage() {
               </button>
               <button
                 type="submit"
-                disabled={!height || !weight || bio.trim().length < 20 || interests.length === 0}
                 className="w-2/3 py-3 rounded-2xl bg-[#6555b8] hover:bg-[#52449e] text-white text-xs font-semibold shadow-md transition disabled:opacity-40"
               >
                 Continue to Photos
