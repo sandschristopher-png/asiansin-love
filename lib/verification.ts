@@ -75,3 +75,12 @@ export async function validateAndCompressVerificationImage(
   }
   return { valid: true, blob, previewUrl: URL.createObjectURL(blob), brightness };
 }
+
+export function generatePoseSequence(): PoseId[] {
+  const ids = VERIFICATION_POSES.map((p) => p.id);
+  for (let i = ids.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [ids[i], ids[j]] = [ids[j], ids[i]];
+  }
+  return ids;
+}

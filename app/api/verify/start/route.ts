@@ -35,14 +35,14 @@ export async function POST() {
     // Resume today's pending attempt or create a new one
     const { data: existing } = await supabase
       .from('verification_attempts')
-      .select('id, pose_sequence, photo_paths, status, submitted_at')
+      .select('id, pose_sequence, photo_paths, status, attempt_date')
       .eq('user_id', user.id)
       .order('submitted_at', { ascending: false })
       .limit(1)
       .maybeSingle();
 
     const today = new Date().toISOString().slice(0, 10);
-    if (existing && existing.submitted_at.slice(0, 10) === today) {
+    if (existing && existing.attempt_date === today) {
       if (existing.photo_paths && existing.photo_paths.length > 0) {
         return NextResponse.json(
           { error: 'Already submitted today. Try again tomorrow.' },
@@ -59,7 +59,7 @@ export async function POST() {
     const sequence = generatePoseSequence();
     const { data: inserted, error } = await supabase
       .from('verification_attempts')
-      .insert({ user_id: user.id, pose_sequence: sequence })
+      .insert({ user_id: user.id, pose_sequence: sequence, attempt_date: new Date().toISOString().slice(0, 10) })
       .select('id')
       .single();
 
