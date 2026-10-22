@@ -17,6 +17,7 @@ import {
 } from 'lucide-react';
 import { captureCurrentLocation } from '@/lib/location';
 import { supabase } from '@/lib/supabase/client';
+import { INTENT_OPTIONS } from '@/lib/intents';
 
 const GENDER_OPTIONS = [
   { val: 'man', label: 'Man' },
@@ -84,6 +85,8 @@ export default function OnboardingPage() {
   // Step 2: Identity & Preferences
   const [gender, setGender] = useState<string>('');
   const [interestedIn, setInterestedIn] = useState<string[]>([]);
+  // Intent (canonical values from lib/intents.ts)
+  const [intent, setIntent] = useState('');
   const [birthdate, setBirthdate] = useState('');
 
   // Step 3: Location (GPS first, manual fallback, NOT location-verified)
@@ -141,6 +144,7 @@ export default function OnboardingPage() {
         if (profile.weight) setWeight(profile.weight);
         if (profile.bio) setBio(profile.bio);
         if (profile.looking_for) setLookingFor(profile.looking_for);
+    if (profile.intent) setIntent(profile.intent);
         if (Array.isArray(profile.interests)) setInterests(profile.interests);
         if (Array.isArray(profile.photos) && profile.photos.length > 0) {
           setPhotos(profile.photos.filter(Boolean));
@@ -286,6 +290,10 @@ export default function OnboardingPage() {
     }
     if (interestedIn.length === 0) {
       setErrorMessage('Please select at least one preference for who you are interested in.');
+      return;
+    }
+    if (!intent) {
+      setErrorMessage('Please select what you are looking for.');
       return;
     }
     if (!birthdate) {
@@ -450,6 +458,7 @@ export default function OnboardingPage() {
           weight,
           bio: bio.trim(),
           looking_for: lookingFor.trim(),
+          intent,
           interests,
           avatar_url: primaryPhoto,
           photos: orderedPhotos,
@@ -653,6 +662,29 @@ export default function OnboardingPage() {
             </div>
 
             <div>
+              <label className="text-xs font-semibold text-[#1C1924] block mb-1">
+                I am here for: <span className="text-[#6C637B] font-normal">(Select one)</span>
+              </label>
+              <div className="flex flex-wrap gap-2 pt-1">
+                {INTENT_OPTIONS.map((opt) => (
+                  <button
+                    key={opt.value}
+                    type="button"
+                    onClick={() => setIntent(opt.value)}
+                    className={
+                      'py-2.5 px-4 rounded-full text-xs font-semibold border transition active:scale-95 ' +
+                      (intent === opt.value
+                        ? 'bg-[#6555b8] border-[#6555b8] text-white shadow-xs'
+                        : 'bg-white border-[#DDD7E5] text-[#524B5E] hover:border-[#6555b8]/40')
+                    }
+                  >
+                    {opt.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div>
               <label className="text-xs font-semibold text-[#1C1924] block mb-1.5">
                 Date of Birth
               </label>
@@ -675,7 +707,7 @@ export default function OnboardingPage() {
               </button>
               <button
                 type="submit"
-                disabled={!gender || interestedIn.length === 0 || !birthdate}
+                disabled={!gender || interestedIn.length === 0 || !intent || !birthdate}
                 className="w-2/3 py-3 rounded-2xl bg-[#6555b8] hover:bg-[#52449e] text-white text-xs font-semibold shadow-md transition disabled:opacity-40"
               >
                 Continue to Location

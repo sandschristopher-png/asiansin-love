@@ -7,6 +7,7 @@ import VerifiedBadge from '@/components/VerifiedBadge';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Camera, Zap, ChevronLeft, ChevronRight, Search, Heart, X as XIcon, SlidersHorizontal, RotateCcw } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
+import { INTENT_OPTIONS, normalizeIntent } from '@/lib/intents';
 import { ActionType, getLocalCardActions, persistCardAction } from '@/lib/interactions';
 
 const DISCOVERY_MODES = [
@@ -189,7 +190,13 @@ function DiscoverContent() {
   const [maxAge, setMaxAge] = useState<number>(65);
   const [draftMinAge, setDraftMinAge] = useState<number>(18);
   const [draftMaxAge, setDraftMaxAge] = useState<number>(65);
-  const [selectedIntent, setSelectedIntent] = useState<string>('All');
+  const [draftGenders, setDraftGenders] = useState<string[]>([]);
+  const [draftCountry, setDraftCountry] = useState<string>('All');
+  const [draftIntent, setDraftIntent] = useState<string>('all');
+  const [draftVerifiedOnly, setDraftVerifiedOnly] = useState<boolean>(false);
+  const [draftActiveNowOnly, setDraftActiveNowOnly] = useState<boolean>(false);
+  const [draftMode, setDraftMode] = useState<DiscoveryModeId>('all');
+  const [selectedIntent, setSelectedIntent] = useState<string>('all');
   const [verifiedOnly, setVerifiedOnly] = useState<boolean>(false);
   const [activeNowOnly, setActiveNowOnly] = useState<boolean>(false);
 
@@ -206,6 +213,12 @@ function DiscoverContent() {
     if (filtersOpen) {
       setDraftMinAge(minAge);
       setDraftMaxAge(maxAge);
+      setDraftGenders(selectedGenders);
+      setDraftCountry(selectedCountry);
+      setDraftIntent(selectedIntent);
+      setDraftVerifiedOnly(verifiedOnly);
+      setDraftActiveNowOnly(activeNowOnly);
+      setDraftMode(discoveryMode);
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = '';
@@ -213,7 +226,7 @@ function DiscoverContent() {
     return () => {
       document.body.style.overflow = '';
     };
-  }, [filtersOpen, minAge, maxAge]);
+  }, [filtersOpen, minAge, maxAge, selectedGenders, selectedCountry, selectedIntent, verifiedOnly, activeNowOnly, discoveryMode]);
 
   useEffect(() => {
     const handleMutualMatch = (e: CustomEvent<{ targetId: string }>) => {
@@ -384,21 +397,24 @@ function DiscoverContent() {
   const applyFilters = () => {
     setMinAge(draftMinAge);
     setMaxAge(draftMaxAge);
-    setFiltersOpen(false);
+    setSelectedGenders(draftGenders);
+    setSelectedCountry(draftCountry);
+    setSelectedIntent(draftIntent);
+    setVerifiedOnly(draftVerifiedOnly);
+    setActiveNowOnly(draftActiveNowOnly);
+    setDiscoveryMode(draftMode);
+    closeFiltersWithAnimation();
   };
 
   const resetFilters = () => {
-    setDiscoveryMode('all');
-    setSelectedGenders(viewerSavedGenders);
-    setSelectedCountry('All');
-    setSearchQuery('');
-    setMinAge(18);
-    setMaxAge(65);
+    setDraftGenders(viewerSavedGenders);
+    setDraftCountry('All');
+    setDraftIntent('all');
     setDraftMinAge(18);
     setDraftMaxAge(65);
-    setSelectedIntent('All');
-    setVerifiedOnly(false);
-    setActiveNowOnly(false);
+    setDraftVerifiedOnly(false);
+    setDraftActiveNowOnly(false);
+    setDraftMode('all');
   };
 
   const filteredProfiles = useMemo(() => {
@@ -412,7 +428,7 @@ function DiscoverContent() {
       const searchableName = (profile.username || profile.name || '').toLowerCase();
       const matchesQuery = !q || searchableName.includes(q) || profile.location.toLowerCase().includes(q);
       const matchesAge = profile.age >= minAge && profile.age <= maxAge;
-      const matchesIntent = selectedIntent === 'All' || !profile.intent || profile.intent === selectedIntent;
+      const matchesIntent = selectedIntent === 'all' || !profile.intent || normalizeIntent(profile.intent) === normalizeIntent(selectedIntent);
       const matchesVerified = !verifiedOnly || profile.verified;
       const matchesOnline = !activeNowOnly || profile.online;
       const matchesDiscoveryMode = (() => {
@@ -718,32 +734,31 @@ function DiscoverContent() {
                       { id: 'trans', label: 'Trans' },
                     ].map((item) => {
                       const isTrans = item.id === 'trans';
+                      const TRANS_IDS = ["trans_woman","trans_man","non_binary"];
                       const isSelected = isTrans
-                        ? selectedGenders.some((g) => ['trans_woman', 'trans_man', 'non_binary'].includes(g))
-                        : selectedGenders.includes(item.id);
+                        ? draftGenders.some((g) => TRANS_IDS.includes(g))
+                        : draftGenders.includes(item.id);
                       return (
                         <button
                           key={item.id}
                           type="button"
                           onClick={() => {
                             if (isTrans) {
-                              const hasAnyTrans = selectedGenders.some((g) =>
-                                ['trans_woman', 'trans_man', 'non_binary'].includes(g)
+                              setDraftGenders(
+                                draftGenders.some((g) => TRANS_IDS.includes(g))
+                                  ? draftGenders.filter((g) => !TRANS_IDS.includes(g))
+                                  : [...draftGenders, ...TRANS_IDS]
                               );
-                              if (hasAnyTrans) {
-                                setSelectedGenders(
-                                  selectedGenders.filter((g) => !['trans_woman', 'trans_man', 'non_binary'].includes(g))
-                                );
-                              } else {
-                                setSelectedGenders([...selectedGenders, 'trans_woman', 'trans_man', 'non_binary']);
-                              }
                             } else {
-                              toggleGender(item.id);
+                              setDraftGenders(
+                                draftGenders.includes(item.id)
+                                  ? draftGenders.filter((g) => g !== item.id)
+                                  : [...draftGenders, item.id]
+                              );
                             }
                           }}
                           className={
-                            'py-1.5 px-3 rounded-full border text-xs font-semibold transition cursor-pointer active:scale-95 ' +
-                            (isSelected ? 'bg-[#6555B8] text-white border-[#6555B8]' : 'bg-white text-[#1C1924] border-[#DDD7E5]')
+                            'py-1.5 px-3 rounded-full border text-xs font-semibold transition cursor-pointer active:scale-95 ' + (isSelected ? 'bg-[#6555B8] text-white border-[#6555B8]' : 'bg-white text-[#1C1924] border-[#DDD7E5]')
                           }
                         >
                           {item.label}
@@ -751,6 +766,108 @@ function DiscoverContent() {
                       );
                     })}
                   </div>
+                </div>
+
+                <div>
+                  <label className="text-[11px] font-semibold text-[#6C637B] uppercase tracking-wider block mb-2">
+                    Age Range
+                  </label>
+                  <div className="flex items-center gap-2">
+                    <select
+                      value={draftMinAge}
+                      onChange={(e) => setDraftMinAge(Math.min(Number(e.target.value), draftMaxAge))}
+                      className="flex-1 py-2 px-2 rounded-xl border border-[#DDD7E5] bg-white text-xs text-[#1C1924] cursor-pointer"
+                    >
+                      {Array.from({ length: 48 }, (_, i) => i + 18).map((age) => (
+                        <option key={age} value={age}>{age}</option>
+                      ))}
+                    </select>
+                    <span className="text-xs text-[#6C637B]">to</span>
+                    <select
+                      value={draftMaxAge}
+                      onChange={(e) => setDraftMaxAge(Math.max(Number(e.target.value), draftMinAge))}
+                      className="flex-1 py-2 px-2 rounded-xl border border-[#DDD7E5] bg-white text-xs text-[#1C1924] cursor-pointer"
+                    >
+                      {Array.from({ length: 48 }, (_, i) => i + 18).map((age) => (
+                        <option key={age} value={age}>{age}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-[11px] font-semibold text-[#6C637B] uppercase tracking-wider block mb-2">
+                    Country
+                  </label>
+                  <select
+                    value={draftCountry}
+                    onChange={(e) => setDraftCountry(e.target.value)}
+                    className="w-full py-2 px-2 rounded-xl border border-[#DDD7E5] bg-white text-xs text-[#1C1924] cursor-pointer"
+                  >
+                    <option value="All">All Countries</option>
+                    {Array.from(new Set(profiles.map((pr) => (pr.country || '').trim()).filter(Boolean))).sort().map((c) => (
+                      <option key={c} value={c}>{c}</option>
+                    ))}
+                  </select>
+                </div>
+
+                <div>
+                  <label className="text-[11px] font-semibold text-[#6C637B] uppercase tracking-wider block mb-2">
+                    Looking For
+                  </label>
+                  <div className="flex flex-wrap gap-1.5">
+                    {[{value: 'all', label: 'All'}, ...INTENT_OPTIONS].map((option) => (
+                      <button
+                        key={option.value}
+                        type="button"
+                        onClick={() => setDraftIntent(option.value)}
+                        className={
+                          'py-1.5 px-3 rounded-full border text-xs font-semibold transition cursor-pointer active:scale-95 ' + (draftIntent === option.value ? 'bg-[#6555B8] text-white border-[#6555B8]' : 'bg-white text-[#1C1924] border-[#DDD7E5]')
+                        }
+                      >
+                        {option.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <label className="text-[11px] font-semibold text-[#6C637B] uppercase tracking-wider block mb-2">
+                    Browse
+                  </label>
+                  <div className="flex flex-wrap gap-1.5">
+                    {DISCOVERY_MODES.map((mode) => (
+                      <button
+                        key={mode.id}
+                        type="button"
+                        onClick={() => setDraftMode(mode.id)}
+                        className={
+                          'py-1.5 px-3 rounded-full border text-xs font-semibold transition cursor-pointer active:scale-95 ' + (draftMode === mode.id ? 'bg-[#6555B8] text-white border-[#6555B8]' : 'bg-white text-[#1C1924] border-[#DDD7E5]')
+                        }
+                      >
+                        {mode.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  {[
+                    { label: 'Verified profiles only', value: draftVerifiedOnly, set: setDraftVerifiedOnly },
+                    { label: 'Active now only', value: draftActiveNowOnly, set: setDraftActiveNowOnly },
+                  ].map((row) => (
+                    <button
+                      key={row.label}
+                      type="button"
+                      onClick={() => row.set(!row.value)}
+                      className="w-full flex items-center justify-between py-2.5 px-3 rounded-xl border border-[#DDD7E5] bg-white cursor-pointer transition hover:border-[#6555B8]/40"
+                    >
+                      <span className="text-xs font-semibold text-[#1C1924]">{row.label}</span>
+                      <span className={'w-9 h-5 rounded-full transition-colors relative shrink-0 ' + (row.value ? 'bg-[#6555B8]' : 'bg-[#DDD7E5]')}>
+                        <span className={'absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all ' + (row.value ? 'left-4' : 'left-0.5')} />
+                      </span>
+                    </button>
+                  ))}
                 </div>
               </div>
               <div className="px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] bg-white border-t border-[#DDD7E5] flex items-center gap-3 shrink-0">
