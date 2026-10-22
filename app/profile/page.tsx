@@ -20,47 +20,16 @@ import {
   ShieldAlert
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
+import { INTENT_OPTIONS, normalizeIntent, intentLabel } from '@/lib/intents';
 import RepScoreCard from '@/components/RepScoreCard';
 
 const QUICK_LANGUAGES = ['English', 'Tagalog', 'Thai', 'Japanese', 'Vietnamese', 'Mandarin', 'Spanish', 'Korean'];
 
-const INTENT_LABELS: Record<string, string> = {
-  the_real_thing: 'The Real Thing',
-  marriage: 'The Real Thing',
-  'marriage & kids': 'The Real Thing',
-  'marriage (no kids)': 'The Real Thing',
-  marriage_minded: 'The Real Thing',
-  'marriage-minded': 'The Real Thing',
-  serious: 'The Real Thing',
-  'serious relationship': 'The Real Thing',
-  long_term: 'Long-Term',
-  'long-term': 'Long-Term',
-  long_term_relationship: 'Long-Term',
-  'long-term relationship': 'Long-Term',
-  'life partner': 'Long-Term',
-  keeping_it_light: 'Keeping It Light',
-  dating: 'Keeping It Light',
-  casual: 'Keeping It Light',
-  'casual dating': 'Keeping It Light',
-};
-const toIntentLabel = (v: unknown) =>
-  INTENT_LABELS[String(v || '').trim().toLowerCase()] || String(v || '').trim();
+const INTENT_CHIP_OPTIONS = INTENT_OPTIONS;
 
-const INTENT_CHIP_OPTIONS = [
-  { value: 'the_real_thing', label: 'The Real Thing' },
-  { value: 'long_term', label: 'Long-Term' },
-  { value: 'keeping_it_light', label: 'Keeping It Light' },
-] as const;
+const toIntentLabel = (v: unknown) => intentLabel(v) || String(v || '').trim();
 
-const toIntentChipValue = (v: unknown): string => {
-  const raw = String(v || '').trim().toLowerCase();
-  if (raw === 'the_real_thing' || raw === 'long_term' || raw === 'keeping_it_light') return raw;
-  const mapped = toIntentLabel(v);
-  if (mapped === 'The Real Thing') return 'the_real_thing';
-  if (mapped === 'Long-Term') return 'long_term';
-  if (mapped === 'Keeping It Light') return 'keeping_it_light';
-  return 'the_real_thing';
-};
+const toIntentChipValue = (v: unknown): string => normalizeIntent(v) || 'serious_relationship';
 
 const RELIGION_OPTIONS = ['Catholic', 'Christian', 'Buddhist', 'Muslim', 'Spiritual', 'None', 'Other'];
 const MARITAL_OPTIONS = ['Never Married', 'Divorced', 'Widowed', 'Separated'];
@@ -138,7 +107,7 @@ export default function MyProfilePage() {
   const [repScore, setRepScore] = useState<number | null>(null);
 
   const [profession, setProfession] = useState('');
-  const [intent, setIntent] = useState('the_real_thing');
+  const [intent, setIntent] = useState('');
   const [religion, setReligion] = useState('Christian');
   const [maritalStatus, setMaritalStatus] = useState('Never Married');
   const [hasKids, setHasKids] = useState('No');
@@ -649,7 +618,7 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
 
           <div className="space-y-3.5 pt-1 text-xs">
             {/* Future Plans (3-Chip Picker in Edit Mode) */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-3 border-b border-[#F0EDF5]">
+            <div className="flex items-center justify-between gap-2 pb-3 border-b border-[#F0EDF5]">
               <span className="font-semibold text-[#6C637B]">Future Plans</span>
               {isEditing ? (
                 <div className="flex flex-wrap items-center gap-1.5">

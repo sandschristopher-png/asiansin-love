@@ -137,8 +137,6 @@ nextjs-portal,
 }
 .animate-fade-in-up { animation: fadeInUp 260ms cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 .animate-scale-in   { animation: scaleIn 180ms cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-.no-scrollbar::-webkit-scrollbar { display: none; }
-.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
 
 @keyframes notifDropdownIn {
