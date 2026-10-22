@@ -307,6 +307,8 @@ function DiscoverContent() {
     }, 240);
   };
 
+  const [sparkLimitNotice, setSparkLimitNotice] = useState<string | null>(null);
+
   const triggerAction = async (id: string, action: ActionType, name?: string, avatarUrl?: string) => {
     const currentAction = cardActions[id];
     const isCurrentlyActive = currentAction === action;
@@ -336,6 +338,18 @@ function DiscoverContent() {
           body: JSON.stringify({ targetUserId: id }),
         });
         const data = await res.json().catch(() => ({}));
+        if (!res.ok) {
+          // Revert optimistic spark (e.g. 429 daily cap) so the UI stays truthful
+          setCardActions((prev) => {
+            const next = { ...prev };
+            delete next[id];
+            return next;
+          });
+          persistCardAction(supabase, id, 'like', true);
+          setSparkLimitNotice(data?.error || 'Spark limit reached - try again later.');
+          setTimeout(() => setSparkLimitNotice(null), 4000);
+          return;
+        }
         if (data?.mutual) {
           playMatchChime();
           setMatchedModalProfile({ id, name: name || 'Member', avatarUrl: avatarUrl || '/placeholder-avatar.svg' });
@@ -601,6 +615,12 @@ function DiscoverContent() {
             })
           )}
         </div>
+
+        {sparkLimitNotice && (
+          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-full bg-[#1C1924] text-white text-[13px] font-medium shadow-lg border border-white/10 max-w-[90vw] text-center">
+            {sparkLimitNotice}
+          </div>
+        )}
 
         {!isLoading && filteredProfiles.length === 0 && (
           <div className="mt-4 p-8 rounded-2xl bg-white border border-[#DDD7E5] text-center space-y-3 shadow-xs">

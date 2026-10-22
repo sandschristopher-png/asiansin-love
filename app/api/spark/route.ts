@@ -29,6 +29,19 @@ export async function POST(req: Request) {
       return NextResponse.json({ sparked: false })
     }
 
+    // Anti-spam barrier: cap outbound sparks per rolling 24h window
+    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
+    const { count: sparksLast24h } = await supabase
+      .from('sparks')
+      .select('id', { count: 'exact', head: true })
+      .eq('sender_id', user.id)
+      .gte('created_at', twentyFourHoursAgo)
+
+    const DAILY_SPARK_CAP = 40
+    if ((sparksLast24h ?? 0) >= DAILY_SPARK_CAP) {
+      return NextResponse.json({ error: 'Daily spark limit reached. Try again later.' }, { status: 429 })
+    }
+
     // Insert new spark
     const { error: insertError } = await supabase.from('sparks').insert({
       sender_id: user.id,
