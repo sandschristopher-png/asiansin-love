@@ -58,6 +58,9 @@ export async function persistCardAction(
 
   setStoredIds(key, updatedIds);
 
+  // Bust the Sparks fast-cache so tab counts refetch fresh after any spark change
+  try { sessionStorage.removeItem('ail_sparks_fast_cache_v2'); } catch {}
+
   // Dispatch custom sync event for UI components listening
   if (typeof window !== 'undefined') {
     window.dispatchEvent(
