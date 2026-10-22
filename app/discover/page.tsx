@@ -21,9 +21,7 @@ type DiscoveryModeId = (typeof DISCOVERY_MODES)[number]['id'];
 const GENDER_LABELS: Record<string, string> = {
   woman: 'Women',
   man: 'Men',
-  trans_woman: 'Trans Women',
-  trans_man: 'Trans Men',
-  non_binary: 'Non-Binary',
+  trans: 'Trans',
 };
 
 export interface ProfileItem {
@@ -31,7 +29,7 @@ export interface ProfileItem {
   username?: string;
   name: string;
   age: number;
-  gender: 'woman' | 'man' | 'trans_woman' | 'trans_man' | 'non_binary';
+  gender: 'woman' | 'man' | 'trans';
   location: string;
   latitude?: number | null;
   longitude?: number | null;
@@ -132,14 +130,14 @@ function DiscoverCardPhotoCarousel({
   );
 }
 
-function normalizeGenderValue(raw?: string | null): 'woman' | 'man' | 'trans_woman' | 'trans_man' | 'non_binary' {
+function normalizeGenderValue(raw?: string | null): 'woman' | 'man' | 'trans' {
   const val = String(raw || '').toLowerCase().trim().replace(/[\s-]+/g, '_');
   if (['man', 'men', 'male', 'm', 'guy', 'guys'].includes(val)) return 'man';
   if (['woman', 'women', 'female', 'f', 'lady', 'ladies', 'girl', 'girls'].includes(val)) return 'woman';
   if (['trans_woman', 'trans_women', 'transgender_woman', 'transgender_women', 'trans', 'mtf', 'transfemale'].includes(val))
-    return 'trans_woman';
-  if (['trans_man', 'trans_men', 'transgender_man', 'transgender_men', 'ftm', 'transmale'].includes(val)) return 'trans_man';
-  if (['non_binary', 'nonbinary', 'nb', 'enby'].includes(val)) return 'non_binary';
+    return 'trans';
+  if (['trans_man', 'trans_men', 'transgender_man', 'transgender_men', 'ftm', 'transmale'].includes(val)) return 'trans';
+  if (['non_binary', 'nonbinary', 'nb', 'enby'].includes(val)) return 'trans';
   return 'woman';
 }
 
@@ -734,7 +732,7 @@ function DiscoverContent() {
                       { id: 'trans', label: 'Trans' },
                     ].map((item) => {
                       const isTrans = item.id === 'trans';
-                      const TRANS_IDS = ["trans_woman","trans_man","non_binary"];
+                      const TRANS_IDS = ["trans"];
                       const isSelected = isTrans
                         ? draftGenders.some((g) => TRANS_IDS.includes(g))
                         : draftGenders.includes(item.id);

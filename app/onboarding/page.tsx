@@ -22,17 +22,13 @@ import { INTENT_OPTIONS } from '@/lib/intents';
 const GENDER_OPTIONS = [
   { val: 'man', label: 'Man' },
   { val: 'woman', label: 'Woman' },
-  { val: 'trans_woman', label: 'Trans Woman' },
-  { val: 'trans_man', label: 'Trans Man' },
-  { val: 'non_binary', label: 'Non-Binary' },
+  { val: 'trans', label: 'Trans' },
 ] as const;
 
 const INTERESTED_IN_OPTIONS = [
   { val: 'man', label: 'Men' },
   { val: 'woman', label: 'Women' },
-  { val: 'trans_woman', label: 'Trans Women' },
-  { val: 'trans_man', label: 'Trans Men' },
-  { val: 'non_binary', label: 'Non-Binary' },
+  { val: 'trans', label: 'Trans' },
 ] as const;
 
 const HEIGHT_OPTIONS = [
@@ -101,7 +97,7 @@ export default function OnboardingPage() {
   const [height, setHeight] = useState('');
   const [weight, setWeight] = useState('');
   const [bio, setBio] = useState('');
-  const [lookingFor, setLookingFor] = useState('');
+  
   const [interests, setInterests] = useState<string[]>([]);
 
   // Step 5: Photos (1-6 photos uploaded to user_photos bucket)
@@ -143,7 +139,7 @@ export default function OnboardingPage() {
         if (profile.height) setHeight(profile.height);
         if (profile.weight) setWeight(profile.weight);
         if (profile.bio) setBio(profile.bio);
-        if (profile.looking_for) setLookingFor(profile.looking_for);
+        
     if (profile.intent) setIntent(profile.intent);
         if (Array.isArray(profile.interests)) setInterests(profile.interests);
         if (Array.isArray(profile.photos) && profile.photos.length > 0) {
@@ -333,10 +329,6 @@ export default function OnboardingPage() {
       setErrorMessage('Please write at least 20 characters in your About Me bio.');
       return;
     }
-    if (!lookingFor.trim()) {
-      setErrorMessage('Please share what you are looking for.');
-      return;
-    }
     if (interests.length === 0) {
       setErrorMessage('Please select at least one interest or hobby.');
       return;
@@ -444,7 +436,7 @@ export default function OnboardingPage() {
           full_name: cleanHandle,
           gender,
           interested_in: interestedIn,
-          seeking_gender: interestedIn[0] || 'woman',
+          seeking_gender: interestedIn[0] === 'man' ? 'men' : interestedIn[0] === 'trans' ? 'trans_women' : 'women',
           birthdate: birthdate || null,
           age: computedAge,
           city: city.trim(),
@@ -457,7 +449,7 @@ export default function OnboardingPage() {
           height,
           weight,
           bio: bio.trim(),
-          looking_for: lookingFor.trim(),
+          
           intent,
           interests,
           avatar_url: primaryPhoto,
@@ -631,7 +623,7 @@ export default function OnboardingPage() {
               <label className="text-xs font-semibold text-[#1C1924] block mb-1">
                 I am interested in: <span className="text-[#6C637B] font-normal">(Select all that apply)</span>
               </label>
-              <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 pt-1">
+              <div className="grid grid-cols-3 gap-2 pt-1">
                 {INTERESTED_IN_OPTIONS.map((opt) => {
                   const checked = interestedIn.includes(opt.val);
                   return (
@@ -849,19 +841,7 @@ export default function OnboardingPage() {
               />
             </div>
 
-            <div>
-              <div className="flex items-center justify-between mb-1">
-                <label className="text-xs font-semibold text-[#1C1924]">Looking For</label>
-                <span className="text-[11px] text-[#8C849B]">{lookingFor.trim().length}/200</span>
-              </div>
-              <input
-                type="text"
-                value={lookingFor}
-                onChange={(e) => setLookingFor(e.target.value.slice(0, 200))}
-                placeholder="e.g. A sincere, family-minded partner for marriage"
-                className="w-full px-4 py-3 rounded-2xl bg-white border border-[#DDD7E5] text-xs sm:text-sm text-[#1C1924] placeholder-[#8C849B] focus:outline-none focus:border-[#6555b8]"
-              />
-            </div>
+
 
             <div>
               <label className="text-xs font-semibold text-[#1C1924] block mb-2">
@@ -899,7 +879,7 @@ export default function OnboardingPage() {
               </button>
               <button
                 type="submit"
-                disabled={!height || !weight || bio.trim().length < 20 || !lookingFor.trim() || interests.length === 0}
+                disabled={!height || !weight || bio.trim().length < 20 || interests.length === 0}
                 className="w-2/3 py-3 rounded-2xl bg-[#6555b8] hover:bg-[#52449e] text-white text-xs font-semibold shadow-md transition disabled:opacity-40"
               >
                 Continue to Photos
