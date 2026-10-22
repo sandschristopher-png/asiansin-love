@@ -84,6 +84,8 @@ export default function SparksPage() {
   const [sparkedYouList, setSparkedYouList] = useState<ProfileCardData[]>([]);
   const [mutualList, setMutualList] = useState<ProfileCardData[]>([]);
   const [visitedList, setVisitedList] = useState<ProfileCardData[]>([]);
+  const [recentInboundCount, setRecentInboundCount] = useState<number>(0);
+  const [showLowSignal, setShowLowSignal] = useState<boolean>(false);
 
   useEffect(() => {
     try {
@@ -178,9 +180,13 @@ export default function SparksPage() {
         const mutualProfiles = mutualIds.map((id) => profileMap.get(id)).filter((x): x is ProfileCardData => Boolean(x));
         const visitedProfiles = fetchVisitorIds.map((id) => profileMap.get(id)).filter((x): x is ProfileCardData => Boolean(x));
 
+        const cutoff48h = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString();
+        const recentInbound = inSparkRows.filter((r) => r.created_at && r.created_at >= cutoff48h).length;
+
         if (!isMounted) return;
 
         setUserGender(resolvedGender);
+        setRecentInboundCount(recentInbound);
         setIsPlus(resolvedPlus);
         setSparkedList(sparkedProfiles);
         setSparkedYouList(sparkedYouProfiles);
@@ -233,6 +239,20 @@ export default function SparksPage() {
     }
     return { title: 'No Mutual Sparks Yet', subtitle: 'When you and another member both Spark each other, your match unlocks here.' };
   }, [activeTab]);
+
+  // Popularity triage: credible senders first, no-photo senders collapsed
+  const [priorityList, lowSignalList] = useMemo(() => {
+    if (activeTab !== 'sparked_you' || !isPlus) return [currentList, [] as ProfileCardData[]];
+    const priority: ProfileCardData[] = [];
+    const lowSignal: ProfileCardData[] = [];
+    for (const p of currentList) {
+      const photo = getPhoto(p);
+      const hasRealPhoto = photo !== '/nomatch-f.png' && photo !== '/placeholder-avatar.svg';
+      if (p.is_verified || hasRealPhoto) priority.push(p);
+      else lowSignal.push(p);
+    }
+    return [priority, lowSignal];
+  }, [activeTab, currentList, isPlus]);
 
   return (
     <main className="min-h-[calc(100dvh-3rem)] bg-white pb-28">
@@ -297,8 +317,9 @@ export default function SparksPage() {
             <Link href="/discover" className="inline-flex items-center justify-center h-10 px-6 rounded-full bg-[#6555B8] hover:bg-[#5646A6] text-white text-xs font-semibold shadow-xs active:scale-95 transition-all">Explore Discover Feed</Link>
           </div>
         ) : (
+          <>
           <div className="grid grid-cols-2 gap-3.5 animate-fade-in-up">
-            {currentList.map((person) => {
+            {priorityList.map((person) => {
               const shouldBlur = activeTab === 'sparked_you' && !isPlus;
               const publicName = getPublicName(person);
               const age = getAge(person);
@@ -328,6 +349,39 @@ export default function SparksPage() {
               );
             })}
           </div>
+          {activeTab === 'sparked_you' && recentInboundCount >= 15 && (
+            <div className="mt-3.5 mb-1 mx-auto max-w-md px-3.5 py-2.5 rounded-xl bg-[#F3EFFC] border border-[#6555B8]/20 text-center">
+              <p className="text-[12px] font-semibold text-[#6555B8]">You're getting a lot of attention - {recentInboundCount} sparks in the last 48 hours</p>
+              <p className="text-[11px] text-[#6C637B] mt-0.5">Best matches first - profiles with photos and verification rise to the top</p>
+            </div>
+          )}
+          {activeTab === 'sparked_you' && isPlus && lowSignalList.length > 0 && (
+            <div className="mt-3.5">
+              <button
+                type="button"
+                onClick={() => setShowLowSignal(!showLowSignal)}
+                className="w-full py-2.5 rounded-xl border border-[#E2DCEB] bg-white text-[12px] font-semibold text-[#8C849B] hover:bg-[#F8F7FA] transition-colors cursor-pointer"
+              >
+                {showLowSignal ? 'Hide' : 'Show'} {lowSignalList.length} more {lowSignalList.length === 1 ? 'request' : 'requests'}
+              </button>
+              {showLowSignal && (
+                <div className="grid grid-cols-2 gap-3.5 mt-2.5 animate-fade-in-up">
+                  {lowSignalList.map((person) => (
+                    <div
+                      key={person.id}
+                      onClick={() => router.push('/profile/' + person.id)}
+                      className="group relative aspect-[3/4] rounded-2xl overflow-hidden bg-gradient-to-br from-[#ECE7F6] to-[#DDD5EE] border border-[#ECE8F4] shadow-xs cursor-pointer active:scale-[0.98] transition-all duration-200 flex flex-col items-center justify-center p-3"
+                    >
+                      <div className="w-12 h-12 rounded-full bg-[#6555B8]/15 flex items-center justify-center text-xl font-bold text-[#6555B8]/60">{getPublicName(person)[0]}</div>
+                      <div className="text-[13px] font-bold text-[#1C1924] mt-2.5 truncate max-w-full">{getPublicName(person)}</div>
+                      <div className="text-[11px] text-[#6C637B] mt-0.5 truncate max-w-full">{getLocationLabel(person)}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+          </>
         )}
       </div>
     </main>
