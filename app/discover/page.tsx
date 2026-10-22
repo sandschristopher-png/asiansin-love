@@ -673,7 +673,8 @@ function DiscoverContent() {
       {/* Filter Drawer */}
       {filtersOpen && typeof document !== 'undefined' &&
         createPortal(
-          <div className="fixed inset-0 z-[999] flex items-end justify-center">
+          <div className="fixed inset-0 z-[999] flex justify-center">
+            <div className="relative z-10 w-full max-w-[430px] h-full flex justify-end pointer-events-none">
             <div
               className={
                 'fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-200 ' +
@@ -684,10 +685,10 @@ function DiscoverContent() {
             <div
               role="dialog"
               aria-modal="true"
-              className="relative z-10 w-full max-w-[430px] mx-auto bg-white rounded-t-3xl shadow-2xl flex flex-col overflow-hidden will-change-transform"
+              className="relative z-10 h-full w-[85%] max-w-[340px] bg-white rounded-l-3xl shadow-2xl flex flex-col overflow-hidden will-change-transform pointer-events-auto"
               style={
                 filtersClosing
-                  ? { transform: 'translateY(100%)', transition: 'transform 0.24s cubic-bezier(0.16, 1, 0.3, 1)' }
+                  ? { transform: 'translateX(100%)', transition: 'transform 0.24s cubic-bezier(0.16, 1, 0.3, 1)' }
                   : { animation: 'filterSheetIn 0.26s cubic-bezier(0.16, 1, 0.3, 1) both' }
               }
             >
@@ -769,7 +770,8 @@ function DiscoverContent() {
                 </button>
               </div>
             </div>
-          </div>,
+                      </div>
+</div>,
           document.body
         )}
 
