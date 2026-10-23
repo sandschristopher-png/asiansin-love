@@ -316,7 +316,7 @@ export default function VerifyPage() {
             <>
               <div className="w-44 h-44 mx-auto rounded-3xl overflow-hidden border border-emerald-200 shadow-sm bg-[#F8F7FA]">
                 <img
-                  src="/images/verification/status-approved.png"
+                  src="/images/verification/approved.png"
                   alt="Approved"
                   className="w-full h-full object-contain"
                 />
@@ -331,7 +331,7 @@ export default function VerifyPage() {
             <>
               <div className="w-44 h-44 mx-auto rounded-3xl overflow-hidden border border-rose-200 shadow-sm bg-[#F8F7FA]">
                 <img
-                  src="/images/verification/status-denied.png"
+                  src="/images/verification/denied.png"
                   alt="Denied"
                   className="w-full h-full object-contain"
                 />
