@@ -313,7 +313,7 @@ export default function VerifyPage() {
             <>
               <div className="w-44 h-44 mx-auto rounded-3xl overflow-hidden border border-emerald-200 shadow-sm bg-[#F8F7FA]">
                 <img
-                  src="/images/verification/status-approved.png"
+                  src="/images/approved.png"
                   alt="Approved"
                   className="w-full h-full object-contain"
                 />
@@ -328,7 +328,7 @@ export default function VerifyPage() {
             <>
               <div className="w-44 h-44 mx-auto rounded-3xl overflow-hidden border border-rose-200 shadow-sm bg-[#F8F7FA]">
                 <img
-                  src="/images/verification/status-denied.png"
+                  src="/images/denied.png"
                   alt="Denied"
                   className="w-full h-full object-contain"
                 />
@@ -503,7 +503,7 @@ export default function VerifyPage() {
                     <div>
                       <p className="text-sm font-medium text-[#1C1924]">Take Verification Photo</p>
                       <p className="text-xs text-[#6C637B] mt-0.5">
-                        Live camera with liveness check - auto-captures all 4 poses
+                        Live camera with liveness check - auto-captures every pose
                       </p>
                     </div>
                   </div>

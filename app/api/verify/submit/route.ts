@@ -25,26 +25,23 @@ export async function POST(req: NextRequest) {
     const form = await req.formData();
     const attemptId = String(form.get('attemptId') || '');
     const blinkVerified = form.get('blinkVerified') === 'true';
-    const files = [0, 1, 2, 3]
-      .map((i) => form.get(`pose_${i}`))
-      .filter((f): f is File => f instanceof File);
 
-    if (!attemptId || files.length !== 4) {
-      return NextResponse.json({ error: 'attemptId and 4 pose photos required' }, { status: 400 });
+    // Collect pose_0..pose_N until the series ends
+    const files: File[] = [];
+    for (let i = 0; ; i++) {
+      const f = form.get(`pose_${i}`);
+      if (!(f instanceof File)) break;
+      files.push(f);
     }
-    for (const f of files) {
-      if (!ALLOWED_MIME.includes(f.type)) {
-        return NextResponse.json({ error: 'Only JPEG, PNG, or WebP images allowed' }, { status: 400 });
-      }
-      if (f.size > MAX_FILE_BYTES) {
-        return NextResponse.json({ error: 'Each photo must be under 10MB' }, { status: 400 });
-      }
+
+    if (!attemptId || files.length === 0) {
+      return NextResponse.json({ error: 'attemptId and pose photos required' }, { status: 400 });
     }
 
     // Verify attempt ownership and that it hasn't been submitted already
     const { data: attempt } = await supabase
       .from('verification_attempts')
-      .select('id, user_id, status, photo_paths')
+      .select('id, user_id, status, photo_paths, pose_sequence')
       .eq('id', attemptId)
       .eq('user_id', user.id)
       .maybeSingle();
@@ -54,6 +51,23 @@ export async function POST(req: NextRequest) {
     }
     if (attempt.status !== 'pending' || (attempt.photo_paths && attempt.photo_paths.length > 0)) {
       return NextResponse.json({ error: 'This attempt was already submitted' }, { status: 409 });
+    }
+
+    // File count must match the server-issued sequence for this attempt
+    const seq = Array.isArray(attempt.pose_sequence) ? attempt.pose_sequence : [];
+    if (files.length !== seq.length) {
+      return NextResponse.json(
+        { error: `Expected ${seq.length} pose photos, got ${files.length}` },
+        { status: 400 }
+      );
+    }
+    for (const f of files) {
+      if (!ALLOWED_MIME.includes(f.type)) {
+        return NextResponse.json({ error: 'Only JPEG, PNG, or WebP images allowed' }, { status: 400 });
+      }
+      if (f.size > MAX_FILE_BYTES) {
+        return NextResponse.json({ error: 'Each photo must be under 10MB' }, { status: 400 });
+      }
     }
 
     // Privileged writes: storage upload + row update via service role
@@ -72,9 +86,7 @@ export async function POST(req: NextRequest) {
       paths.push(path);
     }
 
-    // Auto-verify: the 3-gate liveness scan (blink + pose + avatar match)
-    // passed client-side, so grant the badge immediately. Otherwise fall
-    // back to submitted/pending review.
+    // Auto-verify when the client liveness gates passed; otherwise pending review
     const attemptStatus = blinkVerified ? 'verified' : 'submitted';
     const { error: updErr } = await admin
       .from('verification_attempts')

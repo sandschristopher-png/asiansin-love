@@ -1,4 +1,11 @@
-export type PoseId = 'chin' | 'palm' | 'peace' | 'three';
+export type PoseId =
+  | 'chin'
+  | 'palm'
+  | 'peace'
+  | 'three'
+  | 'thumb'
+  | 'point'
+  | 'finger-heart';
 
 export interface VerificationPose {
   id: PoseId;
@@ -11,6 +18,9 @@ export const VERIFICATION_POSES: VerificationPose[] = [
   { id: 'palm', label: 'Palm up', image: '/images/verification/pose-palm.png' },
   { id: 'peace', label: 'Peace sign', image: '/images/verification/pose-peace.png' },
   { id: 'three', label: 'Three fingers', image: '/images/verification/pose-three.png' },
+  { id: 'thumb', label: 'Thumbs up', image: '/images/verification/pose-thumb.png' },
+  { id: 'point', label: 'Pointing up', image: '/images/verification/pose-point.png' },
+  { id: 'finger-heart', label: 'Finger heart', image: '/images/verification/pose-finger-heart.png' },
 ];
 
 export function getPoseById(id: string): VerificationPose | null {

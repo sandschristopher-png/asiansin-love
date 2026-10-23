@@ -121,6 +121,22 @@ function matchHandPose(poseTitle: string, gestureResult: unknown, noseY: number 
     return wristY > noseY - 0.05 && wristY < noseY + 0.25 && handCenterX > 0.15 && handCenterX < 0.85;
   }
 
+  // Pointing up: single index finger raised
+  if (label.includes('pointing')) {
+    return (
+      topGesture?.categoryName === 'Pointing_Up' ||
+      (indexUp && !middleUp && !ringUp && !pinkyUp)
+    );
+  }
+
+  // Finger heart: thumb tip crossed against index tip
+  if (label.includes('finger heart')) {
+    const dx = lm[4].x - lm[8].x;
+    const dy = lm[4].y - lm[8].y;
+    const tipDist = Math.sqrt(dx * dx + dy * dy);
+    return tipDist < 0.08 && !indexUp;
+  }
+
   // Thumbs up
   if (label.includes('thumb')) {
     return (
