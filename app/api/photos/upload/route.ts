@@ -47,6 +47,12 @@ export async function POST(req: Request) {
 
     const userId = user.id;
 
+    // Privileged storage client: route already authenticated the caller
+    // (Bearer JWT or SSR session), so RLS-verified context is known.
+    const serviceClient = process.env.SUPABASE_SERVICE_ROLE_KEY
+      ? createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY)
+      : authenticatedClient;
+
     // 2. Enforce multipart/form-data exclusively
     const contentType = req.headers.get('content-type') || '';
     if (!contentType.includes('multipart/form-data')) {
@@ -92,7 +98,7 @@ export async function POST(req: Request) {
     const filePath = `${userId}/${isPrimaryAvatar ? 'primary' : 'photo'}-${crypto.createHash('sha256').update(buffer).digest('hex').slice(0, 16)}.${safeExt}`;
 
     // 5. Upload under authenticated caller context (satisfies RLS)
-    const { error: uploadError } = await authenticatedClient.storage
+    const { error: uploadError } = await serviceClient.storage
       .from('user_photos')
       .upload(filePath, buffer, {
         contentType: file.type,
@@ -108,7 +114,7 @@ export async function POST(req: Request) {
     }
 
     // 6. Public URL resolution
-    const { data: publicUrlData } = authenticatedClient.storage
+    const { data: publicUrlData } = serviceClient.storage
       .from('user_photos')
       .getPublicUrl(filePath);
 
