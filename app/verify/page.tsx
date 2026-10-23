@@ -46,9 +46,10 @@ export default function VerifyPage() {
 
   const [starting, setStarting] = useState(true);
   const [startError, setStartError] = useState<string | null>(null);
-  const [attemptId, setAttemptId] = useState<string | null>(null);
+  const [attemptToken, setAttemptToken] = useState<string | null>(null);
   const [sequence, setSequence] = useState<string[]>([]);
   const [step, setStep] = useState(0);
+  const [captureTimestamps, setCaptureTimestamps] = useState<number[]>([]);
   const [photos, setPhotos] = useState<CapturedPhoto[]>([]);
   const [analyzing, setAnalyzing] = useState(false);
   const [submitting, setSubmitting] = useState(false);
@@ -72,7 +73,7 @@ export default function VerifyPage() {
           setStartError(data.error || 'Could not start verification. Please try again.');
           return;
         }
-        setAttemptId(data.attemptId);
+        setAttemptToken(data.attemptId);
         setSequence(data.sequence);
 
         const { data: userData } = await supabase.auth.getUser();
@@ -125,7 +126,7 @@ export default function VerifyPage() {
       });
 
       // Auto-advance to the next pose shortly after capture
-      const total = sequence.length || 4;
+      const total = sequence.length;
       if (forStep + 1 < total) {
         setLiveHint('Pose ' + (forStep + 1) + ' captured! Next pose...');
         streakRef.current = 0;
@@ -211,11 +212,13 @@ export default function VerifyPage() {
       return;
     }
 
-    const file = new File([blob], 'pose-' + Date.now() + '.jpg', { type: 'image/jpeg' });
+    const ts = Date.now();
+    const file = new File([blob], 'pose-' + ts + '.jpg', { type: 'image/jpeg' });
     await processFile(file, step);
+    setCaptureTimestamps((prev) => [...prev, ts]);
 
     // Only shut the camera off after the final pose
-    const total = sequence.length || 4;
+    const total = sequence.length;
     if (step + 1 >= total) {
       stopCamera();
     }
@@ -254,16 +257,16 @@ export default function VerifyPage() {
   }, [cameraOn, step, sequence, analyzing, captureFrame]);
 
   const handleSubmit = useCallback(async () => {
-    if (!attemptId || photos.length < sequence.length) return;
+    if (!attemptToken || photos.length < sequence.length) return;
     setSubmitting(true);
     setErrorMsg(null);
     try {
       const form = new FormData();
-      form.set('attemptId', attemptId);
+      form.set('attemptId', attemptToken);
       form.set('blinkVerified', blinkRef.current.blinkPassed ? 'true' : 'false');
       photos.forEach((p, i) => {
-        form.set('pose_' + i, new File([p.blob], 'pose-' + i + '.jpg', { type: 'image/jpeg' }));
       });
+      form.set('captureTimestamps', JSON.stringify(captureTimestamps));
       const res = await fetch('/api/verify/submit', { method: 'POST', body: form });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to submit verification');
@@ -279,9 +282,9 @@ export default function VerifyPage() {
     } finally {
       setSubmitting(false);
     }
-  }, [attemptId, photos, router, sequence.length]);
+  }, [attemptToken, photos, captureTimestamps, router, sequence.length]);
 
-  const totalSteps = sequence.length || 4;
+  const totalSteps = sequence.length;
   const inReview =
     !starting && !startError && step >= sequence.length && sequence.length > 0;
   const currentPose = !inReview && sequence.length > 0 ? getPoseById(sequence[step]) : null;
@@ -313,7 +316,7 @@ export default function VerifyPage() {
             <>
               <div className="w-44 h-44 mx-auto rounded-3xl overflow-hidden border border-emerald-200 shadow-sm bg-[#F8F7FA]">
                 <img
-                  src="/images/approved.png"
+                  src="/images/verification/status-approved.png"
                   alt="Approved"
                   className="w-full h-full object-contain"
                 />
@@ -328,7 +331,7 @@ export default function VerifyPage() {
             <>
               <div className="w-44 h-44 mx-auto rounded-3xl overflow-hidden border border-rose-200 shadow-sm bg-[#F8F7FA]">
                 <img
-                  src="/images/denied.png"
+                  src="/images/verification/status-denied.png"
                   alt="Denied"
                   className="w-full h-full object-contain"
                 />
