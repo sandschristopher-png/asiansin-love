@@ -5,13 +5,11 @@ import { useRouter } from 'next/navigation';
 import {
   ArrowLeft,
   Camera,
-  CheckCircle2,
   ShieldCheck,
   Loader2,
   SunMedium,
   AlertCircle,
   X,
-  Expand,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import {
@@ -37,7 +35,14 @@ export default function VerifyPage() {
   const capturingRef = useRef(false);
   const avatarUrlRef = useRef<string | null>(null);
   const verifierRef = useRef<typeof import('@/lib/poseVerifier') | null>(null);
-  const [showFullRef, setShowFullRef] = useState(false); // expanded reference modal
+  const lastStatusRef = useRef<{
+    faceDetected: boolean;
+    blinkPassed: boolean;
+    poseMatched: boolean;
+  } | null>(null);
+  const [showFullRef, setShowFullRef] = useState(false);
+  const [denyPulse, setDenyPulse] = useState(false);
+  const [result, setResult] = useState<'approved' | 'denied' | null>(null);
 
   const [starting, setStarting] = useState(true);
   const [startError, setStartError] = useState<string | null>(null);
@@ -151,7 +156,7 @@ export default function VerifyPage() {
       streakRef.current = 0;
       setHoldProgress(0);
       setCameraOn(true);
-      setLiveHint(blinkRef.current.blinkPassed ? 'Getting ready...' : 'Getting ready...');
+      setLiveHint('Getting ready...');
     } catch {
       setEngineLoading(false);
       setErrorMsg('Live camera is required for verification. Please allow camera access and try again.');
@@ -228,6 +233,7 @@ export default function VerifyPage() {
       if (!video || capturingRef.current || analyzing || !verifierRef.current) return;
 
       const status = verifierRef.current.evaluateLiveFrame(video, poseLabel, blinkRef.current);
+      lastStatusRef.current = status;
       setLiveHint(status.hint);
 
       if (status.faceDetected && status.blinkPassed && status.poseMatched) {
@@ -261,8 +267,12 @@ export default function VerifyPage() {
       const res = await fetch('/api/verify/submit', { method: 'POST', body: form });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to submit verification');
+      const verified = Boolean(data.verified);
+      setResult(verified ? 'approved' : 'denied');
       setSuccess(true);
-      setTimeout(() => router.push('/discover'), 2400);
+      if (verified) {
+        setTimeout(() => router.push('/discover'), 2400);
+      }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Failed to submit verification.';
       setErrorMsg(msg);
@@ -276,7 +286,6 @@ export default function VerifyPage() {
     !starting && !startError && step >= sequence.length && sequence.length > 0;
   const currentPose = !inReview && sequence.length > 0 ? getPoseById(sequence[step]) : null;
   const currentPhoto = photos[step];
-  const canManualCapture = cameraOn && streakRef.current > 0 && !analyzing;
 
   return (
     <main className="min-h-screen bg-[#F8F7FA] text-[#1C1924] flex flex-col justify-start">
@@ -299,15 +308,45 @@ export default function VerifyPage() {
       )}
 
       {success ? (
-        <div className="rounded-3xl bg-white border border-emerald-200 p-8 text-center space-y-4 shadow-xl mx-4 mt-4">
-          <div className="h-16 w-16 mx-auto rounded-full bg-emerald-50 border border-emerald-200 text-emerald-600 flex items-center justify-center">
-            <CheckCircle2 className="w-8 h-8" />
-          </div>
-          <h2 className="text-xl font-medium text-[#1C1924]">You are verified!</h2>
-          <p className="text-sm text-[#6C637B] leading-relaxed">
-            Your liveness scan passed and your verified badge is now live on your profile.
-            Taking you back to Discover...
-          </p>
+        <div className="rounded-3xl bg-white border border-[#DDD7E5] p-8 text-center space-y-4 shadow-xl mx-4 mt-4">
+          {result === 'approved' ? (
+            <>
+              <div className="w-44 h-44 mx-auto rounded-3xl overflow-hidden border border-emerald-200 shadow-sm bg-[#F8F7FA]">
+                <img
+                  src="/images/verification/status-approved.png"
+                  alt="Approved"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <h2 className="text-xl font-medium text-[#1C1924]">You are verified!</h2>
+              <p className="text-sm text-[#6C637B] leading-relaxed">
+                Your liveness scan passed and your verified badge is now live on your profile.
+                Taking you back to Discover...
+              </p>
+            </>
+          ) : (
+            <>
+              <div className="w-44 h-44 mx-auto rounded-3xl overflow-hidden border border-rose-200 shadow-sm bg-[#F8F7FA]">
+                <img
+                  src="/images/verification/status-denied.png"
+                  alt="Denied"
+                  className="w-full h-full object-contain"
+                />
+              </div>
+              <h2 className="text-xl font-medium text-[#1C1924]">Verification not completed</h2>
+              <p className="text-sm text-[#6C637B] leading-relaxed">
+                We could not confirm a live scan for this session. You can try again now or come
+                back tomorrow.
+              </p>
+              <button
+                type="button"
+                onClick={() => window.location.reload()}
+                className="text-xs font-semibold text-[#6555b8] hover:text-[#52449e] transition"
+              >
+                Try Again
+              </button>
+            </>
+          )}
         </div>
       ) : starting ? (
         <div className="p-6 text-center space-y-3">
@@ -497,7 +536,7 @@ export default function VerifyPage() {
                 playsInline
                 className="fixed inset-0 w-full h-full object-cover scale-x-[-1]"
               />
-              
+
               {/* Back button in camera mode */}
               <button
                 type="button"
@@ -561,35 +600,36 @@ export default function VerifyPage() {
                 </div>
               )}
 
-              {/* Capture button at bottom center */}
+              {/* Capture button at bottom center - always tappable, gates checked on tap */}
               <div className="fixed bottom-6 left-0 right-0 flex items-center justify-center z-50">
                 <button
                   type="button"
                   onClick={(e) => {
                     e.stopPropagation();
-                    if (canManualCapture) captureFrame();
+                    const s = lastStatusRef.current;
+                    if (s && s.faceDetected && s.blinkPassed && s.poseMatched) {
+                      captureFrame();
+                    } else {
+                      setDenyPulse(true);
+                      setTimeout(() => setDenyPulse(false), 450);
+                    }
                   }}
-                  disabled={!canManualCapture}
-                  className={`h-20 w-20 rounded-full bg-white border-4 border-[#6555b8] flex items-center justify-center active:scale-95 transition shadow-lg ${
-                    canManualCapture ? '' : 'opacity-40'
+                  className={`h-20 w-20 rounded-full bg-white border-4 flex items-center justify-center active:scale-95 transition-all duration-150 shadow-lg ${
+                    denyPulse ? 'border-rose-400 scale-110' : 'border-[#6555b8]'
                   }`}
                   aria-label="Capture photo"
                 >
-                  {engineLoading ? (
-                    <Loader2 className="w-7 h-7 text-[#6555b8] animate-spin" />
-                  ) : (
-                    <Camera className="w-7 h-7 text-[#6555b8]" />
-                  )}
+                  <Camera className="w-7 h-7 text-[#6555b8]" />
                 </button>
               </div>
 
               {/* Expanded reference modal */}
               {showFullRef && currentPose && (
-                <div 
+                <div
                   className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-6"
                   onClick={() => setShowFullRef(false)}
                 >
-                  <div 
+                  <div
                     className="relative bg-white rounded-3xl overflow-hidden max-w-sm w-full"
                     onClick={(e) => e.stopPropagation()}
                   >
