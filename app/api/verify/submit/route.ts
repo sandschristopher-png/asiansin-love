@@ -24,6 +24,7 @@ export async function POST(req: NextRequest) {
 
     const form = await req.formData();
     const attemptId = String(form.get('attemptId') || '');
+    const blinkVerified = form.get('blinkVerified') === 'true';
     const files = [0, 1, 2, 3]
       .map((i) => form.get(`pose_${i}`))
       .filter((f): f is File => f instanceof File);
@@ -71,16 +72,31 @@ export async function POST(req: NextRequest) {
       paths.push(path);
     }
 
+    // Auto-verify: the 3-gate liveness scan (blink + pose + avatar match)
+    // passed client-side, so grant the badge immediately. Otherwise fall
+    // back to submitted/pending review.
+    const attemptStatus = blinkVerified ? 'verified' : 'submitted';
     const { error: updErr } = await admin
       .from('verification_attempts')
-      .update({ photo_paths: paths })
+      .update({ photo_paths: paths, status: attemptStatus, submitted_at: new Date().toISOString() })
       .eq('id', attemptId);
     if (updErr) {
       console.error('attempt update failed:', updErr.message);
       return NextResponse.json({ error: 'Failed to finalize submission' }, { status: 500 });
     }
 
-    return NextResponse.json({ ok: true });
+    if (blinkVerified) {
+      const { error: profErr } = await admin
+        .from('profiles')
+        .update({ is_verified: true })
+        .eq('id', user.id);
+      if (profErr) {
+        console.error('profile verify update failed:', profErr.message);
+        return NextResponse.json({ error: 'Failed to apply verified badge' }, { status: 500 });
+      }
+    }
+
+    return NextResponse.json({ ok: true, verified: blinkVerified });
   } catch (err) {
     console.error('verify/submit error:', err);
     return NextResponse.json({ error: 'Internal error' }, { status: 500 });
