@@ -22,7 +22,7 @@ function cleanHeightForDb(input: string): string | null {
   if (numOnlyMatch) return `${numOnlyMatch[1]} cm`;
 
   // If user entered imperial like 5'5", 5ft 5, 5'5
-  const imperialMatch = raw.match(/^(d)['’fts]+(d{1,2})["”ins]*$/i);
+  const imperialMatch = raw.match(/^(\d)['’fts]+(\d{1,2})["”ins]*$/i);
   if (imperialMatch) {
     const feet = parseInt(imperialMatch[1], 10);
     const inches = parseInt(imperialMatch[2], 10);
@@ -60,7 +60,7 @@ export default function EditProfilePage() {
     country: '',
     profession: '',
     relationship_goal: 'Marriage',
-    marriage_timeline: 'Within 1–2 years',
+    marriage_timeline: 'Within 1-2 years',
     relocation: 'Open to relocation',
     marital_status: 'Never Married',
     wants_kids: 'Wants children',
@@ -96,7 +96,7 @@ export default function EditProfilePage() {
           country: data.country || '',
           profession: data.profession || data.occupation || '',
           relationship_goal: data.relationship_goal || data.intent || 'Marriage',
-          marriage_timeline: data.marriage_timeline || 'Within 1–2 years',
+          marriage_timeline: data.marriage_timeline || 'Within 1-2 years',
           relocation: data.relocation || 'Open to relocation',
           marital_status: data.marital_status || 'Never Married',
           wants_kids: data.wants_kids || 'Wants children',
@@ -496,7 +496,7 @@ export default function EditProfilePage() {
             )}
           </div>
 
-          {/* Username */}
+          {/* Full Name */}
           <div className="space-y-1.5">
             <label className="block text-xs font-medium uppercase tracking-wider text-[#9A8CC3]">
               Username
@@ -582,10 +582,10 @@ export default function EditProfilePage() {
           {/* --- Courtship Dossier Section 1: Courtship & Timeline --- */}
           <div className="pt-2 border-t border-[#9A8CC3]/20 space-y-3">
             <h3 className="text-xs font-bold text-[#6555b8] uppercase tracking-wider flex items-center gap-1.5">
-              <span>💍</span> Courtship Alignment & Timeline
+              Relationship Timeline
             </h3>
             
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <label className="block text-xs font-medium uppercase tracking-wider text-[#9A8CC3]">
                   Marriage Timeline
@@ -596,8 +596,8 @@ export default function EditProfilePage() {
                   className="w-full px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#9A8CC3]/35 text-[#1C1924] text-sm focus:outline-none focus:border-[#9A8CC3]"
                 >
                   <option value="Within 6 months">Within 6 months</option>
-                  <option value="Within 1–2 years">Within 1–2 years</option>
-                  <option value="Within 2–3 years">Within 2–3 years</option>
+                  <option value="Within 1-2 years">Within 1-2 years</option>
+                  <option value="Within 2-3 years">Within 2-3 years</option>
                   <option value="When the time is right">When the time is right</option>
                 </select>
               </div>
@@ -647,7 +647,7 @@ export default function EditProfilePage() {
                   </div>
                   <div>
                     <span className="text-xs font-bold text-emerald-700 flex items-center gap-1">
-                      <span>🛡️ Location Confirmed</span>
+                      <span>Location Confirmed</span>
                       <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-emerald-100 text-emerald-800 font-semibold">GPS Edge</span>
                     </span>
                     <p className="text-[11px] text-[#756D82]">
@@ -675,7 +675,7 @@ export default function EditProfilePage() {
                       Confirm Your Physical Location
                     </span>
                     <p className="text-[11px] text-[#756D82]">
-                      1-click check against your network edge. Awards the 🛡️ Verified badge and +3 Rep.
+                      1-click check against your network edge. Awards the Verified badge and +3 Rep.
                     </p>
                   </div>
                 </div>
@@ -705,10 +705,10 @@ export default function EditProfilePage() {
           {/* --- Courtship Dossier Section 2: Family & Values --- */}
           <div className="pt-2 border-t border-[#9A8CC3]/20 space-y-3">
             <h3 className="text-xs font-bold text-[#E05375] uppercase tracking-wider flex items-center gap-1.5">
-              <span>🏡</span> Family & Values
+              Family & Values
             </h3>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <label className="block text-xs font-medium uppercase tracking-wider text-[#9A8CC3]">
                   Desires Children
@@ -773,10 +773,10 @@ export default function EditProfilePage() {
           {/* --- Courtship Dossier Section 3: Lifestyle & Background --- */}
           <div className="pt-2 border-t border-[#9A8CC3]/20 space-y-3">
             <h3 className="text-xs font-bold text-[#6555b8] uppercase tracking-wider flex items-center gap-1.5">
-              <span>💼</span> Lifestyle & Background
+              Lifestyle & Background
             </h3>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1.5">
                 <label className="block text-xs font-medium uppercase tracking-wider text-[#9A8CC3]">
                   Languages (Comma Separated)
