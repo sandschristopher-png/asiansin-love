@@ -511,7 +511,7 @@ export default function EditProfilePage() {
           </div>
 
           {/* Age & Location */}
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1.5">
               <label className="block text-xs font-medium uppercase tracking-wider text-[#9A8CC3]">
                 Age
@@ -579,7 +579,7 @@ export default function EditProfilePage() {
             </div>
           </div>
 
-          {/* --- Courtship Dossier Section 1: Courtship & Timeline --- */}
+          {/* Relationship Timeline */}
           <div className="pt-2 border-t border-[#9A8CC3]/20 space-y-3">
             <h3 className="text-xs font-bold text-[#6555b8] uppercase tracking-wider flex items-center gap-1.5">
               Relationship Timeline
@@ -702,7 +702,7 @@ export default function EditProfilePage() {
             )}
           </div>
 
-          {/* --- Courtship Dossier Section 2: Family & Values --- */}
+          {/* Family & Values */}
           <div className="pt-2 border-t border-[#9A8CC3]/20 space-y-3">
             <h3 className="text-xs font-bold text-[#E05375] uppercase tracking-wider flex items-center gap-1.5">
               Family & Values
@@ -770,7 +770,7 @@ export default function EditProfilePage() {
             </div>
           </div>
 
-          {/* --- Courtship Dossier Section 3: Lifestyle & Background --- */}
+          {/* Lifestyle & Background */}
           <div className="pt-2 border-t border-[#9A8CC3]/20 space-y-3">
             <h3 className="text-xs font-bold text-[#6555b8] uppercase tracking-wider flex items-center gap-1.5">
               Lifestyle & Background
