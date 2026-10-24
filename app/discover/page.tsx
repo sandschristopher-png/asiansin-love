@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 import { playMatchChime } from '@/lib/sound';
 import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import { createPortal } from 'react-dom';
@@ -265,8 +265,15 @@ function DiscoverContent() {
           const payload = await res.json();
           const v = payload.viewer;
           if (v) {
-            if (v.onboarding_completed === false) {
-              router.push('/onboarding');
+            if (!v || v.onboarding_completed === false) {
+              const isActivelyOnboarding = sessionStorage.getItem('ail_active_onboarding') === '1';
+              if (v && isActivelyOnboarding) {
+                router.replace('/onboarding');
+              } else {
+                await supabase.auth.signOut();
+                const hasVisited = localStorage.getItem('ail_returning') === '1';
+                router.replace(hasVisited ? '/login' : '/');
+              }
               return;
             }
             if (v.latitude && v.longitude) {

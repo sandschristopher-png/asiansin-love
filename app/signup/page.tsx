@@ -50,6 +50,10 @@ export default function SignUpPage() {
         }
       }
 
+      try {
+        localStorage.setItem('ail_returning', '1');
+        sessionStorage.setItem('ail_active_onboarding', '1');
+      } catch {}
       router.push('/onboarding');
       router.refresh();
     } catch (err: any) {

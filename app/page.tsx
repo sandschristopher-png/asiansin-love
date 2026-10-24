@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { playMatchChime } from '@/lib/sound';
 import { getDistanceLabel } from '@/lib/location';
@@ -1138,7 +1138,7 @@ function DiscoverFeed() {
 }
 function HeroGate() {
   const router = useRouter();
-  const [authState, setAuthState] = useState<'loading' | 'signedOutFirstTime' | 'member'>('loading');
+  const [authState, setAuthState] = useState<'loading' | 'signedOutFirstTime'>('loading');
 
   useEffect(() => {
     let mounted = true;
@@ -1149,11 +1149,8 @@ function HeroGate() {
         (localStorage.getItem('ail_returning') === '1' ||
           document.cookie.split('; ').some((row) => row.startsWith('ail_returning=1')));
 
-      const { data, error } = await supabase.auth.getUser();
-
-      if (!mounted) return;
-
-      if (error || !data?.user) {
+      const routeLoggedOutVisitor = () => {
+        if (!mounted) return;
         if (hasVisited) {
           router.replace('/login');
         } else {
@@ -1163,14 +1160,15 @@ function HeroGate() {
           } catch {}
           setAuthState('signedOutFirstTime');
         }
+      };
+
+      const { data, error } = await supabase.auth.getUser();
+      if (!mounted) return;
+
+      if (error || !data?.user) {
+        routeLoggedOutVisitor();
         return;
       }
-
-      // User has a valid session -> mark as returning visitor and check onboarding
-      try {
-        localStorage.setItem('ail_returning', '1');
-        document.cookie = 'ail_returning=1; path=/; max-age=31536000; SameSite=Lax';
-      } catch {}
 
       const { data: profile } = await supabase
         .from('profiles')
@@ -1181,10 +1179,25 @@ function HeroGate() {
       if (!mounted) return;
 
       if (profile?.onboarding_completed) {
+        try {
+          localStorage.setItem('ail_returning', '1');
+          document.cookie = 'ail_returning=1; path=/; max-age=31536000; SameSite=Lax';
+        } catch {}
         router.replace('/discover');
-      } else {
-        router.replace('/onboarding');
+        return;
       }
+
+      // Ghost/abandoned session check: if onboarding is NOT complete and they didn't just sign up/log in during this tab session, sign out the ghost session!
+      const isActivelyOnboarding =
+        typeof window !== 'undefined' && sessionStorage.getItem('ail_active_onboarding') === '1';
+
+      if (!isActivelyOnboarding) {
+        await supabase.auth.signOut();
+        routeLoggedOutVisitor();
+        return;
+      }
+
+      router.replace('/onboarding');
     }
 
     evaluateEntry();
@@ -1201,8 +1214,7 @@ function HeroGate() {
     );
   }
 
-  if (authState === 'signedOutFirstTime') return <HeroLanding />;
-  return null;
+  return <HeroLanding />;
 }
 
 export default HeroGate;

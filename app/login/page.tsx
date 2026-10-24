@@ -54,6 +54,10 @@ export default function LoginPage() {
         .eq("id", data.user.id)
         .maybeSingle();
 
+      try {
+        localStorage.setItem("ail_returning", "1");
+        if (!profile?.onboarding_completed) sessionStorage.setItem("ail_active_onboarding", "1");
+      } catch {}
       window.location.href = profile?.onboarding_completed ? "/discover" : "/onboarding";
     }
   }
