@@ -1,6 +1,7 @@
 ﻿'use client';
 
 import React, { useState } from 'react';
+import { notifyUser } from '@/components/InAppToast';
 
 interface InteractionReviewModalProps {
   isOpen: boolean;

@@ -1,6 +1,7 @@
 'use client';
 
 import { captureCurrentLocation, formatVerifiedDate } from '@/lib/location';
+import { notifyUser } from '@/components/InAppToast';
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
