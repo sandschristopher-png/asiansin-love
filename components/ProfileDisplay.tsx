@@ -1,6 +1,7 @@
 ﻿'use client';
 
 import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { notifyUser } from '@/components/InAppToast';
 import { 
   ShieldCheck, AlertTriangle, Eye, ChevronLeft, ChevronRight, 
   Maximize2, X as CloseIcon, Heart, Sparkles, MessageCircle 
@@ -433,7 +434,7 @@ export function ProfileDisplay({ profile, currentUserId, onInitiateChat, onLike 
         targetUserName={profile.fullName}
         onClose={() => setShowReviewModal(false)}
         onSuccess={() => {
-          alert('Thank you. Your feedback helps keep the platform safe.');
+          notifyUser({ senderName: 'Feedback', avatarUrl: '', message: 'Thank you. Your feedback helps keep the platform safe.', chatUrl: '#' });
           setShowReviewModal(false);
         }}
       />

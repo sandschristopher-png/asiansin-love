@@ -271,7 +271,7 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 2500);
     } else {
-      alert('Could not update profile: ' + error.message);
+      notifyUser({ senderName: 'Profile', avatarUrl: '', message: 'Could not update profile: ' + error.message, chatUrl: '/profile' });
     }
   };
 

@@ -31,7 +31,7 @@ export function InteractionReviewModal({
 
   const handleSubmit = async () => {
     if (photosMatched === null || identityAccurate === null || solicitedMoney === null || wasRespectful === null) {
-      alert('Please complete all confirmation questions before submitting.');
+      notifyUser({ senderName: 'Review', avatarUrl: '', message: 'Please complete all confirmation questions before submitting.', chatUrl: '#' });
       return;
     }
 
@@ -57,10 +57,10 @@ export function InteractionReviewModal({
         onClose();
       } else {
         const data = await res.json();
-        alert(data.error || 'Failed to submit report.');
+        notifyUser({ senderName: 'Review', avatarUrl: '', message: data.error || 'Failed to submit report.', chatUrl: '#' });
       }
     } catch {
-      alert('Network error submitting feedback.');
+      notifyUser({ senderName: 'Review', avatarUrl: '', message: 'Network error submitting feedback.', chatUrl: '#' });
     } finally {
       setIsSubmitting(false);
     }
