@@ -729,7 +729,6 @@ function DiscoverContent() {
                     {[
                       { id: 'female', label: 'Women' },
                       { id: 'male', label: 'Men' },
-                      { id: 'male', label: 'Trans' },
                     ].map((item) => {
                       const isTrans = item.id === 'male';
                       const TRANS_IDS = ["trans"];
