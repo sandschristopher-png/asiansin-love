@@ -405,7 +405,7 @@ function DiscoverContent() {
 
           if (v) {
             if (v.onboarding_completed === false) {
-              router.push('/onboarding');
+              router.push('/onboarding/profile');
               return;
             }
             if (v.latitude && v.longitude) {
