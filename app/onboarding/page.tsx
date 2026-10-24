@@ -20,15 +20,15 @@ import { supabase } from '@/lib/supabase/client';
 import { INTENT_OPTIONS } from '@/lib/intents';
 
 const GENDER_OPTIONS = [
-  { val: 'man', label: 'Man' },
-  { val: 'woman', label: 'Woman' },
-  { val: 'trans', label: 'Trans' },
+  { val: 'male', label: 'Man' },
+  { val: 'female', label: 'Woman' },
+  { val: 'male', label: 'Trans' },
 ] as const;
 
 const INTERESTED_IN_OPTIONS = [
-  { val: 'man', label: 'Men' },
-  { val: 'woman', label: 'Women' },
-  { val: 'trans', label: 'Trans' },
+  { val: 'male', label: 'Men' },
+  { val: 'female', label: 'Women' },
+  { val: 'male', label: 'Trans' },
 ] as const;
 
 const HEIGHT_OPTIONS = [
@@ -436,7 +436,7 @@ export default function OnboardingPage() {
           full_name: cleanHandle,
           gender,
           interested_in: interestedIn,
-          seeking_gender: interestedIn[0] === 'man' ? 'men' : interestedIn[0] === 'trans' ? 'trans_women' : 'women',
+          seeking_gender: interestedIn[0] === 'male' ? 'male' : interestedIn[0] === 'male' ? 'female' : 'female',
           birthdate: birthdate || null,
           age: computedAge,
           city: city.trim(),

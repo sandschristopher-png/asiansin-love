@@ -71,7 +71,7 @@ export interface ProfileItem {
   username?: string;
   name: string;
   age: number;
-  gender: 'woman' | 'man' | 'trans_woman' | 'trans_man' | 'non_binary';
+  gender: 'female' | 'male' | 'female' | 'male' | 'male';
   location: string;
   latitude?: number | null;
   longitude?: number | null;
@@ -221,14 +221,14 @@ function DiscoverCardPhotoCarousel({
   );
 }
 
-function normalizeGenderValue(raw?: string | null): 'woman' | 'man' | 'trans_woman' | 'trans_man' | 'non_binary' {
+function normalizeGenderValue(raw?: string | null): 'female' | 'male' | 'female' | 'male' | 'male' {
   const val = String(raw || '').toLowerCase().trim().replace(/[\s-]+/g, '_');
-  if (['man', 'men', 'male', 'm', 'guy', 'guys'].includes(val)) return 'man';
-  if (['woman', 'women', 'female', 'f', 'lady', 'ladies', 'girl', 'girls'].includes(val)) return 'woman';
-  if (['trans_woman', 'trans_women', 'transgender_woman', 'transgender_women', 'trans', 'mtf', 'transfemale'].includes(val)) return 'trans_woman';
-  if (['trans_man', 'trans_men', 'transgender_man', 'transgender_men', 'ftm', 'transmale'].includes(val)) return 'trans_man';
-  if (['non_binary', 'nonbinary', 'nb', 'enby'].includes(val)) return 'non_binary';
-  return 'woman';
+  if (['male', 'male', 'male', 'm', 'guy', 'guys'].includes(val)) return 'male';
+  if (['female', 'female', 'female', 'f', 'lady', 'ladies', 'girl', 'girls'].includes(val)) return 'female';
+  if (['female', 'female', 'transgender_woman', 'transgender_women', 'male', 'mtf', 'transfemale'].includes(val)) return 'female';
+  if (['male', 'male', 'transgender_man', 'transgender_men', 'ftm', 'transmale'].includes(val)) return 'male';
+  if (['male', 'nonbinary', 'nb', 'enby'].includes(val)) return 'male';
+  return 'female';
 }
 
 function formatConciseIntent(raw?: string | null): string {
@@ -959,11 +959,11 @@ function DiscoverContent() {
                 </div>
                 <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
                   {[
-                    { id: 'woman', label: 'Women' },
-                    { id: 'man', label: 'Men' },
-                    { id: 'trans_woman', label: 'Trans Women' },
-                    { id: 'trans_man', label: 'Trans Men' },
-                    { id: 'non_binary', label: 'Non-Binary' },
+                    { id: 'female', label: 'Women' },
+                    { id: 'male', label: 'Men' },
+                    { id: 'female', label: 'Trans Women' },
+                    { id: 'male', label: 'Trans Men' },
+                    { id: 'male', label: 'Non-Binary' },
                   ].map((item) => {
                     const isSelected = selectedGenders.includes(item.id);
                     return (

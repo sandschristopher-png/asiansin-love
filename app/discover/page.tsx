@@ -29,7 +29,7 @@ export interface ProfileItem {
   username?: string;
   name: string;
   age: number;
-  gender: 'woman' | 'man' | 'trans';
+  gender: 'female' | 'male' | 'male';
   location: string;
   latitude?: number | null;
   longitude?: number | null;
@@ -130,15 +130,15 @@ function DiscoverCardPhotoCarousel({
   );
 }
 
-function normalizeGenderValue(raw?: string | null): 'woman' | 'man' | 'trans' {
+function normalizeGenderValue(raw?: string | null): 'female' | 'male' | 'male' {
   const val = String(raw || '').toLowerCase().trim().replace(/[\s-]+/g, '_');
-  if (['man', 'men', 'male', 'm', 'guy', 'guys'].includes(val)) return 'man';
-  if (['woman', 'women', 'female', 'f', 'lady', 'ladies', 'girl', 'girls'].includes(val)) return 'woman';
-  if (['trans_woman', 'trans_women', 'transgender_woman', 'transgender_women', 'trans', 'mtf', 'transfemale'].includes(val))
-    return 'trans';
-  if (['trans_man', 'trans_men', 'transgender_man', 'transgender_men', 'ftm', 'transmale'].includes(val)) return 'trans';
-  if (['non_binary', 'nonbinary', 'nb', 'enby'].includes(val)) return 'trans';
-  return 'woman';
+  if (['male', 'male', 'male', 'm', 'guy', 'guys'].includes(val)) return 'male';
+  if (['female', 'female', 'female', 'f', 'lady', 'ladies', 'girl', 'girls'].includes(val)) return 'female';
+  if (['female', 'female', 'transgender_woman', 'transgender_women', 'male', 'mtf', 'transfemale'].includes(val))
+    return 'male';
+  if (['male', 'male', 'transgender_man', 'transgender_men', 'ftm', 'transmale'].includes(val)) return 'male';
+  if (['male', 'nonbinary', 'nb', 'enby'].includes(val)) return 'male';
+  return 'female';
 }
 
 function DiscoverContent() {
@@ -727,11 +727,11 @@ function DiscoverContent() {
                   </label>
                   <div className="flex flex-wrap gap-1.5">
                     {[
-                      { id: 'woman', label: 'Women' },
-                      { id: 'man', label: 'Men' },
-                      { id: 'trans', label: 'Trans' },
+                      { id: 'female', label: 'Women' },
+                      { id: 'male', label: 'Men' },
+                      { id: 'male', label: 'Trans' },
                     ].map((item) => {
-                      const isTrans = item.id === 'trans';
+                      const isTrans = item.id === 'male';
                       const TRANS_IDS = ["trans"];
                       const isSelected = isTrans
                         ? draftGenders.some((g) => TRANS_IDS.includes(g))

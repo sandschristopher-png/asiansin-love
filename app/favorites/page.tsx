@@ -134,7 +134,7 @@ export default function SparksPage() {
         const g = String(meRow?.gender || user.user_metadata?.gender || '').toLowerCase();
         const look = String(meRow?.looking_for || meRow?.seeking || '').toLowerCase();
         const resolvedGender: 'male' | 'female' =
-          g === 'female' || g === 'f' || g === 'woman' || look === 'male' || look === 'm' || look === 'men'
+          g === 'female' || g === 'f' || g === 'female' || look === 'male' || look === 'm' || look === 'male'
             ? 'female'
             : 'male';
         const resolvedPlus = Boolean(meRow?.is_plus);

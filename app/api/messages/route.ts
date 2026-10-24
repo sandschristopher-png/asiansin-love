@@ -244,7 +244,7 @@ export async function POST(req: Request) {
 
     const isPlus = Boolean(senderProfile?.is_plus);
     const isVerifiedWoman =
-      senderProfile?.is_verified && senderProfile?.gender === 'woman';
+      senderProfile?.is_verified && senderProfile?.gender === 'female';
 
     if (!isPlus && !isVerifiedWoman) {
       const { data: mutualReply } = await serviceClient

@@ -23,7 +23,7 @@ export async function GET(req: Request) {
     const isPlus = Boolean(profile?.is_plus);
     const isVerifiedWoman =
       Boolean(profile?.is_verified) &&
-      profile?.gender?.toLowerCase() === 'woman';
+      profile?.gender?.toLowerCase() === 'female';
 
     if (isPlus) {
       return NextResponse.json({ type: 'plus', unlimited: true, label: 'Plus Member - Unlimited' });

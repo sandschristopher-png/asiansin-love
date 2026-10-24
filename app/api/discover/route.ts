@@ -4,14 +4,14 @@ import { createClient } from '@supabase/supabase-js';
 
 export const dynamic = 'force-dynamic';
 
-function normalizeGenderValue(raw?: string | null): 'woman' | 'man' | 'trans_woman' | 'trans_man' | 'non_binary' {
+function normalizeGenderValue(raw?: string | null): 'female' | 'male' | 'female' | 'male' | 'male' {
   const val = String(raw || '').toLowerCase().trim().replace(/[\s-]+/g, '_');
-  if (['man', 'men', 'male', 'm', 'guy', 'guys'].includes(val)) return 'man';
-  if (['woman', 'women', 'female', 'f', 'lady', 'ladies', 'girl', 'girls'].includes(val)) return 'woman';
-  if (['trans_woman', 'trans_women', 'transgender_woman', 'transgender_women', 'trans', 'mtf', 'transfemale'].includes(val)) return 'trans_woman';
-  if (['trans_man', 'trans_men', 'transgender_man', 'transgender_men', 'ftm', 'transmale'].includes(val)) return 'trans_man';
-  if (['non_binary', 'nonbinary', 'nb', 'enby'].includes(val)) return 'non_binary';
-  return 'woman';
+  if (['male', 'male', 'male', 'm', 'guy', 'guys'].includes(val)) return 'male';
+  if (['female', 'female', 'female', 'f', 'lady', 'ladies', 'girl', 'girls'].includes(val)) return 'female';
+  if (['female', 'female', 'transgender_woman', 'transgender_women', 'male', 'mtf', 'transfemale'].includes(val)) return 'female';
+  if (['male', 'male', 'transgender_man', 'transgender_men', 'ftm', 'transmale'].includes(val)) return 'male';
+  if (['male', 'nonbinary', 'nb', 'enby'].includes(val)) return 'male';
+  return 'female';
 }
 
 function normalizeInterestedInList(rawInterestedIn: unknown, rawSeekingGender?: unknown): string[] {
@@ -20,7 +20,7 @@ function normalizeInterestedInList(rawInterestedIn: unknown, rawSeekingGender?: 
     rawInterestedIn.forEach((item) => {
       const s = String(item || '').toLowerCase().trim();
       if (s === 'everyone' || s === 'all') {
-        list.push('man', 'woman', 'trans_woman', 'trans_man', 'non_binary');
+        list.push('male', 'female', 'female', 'male', 'male');
       } else if (s) {
         list.push(normalizeGenderValue(s));
       }
@@ -28,7 +28,7 @@ function normalizeInterestedInList(rawInterestedIn: unknown, rawSeekingGender?: 
   } else if (typeof rawInterestedIn === 'string' && rawInterestedIn.trim()) {
     const s = rawInterestedIn.toLowerCase().trim();
     if (s === 'everyone' || s === 'all') {
-      list.push('man', 'woman', 'trans_woman', 'trans_man', 'non_binary');
+      list.push('male', 'female', 'female', 'male', 'male');
     } else {
       s.split(',').forEach((part) => {
         if (part.trim()) list.push(normalizeGenderValue(part));
@@ -37,7 +37,7 @@ function normalizeInterestedInList(rawInterestedIn: unknown, rawSeekingGender?: 
   } else if (typeof rawSeekingGender === 'string' && rawSeekingGender.trim()) {
     const s = rawSeekingGender.toLowerCase().trim();
     if (s === 'everyone' || s === 'all') {
-      list.push('man', 'woman', 'trans_woman', 'trans_man', 'non_binary');
+      list.push('male', 'female', 'female', 'male', 'male');
     } else {
       s.split(',').forEach((part) => {
         if (part.trim()) list.push(normalizeGenderValue(part));
