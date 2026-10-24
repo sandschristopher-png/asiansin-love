@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server';
+﻿import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { createClient } from '@supabase/supabase-js';
 
@@ -51,6 +51,9 @@ export async function GET() {
   try {
     const sessionClient = await createServerSupabaseClient();
     const { data: { user } } = await sessionClient.auth.getUser();
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized', viewer: null, profiles: [] }, { status: 401 });
+    }
 
     const serviceClient = createClient(
       process.env.NEXT_PUBLIC_SUPABASE_URL!,
@@ -205,3 +208,4 @@ export async function GET() {
     return NextResponse.json({ error: err.message || 'Failed to load discover feed' }, { status: 500 });
   }
 }
+

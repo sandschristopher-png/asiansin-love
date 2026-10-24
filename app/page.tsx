@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import { playMatchChime } from '@/lib/sound';
 import { getDistanceLabel } from '@/lib/location';
@@ -32,30 +32,30 @@ const DISCOVERY_MODES = [
 type DiscoveryModeId = (typeof DISCOVERY_MODES)[number]['id'];
 
 const COUNTRY_FLAGS: Record<string, string> = {
-  philippines: '🇵🇭',
-  thailand: '🇹🇭',
-  vietnam: '🇻🇳',
-  indonesia: '🇮🇩',
-  cambodia: '🇰🇭',
-  malaysia: '🇲🇾',
-  singapore: '🇸🇬',
-  laos: '🇱🇦',
-  myanmar: '🇲🇲',
-  'united states': '🇺🇸',
-  canada: '🇨🇦',
-  australia: '🇦🇺',
-  'united kingdom': '🇬🇧',
-  japan: '🇯🇵',
-  'south korea': '🇰🇷',
-  taiwan: '🇹🇼',
-  'hong kong': '🇭🇰',
-  'united arab emirates': '🇦🇪',
-  'new zealand': '🇳🇿',
+  philippines: 'ðŸ‡µðŸ‡­',
+  thailand: 'ðŸ‡¹ðŸ‡­',
+  vietnam: 'ðŸ‡»ðŸ‡³',
+  indonesia: 'ðŸ‡®ðŸ‡©',
+  cambodia: 'ðŸ‡°ðŸ‡­',
+  malaysia: 'ðŸ‡²ðŸ‡¾',
+  singapore: 'ðŸ‡¸ðŸ‡¬',
+  laos: 'ðŸ‡±ðŸ‡¦',
+  myanmar: 'ðŸ‡²ðŸ‡²',
+  'united states': 'ðŸ‡ºðŸ‡¸',
+  canada: 'ðŸ‡¨ðŸ‡¦',
+  australia: 'ðŸ‡¦ðŸ‡º',
+  'united kingdom': 'ðŸ‡¬ðŸ‡§',
+  japan: 'ðŸ‡¯ðŸ‡µ',
+  'south korea': 'ðŸ‡°ðŸ‡·',
+  taiwan: 'ðŸ‡¹ðŸ‡¼',
+  'hong kong': 'ðŸ‡­ðŸ‡°',
+  'united arab emirates': 'ðŸ‡¦ðŸ‡ª',
+  'new zealand': 'ðŸ‡³ðŸ‡¿',
 };
 
 function getCountryFlag(country?: string): string {
-  if (!country) return '🌏';
-  return COUNTRY_FLAGS[country.toLowerCase().trim()] || '🌏';
+  if (!country) return 'ðŸŒ';
+  return COUNTRY_FLAGS[country.toLowerCase().trim()] || 'ðŸŒ';
 }
 
 const GENDER_LABELS: Record<string, string> = {
@@ -1138,32 +1138,72 @@ function DiscoverFeed() {
 }
 function HeroGate() {
   const router = useRouter();
-  const [authState, setAuthState] = useState<'loading' | 'signedOut' | 'member'>('loading');
+  const [authState, setAuthState] = useState<'loading' | 'signedOutFirstTime' | 'member'>('loading');
+
   useEffect(() => {
     let mounted = true;
-    supabase.auth.getUser().then(({ data }) => {
-      if (!mounted) return;
-      setAuthState(data?.user ? 'member' : 'signedOut');
-    });
-    return () => { mounted = false; };
-  }, []);
 
-  // Signed-in members get the real feed at /discover - redirect instead of
-  // rendering the legacy duplicate feed from this file.
-  useEffect(() => {
-    if (authState === 'member') router.replace('/discover');
-  }, [authState, router]);
+    async function evaluateEntry() {
+      const hasVisited =
+        typeof window !== 'undefined' &&
+        (localStorage.getItem('ail_returning') === '1' ||
+          document.cookie.split('; ').some((row) => row.startsWith('ail_returning=1')));
+
+      const { data, error } = await supabase.auth.getUser();
+
+      if (!mounted) return;
+
+      if (error || !data?.user) {
+        if (hasVisited) {
+          router.replace('/login');
+        } else {
+          try {
+            localStorage.setItem('ail_returning', '1');
+            document.cookie = 'ail_returning=1; path=/; max-age=31536000; SameSite=Lax';
+          } catch {}
+          setAuthState('signedOutFirstTime');
+        }
+        return;
+      }
+
+      // User has a valid session -> mark as returning visitor and check onboarding
+      try {
+        localStorage.setItem('ail_returning', '1');
+        document.cookie = 'ail_returning=1; path=/; max-age=31536000; SameSite=Lax';
+      } catch {}
+
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('onboarding_completed')
+        .eq('id', data.user.id)
+        .maybeSingle();
+
+      if (!mounted) return;
+
+      if (profile?.onboarding_completed) {
+        router.replace('/discover');
+      } else {
+        router.replace('/onboarding');
+      }
+    }
+
+    evaluateEntry();
+    return () => {
+      mounted = false;
+    };
+  }, [router]);
 
   if (authState === 'loading') {
     return (
       <div className="min-h-screen bg-[#F8F7FA] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-[#6555B8] border-t-transparent"></div>
+        <div className="animate-spin rounded-full h-10 w-10 border-4 border-[#6555B8] border-t-transparent"></div>
       </div>
     );
   }
 
-  if (authState === 'signedOut') return <HeroLanding />;
+  if (authState === 'signedOutFirstTime') return <HeroLanding />;
   return null;
 }
 
 export default HeroGate;
+

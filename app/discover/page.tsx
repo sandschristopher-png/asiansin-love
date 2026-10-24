@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 import { playMatchChime } from '@/lib/sound';
 import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import { createPortal } from 'react-dom';
@@ -256,6 +256,11 @@ function DiscoverContent() {
       if (!hydrated) setIsLoading(true);
       try {
         const res = await fetch('/api/discover', { cache: 'no-store' });
+        if (res.status === 401) {
+          const hasVisited = localStorage.getItem('ail_returning') === '1';
+          router.replace(hasVisited ? '/login' : '/');
+          return;
+        }
         if (res.ok) {
           const payload = await res.json();
           const v = payload.viewer;
@@ -482,7 +487,7 @@ function DiscoverContent() {
                 }}
                   className="text-[#8C849B] hover:text-[#1C1924] text-xs px-1 cursor-pointer"
                 >
-                  ×
+                  Ã—
                 </button>
               </div>
             ) : (
@@ -934,10 +939,17 @@ export default function AuthGate() {
   const [authState, setAuthState] = useState<'loading' | 'member'>('loading');
   useEffect(() => {
     let mounted = true;
-    supabase.auth.getUser().then(({ data }) => {
+    supabase.auth.getUser().then(({ data, error }) => {
       if (!mounted) return;
-      if (data?.user) setAuthState('member');
-      else router.replace('/');
+      if (data?.user && !error) {
+        setAuthState('member');
+      } else {
+        const hasVisited =
+          typeof window !== 'undefined' &&
+          (localStorage.getItem('ail_returning') === '1' ||
+            document.cookie.split('; ').some((row) => row.startsWith('ail_returning=1')));
+        router.replace(hasVisited ? '/login' : '/');
+      }
     });
     return () => {
       mounted = false;
@@ -953,3 +965,4 @@ export default function AuthGate() {
   }
   return <DiscoverFeed />;
 }
+

@@ -2,6 +2,8 @@
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse, type NextRequest } from 'next/server';
 
+const PROTECTED_PREFIXES = ['/discover', '/onboarding', '/sparks', '/messages', '/profile', '/chat', '/settings'];
+
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({
     request: {
@@ -13,7 +15,6 @@ export async function middleware(request: NextRequest) {
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
   const supabaseServiceKey = process.env.SUPABASE_SERVICE_ROLE_KEY || '';
 
-  // 1. Read session via request cookies
   const supabase = createServerClient(supabaseUrl, supabaseAnonKey, {
     cookies: {
       getAll() {
@@ -37,36 +38,104 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // If not logged in, go to login
-  if (!user) {
-    console.log('[Middleware] No session detected, redirecting to /login');
-    const loginUrl = new URL('/login', request.url);
-    loginUrl.searchParams.set('redirect', request.nextUrl.pathname);
-    return NextResponse.redirect(loginUrl);
+  const { pathname } = request.nextUrl;
+  const hasVisitedBefore = request.cookies.get('ail_returning')?.value === '1';
+
+  // --- ADMIN ROUTE GUARD ---
+  if (pathname.startsWith('/admin')) {
+    if (!user) {
+      const loginUrl = new URL('/login', request.url);
+      loginUrl.searchParams.set('redirect', pathname);
+      return NextResponse.redirect(loginUrl);
+    }
+
+    const adminClient = createClient(supabaseUrl, supabaseServiceKey, {
+      auth: { persistSession: false },
+    });
+
+    const { data: profile } = await adminClient
+      .from('profiles')
+      .select('is_admin')
+      .eq('id', user.id)
+      .single();
+
+    if (!profile?.is_admin) {
+      return NextResponse.redirect(new URL('/', request.url));
+    }
+    return response;
   }
 
-  // 2. Query is_admin using service role client to bypass RLS
-  const adminClient = createClient(supabaseUrl, supabaseServiceKey, {
-    auth: { persistSession: false },
-  });
+  const isProtectedRoute = PROTECTED_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(prefix + '/')
+  );
 
-  const { data: profile, error } = await adminClient
-    .from('profiles')
-    .select('is_admin')
-    .eq('id', user.id)
-    .single();
+  // --- LOGGED-OUT VISITORS ---
+  if (!user) {
+    // If hitting a protected route (/discover, /onboarding, etc.) while signed out:
+    if (isProtectedRoute) {
+      const dest = hasVisitedBefore ? '/login' : '/';
+      return NextResponse.redirect(new URL(dest, request.url));
+    }
 
-  console.log(`[Middleware] User: ${user.email || user.id} | is_admin:`, profile?.is_admin, error ? `| Error: ${error.message}` : '');
+    // If hitting root '/' while signed out:
+    if (pathname === '/') {
+      if (hasVisitedBefore) {
+        return NextResponse.redirect(new URL('/login', request.url));
+      }
+      // First-time visitor: show HeroLanding at '/' and mark cookie for next visit
+      response.cookies.set('ail_returning', '1', {
+        path: '/',
+        maxAge: 60 * 60 * 24 * 365,
+        sameSite: 'lax',
+      });
+      return response;
+    }
 
-  // If not an admin, redirect to hero/home page
-  if (!profile?.is_admin) {
-    console.log('[Middleware] Non-admin user blocked from /admin, redirecting to /');
-    return NextResponse.redirect(new URL('/', request.url));
+    // If visiting /login or /signup directly, mark as returning visitor
+    if (pathname === '/login' || pathname === '/signup') {
+      if (!hasVisitedBefore) {
+        response.cookies.set('ail_returning', '1', {
+          path: '/',
+          maxAge: 60 * 60 * 24 * 365,
+          sameSite: 'lax',
+        });
+      }
+      return response;
+    }
+
+    return response;
+  }
+
+  // --- LOGGED-IN MEMBERS ---
+  // Ensure returning cookie is set whenever a member is signed in
+  if (!hasVisitedBefore) {
+    response.cookies.set('ail_returning', '1', {
+      path: '/',
+      maxAge: 60 * 60 * 24 * 365,
+      sameSite: 'lax',
+    });
+  }
+
+  // If signed in and hitting '/', '/login', or '/signup', send to /discover
+  if (pathname === '/' || pathname === '/login' || pathname === '/signup') {
+    return NextResponse.redirect(new URL('/discover', request.url));
   }
 
   return response;
 }
 
 export const config = {
-  matcher: ['/admin/:path*'],
+  matcher: [
+    '/',
+    '/login',
+    '/signup',
+    '/discover/:path*',
+    '/onboarding/:path*',
+    '/sparks/:path*',
+    '/messages/:path*',
+    '/profile/:path*',
+    '/chat/:path*',
+    '/settings/:path*',
+    '/admin/:path*',
+  ],
 };

@@ -1,4 +1,4 @@
-'use client';
+﻿'use client';
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -470,6 +470,14 @@ export default function OnboardingPage() {
       setLoading(false);
     }
   };
+
+  if (!userId) {
+    return (
+      <div className="min-h-screen bg-[#F8F7FA] flex items-center justify-center">
+        <div className="animate-spin rounded-full h-10 w-10 border-4 border-[#6555b8] border-t-transparent"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-[calc(100dvh-64px)] w-full flex items-center justify-center p-4 sm:p-6 bg-[#F8F7FA]">
@@ -1011,3 +1019,4 @@ export default function OnboardingPage() {
     </div>
   );
 }
+
