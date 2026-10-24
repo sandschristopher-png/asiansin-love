@@ -158,8 +158,8 @@ export function NotificationToast() {
             }
           >
             <Link
-              href={activeToast.linkUrl}
-              onClick={dismissToast}
+              href={activeToast.linkUrl === '#' ? '' : activeToast.linkUrl}
+              onClick={(e) => { if (activeToast.linkUrl === '#') e.preventDefault(); else dismissToast(); }}
               className="flex items-center gap-3 group"
             >
               {activeToast.avatarUrl ? (
