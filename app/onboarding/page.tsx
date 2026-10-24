@@ -22,13 +22,11 @@ import { INTENT_OPTIONS } from '@/lib/intents';
 const GENDER_OPTIONS = [
   { val: 'male', label: 'Man' },
   { val: 'female', label: 'Woman' },
-  { val: 'male', label: 'Trans' },
 ] as const;
 
 const INTERESTED_IN_OPTIONS = [
   { val: 'male', label: 'Men' },
   { val: 'female', label: 'Women' },
-  { val: 'male', label: 'Trans' },
 ] as const;
 
 const HEIGHT_OPTIONS = [
