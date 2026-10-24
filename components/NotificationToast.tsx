@@ -3,6 +3,8 @@
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { notificationService } from '@/lib/notificationService';
+import { usePathname } from 'next/navigation';
+import { supabase } from '@/lib/supabase/client';
 
 export interface ToastPayload {
   id: string;
@@ -20,6 +22,7 @@ export function emitNotificationToast(payload: ToastPayload) {
 
 export function NotificationToast() {
   const [showPermissionPrompt, setShowPermissionPrompt] = useState(false);
+  const pathname = usePathname();
   const [activeToast, setActiveToast] = useState<ToastPayload | null>(null);
   const [isExiting, setIsExiting] = useState(false);
   const autoDismissRef = useRef<NodeJS.Timeout | null>(null);
@@ -47,14 +50,31 @@ export function NotificationToast() {
   }, [dismissToast]);
 
   useEffect(() => {
-    if (typeof window !== 'undefined' && 'Notification' in window) {
-      const dismissed = localStorage.getItem('ail_notif_prompt_dismissed');
-      if (Notification.permission === 'default' && !dismissed) {
-        const timer = setTimeout(() => setShowPermissionPrompt(true), 2500);
-        return () => clearTimeout(timer);
-      }
-    }
-  }, []);
+    if (typeof window === 'undefined' || !('Notification' in window)) return;
+    // Only prompt signed-in users who finished onboarding, on /discover
+    if (pathname !== '/discover') return;
+    if (localStorage.getItem('ail_notif_prompt_dismissed')) return;
+    if (Notification.permission !== 'default') return;
+
+    let cancelled = false;
+    let timer: ReturnType<typeof setTimeout> | null = null;
+
+    supabase.auth.getUser().then(async ({ data: { user } }) => {
+      if (cancelled || !user) return;
+      const { data: profile } = await supabase
+        .from('profiles')
+        .select('onboarding_completed')
+        .eq('id', user.id)
+        .maybeSingle();
+      if (cancelled || !profile?.onboarding_completed) return;
+      timer = setTimeout(() => setShowPermissionPrompt(true), 2500);
+    });
+
+    return () => {
+      cancelled = true;
+      if (timer) clearTimeout(timer);
+    };
+  }, [pathname]);
 
   useEffect(() => {
     const handleToastEvent = (e: Event) => {
@@ -91,14 +111,14 @@ export function NotificationToast() {
       {showPermissionPrompt && (
         <aside
           aria-label="Notification permissions"
-          className="fixed bottom-3 left-3 right-3 sm:left-auto sm:right-6 sm:bottom-6 z-50 max-w-md p-4 rounded-2xl bg-[#2D2F4C] border border-[#9A8CC3]/40 shadow-2xl shadow-black/80 flex items-center gap-3.5 animate-in fade-in slide-in-from-bottom-4 duration-300"
+          className="fixed bottom-3 left-3 right-3 sm:left-auto sm:right-6 sm:bottom-6 z-50 max-w-md p-4 rounded-2xl bg-[#F8F7FA] border border-[#9A8CC3]/25 shadow-xl shadow-black/10 flex items-center gap-3.5 animate-in fade-in slide-in-from-bottom-4 duration-300"
         >
-          <div className="h-10 w-10 rounded-full bg-[#2D2F4C] border border-[#9A8CC3]/35 flex items-center justify-center text-xl shrink-0">
+          <div className="h-10 w-10 rounded-full bg-white border border-[#9A8CC3]/25 flex items-center justify-center text-xl shrink-0">
             🔔
           </div>
           <div className="flex-1 min-w-0">
-            <h2 className="text-xs sm:text-sm font-medium text-white">Enable Notifications</h2>
-            <p className="text-[11px] text-[#DDD8D4] leading-snug mt-0.5">
+            <h2 className="text-xs sm:text-sm font-semibold text-[#1C1924]">Enable Notifications</h2>
+            <p className="text-[11px] text-black/50 leading-snug mt-0.5">
               Get instant sound alerts when genuine matches message or verify.
             </p>
           </div>
@@ -114,7 +134,7 @@ export function NotificationToast() {
               type="button"
               onClick={handleDismissPermission}
               aria-label="Dismiss notification prompt"
-              className="px-2 py-1 text-xs text-[#978FA8] hover:text-white"
+              className="px-2 py-1 text-xs text-black/35 hover:text-black"
             >
               ✕
             </button>
