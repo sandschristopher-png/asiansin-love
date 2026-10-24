@@ -21,7 +21,6 @@ type DiscoveryModeId = (typeof DISCOVERY_MODES)[number]['id'];
 const GENDER_LABELS: Record<string, string> = {
   woman: 'Women',
   man: 'Men',
-  trans: 'Trans',
 };
 
 export interface ProfileItem {
@@ -730,29 +729,13 @@ function DiscoverContent() {
                       { id: 'female', label: 'Women' },
                       { id: 'male', label: 'Men' },
                     ].map((item) => {
-                      const isTrans = item.id === 'male';
-                      const TRANS_IDS = ["trans"];
-                      const isSelected = isTrans
-                        ? draftGenders.some((g) => TRANS_IDS.includes(g))
-                        : draftGenders.includes(item.id);
+                      const isSelected = draftGenders.includes(item.id);
                       return (
                         <button
                           key={item.id}
                           type="button"
                           onClick={() => {
-                            if (isTrans) {
-                              setDraftGenders(
-                                draftGenders.some((g) => TRANS_IDS.includes(g))
-                                  ? draftGenders.filter((g) => !TRANS_IDS.includes(g))
-                                  : [...draftGenders, ...TRANS_IDS]
-                              );
-                            } else {
-                              setDraftGenders(
-                                draftGenders.includes(item.id)
-                                  ? draftGenders.filter((g) => g !== item.id)
-                                  : [...draftGenders, item.id]
-                              );
-                            }
+                            setDraftGenders(                               draftGenders.includes(item.id)                                 ? draftGenders.filter((g) => g !== item.id)                                 : [...draftGenders, item.id]                               );
                           }}
                           className={
                             'py-1.5 px-3 rounded-full border text-xs font-semibold transition cursor-pointer active:scale-95 ' + (isSelected ? 'bg-[#6555B8] text-white border-[#6555B8]' : 'bg-white text-[#1C1924] border-[#DDD7E5]')
