@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { Bell, X } from 'lucide-react';
 import Link from 'next/link';
 import { notificationService } from '@/lib/notificationService';
 import { usePathname } from 'next/navigation';
@@ -114,7 +115,7 @@ export function NotificationToast() {
           className="fixed bottom-3 left-3 right-3 sm:left-auto sm:right-6 sm:bottom-6 z-50 max-w-md p-4 rounded-2xl bg-[#F8F7FA] border border-[#9A8CC3]/25 shadow-xl shadow-black/10 flex items-center gap-3.5 animate-in fade-in slide-in-from-bottom-4 duration-300"
         >
           <div className="h-10 w-10 rounded-full bg-white border border-[#9A8CC3]/25 flex items-center justify-center text-xl shrink-0">
-            🔔
+            <Bell className="h-5 w-5 text-[#6555B8]" />
           </div>
           <div className="flex-1 min-w-0">
             <h2 className="text-xs sm:text-sm font-semibold text-[#1C1924]">Enable Notifications</h2>
@@ -136,7 +137,7 @@ export function NotificationToast() {
               aria-label="Dismiss notification prompt"
               className="px-2 py-1 text-xs text-black/35 hover:text-black"
             >
-              ✕
+              <X className="h-4 w-4" />
             </button>
           </div>
         </aside>
@@ -167,7 +168,7 @@ export function NotificationToast() {
               </div>
             ) : (
               <div className="h-11 w-11 rounded-full bg-[#2D2F4C] border border-[#9A8CC3]/40 flex items-center justify-center text-lg shrink-0">
-                {activeToast.icon || '🔔'}
+                {activeToast.icon ? <span>{activeToast.icon}</span> : <Bell className='h-5 w-5 text-[#9A8CC3]' />}
               </div>
             )}
 
@@ -193,7 +194,7 @@ export function NotificationToast() {
               aria-label="Dismiss notification"
               className="text-xs text-[#978FA8] hover:text-white p-1"
             >
-              ✕
+              <X className="h-4 w-4" />
             </button>
           </Link>
         </aside>
