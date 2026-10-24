@@ -18,10 +18,13 @@ import {
   type CompressionResult,
 } from '@/lib/verification';
 import type { BlinkTracker } from '@/lib/poseVerifier';
+import { computeCanvasHash } from '@/lib/verify/phash';
+
 
 interface CapturedPhoto {
   blob: Blob;
   previewUrl: string;
+  hash?: string;
 }
 
 const HOLD_FRAMES_REQUIRED = 8; // ~1 second at 120ms ticks
@@ -34,6 +37,7 @@ export default function VerifyPage() {
   const streakRef = useRef(0);
   const capturingRef = useRef(false);
   const avatarUrlRef = useRef<string | null>(null);
+  const pendingHashRef = useRef<string | null>(null);
   const verifierRef = useRef<typeof import('@/lib/poseVerifier') | null>(null);
   const lastStatusRef = useRef<{
     faceDetected: boolean;
@@ -118,10 +122,11 @@ export default function VerifyPage() {
         return;
       }
 
+      const capturedHash = pendingHashRef.current;
       setPhotos((prev) => {
         const next = [...prev];
-        if (next.length > forStep) next[forStep] = { blob: result.blob!, previewUrl: result.previewUrl! };
-        else next.push({ blob: result.blob!, previewUrl: result.previewUrl! });
+        if (next.length > forStep) next[forStep] = { blob: result.blob!, previewUrl: result.previewUrl!, hash: capturedHash ?? undefined };
+        else next.push({ blob: result.blob!, previewUrl: result.previewUrl!, hash: capturedHash ?? undefined });
         return next;
       });
 
@@ -190,6 +195,7 @@ export default function VerifyPage() {
     canvas.width = video.videoWidth;
     canvas.height = video.videoHeight;
     canvas.getContext('2d')?.drawImage(video, 0, 0);
+    pendingHashRef.current = computeCanvasHash(canvas);
 
     // Gate 3: biometric match against profile avatar
     if (avatarUrlRef.current && verifierRef.current) {
@@ -265,7 +271,10 @@ export default function VerifyPage() {
       form.set('attemptId', attemptToken);
       form.set('blinkVerified', blinkRef.current.blinkPassed ? 'true' : 'false');
       photos.forEach((p, i) => {
+        form.append('pose_' + i, p.blob, 'pose-' + i + '.jpg');
       });
+      form.set('poseHashes', JSON.stringify(photos.map((p) => p.hash ?? '').filter(Boolean)));
+
       form.set('captureTimestamps', JSON.stringify(captureTimestamps));
       const res = await fetch('/api/verify/submit', { method: 'POST', body: form });
       const data = await res.json();

@@ -109,12 +109,44 @@ export async function POST(req: NextRequest) {
     return fail('Verification attempt already used', 409);
   }
 
-  // 8. Flip the badge. Server-side only; client never touches is_verified.
+  // 7.5 Duplicate-photo defense: compare submitted hashes against all prior verifications
+  const submittedHashes: string[] = [];
+  try {
+    const parsed = JSON.parse(form.get('poseHashes')?.toString() ?? '[]');
+    if (Array.isArray(parsed)) submittedHashes.push(...parsed.filter((h: unknown) => typeof h === 'string' && /^[01]{64}$/.test(h)));
+  } catch { /* fallthrough */ }
+  if (submittedHashes.length >= 2) {
+    const HAMMING_LIMIT = 5; // <= 5 differing bits out of 64 = near-identical photo
+    const { data: priors } = await admin
+      .from('verification_hashes')
+      .select('phash, user_id');
+    if (priors && priors.length > 0) {
+      for (const prior of priors) {
+        if (prior.user_id === user.id) continue; // own re-verifications allowed
+        for (const sh of submittedHashes) {
+          if (sh.length !== prior.phash.length) continue;
+          let dist = 0;
+          for (let b = 0; b < sh.length; b++) if (sh[b] !== prior.phash[b]) dist++;
+          if (dist <= HAMMING_LIMIT) {
+            return fail('Duplicate verification photo detected', 409);
+          }
+        }
+      }
+    }
+  }
+
+// 8. Flip the badge. Server-side only; client never touches is_verified.
   const { error: updErr } = await admin
     .from('profiles')
     .update({ is_verified: true, last_verification_nonce: fingerprint })
     .eq('id', user.id);
   if (updErr) return fail('Could not save verification', 500);
+
+  if (submittedHashes.length > 0) {
+    await admin.from('verification_hashes').insert(
+      submittedHashes.map((h) => ({ user_id: user.id, phash: h }))
+    );
+  }
 
   return NextResponse.json({ verified: true, sequence: payload.sequence });
 }
