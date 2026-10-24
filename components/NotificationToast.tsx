@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useState, useEffect, useCallback, useRef } from 'react';
-import { Bell, X } from 'lucide-react';
 import Link from 'next/link';
 import { notificationService } from '@/lib/notificationService';
 import { usePathname } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
+import { Bell, X } from 'lucide-react';
 
 export interface ToastPayload {
   id: string;
@@ -52,7 +52,6 @@ export function NotificationToast() {
 
   useEffect(() => {
     if (typeof window === 'undefined' || !('Notification' in window)) return;
-    // Only prompt signed-in users who finished onboarding, on /discover
     if (pathname !== '/discover') return;
     if (localStorage.getItem('ail_notif_prompt_dismissed')) return;
     if (Notification.permission !== 'default') return;
@@ -110,94 +109,100 @@ export function NotificationToast() {
   return (
     <>
       {showPermissionPrompt && (
-        <aside
+        <div
           aria-label="Notification permissions"
-          className="fixed bottom-3 left-3 right-3 sm:left-auto sm:right-6 sm:bottom-6 z-50 max-w-md p-4 rounded-2xl bg-[#F8F7FA] border border-[#9A8CC3]/25 shadow-xl shadow-black/10 flex items-center gap-3.5 animate-in fade-in slide-in-from-bottom-4 duration-300"
+          className="fixed inset-0 z-50 flex items-center justify-center p-6 pointer-events-none"
         >
-          <div className="h-10 w-10 rounded-full bg-white border border-[#9A8CC3]/25 flex items-center justify-center text-xl shrink-0">
-            <Bell className="h-5 w-5 text-[#6555B8]" />
-          </div>
-          <div className="flex-1 min-w-0">
-            <h2 className="text-xs sm:text-sm font-semibold text-[#1C1924]">Enable Notifications</h2>
-            <p className="text-[11px] text-black/50 leading-snug mt-0.5">
+          <div className="pointer-events-auto w-full max-w-[300px] rounded-[28px] bg-[#F8F7FA] border border-[#9A8CC3]/25 shadow-2xl shadow-black/20 p-5 flex flex-col items-center text-center animate-in fade-in zoom-in-95 slide-in-from-bottom-2 duration-300">
+            <div className="h-12 w-12 rounded-full bg-[#F3EFFC] flex items-center justify-center mb-3">
+              <Bell className="h-5 w-5 text-[#6555B8]" />
+            </div>
+            <h2 className="text-sm font-bold text-[#1C1924]">Enable Notifications</h2>
+            <p className="text-[11px] text-[#6C637B] leading-snug mt-1">
               Get instant sound alerts when genuine matches message or verify.
             </p>
+            <div className="w-full flex flex-col gap-2 mt-4">
+              <button
+                type="button"
+                onClick={handleEnablePermissions}
+                className="w-full py-2.5 rounded-full bg-[#6555B8] hover:bg-[#52449e] text-white text-xs font-semibold shadow-md transition-all active:scale-[0.97]"
+              >
+                Allow
+              </button>
+              <button
+                type="button"
+                onClick={handleDismissPermission}
+                className="w-full py-2 text-xs font-semibold text-[#6C637B] hover:text-[#1C1924] transition-colors"
+              >
+                Not Now
+              </button>
+            </div>
           </div>
-          <div className="flex items-center gap-1.5 shrink-0">
-            <button
-              type="button"
-              onClick={handleEnablePermissions}
-              className="px-3 py-1.5 rounded-xl bg-[#6555B8] hover:bg-[#7D4B9F] text-white text-xs font-medium shadow-md transition-all active:scale-[0.98]"
-            >
-              Allow
-            </button>
-            <button
-              type="button"
-              onClick={handleDismissPermission}
-              aria-label="Dismiss notification prompt"
-              className="px-2 py-1 text-xs text-black/35 hover:text-black"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-        </aside>
+        </div>
       )}
 
       {activeToast && (
-        <aside
+        <div
           aria-label="Incoming notification alert"
           className={
-            'fixed bottom-4 left-3 right-3 sm:left-auto sm:right-6 z-50 max-w-sm rounded-2xl bg-[#2D2F4C] border border-[#9A8CC3]/50 shadow-2xl p-3.5 transition-all duration-300 ' +
-            (isExiting
-              ? 'opacity-0 translate-y-4 scale-95'
-              : 'opacity-100 translate-y-0 scale-100 animate-in fade-in slide-in-from-bottom-5 duration-300')
+            'fixed inset-0 z-50 flex items-center justify-center p-6 pointer-events-none ' +
+            (isExiting ? 'transition-opacity duration-300 opacity-0' : '')
           }
         >
-          <Link
-            href={activeToast.linkUrl}
-            onClick={dismissToast}
-            className="flex items-start gap-3 group"
+          <div
+            className={
+              'pointer-events-auto w-full max-w-[300px] rounded-3xl bg-[#1E1A2E]/95 backdrop-blur-md border border-[#9A8CC3]/40 shadow-2xl shadow-black/30 p-3.5 ' +
+              (isExiting
+                ? 'opacity-0 scale-95'
+                : 'opacity-100 scale-100 animate-in fade-in zoom-in-95 slide-in-from-bottom-2 duration-300')
+            }
           >
-            {activeToast.avatarUrl ? (
-              <div className="relative h-11 w-11 rounded-full overflow-hidden bg-[#2D2F4C] border border-[#9A8CC3]/40 shrink-0">
-                <img
-                  src={activeToast.avatarUrl}
-                  alt=""
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            ) : (
-              <div className="h-11 w-11 rounded-full bg-[#2D2F4C] border border-[#9A8CC3]/40 flex items-center justify-center text-lg shrink-0">
-                {activeToast.icon ? <span>{activeToast.icon}</span> : <Bell className='h-5 w-5 text-[#9A8CC3]' />}
-              </div>
-            )}
-
-            <div className="flex-1 min-w-0 pr-2">
-              <div className="flex items-center justify-between">
-                <h3 className="text-xs sm:text-sm font-medium text-white group-hover:text-[#B2A4D7] transition-colors truncate">
-                  {activeToast.title}
-                </h3>
-                <span className="text-[10px] text-[#978FA8]">Just now</span>
-              </div>
-              <p className="text-xs text-[#DDD8D4] truncate mt-0.5">
-                {activeToast.description}
-              </p>
-            </div>
-
-            <button
-              type="button"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                dismissToast();
-              }}
-              aria-label="Dismiss notification"
-              className="text-xs text-[#978FA8] hover:text-white p-1"
+            <Link
+              href={activeToast.linkUrl}
+              onClick={dismissToast}
+              className="flex items-center gap-3 group"
             >
-              <X className="h-4 w-4" />
-            </button>
-          </Link>
-        </aside>
+              {activeToast.avatarUrl ? (
+                <div className="relative h-10 w-10 rounded-full overflow-hidden bg-[#2D2F4C] border border-[#9A8CC3]/40 shrink-0">
+                  <img
+                    src={activeToast.avatarUrl}
+                    alt=""
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              ) : (
+                <div className="h-10 w-10 rounded-full bg-[#2D2F4C] border border-[#9A8CC3]/40 flex items-center justify-center shrink-0">
+                  <Bell className="h-5 w-5 text-[#9A8CC3]" />
+                </div>
+              )}
+
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center justify-between gap-2">
+                  <h3 className="text-xs font-semibold text-white group-hover:text-[#B2A4D7] transition-colors truncate">
+                    {activeToast.title}
+                  </h3>
+                  <span className="text-[10px] text-[#978FA8] shrink-0">now</span>
+                </div>
+                <p className="text-[11px] text-[#DDD8D4] truncate mt-0.5">
+                  {activeToast.description}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  dismissToast();
+                }}
+                aria-label="Dismiss notification"
+                className="text-[#978FA8] hover:text-white p-1 shrink-0"
+              >
+                <X className="h-4 w-4" />
+              </button>
+            </Link>
+          </div>
+        </div>
       )}
     </>
   );
