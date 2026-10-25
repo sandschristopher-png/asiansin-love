@@ -2,7 +2,7 @@ import { createServerClient } from '@supabase/ssr';
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse, type NextRequest } from 'next/server';
 
-const PROTECTED_PREFIXES = ['/discover', '/onboarding', '/sparks', '/messages', '/profile', '/chat', '/settings'];
+const PROTECTED_PREFIXES = ['/discover', '/sparks', '/messages', '/profile', '/chat', '/settings'];
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({
@@ -65,19 +65,24 @@ export async function middleware(request: NextRequest) {
     return response;
   }
 
+  // Onboarding is public: new sign-ups flow through it freely
+  if (pathname.startsWith('/onboarding')) {
+    return response;
+  }
+
   const isProtectedRoute = PROTECTED_PREFIXES.some(
     (prefix) => pathname === prefix || pathname.startsWith(prefix + '/')
   );
 
   // --- LOGGED-OUT VISITORS ---
   if (!user) {
-    // If hitting a protected route (/discover, /onboarding, etc.) while signed out:
+    // Protected route while signed out: returning visitors to login, first-timers to onboarding
     if (isProtectedRoute) {
-      const dest = hasVisitedBefore ? '/login' : '/';
+      const dest = hasVisitedBefore ? '/login' : '/onboarding';
       return NextResponse.redirect(new URL(dest, request.url));
     }
 
-    // If hitting root '/' while signed out:
+    // Root '/' while signed out
     if (pathname === '/') {
       if (hasVisitedBefore) {
         return NextResponse.redirect(new URL('/login', request.url));
@@ -91,7 +96,7 @@ export async function middleware(request: NextRequest) {
       return response;
     }
 
-    // If visiting /login or /signup directly, mark as returning visitor
+    // Visiting /login or /signup directly: mark as returning visitor
     if (pathname === '/login' || pathname === '/signup') {
       if (!hasVisitedBefore) {
         response.cookies.set('ail_returning', '1', {
@@ -107,7 +112,6 @@ export async function middleware(request: NextRequest) {
   }
 
   // --- LOGGED-IN MEMBERS ---
-  // Ensure returning cookie is set whenever a member is signed in
   if (!hasVisitedBefore) {
     response.cookies.set('ail_returning', '1', {
       path: '/',
@@ -116,7 +120,7 @@ export async function middleware(request: NextRequest) {
     });
   }
 
-  // If signed in and hitting '/', '/login', or '/signup', send to /discover
+  // Signed in and hitting '/', '/login', or '/signup': send to /discover
   if (pathname === '/' || pathname === '/login' || pathname === '/signup') {
     return NextResponse.redirect(new URL('/discover', request.url));
   }
