@@ -1144,10 +1144,12 @@ function HeroGate() {
     let mounted = true;
 
     async function evaluateEntry() {
+      // localStorage only: the middleware sets the ail_returning cookie on the
+      // first visit itself, so checking the cookie here would flag every new
+      // visitor as returning and bounce them to /login.
       const hasVisited =
         typeof window !== 'undefined' &&
-        (localStorage.getItem('ail_returning') === '1' ||
-          document.cookie.split('; ').some((row) => row.startsWith('ail_returning=1')));
+        localStorage.getItem('ail_returning') === '1';
 
       const routeLoggedOutVisitor = () => {
         if (!mounted) return;
