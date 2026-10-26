@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import { BrandLogo } from '@/components/BrandLogo';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
 
@@ -66,6 +67,7 @@ export default function SignUpPage() {
   return (
     <main className="max-w-md mx-auto w-full px-4 py-12 flex-1 flex flex-col justify-center">
       <div className="text-center mb-6">
+          <BrandLogo size="md" className="mb-4" />
         <h1 className="text-2xl sm:text-3xl font-medium text-[#1C1924]  font-[family-name:var(--font-nunito)]">
           Join asiansin.love
         </h1>
@@ -128,7 +130,7 @@ export default function SignUpPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 rounded-2xl bg-[#6555B8] hover:bg-[#7D4B9F] disabled:opacity-50 text-white font-medium text-sm shadow-lg shadow-[#6555B8]/40 transition active:scale-95 mt-2"
+            className="w-full py-3.5 px-6 rounded-full bg-gradient-to-r from-[#5a48ab] via-[#6555b8] to-[#8d75e0] text-white text-sm font-bold flex items-center justify-center gap-2 shadow-md shadow-[#6555b8]/25 hover:opacity-95 active:scale-[0.99] transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed mt-2"
           >
             {loading ? 'Creating Account...' : 'Create Account'}
           </button>
