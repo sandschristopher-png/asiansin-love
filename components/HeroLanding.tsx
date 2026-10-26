@@ -72,7 +72,7 @@ export function HeroLanding() {
 
           <div className="mt-5">
             <Link
-              href="/login"
+              href="/signup"
               className="inline-flex items-center justify-center w-full max-w-[300px] mx-auto py-3.5 rounded-full bg-[#6555B8] text-white text-sm font-semibold hover:bg-[#5545A8] active:scale-[0.99] transition shadow-[0_8px_20px_-4px_rgba(101,85,184,0.38)]"
             >
               <span>Join for Free</span>
@@ -261,7 +261,7 @@ export function HeroLanding() {
             Join free and start meeting genuine singles across Southeast Asia today.
           </p>
           <Link
-            href="/login"
+            href="/signup"
             className="mt-6 inline-flex items-center justify-center w-full max-w-[260px] py-3.5 rounded-full bg-white text-[#6555B8] text-sm font-bold hover:bg-[#F3EFFC] active:scale-95 transition shadow-md"
           >
             <span>Join for Free</span>
