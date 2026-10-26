@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { createBrowserClient } from "@supabase/ssr";
 import { Eye, EyeOff, Loader2, LogIn } from "lucide-react";
+import { BrandLogo } from "@/components/BrandLogo";
 
 export default function LoginPage() {
   const [supabase] = useState(() =>
@@ -69,7 +70,10 @@ export default function LoginPage() {
 
         {/* Heading only — header owns the branding */}
         <div className="mb-10 text-center">
-          <h1 className="text-xl font-extrabold text-[#181126]">Welcome back</h1>
+          <div className="flex justify-center mb-5">
+          <BrandLogo size="md" />
+        </div>
+        <h1 className="text-xl font-extrabold text-[#181126]">Welcome back</h1>
           <p className="mt-1 text-[13px] text-[#756D82]">
             Sign in to continue your journey.
           </p>
