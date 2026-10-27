@@ -434,7 +434,7 @@ export default function OnboardingPage() {
           full_name: cleanHandle,
           gender,
           interested_in: interestedIn,
-          seeking_gender: interestedIn[0] === 'male' ? 'male' : interestedIn[0] === 'male' ? 'female' : 'female',
+        seeking_gender: interestedIn[0] === 'female' ? 'female' : 'male',
           birthdate: birthdate || null,
           age: computedAge,
           city: city.trim(),
