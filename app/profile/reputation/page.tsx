@@ -81,7 +81,7 @@ export default function ReputationScreen() {
           </div>
 
           <p className="text-xs leading-relaxed text-[#524B5E]">
-            Every verified member begins with a 100 baseline score. Rather than grinding points, your standing is maintained through courteous, sincere courtship and mutual respect.
+            Every verified member begins with a 100 baseline score. Rather than grinding points, your standing is maintained through kind, genuine conversation and mutual respect.
           </p>
 
           <div className="p-3 rounded-xl bg-amber-50/70 border border-amber-200/70 space-y-1">

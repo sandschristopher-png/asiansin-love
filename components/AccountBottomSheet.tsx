@@ -195,7 +195,7 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
               </div>
               <p className="text-xs text-[#B2A4D7] leading-relaxed">
                 {profile?.is_verified
-                  ? 'Your profile carries the verified courtship badge.'
+                  ? 'Your profile carries the verified dating badge.'
                   : 'Earn your verified badge with a 10-second selfie pose.'}
               </p>
             </div>

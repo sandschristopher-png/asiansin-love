@@ -21,6 +21,7 @@ export default function PublicProfilePage() {
   const [profile, setProfile] = useState<any>(null);
   const [message, setMessage] = useState('');
   const [sending, setSending] = useState(false);
+const [isMessageSheetOpen, setIsMessageSheetOpen] = useState(false);
   const [sentSuccess, setSentSuccess] = useState(false);
   const [sendError, setSendError] = useState<string | null>(null);
 
@@ -325,6 +326,74 @@ export default function PublicProfilePage() {
             </div>
           </div>
         </div>
+{/* Message trigger: opens bottom sheet */}
+<div className="pt-1">
+  <button
+    type="button"
+    onClick={() => setIsMessageSheetOpen(true)}
+    className="w-full px-4 py-2.5 rounded-full bg-[#6555b8] hover:bg-[#52449e] text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-95 select-none cursor-pointer shadow-md"
+  >
+    <MessageCircle className="w-4 h-4" />
+    Send {profile.name} a Message
+  </button>
+</div>
+
+{isMessageSheetOpen && (
+  <div
+    className="fixed inset-0 z-[100] flex items-end justify-center bg-black/40 backdrop-blur-sm"
+    onClick={() => setIsMessageSheetOpen(false)}
+  >
+    <div
+      className="w-full max-w-lg p-4 pb-6 rounded-t-3xl bg-white shadow-xl"
+      onClick={(e) => e.stopPropagation()}
+    >
+        {/* Message Composer Card */}
+        <div className="p-4 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-2.5">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium text-[#1C1924] flex items-center gap-1.5">
+              <MessageCircle className="w-4 h-4 text-[#6555b8]" />
+              Send {profile.name} a Message
+            </span>
+            <span className="text-[10px] font-medium text-[#756D82]">Direct Delivery</span>
+          </div>
+
+          <form onSubmit={handleSendMessage} className="space-y-2.5">
+            <textarea
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              rows={3}
+              placeholder={`Hi ${profile.username || "Member"}, I noticed your profile and would love to introduce myself...`}
+              className="w-full text-xs p-3 rounded-2xl border border-[#DDD7E5] bg-[#FAF8FD] focus:bg-white focus:border-[#6555b8] focus:outline-none transition resize-none placeholder:text-[#8C849B]"
+            />
+
+            <div className="flex items-center justify-between">
+              {sentSuccess ? (
+                <span className="text-xs font-medium text-emerald-600 flex items-center gap-1">
+                  <ShieldCheck className="w-3.5 h-3.5" /> Sent successfully!
+                </span>
+              ) : sendError ? (
+                <span className="text-xs font-medium text-rose-500 flex items-center gap-1 max-w-[200px] truncate" title={sendError}>
+                  <svg className="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+                  {sendError}
+                </span>
+              ) : (
+                <span className="text-[11px] text-[#756D82]">Polite intros build trust</span>
+              )}
+
+              <button
+                type="submit"
+                disabled={sending || !message.trim()}
+                className="px-4 py-2 rounded-full bg-[#6555b8] hover:bg-[#52449e] disabled:opacity-50 text-white text-xs font-semibold flex items-center gap-1.5 transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-95 select-none cursor-pointer shadow-md"
+              >
+                <Send className="w-3.5 h-3.5" />
+                <span>{sending ? 'Sending...' : 'Send Message'}</span>
+              </button>
+            </div>
+          </form>
+        </div>
+    </div>
+  </div>
+)}
 
         {/* Message Composer Card */}
         <div className="p-4 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-2.5">
@@ -461,195 +530,6 @@ export default function PublicProfilePage() {
           </p>
         </div>
 
-        {/* Courtship Dossier: 3-Tier Compatibility Architecture */}
-        <div className="space-y-4">
-          {/* 1. Courtship Alignment & Timeline */}
-          <div className="p-4 sm:p-5 rounded-3xl bg-white border border-[#DDD7E5]/70 shadow-xs space-y-3">
-            <div className="flex items-center justify-between pb-2 border-b border-[#F0ECF5]">
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-full bg-[#F3EFFC] text-[#6555b8] flex items-center justify-center">
-                  <HeartHandshake className="w-4 h-4" />
-                </div>
-                <h2 className="text-xs font-bold text-[#1C1924] uppercase tracking-wider">
-                  Courtship Alignment & Timeline
-                </h2>
-              </div>
-              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#F3EFFC] text-[#6555b8]">
-                Intent
-              </span>
-            </div>
-
-            <div className="space-y-0 text-xs divide-y divide-[#F0ECF5]">
-              <div className="flex items-center justify-between py-2.5">
-                <span className="font-medium text-[#756D82] flex items-center gap-2">
-                  <Heart className="w-3.5 h-3.5 text-[#8C849B]" />
-                  Relationship Intent
-                </span>
-                <span className="font-semibold text-[#1C1924] text-right">
-                  {profile.intent || profile.intentions || profile.looking_for || 'Marriage / Serious'}
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between py-2.5">
-                <span className="font-medium text-[#756D82] flex items-center gap-2">
-                  <Sparkles className="w-3.5 h-3.5 text-[#8C849B]" />
-                  Marriage Timeline
-                </span>
-                <span className="font-semibold text-[#1C1924] text-right">
-                  {profile.marriage_timeline || 'Within 1–2 years'}
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between py-2.5">
-                <span className="font-medium text-[#756D82] flex items-center gap-2">
-                  <Globe className="w-3.5 h-3.5 text-[#8C849B]" />
-                  Relocation Flexibility
-                </span>
-                <span className="font-semibold text-[#1C1924] text-right">
-                  {profile.relocation || 'Open to relocation'}
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between py-2.5">
-                <span className="font-medium text-[#756D82] flex items-center gap-2">
-                  <ShieldCheck className="w-3.5 h-3.5 text-[#8C849B]" />
-                  Marital Status
-                </span>
-                <span className="font-semibold text-[#1C1924] text-right">
-                  {profile.marital_status || 'Never Married'}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* 2. Family & Values */}
-          <div className="p-4 sm:p-5 rounded-3xl bg-white border border-[#DDD7E5]/70 shadow-xs space-y-3">
-            <div className="flex items-center justify-between pb-2 border-b border-[#F0ECF5]">
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-full bg-[#FFF0F4] text-[#E05375] flex items-center justify-center">
-                  <Baby className="w-4 h-4" />
-                </div>
-                <h2 className="text-xs font-bold text-[#1C1924] uppercase tracking-wider">
-                  Family & Values
-                </h2>
-              </div>
-              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#FFF0F4] text-[#E05375]">
-                Family
-              </span>
-            </div>
-
-            <div className="space-y-0 text-xs divide-y divide-[#F0ECF5]">
-              <div className="flex items-center justify-between py-2.5">
-                <span className="font-medium text-[#756D82] flex items-center gap-2">
-                  <Baby className="w-3.5 h-3.5 text-[#8C849B]" />
-                  Desires Children
-                </span>
-                <span className="font-semibold text-[#1C1924] text-right">
-                  {profile.wants_kids || 'Wants children'}
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between py-2.5">
-                <span className="font-medium text-[#756D82] flex items-center gap-2">
-                  <User className="w-3.5 h-3.5 text-[#8C849B]" />
-                  Has Children
-                </span>
-                <span className="font-semibold text-[#1C1924] text-right">
-                  {profile.has_kids || 'No'}
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between py-2.5">
-                <span className="font-medium text-[#756D82] flex items-center gap-2">
-                  <Sparkles className="w-3.5 h-3.5 text-[#8C849B]" />
-                  Faith & Beliefs
-                </span>
-                <span className="font-semibold text-[#1C1924] text-right">
-                  {profile.religion || 'Christian (Catholic)'}
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between py-2.5">
-                <span className="font-medium text-[#756D82] flex items-center gap-2">
-                  <MapPin className="w-3.5 h-3.5 text-[#8C849B]" />
-                  Living Situation
-                </span>
-                <span className="font-semibold text-[#1C1924] text-right">
-                  {profile.living_situation || 'Lives independently'}
-                </span>
-              </div>
-            </div>
-          </div>
-
-          {/* 3. Lifestyle & Background */}
-          <div className="p-4 sm:p-5 rounded-3xl bg-white border border-[#DDD7E5]/70 shadow-xs space-y-3">
-            <div className="flex items-center justify-between pb-2 border-b border-[#F0ECF5]">
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-full bg-[#F3EFFC] text-[#6555b8] flex items-center justify-center">
-                  <Briefcase className="w-4 h-4" />
-                </div>
-                <h2 className="text-xs font-bold text-[#1C1924] uppercase tracking-wider">
-                  Lifestyle & Background
-                </h2>
-              </div>
-              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#F3EFFC] text-[#6555b8]">
-                Rhythm
-              </span>
-            </div>
-
-            <div className="space-y-0 text-xs divide-y divide-[#F0ECF5]">
-              <div className="flex items-center justify-between py-2.5">
-                <span className="font-medium text-[#756D82] flex items-center gap-2">
-                  <Briefcase className="w-3.5 h-3.5 text-[#8C849B]" />
-                  Occupation
-                </span>
-                <span className="font-semibold text-[#1C1924] text-right">
-                  {profile.occupation || 'Professional'}
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between py-2.5">
-                <span className="font-medium text-[#756D82] flex items-center gap-2">
-                  <Languages className="w-3.5 h-3.5 text-[#8C849B]" />
-                  Languages
-                </span>
-                <span className="font-semibold text-[#1C1924] text-right">
-                  {Array.isArray(profile.languages) ? profile.languages.join(', ') : (profile.languages || 'English, Tagalog')}
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between py-2.5">
-                <span className="font-medium text-[#756D82] flex items-center gap-2">
-                  <Ruler className="w-3.5 h-3.5 text-[#8C849B]" />
-                  Height
-                </span>
-                <span className="font-semibold text-[#1C1924] text-right">
-                  {formattedHeight && formattedHeight !== 'Not specified' ? formattedHeight : '—'}
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between py-2.5">
-                <span className="font-medium text-[#756D82] flex items-center gap-2">
-                  <Wine className="w-3.5 h-3.5 text-[#8C849B]" />
-                  Drinks
-                </span>
-                <span className="font-semibold text-[#1C1924] text-right">
-                  {profile.drinking || 'Socially'}
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between py-2.5">
-                <span className="font-medium text-[#756D82] flex items-center gap-2">
-                  <Cigarette className="w-3.5 h-3.5 text-[#8C849B]" />
-                  Smokes
-                </span>
-                <span className="font-semibold text-[#1C1924] text-right">
-                  {profile.smoking || 'No'}
-                </span>
-              </div>
-            </div>
-          </div>
-        </div>
 
           {/* Languages Spoken Card */}
           <div className="p-5 rounded-3xl bg-white border border-[#DDD7E5]/70 shadow-sm space-y-3">

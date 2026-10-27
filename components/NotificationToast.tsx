@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { notificationService } from '@/lib/notificationService';
 
 export interface ToastPayload {
+  id?: string;
   title: string;
   description?: string;
   avatarUrl?: string | null;
@@ -40,7 +41,7 @@ export function NotificationToast() {
   const dispatchToast = useCallback((toast: ToastPayload) => {
     clearTimers();
     setIsExiting(false);
-    notificationService.triggerSystemNotification(toast.title, toast.description);
+    notificationService.triggerSystemNotification(toast.title, toast.description ?? toast.title);
     setActiveToast(toast);
     // Pixel-style heads-up: auto-dismiss after ~5s.
     dismissTimer.current = setTimeout(() => dismissToast(), 5000);
