@@ -2,7 +2,7 @@
 
 import { captureCurrentLocation, formatVerifiedDate } from '@/lib/location';
 import { notifyUser } from '@/components/InAppToast';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -92,6 +92,7 @@ export default function MyProfilePage() {
   const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [photos, setPhotos] = useState<string[]>([]);
   const [currentPhotoIdx, setCurrentPhotoIdx] = useState(0);
+  const touchStartX = useRef<number | null>(null);
   const [age, setAge] = useState(25);
   const [location, setLocation] = useState('');
   const [locationSource, setLocationSource] = useState<'gps_verified' | 'self_reported'>('self_reported');
@@ -435,7 +436,34 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
         {/* Framed 4:5 Portrait Card */}
         <div className="relative aspect-[4/5] w-full rounded-3xl overflow-hidden bg-white border border-[#DDD7E5] flex items-center justify-center select-none shadow-xs">
           {currentImg ? (
-            <img src={currentImg} alt={username} className="w-full h-full object-cover" />
+            <div
+              className="w-full h-full cursor-pointer"
+              onClick={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect();
+                const isLeft = e.clientX - rect.left < rect.width / 2;
+                setCurrentPhotoIdx((prev) =>
+                  isLeft
+                    ? (prev - 1 + photoList.length) % Math.max(photoList.length, 1)
+                    : (prev + 1) % Math.max(photoList.length, 1)
+                );
+              }}
+              onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
+              onTouchEnd={(e) => {
+                const startX = touchStartX.current;
+                if (startX == null) return;
+                const dx = e.changedTouches[0].clientX - startX;
+                if (Math.abs(dx) > 40) {
+                  setCurrentPhotoIdx((prev) =>
+                    dx > 0
+                      ? (prev - 1 + photoList.length) % Math.max(photoList.length, 1)
+                      : (prev + 1) % Math.max(photoList.length, 1)
+                  );
+                }
+                touchStartX.current = null;
+              }}
+            >
+              <img src={currentImg} alt={username} className="w-full h-full object-cover pointer-events-none" draggable={false} />
+            </div>
           ) : (
             <Link href="/profile/edit" className="flex flex-col items-center justify-center text-[#6555B8] p-6 text-center">
               <div className="w-14 h-14 rounded-2xl bg-[#F3EFFC] flex items-center justify-center mb-2">
