@@ -1,4 +1,4 @@
-﻿import { NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
 import { createClient } from '@supabase/supabase-js';
@@ -291,11 +291,18 @@ export async function POST(req: Request) {
     }
 
     try {
+      const { data: sender } = await serviceClient
+        .from('profiles')
+        .select('username, avatar_url')
+        .eq('id', senderId)
+        .maybeSingle();
+      const senderName = sender?.username || 'Someone';
       await serviceClient.from('notifications').insert({
         user_id: receiverId,
+        actor_id: senderId,
         type: 'message',
         title: 'New Message',
-        description: 'You received a new message.',
+        description: senderName + ' sent you a message.',
         link_url: '/messages',
       });
     } catch {

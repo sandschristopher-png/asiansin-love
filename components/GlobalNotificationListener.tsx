@@ -52,12 +52,10 @@ export function GlobalNotificationListener() {
             }
 
             emitNotificationToast({
-              id: String(row.id || Date.now()),
               title: row.title || 'New Notification',
-              description: row.description || 'You have a new update on Asians in Love.',
-              linkUrl: row.link_url || '/notifications',
+              description: row.description || 'You have a new update on asians in love.',
+              linkUrl: row.link_url || '/favorites',
               avatarUrl,
-              icon: ICON_BY_TYPE[row.type] || '🔔',
             });
           }
         )

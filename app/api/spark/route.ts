@@ -52,9 +52,6 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: insertError.message }, { status: 500 })
     }
 
-    // Log notification for recipient
-    await supabase.from('notifications').insert({ user_id: targetUserId, type: 'favorite', title: 'New Spark Received', description: 'Someone sent you a spark! Check out who liked your profile.', link_url: '/favorites' })
-
     // Check if mutual spark exists
     const { data: mutual } = await supabase
       .from('sparks')
@@ -62,6 +59,36 @@ export async function POST(req: Request) {
       .eq('sender_id', targetUserId)
       .eq('receiver_id', user.id)
       .maybeSingle()
+
+    // Hydrate sender identity for the notification copy
+    const { data: senderProfile } = await supabase
+      .from('profiles')
+      .select('username, avatar_url')
+      .eq('id', user.id)
+      .maybeSingle()
+    const senderName = senderProfile?.username || 'Someone'
+
+    if (mutual) {
+      // It's a match - notify the recipient with match framing
+      await supabase.from('notifications').insert({
+        user_id: targetUserId,
+        actor_id: user.id,
+        type: 'match',
+        title: "It's a Match!",
+        description: "You and  sparked each other. Say hi.",
+        link_url: '/chat/' + user.id,
+      })
+    } else {
+      // Regular spark - actor-aware copy
+      await supabase.from('notifications').insert({
+        user_id: targetUserId,
+        actor_id: user.id,
+        type: 'favorite',
+        title: 'New Spark',
+        description: senderName + ' sparked your profile.',
+        link_url: '/favorites',
+      })
+    }
 
     return NextResponse.json({ sparked: true, mutual: !!mutual })
   } catch (err: any) {
