@@ -1,5 +1,15 @@
 @import "tailwindcss";
 
+@keyframes ailHeadsUpIn {
+  from { opacity: 0; transform: translateY(-120%); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+@keyframes ailHeadsUpOut {
+  from { opacity: 1; transform: translateY(0); }
+  to   { opacity: 0; transform: translateY(-120%); }
+}
+.animate-ail-headsup-in  { animation: ailHeadsUpIn  0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.animate-ail-headsup-out { animation: ailHeadsUpOut 0.28s cubic-bezier(0.4, 0, 1, 1) forwards; }
 @keyframes slideDown {
   0% {
     opacity: 0;

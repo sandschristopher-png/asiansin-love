@@ -1,211 +1,109 @@
 'use client';
 
-import React, { useState, useEffect, useCallback, useRef } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { notificationService } from '@/lib/notificationService';
-import { usePathname } from 'next/navigation';
-import { supabase } from '@/lib/supabase/client';
-import { Bell, X } from 'lucide-react';
 
 export interface ToastPayload {
-  id: string;
   title: string;
-  description: string;
-  linkUrl: string;
-  avatarUrl?: string;
-  icon?: string;
+  description?: string;
+  avatarUrl?: string | null;
+  linkUrl?: string;
 }
 
+// Fire a heads-up toast from anywhere in the app.
 export function emitNotificationToast(payload: ToastPayload) {
   if (typeof window === 'undefined') return;
   window.dispatchEvent(new CustomEvent<ToastPayload>('ail-toast', { detail: payload }));
 }
 
 export function NotificationToast() {
-  const [showPermissionPrompt, setShowPermissionPrompt] = useState(false);
-  const pathname = usePathname();
   const [activeToast, setActiveToast] = useState<ToastPayload | null>(null);
   const [isExiting, setIsExiting] = useState(false);
-  const autoDismissRef = useRef<NodeJS.Timeout | null>(null);
+  const dismissTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const exitTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  const dismissToast = useCallback(() => {
-    setIsExiting(true);
-    setTimeout(() => {
-      setActiveToast(null);
-      setIsExiting(false);
-    }, 300);
+  const clearTimers = useCallback(() => {
+    if (dismissTimer.current) { clearTimeout(dismissTimer.current); dismissTimer.current = null; }
+    if (exitTimer.current) { clearTimeout(exitTimer.current); exitTimer.current = null; }
   }, []);
 
+  const dismissToast = useCallback(() => {
+    clearTimers();
+    setIsExiting(true);
+    exitTimer.current = setTimeout(() => {
+      setIsExiting(false);
+      setActiveToast(null);
+    }, 280);
+  }, [clearTimers]);
+
   const dispatchToast = useCallback((toast: ToastPayload) => {
-    notificationService.playChime();
-    notificationService.triggerSystemNotification(toast.title, toast.description);
+    clearTimers();
     setIsExiting(false);
+    notificationService.triggerSystemNotification(toast.title, toast.description);
     setActiveToast(toast);
-
-    if (autoDismissRef.current) {
-      clearTimeout(autoDismissRef.current);
-    }
-    autoDismissRef.current = setTimeout(() => {
-      dismissToast();
-    }, 5500);
-  }, [dismissToast]);
-
-  useEffect(() => {
-    if (typeof window === 'undefined' || !('Notification' in window)) return;
-    if (pathname !== '/discover') return;
-    if (localStorage.getItem('ail_notif_prompt_dismissed')) return;
-    if (Notification.permission !== 'default') return;
-
-    let cancelled = false;
-    let timer: ReturnType<typeof setTimeout> | null = null;
-
-    supabase.auth.getUser().then(async ({ data: { user } }) => {
-      if (cancelled || !user) return;
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('onboarding_completed')
-        .eq('id', user.id)
-        .maybeSingle();
-      if (cancelled || !profile?.onboarding_completed) return;
-      timer = setTimeout(() => setShowPermissionPrompt(true), 2500);
-    });
-
-    return () => {
-      cancelled = true;
-      if (timer) clearTimeout(timer);
-    };
-  }, [pathname]);
+    // Pixel-style heads-up: auto-dismiss after ~5s.
+    dismissTimer.current = setTimeout(() => dismissToast(), 5000);
+  }, [clearTimers, dismissToast]);
 
   useEffect(() => {
     const handleToastEvent = (e: Event) => {
       const customEvent = e as CustomEvent<ToastPayload>;
-      if (customEvent.detail) {
-        dispatchToast(customEvent.detail);
-      }
+      dispatchToast(customEvent.detail);
     };
-
     window.addEventListener('ail-toast', handleToastEvent);
     return () => {
       window.removeEventListener('ail-toast', handleToastEvent);
-      if (autoDismissRef.current) {
-        clearTimeout(autoDismissRef.current);
-      }
+      clearTimers();
     };
-  }, [dispatchToast]);
+  }, [dispatchToast, clearTimers]);
 
-  const handleEnablePermissions = async () => {
-    const res = await notificationService.requestPermission();
-    setShowPermissionPrompt(false);
-    if (res === 'granted') {
-      notificationService.playChime();
-    }
-  };
-
-  const handleDismissPermission = () => {
-    localStorage.setItem('ail_notif_prompt_dismissed', 'true');
-    setShowPermissionPrompt(false);
-  };
+  if (!activeToast) return null;
 
   return (
-    <>
-      {showPermissionPrompt && (
-        <div
-          aria-label="Notification permissions"
-          className="fixed inset-0 z-50 flex items-center justify-center p-6 pointer-events-none"
-        >
-          <div className="pointer-events-auto w-full max-w-[300px] rounded-[28px] bg-[#F8F7FA] border border-[#9A8CC3]/25 shadow-2xl shadow-black/20 p-5 flex flex-col items-center text-center animate-in fade-in zoom-in-95 slide-in-from-bottom-2 duration-300">
-            <div className="h-12 w-12 rounded-full bg-[#F3EFFC] flex items-center justify-center mb-3">
-              <Bell className="h-5 w-5 text-[#6555B8]" />
-            </div>
-            <h2 className="text-sm font-bold text-[#1C1924]">Enable Notifications</h2>
-            <p className="text-[11px] text-[#6C637B] leading-snug mt-1">
-              Get instant sound alerts when genuine matches message or verify.
-            </p>
-            <div className="w-full flex flex-col gap-2 mt-4">
-              <button
-                type="button"
-                onClick={handleEnablePermissions}
-                className="w-full py-2.5 rounded-full bg-[#6555B8] hover:bg-[#52449e] text-white text-xs font-semibold shadow-md transition-all active:scale-[0.97]"
-              >
-                Allow
-              </button>
-              <button
-                type="button"
-                onClick={handleDismissPermission}
-                className="w-full py-2 text-xs font-semibold text-[#6C637B] hover:text-[#1C1924] transition-colors"
-              >
-                Not Now
-              </button>
-            </div>
+    <div className="pointer-events-none fixed left-1/2 top-3 z-[100070] w-[calc(100%-1.5rem)] max-w-[360px] -translate-x-1/2">
+      <Link
+        href={activeToast.linkUrl && activeToast.linkUrl !== '#' ? activeToast.linkUrl : ''}
+        onClick={(e) => {
+          if (!activeToast.linkUrl || activeToast.linkUrl === '#') e.preventDefault();
+          else dismissToast();
+        }}
+        className={
+          'pointer-events-auto flex w-full items-start gap-3 rounded-2xl border border-[#9A8CC3]/25 bg-[#F8F7FA]/95 p-3.5 shadow-lg shadow-black/15 backdrop-blur-md ' +
+          (isExiting ? 'animate-ail-headsup-out' : 'animate-ail-headsup-in')
+        }
+      >
+        {/* Circular avatar, same treatment as chat messages */}
+        {activeToast.avatarUrl ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={activeToast.avatarUrl}
+            alt=""
+            className="h-9 w-9 shrink-0 rounded-full object-cover"
+          />
+        ) : (
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#6555B8]/10 text-sm font-bold text-[#6555B8]">
+            {(activeToast.title || '?').charAt(0).toUpperCase()}
           </div>
+        )}
+        <div className="min-w-0 flex-1 pt-0.5">
+          <p className="truncate text-[13px] font-semibold text-[#1C1924]">{activeToast.title}</p>
+          {activeToast.description ? (
+            <p className="mt-0.5 line-clamp-2 text-xs leading-snug text-[#6C637B]">{activeToast.description}</p>
+          ) : null}
         </div>
-      )}
-
-      {activeToast && (
-        <div
-          aria-label="Incoming notification alert"
-          className={
-            'fixed inset-0 z-50 flex items-center justify-center p-6 pointer-events-none ' +
-            (isExiting ? 'transition-opacity duration-300 opacity-0' : '')
-          }
+        <span
+          role="button"
+          tabIndex={-1}
+          onClick={(e) => { e.preventDefault(); e.stopPropagation(); dismissToast(); }}
+          className="ml-1 mt-0.5 shrink-0 cursor-pointer rounded-full p-1 text-[#6C637B]/70 transition-colors hover:bg-black/5 hover:text-[#1C1924]"
+          aria-label="Dismiss notification"
         >
-          <div
-            className={
-              'pointer-events-auto w-full max-w-[300px] rounded-3xl bg-[#1E1A2E]/95 backdrop-blur-md border border-[#9A8CC3]/40 shadow-2xl shadow-black/30 p-3.5 ' +
-              (isExiting
-                ? 'opacity-0 scale-95'
-                : 'opacity-100 scale-100 animate-in fade-in zoom-in-95 slide-in-from-bottom-2 duration-300')
-            }
-          >
-            <Link
-              href={activeToast.linkUrl === '#' ? '' : activeToast.linkUrl}
-              onClick={(e) => { if (activeToast.linkUrl === '#') e.preventDefault(); else dismissToast(); }}
-              className="flex items-center gap-3 group"
-            >
-              {activeToast.avatarUrl ? (
-                <div className="relative h-10 w-10 rounded-full overflow-hidden bg-[#2D2F4C] border border-[#9A8CC3]/40 shrink-0">
-                  <img
-                    src={activeToast.avatarUrl}
-                    alt=""
-                    className="w-full h-full object-cover"
-                  />
-                </div>
-              ) : (
-                <div className="h-10 w-10 rounded-full bg-[#2D2F4C] border border-[#9A8CC3]/40 flex items-center justify-center shrink-0">
-                  <Bell className="h-5 w-5 text-[#9A8CC3]" />
-                </div>
-              )}
-
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between gap-2">
-                  <h3 className="text-xs font-semibold text-white group-hover:text-[#B2A4D7] transition-colors truncate">
-                    {activeToast.title}
-                  </h3>
-                  <span className="text-[10px] text-[#978FA8] shrink-0">now</span>
-                </div>
-                <p className="text-[11px] text-[#DDD8D4] truncate mt-0.5">
-                  {activeToast.description}
-                </p>
-              </div>
-
-              <button
-                type="button"
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  dismissToast();
-                }}
-                aria-label="Dismiss notification"
-                className="text-[#978FA8] hover:text-white p-1 shrink-0"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </Link>
-          </div>
-        </div>
-      )}
-    </>
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
+            <path d="M2 2l8 8M10 2l-8 8" />
+          </svg>
+        </span>
+      </Link>
+    </div>
   );
 }
-
-export default NotificationToast;
