@@ -23,6 +23,7 @@ import {
 import { supabase } from '@/lib/supabase/client';
 import { INTENT_OPTIONS, normalizeIntent, intentLabel } from '@/lib/intents';
 import RepScoreCard from '@/components/RepScoreCard';
+import { ProfileHighlightsEditorRow } from '@/components/ProfileHighlightsEditorRow';
 
 const QUICK_LANGUAGES = ['English', 'Tagalog', 'Thai', 'Japanese', 'Vietnamese', 'Mandarin', 'Spanish', 'Korean'];
 
@@ -497,6 +498,9 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
         </div>
 
         <RepScoreCard score={repScore ?? 100} />
+
+{/* PROFILE HIGHLIGHTS */}
+<ProfileHighlightsEditorRow />
 
         {/* INTERESTS & HOBBIES */}
         <div className="p-5 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-3">
