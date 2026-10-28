@@ -82,7 +82,7 @@ export function ProfileCard({
 
       <div className="absolute top-3 left-3 right-3 z-10 flex items-center justify-between pointer-events-none">
         {profile.isOnline ? (
-          <span className="presence-dot h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white/90 shadow" />
+          <span className="presence-dot absolute top-3 left-3 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white/90 shadow z-20" />
         ) : <div />}
 
         {profile.repScore !== undefined && (
