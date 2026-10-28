@@ -28,6 +28,10 @@ export function BottomNav() {
   const [user, setUser] = useState<any>(null);
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const pathname = usePathname();
+  const isPublicProfile = pathname.startsWith("/profile/") && pathname !== "/profile";
+  const isChat = pathname.startsWith("/chat");
+  if (isPublicProfile || isChat) return null;
+
 
   const isActive = (path: string) => {
     if (!pathname) return false;

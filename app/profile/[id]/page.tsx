@@ -8,6 +8,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, ShieldCheck, MapPin, Briefcase, ChevronLeft, ChevronRight, Heart, Zap, Languages, Globe, Send, MessageCircle, BadgeCheck, User, Sparkles, HeartHandshake, Baby, Ruler, Wine, Cigarette } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import RepScoreCard from '@/components/RepScoreCard';
+import { ProfileTopHeader } from '@/components/profile/ProfileTopHeader';
+import { ProfileFloatingDock } from '@/components/profile/ProfileFloatingDock';
 
 
 export default function PublicProfilePage() {
@@ -210,19 +212,9 @@ const [isMessageSheetOpen, setIsMessageSheetOpen] = useState(false);
   return (
     <div className="min-h-screen flex flex-col bg-[#F8F7FA] text-[#1C1924]">
       <main className="flex-1 w-full px-4 pt-4 pb-28 space-y-4">
-        {/* Top Bar Navigation */}
-        <div className="flex items-center justify-between">
-          <Link
-            href="/discover"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#524B5E] hover:text-[#1C1924] transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] hover:-translate-x-0.5 active:scale-90 select-none"
-          >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Back to Discover</span>
-          </Link>
-          
-        </div>
+        <ProfileTopHeader targetUserId={profile.id} targetUserName={profile.name} />
 
-        {/* Hero Card: Photo + Identity + Direct Actions */}
+{/* Hero Card: Photo + Identity + Direct Actions */}
         <div className="bg-white rounded-3xl border border-[#DDD7E5] shadow-xs overflow-hidden">
           {/* Main Photo Frame */}
           <div className="relative aspect-[4/5] w-full bg-[#181926] select-none group overflow-hidden">
@@ -306,27 +298,7 @@ const [isMessageSheetOpen, setIsMessageSheetOpen] = useState(false);
             </div>
           </div>
 
-          {/* Action Dock */}
-          <div className="grid grid-cols-4 gap-2.5 p-3">
-            <button
-              type="button"
-              onClick={() => setIsMessageSheetOpen(true)}
-              className="col-span-3 inline-flex items-center justify-center gap-2 rounded-2xl bg-[#6555B8] py-3 text-xs font-semibold text-white shadow-sm transition hover:bg-[#5849a6] active:scale-[0.98]"
-            >
-              <MessageCircle size={14} strokeWidth={2.5} />
-              Message {profile.name}
-            </button>
-            <button
-              type="button"
-              onClick={toggleSpark}
-              disabled={sparkBusy}
-              className={'col-span-1 inline-flex items-center justify-center rounded-2xl border py-3 text-xs font-bold transition active:scale-[0.98] ' + (isSparked ? 'bg-[#6555B8] border-[#6555B8] text-white' : 'border-[#9A8CC3]/25 bg-[#F3EFFC] text-[#6555B8] hover:bg-[#e8e1f8]')}
-              aria-label="Spark"
-            >
-              <Zap size={15} strokeWidth={2.5} className={isSparked ? 'fill-white' : ''} />
-            </button>
-          </div>
-        </div>
+</div>
 
 {isMessageSheetOpen && (
   <div
@@ -385,52 +357,7 @@ const [isMessageSheetOpen, setIsMessageSheetOpen] = useState(false);
   </div>
 )}
 
-        {/* Message Composer Card */}
-        <div className="p-4 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-2.5">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-[#1C1924] flex items-center gap-1.5">
-              <MessageCircle className="w-4 h-4 text-[#6555b8]" />
-              Send {profile.name} a Message
-            </span>
-            <span className="text-[10px] font-medium text-[#756D82]">Direct Delivery</span>
-          </div>
-
-          <form onSubmit={handleSendMessage} className="space-y-2.5">
-            <textarea
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              rows={3}
-              placeholder={`Hi ${profile.username || "Member"}, I noticed your profile and would love to introduce myself...`}
-              className="w-full text-xs p-3 rounded-2xl border border-[#DDD7E5] bg-[#FAF8FD] focus:bg-white focus:border-[#6555b8] focus:outline-none transition resize-none placeholder:text-[#8C849B]"
-            />
-
-            <div className="flex items-center justify-between">
-              {sentSuccess ? (
-                <span className="text-xs font-medium text-emerald-600 flex items-center gap-1">
-                  <ShieldCheck className="w-3.5 h-3.5" /> Sent successfully!
-                </span>
-              ) : sendError ? (
-                <span className="text-xs font-medium text-rose-500 flex items-center gap-1 max-w-[200px] truncate" title={sendError}>
-                  <svg className="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                  {sendError}
-                </span>
-              ) : (
-                <span className="text-[11px] text-[#756D82]">Polite intros build trust</span>
-              )}
-
-              <button
-                type="submit"
-                disabled={sending || !message.trim()}
-                className="px-4 py-2 rounded-full bg-[#6555b8] hover:bg-[#52449e] disabled:opacity-50 text-white text-xs font-semibold flex items-center gap-1.5 transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-95 select-none cursor-pointer shadow-md"
-              >
-                <Send className="w-3.5 h-3.5" />
-                <span>{sending ? 'Sending...' : 'Send Message'}</span>
-              </button>
-            </div>
-          </form>
-        </div>
-
-        {/* Reputation Score Card */}
+{/* Reputation Score Card */}
           <RepScoreCard score={profile.rep_score ?? 100} />
 
           {/* with-Style "Things in Common" & Interests Card */}
@@ -543,6 +470,15 @@ const [isMessageSheetOpen, setIsMessageSheetOpen] = useState(false);
             </div>
           </div>
       </main>
+
+      <ProfileFloatingDock
+        targetUserId={profile.id}
+        targetUserName={profile.name}
+        isSparked={isSparked}
+        sparkBusy={sparkBusy}
+        onSpark={toggleSpark}
+        onMessage={() => setIsMessageSheetOpen(true)}
+      />
     </div>
   );
 }
