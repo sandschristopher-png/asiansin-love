@@ -288,8 +288,18 @@ const [isMessageSheetOpen, setIsMessageSheetOpen] = useState(false);
               </>
             )}
 
-            {/* Online Status Badge */}
-            <span className="presence-dot absolute top-3 left-3 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white/90 shadow z-20" />
+                        {/* Back button */}
+            <button
+              type="button"
+              aria-label="Back"
+              onClick={() => { if (typeof window !== 'undefined' && window.history.length > 1) { router.back(); } else { router.push('/discover'); } }}
+              className="absolute top-2.5 left-2.5 z-30 flex h-10 w-10 items-center justify-center rounded-full bg-black/35 text-white backdrop-blur-md transition hover:bg-black/50 active:scale-95 pointer-events-auto"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </button>
+
+{/* Online Status Badge */}
+            <span className="presence-dot absolute top-6 left-14 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white/90 shadow z-20" />
 
             {/* Bottom gradient scrim */}
             <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-4 pt-14 pointer-events-none">
