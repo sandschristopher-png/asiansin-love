@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Sparkles, ChevronRight, Loader2 } from 'lucide-react';
+import { ChevronRight, Loader2 } from 'lucide-react';
 import { useHighlights, type EditableInterest } from '@/hooks/useHighlights';
 import { EditHighlightsModal } from '@/components/EditHighlightsModal';
 
@@ -12,14 +12,11 @@ export function ProfileHighlightsEditorRow() {
   const activeHighlights: EditableInterest[] = availableInterests.filter((i) => i.is_highlight);
 
   return (
-    <div className="space-y-2 py-3 border-b border-neutral-100 dark:border-neutral-800">
+    <div className="rounded-3xl bg-white border border-[#DDD7E5] shadow-xs p-4 space-y-2">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-1.5">
-          <Sparkles className="h-4 w-4 text-[#6555B8]" />
-          <span className="text-xs font-bold uppercase tracking-wider text-neutral-600 dark:text-neutral-300">
-            Profile Highlights
-          </span>
-        </div>
+        <span className="text-xs font-bold uppercase tracking-wider text-[#524B5E]">
+          Profile Highlights
+        </span>
         <button
           type="button"
           onClick={() => setIsModalOpen(true)}
@@ -31,11 +28,11 @@ export function ProfileHighlightsEditorRow() {
       </div>
 
       {isLoading ? (
-        <div className="flex items-center gap-2 py-2 text-xs text-neutral-400">
+        <div className="flex items-center gap-2 py-2 text-xs text-[#6C637B]">
           <Loader2 className="h-3.5 w-3.5 animate-spin" /> Loading your highlights...
         </div>
       ) : activeHighlights.length === 0 ? (
-        <p className="text-xs text-neutral-400">
+        <p className="text-xs text-[#6C637B]">
           No highlights chosen. Select up to 3 interests to showcase on your profile.
         </p>
       ) : (
