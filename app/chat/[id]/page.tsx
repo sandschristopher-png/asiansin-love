@@ -331,7 +331,7 @@ export default function ChatConversationPage() {
       .channel(channelName)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, (payload) => {
         if (!isMounted) return;
-        console.log('[chat] Realtime event:', payload.eventType, payload.new?.id);
+        console.log('[chat] Realtime event:', payload.eventType, (payload.new as any)?.id);
 
         if (payload.eventType === 'UPDATE') {
           const updated = payload.new;
@@ -359,7 +359,7 @@ export default function ChatConversationPage() {
               const isMe = newRow.sender_id === currentUserId;
               const newMsg = {
                 id: newRow.id,
-                sender: isMe ? 'me' : 'them',
+                sender: (isMe ? 'me' : 'them') as 'me' | 'them',
                 text: newRow.content,
                 createdAt: newRow.created_at,
                 time: formatTimeShort(newRow.created_at),
