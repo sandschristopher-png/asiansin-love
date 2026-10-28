@@ -8,6 +8,7 @@ import { useParams, useRouter } from 'next/navigation';
 import { ArrowLeft, ShieldCheck, MapPin, Briefcase, ChevronLeft, ChevronRight, Heart, Zap, Languages, Globe, Send, MessageCircle, BadgeCheck, User, Sparkles, HeartHandshake, Baby, Ruler, Wine, Cigarette } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import RepScoreCard from '@/components/RepScoreCard';
+import { ProfileHighlights } from '@/components/profile/ProfileHighlights';
 import { ProfileTopHeader } from '@/components/profile/ProfileTopHeader';
 import { ProfileFloatingDock } from '@/components/profile/ProfileFloatingDock';
 
@@ -100,6 +101,15 @@ const [isMessageSheetOpen, setIsMessageSheetOpen] = useState(false);
             if (Array.isArray(myProf?.interests)) setViewerInterests(myProf.interests);
             if (myProf?.relationship_intent) setViewerIntent(myProf.relationship_intent);
           }
+          const { data: highlightRows } = await supabase
+            .from('user_interests')
+            .select('tag_id, highlight_story, interest_tags(label, icon)')
+            .eq('user_id', data.id)
+            .eq('is_highlight', true)
+            .order('created_at', { ascending: true })
+            .limit(3);
+          data.highlight_rows = highlightRows || [];
+
           let calculatedAge = data.age;
           if (!calculatedAge && (data.birthdate || data.date_of_birth)) {
             const dob = new Date(data.birthdate || data.date_of_birth);
@@ -360,6 +370,12 @@ const [isMessageSheetOpen, setIsMessageSheetOpen] = useState(false);
 {/* Reputation Score Card */}
           <RepScoreCard score={profile.rep_score ?? 100} />
 
+          <ProfileHighlights
+            highlights={profile.highlight_rows || []}
+            viewerInterests={viewerInterests}
+            targetUserName={profile.name}
+          />
+
           {/* with-Style "Things in Common" & Interests Card */}
         {(() => {
           const profileTags: string[] = Array.isArray(profile.interests) ? profile.interests : [];
@@ -373,6 +389,8 @@ const [isMessageSheetOpen, setIsMessageSheetOpen] = useState(false);
           );
           const totalCommon = sharedTags.length + (sameIntent ? 1 : 0);
 
+          const hasHighlights = Array.isArray(profile.highlight_rows) && profile.highlight_rows.length > 0;
+          if (hasHighlights) return null;
           if (profileTags.length === 0 && totalCommon === 0) return null;
 
           return (
