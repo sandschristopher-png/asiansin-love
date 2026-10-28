@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Bell, Zap, MessageSquare, Eye, Heart, ShieldCheck, ShieldAlert, BadgeCheck } from 'lucide-react';
+import { supabase } from '@/lib/supabase/client';
 
 type Notification = {
   id: string;
@@ -86,6 +87,59 @@ export default function NotificationsSection({ initial, onNavigate }: { initial?
       })
       .catch(() => {})
       .finally(() => setLoading(false));
+  }, []);
+
+  // Live updates while the menu is open: prepend new notifications instantly.
+  useEffect(() => {
+    let channel: any = null;
+    let isMounted = true;
+
+    async function setup(uid: string) {
+      if (channel) await supabase.removeChannel(channel);
+      channel = supabase
+        .channel('notif-section-' + uid)
+        .on(
+          'postgres_changes',
+          { event: 'INSERT', schema: 'public', table: 'notifications', filter: 'user_id=eq.' + uid },
+          async (payload: any) => {
+            if (!isMounted || !payload.new) return;
+            const row = payload.new;
+            let actor = null;
+            if (row.actor_id) {
+              const { data } = await supabase
+                .from('profiles')
+                .select('id, username, avatar_url')
+                .eq('id', row.actor_id)
+                .maybeSingle();
+              actor = data;
+            }
+            const enriched = { ...row, actor };
+            setNotifications((prev) => {
+              if (prev.some((n) => n.id === enriched.id)) return prev;
+              const next = [enriched, ...prev];
+              try { localStorage.setItem('ail_notifs_cache', JSON.stringify({ notifications: next, unread_count: next.filter((n) => !n.is_read).length })); } catch {}
+              return next;
+            });
+            setUnread((prev) => prev + 1);
+          }
+        )
+        .subscribe();
+    }
+
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      if (user && isMounted) setup(user.id);
+    });
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => {
+      if (session?.user && isMounted) setup(session.user.id);
+      else if (channel) { supabase.removeChannel(channel); channel = null; }
+    });
+
+    return () => {
+      isMounted = false;
+      subscription.unsubscribe();
+      if (channel) supabase.removeChannel(channel);
+    };
   }, []);
 
   useEffect(() => {
