@@ -289,7 +289,7 @@ const [isMessageSheetOpen, setIsMessageSheetOpen] = useState(false);
             )}
 
             {/* Online Status Badge */}
-            <span className="presence-dot h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white/90 shadow" />
+            <span className="presence-dot absolute top-3 left-3 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white/90 shadow z-20" />
 
             {/* Bottom gradient scrim */}
             <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-4 pt-14 pointer-events-none">
