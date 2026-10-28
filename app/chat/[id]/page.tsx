@@ -335,9 +335,11 @@ export default function ChatConversationPage() {
 
         if (payload.eventType === 'UPDATE') {
           const updated = payload.new;
-          if (typeof updated.is_read !== 'undefined') {
-            setMessages((prev) =>
-              prev.map((m) => (m.id === updated.id ? { ...m, read: Boolean(updated.is_read)} : m))
+          console.log('[chat] UPDATE event received:', updated?.id, 'is_read:', updated?.is_read, 'read:', updated?.read);
+          const readFlag = updated.is_read ?? updated.read;
+          if (typeof readFlag !== 'undefined') {
+            setMessages((prev: ChatMessage[]) =>
+              prev.map((m) => (m.id === updated.id ? { ...m, read: Boolean(readFlag) } : m))
             );
           }
           return;
@@ -354,8 +356,13 @@ export default function ChatConversationPage() {
           const isSender = newRow.sender_id === currentUserId;
 
           if (isReceiver || isSender) {
+            const echoIsMine = newRow.sender_id === currentUserId;
             setMessages((prev) => {
               if (prev.some((m) => m.id === newRow.id)) return prev;
+              // Drop the optimistic temp copy of my own message now that the DB row arrived
+              const cleaned = echoIsMine
+                ? prev.filter((m) => !m.id.startsWith('temp-'))
+                : prev;
               const isMe = newRow.sender_id === currentUserId;
               const newMsg = {
                 id: newRow.id,
@@ -366,7 +373,7 @@ export default function ChatConversationPage() {
                 read: Boolean(newRow.is_read ?? newRow.read ?? true),
               };
               console.log('[chat] Adding new message:', newMsg.id, 'from:', newMsg.sender);
-              return [...prev, newMsg];
+              return [...cleaned, newMsg];
             });
           } else {
             console.log('[chat] Message not for this user, ignoring:', newRow.id);
