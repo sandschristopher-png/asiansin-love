@@ -114,13 +114,13 @@ export default function NotificationsSection({ initial, onNavigate }: { initial?
               actor = data;
             }
             const enriched = { ...row, actor };
-            setNotifications((prev) => {
+            setNotifications((prev: Notification[]) => {
               if (prev.some((n) => n.id === enriched.id)) return prev;
               const next = [enriched, ...prev];
               try { localStorage.setItem('ail_notifs_cache', JSON.stringify({ notifications: next, unread_count: next.filter((n) => !n.is_read).length })); } catch {}
               return next;
             });
-            setUnread((prev) => prev + 1);
+            setUnread((prev: number) => prev + 1);
           }
         )
         .subscribe();
