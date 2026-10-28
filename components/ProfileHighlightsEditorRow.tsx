@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { ChevronRight, Loader2 } from 'lucide-react';
+import { ChevronRight, Loader2, MessageCircle } from 'lucide-react';
 import { useHighlights, type EditableInterest } from '@/hooks/useHighlights';
 import { EditHighlightsModal } from '@/components/EditHighlightsModal';
 
@@ -12,7 +12,7 @@ export function ProfileHighlightsEditorRow() {
   const activeHighlights: EditableInterest[] = availableInterests.filter((i) => i.is_highlight);
 
   return (
-    <div className="rounded-3xl bg-white border border-[#DDD7E5] shadow-xs p-4 space-y-2">
+    <div className="rounded-3xl bg-white border border-[#DDD7E5] shadow-xs p-4 space-y-3">
       <div className="flex items-center justify-between">
         <span className="text-xs font-bold uppercase tracking-wider text-[#524B5E]">
           Profile Highlights
@@ -36,14 +36,22 @@ export function ProfileHighlightsEditorRow() {
           No highlights chosen. Select up to 3 interests to showcase on your profile.
         </p>
       ) : (
-        <div className="flex flex-wrap gap-1.5 pt-1">
+        <div className="space-y-2.5 pt-1">
           {activeHighlights.map((item) => (
-            <span
+            <div
               key={item.tag_id}
-              className="inline-flex items-center rounded-full border border-[#6555B8]/30 bg-[#6555B8]/10 px-2.5 py-1 text-[11px] font-medium text-[#6555B8]"
+              className="rounded-2xl border border-[#DDD7E5] bg-white p-3"
             >
-              {item.label}
-            </span>
+              <span className="inline-flex items-center rounded-full border border-[#6555B8]/30 bg-[#6555B8]/10 px-2.5 py-1 text-[11px] font-semibold text-[#6555B8]">
+                {item.label}
+              </span>
+              {item.highlight_story && (
+                <div className="mt-2 flex items-start gap-2 rounded-xl bg-[#F8F7FA] p-2.5 text-xs text-[#6C637B]">
+                  <MessageCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#6555B8]" />
+                  <p className="italic">{item.highlight_story}</p>
+                </div>
+              )}
+            </div>
           ))}
         </div>
       )}
