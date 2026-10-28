@@ -326,42 +326,60 @@ export default function ChatConversationPage() {
     let isMounted = true;
     const channelName = 'chat_' + [resolvedTargetUuid, currentUserId].sort().join('_');
 
+    console.log('[chat] Setting up realtime channel:', channelName);
     const channel = supabase
       .channel(channelName)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, (payload) => {
         if (!isMounted) return;
+        console.log('[chat] Realtime event:', payload.eventType, payload.new?.id);
+
         if (payload.eventType === 'UPDATE') {
-          const updated = payload.new as any;
-          setMessages((prev) =>
-            prev.map((m) => (m.id === updated.id ? { ...m, read: Boolean(updated.is_read) } : m))
-          );
+          const updated = payload.new;
+          if (typeof updated.is_read !== 'undefined') {
+            setMessages((prev) =>
+              prev.map((m) => (m.id === updated.id ? { ...m, read: Boolean(updated.is_read)} : m))
+            );
+          }
           return;
         }
 
         if (payload.eventType === 'INSERT') {
-          const newRow = payload.new as any;
-          const recId = newRow.receiver_id || newRow.recipient_id;
-          const isFromTarget = newRow.sender_id === resolvedTargetUuid && recId === currentUserId;
+          const newRow = payload.new;
+          if (newRow.is_quarantined || newRow.is_flagged) {
+            console.log('[chat] Skipping quarantined/flagged message:', newRow.id);
+            return;
+          }
 
-          if (isFromTarget && !newRow.is_quarantined) {
+          const isReceiver = newRow.receiver_id === currentUserId;
+          const isSender = newRow.sender_id === currentUserId;
+
+          if (isReceiver || isSender) {
             setMessages((prev) => {
               if (prev.some((m) => m.id === newRow.id)) return prev;
-              return [
-                ...prev,
-                {
-                  id: newRow.id,
-                  sender: 'them',
-                  text: newRow.content,
-                  createdAt: newRow.created_at,
-                  time: formatTimeShort(newRow.created_at),
-                  read: true,
-                },
-              ];
+              const isMe = newRow.sender_id === currentUserId;
+              const newMsg = {
+                id: newRow.id,
+                sender: isMe ? 'me' : 'them',
+                text: newRow.content,
+                createdAt: newRow.created_at,
+                time: formatTimeShort(newRow.created_at),
+                read: Boolean(newRow.is_read ?? newRow.read ?? true),
+              };
+              console.log('[chat] Adding new message:', newMsg.id, 'from:', newMsg.sender);
+              return [...prev, newMsg];
             });
+          } else {
+            console.log('[chat] Message not for this user, ignoring:', newRow.id);
           }
         }
       })
-      .subscribe();
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          console.log('[chat] Channel subscribed successfully');
+        } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          console.error('[chat] Channel error:', status);
+        }
+      });
 
     return () => {
       isMounted = false;
