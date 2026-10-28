@@ -171,7 +171,7 @@ export function Navbar() {
               <div className="flex items-center gap-2.5">
                 <button
                   type="button"
-                  onClick={() => router.back()}
+                  onClick={() => { if (typeof window !== "undefined" && window.history.length > 1) router.back(); else router.push("/discover"); }}
                   className="w-8 h-8 rounded-full flex items-center justify-center text-[#4C3B75] hover:bg-black/5 transition-colors -ml-1 sm:hidden"
                   aria-label="Back"
                 >
