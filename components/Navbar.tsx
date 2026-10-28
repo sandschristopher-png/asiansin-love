@@ -322,7 +322,7 @@ export function Navbar() {
                   setProfileMenuOpen(false);
                   if (typeof navigator !== "undefined" && navigator.share) {
                     navigator.share({
-                      title: `${targetUserName || 'Profile'} on asiansin.love`,
+                      title: 'Profile on asiansin.love',
                       url: typeof window !== "undefined" ? window.location.href : "",
                     }).catch(() => {});
                   }
