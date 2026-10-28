@@ -30,7 +30,7 @@ export function BottomNav() {
   const pathname = usePathname();
   const isPublicProfile = pathname.startsWith("/profile/") && pathname !== "/profile";
   const isChat = pathname.startsWith("/chat");
-  if (isPublicProfile || isChat) return null;
+
 
 
   const isActive = (path: string) => {
@@ -84,6 +84,7 @@ export function BottomNav() {
         .subscribe();
     };
 
+
     fetchAndSubscribeUnread();
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event: any, session: any) => {
@@ -96,6 +97,7 @@ export function BottomNav() {
     });
 
     
+
 
 
     return () => {
@@ -122,7 +124,7 @@ export function BottomNav() {
     };
   }, []);
 
-  if (!user || PUBLIC_ROUTES.includes(pathname) || pathname?.startsWith('/onboarding')) {
+  if (!user || isPublicProfile || isChat || PUBLIC_ROUTES.includes(pathname) || pathname?.startsWith('/onboarding')) {
     return null;
   }
 
@@ -143,6 +145,7 @@ export function BottomNav() {
         {navItems.map((item) => {
           const active = isActive(item.href);
           const Icon = item.icon;
+
 
           return (
             <Link
