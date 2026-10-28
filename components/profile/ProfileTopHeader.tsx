@@ -1,6 +1,5 @@
 "use client";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
 
 export function ProfileTopHeader({
   targetUserId,
@@ -9,43 +8,18 @@ export function ProfileTopHeader({
   targetUserId: string;
   targetUserName: string;
 }) {
-  const router = useRouter();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const onBack = () => {
-    if (typeof window !== "undefined" && window.history.length > 1) {
-      router.back();
-    } else {
-      router.push("/discover");
-    }
-  };
-
+  // Expose setter to parent via window or prop - for now, we'll use a custom event
+  // Better: pass down setProfileMenuOpen as prop, but for simplicity we'll use custom event
   return (
     <>
-      {/* Frosted white control pills — sit below Navbar, no collision */}
-      <div className="absolute top-3 left-3 right-3 z-30 flex items-center justify-between pointer-events-none">
-        <button
-          onClick={onBack}
-          aria-label="Go back"
-          className="pointer-events-auto h-9 w-9 rounded-full bg-white/85 backdrop-blur-md border border-black/5 shadow-sm text-[#1C1924] flex items-center justify-center active:scale-95 transition"
-        >
-          <svg className="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.25" strokeLinecap="round" strokeLinejoin="round">
-            <path d="M15 18l-6-6 6-6" />
-          </svg>
-        </button>
-        <button
-          onClick={() => setMenuOpen(true)}
-          aria-label="More options"
-          className="pointer-events-auto h-9 w-9 rounded-full bg-white/85 backdrop-blur-md border border-black/5 shadow-sm text-[#1C1924] flex items-center justify-center active:scale-95 transition"
-        >
-          <svg className="h-[18px] w-[18px]" viewBox="0 0 24 24" fill="currentColor">
-            <circle cx="12" cy="5" r="1.7" />
-            <circle cx="12" cy="12" r="1.7" />
-            <circle cx="12" cy="19" r="1.7" />
-          </svg>
-        </button>
-      </div>
-
+      {/* Trigger hidden button to open menu - parent will listen */}
+      <button
+        id="open-profile-menu"
+        className="hidden"
+        onClick={() => setMenuOpen(true)}
+      />
       {/* Options bottom sheet */}
       {menuOpen && (
         <div

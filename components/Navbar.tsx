@@ -13,6 +13,7 @@ export function Navbar() {
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const [inviteCopied, setInviteCopied] = useState(false);
   const [hasUnread, setHasUnread] = useState(false);
   const [prefetchedNotifs, setPrefetchedNotifs] = useState<any>(null);
@@ -182,6 +183,20 @@ export function Navbar() {
                 >
                   {pageTitle}
                 </h1>
+                {pathname?.startsWith('/profile/') && (
+                  <button
+                    type="button"
+                    onClick={() => setProfileMenuOpen(true)}
+                    className="w-8 h-8 rounded-full flex items-center justify-center text-[#4C3B75] hover:bg-black/5 transition-colors sm:hidden"
+                    aria-label="More options"
+                  >
+                    <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                      <circle cx="12" cy="5" r="1.7" />
+                      <circle cx="12" cy="12" r="1.7" />
+                      <circle cx="12" cy="19" r="1.7" />
+                    </svg>
+                  </button>
+                )}
               </div>
             )}
           </div>
@@ -277,6 +292,55 @@ export function Navbar() {
           }
         }
       `}</style>
-    </header>
+    
+      {/* Profile Options Bottom Sheet */}
+      {profileMenuOpen && (
+        <div
+          className="fixed inset-0 z-[100] flex items-end justify-center bg-black/40 backdrop-blur-sm"
+          onClick={() => setProfileMenuOpen(false)}
+        >
+          <div
+            className="w-full max-w-md p-4 pb-6 rounded-t-3xl bg-white shadow-xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-gray-200" />
+            <div className="space-y-1">
+              <button
+                onClick={() => setProfileMenuOpen(false)}
+                className="w-full text-left px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors text-[#1C1924]"
+              >
+                Report Profile
+              </button>
+              <button
+                onClick={() => setProfileMenuOpen(false)}
+                className="w-full text-left px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors text-[#1C1924]"
+              >
+                Block User
+              </button>
+              <button
+                onClick={() => {
+                  setProfileMenuOpen(false);
+                  if (typeof navigator !== "undefined" && navigator.share) {
+                    navigator.share({
+                      title: `${targetUserName || 'Profile'} on asiansin.love`,
+                      url: typeof window !== "undefined" ? window.location.href : "",
+                    }).catch(() => {});
+                  }
+                }}
+                className="w-full text-left px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors text-[#1C1924]"
+              >
+                Share Profile
+              </button>
+            </div>
+            <button
+              onClick={() => setProfileMenuOpen(false)}
+              className="mt-3 w-full py-3 rounded-xl bg-gray-100 text-gray-600 font-medium hover:bg-gray-200 transition-colors"
+            >
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+</header>
   );
 }

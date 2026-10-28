@@ -227,7 +227,7 @@ const [isMessageSheetOpen, setIsMessageSheetOpen] = useState(false);
 {/* Hero Card: Photo + Identity + Direct Actions */}
         <div className="bg-white rounded-3xl border border-[#DDD7E5] shadow-xs overflow-hidden">
           {/* Main Photo Frame */}
-          <div className="relative aspect-[4/5] w-full bg-[#181926] select-none group overflow-hidden"><ProfileTopHeader targetUserId={profile.id} targetUserName={profile.name} />
+          <div className="relative aspect-[4/5] w-full bg-[#181926] select-none group overflow-hidden rounded-t-3xl">
             {photoList && photoList.length > 0 ? (
               <div 
                 className="flex h-full w-full transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform"
