@@ -1,5 +1,7 @@
 import { SupabaseClient } from '@supabase/supabase-js';
 
+import { notifyUser, notifyMatchPair } from '@/lib/notify';
+
 export type ActionType = 'pass' | 'star' | 'like';
 
 const STORAGE_KEY_LIKES = 'ail_liked_ids';
@@ -116,33 +118,17 @@ export async function persistCardAction(
                 );
               }
 
-              // Notify both users of the mutual match
-              await supabase.from('notifications').insert([
-                {
-                  user_id: targetId,
-                  type: 'match',
-                  title: "It's a Match!",
-                  description: "You both liked each other! Start a conversation now.",
-                  is_read: false,
-                },
-                {
-                  user_id: user.id,
-                  type: 'match',
-                  title: "It's a Match!",
-                  description: "You have a new mutual match!",
-                  is_read: false,
-                }
-              ]);
+              // Notify both users of the mutual match (respects prefs)
+              await notifyMatchPair(supabase, user.id, targetId, action);
             } else {
-              // Standard single like notification
-              await supabase.from('notifications').insert({
-                user_id: targetId,
+              // Standard single like notification (respects prefs, carries actor)
+              await notifyUser(supabase, targetId, {
+                actorId: user.id,
                 type: 'favorite',
-                title: action === 'star' ? 'Super Liked!' : 'New Favorite',
-                description: action === 'star' 
-                  ? 'Someone starred your profile as a priority match.' 
-                  : 'Someone added your profile to their favorites.',
-                is_read: false,
+                title: action === 'star' ? 'Super Spark!' : 'New Spark!',
+                description: action === 'star'
+                  ? 'Someone starred your profile as a priority match.'
+                  : 'Someone sparked your profile.',
               });
             }
           } catch (notifErr) {

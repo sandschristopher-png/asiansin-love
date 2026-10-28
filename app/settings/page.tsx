@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
 import { HandleUpgradeModal } from '@/components/HandleUpgradeModal';
 import HandleChangeCard from '@/components/HandleChangeCard';
+import { NotificationPrefsCard } from '@/components/NotificationPrefsCard';
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -145,6 +146,9 @@ export default function SettingsPage() {
         {/* Account Settings Card */}
         <div className="bg-white rounded-3xl border border-[#DDD7E5] p-5 shadow-xs space-y-5">
                   <HandleChangeCard />
+
+      {/* Notification Preferences Card */}
+      <NotificationPrefsCard />
 
           {/* AIL+ Membership Card */}
           <div className="p-4 rounded-2xl bg-[#F8F7FA] border border-[#DDD7E5] flex items-start gap-3.5">
