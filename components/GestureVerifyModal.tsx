@@ -220,7 +220,7 @@ export default function GestureVerifyModal({ isOpen, onClose, onSuccess }: Gestu
           <div className="py-6 text-center space-y-4">
             <div className="relative w-36 h-36 mx-auto rounded-2xl overflow-hidden border border-[#DDD7E5] bg-white shadow-xs">
               <Image
-                src="/images/verification/status-approved.png"
+                src="/images/verification/approved.png"
                 alt="Verification Approved"
                 fill
                 className="object-contain"
@@ -244,7 +244,7 @@ export default function GestureVerifyModal({ isOpen, onClose, onSuccess }: Gestu
           <div className="py-6 text-center space-y-4">
             <div className="relative w-36 h-36 mx-auto rounded-2xl overflow-hidden border border-[#E05375]/30 bg-white shadow-xs">
               <Image
-                src="/images/verification/status-denied.png"
+                src="/images/verification/denied.png"
                 alt="Verification Denied"
                 fill
                 className="object-contain"

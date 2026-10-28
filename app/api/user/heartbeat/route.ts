@@ -4,10 +4,9 @@ import { createClient } from "@/lib/supabase/server";
 export async function POST() {
   try {
     const supabase = await createClient();
-    const {
-      data: { user },
-      error: authError,
-    } = await supabase.auth.getUser();
+    // getSession reads local JWT (no network round-trip to Supabase Auth)
+    const { data: { session }, error: authError } = await supabase.auth.getSession();
+    const user = session?.user ?? null;
 
     if (authError || !user) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
