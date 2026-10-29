@@ -1,512 +1,338 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-
-import { notifyVisit } from '@/lib/notify';
-import Link from 'next/link';
+import React, { useState, useEffect } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { ArrowLeft, ShieldCheck, MapPin, Briefcase, ChevronLeft, ChevronRight, Heart, Zap, Languages, Globe, Send, MessageCircle, BadgeCheck, User, Sparkles, HeartHandshake, Baby, Ruler, Wine, Cigarette } from 'lucide-react';
+import {
+  ArrowLeft,
+  MoreHorizontal,
+  MapPin,
+  ShieldCheck,
+  Zap,
+  MessageCircle,
+  Sparkles,
+  ShieldAlert,
+  Ban
+} from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
-import RepScoreCard from '@/components/RepScoreCard';
-import { ProfileHighlights } from '@/components/profile/ProfileHighlights';
-import { ProfileTopHeader } from '@/components/profile/ProfileTopHeader';
-import { ProfileFloatingDock } from '@/components/profile/ProfileFloatingDock';
 
+interface Highlight {
+  id: string;
+  label: string;
+  icon: string;
+  story: string;
+}
+
+interface ProfileData {
+  id: string;
+  full_name: string;
+  age: number;
+  city: string;
+  country: string;
+  avatar_url: string;
+  bio: string;
+  is_verified: boolean;
+  relationship_goal?: string;
+  languages?: string[];
+  highlights?: Highlight[];
+}
 
 export default function PublicProfilePage() {
-  const params = useParams();
   const router = useRouter();
-  const id = params?.id as string;
+  const params = useParams();
+  const profileId = params?.id as string;
 
   const [loading, setLoading] = useState(true);
-  const [profile, setProfile] = useState<any>(null);
-  const [message, setMessage] = useState('');
-  const [sending, setSending] = useState(false);
-const [isMessageSheetOpen, setIsMessageSheetOpen] = useState(false);
-  const [sentSuccess, setSentSuccess] = useState(false);
-  const [sendError, setSendError] = useState<string | null>(null);
-
-  const [isSparked, setIsSparked] = useState(() => {
-    try {
-      const cached = typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('ail_sparked_ids') || '[]') : [];
-      return Array.isArray(cached) && cached.includes(String(id));
-    } catch { return false; }
-  });
-
-  const [sparkBusy, setSparkBusy] = useState(false);
-
-  const toggleSpark = async () => {
-    if (sparkBusy || !id) return;
-    const targetId = String(id);
-    const next = !isSparked;
-    setSparkBusy(true);
-    setIsSparked(next);
-    try {
-      const res = await fetch('/api/spark', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ targetUserId: targetId }),
-      });
-      if (!res.ok) throw new Error('Spark request failed');
-      const data = await res.json();
-      const sparked = !!data.sparked;
-      setIsSparked(sparked);
-      const key = 'ail_sparked_ids';
-      const cached: string[] = JSON.parse(localStorage.getItem(key) || '[]');
-      const updated = sparked ? Array.from(new Set([...cached, targetId])) : cached.filter((x: string) => x !== targetId);
-      localStorage.setItem(key, JSON.stringify(updated));
-    } catch (err) {
-      console.error('Spark failed:', err);
-      setIsSparked(!next);
-    } finally {
-      setSparkBusy(false);
-    }
-  };
-  const [currentPhotoIdx, setCurrentPhotoIdx] = useState(0);
-  const [viewerInterests, setViewerInterests] = useState<string[]>([]);
-  const [viewerIntent, setViewerIntent] = useState<string>('');
+  const [notFound, setNotFound] = useState(false);
+  const [profile, setProfile] = useState<ProfileData | null>(null);
+  const [isSparked, setIsSparked] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
 
   useEffect(() => {
-    async function loadData() {
-      if (!id) return;
+    async function fetchProfile() {
+      if (!profileId) return;
 
       try {
-        const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(id);
-        let query = supabase.from('profiles').select('*');
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('id, full_name, birthdate, city, country, avatar_url, bio, is_verified, relationship_intent, languages')
+          .eq('id', profileId)
+          .maybeSingle();
 
-        if (isUuid) {
-          query = query.eq('id', id);
-        } else {
-          query = query.ilike('username', id);
+        if (error || !data) {
+          setNotFound(true);
+          return;
         }
 
-        const { data, error } = await query.maybeSingle();
-        if (error) throw error;
+        const bd = data.birthdate ? new Date(data.birthdate) : null;
+        const age = bd ? Math.floor((Date.now() - bd.getTime()) / (365.25 * 24 * 3600 * 1000)) : 0;
 
-        if (data) {
-          const { data: { user: currentUser } } = await supabase.auth.getUser();
-          if (currentUser) {
-            if (currentUser.id !== data.id) {
-              supabase.from('profile_views').insert({ viewer_id: currentUser.id, viewed_id: data.id }).then(() => {
-          if (currentUser.id !== data.id) {
-            notifyVisit(supabase, data.id, currentUser.id);
-          }
-        });
-            }
-            const { data: myProf } = await supabase
-              .from('profiles')
-              .select('*')
-              .eq('id', currentUser.id)
-              .maybeSingle();
-            if (Array.isArray(myProf?.interests)) setViewerInterests(myProf.interests);
-            if (myProf?.relationship_intent) setViewerIntent(myProf.relationship_intent);
-          }
-          const { data: highlightRows } = await supabase
+        // Second query: highlights are optional — a profile with none still renders
+        let highlights: Highlight[] = [];
+        try {
+          const { data: hi } = await supabase
             .from('user_interests')
-            .select('tag_id, highlight_story, interest_tags(label, icon)')
-            .eq('user_id', data.id)
-            .eq('is_highlight', true)
-            .order('created_at', { ascending: true })
-            .limit(3);
-          data.highlight_rows = highlightRows || [];
-
-          let calculatedAge = data.age;
-          if (!calculatedAge && (data.birthdate || data.date_of_birth)) {
-            const dob = new Date(data.birthdate || data.date_of_birth);
-            const diffMs = Date.now() - dob.getTime();
-            calculatedAge = Math.floor(diffMs / (1000 * 60 * 60 * 24 * 365.25));
-          }
-
-          const rawCountry = data.country || 'Philippines';
-          const rawCity = data.city || '';
-          const locationDisplay = rawCity ? (rawCity + ', ' + rawCountry) : (data.location || rawCountry);
-
-          setProfile({
-            ...data,
-            name: data.username ? data.username.replace(/^@/, '') : (data.display_name || 'Member'),
-            handle: data.username ? data.username.replace(/^@/, '') : null,
-            age: calculatedAge || null,
-            locationDisplay,
-            avatar_url: data.avatar_url || '/placeholder-avatar.svg',
-            photos: Array.isArray(data.photos) && data.photos.length > 0
-              ? data.photos
-              : [data.avatar_url || '/placeholder-avatar.svg'],
-            rep_score: data.reputation_score || 98,
-          });
+            .select('tag_id, highlight_story, interest_tags ( id, label, icon )')
+            .eq('user_id', profileId)
+            .eq('is_highlight', true);
+          highlights = (hi || [])
+            .filter((h: any) => h.interest_tags)
+            .map((h: any) => ({
+              id: h.interest_tags.id,
+              label: h.interest_tags.label || 'Interest',
+              icon: h.interest_tags.icon || '',
+              story: h.highlight_story || ''
+            }));
+        } catch (e) {
+          console.warn('Highlights fetch failed, rendering profile without them:', e);
         }
+
+        setProfile({
+          id: data.id,
+          full_name: data.full_name || 'Member',
+          age,
+          city: data.city || '',
+          country: data.country || '',
+          avatar_url: data.avatar_url || '',
+          bio: data.bio || '',
+          is_verified: Boolean(data.is_verified),
+          relationship_goal: data.relationship_intent || undefined,
+          languages: Array.isArray(data.languages) ? data.languages : undefined,
+          highlights
+        });
       } catch (err) {
-        console.error('Failed to load profile:', err);
+        console.error("Error fetching profile:", err);
+        setNotFound(true);
       } finally {
         setLoading(false);
       }
     }
 
-    loadData();
-  }, [id]);
+    fetchProfile();
+  }, [profileId]);
 
-  const handleSendMessage = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!message.trim() || sending) return;
-
-    setSending(true);
-    setSentSuccess(false);
-
-    try {
-      const res = await fetch('/api/messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          receiverId: profile.id,
-          content: message.trim(),
-        }),
-      });
-
-      if (res.status === 401) {
-        router.push('/login');
-        return;
-      }
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        alert(data.error || 'Message could not be sent.');
-        return;
-      }
-
-      setSentSuccess(true);
-      setMessage('');
-    } catch (err: any) {
-      console.error('Error sending message:', err);
-    } finally {
-      setSending(false);
-    }
-  };
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F8F7FA] flex items-center justify-center p-6">
-
-        <div className="w-8 h-8 rounded-full border-2 border-[#6555b8] border-t-transparent animate-spin" />
+      <div className="flex min-h-screen items-center justify-center bg-neutral-50">
+        <div className="h-7 w-7 animate-spin rounded-full border-2 border-[#6555B8] border-t-transparent" />
       </div>
     );
   }
 
-  if (!profile) {
+  if (notFound || !profile) {
     return (
-      <div className="min-h-screen bg-[#F8F7FA] flex flex-col items-center justify-center p-6 text-center space-y-4">
-        <h2 className="text-xl font-medium text-[#1C1924]">Profile Not Found</h2>
-        <p className="text-sm text-[#756D82]">This member may have deactivated their account or updated their handle.</p>
-        <Link
-          href="/discover"
-          className="px-5 py-2.5 rounded-full bg-[#6555b8] text-white text-sm font-semibold hover:bg-[#52449e] transition shadow-xs"
+      <div className="flex min-h-screen flex-col items-center justify-center gap-4 bg-neutral-50 px-6 text-center">
+        <p className="text-sm font-semibold text-neutral-700">This profile is no longer available.</p>
+        <button
+          type="button"
+          onClick={() => router.push('/discover')}
+          className="rounded-2xl bg-[#6555B8] px-5 py-3 text-xs font-semibold text-white active:scale-95"
         >
-          Return to Discover
-        </Link>
+          Back to Discover
+        </button>
       </div>
     );
   }
-
-  const photoList = profile.photos || [profile.avatar_url];
-  const currentImg = photoList[currentPhotoIdx] || profile.avatar_url;
-  const hasMultiple = photoList.length > 1;
-
-  const parseCmHeight = (val: any) => {
-    if (!val) return 'Not specified';
-    const match = String(val).match(/(\d{2,3})\s*cm/i);
-    if (match) return `${match[1]} cm`;
-    const numOnly = String(val).match(/^\d{2,3}$/);
-    if (numOnly) return `${numOnly[0]} cm`;
-    return String(val).replace(/[()]/g, '').trim();
-  };
-  const formattedHeight = parseCmHeight(profile.height);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#F8F7FA] text-[#1C1924]">
-      <main className="flex-1 w-full px-4 pt-4 pb-28 space-y-4">
-        
+    <div className="relative min-h-screen bg-neutral-50 font-sans text-neutral-900">
+      <main className="mx-auto max-w-md px-3 pt-3 pb-28 space-y-3.5">
 
-{/* Hero Card: Photo + Identity + Direct Actions */}
-        <div className="bg-white rounded-3xl border border-[#DDD7E5] shadow-xs overflow-hidden">
-          {/* Main Photo Frame */}
-          <div className="relative aspect-[4/5] w-full bg-[#181926] select-none group overflow-hidden rounded-t-3xl">
-            {photoList && photoList.length > 0 ? (
-              <div 
-                className="flex h-full w-full transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] will-change-transform"
-                style={{ transform: `translateX(-${currentPhotoIdx * 100}%)` }}
-              >
-                {photoList.map((photo: string, idx: number) => (
-                  <div key={idx} className="w-full h-full shrink-0 relative">
-                    <img
-                      src={photo}
-                      alt={`${profile.name} - ${idx + 1}`}
-                      className="w-full h-full object-cover select-none pointer-events-none"
-                      loading={idx === 0 ? "eager" : "lazy"}
-                    />
-                  </div>
-                ))}
-              </div>
-            ) : (
-              <div className="flex flex-col items-center justify-center gap-2 text-[#756D82] h-full">
-                <User className="w-12 h-12 stroke-[1.5] text-[#6555b8]" />
-                <span className="text-xs">No photo available</span>
-              </div>
-            )}
+        {/* HERO CARD: 4:5 Photo + Frosted Top Controls + Scrim */}
+        <div className="relative aspect-[4/5] w-full overflow-hidden rounded-3xl bg-neutral-200 shadow-xs">
+          <img
+            src={profile.avatar_url || '/placeholder-avatar.svg'}
+            alt={profile.full_name}
+            className="h-full w-full object-cover"
+          />
 
-            {/* Instagram / Story Tap Targets & Progress Bars */}
-            {hasMultiple && (
-              <>
-                <div className="absolute top-2.5 inset-x-3 flex items-center gap-1 z-20 pointer-events-none">
-                  {photoList.map((_: any, idx: number) => (
-                    <div
-                      key={idx}
-                      className={'h-1 flex-1 rounded-full transition-all duration-300 ' + (
-                        idx === currentPhotoIdx
-                          ? 'bg-white shadow-[0_0_6px_rgba(255,255,255,0.8)]'
-                          : 'bg-white/40 backdrop-blur-xs'
-                      )}
-                    />
-                  ))}
-                </div>
-
-                <button
-                  type="button"
-                  aria-label="Previous photo"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setCurrentPhotoIdx((prev) => (prev > 0 ? prev - 1 : photoList.length - 1));
-                  }}
-                  className="absolute inset-y-0 left-0 w-1/3 z-10 cursor-pointer focus:outline-none"
-                />
-                <button
-                  type="button"
-                  aria-label="Next photo"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setCurrentPhotoIdx((prev) => (prev < photoList.length - 1 ? prev + 1 : 0));
-                  }}
-                  className="absolute inset-y-0 right-0 w-1/3 z-10 cursor-pointer focus:outline-none"
-                />
-              </>
-            )}
-
-                        {/* Back button */}
+          {/* Floating Frosted Top Nav */}
+          <div className="absolute top-0 inset-x-0 z-20 flex items-center justify-between p-3.5 pointer-events-none">
             <button
               type="button"
+              onClick={() => { if (window.history.length > 1) { router.back(); } else { router.push('/discover'); } }}
               aria-label="Back"
-              onClick={() => { if (typeof window !== 'undefined' && window.history.length > 1) { router.back(); } else { router.push('/discover'); } }}
-              className="absolute top-2.5 left-2.5 z-30 flex h-10 w-10 items-center justify-center rounded-full bg-black/35 text-white backdrop-blur-md transition hover:bg-black/50 active:scale-95 pointer-events-auto"
+              className="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-md transition hover:bg-black/60 active:scale-95"
             >
               <ArrowLeft className="h-5 w-5" />
             </button>
 
-{/* Online Status Badge */}
-            <span className="presence-dot absolute top-6 left-14 h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white/90 shadow z-20" />
+            <div className="relative pointer-events-auto">
+              <button
+                type="button"
+                onClick={() => setShowMenu(!showMenu)}
+                aria-label="More options"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-md transition hover:bg-black/60 active:scale-95"
+              >
+                <MoreHorizontal className="h-5 w-5" />
+              </button>
 
-            {/* Bottom gradient scrim */}
-            <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-4 pt-14 pointer-events-none">
-              <div className="text-white">
-                <h1 className="text-xl font-semibold tracking-tight flex items-center gap-1.5">
-                  {profile.username || "Member"}{profile.age ? (', ' + profile.age) : ''}
-                  {profile.is_verified && (
-                    <BadgeCheck size={15} strokeWidth={2.5} className="shrink-0 text-emerald-300" />
+              {showMenu && (
+                <>
+                  <div className="fixed inset-0 z-40" onClick={() => setShowMenu(false)} />
+                  <div className="absolute right-0 top-12 z-50 w-48 rounded-2xl border border-neutral-200 bg-white p-1.5 shadow-xl">
+                    <button
+                      type="button"
+                      onClick={() => setShowMenu(false)}
+                      className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-xs font-semibold text-neutral-700 transition hover:bg-neutral-50"
+                    >
+                      <ShieldAlert className="h-4 w-4 text-amber-500" />
+                      Report Profile
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setShowMenu(false)}
+                      className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-xs font-semibold text-rose-600 transition hover:bg-rose-50"
+                    >
+                      <Ban className="h-4 w-4 text-rose-500" />
+                      Block Profile
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+
+          {/* Bottom Gradient Scrim */}
+          <div className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/90 via-black/40 to-transparent p-5 pt-24 pointer-events-none">
+            <div className="flex items-center gap-2">
+              <h1 className="text-2xl font-bold tracking-tight text-white font-sans">
+                {profile.full_name}{profile.age ? `, ${profile.age}` : ''}
+              </h1>
+
+              {profile.is_verified && (
+                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/25 px-2.5 py-0.5 text-[11px] font-bold text-emerald-300 backdrop-blur-xs border border-emerald-400/30">
+                  <ShieldCheck className="h-3.5 w-3.5" />
+                  Verified
+                </span>
+              )}
+            </div>
+
+            <div className="mt-1 flex items-center gap-1.5 text-xs font-medium text-neutral-200">
+              <MapPin className="h-3.5 w-3.5 text-neutral-300" />
+              <span>{[profile.city, profile.country].filter(Boolean).join(', ') || 'Somewhere'}</span>
+            </div>
+          </div>
+        </div>
+
+        {/* COMMON GROUND ICEBREAKER BANNER */}
+        {profile.highlights && profile.highlights.length > 0 && (
+          <div className="flex items-center gap-2.5 rounded-2xl border border-[#6555B8]/20 bg-[#6555B8]/5 p-3.5">
+            <Sparkles className="h-4 w-4 text-[#6555B8] shrink-0" />
+            <p className="text-xs font-medium text-neutral-800 leading-snug">
+              You and {profile.full_name} both enjoy{' '}
+              <span className="font-bold text-[#6555B8]">{profile.highlights[0].label}</span>
+            </p>
+          </div>
+        )}
+
+        {/* ABOUT ME / BIO */}
+        {profile.bio && (
+          <section className="rounded-2xl border border-neutral-200/80 bg-white p-4 shadow-xs">
+            <h2 className="text-[11px] font-bold uppercase tracking-wider text-neutral-400">
+              About Me
+            </h2>
+            <p className="mt-2 text-xs leading-relaxed text-neutral-700 whitespace-pre-line font-sans">
+              {profile.bio}
+            </p>
+          </section>
+        )}
+
+        {/* HIGHLIGHTS & STORIES */}
+        {profile.highlights && profile.highlights.length > 0 && (
+          <section className="space-y-2">
+            <div className="flex items-center justify-between px-1">
+              <h2 className="text-[11px] font-bold uppercase tracking-wider text-neutral-400">
+                Highlights & Interests
+              </h2>
+            </div>
+
+            <div className="grid gap-2.5">
+              {profile.highlights.map((item) => (
+                <div
+                  key={item.id}
+                  className="group cursor-pointer rounded-2xl border border-neutral-200/80 bg-white p-4 shadow-xs transition hover:border-[#6555B8]/40 active:scale-[0.99]"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      {item.icon && <span className="text-base">{item.icon}</span>}
+                      <span className="text-xs font-bold text-neutral-900">{item.label}</span>
+                    </div>
+                  </div>
+
+                  {item.story && (
+                    <p className="mt-2 text-xs leading-relaxed text-neutral-600">
+                      &ldquo;{item.story}&rdquo;
+                    </p>
                   )}
-                </h1>
-                <p className="mt-0.5 flex items-center gap-1 text-[11px] text-neutral-200">
-                  <MapPin size={11} strokeWidth={2.5} className="shrink-0" />
-                  <span>{profile.locationDisplay || profile.location || 'Somewhere'}</span>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
+        {/* BASIC DETAILS / TRAITS */}
+        {(profile.relationship_goal || (profile.languages && profile.languages.length > 0)) && (
+          <section className="rounded-2xl border border-neutral-200/80 bg-white p-4 shadow-xs space-y-3">
+            {profile.relationship_goal && (
+              <div>
+                <h3 className="text-[11px] font-bold uppercase tracking-wider text-neutral-400">
+                  Looking For
+                </h3>
+                <p className="mt-1 text-xs font-semibold text-neutral-800">
+                  {profile.relationship_goal}
                 </p>
               </div>
-            </div>
-          </div>
+            )}
 
-</div>
-
-{isMessageSheetOpen && (
-  <div
-    className="fixed inset-0 z-[100] flex items-end justify-center bg-black/40 backdrop-blur-sm"
-    onClick={() => setIsMessageSheetOpen(false)}
-  >
-    <div
-      className="w-full max-w-lg p-4 pb-6 rounded-t-3xl bg-white shadow-xl"
-      onClick={(e) => e.stopPropagation()}
-    >
-        {/* Message Composer Card */}
-        <div className="p-4 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-2.5">
-          <div className="flex items-center justify-between">
-            <span className="text-xs font-medium text-[#1C1924] flex items-center gap-1.5">
-              <MessageCircle className="w-4 h-4 text-[#6555b8]" />
-              Send {profile.name} a Message
-            </span>
-            <span className="text-[10px] font-medium text-[#756D82]">Direct Delivery</span>
-          </div>
-
-          <form onSubmit={handleSendMessage} className="space-y-2.5">
-            <textarea
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
-              rows={3}
-              placeholder={`Hi ${profile.username || "Member"}, I noticed your profile and would love to introduce myself...`}
-              className="w-full text-xs p-3 rounded-2xl border border-[#DDD7E5] bg-[#FAF8FD] focus:bg-white focus:border-[#6555b8] focus:outline-none transition resize-none placeholder:text-[#8C849B]"
-            />
-
-            <div className="flex items-center justify-between">
-              {sentSuccess ? (
-                <span className="text-xs font-medium text-emerald-600 flex items-center gap-1">
-                  <ShieldCheck className="w-3.5 h-3.5" /> Sent successfully!
-                </span>
-              ) : sendError ? (
-                <span className="text-xs font-medium text-rose-500 flex items-center gap-1 max-w-[200px] truncate" title={sendError}>
-                  <svg className="w-3.5 h-3.5 shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-                  {sendError}
-                </span>
-              ) : (
-                <span className="text-[11px] text-[#756D82]">Polite intros build trust</span>
-              )}
-
-              <button
-                type="submit"
-                disabled={sending || !message.trim()}
-                className="px-4 py-2 rounded-full bg-[#6555b8] hover:bg-[#52449e] disabled:opacity-50 text-white text-xs font-semibold flex items-center gap-1.5 transition-all duration-200 ease-[cubic-bezier(0.16,1,0.3,1)] active:scale-95 select-none cursor-pointer shadow-md"
-              >
-                <Send className="w-3.5 h-3.5" />
-                <span>{sending ? 'Sending...' : 'Send Message'}</span>
-              </button>
-            </div>
-          </form>
-        </div>
-    </div>
-  </div>
-)}
-
-{/* Reputation Score Card */}
-          <RepScoreCard score={profile.rep_score ?? 100} />
-
-          <ProfileHighlights
-            highlights={profile.highlight_rows || []}
-            viewerInterests={viewerInterests}
-            targetUserName={profile.name}
-          />
-
-          {/* with-Style "Things in Common" & Interests Card */}
-        {(() => {
-          const profileTags: string[] = Array.isArray(profile.interests) ? profile.interests : [];
-          const sharedTags = profileTags.filter((t) =>
-            viewerInterests.some((v) => v.toLowerCase() === t.toLowerCase())
-          );
-          const sameIntent = Boolean(
-            viewerIntent &&
-            (profile.relationship_intent || profile.intent) &&
-            viewerIntent.toLowerCase() === String(profile.relationship_intent || profile.intent).toLowerCase()
-          );
-          const totalCommon = sharedTags.length + (sameIntent ? 1 : 0);
-
-          const hasHighlights = Array.isArray(profile.highlight_rows) && profile.highlight_rows.length > 0;
-          if (hasHighlights) return null;
-          if (profileTags.length === 0 && totalCommon === 0) return null;
-
-          return (
-            <div className="p-4 sm:p-5 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <span className="w-7 h-7 rounded-full bg-[#F3EFFC] text-[#6555b8] flex items-center justify-center">
-                    <Sparkles className="w-4 h-4" />
-                  </span>
-                  <div>
-                    <h2
-                      className="text-xs font-bold uppercase tracking-wider text-[#1C1924]"
-                      style={{ fontFamily: 'var(--font-brand)' }}
-                    >
-                      Interests &amp; Things in Common
-                    </h2>
-                    <p className="text-[11px] text-[#6C637B]">
-                      {totalCommon > 0
-                        ? `You share ${totalCommon} interest${totalCommon > 1 ? 's' : ''} & values`
-                        : 'Hobbies & lifestyle tags'}
-                    </p>
-                  </div>
-                </div>
-                {totalCommon > 0 && (
-                  <span className="px-2.5 py-1 rounded-full bg-[#6555b8] text-white text-[11px] font-bold shadow-2xs">
-                    {totalCommon} Shared
-                  </span>
-                )}
-              </div>
-
-              <div className="flex flex-wrap gap-1.5 pt-1">
-                {sameIntent && (
-                  <span className="px-3 py-1 rounded-full bg-[#F3EFFC] border border-[#6555b8] text-[#6555b8] text-xs font-bold flex items-center gap-1">
-                    <Heart className="w-3 h-3 fill-[#6555b8]" />
-                    <span>Both want {profile.relationship_intent || profile.intent}</span>
-                  </span>
-                )}
-                {profileTags.map((tag: string) => {
-                  const isShared = sharedTags.includes(tag);
-                  return (
+            {profile.languages && profile.languages.length > 0 && (
+              <div className="border-t border-neutral-100 pt-3">
+                <h3 className="text-[11px] font-bold uppercase tracking-wider text-neutral-400">
+                  Languages
+                </h3>
+                <div className="mt-1.5 flex flex-wrap gap-1.5">
+                  {profile.languages.map((lang) => (
                     <span
-                      key={tag}
-                      className={
-                        'px-3 py-1 rounded-full text-xs font-semibold border transition ' +
-                        (isShared
-                          ? 'bg-[#F3EFFC] border-[#6555b8] text-[#6555b8]'
-                          : 'bg-[#F8F7FA] border-[#DDD7E5] text-[#524B5E]')
-                      }
+                      key={lang}
+                      className="rounded-full bg-neutral-100 px-2.5 py-1 text-[11px] font-medium text-neutral-700"
                     >
-                      {isShared ? '✨ ' + tag : tag}
+                      {lang}
                     </span>
-                  );
-                })}
+                  ))}
+                </div>
               </div>
-            </div>
-          );
-        })()}
-
-          {/* About Me Card */}
-        <div className="p-4 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-1.5">
-          <h2 className="text-xs font-medium uppercase tracking-wider text-[#756D82]">About Me</h2>
-          <p className="text-xs sm:text-sm text-[#1C1924] leading-relaxed">
-            {profile.bio || 'No bio provided yet.'}
-          </p>
-        </div>
-
-        {/* Looking For Card */}
-        <div className="p-4 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-1.5">
-          <h2 className="text-xs font-medium uppercase tracking-wider text-[#756D82]">What I'm Looking For</h2>
-          <p className="text-xs sm:text-sm text-[#1C1924] leading-relaxed">
-            {profile.looking_for || 'Long-Term Relationship'}
-          </p>
-        </div>
-
-
-          {/* Languages Spoken Card */}
-          <div className="p-5 rounded-3xl bg-white border border-[#DDD7E5]/70 shadow-sm space-y-3">
-            <div className="flex items-center gap-1.5 text-[11px] font-bold text-[#6555B8] uppercase tracking-wider">
-              <Languages className="w-3.5 h-3.5" />
-              <span>Languages Spoken</span>
-            </div>
-            <div className="flex flex-wrap gap-2 pt-1">
-              {(profile.languages || 'English')
-                .split(',')
-                .map((lang: string) => lang.trim())
-                .filter(Boolean)
-                .map((lang: string) => (
-                  <span
-                    key={lang}
-                    className="px-3.5 py-1.5 rounded-xl bg-[#FAF8FD] border border-[#DDD7E5] text-xs font-semibold text-[#1C1924]"
-                  >
-                    {lang}
-                  </span>
-                ))}
-            </div>
-          </div>
+            )}
+          </section>
+        )}
       </main>
 
-      <ProfileFloatingDock
-        targetUserId={profile.id}
-        targetUserName={profile.name}
-        isSparked={isSparked}
-        sparkBusy={sparkBusy}
-        onSpark={toggleSpark}
-        onMessage={() => setIsMessageSheetOpen(true)}
-      />
+      {/* FIXED FLOATING DOCK — pinned like the Discover bottom nav */}
+      <aside className="fixed bottom-3.5 left-1/2 -translate-x-1/2 w-[calc(100%-1.75rem)] max-w-md z-40">
+        <div className="flex items-center gap-2.5 rounded-2xl border border-neutral-200/80 bg-white/95 p-2.5 shadow-lg backdrop-blur-md">
+          <button
+            type="button"
+            onClick={() => setIsSparked(!isSparked)}
+            aria-label="Spark"
+            className={`flex h-11 flex-1 items-center justify-center gap-1.5 rounded-xl border text-xs font-bold transition active:scale-95 ${
+              isSparked
+                ? 'border-neutral-200 bg-neutral-100 text-neutral-400'
+                : 'border-neutral-200 bg-neutral-50 text-neutral-800 hover:bg-neutral-100'
+            }`}
+          >
+            <Zap className={`h-4 w-4 ${isSparked ? 'fill-amber-500 text-amber-500' : 'text-neutral-400'}`} />
+            <span>{isSparked ? 'Sparked' : 'Spark'}</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => router.push(`/chat/${profile.id}`)}
+            aria-label="Message"
+            className="flex h-11 flex-1 items-center justify-center gap-2 rounded-xl bg-[#6555B8] px-4 text-xs font-semibold text-white shadow-sm transition hover:bg-[#5849a6] active:scale-95"
+          >
+            <MessageCircle className="h-4 w-4" />
+            <span>Message</span>
+          </button>
+        </div>
+      </aside>
     </div>
   );
 }

@@ -10,11 +10,9 @@ export default function Template({ children }: { children: React.ReactNode }) {
         @keyframes routeFadeIn {
           from {
             opacity: 0;
-            transform: translateY(3px);
           }
           to {
             opacity: 1;
-            transform: translateY(0);
           }
         }
       `}</style>
