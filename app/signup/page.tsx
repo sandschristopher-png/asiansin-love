@@ -8,8 +8,6 @@ import { supabase } from '@/lib/supabase/client';
 
 export default function SignUpPage() {
   const router = useRouter();
-
-  const [fullName, setFullName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -23,7 +21,8 @@ export default function SignUpPage() {
 
     try {
       const cleanEmail = email.trim().toLowerCase();
-      const cleanName = fullName.trim();
+      // Derived placeholder; onboarding Step 1 overwrites with the chosen username
+      const cleanName = cleanEmail.split('@')[0] || 'New Member';
 
       const { data, error } = await supabase.auth.signUp({
         email: cleanEmail,
@@ -83,22 +82,7 @@ export default function SignUpPage() {
           </div>
         )}
 
-        <form onSubmit={handleSignUp} className="space-y-4">
-          <div>
-            <label className="text-xs font-medium uppercase tracking-wider text-[#9A8CC3] block mb-1">
-              Your Name / Username
-            </label>
-            <input
-              type="text"
-              required
-              value={fullName}
-              onChange={(e) => setFullName(e.target.value)}
-              placeholder="e.g. Christopher"
-              className="w-full px-4 py-2.5 rounded-2xl bg-[#FFFFFF] border border-[#9A8CC3]/40 text-[#1C1924] text-sm focus:outline-none focus:border-[#9A8CC3] placeholder-[#756D82]/60 transition"
-            />
-          </div>
-
-          <div>
+        <form onSubmit={handleSignUp} className="space-y-4">          <div>
             <label className="text-xs font-medium uppercase tracking-wider text-[#9A8CC3] block mb-1">
               Email Address
             </label>
