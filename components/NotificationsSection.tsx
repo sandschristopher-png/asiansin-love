@@ -179,7 +179,7 @@ export default function NotificationsSection({ initial, onNavigate }: { initial?
         </span>
         {unread > 0 && <span className="text-[10px] font-semibold text-[#6555B8]">{unread} new</span>}
       </div>
-      <div className="mx-2 mb-2 flex max-h-[240px] flex-col gap-1.5 overflow-y-auto rounded-xl border border-[#9A8CC3]/25 bg-white/70 p-1.5">
+      <div className="mx-2 mb-2 flex max-h-[160px] flex-col gap-1.5 overflow-y-auto rounded-2xl border border-[#E5E1EC] bg-white/95 backdrop-blur-md shadow-lg [&::-webkit-scrollbar]:hidden [scrollbar-width:none]/70 p-1.5">
         {notifications.slice(0, 8).map(n => {
           const meta = TYPE_META[n.type];
           if (!meta) return null;
@@ -189,7 +189,7 @@ export default function NotificationsSection({ initial, onNavigate }: { initial?
               key={n.id}
               onClick={() => handleOpen(n)}
               className={`flex w-full items-start gap-2.5 rounded-lg px-2 py-1.5 text-left transition-colors ${
-                n.is_read ? 'bg-transparent' : 'bg-[#F3EFFC]'
+                n.is_read ? 'bg-transparent' : 'hover:bg-[#F8F7FA]/50'
               }`}
             >
               <Icon size={15} strokeWidth={2} className={`mt-0.5 shrink-0 ${n.is_read ? 'text-black/40' : 'text-[#6555B8]'}`} />
