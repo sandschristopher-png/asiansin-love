@@ -1,4 +1,12 @@
 import type { Metadata, Viewport } from 'next';
+
+// SUPPRESS_NO_LOG_WARN: quiet the repeated Supabase getSession advisory in dev logs
+const origWarn = console.warn;
+console.warn = (...args: unknown[]) => {
+  const msg = typeof args[0] === 'string' ? args[0] : '';
+  if (msg.includes('could be insecure') || msg.includes('supabase.auth.getUser() instead')) return;
+  origWarn(...args);
+};
 import { Comfortaa, Plus_Jakarta_Sans, Outfit } from 'next/font/google';
 
 const comfortaa = Comfortaa({
