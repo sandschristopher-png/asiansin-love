@@ -29,6 +29,7 @@ interface ChatMessage {
   warning?: string;
   read?: boolean;
   pending?: boolean;
+wasMasked?: boolean;
 }
 
 function sanitizeMessage(text: string): { sanitized: string; wasMasked: boolean } {
@@ -334,7 +335,7 @@ export default function ChatConversationPage() {
         console.log('[chat] Realtime event:', payload.eventType, (payload.new as any)?.id);
 
         if (payload.eventType === 'UPDATE') {
-          const updated = payload.new;
+          const updated: any = payload.new;
           console.log('[chat] UPDATE event received:', updated?.id, 'is_read:', updated?.is_read, 'read:', updated?.read);
           const readFlag = updated.is_read ?? updated.read;
           if (typeof readFlag !== 'undefined') {
@@ -346,7 +347,7 @@ export default function ChatConversationPage() {
         }
 
         if (payload.eventType === 'INSERT') {
-          const newRow = payload.new;
+          const newRow: any = payload.new;
           if (newRow.is_quarantined || newRow.is_flagged) {
             console.log('[chat] Skipping quarantined/flagged message:', newRow.id);
             return;
