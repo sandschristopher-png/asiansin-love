@@ -1,24 +1,20 @@
-﻿import React from 'react';
-import { Sparkles } from 'lucide-react';
-
 interface PlusBadgeProps {
-  size?: 'sm' | 'md';
-  className?: string;
+  size?: 'sm' | 'md' | 'lg'
+  className?: string
+}
+
+const SIZE_CLASS: Record<NonNullable<PlusBadgeProps['size']>, string> = {
+  sm: 'h-[16px] px-1.5 text-[9px]',
+  md: 'h-[20px] px-2 text-[10px]',
+  lg: 'h-[24px] px-2.5 text-[11px]',
 }
 
 export function PlusBadge({ size = 'sm', className = '' }: PlusBadgeProps) {
-  const isSmall = size === 'sm';
   return (
     <span
-      className={`inline-flex items-center gap-1 font-medium uppercase tracking-wider rounded-full shadow-sm select-none ${
-        isSmall
-          ? 'px-2 py-0.5 text-[9px] sm:text-[10px] bg-gradient-to-r from-[#7A69D6] to-[#6555B8] text-white border border-white/20'
-          : 'px-2.5 py-1 text-xs bg-gradient-to-r from-[#7A69D6] to-[#6555B8] text-white border border-white/20'
-      } ${className}`}
+      className={`inline-flex shrink-0 items-center rounded-full bg-[#6555B8] font-bold uppercase tracking-wide text-white ${SIZE_CLASS[size]} ${className}`}
     >
-      <Sparkles className={isSmall ? "w-2.5 h-2.5 fill-white text-white" : "w-3 h-3 fill-white text-white"} />
-      <span>Plus</span>
+      Plus
     </span>
-  );
+  )
 }
-

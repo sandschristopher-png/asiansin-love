@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import { usePathname } from 'next/navigation';
 import { X, Infinity, Compass, TrendingUp, Lock, ArrowRight, Loader2 } from 'lucide-react';
 
 interface UpgradeModalProps {
@@ -16,6 +17,7 @@ export default function UpgradeModal({
   onSelectPlan,
   triggerContext = 'general',
 }: UpgradeModalProps) {
+  const pathname = usePathname();
   const [isRedirecting, setIsRedirecting] = useState(false);
 
   if (!isOpen) return null;
@@ -57,7 +59,7 @@ export default function UpgradeModal({
       const res = await fetch('/api/plus/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ planId }),
+        body: JSON.stringify({ planId, returnPath: pathname || '/plus' }),
       });
       const data = await res.json();
       if (data?.url) {

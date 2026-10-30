@@ -13,7 +13,9 @@ export async function POST(req: NextRequest) {
     { cookies: { getAll: () => cookieStore.getAll(), setAll: () => {} } }
   );
 
-  const { data: { user } } = await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
   if (!user) {
     return NextResponse.json({ error: 'Please sign in first.' }, { status: 401 });
   }
@@ -24,17 +26,32 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Stripe is not configured yet.' }, { status: 503 });
   }
 
+  // Parse optional returnPath from request body (relative paths only)
+  let returnPath = '/plus';
+  try {
+    const body = await req.json();
+    if (
+      body?.returnPath &&
+      typeof body.returnPath === 'string' &&
+      body.returnPath.startsWith('/') &&
+      !body.returnPath.startsWith('//')
+    ) {
+      returnPath = body.returnPath;
+    }
+  } catch {}
+
   const stripe = new Stripe(secret);
   const origin = req.headers.get('origin') || 'https://asiansin.love';
+  const delimiter = returnPath.includes('?') ? '&' : '?';
 
   const session = await stripe.checkout.sessions.create({
     mode: 'subscription',
     line_items: [{ price: priceId, quantity: 1 }],
-    success_url: origin + '/plus?success=1',
-    cancel_url: origin + '/plus',
+    success_url: `${origin}${returnPath}${delimiter}success=1`,
+    cancel_url: `${origin}${returnPath}`,
     client_reference_id: user.id,
     subscription_data: { metadata: { userId: user.id } },
-    metadata: { userId: user.id }
+    metadata: { userId: user.id },
   });
 
   return NextResponse.json({ url: session.url });
