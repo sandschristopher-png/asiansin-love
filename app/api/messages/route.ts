@@ -38,23 +38,28 @@ export async function GET(req: Request) {
 
     const pairFilter = [user.id, targetUserId];
 
-    // Count mutual substantive messages (15+ chars) between the pair
-    const { data: threadHistory, error: historyError } = await serviceClient
+    // Single consolidated query: fetch latest 60 messages descending
+    const { data: rawMessages, error: fetchError } = await serviceClient
       .from('messages')
-      .select('sender_id, content')
+      .select('id, sender_id, receiver_id, content, created_at, is_quarantined, is_read')
       .in('sender_id', pairFilter)
       .in('receiver_id', pairFilter)
       .eq('is_quarantined', false)
       .order('created_at', { ascending: false })
-      .limit(40);
+      .limit(60);
 
-    if (historyError) {
-      return NextResponse.json({ error: historyError.message }, { status: 500 });
+    if (fetchError) {
+      return NextResponse.json({ error: fetchError.message }, { status: 500 });
     }
 
+    // Chronological order for the UI
+    const messages = (rawMessages || []).reverse();
+
+    // Calculate substantive mutual count from the latest 40 messages
+    const sample = messages.slice(-40);
     let senderCount = 0;
     let receiverCount = 0;
-    for (const msg of threadHistory || []) {
+    for (const msg of sample) {
       if ((msg.content || '').trim().length >= 15) {
         if (msg.sender_id === user.id) senderCount++;
         else if (msg.sender_id === targetUserId) receiverCount++;
@@ -62,28 +67,15 @@ export async function GET(req: Request) {
     }
     const mutualCount = Math.min(senderCount, receiverCount);
 
-    // Fetch the visible thread
-    const { data: messages, error: fetchError } = await serviceClient
-      .from('messages')
-      .select('id, sender_id, receiver_id, content, created_at, is_quarantined, is_read')
-      .in('sender_id', pairFilter)
-      .in('receiver_id', pairFilter)
-      .eq('is_quarantined', false)
-      .order('created_at', { ascending: true })
-      .limit(100);
-
-    if (fetchError) {
-      return NextResponse.json({ error: fetchError.message }, { status: 500 });
-    }
-
-    // Mask contact info server-side before dispatch
-    const maskedMessages = (messages || []).map((msg) => {
+    // Mask contact info and retain is_read status
+    const maskedMessages = messages.map((msg) => {
       const maskResult = applyContactRevealMask(msg.content || '', mutualCount);
       return {
         id: msg.id,
         sender: msg.sender_id === user.id ? 'me' : 'them',
         text: maskResult.text,
         createdAt: msg.created_at,
+        read: Boolean(msg.is_read),
         wasMasked: maskResult.hasBlockedContent,
       };
     });

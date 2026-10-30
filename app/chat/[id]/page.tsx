@@ -175,6 +175,7 @@ export default function ChatConversationPage() {
     const hasUnreadFromTarget = messages.some((m) => m.sender === 'them' && !m.read);
     if (!hasUnreadFromTarget) return;
 
+    setMessages((prev) => prev.map((m) => (m.sender === 'them' && !m.read ? { ...m, read: true } : m)));
     supabase
       .from('messages')
       .update({ is_read: true })
@@ -361,9 +362,8 @@ export default function ChatConversationPage() {
             setMessages((prev) => {
               if (prev.some((m) => m.id === newRow.id)) return prev;
               // Drop the optimistic temp copy of my own message now that the DB row arrived
-              const cleaned = echoIsMine
-                ? prev.filter((m) => !m.id.startsWith('temp-'))
-                : prev;
+              // Keep pending optimistic items intact; submitMessage will swap the specific tempId upon HTTP response
+              const cleaned = prev;
               const isMe = newRow.sender_id === currentUserId;
               const newMsg = {
                 id: newRow.id,
