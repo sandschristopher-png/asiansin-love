@@ -1,8 +1,8 @@
 import { createHmac, timingSafeEqual } from 'crypto';
 
-// Pose pool: add new pose ids here as assets are added to
-// public/images/verification/ (goal: 7 poses = 42 permutations at length 2).
-export const POSE_POOL = ['chin', 'palm', 'peace', 'three'] as const;
+// The 4 canonical MediaPipe canned gestures:
+// peace (Victory), palm (Open_Palm), pointing (Pointing_Up), thumbs (Thumb_Up)
+export const POSE_POOL = ['palm', 'peace', 'pointing', 'thumbs'] as const;
 
 export const SEQUENCE_LENGTH = 2;
 export const TOKEN_TTL_MS = 5 * 60 * 1000;
@@ -66,7 +66,6 @@ export function verifyToken(token: string): VerifyTokenPayload | null {
   }
 }
 
-// Stable fingerprint of a used token for single-use replay protection.
 export function tokenFingerprint(token: string): string {
   return createHmac('sha256', getSigningSecret()).update(token).digest('hex').slice(0, 32);
 }

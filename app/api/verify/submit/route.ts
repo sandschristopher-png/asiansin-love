@@ -1,152 +1,104 @@
-import { NextRequest, NextResponse } from 'next/server';
+import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { createClient as createSessionClient } from '@/lib/supabase/server';
-import { verifyToken, tokenFingerprint, TOKEN_TTL_MS } from '@/lib/verify/token';
+import { verifyToken, TOKEN_TTL_MS } from '@/lib/verify/token';
 
-export const runtime = 'nodejs';
+const MIN_ELAPSED_MS = 4000;
+const MAX_ELAPSED_MS = 90000;
+const MAX_PHOTO_BYTES = 10 * 1024 * 1024;
 
-// Calibrated for blink + 2 poses. A human needs ~2.5-4s; scripts fire faster.
-const MIN_ELAPSED_MS = 2600;
-const MIN_POSE_GAP_MS = 600;
-
-function fail(error: string, status: number) {
-  return NextResponse.json({ error }, { status });
+function getServiceClient() {
+  return createClient(
+    process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    process.env.SUPABASE_SERVICE_ROLE_KEY!
+  );
 }
 
-export async function POST(req: NextRequest) {
-  const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
-  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!url || !serviceKey) return fail('Server not configured', 500);
-
-  const session = await createSessionClient();
-  const { data: { user } } = await session.auth.getUser();
-  if (!user) return fail('Unauthorized', 401);
+export async function POST(req: Request) {
+  const supabase = createSessionClient();
+  const { data, error: authError } = await supabase.auth.getUser();
+  if (authError || !data?.user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+  const userId = data.user.id;
 
   let form: FormData;
   try {
     form = await req.formData();
   } catch {
-    return fail('Invalid request body', 400);
+    return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
   }
 
-  // Client sends the signed token under the field name 'attemptId'.
-  const attemptToken = form.get('attemptId')?.toString() ?? '';
-  if (!attemptToken) return fail('Missing attempt token', 400);
-
-  // 1. HMAC signature + payload shape
-  const payload = verifyToken(attemptToken);
-  if (!payload) return fail('Invalid or malformed token', 401);
-
-  // 2. Token belongs to this user
-  if (payload.userId !== user.id) {
-    return fail('Token does not belong to this user', 403);
+  const attemptId = form.get('attemptId');
+  if (typeof attemptId !== 'string' || !attemptId) {
+    return NextResponse.json({ error: 'Missing verification token' }, { status: 400 });
   }
 
-  // 3. Timing physics
-  const elapsed = Date.now() - payload.issuedAt;
-  if (elapsed > TOKEN_TTL_MS) {
-    return fail('Verification session expired, please restart', 410);
+  const payload = verifyToken(attemptId);
+  if (!payload) {
+    return NextResponse.json({ error: 'Invalid verification token' }, { status: 401 });
   }
+
+  // Token must belong to the requesting user
+  if (payload.userId !== userId) {
+    return NextResponse.json({ error: 'Token does not belong to this user' }, { status: 403 });
+  }
+
+  // TTL window
+  const now = Date.now();
+  if (now - payload.issuedAt > TOKEN_TTL_MS) {
+    return NextResponse.json({ error: 'Verification session expired. Please retry.' }, { status: 410 });
+  }
+
+  // Elapsed time computed SERVER-SIDE from issuedAt - never trust client timestamps
+  const elapsed = now - payload.issuedAt;
   if (elapsed < MIN_ELAPSED_MS) {
-    return fail('Completed too fast to be human', 400);
+    return NextResponse.json({ error: 'Verification completed too quickly' }, { status: 400 });
+  }
+  if (elapsed > MAX_ELAPSED_MS) {
+    return NextResponse.json({ error: 'Verification session timed out. Please retry.' }, { status: 410 });
   }
 
-  // 4. Capture telemetry
-  let captureTimestamps: number[] = [];
-  try {
-    const parsed = JSON.parse(form.get('captureTimestamps')?.toString() ?? '[]');
-    if (Array.isArray(parsed)) captureTimestamps = parsed;
-  } catch {
-    // handled by the length check below
-  }
-  const seqLen = payload.sequence.length;
-  if (captureTimestamps.length !== seqLen) {
-    return fail('Incomplete capture telemetry', 400);
-  }
-  for (let i = 0; i < captureTimestamps.length; i++) {
-    const t = captureTimestamps[i];
-    if (typeof t !== 'number' || t < payload.issuedAt || t > payload.issuedAt + TOKEN_TTL_MS + 5000) {
-      return fail('Invalid capture timing', 400);
+  // Require exactly the number of pose photos the server issued
+  const blobs: Blob[] = [];
+  for (let i = 0; i < payload.sequence.length; i++) {
+    const blob = form.get(`pose_${i}`);
+    if (!blob || typeof blob === 'string') {
+      return NextResponse.json({ error: `Missing pose photo ${i + 1}` }, { status: 400 });
     }
-    if (i > 0 && t - captureTimestamps[i - 1] < MIN_POSE_GAP_MS) {
-      return fail('Poses captured too quickly', 400);
+    if (blob.type !== 'image/jpeg') {
+      return NextResponse.json({ error: `Pose photo ${i + 1} must be JPEG` }, { status: 400 });
     }
+    if (blob.size > MAX_PHOTO_BYTES) {
+      return NextResponse.json({ error: `Pose photo ${i + 1} exceeds 10MB` }, { status: 400 });
+    }
+    blobs.push(blob);
   }
 
-  // 5. Pose photos: exact count, non-empty, in server-dictated order
-  const files: File[] = [];
-  for (let i = 0; i < seqLen; i++) {
-    const entry = form.get('pose_' + i);
-    if (!(entry instanceof File) || entry.size === 0) {
-      return fail('Missing pose photo ' + (i + 1), 400);
-    }
-    files.push(entry);
-  }
-
-  const admin = createClient(url, serviceKey, { auth: { persistSession: false } });
-
-  // 6. Upload to the private 'verifications' bucket under this user's folder
-  const basePath = `${user.id}/${Date.now()}`;
-  for (let i = 0; i < files.length; i++) {
-    const uploadResult = await admin.storage
+  // Persist pose photos privately for audit
+  const service = getServiceClient();
+  for (let i = 0; i < blobs.length; i++) {
+    const buf = Buffer.from(await blobs[i].arrayBuffer());
+    const path = `${userId}/${Date.now()}_pose_${i}.jpg`;
+    const { error: uploadError } = await service.storage
       .from('verifications')
-      .upload(`${basePath}/pose_${i}.jpg`, files[i], {
-        contentType: 'image/jpeg',
-        upsert: false,
-      });
-    if (uploadResult.error) return fail('Could not store verification photo', 500);
-  }
-
-  // 7. Replay protection: single-use nonce fingerprint
-  const fingerprint = tokenFingerprint(attemptToken);
-  const { data: profile, error: profErr } = await admin
-    .from('profiles')
-    .select('last_verification_nonce')
-    .eq('id', user.id)
-    .maybeSingle();
-  if (profErr) return fail('Could not load profile', 500);
-  if (profile?.last_verification_nonce === fingerprint) {
-    return fail('Verification attempt already used', 409);
-  }
-
-  // 7.5 Duplicate-photo defense: compare submitted hashes against all prior verifications
-  const submittedHashes: string[] = [];
-  try {
-    const parsed = JSON.parse(form.get('poseHashes')?.toString() ?? '[]');
-    if (Array.isArray(parsed)) submittedHashes.push(...parsed.filter((h: unknown) => typeof h === 'string' && /^[01]{64}$/.test(h)));
-  } catch { /* fallthrough */ }
-  if (submittedHashes.length >= 2) {
-    const HAMMING_LIMIT = 5; // <= 5 differing bits out of 64 = near-identical photo
-    const { data: priors } = await admin
-      .from('verification_hashes')
-      .select('phash, user_id');
-    if (priors && priors.length > 0) {
-      for (const prior of priors) {
-        if (prior.user_id === user.id) continue; // own re-verifications allowed
-        for (const sh of submittedHashes) {
-          if (sh.length !== prior.phash.length) continue;
-          let dist = 0;
-          for (let b = 0; b < sh.length; b++) if (sh[b] !== prior.phash[b]) dist++;
-          if (dist <= HAMMING_LIMIT) {
-            return fail('Duplicate verification photo detected', 409);
-          }
-        }
-      }
+      .upload(path, buf, { contentType: 'image/jpeg', upsert: false });
+    if (uploadError) {
+      console.error('[verify/submit] upload failed:', uploadError.message);
+      // Non-fatal: don't block verification on storage hiccup
     }
   }
 
-// 8. Flip the badge. Server-side only; client never touches is_verified.
-  const { error: updErr } = await admin
+  // Flip verification status
+  const { error: updateError } = await service
     .from('profiles')
-    .update({ is_verified: true, last_verification_nonce: fingerprint })
-    .eq('id', user.id);
-  if (updErr) return fail('Could not save verification', 500);
+    .update({ is_verified: true })
+    .eq('id', userId);
 
-  if (submittedHashes.length > 0) {
-    await admin.from('verification_hashes').insert(
-      submittedHashes.map((h) => ({ user_id: user.id, phash: h }))
-    );
+  if (updateError) {
+    console.error('[verify/submit] profile update failed:', updateError.message);
+    return NextResponse.json({ error: 'Could not save verification status' }, { status: 500 });
   }
 
-  return NextResponse.json({ verified: true, sequence: payload.sequence });
+  return NextResponse.json({ verified: true });
 }
