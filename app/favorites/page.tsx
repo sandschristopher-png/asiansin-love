@@ -4,6 +4,7 @@ import React, { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Zap, Lock, Crown, CheckCircle2 } from 'lucide-react';
+import UpgradeModal from '@/components/UpgradeModal';
 import { createBrowserClient } from '@supabase/ssr';
 
 type SparkTab = 'sparked' | 'sparked_you' | 'mutual' | 'visited';
@@ -320,7 +321,7 @@ export default function SparksPage() {
           <>
           <div className="grid grid-cols-2 gap-3.5 animate-fade-in-up">
             {priorityList.map((person) => {
-              const shouldBlur = activeTab === 'sparked_you' && !isPlus;
+              const shouldBlur = (activeTab === 'sparked_you' || activeTab === 'visited') && !isPlus;
               const publicName = getPublicName(person);
               const age = getAge(person);
               const photo = shouldBlur ? '/placeholder-avatar.svg' : getPhoto(person);
@@ -342,7 +343,7 @@ export default function SparksPage() {
                     </div>
                   )}
                   <div className="absolute bottom-2.5 left-3 right-3 text-white">
-                    <div className="font-bold text-[15px] leading-tight truncate">{shouldBlur ? 'Someone Sparked You' : `${publicName}${age ? `, ${age}` : ''}`}</div>
+                    <div className="font-bold text-[15px] leading-tight truncate">{shouldBlur ? (activeTab === 'visited' ? 'Someone Visited You' : 'Someone Sparked You') : `${publicName}${age ? `, ${age}` : ''}`}</div>
                     <div className="text-[11px] text-white/85 truncate mt-0.5">{location}</div>
                   </div>
                 </div>
