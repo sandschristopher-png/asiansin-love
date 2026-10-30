@@ -120,109 +120,94 @@ export default function SparksPage() {
           return;
         }
 
-        const [meRes, outSparksRes, inSparksRes, favRes, viewsRes] = await Promise.allSettled([
-          supabaseClient.from('profiles').select('gender, looking_for, seeking, is_plus').eq('id', user.id).maybeSingle(),
+                // Server-side gated fetch — no client-side bypass possible
+        const resp = await fetch('/api/sparks/gated');
+        if (resp.status === 403 || resp.status === 401) {
+          // Not Plus or not authenticated: show paywall, empty gated data
+          if (isMounted) {
+            setIsPlus(false);
+            setSparkedList([]);
+            setSparkedYouList([]);
+            setMutualList([]);
+            setVisitedList([]);
+            setLoading(false);
+          }
+          return;
+        }
+
+        if (!resp.ok) {
+          console.error('Sparks gate error:', resp.status);
+          if (isMounted) setLoading(false);
+          return;
+        }
+
+        const { sparkedYou, visitedYou } = await resp.json();
+
+        // Fetch your own outbound sparks and mutuals (these are safe to read directly)
+        const [outSparksRes, inSparksRes] = await Promise.allSettled([
           supabaseClient.from('sparks').select('receiver_id, created_at').eq('sender_id', user.id).order('created_at', { ascending: false }),
-          supabaseClient.from('sparks').select('sender_id, created_at').eq('receiver_id', user.id).order('created_at', { ascending: false }),
-          supabaseClient.from('favorites').select('favorite_id, created_at').eq('user_id', user.id).order('created_at', { ascending: false }),
-          supabaseClient.from('profile_views').select('viewer_id, created_at').eq('viewed_id', user.id).order('created_at', { ascending: false })
+          supabaseClient.from('sparks').select('sender_id, created_at').eq('receiver_id', user.id).order('created_at', { ascending: false })
         ]);
 
-                const unwrap = <T,>(r: PromiseSettledResult<T>): T | null =>
+        const unwrap = <T,>(r: PromiseSettledResult<T>): T | null =>
           r.status === 'fulfilled' ? r.value : null;
-
-        const meRow: any = unwrap(meRes)?.data ?? null;
-        const g = String(meRow?.gender || user.user_metadata?.gender || '').toLowerCase();
-        const look = String(meRow?.looking_for || meRow?.seeking || '').toLowerCase();
-        const resolvedGender: 'male' | 'female' =
-          g === 'female' || g === 'f' || g === 'female' || look === 'male' || look === 'm' || look === 'male'
-            ? 'female'
-            : 'male';
-        const resolvedPlus = Boolean(meRow?.is_plus);
 
         const outSparkRows: any[] = (unwrap(outSparksRes)?.data as any[]) ?? [];
         const inSparkRows: any[] = (unwrap(inSparksRes)?.data as any[]) ?? [];
-        const favRows: any[] = (unwrap(favRes)?.data as any[]) ?? [];
-        const viewRows: any[] = (unwrap(viewsRes)?.data as any[]) ?? [];
 
         const outIds: string[] = Array.from(new Set<string>(
           outSparkRows.map((r) => r.receiver_id).filter((x): x is string => typeof x === 'string')
         ));
-        const favIds: string[] = Array.from(new Set<string>(
-          favRows.map((r) => r.favorite_id).filter((x): x is string => typeof x === 'string')
-        ));
         const inIds: string[] = Array.from(new Set<string>(
           inSparkRows.map((r) => r.sender_id).filter((x): x is string => typeof x === 'string')
         ));
-        const viewerIds: string[] = Array.from(new Set<string>(
-          viewRows.map((r) => r.viewer_id).filter((x): x is string => typeof x === 'string' && x !== user.id)
-        ));
 
-        const mergedOutIds: string[] = Array.from(new Set<string>([...outIds, ...favIds]));
+        const mergedOutIds: string[] = Array.from(new Set<string>([...outIds]));
         const outSet = new Set<string>(mergedOutIds);
         const mutualIds: string[] = inIds.filter((id) => outSet.has(id));
 
-        const fetchVisitorIds: string[] = resolvedPlus ? viewerIds : [];
-        const allUniqueIds: string[] = Array.from(new Set<string>([...mergedOutIds, ...inIds, ...fetchVisitorIds]));
-
+        const allIds = Array.from(new Set<string>([...mergedOutIds, ...inIds]));
         const profileMap = new Map<string, ProfileCardData>();
-        if (allUniqueIds.length > 0) {
-          const { data: profilesData } = await supabaseClient
-            .from('profiles')
-            .select('*')
-            .in('id', allUniqueIds);
+        if (allIds.length > 0) {
+          const { data: profilesData } = await supabaseClient.from('profiles').select('*').in('id', allIds);
           for (const pr of ((profilesData || []) as ProfileCardData[])) {
             profileMap.set(pr.id, pr);
           }
         }
 
         const sparkedProfiles = mergedOutIds.map((id) => profileMap.get(id)).filter((x): x is ProfileCardData => Boolean(x));
-        const sparkedYouProfiles = inIds.map((id) => profileMap.get(id)).filter((x): x is ProfileCardData => Boolean(x));
+        const sparkedYouProfiles = (sparkedYou ?? []) as ProfileCardData[];
         const mutualProfiles = mutualIds.map((id) => profileMap.get(id)).filter((x): x is ProfileCardData => Boolean(x));
-        const visitedProfiles = fetchVisitorIds.map((id) => profileMap.get(id)).filter((x): x is ProfileCardData => Boolean(x));
-        // --- Free-tier masking: strip PII from sparkedYou/visited before state/cache ---
-        const maskProfile = (pr: ProfileCardData): ProfileCardData => ({
-          ...pr,
-          full_name: null,
-          username: null,
-          avatar_url: null,
-          gallery: [],
-        });
-        const finalSparkedYouProfiles = resolvedPlus
-          ? sparkedYouProfiles
-          : sparkedYouProfiles.map(maskProfile);
-        const finalVisitedProfiles = resolvedPlus
-          ? visitedProfiles
-          : visitedProfiles.map(maskProfile);
+        const visitedProfiles = (visitedYou ?? []) as ProfileCardData[];
 
         const cutoff48h = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString();
         const recentInbound = inSparkRows.filter((r) => r.created_at && r.created_at >= cutoff48h).length;
 
         if (!isMounted) return;
 
-        setUserGender(resolvedGender);
+        setUserGender('male');
         setRecentInboundCount(recentInbound);
-        setIsPlus(resolvedPlus);
+        setIsPlus(true); // Server confirmed Plus
         setSparkedList(sparkedProfiles);
-        setSparkedYouList(finalSparkedYouProfiles);
+        setSparkedYouList(sparkedYouProfiles);
         setMutualList(mutualProfiles);
-        setVisitedList(finalVisitedProfiles);
+        setVisitedList(visitedProfiles);
         setLoading(false);
 
         try {
           const cachePayload: CachedSparksState = {
-            userGender: resolvedGender,
-            isPlus: resolvedPlus,
+            userGender: 'male',
+            isPlus: true,
             sparked: sparkedProfiles,
-            sparkedYou: finalSparkedYouProfiles,
+            sparkedYou: sparkedYouProfiles,
             mutual: mutualProfiles,
-            visited: finalVisitedProfiles,
+            visited: visitedProfiles,
             timestamp: Date.now()
           };
           sessionStorage.setItem(CACHE_KEY, JSON.stringify(cachePayload));
         } catch {}
       } catch (err) {
-        console.error('Error loading Sparks:', err);
+        console.error('Error loading Sparks:', err);console.error('Error loading Sparks:', err);
         if (isMounted) setLoading(false);
       }
     }
