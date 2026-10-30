@@ -221,7 +221,7 @@ export default function ChatConversationPage() {
           : supabase
               .from('profiles')
               .select('id, username, display_name, full_name, avatar_url, reputation_score, city, country, interests')
-              .or('username.ilike.' + rawParam + ',display_name.ilike.' + rawParam)
+              .or(`username.ilike.%${rawParam}%,display_name.ilike.%${rawParam}%`)
               .limit(1)
               .maybeSingle(),
       ]);
