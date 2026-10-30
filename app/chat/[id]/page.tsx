@@ -540,7 +540,7 @@ export default function ChatConversationPage() {
   };
 
   return (
-    <main className="w-full h-[calc(100dvh-148px)] max-h-[calc(100dvh-148px)] flex flex-col bg-[#F9F8FC] text-[#1C1924] font-sans relative overflow-hidden">
+    <div className="w-full h-full flex flex-col bg-[#F9F8FC] text-[#1C1924] font-sans relative overflow-hidden">
       {/* Sticky Header */}
       <header className="flex items-center justify-between px-3.5 py-2.5 bg-white/95 backdrop-blur-md border-b border-[#ECE8F4] shrink-0 z-20">
         <div className="flex items-center gap-2.5 min-w-0">
@@ -825,7 +825,7 @@ export default function ChatConversationPage() {
       )}
 
       {/* Docked Flex Composer (Never overlaps message feed) */}
-      <div className="shrink-0 bg-white/95 backdrop-blur-md border-t border-[#ECE8F4] px-3 py-2.5 z-20">
+      <div className="shrink-0 bg-white/95 backdrop-blur-md border-t border-[#ECE8F4] px-3 pt-2 pb-[max(0.625rem,env(safe-area-inset-bottom))] z-20">
         {cooldownSeconds > 0 ? (
           <div className="p-3 rounded-2xl bg-[#F8F7FA] border border-[#DDD7E5] flex flex-col items-center gap-2 shadow-xs text-center">
             <div className="flex items-center gap-1.5 text-xs text-[#524B5E]">
@@ -930,6 +930,6 @@ export default function ChatConversationPage() {
           </div>
         </div>
       )}
-    </main>
+    </div>
   );
 }
