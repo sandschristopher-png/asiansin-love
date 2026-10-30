@@ -7,6 +7,7 @@ interface BrandLogoProps {
   className?: string;
   href?: string;
   size?: 'sm' | 'md' | 'lg';
+  textSize?: string;
 }
 
 const SIZE_CLASS: Record<'sm' | 'md' | 'lg', string> = {

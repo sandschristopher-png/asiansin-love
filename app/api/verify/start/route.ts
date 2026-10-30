@@ -3,7 +3,7 @@ import { createClient as createSessionClient } from '@/lib/supabase/server';
 import { signToken, POSE_POOL, SEQUENCE_LENGTH, VerifyTokenPayload } from '@/lib/verify/token';
 
 export async function POST() {
-  const supabase = createSessionClient();
+  const supabase = await createSessionClient();
   const { data, error } = await supabase.auth.getUser();
   if (error || !data?.user) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
