@@ -180,6 +180,20 @@ export default function SparksPage() {
         const sparkedYouProfiles = inIds.map((id) => profileMap.get(id)).filter((x): x is ProfileCardData => Boolean(x));
         const mutualProfiles = mutualIds.map((id) => profileMap.get(id)).filter((x): x is ProfileCardData => Boolean(x));
         const visitedProfiles = fetchVisitorIds.map((id) => profileMap.get(id)).filter((x): x is ProfileCardData => Boolean(x));
+        // --- Free-tier masking: strip PII from sparkedYou/visited before state/cache ---
+        const maskProfile = (pr: ProfileCardData): ProfileCardData => ({
+          ...pr,
+          full_name: null,
+          username: null,
+          avatar_url: null,
+          gallery: [],
+        });
+        const finalSparkedYouProfiles = resolvedPlus
+          ? sparkedYouProfiles
+          : sparkedYouProfiles.map(maskProfile);
+        const finalVisitedProfiles = resolvedPlus
+          ? visitedProfiles
+          : visitedProfiles.map(maskProfile);
 
         const cutoff48h = new Date(Date.now() - 48 * 60 * 60 * 1000).toISOString();
         const recentInbound = inSparkRows.filter((r) => r.created_at && r.created_at >= cutoff48h).length;
@@ -190,9 +204,9 @@ export default function SparksPage() {
         setRecentInboundCount(recentInbound);
         setIsPlus(resolvedPlus);
         setSparkedList(sparkedProfiles);
-        setSparkedYouList(sparkedYouProfiles);
+        setSparkedYouList(finalSparkedYouProfiles);
         setMutualList(mutualProfiles);
-        setVisitedList(visitedProfiles);
+        setVisitedList(finalVisitedProfiles);
         setLoading(false);
 
         try {
@@ -200,9 +214,9 @@ export default function SparksPage() {
             userGender: resolvedGender,
             isPlus: resolvedPlus,
             sparked: sparkedProfiles,
-            sparkedYou: sparkedYouProfiles,
+            sparkedYou: finalSparkedYouProfiles,
             mutual: mutualProfiles,
-            visited: visitedProfiles,
+            visited: finalVisitedProfiles,
             timestamp: Date.now()
           };
           sessionStorage.setItem(CACHE_KEY, JSON.stringify(cachePayload));

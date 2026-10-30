@@ -875,6 +875,11 @@ export default function OnboardingPage() {
               </div>
             </div>
 
+            {errorMessage && (
+              <div className="bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium rounded-2xl px-4 py-3">
+                {errorMessage}
+              </div>
+            )}
             <div className="flex items-center gap-3 pt-2">
               <button
                 type="button"
@@ -886,6 +891,7 @@ export default function OnboardingPage() {
               <button
                 type="submit"
                 className="w-2/3 py-3 rounded-2xl bg-[#6555b8] hover:bg-[#52449e] text-white text-xs font-semibold shadow-md transition disabled:opacity-40"
+                disabled={!height || !weight || bio.trim().length < 20 || interests.length === 0}
               >
                 Continue to Photos
               </button>
