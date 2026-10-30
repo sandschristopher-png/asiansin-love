@@ -130,11 +130,11 @@ export default function UpgradeModal({
 
             <div className="flex items-start gap-3">
               <div className="w-6 h-6 rounded-lg bg-white border border-[#DDD7E5] text-[#6555B8] flex items-center justify-center shrink-0 mt-0.5 shadow-2xs">
-                <Check className="w-3.5 h-3.5 text-emerald-600 font-bold" />
+                <Sparkles className="w-3.5 h-3.5 text-[#6555B8]" />
               </div>
               <div className="text-left">
-                <p className="text-xs font-semibold text-neutral-900">Username Modifications Included</p>
-                <p className="text-[11px] text-neutral-500 leading-tight">Update your public username without restrictions</p>
+                <p className="text-xs font-semibold text-neutral-900">Passport & Global Location</p>
+                <p className="text-[11px] text-neutral-500 leading-tight">Teleport your profile and match in any city worldwide</p>
               </div>
             </div>
           </div>
