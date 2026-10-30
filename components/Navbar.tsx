@@ -2,11 +2,10 @@
 import { BrandLogo } from '@/components/BrandLogo';
 import NotificationsSection from '@/components/NotificationsSection';
 import { notifyUser } from '@/components/InAppToast';
-import { notificationService } from '@/lib/notificationService';
 import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { User, Settings, LogOut, ArrowLeft, Share2, Check } from 'lucide-react';
+import { User, Settings, LogOut, ArrowLeft, Share2, Check , Zap} from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { PlusBadge } from './PlusBadge';
 export function Navbar() {
@@ -226,6 +225,21 @@ export function Navbar() {
                   <NotificationsSection initial={prefetchedNotifs} onNavigate={() => setMenuOpen(false)} />
                     <div className="py-1">
                       <Link
+                        href="/plus"
+                        onClick={() => setMenuOpen(false)}
+                        className="flex items-center justify-between px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                      >
+                        <div className="flex items-center gap-3">
+                          <Zap className="w-4 h-4 text-[#6555B8]" />
+                          <span className="font-medium text-[#1C1924]">AIL Plus</span>
+                        </div>
+                        {profile?.is_plus ? (
+                          <span className="text-[10px] font-bold text-[#6555B8] bg-[#F3EFFC] border border-[#DDD7E5]/70 px-2 py-0.5 rounded-full">Active</span>
+                        ) : (
+                          <span className="text-[10px] font-semibold text-[#6555B8] bg-[#F3EFFC] px-2 py-0.5 rounded-full">Upgrade</span>
+                        )}
+                      </Link>
+                    <Link
                         href="/profile"
                         onClick={() => setMenuOpen(false)}
                         className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
