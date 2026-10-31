@@ -74,19 +74,51 @@ function getLocationLabel(p: ProfileCardData): string {
   return parts.length > 0 ? parts.join(', ') : 'Southeast Asia';
 }
 
+
+let memorySparksCache: any = null;
+function getInitialSparksState(): any {
+  if (memorySparksCache) return JSON.parse(JSON.stringify(memorySparksCache));
+  if (typeof window !== 'undefined') {
+    try {
+      const raw = sessionStorage.getItem(CACHE_KEY);
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (parsed && Array.isArray(parsed.sparked)) {
+          memorySparksCache = parsed;
+          return JSON.parse(JSON.stringify(parsed));
+        }
+      }
+    } catch {}
+  }
+  return null;
+}
+
 export default function SparksPage() {
   const router = useRouter();
+  const initialSparks = getInitialSparksState();
   const [activeTab, setActiveTab] = useState<SparkTab>('sparked');
-  const [loading, setLoading] = useState<boolean>(true);
-  const [userGender, setUserGender] = useState<'male' | 'female'>('male');
-  const [isPlus, setIsPlus] = useState<boolean>(false);
-
-  const [sparkedList, setSparkedList] = useState<ProfileCardData[]>([]);
-  const [sparkedYouList, setSparkedYouList] = useState<ProfileCardData[]>([]);
-  const [mutualList, setMutualList] = useState<ProfileCardData[]>([]);
-  const [visitedList, setVisitedList] = useState<ProfileCardData[]>([]);
+  const [loading, setLoading] = useState<boolean>(() => !initialSparks);
+  const [userGender, setUserGender] = useState<'male' | 'female'>(() => initialSparks?.userGender || 'male');
+  const [isPlus, setIsPlus] = useState<boolean>(() => Boolean(initialSparks?.isPlus));
+  const [sparkedList, setSparkedList] = useState<ProfileCardData[]>(() => initialSparks?.sparked || []);
+  const [sparkedYouList, setSparkedYouList] = useState<ProfileCardData[]>(() => initialSparks?.sparkedYou || []);
+  const [mutualList, setMutualList] = useState<ProfileCardData[]>(() => initialSparks?.mutual || []);
+  const [visitedList, setVisitedList] = useState<ProfileCardData[]>(() => initialSparks?.visited || []);
   const [recentInboundCount, setRecentInboundCount] = useState<number>(0);
   const [showLowSignal, setShowLowSignal] = useState<boolean>(false);
+
+  useEffect(() => {
+    if (!loading) {
+      memorySparksCache = {
+        userGender,
+        isPlus,
+        sparked: sparkedList,
+        sparkedYou: sparkedYouList,
+        mutual: mutualList,
+        visited: visitedList,
+      };
+    }
+  }, [loading, userGender, isPlus, sparkedList, sparkedYouList, mutualList, visitedList]);
 
   useEffect(() => {
     try {

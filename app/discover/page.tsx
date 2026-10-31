@@ -140,6 +140,26 @@ function normalizeGenderValue(raw?: string | null): 'female' | 'male' | 'male' {
   return 'female';
 }
 
+
+// Universal SWR Module Cache for Discover Feed
+let memoryDiscoverCache: { profiles: ProfileItem[] } | null = null;
+function getInitialDiscoverFeed(): ProfileItem[] {
+  if (memoryDiscoverCache?.profiles?.length) return memoryDiscoverCache.profiles.slice();
+  if (typeof window !== 'undefined') {
+    try {
+      const cachedRaw = localStorage.getItem('ail_discover_cache');
+      if (cachedRaw) {
+        const cached = JSON.parse(cachedRaw);
+        if (Array.isArray(cached?.profiles) && cached.profiles.length > 0) {
+          memoryDiscoverCache = { profiles: cached.profiles };
+          return cached.profiles.slice();
+        }
+      }
+    } catch {}
+  }
+  return [];
+}
+
 function DiscoverContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -147,13 +167,23 @@ function DiscoverContent() {
   const [discoveryMode, setDiscoveryMode] = useState<DiscoveryModeId>('all');
   const [currentUserCoords, setCurrentUserCoords] = useState<{ lat: number; lon: number } | null>(null);
   const [viewerSavedGenders, setViewerSavedGenders] = useState<string[]>([]);
-  const [profiles, setProfiles] = useState<ProfileItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const initialFeed = getInitialDiscoverFeed();
+  const [profiles, setProfiles] = useState<ProfileItem[]>(() => initialFeed);
+  const [isLoading, setIsLoading] = useState(() => initialFeed.length === 0);
   const [searchQuery, setSearchQuery] = useState(() => searchParams.get('q') || '');
   const [selectedCountry, setSelectedCountry] = useState('All');
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchAnimating, setSearchAnimating] = useState(false);
   const [searchClosing, setSearchClosing] = useState(false);
+
+  useEffect(() => {
+    if (profiles.length > 0) {
+      memoryDiscoverCache = { profiles };
+      try {
+        localStorage.setItem('ail_discover_cache', JSON.stringify({ profiles }));
+      } catch {}
+    }
+  }, [profiles]);
 
   const [selectedGenders, setSelectedGenders] = useState<string[]>(() => {
     if (typeof window !== 'undefined') {
@@ -253,7 +283,7 @@ function DiscoverContent() {
           }
         }
       } catch {}
-      if (!hydrated) setIsLoading(true);
+      if (!hydrated && profiles.length === 0) setIsLoading(true);
       try {
         const res = await fetch('/api/discover', { cache: 'no-store' });
         if (res.status === 401) {

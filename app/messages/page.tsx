@@ -40,10 +40,30 @@ function formatConversationTimestamp(iso?: string): string {
   }
 }
 
+
+let memoryConversationsCache: ConversationItem[] | null = null;
+function getInitialConversations(): ConversationItem[] {
+  if (memoryConversationsCache) return memoryConversationsCache.slice();
+  if (typeof window !== 'undefined') {
+    try {
+      const raw = sessionStorage.getItem('ail_messages_fast_cache');
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          memoryConversationsCache = parsed;
+          return parsed.slice();
+        }
+      }
+    } catch {}
+  }
+  return [];
+}
+
 export default function MessagesPage() {
   const router = useRouter();
-  const [conversations, setConversations] = useState<ConversationItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const initialConversations = getInitialConversations();
+  const [conversations, setConversations] = useState<ConversationItem[]>(() => initialConversations);
+  const [loading, setLoading] = useState(() => initialConversations.length === 0);
   const [activeTab, setActiveTab] = useState<'all' | 'unread'>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -130,9 +150,15 @@ export default function MessagesPage() {
             };
           });
 
-        if (isMountedRef.current) {
-          setConversations(formatted);
-        }
+        memoryConversationsCache = formatted;
+          if (typeof window !== 'undefined') {
+            try {
+              sessionStorage.setItem('ail_messages_fast_cache', JSON.stringify(formatted));
+            } catch {}
+          }
+          if (isMountedRef.current) {
+            setConversations(formatted);
+          }
       } catch (err) {
         console.error('Error loading conversations:', err);
       } finally {
