@@ -469,10 +469,17 @@ function DiscoverContent() {
                 <Search className="w-3.5 h-3.5 text-[#8C849B] shrink-0" />
                 <input
                   autoFocus
-                  type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="City or username"
+                  type="search"
+                    autoComplete="off"
+                    autoCorrect="off"
+                    autoCapitalize="off"
+                    spellCheck={false}
+                    data-1p-ignore="true"
+                    data-lpignore="true"
+                    data-form-type="other"
+                    placeholder="City or username"
                   className="flex-1 w-full bg-transparent text-xs text-[#1C1924] placeholder-[#8C849B] focus:outline-none"
                 />
                 <button
@@ -487,7 +494,7 @@ function DiscoverContent() {
                 }}
                   className="text-[#8C849B] hover:text-[#1C1924] text-xs px-1 cursor-pointer"
                 >
-                  Ã—
+                  <XIcon className="w-3.5 h-3.5" />
                 </button>
               </div>
             ) : (

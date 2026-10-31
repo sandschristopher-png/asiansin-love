@@ -20,13 +20,22 @@ import { supabase } from '@/lib/supabase/client';
 
 type SettingsKey = 'hide_profile' | 'show_active_status' | 'notify_sparks' | 'notify_messages';
 
+
+// Module-level cache for instantaneous 0ms paint
+let cachedSettingsData: {
+  hide_profile: boolean;
+  show_active_status: boolean;
+  notify_sparks: boolean;
+  notify_messages: boolean;
+} | null = null;
+
 export default function SettingsHubPage() {
   const router = useRouter();
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(() => !cachedSettingsData);
   const [loggingOut, setLoggingOut] = useState(false);
   const [savingKey, setSavingKey] = useState<SettingsKey | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [settings, setSettings] = useState({
+  const [settings, setSettings] = useState(() => cachedSettingsData || {
     hide_profile: false,
     show_active_status: true,
     notify_sparks: true,
@@ -51,12 +60,14 @@ export default function SettingsHubPage() {
         // Column(s) missing — remind to run the migration
         setErrorMsg('Settings storage not initialized. Run the profiles migration.');
       } else if (data) {
-        setSettings({
-          hide_profile: Boolean(data.hide_profile),
-          show_active_status: data.show_active_status ?? true,
-          notify_sparks: data.notify_sparks ?? true,
-          notify_messages: data.notify_messages ?? true,
-        });
+        const loadedSettings = {
+            hide_profile: Boolean(data.hide_profile),
+            show_active_status: data.show_active_status ?? true,
+            notify_sparks: data.notify_sparks ?? true,
+            notify_messages: data.notify_messages ?? true,
+          };
+          cachedSettingsData = loadedSettings;
+          setSettings(loadedSettings);
       }
       setLoading(false);
     }
