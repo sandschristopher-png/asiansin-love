@@ -80,49 +80,79 @@ const HOBBY_TAGS = [
   'Business & Career'
 ];
 
+
+// --- IN-MEMORY & SESSION PROFILE CACHE (ELIMINATES ROUTE FLASH) ---
+let memoryProfileCache: any = null;
+const getInitialProfileCache = () => {
+  if (memoryProfileCache) return memoryProfileCache;
+  if (typeof window !== 'undefined') {
+    try {
+      const stored = sessionStorage.getItem('ail_profile_cache');
+      if (stored) {
+        memoryProfileCache = JSON.parse(stored);
+        return memoryProfileCache;
+      }
+    } catch {}
+  }
+  return null;
+};
+
+const updateProfileCache = (data: any) => {
+  memoryProfileCache = { ...(memoryProfileCache || {}), ...data };
+  if (typeof window !== 'undefined') {
+    try {
+      sessionStorage.setItem('ail_profile_cache', JSON.stringify(memoryProfileCache));
+    } catch {}
+  }
+};
+
 export default function MyProfilePage() {
   const router = useRouter();
 
-  const [loading, setLoading] = useState(true);
+  const initialProfile = getInitialProfileCache();
+
+  const [loading, setLoading] = useState(!initialProfile);
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
-  const [name, setName] = useState('');
-  const [username, setUsername] = useState('');
-  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
-  const [photos, setPhotos] = useState<string[]>([]);
+  const [name, setName] = useState<string>(() => initialProfile?.name ?? '');
+  const [username, setUsername] = useState<string>(() => initialProfile?.username ?? '');
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(() => initialProfile?.avatarUrl ?? null);
+  const [photos, setPhotos] = useState<string[]>(() => initialProfile?.photos ?? []);
   const [currentPhotoIdx, setCurrentPhotoIdx] = useState(0);
   const touchStartX = useRef<number | null>(null);
   const justSwiped = useRef(false);
-  const [age, setAge] = useState(25);
-  const [location, setLocation] = useState('');
-  const [locationSource, setLocationSource] = useState<'gps_verified' | 'self_reported'>('self_reported');
-  const [locationVerifiedAt, setLocationVerifiedAt] = useState<string | null>(null);
-  const [latitude, setLatitude] = useState<number | null>(null);
-  const [longitude, setLongitude] = useState<number | null>(null);
+  const [age, setAge] = useState<number>(() => initialProfile?.age ?? 25);
+  const [location, setLocation] = useState<string>(() => initialProfile?.location ?? '');
+  const [locationSource, setLocationSource] = useState<'gps_verified' | 'self_reported'>(() => initialProfile?.locationSource ?? 'self_reported');
+  const [locationVerifiedAt, setLocationVerifiedAt] = useState<string | null>(() => initialProfile?.locationVerifiedAt ?? null);
+  const [latitude, setLatitude] = useState<number | null>(() => initialProfile?.latitude ?? null);
+  const [longitude, setLongitude] = useState<number | null>(() => initialProfile?.longitude ?? null);
   const [isLocating, setIsLocating] = useState<boolean>(false);
   const [locError, setLocError] = useState<string | null>(null);
-  const [bio, setBio] = useState('');
-  const [lookingFor, setLookingFor] = useState('');
-  const [interests, setInterests] = useState<string[]>([]);
+  const [bio, setBio] = useState<string>(() => initialProfile?.bio ?? '');
+  const [lookingFor, setLookingFor] = useState<string>(() => initialProfile?.lookingFor ?? '');
+  const [interests, setInterests] = useState<string[]>(() => initialProfile?.interests ?? []);
 
-  const [verificationStatus, setVerificationStatus] = useState<'unverified' | 'pending' | 'verified'>('unverified');
-  const [isPlus, setIsPlus] = useState<boolean>(false);
-  const [repScore, setRepScore] = useState<number | null>(null);
+  const [verificationStatus, setVerificationStatus] = useState<'unverified' | 'pending' | 'verified'>(
+    () => initialProfile?.verificationStatus ?? 'unverified'
+  );
+  const [isPlus, setIsPlus] = useState<boolean>(() => initialProfile?.isPlus ?? false);
+  const [repScore, setRepScore] = useState<number | null>(() => initialProfile?.repScore ?? null);
 
-  const [profession, setProfession] = useState('');
-  const [intent, setIntent] = useState('');
-  const [religion, setReligion] = useState('Christian');
-  const [maritalStatus, setMaritalStatus] = useState('Never Married');
-  const [hasKids, setHasKids] = useState('No');
-  const [wantsKids, setWantsKids] = useState('Yes');
-  const [relocation, setRelocation] = useState('Can Relocate');
-  const [userLanguages, setUserLanguages] = useState('English');
-  const [height, setHeight] = useState('');
-  const [weight, setWeight] = useState('');
-  const [drinking, setDrinking] = useState('No');
-  const [smoking, setSmoking] = useState('No');
+  const [profession, setProfession] = useState<string>(() => initialProfile?.profession ?? '');
+  const [intent, setIntent] = useState<string>(() => initialProfile?.intent ?? '');
+  const [religion, setReligion] = useState<string>(() => initialProfile?.religion ?? 'Christian');
+  const [maritalStatus, setMaritalStatus] = useState<string>(() => initialProfile?.maritalStatus ?? 'Never Married');
+  const [hasKids, setHasKids] = useState<string>(() => initialProfile?.hasKids ?? 'No');
+  const [wantsKids, setWantsKids] = useState<string>(() => initialProfile?.wantsKids ?? 'Yes');
+  const [relocation, setRelocation] = useState<string>(() => initialProfile?.relocation ?? 'Can Relocate');
+  const [userLanguages, setUserLanguages] = useState<string>(() => initialProfile?.userLanguages ?? 'English');
+  const [height, setHeight] = useState<string>(() => initialProfile?.height ?? '');
+  const [weight, setWeight] = useState<string>(() => initialProfile?.weight ?? '');
+  const [drinking, setDrinking] = useState<string>(() => initialProfile?.drinking ?? 'No');
+  const [smoking, setSmoking] = useState<string>(() => initialProfile?.smoking ?? 'No');
   const [langInput, setLangInput] = useState('');
 
   useEffect(() => {
@@ -197,6 +227,37 @@ export default function MyProfilePage() {
         } else if (data.avatar_url) {
           setPhotos([data.avatar_url]);
         }
+        // Sync to instant memory cache
+        updateProfileCache({
+            name: data.display_name || data.full_name || resolvedUsername,
+            username: resolvedUsername,
+            avatarUrl: data.avatar_url || null,
+            photos: Array.isArray(data.photos) && data.photos.length > 0 ? data.photos.filter(Boolean) : (data.avatar_url ? [data.avatar_url] : []),
+            age: data.age || 25,
+            location: locStr,
+            locationSource: data.location_source || 'self_reported',
+            locationVerifiedAt: data.location_verified_at || null,
+            latitude: data.latitude || null,
+            longitude: data.longitude || null,
+            bio: data.bio || '',
+            lookingFor: data.looking_for || '',
+            interests: Array.isArray(data.interests) ? data.interests : [],
+            verificationStatus: data.verification_status || (data.is_verified ? 'verified' : 'unverified'),
+            isPlus: Boolean(data.is_plus),
+            repScore: typeof data.reputation_score === 'number' ? data.reputation_score : null,
+            profession: data.occupation || '',
+            intent: toIntentChipValue(data.relationship_intent || data.intentions),
+            religion: data.religion || 'Christian',
+            maritalStatus: data.marital_status || 'Never Married',
+            hasKids: data.has_kids || 'No',
+            wantsKids: data.wants_kids || 'Yes',
+            relocation: data.relocation || 'Can Relocate',
+            userLanguages: data.languages ? (Array.isArray(data.languages) ? data.languages.join(', ') : data.languages) : 'English',
+            height: data.height || '',
+            weight: data.weight || '',
+            drinking: data.drinking || 'No',
+            smoking: data.smoking || 'No',
+          });
       }
       setLoading(false);
     }
