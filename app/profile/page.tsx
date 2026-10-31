@@ -562,37 +562,37 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
         </div>
 
         {/* Edit / Save Action Bar */}
-        <div className="flex gap-2.5">
-          {isEditing ? (
-            <>
+          <div className="h-12 w-full flex items-stretch gap-2.5">
+            {isEditing ? (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setIsEditing(false)}
+                  className="h-full flex-1 rounded-2xl bg-white border border-[#DDD7E5] text-xs font-semibold text-[#524B5E] hover:bg-[#F8F7FA] transition flex items-center justify-center shadow-xs cursor-pointer active:scale-[0.99]"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={handleSave}
+                  disabled={saving}
+                  className="h-full flex-1 rounded-2xl bg-[#6555B8] border border-[#6555B8] text-white text-xs font-semibold hover:bg-[#52449e] transition flex items-center justify-center gap-1.5 shadow-xs disabled:opacity-50 cursor-pointer active:scale-[0.99]"
+                >
+                  {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
+                  <span>{saving ? 'Saving...' : 'Save Profile'}</span>
+                </button>
+              </>
+            ) : (
               <button
                 type="button"
-                onClick={() => setIsEditing(false)}
-                className="flex-1 py-3 rounded-2xl bg-white border border-[#DDD7E5] text-xs font-semibold text-[#524B5E] hover:bg-[#F8F7FA] transition"
+                onClick={() => setIsEditing(true)}
+                className="h-full w-full rounded-2xl bg-white border border-[#DDD7E5] text-xs font-semibold text-[#1C1924] hover:bg-[#F3EFFC] hover:border-[#6555B8]/40 transition flex items-center justify-center gap-2 shadow-xs cursor-pointer active:scale-[0.99]"
               >
-                Cancel
+                <Edit3 className="w-3.5 h-3.5 text-[#6555B8]" />
+                <span>Edit Profile Details</span>
               </button>
-              <button
-                type="button"
-                onClick={handleSave}
-                disabled={saving}
-                className="flex-1 py-3 rounded-2xl bg-[#6555B8] text-white text-xs font-semibold hover:bg-[#52449e] transition flex items-center justify-center gap-1.5 shadow-md disabled:opacity-50"
-              >
-                {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
-                <span>{saving ? 'Saving...' : 'Save Profile'}</span>
-              </button>
-            </>
-          ) : (
-            <button
-              type="button"
-              onClick={() => setIsEditing(true)}
-              className="w-full py-3 rounded-2xl bg-white border border-[#DDD7E5] text-xs font-semibold text-[#1C1924] hover:bg-[#F3EFFC] hover:border-[#6555B8]/40 transition flex items-center justify-center gap-2 shadow-xs cursor-pointer"
-            >
-              <Edit3 className="w-3.5 h-3.5 text-[#6555B8]" />
-              <span>Edit Profile Details</span>
-            </button>
-          )}
-        </div>
+            )}
+          </div>
 
         <RepScoreCard score={repScore ?? 100} />
 
