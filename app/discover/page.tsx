@@ -462,7 +462,7 @@ function DiscoverContent() {
     <div className="w-full min-h-full bg-[#F8F7FA] text-[#1C1924] flex flex-col font-sans animate-[fadeIn_200ms_cubic-bezier(0.16,1,0.3,1)]">
       <main className="w-full max-w-md mx-auto px-4 pt-4 pb-36 relative">
         {/* Static Pinned Search & Filter Controls on Left + Horizontally Scrolling Categories on Right */}
-        <section aria-label="Search and Filters" className="sticky top-0 z-30 w-full py-2.5 mb-3 flex items-center gap-3 bg-[#F8F7FA]/95 backdrop-blur-md -mx-4 px-4 border-b border-[#EAE5F2]/60">
+        <section aria-label="Search and Filters" className="sticky top-0 z-30 w-[calc(100%+2rem)] -mx-4 px-4 py-2 flex items-center gap-3 bg-[#F8F7FA]/95 backdrop-blur-md border-b border-[#EAE5F2]/60">
           <div className={`flex items-center gap-1.5 ${searchOpen || searchQuery ? 'flex-1 min-w-0' : 'hidden'}`}>
             {searchOpen || searchQuery ? (
               <div className={`flex-1 min-w-0 h-9 flex items-center gap-1 bg-white border border-[#DDD7E5] focus-within:border-[#6555B8] rounded-full pl-3 pr-2 shadow-2xs transition-all ${searchAnimating ? 'animate-[slideIn_200ms_cubic-bezier(0.16,1,0.3,1)]' : ''} ${searchClosing ? 'animate-[slideOut_180ms_ease-in_forwards]' : ''}`}>
@@ -507,7 +507,7 @@ function DiscoverContent() {
                     key={mode.id}
                     type="button"
                     onClick={() => setDiscoveryMode(mode.id)}
-                    className={`shrink-0 text-sm transition-colors ${
+                    className={`shrink-0 text-sm h-8 flex items-center transition-colors ${
                       active ? 'text-[#6555B8] font-bold' : 'text-black/40 font-medium'
                     }`}
                     
@@ -520,7 +520,7 @@ function DiscoverContent() {
           </div>
           )}
                         {(searchOpen || searchQuery) ? null : (
-              <div className="shrink-0 flex items-center bg-white border border-[#E8E4EE] rounded-full p-0.5 shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
+              <div className="shrink-0 h-8 flex items-center bg-white border border-[#E8E4EE] rounded-full px-1 shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
                 <button
                   type="button"
                   onClick={() => setSearchOpen(true)}
@@ -684,195 +684,226 @@ function DiscoverContent() {
           </div>
         )}
       </main>
+      <style jsx global>{`
+        @keyframes sheetSlideUp {
+          from { transform: translateY(100%); }
+          to { transform: translateY(0); }
+        }`}</style>
 
-      {/* Filter Drawer */}
-      {filtersOpen && typeof document !== 'undefined' &&
-        createPortal(
-          <div className="fixed inset-0 z-[999] flex justify-center">
-            <div className="relative z-10 w-full max-w-[430px] h-full flex justify-end pointer-events-none">
-            <div
-              className={
-                'fixed inset-0 bg-black/60 backdrop-blur-sm transition-opacity duration-200 ' +
-                (filtersClosing ? 'opacity-0' : 'opacity-100')
-              }
-              onClick={closeFiltersWithAnimation}
-            />
-            <div
-              role="dialog"
-              aria-modal="true"
-              className="relative z-10 h-full w-[85%] max-w-[340px] bg-white rounded-l-3xl shadow-2xl flex flex-col overflow-hidden will-change-transform pointer-events-auto"
-              style={
-                filtersClosing
-                  ? { transform: 'translateX(100%)', transition: 'transform 0.24s cubic-bezier(0.16, 1, 0.3, 1)' }
-                  : { animation: 'filterSheetIn 0.26s cubic-bezier(0.16, 1, 0.3, 1) both' }
-              }
-            >
-              <div className="flex items-center justify-between px-4 py-3 border-b border-[#DDD7E5] shrink-0 bg-white">
-                <div className="flex items-center gap-2">
-                  <SlidersHorizontal className="w-4 h-4 text-[#6555B8]" />
-                  <h2 className="text-sm font-bold text-[#1C1924]">Refine Discover Feed</h2>
-                </div>
-                <button
-                  type="button"
-                  onClick={closeFiltersWithAnimation}
-                  className="p-1.5 rounded-full text-[#524B5E] hover:bg-[#F3EFFC] transition cursor-pointer"
-                  aria-label="Close filters"
+      {/* Filter Drawer (Pairs/With Style Mobile Bottom Sheet) */}
+        {filtersOpen && typeof document !== 'undefined' &&
+          createPortal(
+            <div className="fixed inset-0 z-[999] flex justify-center items-end">
+              {/* Dimmed backdrop */}
+              <div
+                className={
+                  'fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity duration-200 ' +
+                  (filtersClosing ? 'opacity-0' : 'opacity-100')
+                }
+                onClick={closeFiltersWithAnimation}
+              />
+
+              {/* Bottom Sheet Modal confined to mobile app shell */}
+              <div className="relative z-10 w-full max-w-[430px] flex flex-col pointer-events-none">
+                <div
+                  role="dialog"
+                  aria-modal="true"
+                  className="w-full max-h-[85vh] bg-white rounded-t-[28px] shadow-[0_-10px_35px_rgba(0,0,0,0.16)] flex flex-col overflow-hidden will-change-transform pointer-events-auto"
+                  style={
+                    filtersClosing
+                      ? { transform: 'translateY(100%)', transition: 'transform 0.22s cubic-bezier(0.16, 1, 0.3, 1)' }
+                      : { animation: 'sheetSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) both' }
+                  }
                 >
-                  <XIcon className="w-4 h-4" />
-                </button>
-              </div>
-              <div className="flex-1 min-h-0 overflow-y-auto px-4 py-3 space-y-4">
-                <div>
-                  <label className="text-[11px] font-semibold text-[#6C637B] uppercase tracking-wider block mb-2">
-                    Interested In
-                  </label>
-                  <div className="flex flex-wrap gap-1.5">
-                    {[
-                      { id: 'female', label: 'Women' },
-                      { id: 'male', label: 'Men' },
-                    ].map((item) => {
-                      const isSelected = draftGenders.includes(item.id);
-                      return (
-                        <button
-                          key={item.id}
-                          type="button"
-                          onClick={() => {
-                            setDraftGenders(                               draftGenders.includes(item.id)                                 ? draftGenders.filter((g) => g !== item.id)                                 : [...draftGenders, item.id]                               );
-                          }}
-                          className={
-                            'py-1.5 px-3 rounded-full border text-xs font-semibold transition cursor-pointer active:scale-95 ' + (isSelected ? 'bg-[#6555B8] text-white border-[#6555B8]' : 'bg-white text-[#1C1924] border-[#DDD7E5]')
-                          }
-                        >
-                          {item.label}
-                        </button>
-                      );
-                    })}
+                  {/* Top Pull Handle */}
+                  <div className="pt-2.5 pb-1 flex justify-center shrink-0 bg-white">
+                    <div className="w-10 h-1 rounded-full bg-[#DDD7E5]" />
                   </div>
-                </div>
 
-                <div>
-                  <label className="text-[11px] font-semibold text-[#6C637B] uppercase tracking-wider block mb-2">
-                    Age Range
-                  </label>
-                  <div className="flex items-center gap-2">
-                    <select
-                      value={draftMinAge}
-                      onChange={(e) => setDraftMinAge(Math.min(Number(e.target.value), draftMaxAge))}
-                      className="flex-1 py-2 px-2 rounded-xl border border-[#DDD7E5] bg-white text-xs text-[#1C1924] cursor-pointer"
-                    >
-                      {Array.from({ length: 48 }, (_, i) => i + 18).map((age) => (
-                        <option key={age} value={age}>{age}</option>
-                      ))}
-                    </select>
-                    <span className="text-xs text-[#6C637B]">to</span>
-                    <select
-                      value={draftMaxAge}
-                      onChange={(e) => setDraftMaxAge(Math.max(Number(e.target.value), draftMinAge))}
-                      className="flex-1 py-2 px-2 rounded-xl border border-[#DDD7E5] bg-white text-xs text-[#1C1924] cursor-pointer"
-                    >
-                      {Array.from({ length: 48 }, (_, i) => i + 18).map((age) => (
-                        <option key={age} value={age}>{age}</option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                <div>
-                  <label className="text-[11px] font-semibold text-[#6C637B] uppercase tracking-wider block mb-2">
-                    Country
-                  </label>
-                  <select
-                    value={draftCountry}
-                    onChange={(e) => setDraftCountry(e.target.value)}
-                    className="w-full py-2 px-2 rounded-xl border border-[#DDD7E5] bg-white text-xs text-[#1C1924] cursor-pointer"
-                  >
-                    <option value="All">All Countries</option>
-                    {Array.from(new Set(profiles.map((pr) => (pr.country || '').trim()).filter(Boolean))).sort().map((c) => (
-                      <option key={c} value={c}>{c}</option>
-                    ))}
-                  </select>
-                </div>
-
-                <div>
-                  <label className="text-[11px] font-semibold text-[#6C637B] uppercase tracking-wider block mb-2">
-                    Looking For
-                  </label>
-                  <div className="flex flex-wrap gap-1.5">
-                    {[{value: 'all', label: 'All'}, ...INTENT_OPTIONS].map((option) => (
-                      <button
-                        key={option.value}
-                        type="button"
-                        onClick={() => setDraftIntent(option.value)}
-                        className={
-                          'py-1.5 px-3 rounded-full border text-xs font-semibold transition cursor-pointer active:scale-95 ' + (draftIntent === option.value ? 'bg-[#6555B8] text-white border-[#6555B8]' : 'bg-white text-[#1C1924] border-[#DDD7E5]')
-                        }
-                      >
-                        {option.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div>
-                  <label className="text-[11px] font-semibold text-[#6C637B] uppercase tracking-wider block mb-2">
-                    Browse
-                  </label>
-                  <div className="flex flex-wrap gap-1.5">
-                    {DISCOVERY_MODES.map((mode) => (
-                      <button
-                        key={mode.id}
-                        type="button"
-                        onClick={() => setDraftMode(mode.id)}
-                        className={
-                          'py-1.5 px-3 rounded-full border text-xs font-semibold transition cursor-pointer active:scale-95 ' + (draftMode === mode.id ? 'bg-[#6555B8] text-white border-[#6555B8]' : 'bg-white text-[#1C1924] border-[#DDD7E5]')
-                        }
-                      >
-                        {mode.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <div className="space-y-2">
-                  {[
-                    { label: 'Verified profiles only', value: draftVerifiedOnly, set: setDraftVerifiedOnly },
-                    { label: 'Active now only', value: draftActiveNowOnly, set: setDraftActiveNowOnly },
-                  ].map((row) => (
+                  {/* Header */}
+                  <div className="flex items-center justify-between px-5 py-2.5 border-b border-[#F0ECF4] shrink-0 bg-white">
+                    <div className="flex items-center gap-2">
+                      <SlidersHorizontal className="w-4 h-4 text-[#6555B8]" />
+                      <h2 className="text-sm font-bold text-[#1C1924]">Refine Discover Feed</h2>
+                    </div>
                     <button
-                      key={row.label}
                       type="button"
-                      onClick={() => row.set(!row.value)}
-                      className="w-full flex items-center justify-between py-2.5 px-3 rounded-xl border border-[#DDD7E5] bg-white cursor-pointer transition hover:border-[#6555B8]/40"
+                      onClick={closeFiltersWithAnimation}
+                      className="p-1.5 rounded-full text-[#6C637B] hover:bg-[#F3EFFC] transition cursor-pointer"
+                      aria-label="Close filters"
                     >
-                      <span className="text-xs font-semibold text-[#1C1924]">{row.label}</span>
-                      <span className={'w-9 h-5 rounded-full transition-colors relative shrink-0 ' + (row.value ? 'bg-[#6555B8]' : 'bg-[#DDD7E5]')}>
-                        <span className={'absolute top-0.5 w-4 h-4 rounded-full bg-white shadow transition-all ' + (row.value ? 'left-4' : 'left-0.5')} />
-                      </span>
+                      <XIcon className="w-4 h-4" />
                     </button>
-                  ))}
+                  </div>
+
+                  {/* Scrollable Form Body with hidden scrollbar */}
+                  <div className="flex-1 min-h-0 overflow-y-auto px-5 py-4 space-y-5 no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+                    <div>
+                      <label className="text-[11px] font-bold text-[#6C637B] uppercase tracking-wider block mb-2">
+                        Interested In
+                      </label>
+                      <div className="flex flex-wrap gap-2">
+                        {[
+                          { id: 'female', label: 'Women' },
+                          { id: 'male', label: 'Men' },
+                        ].map((item) => {
+                          const isSelected = draftGenders.includes(item.id);
+                          return (
+                            <button
+                              key={item.id}
+                              type="button"
+                              onClick={() => {
+                                setDraftGenders(
+                                  draftGenders.includes(item.id)
+                                    ? draftGenders.filter((g) => g !== item.id)
+                                    : [...draftGenders, item.id]
+                                );
+                              }}
+                              className={
+                                'py-1.5 px-3.5 rounded-full border text-xs font-semibold transition-all cursor-pointer active:scale-95 ' +
+                                (isSelected
+                                  ? 'bg-[#6555B8] text-white border-[#6555B8] shadow-2xs'
+                                  : 'bg-white text-[#1C1924] border-[#DDD7E5] hover:border-[#6555B8]/40')
+                              }
+                            >
+                              {item.label}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="text-[11px] font-bold text-[#6C637B] uppercase tracking-wider block mb-2">
+                        Age Range
+                      </label>
+                      <div className="flex items-center gap-2.5">
+                        <select
+                          value={draftMinAge}
+                          onChange={(e) => setDraftMinAge(Math.min(Number(e.target.value), draftMaxAge))}
+                          className="flex-1 py-2 px-3 rounded-xl border border-[#DDD7E5] bg-white text-xs text-[#1C1924] cursor-pointer focus:outline-none focus:border-[#6555B8]"
+                        >
+                          {Array.from({ length: 48 }, (_, i) => i + 18).map((age) => (
+                            <option key={age} value={age}>{age}</option>
+                          ))}
+                        </select>
+                        <span className="text-xs text-[#6C637B] font-medium">to</span>
+                        <select
+                          value={draftMaxAge}
+                          onChange={(e) => setDraftMaxAge(Math.max(Number(e.target.value), draftMinAge))}
+                          className="flex-1 py-2 px-3 rounded-xl border border-[#DDD7E5] bg-white text-xs text-[#1C1924] cursor-pointer focus:outline-none focus:border-[#6555B8]"
+                        >
+                          {Array.from({ length: 48 }, (_, i) => i + 18).map((age) => (
+                            <option key={age} value={age}>{age}</option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="text-[11px] font-bold text-[#6C637B] uppercase tracking-wider block mb-2">
+                        Country
+                      </label>
+                      <select
+                        value={draftCountry}
+                        onChange={(e) => setDraftCountry(e.target.value)}
+                        className="w-full py-2 px-3 rounded-xl border border-[#DDD7E5] bg-white text-xs text-[#1C1924] cursor-pointer focus:outline-none focus:border-[#6555B8]"
+                      >
+                        <option value="All">All Countries</option>
+                        {Array.from(new Set(profiles.map((pr) => (pr.country || '').trim()).filter(Boolean))).sort().map((c) => (
+                          <option key={c} value={c}>{c}</option>
+                        ))}
+                      </select>
+                    </div>
+
+                    <div>
+                      <label className="text-[11px] font-bold text-[#6C637B] uppercase tracking-wider block mb-2">
+                        Looking For
+                      </label>
+                      <div className="flex flex-wrap gap-2">
+                        {[{value: 'all', label: 'All'}, ...INTENT_OPTIONS].map((option) => (
+                          <button
+                            key={option.value}
+                            type="button"
+                            onClick={() => setDraftIntent(option.value)}
+                            className={
+                              'py-1.5 px-3.5 rounded-full border text-xs font-semibold transition-all cursor-pointer active:scale-95 ' +
+                              (draftIntent === option.value
+                                ? 'bg-[#6555B8] text-white border-[#6555B8] shadow-2xs'
+                                : 'bg-white text-[#1C1924] border-[#DDD7E5] hover:border-[#6555B8]/40')
+                            }
+                          >
+                            {option.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="text-[11px] font-bold text-[#6C637B] uppercase tracking-wider block mb-2">
+                        Browse Mode
+                      </label>
+                      <div className="flex flex-wrap gap-2">
+                        {DISCOVERY_MODES.map((mode) => (
+                          <button
+                            key={mode.id}
+                            type="button"
+                            onClick={() => setDraftMode(mode.id)}
+                            className={
+                              'py-1.5 px-3.5 rounded-full border text-xs font-semibold transition-all cursor-pointer active:scale-95 ' +
+                              (draftMode === mode.id
+                                ? 'bg-[#6555B8] text-white border-[#6555B8] shadow-2xs'
+                                : 'bg-white text-[#1C1924] border-[#DDD7E5] hover:border-[#6555B8]/40')
+                            }
+                          >
+                            {mode.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div className="space-y-3 pt-1">
+                      {[
+                        { label: 'Verified profiles only', value: draftVerifiedOnly, set: setDraftVerifiedOnly },
+                        { label: 'Active now only', value: draftActiveNowOnly, set: setDraftActiveNowOnly },
+                      ].map((row) => (
+                        <button
+                          key={row.label}
+                          type="button"
+                          onClick={() => row.set(!row.value)}
+                          className="w-full flex items-center justify-between py-2 text-xs font-medium text-[#1C1924] cursor-pointer"
+                        >
+                          <span>{row.label}</span>
+                          <span className={'w-10 h-6 rounded-full transition-colors relative shrink-0 ' + (row.value ? 'bg-[#6555B8]' : 'bg-[#DDD7E5]')}>
+                            <span className={'absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-all ' + (row.value ? 'left-5' : 'left-1')} />
+                          </span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Sticky Footer */}
+                  <div className="px-5 py-3 pb-[max(1rem,env(safe-area-inset-bottom))] bg-white/95 backdrop-blur-md border-t border-[#ECE8F2] flex items-center gap-3 shrink-0">
+                    <button
+                      type="button"
+                      onClick={resetFilters}
+                      className="py-2.5 px-4 rounded-full text-xs font-semibold text-[#6C637B] hover:text-[#1C1924] hover:bg-[#F8F7FA] transition cursor-pointer"
+                    >
+                      Reset
+                    </button>
+                    <button
+                      type="button"
+                      onClick={applyFilters}
+                      className="flex-1 py-2.5 rounded-full bg-gradient-to-r from-[#6555B8] to-[#5546A8] text-white text-xs font-bold shadow-[0_4px_14px_rgba(101,85,184,0.35)] hover:opacity-95 active:scale-[0.98] transition-all cursor-pointer"
+                    >
+                      Apply Filters
+                    </button>
+                  </div>
                 </div>
               </div>
-              <div className="px-4 py-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] bg-white border-t border-[#DDD7E5] flex items-center gap-3 shrink-0">
-                <button
-                  type="button"
-                  onClick={resetFilters}
-                  className="py-2 px-3 rounded-full text-xs font-semibold text-[#524B5E] hover:text-[#1C1924] cursor-pointer"
-                >
-                  Reset
-                </button>
-                <button
-                  type="button"
-                  onClick={applyFilters}
-                  className="flex-1 py-2.5 rounded-full bg-[#6555B8] text-white text-xs font-semibold hover:bg-[#52449e] cursor-pointer"
-                >
-                  Apply Filters
-                </button>
-              </div>
-            </div>
-                      </div>
-</div>,
-          document.body
-        )}
+            </div>,
+            document.body
+          )}
 
       {matchedModalProfile && (
         <div
