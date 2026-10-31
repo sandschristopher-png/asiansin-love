@@ -28,7 +28,8 @@ export function BottomNav() {
   const [user, setUser] = useState<any>(null);
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const pathname = usePathname();
-  const isPublicProfile = pathname.startsWith("/profile/") && pathname !== "/profile";
+  const cleanPath = pathname?.replace(/\/+$/, '') || '';
+  const isPublicProfile = cleanPath.startsWith('/profile/') && !['/profile/edit', '/profile/reputation'].includes(cleanPath);
   const isChat = pathname.startsWith("/chat");
 
 
@@ -114,8 +115,10 @@ export function BottomNav() {
 
     const handleResize = () => {
       if (!window.visualViewport) return;
-      const isKeyboard = window.visualViewport.height < window.innerHeight * 0.82;
-      setIsKeyboardOpen(isKeyboard);
+      const activeEl = document.activeElement;
+      const isInputActive = activeEl && (activeEl.tagName === 'INPUT' || activeEl.tagName === 'TEXTAREA' || activeEl.getAttribute('contenteditable') === 'true');
+      const isKeyboard = isInputActive && (window.visualViewport.height < window.innerHeight * 0.75);
+      setIsKeyboardOpen(Boolean(isKeyboard));
     };
 
     window.visualViewport.addEventListener('resize', handleResize);
@@ -137,7 +140,7 @@ export function BottomNav() {
 
   return (
     <div 
-      className={`fixed bottom-3.5 left-1/2 -translate-x-1/2 w-[calc(100%-1.75rem)] max-w-[390px] z-50 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+      className={`fixed bottom-[max(0.875rem,env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 w-[calc(100%-1.75rem)] max-w-[390px] z-50 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
         isKeyboardOpen ? 'translate-y-24 opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'
       }`}
     >

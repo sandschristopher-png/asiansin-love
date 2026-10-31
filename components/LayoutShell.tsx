@@ -16,11 +16,10 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
     pathname?.startsWith('/onboarding') ||
     pathname?.startsWith('/verify');
 
+  const cleanPath = pathname?.replace(/\/+$/, '') || '';
   const isPublicProfile =
-    pathname?.startsWith('/profile/') &&
-    pathname !== '/profile' &&
-    !pathname?.startsWith('/profile/edit') &&
-    !pathname?.startsWith('/profile/reputation');
+    cleanPath.startsWith('/profile/') &&
+    !['/profile/edit', '/profile/reputation'].includes(cleanPath);
 
   const isChat = pathname?.startsWith('/chat');
 
