@@ -1,20 +1,29 @@
+'use client';
+
+import React from 'react';
+
 interface PlusBadgeProps {
-  size?: 'sm' | 'md' | 'lg'
-  className?: string
+  size?: 'xs' | 'sm' | 'md';
+  className?: string;
 }
 
-const SIZE_CLASS: Record<NonNullable<PlusBadgeProps['size']>, string> = {
-  sm: 'h-[16px] px-1.5 text-[9px]',
-  md: 'h-[20px] px-2 text-[10px]',
-  lg: 'h-[24px] px-2.5 text-[11px]',
-}
+export function PlusBadge({
+  size = 'sm',
+  className = '',
+}: PlusBadgeProps) {
+  const sizeClasses = {
+    xs: 'text-[9px] px-1.5 py-0.5',
+    sm: 'text-[10px] px-2 py-0.5',
+    md: 'text-[11px] px-2.5 py-0.5',
+  }[size] || 'text-[10px] px-2 py-0.5';
 
-export function PlusBadge({ size = 'sm', className = '' }: PlusBadgeProps) {
   return (
     <span
-      className={`inline-flex shrink-0 items-center rounded-full bg-[#6555B8] font-bold uppercase tracking-wide text-white ${SIZE_CLASS[size]} ${className}`}
+      className={`inline-flex items-center justify-center font-bold tracking-wider uppercase select-none rounded-full bg-[#6555B8] text-white ${sizeClasses} ${className}`}
+      style={{ letterSpacing: '0.04em' }}
     >
-      Plus
+      <span className="leading-none">Plus</span>
     </span>
-  )
+  );
 }
+export { PlusBadge as default };
