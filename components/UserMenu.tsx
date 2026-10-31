@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { User, Settings, LogOut, ChevronDown, ShieldCheck, Heart } from 'lucide-react'
+import { hardSignOut } from '@/lib/hardSignOut';
 
 interface UserMenuProps {
   displayName: string
