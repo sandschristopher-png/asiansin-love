@@ -520,31 +520,28 @@ function DiscoverContent() {
           </div>
           )}
                         {(searchOpen || searchQuery) ? null : (
-            <div className="shrink-0 flex items-center gap-1.5">
-              <button
-                type="button"
-                onClick={() => {
-                  setSearchAnimating(true);
-                  setTimeout(() => setSearchOpen(true), 10);
-                  setTimeout(() => setSearchAnimating(false), 200);
-                }}
-                aria-label="Open Search"
-                className="relative p-1.5 -m-1 text-[#6C637B] hover:text-[#6555B8] transition-colors cursor-pointer"
-              >
-                <Search className="w-4 h-4" />
-              </button>
-              <button
-                type="button"
-                onClick={() => setFiltersOpen(true)}
-                aria-label="Open Filters"
-                className="relative p-1.5 -m-1 text-[#6555B8] transition-colors cursor-pointer"
-              >
-                <SlidersHorizontal className="w-4 h-4" />
-                {activeFiltersCount > 0 && (
-                  <span className="absolute -top-0.5 -right-0.5 w-2.5 h-2.5 rounded-full bg-[#6555B8] ring-2 ring-white" />
-                )}
-              </button>
-            </div>
+              <div className="shrink-0 flex items-center bg-white border border-[#E8E4EE] rounded-full p-0.5 shadow-[0_1px_3px_rgba(0,0,0,0.03)]">
+                <button
+                  type="button"
+                  onClick={() => setSearchOpen(true)}
+                  aria-label="Search profiles"
+                  className="w-7 h-7 rounded-full flex items-center justify-center text-[#6C637B] hover:text-[#1C1924] hover:bg-[#F8F7FA] active:scale-95 transition-all cursor-pointer"
+                >
+                  <Search className="w-3.5 h-3.5" />
+                </button>
+                <div className="w-[1px] h-3.5 bg-[#E8E4EE] mx-0.5" />
+                <button
+                  type="button"
+                  onClick={() => setFiltersOpen(true)}
+                  aria-label="Filter preferences"
+                  className="relative w-7 h-7 rounded-full flex items-center justify-center text-[#6C637B] hover:text-[#1C1924] hover:bg-[#F8F7FA] active:scale-95 transition-all cursor-pointer"
+                >
+                  <SlidersHorizontal className="w-3.5 h-3.5" />
+                  {(verifiedOnly || activeNowOnly || selectedCountry !== 'All' || selectedGenders.length > 0 || draftMinAge !== 18 || draftMaxAge !== 70 || selectedIntent !== 'all') && (
+                    <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-[#6555B8] ring-2 ring-white" />
+                  )}
+                </button>
+              </div>
             )}
         </section>
 
