@@ -7,6 +7,7 @@ import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { User, Settings, LogOut, ArrowLeft, Share2, Check , Zap} from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
+import { hardSignOut } from '@/lib/hardSignOut';
 import { PlusBadge } from './PlusBadge';
 export function Navbar() {
   const [user, setUser] = useState<any>(null);
@@ -135,7 +136,7 @@ export function Navbar() {
   }, []);
   const handleSignOut = async () => {
     setMenuOpen(false);
-    await supabase.auth.signOut();
+    await hardSignOut();
     setUser(null);
     setProfile(null);
     setHasUnread(false);

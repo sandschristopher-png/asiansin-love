@@ -21,6 +21,7 @@ import {
   MapPin
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
+import { hardSignOut } from '@/lib/hardSignOut';
 
 interface SideMenuDrawerProps {
   isOpen: boolean;
@@ -114,7 +115,7 @@ export function SideMenuDrawer({ isOpen, onClose, onOpenFilters }: SideMenuDrawe
   const handleSignOut = async () => {
     try {
       setSigningOut(true);
-      await supabase.auth.signOut();
+      await hardSignOut();
     } finally {
       window.location.href = '/';
     }

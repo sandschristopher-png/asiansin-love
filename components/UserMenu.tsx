@@ -29,7 +29,7 @@ export function UserMenu({ displayName, avatarUrl, userId }: UserMenuProps) {
   }, [])
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut()
+    await hardSignOut()
     window.location.href = '/'
   }
 

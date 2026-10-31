@@ -21,6 +21,7 @@ import {
   ShieldAlert
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
+import { hardSignOut } from '@/lib/hardSignOut';
 import { INTENT_OPTIONS, normalizeIntent, intentLabel } from '@/lib/intents';
 import RepScoreCard from '@/components/RepScoreCard';
 import { ProfileHighlightsEditorRow } from '@/components/ProfileHighlightsEditorRow';
@@ -93,6 +94,7 @@ export default function MyProfilePage() {
   const [photos, setPhotos] = useState<string[]>([]);
   const [currentPhotoIdx, setCurrentPhotoIdx] = useState(0);
   const touchStartX = useRef<number | null>(null);
+  const justSwiped = useRef(false);
   const [age, setAge] = useState(25);
   const [location, setLocation] = useState('');
   const [locationSource, setLocationSource] = useState<'gps_verified' | 'self_reported'>('self_reported');
@@ -239,7 +241,7 @@ export default function MyProfilePage() {
       id: user.id,
       display_name: name || username,
       full_name: name || username,
-      age: Number(age),
+      age: age && !isNaN(Number(age)) ? Number(age) : null,
       location,
       location_source: locationSource,
       location_verified_at: locationVerifiedAt,
@@ -256,7 +258,7 @@ export default function MyProfilePage() {
       relocation,
       languages: userLanguages,
       height: (() => { const cm = extractUnit(height, 'cm') || (/^\\d+$/.test(String(height)) ? String(height) : null); return cm ? cm + ' cm' : null; })(),
-weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(weight)) ? String(weight) : null); return kg ? Number(kg) : null; })(),
+weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(weight)) ? String(weight) : null); return kg ? kg + ' kg' : null; })(),
       drinking,
       smoking,
       updated_at: new Date().toISOString(),
@@ -382,12 +384,19 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
         ) : (
           <div className="flex items-center justify-between gap-2 px-1">
             <div>
-              <h2
+              <div className="flex items-center gap-2">
+                <h2
                 className="text-xl sm:text-[22px] font-bold text-[#1C1924] tracking-tight"
                 style={{ fontFamily: 'var(--font-brand)' }}
               >
                 {username.replace(/^@/, '')}{age ? ', ' + age : ''}
               </h2>
+                {isPlus && (
+                  <span className="px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-bold text-[10px] uppercase tracking-wider shadow-2xs">
+                    PLUS
+                  </span>
+                )}
+              </div>
               <div className="flex items-center gap-1.5 mt-0.5">
                 <MapPin className="w-3.5 h-3.5 text-[#6555B8]" />
                 <p className="text-xs font-medium text-[#6C637B]">
@@ -405,11 +414,7 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
             </div>
 
             <div className="flex items-center gap-2">
-              {isPlus && (
-                <span className="px-2.5 py-1 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-bold text-[10px] uppercase tracking-wider shadow-2xs">
-                  PLUS
-                </span>
-              )}
+              
               {verificationStatus === 'verified' ? (
                 <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold">
                   <ShieldCheck className="w-4 h-4 text-emerald-600" />
@@ -439,6 +444,7 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
             <div
               className="w-full h-full cursor-pointer"
               onClick={(e) => {
+                if (justSwiped.current) return;
                 const rect = e.currentTarget.getBoundingClientRect();
                 const isLeft = e.clientX - rect.left < rect.width / 2;
                 setCurrentPhotoIdx((prev) =>
@@ -453,6 +459,8 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
                 if (startX == null) return;
                 const dx = e.changedTouches[0].clientX - startX;
                 if (Math.abs(dx) > 40) {
+                  justSwiped.current = true;
+                  setTimeout(() => { justSwiped.current = false; }, 400);
                   setCurrentPhotoIdx((prev) =>
                     dx > 0
                       ? (prev - 1 + photoList.length) % Math.max(photoList.length, 1)

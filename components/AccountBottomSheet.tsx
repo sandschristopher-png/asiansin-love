@@ -4,6 +4,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
+import { hardSignOut } from '@/lib/hardSignOut';
 
 interface AccountBottomSheetProps {
   isOpen: boolean;
@@ -95,7 +96,7 @@ export function AccountBottomSheet({ isOpen, onClose }: AccountBottomSheetProps)
   };
 
   const handleSignOut = async () => {
-    await supabase.auth.signOut();
+    await hardSignOut();
     closeWithAnimation();
     window.location.href = '/';
   };
