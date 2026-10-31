@@ -269,10 +269,10 @@ export default function ChatConversationPage() {
         ).replace(/^@/, '');
 
         setTargetInfo({
-          name: cleanHandle,
+          name: cleanHandle.replace(/^@+/, ''),
           avatar: profData.avatar_url || '/placeholder-avatar.svg',
           rep: typeof profData.reputation_score === 'number' ? profData.reputation_score : 100,
-          city: profData.city || '',
+          city: (profData.city || '').replace(/^@+/, ''),
           country: profData.country || '',
         });
 
@@ -286,15 +286,15 @@ export default function ChatConversationPage() {
 
         if (shared.length > 0) {
           setIcebreakerPrompt(
-            'Hi @' + cleanHandle + '! I noticed we both enjoy ' + shared[0] + '—what is your favorite part about it?'
+            'Hi ' + cleanHandle.replace(/^@+/, '') + '! I noticed we both enjoy ' + shared[0] + '—what is your favorite part about it?'
           );
         } else if (theirInterests.length > 0) {
           setIcebreakerPrompt(
-            'Hi @' + cleanHandle + '! I saw on your profile that you enjoy ' + theirInterests[0] + '—how is your week going' + (profData.city ? ' in ' + profData.city : '') + '?'
+            'Hi ' + cleanHandle.replace(/^@+/, '') + '! I saw on your profile that you enjoy ' + theirInterests[0] + '—how is your week going' + (profData.city ? ' in ' + profData.city : '') + '?'
           );
         } else {
           setIcebreakerPrompt(
-            'Hi @' + cleanHandle + '! I really appreciated your profile and would love to get to know you. How is your day going?'
+            'Hi ' + cleanHandle.replace(/^@+/, '') + '! I really appreciated your profile and would love to get to know you. How is your day going?'
           );
         }
       }
@@ -540,7 +540,7 @@ export default function ChatConversationPage() {
   };
 
   return (
-    <div className="w-full h-full flex flex-col bg-[#F9F8FC] text-[#1C1924] font-sans relative overflow-hidden">
+    <div className="w-full h-[100dvh] max-h-[100dvh] flex flex-col bg-[#F9F8FC] text-[#1C1924] font-sans relative overflow-hidden">
       {/* Sticky Header */}
       <header className="flex items-center justify-between px-3.5 py-2.5 bg-white/95 backdrop-blur-md border-b border-[#ECE8F4] shrink-0 z-20">
         <div className="flex items-center gap-2.5 min-w-0">
@@ -583,7 +583,7 @@ export default function ChatConversationPage() {
                 <div className="flex items-center gap-1.5 mt-0.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block shrink-0" />
                   <span className="text-[11px] text-[#7A7289] font-medium truncate">
-                    {targetInfo.city ? targetInfo.city : 'Active recently'}
+                    {targetInfo.city ? targetInfo.city.replace(/^@+/, '') : 'Active recently'}
                   </span>
                 </div>
               </div>
@@ -621,7 +621,7 @@ export default function ChatConversationPage() {
       <div
         ref={scrollContainerRef}
         onScroll={handleContainerScroll}
-        className="flex-1 overflow-y-auto px-3.5 py-4 overscroll-contain"
+        className="flex-1 min-h-0 overflow-y-auto px-3.5 py-4 overscroll-contain"
       >
         {isInitialLoading ? (
           <div className="space-y-4 py-4 animate-pulse">
@@ -825,7 +825,7 @@ export default function ChatConversationPage() {
       )}
 
       {/* Docked Flex Composer (Never overlaps message feed) */}
-      <div className="shrink-0 bg-white/95 backdrop-blur-md border-t border-[#ECE8F4] px-3 pt-2 pb-[max(0.625rem,env(safe-area-inset-bottom))] z-20">
+      <div className="shrink-0 w-full bg-white/95 backdrop-blur-md border-t border-[#ECE8F4] px-3 pt-2 pb-[max(0.625rem,env(safe-area-inset-bottom))] z-20">
         {cooldownSeconds > 0 ? (
           <div className="p-3 rounded-2xl bg-[#F8F7FA] border border-[#DDD7E5] flex flex-col items-center gap-2 shadow-xs text-center">
             <div className="flex items-center gap-1.5 text-xs text-[#524B5E]">
