@@ -161,24 +161,44 @@ export default function PublicProfilePage() {
         return;
       }
 
-      if (isSparked) {
-        await supabase
-          .from('sparks')
-          .delete()
-          .eq('sender_id', user.id)
-          .eq('receiver_id', targetUserId);
-        setIsSparked(false);
+      const res = await fetch('/api/spark', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ targetUserId }),
+      });
+
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        triggerToast(data?.error || 'Spark limit reached. Try again later.');
+        return;
+      }
+
+      const sparked = Boolean(data.sparked);
+      setIsSparked(sparked);
+
+      // Invalidate sparks cache so /favorites stays in sync
+      if (typeof window !== 'undefined') {
+        try {
+          sessionStorage.removeItem('ail_sparks_fast_cache_v2');
+          window.dispatchEvent(
+            new CustomEvent('ail_spark_sync', {
+              detail: { targetUserId, sparked, mutual: Boolean(data.mutual) },
+            })
+          );
+        } catch {}
+      }
+
+      if (data.mutual) {
+        triggerToast("It's a Match! You both sparked each other.");
+      } else if (sparked) {
+        triggerToast('Spark sent!');
       } else {
-        await supabase
-          .from('sparks')
-          .insert({
-            sender_id: user.id,
-            receiver_id: targetUserId,
-          });
-        setIsSparked(true);
+        triggerToast('Spark removed');
       }
     } catch (err) {
       console.error('Error toggling spark:', err);
+      triggerToast('Network error toggling spark.');
     } finally {
       setSparkLoading(false);
     }

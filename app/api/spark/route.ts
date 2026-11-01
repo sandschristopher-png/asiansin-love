@@ -75,7 +75,7 @@ export async function POST(req: Request) {
         actor_id: user.id,
         type: 'match',
         title: "It's a Match!",
-        description: "You and  sparked each other. Say hi.",
+        description: `You and ${senderName} sparked each other. Say hi.`,
         link_url: '/chat/' + user.id,
       })
     } else {

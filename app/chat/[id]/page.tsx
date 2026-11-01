@@ -307,8 +307,8 @@ export default function ChatConversationPage() {
             text: m.text,
             createdAt: m.createdAt,
             time: formatTimeShort(m.createdAt),
-            read: false,
             wasMasked: m.wasMasked,
+            read: Boolean(m.read ?? m.is_read),
           }))
         );
       }

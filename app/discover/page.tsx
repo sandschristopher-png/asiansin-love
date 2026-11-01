@@ -1,4 +1,5 @@
 'use client';
+import { useRef } from 'react';
 import { playMatchChime } from '@/lib/sound';
 import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import { createPortal } from 'react-dom';
@@ -230,6 +231,24 @@ function DiscoverContent() {
   const [matchedModalProfile, setMatchedModalProfile] = useState<{ id: string; name: string; avatarUrl?: string } | null>(null);
   const [isModalClosing, setIsModalClosing] = useState(false);
   const [filtersClosing, setFiltersClosing] = useState(false);
+  const [sheetDragY, setSheetDragY] = useState(0);
+  const dragStartYRef = useRef<number | null>(null);
+
+  const handleTouchStart = (e: React.TouchEvent) => {
+    dragStartYRef.current = e.touches[0].clientY;
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (dragStartYRef.current === null) return;
+    const delta = e.touches[0].clientY - dragStartYRef.current;
+    if (delta > 0) setSheetDragY(delta);
+  };
+
+  const handleTouchEnd = () => {
+    if (sheetDragY > 80) closeFiltersWithAnimation();
+    setSheetDragY(0);
+    dragStartYRef.current = null;
+  };
   const [cardActions, setCardActions] = useState<Record<string, ActionType>>({});
   const [lastPassed, setLastPassed] = useState<{ id: string; name: string } | null>(null);
 
@@ -349,6 +368,7 @@ function DiscoverContent() {
     setTimeout(() => {
       setFiltersOpen(false);
       setFiltersClosing(false);
+      setSheetDragY(0);
     }, 240);
   };
 
@@ -423,8 +443,27 @@ function DiscoverContent() {
     if (verifiedOnly) count++;
     if (activeNowOnly) count++;
     if (discoveryMode !== 'all') count++;
+    if (
+      selectedGenders.length > 0 &&
+      (viewerSavedGenders.length === 0 ||
+        selectedGenders.slice().sort().join(',') !== viewerSavedGenders.slice().sort().join(','))
+    ) count++;
     return count;
-  }, [selectedCountry, minAge, maxAge, selectedIntent, verifiedOnly, activeNowOnly, discoveryMode]);
+  }, [selectedCountry, minAge, maxAge, selectedIntent, verifiedOnly, activeNowOnly, discoveryMode, selectedGenders, viewerSavedGenders]);
+
+  const hasActiveFilters = activeFiltersCount > 0;
+
+  const resetAndApplyFilters = () => {
+    resetFilters();
+    setSelectedGenders(viewerSavedGenders);
+    setSelectedCountry('All');
+    setSelectedIntent('all');
+    setMinAge(18);
+    setMaxAge(65);
+    setVerifiedOnly(false);
+    setActiveNowOnly(false);
+    setDiscoveryMode('all');
+  };
 
   const applyFilters = () => {
     setMinAge(draftMinAge);
@@ -574,7 +613,7 @@ function DiscoverContent() {
                   className="relative w-7 h-7 rounded-full flex items-center justify-center text-[#6C637B] hover:text-[#1C1924] hover:bg-[#F8F7FA] active:scale-95 transition-all cursor-pointer"
                 >
                   <SlidersHorizontal className="w-3.5 h-3.5" />
-                  {(verifiedOnly || activeNowOnly || selectedCountry !== 'All' || selectedGenders.length > 0 || draftMinAge !== 18 || draftMaxAge !== 70 || selectedIntent !== 'all') && (
+                  {hasActiveFilters && (
                     <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-[#6555B8] ring-2 ring-white" />
                   )}
                 </button>
@@ -684,7 +723,7 @@ function DiscoverContent() {
             </p>
             <button
               type="button"
-              onClick={resetFilters}
+              onClick={resetAndApplyFilters}
               className="inline-flex items-center gap-1.5 px-5 py-2.5 text-xs font-semibold rounded-full bg-[#6555B8] text-white hover:bg-[#52449e] transition shadow-sm cursor-pointer"
             >
               <RotateCcw className="w-3.5 h-3.5" />
@@ -749,16 +788,18 @@ function DiscoverContent() {
                   style={
                     filtersClosing
                       ? { transform: 'translateY(100%)', transition: 'transform 0.22s cubic-bezier(0.16, 1, 0.3, 1)' }
+                      : sheetDragY > 0
+                      ? { transform: `translateY(${sheetDragY}px)`, transition: 'none' }
                       : { animation: 'sheetSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) both' }
                   }
                 >
                   {/* Top Pull Handle */}
-                  <div className="pt-2.5 pb-1 flex justify-center shrink-0 bg-white">
+                  <div className="pt-3 pb-2 flex justify-center shrink-0 bg-white cursor-grab active:cursor-grabbing touch-none select-none">
                     <div className="w-10 h-1 rounded-full bg-[#DDD7E5]" />
                   </div>
 
                   {/* Header */}
-                  <div className="flex items-center justify-between px-5 py-2.5 border-b border-[#F0ECF4] shrink-0 bg-white">
+                  <div className="flex items-center justify-between px-5 py-2.5 border-b border-[#F0ECF4] shrink-0 bg-white select-none">
                     <div className="flex items-center gap-2">
                       <SlidersHorizontal className="w-4 h-4 text-[#6555B8]" />
                       <h2 className="text-sm font-bold text-[#1C1924]">Refine Discover Feed</h2>
@@ -774,7 +815,7 @@ function DiscoverContent() {
                   </div>
 
                   {/* Scrollable Form Body with hidden scrollbar */}
-                  <div className="flex-1 min-h-0 overflow-y-auto px-5 py-4 space-y-5 no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
+                  <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain touch-pan-y px-5 py-4 space-y-5 no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
                     <div>
                       <label className="text-[11px] font-bold text-[#6C637B] uppercase tracking-wider block mb-2">
                         Interested In
