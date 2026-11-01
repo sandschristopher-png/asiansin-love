@@ -23,6 +23,7 @@ import {
 import { supabase } from '@/lib/supabase/client';
 import { hardSignOut } from '@/lib/hardSignOut';
 import { INTENT_OPTIONS, normalizeIntent, intentLabel } from '@/lib/intents';
+import { PlusBadge } from '@/components/PlusBadge';
 import RepScoreCard from '@/components/RepScoreCard';
 import { ProfileHighlightsEditorRow } from '@/components/ProfileHighlightsEditorRow';
 
@@ -363,24 +364,6 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
           </div>
         )}
 
-        {/* Quick Actions Bar */}
-        <div className="flex items-center justify-end gap-2">
-          <Link
-            href="/profile/edit"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#DDD7E5] bg-white hover:bg-[#F3EFFC] text-xs font-semibold text-[#6555B8] transition shadow-2xs"
-          >
-            <Camera className="w-3.5 h-3.5" />
-            <span>Photos</span>
-          </Link>
-          <Link
-            href="/settings"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-[#DDD7E5] bg-white hover:bg-[#F8F7FA] text-xs font-semibold text-[#524B5E] hover:text-[#1C1924] transition shadow-2xs"
-          >
-            <Settings className="w-3.5 h-3.5 text-[#6555B8]" />
-            <span>Settings</span>
-          </Link>
-        </div>
-
         {/* Identity Bar */}
         {isEditing ? (
           <div className="p-5 rounded-3xl bg-white border border-[#DDD7E5] space-y-3.5 shadow-xs">
@@ -444,23 +427,24 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
           </div>
         ) : (
           <div className="flex items-center justify-between gap-2 px-1">
-            <div>
-              <div className="flex items-center gap-2">
+            <div className="min-w-0">
+              <div className="flex items-center gap-2 flex-wrap">
                 <h2
-                className="text-xl sm:text-[22px] font-bold text-[#1C1924] tracking-tight"
-                style={{ fontFamily: 'var(--font-brand)' }}
-              >
-                {username.replace(/^@/, '')}{age ? ', ' + age : ''}
-              </h2>
-                {isPlus && (
-                  <span className="px-2.5 py-0.5 rounded-full bg-gradient-to-r from-amber-400 to-amber-500 text-slate-950 font-bold text-[10px] uppercase tracking-wider shadow-2xs">
-                    PLUS
+                  className="text-xl sm:text-[22px] font-bold text-[#1C1924] tracking-tight truncate"
+                  style={{ fontFamily: 'var(--font-brand)' }}
+                >
+                  {username.replace(/^@/, '')}{age ? ', ' + age : ''}
+                </h2>
+                {isPlus && <PlusBadge size="sm" />}
+                {verificationStatus === 'verified' && (
+                  <span title="Verified Member">
+                    <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
                   </span>
                 )}
               </div>
               <div className="flex items-center gap-1.5 mt-0.5">
-                <MapPin className="w-3.5 h-3.5 text-[#6555B8]" />
-                <p className="text-xs font-medium text-[#6C637B]">
+                <MapPin className="w-3.5 h-3.5 text-[#6555B8] shrink-0" />
+                <p className="text-xs font-medium text-[#6C637B] truncate">
                   {location || 'Location not set'}
                 </p>
                 {locationSource === 'gps_verified' && (
@@ -474,29 +458,30 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
               </div>
             </div>
 
-            <div className="flex items-center gap-2">
-              
-              {verificationStatus === 'verified' ? (
-                <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs font-semibold">
-                  <ShieldCheck className="w-4 h-4 text-emerald-600" />
-                  <span>Verified</span>
-                </div>
-              ) : verificationStatus === 'pending' ? (
-                <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-xs font-semibold">
-                  <Clock className="w-3.5 h-3.5 animate-pulse" />
-                  <span>Pending</span>
-                </div>
-              ) : (
-                <Link
-                  href="/verify"
-                  className="flex items-center gap-1 px-3 py-1.5 rounded-full bg-[#F3EFFC] border border-[#DDD7E5] hover:border-[#6555B8] text-xs font-semibold text-[#6555B8] transition shadow-2xs"
-                >
-                  <ShieldAlert className="w-3.5 h-3.5 text-[#6555B8]" />
-                  <span>Verify</span>
-                </Link>
-              )}
-            </div>
+            {verificationStatus === 'pending' && (
+              <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-xs font-semibold shrink-0">
+                <Clock className="w-3.5 h-3.5 animate-pulse" />
+                <span>Pending</span>
+              </div>
+            )}
           </div>
+        )}
+
+        {/* Discreet Verification Status Card */}
+        {verificationStatus !== 'verified' && verificationStatus !== 'pending' && (
+          <Link
+            href="/verify"
+            className="w-full p-3.5 rounded-2xl bg-[#F3EFFC]/70 border border-[#6555B8]/20 flex items-center justify-between hover:bg-[#F3EFFC] transition shadow-2xs"
+          >
+            <div className="flex items-center gap-2.5">
+              <ShieldAlert className="w-4 h-4 text-[#6555B8] shrink-0" />
+              <div>
+                <p className="text-xs font-semibold text-[#1C1924]">Verify your profile</p>
+                <p className="text-[11px] text-[#6C637B]">Confirm identity to unlock full match features</p>
+              </div>
+            </div>
+            <span className="text-xs font-semibold text-[#6555B8]">Verify &rarr;</span>
+          </Link>
         )}
 
         {/* Framed 4:5 Portrait Card */}
@@ -546,6 +531,15 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
           <div className="absolute top-4 left-4 z-10">
             <span className="presence-dot h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white/90 shadow block" />
           </div>
+
+          {/* Photo Manager Pill */}
+          <Link
+            href="/profile/edit"
+            className="absolute bottom-3.5 right-3.5 z-10 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/55 backdrop-blur-md text-white text-xs font-medium hover:bg-black/70 transition shadow-sm"
+          >
+            <Camera className="w-3.5 h-3.5 text-white/90" />
+            <span>{photoList.length > 0 ? photoList.length : 'Add'}</span>
+          </Link>
 
           {hasMultiple && (
             <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-1.5 z-10">
