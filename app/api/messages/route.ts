@@ -5,6 +5,7 @@ import { createClient } from '@supabase/supabase-js';
 import { evaluateMessageModeration, hasContactSharingIntent, evaluateSubstantiveConversation } from '@/lib/moderation';
 import { applyContactRevealMask } from '@/lib/safety';
 import { createClient as createSessionClient } from '@/lib/supabase/server';
+import { sendPushToUser } from '@/lib/pushSender';
 
 const isUUID = (str: unknown) =>
   typeof str === 'string' &&
@@ -297,6 +298,11 @@ export async function POST(req: Request) {
         description: senderName + ' sent you a message.',
         link_url: '/messages',
       });
+      await sendPushToUser({
+        userId: receiverId,
+        type: 'message',
+        conversationId: senderId,
+      }).catch((e) => console.error('[Push] message error:', e));
     } catch {
       // Non-blocking notification dispatch
     }

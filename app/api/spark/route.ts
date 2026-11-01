@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
+import { sendPushToUser } from '@/lib/pushSender'
 
 export async function POST(req: Request) {
   try {
@@ -78,6 +79,10 @@ export async function POST(req: Request) {
         description: `You and ${senderName} sparked each other. Say hi.`,
         link_url: '/chat/' + user.id,
       })
+      await sendPushToUser({
+        userId: targetUserId,
+        type: 'match',
+      }).catch((e) => console.error('[Push] spark match error:', e))
     } else {
       // Regular spark - actor-aware copy
       await supabase.from('notifications').insert({
@@ -88,6 +93,10 @@ export async function POST(req: Request) {
         description: senderName + ' sparked your profile.',
         link_url: '/favorites',
       })
+      await sendPushToUser({
+        userId: targetUserId,
+        type: 'spark',
+      }).catch((e) => console.error('[Push] spark regular error:', e))
     }
 
     return NextResponse.json({ sparked: true, mutual: !!mutual })
