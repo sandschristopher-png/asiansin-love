@@ -204,7 +204,17 @@ export function Navbar() {
         <div className="flex items-center gap-2">
           {user ? (
             <>
-<div className="relative" ref={menuRef}>
+{pathname === '/profile' && (
+              <Link
+                href="/settings"
+                className="w-8 h-8 rounded-full flex items-center justify-center text-[#6555B8] hover:bg-[#F3EFFC] transition-colors"
+                aria-label="Settings"
+                title="Settings"
+              >
+                <Settings className="w-5 h-5 stroke-[2]" />
+              </Link>
+            )}
+            <div className={`relative ${pathname === "/profile" ? "hidden" : ""}`} ref={menuRef}>
                 <button
                   type="button"
                   onClick={() => setMenuOpen(!menuOpen)}
