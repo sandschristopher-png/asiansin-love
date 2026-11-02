@@ -173,24 +173,7 @@ export default function UpgradeModal({
               </div>
             </button>
 
-            {/* 3 Months */}
-            <button
-              type="button"
-              onClick={() => setSelectedTier('3m')}
-              className={`relative rounded-xl p-2 text-left border transition cursor-pointer flex flex-col justify-between ${
-                selectedTier === '3m'
-                  ? 'border-[#6555B8] bg-[#F3EFFC]/80 ring-1 ring-[#6555B8] shadow-xs'
-                  : 'border-[#ECE6F7] bg-[#FAF9FD] hover:border-[#DDD7E5]'
-              }`}
-            >
-              <div className="pt-0.5">
-                <div className="text-[10px] font-bold text-[#1C1924]">3 Mo</div>
-                <div className="text-[9px] text-[#6555B8] font-semibold">Save 20%</div>
-              </div>
-              <div className="mt-1 pt-1 border-t border-[#ECE6F7]/80">
-                <div className="text-xs font-bold text-[#1C1924]">$11.99<span className="text-[9px] font-normal text-[#6C637B]">/mo</span></div>
-              </div>
-            </button>
+
 
             {/* 1 Month */}
             <button
@@ -226,7 +209,7 @@ export default function UpgradeModal({
             ) : (
               <>
                 <span>
-                  Upgrade to AIL+ • {selectedTier === '12m' ? '$7.99/mo' : selectedTier === '3m' ? '$11.99/mo' : '$14.99/mo'}
+                  Upgrade to AIL+ • {selectedTier === '12m' ? '$7.99/mo' : '$14.99/mo'}
                 </span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </>
