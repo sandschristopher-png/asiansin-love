@@ -3,8 +3,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Zap, Lock, Crown, CheckCircle2 } from 'lucide-react';
-import UpgradeModal from '@/components/UpgradeModal';
+import { Zap, Lock, Crown } from 'lucide-react';
 import { createBrowserClient } from '@supabase/ssr';
 
 type SparkTab = 'sparked' | 'sparked_you' | 'mutual' | 'visited';
@@ -239,7 +238,7 @@ export default function SparksPage() {
           sessionStorage.setItem(CACHE_KEY, JSON.stringify(cachePayload));
         } catch {}
       } catch (err) {
-        console.error('Error loading Sparks:', err);console.error('Error loading Sparks:', err);
+        console.error('Error loading Sparks:', err);
         if (isMounted) setLoading(false);
       }
     }
@@ -269,7 +268,10 @@ export default function SparksPage() {
     if (activeTab === 'sparked_you') {
       return { title: 'No Incoming Sparks Yet', subtitle: 'Keep your profile photo fresh—when someone sparks you, they will appear right here!' };
     }
-    return { title: 'No Mutual Sparks Yet', subtitle: 'When you and another member both Spark each other, your match unlocks here.' };
+    if (activeTab === 'mutual') {
+      return { title: 'No Mutual Sparks Yet', subtitle: 'When you and another member both Spark each other, your match unlocks here.' };
+    }
+    return { title: 'No Visitors Yet', subtitle: 'Members who view your profile will be listed here with AIL+.' };
   }, [activeTab]);
 
   // Popularity triage: credible senders first, no-photo senders collapsed
@@ -357,7 +359,8 @@ export default function SparksPage() {
               const age = getAge(person);
               const photo = shouldBlur ? '/placeholder-avatar.svg' : getPhoto(person);
               const location = getLocationLabel(person);
-              const rep = person.reputation_score ?? 100;              return (
+              const rep = person.reputation_score ?? 100;
+              return (
                 <div
                   key={person.id}
                   onClick={() => { if (shouldBlur) { router.push('/settings?upgrade=plus'); } else { router.push(`/profile/${person.id}`); } }}
