@@ -53,16 +53,19 @@ export async function sendPushToUser({ userId, type, conversationId }: SendOpts)
     { auth: { persistSession: false, autoRefreshToken: false } }
   );
 
-  // Respect recipient's notification preferences
+  // Respect recipient's notification preferences: the Settings page toggles
+  // (notify_messages / notify_sparks) and the per-type notification_prefs map.
   const prefKey = PREF_KEY[type];
-  if (prefKey) {
+  {
     const { data: profile } = await admin
       .from('profiles')
-      .select('notification_prefs')
+      .select('notification_prefs, notify_messages, notify_sparks')
       .eq('id', userId)
       .maybeSingle();
+    if (type === 'message' && profile?.notify_messages === false) return;
+    if ((type === 'spark' || type === 'match') && profile?.notify_sparks === false) return;
     const prefs = profile?.notification_prefs as Record<string, boolean> | null;
-    if (prefs && prefs[prefKey] === false) return;
+    if (prefKey && prefs && prefs[prefKey] === false) return;
   }
 
   const { data: subs, error } = await admin
@@ -91,6 +94,7 @@ export async function sendPushToUser({ userId, type, conversationId }: SendOpts)
         ? '/favorites'
         : '/discover',
     type,
+    tag: type === 'message' && conversationId ? `message:${conversationId}` : type,
   });
 
   const dead: string[] = [];

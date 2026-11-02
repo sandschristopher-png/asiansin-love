@@ -89,7 +89,7 @@ export function RealtimeMatchToast() {
   if (!visible || !match) return null;
 
   return (
-    <div className="fixed top-5 left-1/2 -translate-x-1/2 z-[100] w-[92%] max-w-sm">
+    <div className="fixed top-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[400px] z-[100]">
       <div className="flex items-center justify-between p-3.5 rounded-2xl bg-white/95 text-[#1C1924] border border-[#ECE8F4] shadow-[0_12px_32px_rgba(101,85,184,0.18)] backdrop-blur-md animate-in slide-in-from-top-4 duration-300">
         <div className="flex items-center gap-3">
           <img

@@ -339,7 +339,7 @@ export default function PublicProfilePage() {
   return (
     <div className="relative flex-1 w-full bg-[#F8F7FA] text-[#1C1924] font-sans">
       {toastMsg && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] px-4 py-2.5 rounded-2xl bg-[#1C1924]/90 text-white text-xs font-semibold shadow-lg backdrop-blur-md">
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[400px] z-[100] px-4 py-2.5 rounded-2xl bg-white/95 border border-[#ECE8F4] text-[#1C1924] text-xs font-semibold text-center shadow-[0_12px_32px_rgba(101,85,184,0.18)] backdrop-blur-md">
           {toastMsg}
         </div>
       )}

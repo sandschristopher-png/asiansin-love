@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { createClient } from '@supabase/supabase-js';
 import { resolveCountry } from '@/lib/countries';
+import { getPresenceStatus } from '@/lib/presence';
 
 /**
  * Only the columns the Discover grid / profile sheet mapping below reads. Never select('*') here:
@@ -195,11 +196,10 @@ export async function GET() {
           latitude: row.latitude == null || !Number.isFinite(Number(row.latitude)) ? null : Math.round(Number(row.latitude) * 100) / 100,
           longitude: row.longitude == null || !Number.isFinite(Number(row.longitude)) ? null : Math.round(Number(row.longitude) * 100) / 100,
           location_source: row.location_source || 'self_reported',
-          // Respect Settings > Show active status; no activity record means not online.
-          online:
-            row.show_active_status !== false &&
-            Boolean(row.last_active) &&
-            Date.now() - new Date(row.last_active).getTime() < 1000 * 60 * 15,
+          // Respect Settings > Show active status; online = heartbeat within the last 5 minutes.
+          // (The client also ORs in live Realtime Presence.)
+          online: row.show_active_status !== false && getPresenceStatus(row.last_active).isOnline,
+          lastActive: row.show_active_status !== false ? row.last_active || null : null,
           intent: row.relationship_intent || row.intentions || row.relationship_goal || row.intent || 'Marriage',
           looking_for: row.looking_for || row.intentions || row.relationship_intent || 'Serious Relationship',
           bio: row.bio || '',

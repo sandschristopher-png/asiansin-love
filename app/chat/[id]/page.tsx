@@ -28,6 +28,11 @@ import { applyContactRevealMask, CONTACT_UNLOCK_TURNS } from '@/lib/safety';
 import { AudioPill } from '@/components/AudioPill';
 import { useVoiceRecorder } from '@/lib/useVoiceRecorder';
 import { VOICE_NOTE_MAX_MS, formatSeconds } from '@/lib/audio';
+import { InAppToast } from '@/components/InAppToast';
+import { getPresenceStatus } from '@/lib/presence';
+import { usePresentUserIds } from '@/lib/realtimePresence';
+
+const VOICE_LOCKED_MESSAGE = `Voice notes unlock after both members exchange ${CONTACT_UNLOCK_TURNS} substantive messages (15+ characters each).`;
 
 interface ChatMessage {
   id: string;
@@ -123,6 +128,8 @@ export default function ChatConversationPage() {
     rep: 100,
     city: '',
     country: '',
+    lastActive: null as string | null,
+    showActive: true,
   });
 
   const [icebreakerPrompt, setIcebreakerPrompt] = useState<string | null>(null);
@@ -131,6 +138,18 @@ export default function ChatConversationPage() {
   const [contactUnlocked, setContactUnlocked] = useState(false);
   const [voiceSending, setVoiceSending] = useState(false);
   const voice = useVoiceRecorder(VOICE_NOTE_MAX_MS);
+  const [toast, setToast] = useState<string | null>(null);
+  const closeToast = useCallback(() => setToast(null), []);
+  const presentIds = usePresentUserIds();
+  const [, setPresenceTick] = useState(0);
+  useEffect(() => {
+    const t = setInterval(() => setPresenceTick((n) => n + 1), 60_000); // re-evaluate "Active Xm ago"
+    return () => clearInterval(t);
+  }, []);
+  // Mic permission / recorder failures surface as a toast instead of failing silently.
+  useEffect(() => {
+    if (voice.error) setToast(voice.error);
+  }, [voice.error]);
   const voicePreviewUrl = React.useMemo(() => (voice.blob ? URL.createObjectURL(voice.blob) : null), [voice.blob]);
   useEffect(() => () => {
     if (voicePreviewUrl) URL.revokeObjectURL(voicePreviewUrl);
@@ -257,12 +276,12 @@ export default function ChatConversationPage() {
         isUuid
           ? supabase
               .from('profiles')
-              .select('id, username, display_name, full_name, avatar_url, reputation_score, city, country, interests, languages')
+              .select('id, username, display_name, full_name, avatar_url, reputation_score, city, country, interests, languages, last_active, show_active_status')
               .eq('id', rawParam)
               .maybeSingle()
           : supabase
               .from('profiles')
-              .select('id, username, display_name, full_name, avatar_url, reputation_score, city, country, interests, languages')
+              .select('id, username, display_name, full_name, avatar_url, reputation_score, city, country, interests, languages, last_active, show_active_status')
               .or(`username.ilike.%${handleParam}%,display_name.ilike.%${handleParam}%`)
               .limit(1)
               .maybeSingle(),
@@ -316,6 +335,8 @@ export default function ChatConversationPage() {
           rep: typeof profData.reputation_score === 'number' ? profData.reputation_score : 100,
           city: (profData.city || '').replace(/^@+/, ''),
           country: profData.country || '',
+          lastActive: profData.last_active || null,
+          showActive: profData.show_active_status !== false,
         });
 
         const retiredTags = new Set(['nature walks', 'gaming', 'entrepreneurship']);
@@ -563,14 +584,11 @@ export default function ChatConversationPage() {
 
   const startVoiceNote = () => {
     if (!contactUnlocked) {
-      setShowSafetyNotice(true);
-      setErrorBanner(
-        `Voice notes unlock after you both send ${CONTACT_UNLOCK_TURNS} messages (15+ characters). Keep chatting!`
-      );
+      setToast(VOICE_LOCKED_MESSAGE);
       return;
     }
     setErrorBanner(null);
-    voice.start();
+    voice.start(); // getUserMedia({ audio }) + live waveform; Trash / Stop / Send in the composer
   };
 
   const sendVoiceNote = async () => {
@@ -723,12 +741,24 @@ export default function ChatConversationPage() {
                   style={{ fontFamily: 'var(--font-brand)' }}
                 > {targetInfo.name || 'Member'}
                 </span>
-                <div className="flex items-center gap-1.5 mt-0.5">
-                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block shrink-0" />
-                  <span className="text-[11px] text-[#7A7289] font-medium truncate">
-                    {targetInfo.city ? targetInfo.city.replace(/^@+/, '') : 'Active recently'}
-                  </span>
-                </div>
+                {(() => {
+                  // Green dot only when connected right now (Realtime Presence) or active in the last
+                  // 5 minutes; otherwise "Active 2h ago", falling back to their city.
+                  const city = targetInfo.city ? targetInfo.city.replace(/^@+/, '') : '';
+                  const presence = targetInfo.showActive ? getPresenceStatus(targetInfo.lastActive) : null;
+                  const online =
+                    targetInfo.showActive &&
+                    (Boolean(resolvedTargetUuid && presentIds.has(resolvedTargetUuid)) || Boolean(presence?.isOnline));
+                  const activity = !online && presence && presence.statusLabel !== 'Offline' ? presence.statusLabel : '';
+                  const label = online ? 'Online' : [activity, city].filter(Boolean).join(' · ');
+                  if (!label) return null;
+                  return (
+                    <div className="flex items-center gap-1.5 mt-0.5">
+                      {online && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block shrink-0" />}
+                      <span className="text-[11px] text-[#7A7289] font-medium truncate">{label}</span>
+                    </div>
+                  );
+                })()}
               </div>
             </Link>
           )}
@@ -1096,22 +1126,29 @@ export default function ChatConversationPage() {
               />
             </div>
             {!inputText.trim() && (
-              <button
-                type="button"
-                onClick={startVoiceNote}
-                aria-label={contactUnlocked ? 'Record a voice note' : 'Voice notes are locked'}
-                title={contactUnlocked ? 'Record a voice note (up to 30s)' : `Voice notes unlock after ${CONTACT_UNLOCK_TURNS} messages each`}
-                className={`relative w-9 h-9 rounded-full border flex items-center justify-center shrink-0 transition ${
-                  contactUnlocked
-                    ? 'border-[#E2DBF0] bg-[#F3EFFC] text-[#6555B8] hover:bg-[#EBE5FA]'
-                    : 'border-[#ECE8F4] bg-white text-[#B6AEC7]'
-                }`}
-              >
-                <Mic className="w-4 h-4" />
+              <span className="relative inline-flex items-center justify-center w-10 h-10 rounded-full shrink-0">
+                <button
+                  type="button"
+                  onClick={startVoiceNote}
+                  aria-label={contactUnlocked ? 'Record a voice note' : 'Voice notes are locked'}
+                  title={contactUnlocked ? 'Record a voice note (up to 30s)' : VOICE_LOCKED_MESSAGE}
+                  className={`w-10 h-10 rounded-full border flex items-center justify-center transition cursor-pointer active:scale-95 ${
+                    contactUnlocked
+                      ? 'border-[#E2DBF0] bg-[#F3EFFC] text-[#6555B8] hover:bg-[#EBE5FA]'
+                      : 'border-[#ECE8F4] bg-white text-[#B6AEC7]'
+                  }`}
+                >
+                  <Mic className="w-4 h-4" />
+                </button>
                 {!contactUnlocked && (
-                  <Lock className="absolute -bottom-0.5 -right-0.5 w-3 h-3 p-[1px] rounded-full bg-white text-[#8C849B]" />
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-white text-[#6555B8] rounded-full flex items-center justify-center shadow-xs border border-[#ECE8F4]"
+                  >
+                    <Lock className="w-2 h-2" strokeWidth={3} />
+                  </span>
                 )}
-              </button>
+              </span>
             )}
             <button
               type="submit"
@@ -1124,6 +1161,12 @@ export default function ChatConversationPage() {
           </form>
         )}
       </div>
+
+      <InAppToast
+        message={toast}
+        onClose={closeToast}
+        icon={toast === VOICE_LOCKED_MESSAGE ? <Lock className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
+      />
 
       <UpgradeModal
         isOpen={showUpgradeModal}

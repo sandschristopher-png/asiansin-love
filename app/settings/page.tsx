@@ -17,6 +17,7 @@ import {
   MessageCircle, Trash2, AlertTriangle } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { hardSignOut } from '@/lib/hardSignOut';
+import { PushDeviceRow } from '@/components/PushDeviceRow';
 
 type SettingsKey = 'hide_profile' | 'show_active_status' | 'notify_sparks' | 'notify_messages';
 
@@ -307,6 +308,8 @@ export default function SettingsHubPage() {
             busy={savingKey === 'notify_messages'}
             onClick={() => handleToggle('notify_messages')}
           />
+
+          <PushDeviceRow />
         </div>
 
         {/* CARD 4: SAFETY & SUPPORT */}

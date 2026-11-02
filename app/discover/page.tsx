@@ -13,6 +13,7 @@ import { ActionType, getLocalCardActions, persistCardAction } from '@/lib/intera
 import { CardPhoto } from '@/components/CardPhoto';
 import { AudioPill } from '@/components/AudioPill';
 import { isTrustedVoiceIntroUrl } from '@/lib/audio';
+import { usePresentUserIds } from '@/lib/realtimePresence';
 
 const DISCOVERY_MODES = [
   { id: 'all', label: 'All' },
@@ -26,6 +27,14 @@ const GENDER_LABELS: Record<string, string> = {
   woman: 'Women',
   man: 'Men',
 };
+
+/** Scroll offset of the nearest scrolled ancestor (the app shell scrolls an inner div). */
+function scrollTopOf(el: HTMLElement | null): number {
+  for (let node = el; node; node = node.parentElement) {
+    if (node.scrollTop > 0) return node.scrollTop;
+  }
+  return typeof window !== 'undefined' ? window.scrollY : 0;
+}
 
 export interface ProfileItem {
   id: string;
@@ -49,6 +58,7 @@ export interface ProfileItem {
   interests?: string[];
   created_at?: string;
   voiceIntroUrl?: string | null;
+  lastActive?: string | null;
 }
 
 function DiscoverCardPhotoCarousel({
@@ -173,6 +183,7 @@ function DiscoverContent() {
   const [viewerSavedGenders, setViewerSavedGenders] = useState<string[]>([]);
   const initialFeed = getInitialDiscoverFeed();
   const [profiles, setProfiles] = useState<ProfileItem[]>(() => initialFeed);
+  const presentIds = usePresentUserIds();
   const [isLoading, setIsLoading] = useState(() => initialFeed.length === 0);
   const [pullDistance, setPullDistance] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -381,12 +392,14 @@ function DiscoverContent() {
 
   const handlePullStart = (e: React.TouchEvent) => {
     if (isRefreshing || filtersOpen || searchOpen) return;
+    if (scrollTopOf(e.currentTarget as HTMLElement) > 0) return;
     pullStartY.current = e.touches[0].clientY;
   };
 
   const handlePullMove = (e: React.TouchEvent) => {
     if (pullStartY.current === null) return;
-    if (window.scrollY > 0) { pullStartY.current = null; setPullDistance(0); return; }
+    // The app shell scrolls an inner container, not the window: only pull when it is at the top.
+    if (scrollTopOf(e.currentTarget as HTMLElement) > 0) { pullStartY.current = null; setPullDistance(0); return; }
     const dy = e.touches[0].clientY - pullStartY.current;
     if (dy <= 0) { setPullDistance(0); return; }
     setPullDistance(Math.min(dy * 0.45, 80));
@@ -546,9 +559,9 @@ function DiscoverContent() {
       const matchesAge = profile.age >= minAge && profile.age <= maxAge;
       const matchesIntent = selectedIntent === 'all' || !profile.intent || normalizeIntent(profile.intent) === normalizeIntent(selectedIntent);
       const matchesVerified = !verifiedOnly || profile.verified;
-      const matchesOnline = !activeNowOnly || profile.online;
+      const matchesOnline = !activeNowOnly || profile.online || presentIds.has(profile.id);
       const matchesDiscoveryMode = (() => {
-        if (discoveryMode === 'online') return Boolean(profile.online || profile.recentlyActive);
+        if (discoveryMode === 'online') return Boolean(profile.online || presentIds.has(profile.id) || profile.recentlyActive);
         if (discoveryMode === 'near_me') return true;
         if (discoveryMode === 'new') {
           const createdAt = profile.created_at ? new Date(profile.created_at).getTime() : 0;
@@ -567,7 +580,7 @@ function DiscoverContent() {
         matchesDiscoveryMode
       );
     });
-  }, [profiles, cardActions, selectedCountry, selectedGenders, searchQuery, minAge, maxAge, selectedIntent, verifiedOnly, activeNowOnly, discoveryMode]);
+  }, [profiles, cardActions, selectedCountry, selectedGenders, searchQuery, minAge, maxAge, selectedIntent, verifiedOnly, activeNowOnly, discoveryMode, presentIds]);
 
   const visibleProfiles = filteredProfiles.slice(0, visibleLimit);
   const hasMore = visibleLimit < filteredProfiles.length;
@@ -576,10 +589,21 @@ function DiscoverContent() {
     <div onTouchStart={handlePullStart} onTouchMove={handlePullMove} onTouchEnd={handlePullEnd} className="w-full min-h-full bg-[#F8F7FA] text-[#1C1924] flex flex-col font-sans animate-[fadeIn_200ms_cubic-bezier(0.16,1,0.3,1)] overscroll-contain">
       {/* Pull-to-Refresh Indicator */}
       <div
-        className="flex items-center justify-center overflow-hidden"
-        style={{ height: isRefreshing ? 40 : pullDistance, transition: pullDistance > 0 && !isRefreshing ? 'none' : 'height 300ms cubic-bezier(0.16,1,0.3,1)' }}
+        aria-hidden={!isRefreshing && pullDistance === 0}
+        className={
+          'flex items-center justify-center overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ' +
+          (isRefreshing || pullDistance > 0 ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 max-h-0 pointer-events-none')
+        }
+        // Follows the finger 1:1 while pulling (no transition); animates open/closed otherwise.
+        style={{ height: isRefreshing ? 40 : pullDistance, ...(pullDistance > 0 && !isRefreshing ? { transition: 'none' } : {}) }}
       >
-        <div className="w-5 h-5 border-2 border-[#6555B8] border-t-transparent rounded-full" style={{ transform: `rotate(${Math.min(pullDistance, 56) * 6}deg)` }} />
+        <div
+          role={isRefreshing ? 'status' : undefined}
+          aria-label={isRefreshing ? 'Refreshing' : undefined}
+          className={'w-5 h-5 border-2 border-[#6555B8] border-t-transparent rounded-full ' + (isRefreshing ? 'animate-spin' : '')}
+          // While pulling, rotation tracks the pull; while refreshing, animate-spin owns transform.
+          style={isRefreshing ? undefined : { transform: `rotate(${pullDistance * 6}deg)`, opacity: Math.min(1, pullDistance / 56) }}
+        />
       </div>
       <main className="w-full max-w-md mx-auto px-4 pt-4 pb-36 relative">
         {/* Static Pinned Search & Filter Controls on Left + Horizontally Scrolling Categories on Right */}
@@ -709,7 +733,7 @@ function DiscoverContent() {
                     avatarUrl={profile.avatarUrl}
                     name={displayName}
                     repScore={profile.repScore}
-                    online={profile.online}
+                    online={profile.online || presentIds.has(profile.id)}
                     recentlyActive={profile.recentlyActive}
                   />
                   {isTrustedVoiceIntroUrl(profile.voiceIntroUrl) && (
@@ -765,7 +789,7 @@ function DiscoverContent() {
         </div>
 
         {sparkLimitNotice && (
-          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2.5 rounded-full bg-[#1C1924] text-white text-[13px] font-medium shadow-lg border border-white/10 max-w-[90vw] text-center">
+          <div className="fixed top-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[400px] z-50 px-4 py-2.5 rounded-2xl bg-white/95 border border-[#ECE8F4] text-[#1C1924] text-[13px] font-medium shadow-[0_12px_32px_rgba(101,85,184,0.18)] backdrop-blur-md text-center">
             {sparkLimitNotice}
           </div>
         )}

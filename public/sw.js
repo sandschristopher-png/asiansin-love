@@ -1,4 +1,5 @@
-const CACHE_NAME = 'ail-cache-v1';
+// v2: stop caching /api responses (private data) - activating v2 deletes the old cache.
+const CACHE_NAME = 'ail-cache-v2';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
@@ -14,6 +15,9 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
+  const url = new URL(event.request.url);
+  // Never cache API responses (messages, profiles, signed URLs) or cross-origin requests.
+  if (url.origin !== self.location.origin || url.pathname.startsWith('/api/')) return;
 
   event.respondWith(
     fetch(event.request).then((response) => {
@@ -42,12 +46,14 @@ self.addEventListener('push', (event) => {
   const title = payload.title || 'Asians in Love';
   const options = {
     body: payload.body || 'You have a new update waiting.',
-    icon: payload.icon || '/icon.svg', // Using SVG since PNGs aren't generated yet
-    tag: payload.tag || 'ail-notification',
+    icon: payload.icon || '/icon-192.png',
+    badge: '/icon-192.png',
+    tag: payload.tag || payload.type || 'ail-notification',
     renotify: true,
     vibrate: [200, 100, 200],
     data: {
-      linkUrl: payload.link_url || payload.linkUrl || '/'
+      // lib/pushSender sends `url` (e.g. /chat/<senderId>); older payloads used link_url.
+      linkUrl: payload.url || payload.link_url || payload.linkUrl || '/'
     }
   };
 

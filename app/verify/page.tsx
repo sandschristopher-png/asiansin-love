@@ -577,6 +577,10 @@ export default function VerifyPage() {
           {/* Fullscreen camera takeover when camera is on */}
           {cameraOn && (
             <>
+              {/* Mirrored for display only (selfie view). MediaPipe reads the raw, un-mirrored frames, and
+                  lib/poseVerifier estimateYawDeg() maps them to the user's own left/right, so "Turn head
+                  left" = the user's physical left = the head moving toward screen-left in this preview.
+                  Do not compensate for this CSS flip in the yaw maths. */}
               <video
                 ref={videoRef}
                 autoPlay
