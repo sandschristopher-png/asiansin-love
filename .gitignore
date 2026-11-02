@@ -58,3 +58,7 @@ midscene_run/
 current-code-dump.txt
 build-output*.txt
 build-output*.txt
+
+# Patch artifacts & local notes
+patches/**/.applied
+asiansinlove_context.md

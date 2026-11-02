@@ -1,16 +1,53 @@
 // lib/adminAlerts.ts
-import { generateAdminActionSignature } from './adminSecurity';
+import { signAdminAction } from './adminSecurity';
+
+function siteUrl(): string {
+  return (
+    process.env.NEXT_PUBLIC_SITE_URL ||
+    (process.env.NODE_ENV === 'production' ? 'https://asiansin.love' : 'http://localhost:3000')
+  ).replace(/\/$/, '');
+}
+
+function verifyLink(userId: string, action: 'approve' | 'reject'): string {
+  const { ts, sig } = signAdminAction(`verify:${userId}:${action}`);
+  const q = new URLSearchParams({ uid: userId, action, ts, sig });
+  return `${siteUrl()}/api/admin/verify?${q.toString()}`;
+}
+
+function photoLink(
+  userId: string,
+  photoId: string,
+  photoUrl: string,
+  action: 'approve' | 'reject',
+  isPrimary: boolean
+): string {
+  const { ts, sig } = signAdminAction(
+    `photo:${userId}:${photoId}:${action}:${isPrimary}:${photoUrl}`
+  );
+  const q = new URLSearchParams({
+    uid: userId,
+    photoId,
+    action,
+    isPrimary: String(isPrimary),
+    u: photoUrl,
+    ts,
+    sig,
+  });
+  return `${siteUrl()}/api/admin/review-photo?${q.toString()}`;
+}
 
 export async function sendTelegramVerificationAlert({
   userId,
   poseRequested,
   selfieUrl,
+  extraSelfieUrls = [],
   avatarUrl,
   aiVerdict,
 }: {
   userId: string;
   poseRequested: string;
   selfieUrl: string;
+  extraSelfieUrls?: string[];
   avatarUrl: string;
   aiVerdict?: {
     isSafe: boolean;
@@ -26,18 +63,17 @@ export async function sendTelegramVerificationAlert({
     return;
   }
 
+  const extras = extraSelfieUrls.map((u, i) => `\n👉 [View Capture ${i + 2}](${u})`).join('');
   const caption = 
 `🛡️ *New Identity Gesture Verification*
 *User ID:* \`${userId}\`
-*Requested Pose:* ${poseRequested}
-${aiVerdict ? `\n🤖 *Gemini AI Pre-Check:*\n• Pose Match: ${aiVerdict.poseMatchesPrompt ? '✅ Yes' : '⚠️ Unconfirmed'}\n• Content Safe: ${aiVerdict.isSafe ? '✅ Safe' : '⚠️ Flagged'}\n• Note: _${aiVerdict.reason}_\n` : ''}
+*Requested Poses:* ${poseRequested}
+${aiVerdict ? `\n🤖 *Gemini AI Pre-Check (hint only):*\n• Pose Match: ${aiVerdict.poseMatchesPrompt ? '✅ Yes' : '⚠️ Unconfirmed'}\n• Content Safe: ${aiVerdict.isSafe ? '✅ Safe' : '⚠️ Flagged'}\n• Note: _${aiVerdict.reason}_\n` : ''}
 
 👉 [View Profile Avatar](${avatarUrl})
-👉 [View Live Selfie Capture](${selfieUrl})`;
+👉 [View Live Selfie Capture](${selfieUrl})${extras}
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
-  const approveSig = generateAdminActionSignature(`verify:${userId}:approve`);
-  const rejectSig = generateAdminActionSignature(`verify:${userId}:reject`);
+Compare the live captures with the profile photos before approving.`;
 
   try {
     await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
@@ -50,14 +86,8 @@ ${aiVerdict ? `\n🤖 *Gemini AI Pre-Check:*\n• Pose Match: ${aiVerdict.poseMa
         reply_markup: {
           inline_keyboard: [
             [
-              { 
-                text: '✅ Approve Identity', 
-                url: `${baseUrl}/api/admin/verify?uid=${userId}&action=approve&sig=${approveSig}` 
-              },
-              { 
-                text: '❌ Reject Identity', 
-                url: `${baseUrl}/api/admin/verify?uid=${userId}&action=reject&sig=${rejectSig}` 
-              },
+              { text: '✅ Approve Identity', url: verifyLink(userId, 'approve') },
+              { text: '❌ Reject Identity', url: verifyLink(userId, 'reject') },
             ],
           ],
         },
@@ -89,12 +119,8 @@ export async function sendTelegramPhotoReviewAlert({
     return;
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000';
   const typeLabel = isPrimaryAvatar ? 'Main Avatar' : 'Gallery Photo';
-  const caption = `📸 *New Photo Submission (${typeLabel})*\n*User ID:* \`${userId}\`\n*Gender:* ${userGender || 'female'}\n\nPlease inspect for inappropriate attire, solicitation watermarks, or violations.`;
-
-  const approveSig = generateAdminActionSignature(`photo:${userId}:${photoId}:approve:${isPrimaryAvatar}`);
-  const rejectSig = generateAdminActionSignature(`photo:${userId}:${photoId}:reject:${isPrimaryAvatar}`);
+  const caption = `📸 *New Photo Submission (${typeLabel})*\n*User ID:* \`${userId}\`\n*Gender:* ${userGender || 'female'}\n\nPlease inspect for inappropriate attire, solicitation watermarks, or violations.${isPrimaryAvatar ? '' : '\n\nGallery photos are live immediately - Reject removes it from the profile.'}`;
 
   try {
     await fetch(`https://api.telegram.org/bot${token}/sendPhoto`, {
@@ -110,11 +136,11 @@ export async function sendTelegramPhotoReviewAlert({
             [
               {
                 text: '✅ Approve Photo',
-                url: `${baseUrl}/api/admin/review-photo?photoId=${photoId}&uid=${userId}&action=approve&isPrimary=${isPrimaryAvatar}&sig=${approveSig}`,
+                url: photoLink(userId, photoId, photoUrl, 'approve', isPrimaryAvatar),
               },
               {
                 text: '❌ Reject Photo',
-                url: `${baseUrl}/api/admin/review-photo?photoId=${photoId}&uid=${userId}&action=reject&isPrimary=${isPrimaryAvatar}&sig=${rejectSig}`,
+                url: photoLink(userId, photoId, photoUrl, 'reject', isPrimaryAvatar),
               },
             ],
           ],

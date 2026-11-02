@@ -1,8 +1,63 @@
 import { NextRequest, NextResponse } from 'next/server';
 import Stripe from 'stripe';
-import { createClient } from '@supabase/supabase-js';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 export const runtime = 'nodejs';
+
+type Tier = '12m' | '3m' | '1m';
+const isTier = (v: unknown): v is Tier => v === '12m' || v === '3m' || v === '1m';
+
+/** price id -> tier, built from the same env vars the checkout route uses. */
+function tierFromPriceId(priceId: string | undefined | null): Tier | null {
+  if (!priceId) return null;
+  const map: Array<[Tier, Array<string | undefined>]> = [
+    ['12m', [process.env.STRIPE_PLUS_PRICE_12M, process.env.STRIPE_PRICE_ANNUAL]],
+    ['3m', [process.env.STRIPE_PLUS_PRICE_3M]],
+    ['1m', [process.env.STRIPE_PLUS_PRICE_1M, process.env.STRIPE_PRICE_MONTHLY]],
+  ];
+  for (const [tier, ids] of map) if (ids.includes(priceId)) return tier;
+  return null;
+}
+
+function tierFromSubscription(sub: Stripe.Subscription): Tier | null {
+  const fromMeta = (sub.metadata as Record<string, string> | undefined)?.planId;
+  if (isTier(fromMeta)) return fromMeta;
+  return tierFromPriceId(sub.items?.data?.[0]?.price?.id);
+}
+
+/**
+ * Writes the membership state. Optional columns (plus_enabled, membership_tier) are dropped
+ * automatically if they do not exist yet; is_plus is always written.
+ * Returns an error message if even the minimal update failed (so Stripe retries the event).
+ */
+async function applyMembership(
+  admin: SupabaseClient,
+  userId: string,
+  active: boolean,
+  tier: Tier | null
+): Promise<string | null> {
+  const payload: Record<string, unknown> = {
+    is_plus: active,
+    plus_enabled: active,
+    membership_tier: active ? tier : null,
+  };
+
+  for (let attempt = 0; attempt < 4; attempt++) {
+    const { error } = await admin.from('profiles').update(payload).eq('id', userId);
+    if (!error) return null;
+
+    const missing =
+      /Could not find the '([a-z_]+)' column/i.exec(error.message)?.[1] ||
+      /column "?([a-z_]+)"? .*does not exist/i.exec(error.message)?.[1];
+    if (missing && missing !== 'is_plus' && missing in payload) {
+      console.warn(`[webhook] profiles.${missing} not present, continuing without it`);
+      delete payload[missing];
+      continue;
+    }
+    return error.message;
+  }
+  return 'too many retries adjusting payload';
+}
 
 export async function POST(req: NextRequest) {
   const secret = process.env.STRIPE_SECRET_KEY;
@@ -27,26 +82,61 @@ export async function POST(req: NextRequest) {
 
   const admin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.SUPABASE_SERVICE_ROLE_KEY!
+    process.env.SUPABASE_SERVICE_ROLE_KEY!,
+    { auth: { persistSession: false } }
   );
 
-  if (event.type === 'checkout.session.completed') {
-    const session = event.data.object as Stripe.Checkout.Session;
-    const userId = session.metadata?.userId || session.client_reference_id;
-    if (userId && (session.payment_status === 'paid' || session.payment_status === 'no_payment_required')) {
-      const { error } = await admin.from('profiles').update({ is_plus: true }).eq('id', userId);
-      if (error) console.error('[webhook] is_plus=true update failed:', userId, error.message);
+  try {
+    if (event.type === 'checkout.session.completed') {
+      const session = event.data.object as Stripe.Checkout.Session;
+      const userId = session.metadata?.userId || session.client_reference_id;
+      const paid = session.payment_status === 'paid' || session.payment_status === 'no_payment_required';
+      if (userId && paid) {
+        const metaPlan = session.metadata?.planId;
+        const tier = isTier(metaPlan) ? metaPlan : null;
+        const err = await applyMembership(admin, userId, true, tier);
+        if (err) {
+          console.error('[webhook] membership update failed:', userId, err);
+          return NextResponse.json({ error: 'Database update failed.' }, { status: 500 }); // Stripe will retry
+        }
+      }
     }
-  }
 
-  if (event.type === 'customer.subscription.deleted' || event.type === 'customer.subscription.updated') {
-    const sub = event.data.object as Stripe.Subscription;
-    const userId = (sub.metadata as Record<string, string> | undefined)?.userId;
-    if (userId) {
-      const active = sub.status === 'active' || sub.status === 'trialing';
-      const { error } = await admin.from('profiles').update({ is_plus: active }).eq('id', userId);
-      if (error) console.error('[webhook] is_plus=' + active + ' update failed:', userId, error.message);
+    if (event.type === 'customer.subscription.updated' || event.type === 'customer.subscription.deleted') {
+      const sub = event.data.object as Stripe.Subscription;
+      const userId = (sub.metadata as Record<string, string> | undefined)?.userId;
+      if (userId) {
+        const active =
+          event.type !== 'customer.subscription.deleted' &&
+          (sub.status === 'active' || sub.status === 'trialing');
+
+        let stillActiveElsewhere = false;
+        if (!active) {
+          // An old subscription ending must not switch off a newer one.
+          try {
+            const others = await stripe.subscriptions.list({
+              customer: sub.customer as string,
+              status: 'active',
+              limit: 5,
+            });
+            stillActiveElsewhere = others.data.some((s) => s.id !== sub.id);
+          } catch (e) {
+            console.warn('[webhook] could not check other subscriptions:', e);
+          }
+        }
+
+        if (!stillActiveElsewhere) {
+          const err = await applyMembership(admin, userId, active, active ? tierFromSubscription(sub) : null);
+          if (err) {
+            console.error('[webhook] membership update failed:', userId, err);
+            return NextResponse.json({ error: 'Database update failed.' }, { status: 500 });
+          }
+        }
+      }
     }
+  } catch (err) {
+    console.error('[webhook] handler error:', err);
+    return NextResponse.json({ error: 'Webhook handler failed.' }, { status: 500 });
   }
 
   return NextResponse.json({ received: true });

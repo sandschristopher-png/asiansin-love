@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createServerClient } from '@supabase/ssr';
+import { createClient } from '@supabase/supabase-js';
 import { cookies } from 'next/headers';
 
 export const runtime = 'nodejs';
@@ -42,7 +43,17 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'AIL+ required.' }, { status: 402 });
   }
 
-  const { error } = await supabase
+  // travel_city / travel_country are protected columns: members cannot write them
+  // from the browser, so the (already membership-checked) update uses the service role.
+  const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!serviceKey) {
+    return NextResponse.json({ error: 'Travel mode is unavailable right now.' }, { status: 503 });
+  }
+  const admin = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, serviceKey, {
+    auth: { persistSession: false },
+  });
+
+  const { error } = await admin
     .from('profiles')
     .update({ travel_city: match[0], travel_country: match[1] })
     .eq('id', user.id);

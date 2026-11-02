@@ -2,7 +2,10 @@ import { createServerClient } from '@supabase/ssr';
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse, type NextRequest } from 'next/server';
 
-const PROTECTED_PREFIXES = ['/discover', '/sparks', '/messages', '/profile', '/chat', '/settings'];
+const PROTECTED_PREFIXES = [
+  '/discover', '/sparks', '/messages', '/profile', '/chat', '/settings',
+  '/favorites', '/notifications', '/verify',
+];
 
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({
@@ -140,6 +143,9 @@ export const config = {
     '/profile/:path*',
     '/chat/:path*',
     '/settings/:path*',
+    '/favorites/:path*',
+    '/notifications/:path*',
+    '/verify/:path*',
     '/admin/:path*',
   ],
 };

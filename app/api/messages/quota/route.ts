@@ -1,18 +1,24 @@
 import { NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase/client';
+import { createClient as createSessionClient } from '@/lib/supabase/server';
 
 const isUUID = (str: string) =>
   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(str);
 
 export async function GET(req: Request) {
   try {
-    const { searchParams } = new URL(req.url);
-    const senderId = searchParams.get('senderId');
-    const targetId = searchParams.get('targetId');
+    // The sender is whoever is signed in. A senderId in the query string is ignored.
+    const supabase = await createSessionClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
 
-    if (!senderId || !isUUID(senderId)) {
+    if (!user) {
       return NextResponse.json({ status: 'unauthenticated' });
     }
+    const senderId = user.id;
+
+    const { searchParams } = new URL(req.url);
+    const targetId = searchParams.get('targetId');
 
     const { data: profile } = await supabase
       .from('profiles')

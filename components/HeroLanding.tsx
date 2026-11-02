@@ -105,7 +105,7 @@ export function HeroLanding() {
               <div className="relative w-[210px] h-[190px] translate-y-[2px] translate-x-[10px]">
                 <Image
                   src="/hero-couple.png"
-                  alt="A couple who met on asiansin.love"
+                  alt="A happy couple"
                   fill
                   sizes="210px"
                   className="object-contain object-bottom"
@@ -180,7 +180,7 @@ export function HeroLanding() {
             Know who you&apos;re talking to
           </h2>
           <p className="mt-1.5 text-[13px] text-[#6C637B] leading-relaxed max-w-[310px]">
-            GPS and photo verification keep fakes out. Every profile you see is a real person, where they say they are.
+            Photo verification and manual profile review help keep fakes out. Report anyone who seems off and our team will act.
           </p>
         </div>
       </section>
@@ -265,7 +265,7 @@ export function HeroLanding() {
             className="mt-3 text-2xl font-bold text-white tracking-tight"
             style={{ fontFamily: 'var(--font-brand, "Comfortaa", sans-serif)' }}
           >
-            Someone real is waiting.
+            Be one of our first members.
           </h2>
           <p className="mt-2 text-[13.5px] text-white/85 max-w-[260px] mx-auto leading-relaxed">
             Join free and start meeting genuine singles across Southeast Asia today.

@@ -7,6 +7,15 @@ import crypto from 'crypto';
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
+/** The browser-supplied MIME type is not trusted: check the file's actual leading bytes. */
+function matchesImageSignature(buf: Buffer, mime: string): boolean {
+  if (buf.length < 12) return false;
+  if (mime === 'image/jpeg') return buf[0] === 0xff && buf[1] === 0xd8 && buf[2] === 0xff;
+  if (mime === 'image/png') return buf.subarray(0, 8).equals(Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]));
+  if (mime === 'image/webp') return buf.toString('ascii', 0, 4) === 'RIFF' && buf.toString('ascii', 8, 12) === 'WEBP';
+  return false;
+}
+
 export async function POST(req: Request) {
   try {
     // 1. Authenticate via Bearer Token header or SSR Session Cookies
@@ -95,6 +104,12 @@ export async function POST(req: Request) {
     const arrayBuffer = await file.arrayBuffer();
 
     const buffer = Buffer.from(arrayBuffer);
+    if (!matchesImageSignature(buffer, file.type)) {
+      return NextResponse.json(
+        { error: 'File contents do not match an allowed image format' },
+        { status: 400 }
+      );
+    }
     const filePath = `${userId}/${isPrimaryAvatar ? 'primary' : 'photo'}-${crypto.createHash('sha256').update(buffer).digest('hex').slice(0, 16)}.${safeExt}`;
 
     // 5. Upload under authenticated caller context (satisfies RLS)
@@ -159,7 +174,7 @@ export async function POST(req: Request) {
       updatePayload.avatar_status = 'pending_review';
     }
 
-    const { error: profileUpdateError } = await authenticatedClient
+    const { error: profileUpdateError } = await serviceClient
       .from('profiles')
       .update(updatePayload)
       .eq('id', userId);

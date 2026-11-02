@@ -227,7 +227,11 @@ export function ChatInterface({ currentUserId, targetUser, initialMessages = [] 
             is_quarantined: data.message.is_quarantined ?? false,
             pending: false,
           };
-          setMessages((prev) => prev.map((m) => (m.id === tempId ? confirmed : m)));
+          setMessages((prev) =>
+            prev
+              .map((m) => (m.id === tempId ? confirmed : m))
+              .filter((m, i, all) => all.findIndex((x) => x.id === m.id) === i)
+          );
         }
       }
     } catch {

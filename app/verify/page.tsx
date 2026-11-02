@@ -47,6 +47,7 @@ export default function VerifyPage() {
   const [showFullRef, setShowFullRef] = useState(false);
   const [denyPulse, setDenyPulse] = useState(false);
   const [result, setResult] = useState<'approved' | 'denied' | null>(null);
+  const [pendingReview, setPendingReview] = useState(false);
 
   const [starting, setStarting] = useState(true);
   const [startError, setStartError] = useState<string | null>(null);
@@ -280,10 +281,12 @@ export default function VerifyPage() {
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || 'Failed to submit verification');
       const verified = Boolean(data.verified);
-      setResult(verified ? 'approved' : 'denied');
+      const pending = Boolean(data.pending);
+      setPendingReview(pending);
+      setResult(verified || pending ? 'approved' : 'denied');
       setSuccess(true);
-      if (verified) {
-        setTimeout(() => router.push('/discover'), 2400);
+      if (verified || pending) {
+        setTimeout(() => router.push('/discover'), pending ? 3500 : 2400);
       }
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : 'Failed to submit verification.';
@@ -330,10 +333,13 @@ export default function VerifyPage() {
                   className="w-full h-full object-contain"
                 />
               </div>
-              <h2 className="text-xl font-medium text-[#1C1924]">You are verified!</h2>
+              <h2 className="text-xl font-medium text-[#1C1924]">
+                {pendingReview ? 'Submitted for review' : 'You are verified!'}
+              </h2>
               <p className="text-sm text-[#6C637B] leading-relaxed">
-                Your liveness scan passed and your verified badge is now live on your profile.
-                Taking you back to Discover...
+                {pendingReview
+                  ? 'Thanks! Our team will review your photos and your verified badge will appear on your profile once approved. Taking you back to Discover...'
+                  : 'Your liveness scan passed and your verified badge is now live on your profile. Taking you back to Discover...'}
               </p>
             </>
           ) : (

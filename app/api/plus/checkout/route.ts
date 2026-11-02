@@ -11,6 +11,15 @@ const PLAN_PRICES: Record<'12m' | '3m' | '1m', string | undefined> = {
   '1m': process.env.STRIPE_PLUS_PRICE_1M ?? process.env.STRIPE_PRICE_MONTHLY,
 };
 
+const SITE_ORIGIN = (process.env.NEXT_PUBLIC_SITE_URL || 'https://asiansin.love').replace(/\/$/, '');
+// Only these origins may be used for Stripe's success/cancel redirects.
+const ALLOWED_ORIGINS = new Set([
+  SITE_ORIGIN,
+  'https://asiansin.love',
+  'https://www.asiansin.love',
+  ...(process.env.NODE_ENV === 'production' ? [] : ['http://localhost:3000']),
+]);
+
 export async function POST(req: NextRequest) {
   const cookieStore = await cookies();
   const supabase = createServerClient(
@@ -58,7 +67,8 @@ export async function POST(req: NextRequest) {
   }
 
   const stripe = new Stripe(secret);
-  const origin = req.headers.get('origin') || 'https://asiansin.love';
+  const requestOrigin = req.headers.get('origin');
+  const origin = requestOrigin && ALLOWED_ORIGINS.has(requestOrigin) ? requestOrigin : SITE_ORIGIN;
   const delimiter = returnPath.includes('?') ? '&' : '?';
 
   const session = await stripe.checkout.sessions.create({
@@ -67,7 +77,8 @@ export async function POST(req: NextRequest) {
     success_url: `${origin}${returnPath}${delimiter}success=1`,
     cancel_url: `${origin}${returnPath}`,
     client_reference_id: user.id,
-    subscription_data: { metadata: { userId: user.id } },
+    // planId is stored on the subscription so every renewal / change event still knows the tier.
+    subscription_data: { metadata: { userId: user.id, planId } },
     metadata: { userId: user.id, planId },
   });
 

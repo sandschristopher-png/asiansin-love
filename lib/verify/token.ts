@@ -14,11 +14,14 @@ export type VerifyTokenPayload = {
 };
 
 export function getSigningSecret(): string {
-  const secret = process.env.KYC_SIGNING_SECRET || process.env.SUPABASE_SERVICE_ROLE_KEY;
-  if (!secret) {
+  if (process.env.KYC_SIGNING_SECRET) return process.env.KYC_SIGNING_SECRET;
+  const base = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!base) {
     throw new Error('KYC_SIGNING_SECRET or SUPABASE_SERVICE_ROLE_KEY not configured');
   }
-  return secret;
+  // Purpose-bound key derived from the service key, so the raw key is never used as an HMAC secret.
+  // (Set KYC_SIGNING_SECRET to a random string to replace this fallback.)
+  return createHmac('sha256', base).update('asiansin-love:kyc-signing:v1').digest('hex');
 }
 
 function b64url(input: string): string {

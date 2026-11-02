@@ -166,8 +166,9 @@ export async function GET() {
           repScore: row.reputation_score ?? 100,
           verified: Boolean(row.is_verified || row.verification_status === 'verified'),
           is_plus: Boolean(row.is_plus),
-          latitude: row.latitude ?? null,
-          longitude: row.longitude ?? null,
+          // Other members' exact coordinates never leave the server: rounded to ~1 km.
+          latitude: row.latitude == null || !Number.isFinite(Number(row.latitude)) ? null : Math.round(Number(row.latitude) * 100) / 100,
+          longitude: row.longitude == null || !Number.isFinite(Number(row.longitude)) ? null : Math.round(Number(row.longitude) * 100) / 100,
           location_source: row.location_source || 'self_reported',
           online: Boolean(
             row.last_active

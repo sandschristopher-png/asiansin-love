@@ -410,8 +410,8 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
                 setIsLocating(false);
                 if (res.success && res.data) {
                   setLocation(res.data.city + ', ' + res.data.country);
-                  setLocationSource('gps_verified');
-                  setLocationVerifiedAt(new Date().toISOString());
+                  setLocationSource('self_reported');
+                  setLocationVerifiedAt(null);
                   setLatitude(res.data.latitude);
                   setLongitude(res.data.longitude);
                 } else if (res.error) {
@@ -449,10 +449,10 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
                 </p>
                 {locationSource === 'gps_verified' && (
                   <span
-                    title={locationVerifiedAt ? 'GPS Verified ' + formatVerifiedDate(locationVerifiedAt) : 'GPS Verified'}
+                    title={locationVerifiedAt ? 'Location confirmed ' + formatVerifiedDate(locationVerifiedAt) : 'Location confirmed'}
                     className="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-[10px] font-semibold text-emerald-700"
                   >
-                    GPS
+                    Location
                   </span>
                 )}
               </div>

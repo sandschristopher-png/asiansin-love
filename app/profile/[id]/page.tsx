@@ -74,6 +74,7 @@ export default function PublicProfilePage() {
   const [highlights, setHighlights] = useState<HighlightRow[]>([]);
   const [currentPhotoIdx, setCurrentPhotoIdx] = useState(0);
   const touchStartX = useRef<number | null>(null);
+            const touchStartY = useRef<number | null>(null);
 
   const [isSparked, setIsSparked] = useState(false);
   const [sparkLoading, setSparkLoading] = useState(false);
@@ -357,13 +358,17 @@ export default function PublicProfilePage() {
               );
             }}
             onTouchStart={(e) => {
-              touchStartX.current = e.touches[0].clientX;
+              const t = e.touches[0];
+              touchStartX.current = t.clientX;
+              touchStartY.current = t.clientY;
             }}
             onTouchEnd={(e) => {
               const startX = touchStartX.current;
-              if (startX == null || !hasMultiplePhotos) return;
+              const startY = touchStartY.current;
+              if (startX == null || startY == null || !hasMultiplePhotos) return;
               const dx = e.changedTouches[0].clientX - startX;
-              if (Math.abs(dx) > 40) {
+              const dy = e.changedTouches[0].clientY - startY;
+              if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
                 setCurrentPhotoIdx((prev) =>
                   dx > 0
                     ? (prev - 1 + photoList.length) % photoList.length
@@ -371,6 +376,7 @@ export default function PublicProfilePage() {
                 );
               }
               touchStartX.current = null;
+              touchStartY.current = null;
             }}
           >
             <img
@@ -490,7 +496,7 @@ export default function PublicProfilePage() {
               <span>{displayLocation}</span>
               {profile.location_source === 'gps_verified' && (
                 <span className="ml-1 rounded-full bg-white/20 px-2 py-0.2 text-[10px] font-semibold text-white backdrop-blur-xs">
-                  GPS
+                  Location
                 </span>
               )}
             </div>

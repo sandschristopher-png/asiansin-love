@@ -166,9 +166,13 @@ export default function GestureVerifyModal({
       });
 
       const data = await res.json();
-      if (res.ok && data.verified) {
+      if (res.ok && (data.verified || data.pending)) {
         setAppPhase('approved');
-        setStatusMessage('Pose verification confirmed! Your profile is verified.');
+        setStatusMessage(
+          data.pending
+            ? 'Submitted! Our team will review your photos and your verified badge will appear once approved.'
+            : 'Pose verification confirmed! Your profile is verified.'
+        );
         cleanup();
         if (onSuccessRef.current) setTimeout(() => onSuccessRef.current?.(), 1800);
       } else {
@@ -429,7 +433,7 @@ export default function GestureVerifyModal({
             </div>
             <div className="space-y-1">
               <div className="inline-flex items-center gap-1.5 text-emerald-600 font-bold text-sm">
-                <CheckCircle2 className="w-4 h-4" /> Identity Verified
+                <CheckCircle2 className="w-4 h-4" /> {statusMessage.startsWith('Submitted') ? 'Submitted for review' : 'Identity Verified'}
               </div>
               <p className="text-xs text-[#524B5E] max-w-xs mx-auto">{statusMessage}</p>
             </div>

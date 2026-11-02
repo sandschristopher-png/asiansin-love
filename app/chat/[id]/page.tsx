@@ -463,7 +463,7 @@ export default function ChatConversationPage() {
                   pending: false,
                 }
               : m
-          )
+          ).filter((m, i, all) => all.findIndex((x) => x.id === m.id) === i)
         );
       } else {
         setMessages((prev) => prev.map((m) => (m.id === tempId ? { ...m, pending: false } : m)));

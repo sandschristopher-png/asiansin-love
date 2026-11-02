@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@supabase/supabase-js';
+import { createClient as createSessionClient } from '@/lib/supabase/server';
+
+export const runtime = 'nodejs';
 
 const COUNTRY_MAP: Record<string, string> = {
   PH: 'Philippines',
@@ -30,32 +33,45 @@ const COUNTRY_MAP: Record<string, string> = {
   NZ: 'New Zealand',
 };
 
+const REPUTATION_BOOST = 3;
+const RECHECK_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
+
+/** The caller is whoever the Supabase session (cookie) or Bearer token proves - never the request body. */
+async function getAuthedUserId(req: NextRequest): Promise<string | null> {
+  const token = req.headers.get('authorization')?.replace(/^Bearer\s+/i, '');
+  if (token) {
+    const anon = createClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+      { auth: { persistSession: false } }
+    );
+    const { data, error } = await anon.auth.getUser(token);
+    return !error && data?.user ? data.user.id : null;
+  }
+  const session = await createSessionClient();
+  const { data, error } = await session.auth.getUser();
+  return !error && data?.user ? data.user.id : null;
+}
+
 export async function POST(req: NextRequest) {
   try {
-    const authHeader = req.headers.get('authorization');
-    const token = authHeader?.replace(/^Bearer\s+/i, '');
-
-    let userId: string | null = null;
-
-    if (token) {
-      const { data: { user }, error: authErr } = await supabase.auth.getUser(token);
-      if (!authErr && user) {
-        userId = user.id;
-      }
-    }
-
-    if (!userId) {
-      const body = await req.json().catch(() => ({}));
-      userId = body.userId || null;
-    }
-
+    const userId = await getAuthedUserId(req);
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized. Sign in to verify location.' }, { status: 401 });
     }
 
-    const { data: profile, error: fetchErr } = await supabase
+    const serviceKey = process.env.SUPABASE_SERVICE_ROLE_KEY;
+    if (!serviceKey) {
+      console.error('verify/location: SUPABASE_SERVICE_ROLE_KEY missing');
+      return NextResponse.json({ error: 'Location check is unavailable right now.' }, { status: 503 });
+    }
+    const admin = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, serviceKey, {
+      auth: { persistSession: false },
+    });
+
+    const { data: profile, error: fetchErr } = await admin
       .from('profiles')
-      .select('id, country, city, reputation_score')
+      .select('id, country, city, reputation_score, location_verified_at')
       .eq('id', userId)
       .single();
 
@@ -63,64 +79,84 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Profile not found.' }, { status: 404 });
     }
 
+    // Country comes from the hosting platform's IP geolocation headers.
+    // Test overrides exist ONLY in local development.
+    const isDev = process.env.NODE_ENV === 'development';
     let detectedCountryCode = req.headers.get('x-vercel-ip-country')?.toUpperCase() || null;
-    let detectedCity = req.headers.get('x-vercel-ip-city') 
-      ? decodeURIComponent(req.headers.get('x-vercel-ip-city')!) 
+    let detectedCity = req.headers.get('x-vercel-ip-city')
+      ? decodeURIComponent(req.headers.get('x-vercel-ip-city')!)
       : null;
 
-    const isDev = process.env.NODE_ENV === 'development' || !detectedCountryCode;
     if (isDev && !detectedCountryCode) {
       const testCountry = req.headers.get('x-test-country');
-      detectedCountryCode = testCountry ? testCountry.toUpperCase() : (profile.country === 'United States' ? 'US' : 'PH');
+      detectedCountryCode = testCountry
+        ? testCountry.toUpperCase()
+        : profile.country === 'United States'
+          ? 'US'
+          : 'PH';
       detectedCity = detectedCity || (detectedCountryCode === 'US' ? 'Los Angeles' : 'Manila');
     }
 
-    const detectedCountryName = detectedCountryCode ? (COUNTRY_MAP[detectedCountryCode] || detectedCountryCode) : 'Unknown';
-    const declaredCountry = (profile.country || '').trim().toLowerCase();
+    if (!detectedCountryCode) {
+      return NextResponse.json(
+        { error: 'We could not determine your location from this connection. Please try again.' },
+        { status: 503 }
+      );
+    }
 
-    const isCountryMatch =
-      declaredCountry === detectedCountryName.toLowerCase() ||
-      declaredCountry === (COUNTRY_MAP[detectedCountryCode || ''] || '').toLowerCase();
+    const detectedCountryName = COUNTRY_MAP[detectedCountryCode] || detectedCountryCode;
+    const declaredCountry = (profile.country || '').trim();
+    const isCountryMatch = declaredCountry.toLowerCase() === detectedCountryName.toLowerCase();
 
-    // Award Verified Status & Rep Score boost (do not block travelers on country mismatch)
-    const newScore = Math.min(100, (profile.reputation_score || 95) + 3);
-    const updates: Record<string, any> = {
-      location_source: 'gps_verified',
+    if (!isCountryMatch) {
+      return NextResponse.json(
+        {
+          error: 'Location does not match your profile.',
+          message: `Your connection appears to be in ${detectedCountryName}, but your profile lists ${declaredCountry || 'no country'}. Update your profile country, or try again from your usual connection (turn off any VPN).`,
+          locationMismatch: true,
+          detectedCountry: detectedCountryName,
+          declaredCountry: profile.country,
+        },
+        { status: 422 }
+      );
+    }
+
+    // Reputation boost only once per recheck window so repeated calls cannot farm score.
+    const lastCheck = profile.location_verified_at ? new Date(profile.location_verified_at).getTime() : 0;
+    const eligibleForBoost = !lastCheck || Date.now() - lastCheck > RECHECK_WINDOW_MS;
+    const baseScore = typeof profile.reputation_score === 'number' ? profile.reputation_score : 95;
+    const newScore = eligibleForBoost ? Math.min(100, baseScore + REPUTATION_BOOST) : baseScore;
+
+    // NOTE: this does NOT set is_verified. The verified badge is only granted by an admin
+    // after reviewing the photo verification.
+    const updates: Record<string, unknown> = {
+      location_source: 'gps_verified', // kept for existing UI; means "country confirmed from network location"
       location_verified_at: new Date().toISOString(),
-      is_verified: true,
       reputation_score: newScore,
       updated_at: new Date().toISOString(),
     };
-
     if (detectedCity && !profile.city) {
       updates.city = detectedCity;
     }
 
-    const { error: updateErr } = await supabase
-      .from('profiles')
-      .update(updates)
-      .eq('id', userId);
-
+    const { error: updateErr } = await admin.from('profiles').update(updates).eq('id', userId);
     if (updateErr) {
-      return NextResponse.json({ error: 'Failed to update verification status.' }, { status: 500 });
+      console.error('verify/location update failed:', updateErr.message);
+      return NextResponse.json({ error: 'Failed to update location status.' }, { status: 500 });
     }
 
     return NextResponse.json({
       success: true,
-      verified: true,
-      locationMismatch: !isCountryMatch,
+      locationVerified: true,
       locationSource: 'gps_verified',
       detectedCountry: detectedCountryName,
       detectedCity,
       declaredCountry: profile.country,
       reputationScore: newScore,
-      message: isCountryMatch
-        ? 'Physical location confirmed! 🛡️ Verified badge awarded.'
-        : `Location verified (network detected ${detectedCountryName} while profile lists ${profile.country || 'another country'}). If you are traveling, no action is needed; otherwise update your profile country or retry on your local connection.`,
+      message: 'Location confirmed from your connection. A location badge was added to your profile.',
     });
-
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Location verification error:', err);
-    return NextResponse.json({ error: err.message || 'Internal server error.' }, { status: 500 });
+    return NextResponse.json({ error: 'Internal server error.' }, { status: 500 });
   }
 }

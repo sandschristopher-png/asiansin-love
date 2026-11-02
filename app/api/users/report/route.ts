@@ -5,18 +5,18 @@ const VALID_REASONS = ['fake_profile', 'harassment', 'spam', 'inappropriate_phot
 
 export async function POST(req: Request) {
   const supabase = await createClient();
-  const { data: { session } } = await supabase.auth.getSession();
-  if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const { data: { user } } = await supabase.auth.getUser();
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
   const { reportedId, reason, details } = await req.json();
   if (!reportedId || !reason) return NextResponse.json({ error: 'reportedId and reason are required' }, { status: 400 });
   if (!VALID_REASONS.includes(reason)) return NextResponse.json({ error: 'Invalid reason' }, { status: 400 });
-  if (reportedId === session.user.id) return NextResponse.json({ error: 'Cannot report yourself' }, { status: 400 });
+  if (reportedId === user.id) return NextResponse.json({ error: 'Cannot report yourself' }, { status: 400 });
 
   const { data, error } = await supabase
     .from('user_reports')
     .insert({
-      reporter_id: session.user.id,
+      reporter_id: user.id,
       reported_id: reportedId,
       reason,
       details: details?.slice(0, 1000) || null,
@@ -35,7 +35,7 @@ export async function POST(req: Request) {
   if (token && chatId) {
     const message =
 `Member Safety Report
-Reporter: ${session.user.id}
+Reporter: ${user.id}
 Reported: ${reportedId}
 Reason: ${reason}
 Details: ${details?.slice(0, 1000) || 'None provided'}
