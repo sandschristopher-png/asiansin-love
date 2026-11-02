@@ -854,6 +854,9 @@ export default function ChatConversationPage() {
                 value={inputText}
                 onChange={handleTextareaChange}
                 onKeyDown={handleKeyDown}
+                onFocus={() => {
+                  setTimeout(() => scrollToBottom('smooth'), 180);
+                }}
                 className="w-full bg-transparent text-[#1C1924] placeholder-[#8C849B] text-[13.5px] leading-snug outline-none resize-none max-h-28 overflow-y-auto"
               />
             </div>
