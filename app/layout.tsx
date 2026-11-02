@@ -27,6 +27,12 @@ const SITE_TITLE = 'Asians in Love - Real Connections';
 const SITE_DESCRIPTION =
   'Meet genuine singles across Southeast Asia. Safe, real connections with sparks, chats, and meaningful relationships.';
 
+// Social share cards (Open Graph / Twitter). public/og-image.png is built by scripts/generate-og-image.mjs.
+const SHARE_TITLE = 'Asians in Love — Intentional Dating for Singles in Asia & Beyond';
+const SHARE_DESCRIPTION =
+  'High-trust Asian dating featuring 1-shot gesture verification, voice intros, and community reputation.';
+const SHARE_IMAGE = { url: '/og-image.png', width: 1200, height: 630, alt: 'Asians in Love' };
+
 export const metadata: Metadata = {
   metadataBase: new URL('https://asiansin.love'),
   title: SITE_TITLE,
@@ -37,18 +43,19 @@ export const metadata: Metadata = {
   manifest: '/manifest.webmanifest',
   appleWebApp: { capable: true, title: 'asiansin.love', statusBarStyle: 'default' },
   openGraph: {
-    title: SITE_TITLE,
-    description: SITE_DESCRIPTION,
+    title: SHARE_TITLE,
+    description: SHARE_DESCRIPTION,
     url: 'https://asiansin.love',
     siteName: 'Asians in Love',
     type: 'website',
     locale: 'en_US',
-    // TODO: add images: [{ url: '/og.jpg', width: 1200, height: 630 }] once you have a 1200x630 share image.
+    images: [SHARE_IMAGE],
   },
   twitter: {
-    card: 'summary',
-    title: SITE_TITLE,
-    description: SITE_DESCRIPTION,
+    card: 'summary_large_image',
+    title: SHARE_TITLE,
+    description: SHARE_DESCRIPTION,
+    images: [SHARE_IMAGE.url],
   },
 };
 

@@ -2,7 +2,8 @@
 
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { Zap, Heart, Check, Loader2 } from 'lucide-react'
+import { SparkingHeart } from '@/components/icons/SparkingHeart'
+import { Heart, Check, Loader2 } from 'lucide-react'
 
 interface ProfileActionsProps {
   targetUserId: string
@@ -112,7 +113,7 @@ export function ProfileActions({
           </>
         ) : (
           <>
-            <Zap className="h-4 w-4 fill-current" />
+            <SparkingHeart className="h-4 w-4" />
             <span>Send Spark</span>
           </>
         )}

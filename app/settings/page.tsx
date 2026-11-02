@@ -14,7 +14,7 @@ import {
   Smartphone,
   EyeOff,
   Loader2,
-  MessageCircle, Trash2, AlertTriangle } from 'lucide-react';
+  MessageCircle, Trash2, AlertTriangle, CreditCard, FileText } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { hardSignOut } from '@/lib/hardSignOut';
 import { PushDeviceRow } from '@/components/PushDeviceRow';
@@ -40,6 +40,8 @@ export default function SettingsHubPage() {
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
   const [savingKey, setSavingKey] = useState<SettingsKey | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
+  const [isPlus, setIsPlus] = useState(false);
+  const [openingPortal, setOpeningPortal] = useState(false);
   const [settings, setSettings] = useState(() => cachedSettingsData || {
     hide_profile: false,
     show_active_status: true,
@@ -60,6 +62,14 @@ export default function SettingsHubPage() {
         .select('hide_profile, show_active_status, notify_sparks, notify_messages')
         .eq('id', user.id)
         .maybeSingle();
+
+      // AIL+ members get a "Manage Subscription" row (Stripe billing portal).
+      supabase
+        .from('profiles')
+        .select('is_plus')
+        .eq('id', user.id)
+        .maybeSingle()
+        .then(({ data: plus }) => setIsPlus(Boolean(plus?.is_plus)));
 
       if (error) {
         // Column(s) missing — remind to run the migration
@@ -103,6 +113,24 @@ export default function SettingsHubPage() {
       setErrorMsg('Could not save setting. Check your connection and try again.');
     }
     setSavingKey(null);
+  };
+
+  const openBillingPortal = async () => {
+    setOpeningPortal(true);
+    setErrorMsg(null);
+    try {
+      const res = await fetch('/api/stripe/portal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ return_path: '/settings' }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.url) throw new Error(data.error || 'Could not open the billing portal.');
+      window.location.href = data.url;
+    } catch (err) {
+      setErrorMsg(err instanceof Error ? err.message : 'Could not open the billing portal.');
+      setOpeningPortal(false);
+    }
   };
 
   const handleLogout = async () => {
@@ -335,7 +363,57 @@ export default function SettingsHubPage() {
             </div>
             <ChevronRight className="w-4 h-4 text-[#8C849B]" />
           </Link>
+
+          {[
+            { href: '/safety', title: 'Safety & Anti-Scam Guide', subtitle: 'Spotting scams, contact gate, reporting' },
+            { href: '/terms', title: 'Terms of Service', subtitle: 'Rules, AIL+ billing and cancellation' },
+            { href: '/privacy', title: 'Privacy Policy', subtitle: 'Your data, selfies and account deletion' },
+          ].map((row) => (
+            <Link
+              key={row.href}
+              href={row.href}
+              className="flex items-center justify-between p-3 rounded-2xl hover:bg-[#F8F7FA] transition cursor-pointer"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-xl bg-[#F8F7FA] text-[#524B5E] flex items-center justify-center">
+                  <FileText className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-[#1C1924]">{row.title}</p>
+                  <p className="text-[11px] text-[#6C637B]">{row.subtitle}</p>
+                </div>
+              </div>
+              <ChevronRight className="w-4 h-4 text-[#8C849B]" />
+            </Link>
+          ))}
         </div>
+
+        {/* AIL+ BILLING (subscribers only) */}
+        {isPlus && (
+          <div className="rounded-3xl bg-white border border-[#DDD7E5] p-2 shadow-2xs">
+            <button
+              type="button"
+              onClick={openBillingPortal}
+              disabled={openingPortal}
+              className="w-full flex items-center justify-between p-3 rounded-2xl hover:bg-[#F8F7FA] transition cursor-pointer text-left disabled:opacity-60"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-xl bg-[#F3EFFC] text-[#6555B8] flex items-center justify-center">
+                  <CreditCard className="w-4 h-4" />
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-[#1C1924]">Manage Subscription</p>
+                  <p className="text-[11px] text-[#6C637B]">Cancel AIL+ or update your payment method</p>
+                </div>
+              </div>
+              {openingPortal ? (
+                <Loader2 className="w-4 h-4 animate-spin text-[#6555B8]" />
+              ) : (
+                <ChevronRight className="w-4 h-4 text-[#8C849B]" />
+              )}
+            </button>
+          </div>
+        )}
 
         {/* CARD 5: ACCOUNT LIFECYCLE */}
         <div className="rounded-3xl bg-white border border-[#DDD7E5] p-2 shadow-2xs space-y-1">

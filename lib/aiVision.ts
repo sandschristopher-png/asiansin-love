@@ -159,3 +159,33 @@ Answer strictly:
     return null;
   }
 }
+
+/**
+ * Natural, tone-preserving translation of one chat message (Taglish, Bisaya, Thai slang...).
+ * Returns null on any error so the caller can show "unavailable".
+ */
+export async function translateChatMessage(text: string, targetLanguage = 'English'): Promise<string | null> {
+  try {
+    const response = await ai.models.generateContent({
+      model: 'gemini-3.8-flash',
+      contents: [
+        {
+          role: 'user',
+          parts: [
+            {
+              text: `Translate this dating app message naturally into ${targetLanguage}. Preserve casual emotional tone, Taglish/Bisaya nuances, or Thai slang. If it is already in ${targetLanguage}, return it unchanged. Return only the raw translated text string.
+
+Message:
+"""${text}"""`,
+            },
+          ],
+        },
+      ],
+    });
+    const out = (response.text || '').trim().replace(/^"""|"""$/g, '').trim();
+    return out ? out.slice(0, 4000) : null;
+  } catch (error) {
+    console.error('AI translation error:', error);
+    return null;
+  }
+}

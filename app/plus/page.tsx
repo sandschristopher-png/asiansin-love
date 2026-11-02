@@ -130,7 +130,11 @@ function PlusHubContent() {
     setOpeningPortal(true);
     setStatusMsg(null);
     try {
-      const res = await fetch('/api/plus/portal', { method: 'POST' });
+      const res = await fetch('/api/stripe/portal', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ return_path: '/plus' }),
+      });
       const json = await res.json();
       if (!res.ok || !json.url) {
         setStatusMsg(json.error || 'Could not open billing portal.');

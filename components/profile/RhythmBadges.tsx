@@ -102,9 +102,9 @@ export function RhythmSelector({
 }) {
   const options = RHYTHM_FIELDS[field] as readonly RhythmOption[];
   return (
-    <div className="space-y-1.5">
-      <p className="text-xs font-semibold text-[#1C1924]">{label}</p>
-      <div className="flex flex-wrap gap-1.5">
+    <div className="w-full min-w-0 space-y-1.5">
+      <p className="block w-full text-xs font-semibold leading-snug text-[#1C1924]">{label}</p>
+      <div className="flex w-full flex-wrap gap-1.5">
         {options.map((o) => {
           const active = value === o.value;
           return (

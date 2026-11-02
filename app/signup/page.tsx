@@ -120,6 +120,13 @@ export default function SignUpPage() {
           </button>
         </form>
 
+        <p className="text-[11px] leading-relaxed text-[#8C849B] text-center">
+          By creating an account you confirm you are 18+ and agree to our{' '}
+          <Link href="/terms" className="font-semibold text-[#6555B8] hover:underline">Terms of Service</Link> and{' '}
+          <Link href="/privacy" className="font-semibold text-[#6555B8] hover:underline">Privacy Policy</Link>. Read our{' '}
+          <Link href="/safety" className="font-semibold text-[#6555B8] hover:underline">Safety Guide</Link>.
+        </p>
+
         <div className="pt-2 border-t border-[#9A8CC3]/20 text-center text-xs text-[#1C1924]">
           Already have an account?{' '}
           <Link href="/login" className="text-[#B2A4D7] font-medium hover:underline">

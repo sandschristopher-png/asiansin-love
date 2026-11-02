@@ -5,12 +5,19 @@ export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
   const code = requestUrl.searchParams.get('code');
   const origin = requestUrl.origin;
-  const next = requestUrl.searchParams.get('next') || '/discover';
+  // Same-site paths only (blocks open redirects such as ?next=//evil.example).
+  const rawNext = requestUrl.searchParams.get('next') || '';
+  const next = /^\/(?![/\\])/.test(rawNext) ? rawNext : '/discover';
+  const isRecovery = next === '/reset-password';
   const oauthError = requestUrl.searchParams.get('error');
   const oauthErrorDesc = requestUrl.searchParams.get('error_description');
 
   if (oauthError || oauthErrorDesc) {
     console.error('OAuth provider error:', oauthError, oauthErrorDesc);
+    // Expired / already-used recovery links come back as ?error=access_denied&error_code=otp_expired.
+    if (isRecovery) {
+      return NextResponse.redirect(`${origin}/login?notice=reset_expired`);
+    }
     const reason = encodeURIComponent(oauthErrorDesc || oauthError || 'oauth_error');
     return NextResponse.redirect(`${origin}/login?error=${reason}`);
   }
@@ -22,7 +29,8 @@ export async function GET(request: Request) {
     if (!error) {
       let destination = next;
       const { data: { user } } = await supabase.auth.getUser();
-      if (user) {
+      // Password recovery always lands on /reset-password, even mid-onboarding.
+      if (user && !isRecovery) {
         const { data: profile } = await supabase
           .from('profiles')
           .select('onboarding_completed')
@@ -45,9 +53,15 @@ export async function GET(request: Request) {
       }
     } else {
       console.error('exchangeCodeForSession error:', error.message);
+      if (isRecovery) {
+        return NextResponse.redirect(`${origin}/login?notice=reset_expired`);
+      }
       return NextResponse.redirect(`${origin}/login?error=${encodeURIComponent(error.message)}`);
     }
   }
 
+  if (isRecovery) {
+    return NextResponse.redirect(`${origin}/login?notice=reset_expired`);
+  }
   return NextResponse.redirect(`${origin}/login?error=no_code_provided`);
 }

@@ -48,18 +48,21 @@ BEGIN
   SET is_quarantined = FALSE
   WHERE id = p_message_id;
 
+  -- Live moderation_log columns: category / action / flagged_text / points_deducted / actor_id.
   INSERT INTO public.moderation_log (
     user_id,
-    trigger_rule,
+    category,
+    action,
     flagged_text,
-    penalty_points,
+    points_deducted,
     actor_id
   ) VALUES (
     v_msg.sender_id,
     'admin_release',
+    'release_quarantine',
     COALESCE(p_notes, 'Message quarantine lifted by administrator'),
     0,
-    p_admin_id
+    COALESCE(p_admin_id, auth.uid())
   );
 
   RETURN jsonb_build_object(

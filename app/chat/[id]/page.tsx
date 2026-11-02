@@ -142,6 +142,10 @@ export default function ChatConversationPage() {
   const [voiceSending, setVoiceSending] = useState(false);
   const voice = useVoiceRecorder(VOICE_NOTE_MAX_MS);
   const [toast, setToast] = useState<string | null>(null);
+  // 1-tap translations of incoming messages, keyed by message id.
+  const [translations, setTranslations] = useState<
+    Record<string, { text?: string; showing: boolean; loading: boolean }>
+  >({});
   const closeToast = useCallback(() => setToast(null), []);
   const presentIds = usePresentUserIds();
   const [, setPresenceTick] = useState(0);
@@ -600,6 +604,29 @@ export default function ChatConversationPage() {
     return (data?.url as string) || null;
   }, []);
 
+  const toggleTranslation = async (msg: ChatMessage) => {
+    const current = translations[msg.id];
+    if (current?.loading) return;
+    if (current?.text) {
+      setTranslations((prev) => ({ ...prev, [msg.id]: { ...current, showing: !current.showing } }));
+      return;
+    }
+    setTranslations((prev) => ({ ...prev, [msg.id]: { showing: false, loading: true } }));
+    try {
+      const res = await fetch('/api/chat/translate', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ message_id: msg.id, text: msg.text, target_language: 'English' }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || !data.translation) throw new Error(data.error || 'Translation is unavailable right now.');
+      setTranslations((prev) => ({ ...prev, [msg.id]: { text: data.translation, showing: true, loading: false } }));
+    } catch (err) {
+      setTranslations((prev) => ({ ...prev, [msg.id]: { showing: false, loading: false } }));
+      setToast(err instanceof Error ? err.message : 'Translation is unavailable right now.');
+    }
+  };
+
   const startVoiceNote = () => {
     if (!voiceAllowed) {
       setToast(voiceLockedMessage);
@@ -943,6 +970,14 @@ export default function ChatConversationPage() {
                   formatDateDivider(nextMsg.createdAt) === currentDayLabel &&
                   Math.abs(new Date(nextMsg.createdAt).getTime() - new Date(msg.createdAt).getTime()) < 120000;
 
+                // Incoming text from the other member (not voice notes, masked text or optimistic bubbles).
+                const canTranslate =
+                  !isMe &&
+                  !msg.hasAudio &&
+                  !msg.wasMasked &&
+                  Boolean(msg.text?.trim()) &&
+                  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(msg.id);
+
                 return (
                   <React.Fragment key={msg.id}>
                     {showDateHeader && (
@@ -996,22 +1031,48 @@ export default function ChatConversationPage() {
                               label="Voice note"
                               durationMs={msg.audioDurationMs}
                               tone={isMe ? 'onBrand' : 'light'}
+                              showProgress
                               className="-mx-1"
                             />
+                          ) : translations[msg.id]?.showing && translations[msg.id]?.text ? (
+                            <span className="block">
+                              <span className="block italic text-[#3D3650]">{translations[msg.id]?.text}</span>
+                              <span className="mt-1.5 inline-flex items-center px-1.5 py-0.5 rounded-md bg-[#F3EFFC] text-[9.5px] font-semibold not-italic text-[#6555B8]">
+                                Translated
+                              </span>
+                            </span>
                           ) : (
                             msg.text
                           )}
                         </div>
                       </div>
 
-                      {!isSameSenderAsNext && (
+                      {(!isSameSenderAsNext || canTranslate) && (
                         <div
                           className={
                             'flex items-center gap-1 mt-1 text-[10px] text-[#8C849B] select-none ' +
                             (isMe ? 'pr-0.5' : 'pl-8')
                           }
                         >
-                          <span>{msg.pending ? 'Sending...' : msg.time}</span>
+                          {!isSameSenderAsNext && <span>{msg.pending ? 'Sending...' : msg.time}</span>}
+                          {canTranslate && (
+                            <>
+                              {!isSameSenderAsNext && <span aria-hidden>·</span>}
+                              <button
+                                type="button"
+                                onClick={() => toggleTranslation(msg)}
+                                disabled={translations[msg.id]?.loading}
+                                className="font-semibold text-[#6555B8] hover:underline cursor-pointer disabled:opacity-60 inline-flex items-center gap-1"
+                              >
+                                {translations[msg.id]?.loading && <Loader2 className="w-2.5 h-2.5 animate-spin" />}
+                                {translations[msg.id]?.loading
+                                  ? 'Translating...'
+                                  : translations[msg.id]?.showing
+                                    ? 'Translated · Show original'
+                                    : 'Translate'}
+                              </button>
+                            </>
+                          )}
                           {isMe && !msg.pending && (
                             msg.read ? (
                               <CheckCheck className="w-3 h-3 text-[#6555B8]" />
@@ -1139,7 +1200,7 @@ export default function ChatConversationPage() {
                   type="button"
                   onClick={startVoiceNote}
                   aria-label={voiceAllowed ? 'Record a voice note' : 'Voice notes are locked'}
-                  title={voiceAllowed ? 'Record a voice note (up to 30s)' : voiceLockedMessage}
+                  title={voiceAllowed ? `Record a voice note (up to ${VOICE_NOTE_MAX_MS / 1000}s)` : voiceLockedMessage}
                   className={`w-10 h-10 rounded-full border flex items-center justify-center transition cursor-pointer active:scale-95 ${
                     voiceAllowed
                       ? 'border-[#E2DBF0] bg-[#F3EFFC] text-[#6555B8] hover:bg-[#EBE5FA]'

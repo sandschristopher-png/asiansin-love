@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import {
   MapPin,
   Navigation,
@@ -1024,6 +1025,12 @@ export default function OnboardingPage() {
               </p>
             </div>
 
+            <p className="text-[11px] leading-relaxed text-[#8C849B] text-center">
+              By finishing you agree to our{' '}
+              <Link href="/terms" className="font-semibold text-[#6555b8] hover:underline">Terms</Link>,{' '}
+              <Link href="/privacy" className="font-semibold text-[#6555b8] hover:underline">Privacy Policy</Link> and{' '}
+              <Link href="/safety" className="font-semibold text-[#6555b8] hover:underline">Safety Guide</Link>.
+            </p>
             <div className="flex items-center gap-3 pt-2">
               <button
                 type="button"

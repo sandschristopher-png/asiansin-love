@@ -6,7 +6,7 @@ import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import VerifiedBadge from '@/components/VerifiedBadge';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Camera, Zap, ChevronLeft, ChevronRight, Search, Heart, X as XIcon, SlidersHorizontal, RotateCcw } from 'lucide-react';
+import { Camera, ChevronLeft, ChevronRight, Search, Heart, X as XIcon, SlidersHorizontal, RotateCcw } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { INTENT_OPTIONS, normalizeIntent } from '@/lib/intents';
 import { ActionType, getLocalCardActions, persistCardAction } from '@/lib/interactions';
@@ -16,6 +16,7 @@ import { isTrustedVoiceIntroUrl } from '@/lib/audio';
 import { usePresentUserIds } from '@/lib/realtimePresence';
 import { sharedTraits } from '@/lib/rhythm';
 import { InCommonCard, RhythmPill } from '@/components/profile/RhythmBadges';
+import { SparkingHeart } from '@/components/icons/SparkingHeart';
 
 const DISCOVERY_MODES = [
   { id: 'all', label: 'All' },
@@ -734,7 +735,7 @@ function DiscoverContent() {
               return (
                 <div
                   key={profile.id}
-                  className="group relative rounded-2xl overflow-hidden aspect-[4/5] w-full bg-[#F2EEF7] border border-[#DDD7E5]/70 shadow-xs hover:shadow-md transition-all duration-300 select-none"
+                  className="group relative isolate rounded-2xl overflow-hidden aspect-[4/5] w-full bg-[#F2EEF7] border border-[#DDD7E5]/70 shadow-xs hover:shadow-md transition-all duration-300 select-none"
                 >
                   <DiscoverCardPhotoCarousel
                     profileId={profile.id}
@@ -765,7 +766,7 @@ function DiscoverContent() {
                         : 'bg-black/45 text-white hover:bg-black/65 backdrop-blur-xs')
                     }
                   >
-                    <Zap className={'w-4 h-4 ' + (isLiked ? 'fill-white' : '')} />
+                    <SparkingHeart className={'w-4 h-4 ' + (isLiked ? 'fill-white' : '')} />
                   </button>
                   <div className="absolute bottom-0 inset-x-0 pt-10 pb-3 px-3 z-10 pointer-events-none bg-gradient-to-t from-black/65 via-black/25 to-transparent">
                     <Link href={'/profile/' + profile.id} className="block min-w-0 pointer-events-auto">

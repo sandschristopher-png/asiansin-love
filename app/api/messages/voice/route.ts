@@ -1,5 +1,5 @@
 // app/api/messages/voice/route.ts
-//   POST multipart { receiverId, audio, durationMs } -> sends a voice note (max 30 s)
+//   POST multipart { receiverId, audio, durationMs } -> sends a voice note (max 60 s)
 //   GET  ?id=<messageId>                         -> short-lived signed URL for a participant
 //
 // Voice notes cannot be screened for phone numbers / handles, so they sit behind the same
@@ -60,7 +60,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Missing recording.' }, { status: 400 });
   }
   if (!Number.isFinite(durationMs) || durationMs < 500 || durationMs > VOICE_NOTE_MAX_MS + 500) {
-    return NextResponse.json({ error: 'Voice notes can be up to 30 seconds.' }, { status: 400 });
+    return NextResponse.json({ error: `Voice notes can be up to ${VOICE_NOTE_MAX_MS / 1000} seconds.` }, { status: 400 });
   }
   if (audio.size > VOICE_NOTE_MAX_BYTES) {
     return NextResponse.json({ error: 'Recording is too large.' }, { status: 400 });

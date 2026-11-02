@@ -290,7 +290,7 @@ export default function AdminModerationPage() {
 
       {/* Mobile-First Bottom Sheet / Centered Modal */}
       {activeMessage && (
-        <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center">
+        <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center">
           {/* Backdrop */}
           <div
             className="fixed inset-0 bg-[#1C1924]/40 backdrop-blur-sm transition-opacity"

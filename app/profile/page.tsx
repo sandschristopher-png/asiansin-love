@@ -390,7 +390,7 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
                 className="w-full px-4 py-2.5 rounded-2xl bg-white border border-[#DDD7E5] text-sm font-medium text-[#1C1924] focus:outline-none focus:border-[#6555B8] focus:ring-2 focus:ring-[#6555B8]/15"
               />
             </div>
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-[96px_1fr] gap-3">
               <div>
                 <label className="text-xs font-semibold text-[#1C1924] block mb-1">Age</label>
                 <input
@@ -404,12 +404,13 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
                 <label className="text-xs font-semibold text-[#1C1924] block mb-1">City &amp; Country</label>
                 <input
                   type="text"
+                  title={location}
                   value={location}
                   onChange={(e) => {
                     setLocation(e.target.value);
                     setLocationSource('self_reported');
                   }}
-                  className="w-full px-4 py-2.5 rounded-2xl bg-white border border-[#DDD7E5] text-sm font-medium text-[#1C1924] focus:outline-none focus:border-[#6555B8] focus:ring-2 focus:ring-[#6555B8]/15"
+                  className="w-full min-w-0 text-ellipsis overflow-hidden px-3.5 py-2.5 rounded-2xl bg-white border border-[#DDD7E5] text-[13px] font-medium text-[#1C1924] focus:outline-none focus:border-[#6555B8] focus:ring-2 focus:ring-[#6555B8]/15"
                 />
               </div>
             </div>
@@ -690,12 +691,9 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
 
         {/* MY RHYTHM (reply pace, relocation, timeline) */}
         <div className="p-5 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-2.5">
-          <span
-            className="text-xs font-bold text-[#6555B8] uppercase tracking-wider"
-            style={{ fontFamily: 'var(--font-brand)' }}
-          >
+          <h3 className="block text-xs font-bold text-[#6555B8] uppercase tracking-wider leading-normal">
             My Rhythm
-          </span>
+          </h3>
           {isEditing ? (
             <RhythmSelectors value={rhythm} onChange={setRhythm} />
           ) : rhythm.reply_pace || rhythm.relocation_readiness || rhythm.timeline_intent ? (
@@ -720,22 +718,25 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
             >
               What They&apos;re Looking For
             </span>
-            {isEditing ? (
-              <span className="text-[11px] font-medium text-[#8C849B]">{lookingFor.length}/200</span>
-            ) : (
+            {!isEditing && (
               <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#F3EFFC] text-[#6555B8]">
                 Goals
               </span>
             )}
           </div>
           {isEditing ? (
-            <input
-              type="text"
-              value={lookingFor}
-              onChange={(e) => setLookingFor(e.target.value.slice(0, 200))}
-              placeholder="Describe the partner and relationship you are looking for..."
-              className="w-full px-4 py-3 rounded-2xl bg-[#F8F7FA] border border-[#DDD7E5] text-xs sm:text-sm text-[#1C1924] placeholder-[#8C849B] focus:outline-none focus:bg-white focus:border-[#6555B8]"
-            />
+            <div className="relative">
+              <textarea
+                value={lookingFor}
+                onChange={(e) => setLookingFor(e.target.value.slice(0, 200))}
+                rows={3}
+                placeholder="Describe the partner and relationship you are looking for..."
+                className="w-full px-4 pt-3 pb-7 rounded-2xl bg-[#F8F7FA] border border-[#DDD7E5] text-xs sm:text-sm text-[#1C1924] leading-relaxed placeholder-[#8C849B] focus:outline-none focus:bg-white focus:border-[#6555B8] resize-none"
+              />
+              <span className="absolute right-3 bottom-2 text-xs text-[#8A839E] pointer-events-none">
+                {lookingFor.length}/200
+              </span>
+            </div>
           ) : (
             <p className="text-xs sm:text-sm text-[#1C1924] leading-relaxed">
               {lookingFor ? toIntentLabel(lookingFor) : <span className="text-[#8C849B] italic">No preferences added yet.</span>}

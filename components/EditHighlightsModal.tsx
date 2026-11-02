@@ -84,9 +84,10 @@ export function EditHighlightsModal({
 
   const selectedObjects = availableInterests.filter((i) => selectedIds.includes(i.tag_id));
 
+  // z-[70]: above the floating BottomNav (z-50) so Save Highlights is never trapped under it.
   return (
     <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 backdrop-blur-sm sm:items-center p-0 sm:p-4"
+      className="fixed inset-0 z-[70] flex items-end justify-center bg-black/50 backdrop-blur-sm sm:items-center p-0 sm:p-4"
       onClick={onClose}
     >
       <div
@@ -181,7 +182,7 @@ export function EditHighlightsModal({
             </div>
           )}
 
-          <div className="pt-2 pb-[max(1rem,env(safe-area-inset-bottom))]">
+          <div className="pt-2 pb-[calc(5rem+env(safe-area-inset-bottom,20px))] sm:pb-4">
             <button
               type="submit"
               disabled={isSaving}

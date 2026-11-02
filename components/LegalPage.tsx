@@ -1,0 +1,73 @@
+import React from 'react';
+import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
+
+export interface LegalSection {
+  title: string;
+  body: React.ReactNode;
+}
+
+const LEGAL_LINKS = [
+  { href: '/terms', label: 'Terms' },
+  { href: '/privacy', label: 'Privacy' },
+  { href: '/safety', label: 'Safety' },
+];
+
+/** Static legal / policy page inside the 430px app column (Terms, Privacy, Safety). */
+export function LegalPage({
+  eyebrow,
+  title,
+  intro,
+  updated,
+  sections,
+}: {
+  eyebrow: string;
+  title: string;
+  intro: React.ReactNode;
+  updated: string;
+  sections: LegalSection[];
+}) {
+  return (
+    <div className="min-h-full bg-[#F9F8FC] text-[#1C1924]">
+      <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-[#ECE8F4] px-4 py-3 flex items-center gap-3">
+        <Link
+          href="/"
+          className="w-9 h-9 rounded-full flex items-center justify-center text-[#524B5E] hover:text-[#6555B8] hover:bg-[#F3EFFC] transition"
+          aria-label="Back to home"
+        >
+          <ArrowLeft className="w-4 h-4" />
+        </Link>
+        <div className="min-w-0">
+          <p className="text-[10px] font-bold uppercase tracking-wider text-[#6555B8]">{eyebrow}</p>
+          <h1 className="text-sm font-bold text-[#1C1924] truncate">{title}</h1>
+        </div>
+      </header>
+
+      <main className="w-full max-w-[430px] mx-auto px-4 pt-4 pb-[calc(6rem+env(safe-area-inset-bottom,16px))] space-y-3">
+        <div className="p-4 rounded-3xl bg-white border border-[#ECE8F4] space-y-2">
+          <div className="text-xs text-[#524B5E] leading-relaxed space-y-2">{intro}</div>
+          <p className="text-[10px] text-[#8C849B]">Last updated {updated}</p>
+        </div>
+
+        {sections.map((s, i) => (
+          <section key={s.title} className="p-4 rounded-3xl bg-white border border-[#ECE8F4] space-y-2">
+            <h2 className="text-[13px] font-bold text-[#1C1924]">
+              {i + 1}. {s.title}
+            </h2>
+            <div className="text-xs text-[#524B5E] leading-relaxed space-y-2 [&_ul]:list-disc [&_ul]:pl-4 [&_ul]:space-y-1 [&_a]:font-semibold [&_a]:text-[#6555B8] [&_a]:underline">
+              {s.body}
+            </div>
+          </section>
+        ))}
+
+        <nav className="flex items-center justify-center gap-4 pt-2 text-[11px] font-semibold text-[#6555B8]">
+          {LEGAL_LINKS.map((l) => (
+            <Link key={l.href} href={l.href} className="hover:underline">
+              {l.label}
+            </Link>
+          ))}
+        </nav>
+      </main>
+    </div>
+  );
+}

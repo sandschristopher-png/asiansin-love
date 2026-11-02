@@ -124,7 +124,7 @@ export function SideMenuDrawer({ isOpen, onClose, onOpenFilters }: SideMenuDrawe
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 flex justify-end">
+    <div className="fixed inset-0 z-[70] flex justify-end">
       <div
         className="fixed inset-0 bg-black/35 backdrop-blur-[2px] transition-opacity animate-fadeIn"
         onClick={onClose}

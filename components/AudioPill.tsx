@@ -10,6 +10,8 @@ const BARS = [0.45, 0.8, 0.55, 1, 0.65, 0.9, 0.5];
  * Compact Play/Pause pill with animated wave bars (brand lilac).
  * `src` may be a URL or a function that resolves one on first play (e.g. a signed URL).
  * Clicks never bubble, so it is safe inside a card <Link>.
+ * `showProgress` swaps the wave bars for a progress track and an elapsed / total readout
+ * (in-chat voice notes).
  */
 export function AudioPill({
   src,
@@ -17,6 +19,7 @@ export function AudioPill({
   durationMs,
   size = 'md',
   tone = 'light',
+  showProgress = false,
   className = '',
 }: {
   src: string | (() => Promise<string | null>);
@@ -24,12 +27,15 @@ export function AudioPill({
   durationMs?: number | null;
   size?: 'sm' | 'md';
   tone?: 'light' | 'onBrand';
+  showProgress?: boolean;
   className?: string;
 }) {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [playing, setPlaying] = useState(false);
   const [loading, setLoading] = useState(false);
   const [failed, setFailed] = useState(false);
+  const [positionMs, setPositionMs] = useState(0);
+  const [mediaDurationMs, setMediaDurationMs] = useState<number | null>(null);
 
   useEffect(
     () => () => {
@@ -55,7 +61,15 @@ export function AudioPill({
         audio.preload = 'auto';
         audio.onplay = () => setPlaying(true);
         audio.onpause = () => setPlaying(false);
-        audio.onended = () => setPlaying(false);
+        audio.onended = () => {
+          setPlaying(false);
+          setPositionMs(0);
+        };
+        audio.ontimeupdate = () => setPositionMs(audio.currentTime * 1000);
+        audio.onloadedmetadata = () => {
+          // WebM from MediaRecorder often reports Infinity until fully read; keep the stored length then.
+          if (Number.isFinite(audio.duration) && audio.duration > 0) setMediaDurationMs(audio.duration * 1000);
+        };
         audio.onerror = () => {
           setPlaying(false);
           setFailed(true);
@@ -73,6 +87,8 @@ export function AudioPill({
 
   const sm = size === 'sm';
   const onBrand = tone === 'onBrand';
+  const totalMs = durationMs || mediaDurationMs || 0;
+  const progress = totalMs > 0 ? Math.min(1, positionMs / totalMs) : 0;
   return (
     <button
       type="button"
@@ -99,6 +115,21 @@ export function AudioPill({
           <Play className={`${sm ? 'w-2.5 h-2.5' : 'w-3 h-3'} fill-current translate-x-[0.5px]`} />
         )}
       </span>
+      {showProgress ? (
+        <span
+          className={`relative h-1 w-24 rounded-full overflow-hidden ${onBrand ? 'bg-white/30' : 'bg-[#6555B8]/20'}`}
+          role="progressbar"
+          aria-label={`${label} progress`}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={Math.round(progress * 100)}
+        >
+          <span
+            className={`absolute inset-y-0 left-0 rounded-full transition-[width] duration-200 ease-linear ${onBrand ? 'bg-white' : 'bg-[#6555B8]'}`}
+            style={{ width: `${progress * 100}%` }}
+          />
+        </span>
+      ) : (
       <span className={`flex items-center gap-[2px] ${sm ? 'h-3' : 'h-4'}`} aria-hidden>
         {BARS.map((h, i) => (
           <span
@@ -108,8 +139,15 @@ export function AudioPill({
           />
         ))}
       </span>
-      <span className={`font-semibold whitespace-nowrap ${sm ? 'text-[10.5px]' : 'text-xs'}`}>
-        {failed ? 'Unavailable' : durationMs ? formatSeconds(durationMs) : label}
+      )}
+      <span className={`font-semibold whitespace-nowrap tabular-nums ${sm ? 'text-[10.5px]' : 'text-xs'}`}>
+        {failed
+          ? 'Unavailable'
+          : showProgress && (playing || positionMs > 0)
+            ? formatSeconds(positionMs)
+            : totalMs
+              ? formatSeconds(totalMs)
+              : label}
       </span>
     </button>
   );

@@ -2,7 +2,7 @@
 
 export const VOICE_INTRO_MIN_MS = 5000;
 export const VOICE_INTRO_MAX_MS = 10000;
-export const VOICE_NOTE_MAX_MS = 30000;
+export const VOICE_NOTE_MAX_MS = 60000;
 
 /** Upload caps (opus at ~32 kbps is ~40 KB for 10 s; AAC on iOS is larger). */
 export const VOICE_INTRO_MAX_BYTES = 1024 * 1024;

@@ -270,7 +270,7 @@ export default function VerifyPage() {
           </button>
         </div>
       ) : cameraOn ? (
-        <div className="fixed inset-0 bg-black z-40">
+        <div className="fixed inset-0 bg-black z-[70]">
           {/* Mirrored for display only (selfie view); the snapshot is taken from the raw frame. */}
           <video
             ref={videoRef}

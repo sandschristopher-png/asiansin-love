@@ -8,7 +8,6 @@ import {
   MoreHorizontal,
   MapPin,
   ShieldCheck,
-  Zap,
   MessageCircle,
   Sparkles,
   ShieldAlert,
@@ -24,6 +23,7 @@ import { resolveCountry } from '@/lib/countries';
 import { rhythmOption, sharedTraits, toList } from '@/lib/rhythm';
 import { scoreOf } from '@/lib/reputation';
 import { InCommonCard, RepBadge, RhythmPill } from '@/components/profile/RhythmBadges';
+import { SparkingHeart } from '@/components/icons/SparkingHeart';
 
 interface HighlightRow {
   tag_id: string;
@@ -326,10 +326,8 @@ export default function PublicProfilePage() {
                 <Loader2 className="h-4 w-4 animate-spin text-[#6555B8]" />
               ) : (
                 <>
-                  <Zap
-                    className={`h-4 w-4 ${
-                      isSparked ? 'text-[#6555B8] fill-[#6555B8]' : 'text-amber-500 fill-amber-500'
-                    }`}
+                  <SparkingHeart
+                    className={`h-4 w-4 ${isSparked ? 'text-[#6555B8] fill-[#6555B8]' : 'text-[#8A839E]'}`}
                   />
                   <span>{isSparked ? 'Sparked' : 'Spark'}</span>
                 </>
@@ -530,7 +528,7 @@ export default function PublicProfilePage() {
 
             {isTrustedVoiceIntroUrl(profile.voice_intro_url) && (
               <div className="mt-3 pointer-events-auto">
-                <AudioPill src={profile.voice_intro_url} label="Hear my voice" />
+                <AudioPill src={profile.voice_intro_url} label="Hear my voice" tone="onBrand" showProgress />
               </div>
             )}
           </div>

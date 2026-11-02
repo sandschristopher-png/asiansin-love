@@ -1,83 +1,158 @@
+import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowLeft, ShieldCheck, Heart, AlertTriangle, Lock } from 'lucide-react';
+import { LegalPage, type LegalSection } from '@/components/LegalPage';
+
+export const metadata: Metadata = {
+  title: 'Terms of Service - Asians in Love',
+  description: 'The rules for using Asians in Love (asiansin.love): eligibility, conduct, content, AIL+ billing and cancellation.',
+};
+
+const sections: LegalSection[] = [
+  {
+    title: 'Who can use Asians in Love',
+    body: (
+      <>
+        <p>
+          You must be <strong>at least 18 years old</strong> (or the age of majority where you live, if higher) to create an
+          account. By signing up you confirm that you meet this requirement, that the information in your profile is true, and
+          that you are legally allowed to use a dating service in your country.
+        </p>
+        <p>One person, one account. Accounts may not be shared, sold or transferred.</p>
+      </>
+    ),
+  },
+  {
+    title: 'What is not allowed',
+    body: (
+      <>
+        <p>Asians in Love is for people looking for genuine relationships. The following are banned and lead to removal:</p>
+        <ul>
+          <li>Commercial solicitation of any kind, including advertising, selling content or recruiting.</li>
+          <li>Sex work, escort services, &quot;bar fine&quot; or pay-per-meet arrangements, and requests for explicit photos.</li>
+          <li>
+            Asking for, offering or sending money, gift cards, mobile-wallet transfers (GCash, Maya, PromptPay and similar),
+            loans, &quot;allowances&quot; or travel money.
+          </li>
+          <li>Romance scams, investment or crypto schemes, and any attempt to move members to outside platforms to defraud them.</li>
+          <li>Harassment, hate speech, threats, impersonation, fake profiles and photos that are not you.</li>
+        </ul>
+        <p>
+          Messages are screened automatically. Content that breaks these rules can be quarantined for review and lowers your
+          reputation score; serious or repeated violations lead to suspension or permanent removal. See our{' '}
+          <Link href="/safety">Safety &amp; Anti-Scam Guide</Link>.
+        </p>
+      </>
+    ),
+  },
+  {
+    title: 'Your content',
+    body: (
+      <>
+        <p>
+          You keep ownership of the photos, text and voice recordings you post. You give Asians in Love a worldwide,
+          non-exclusive, royalty-free license to host, store, display and process that content only to run, secure and
+          improve the service (for example, showing your profile to other members or screening messages for scams). This
+          license ends when you delete the content or your account, except where we must keep records for legal or safety
+          reasons.
+        </p>
+        <p>You are responsible for what you post and must have the right to share it.</p>
+      </>
+    ),
+  },
+  {
+    title: 'Verification and reputation',
+    body: (
+      <p>
+        The verified badge is granted only after our team reviews your verification selfie. Automated checks help us
+        prioritise reviews but never grant the badge on their own. Reputation scores reflect how members use the service
+        and may limit features (such as messaging rate or voice notes) while an account is under review.
+      </p>
+    ),
+  },
+  {
+    title: 'AIL+ subscriptions and billing',
+    body: (
+      <>
+        <p>AIL+ is an optional paid membership, billed in US dollars through Stripe:</p>
+        <ul>
+          <li>Monthly: $14.99 per month, billed every month.</li>
+          <li>3 months: $11.99 per month, billed $35.97 every 3 months.</li>
+          <li>12 months: $7.99 per month, billed $95.88 every year.</li>
+        </ul>
+        <p>
+          Subscriptions <strong>renew automatically</strong> at the end of each period until you cancel. Taxes may apply.
+          Prices can change; any change applies from your next renewal and we will tell you before it does.
+        </p>
+        <p>
+          <strong>Cancel anytime</strong> in Settings → Manage Subscription, which opens the Stripe billing portal where you
+          can cancel or update your payment method yourself. Cancelling stops future renewals; you keep AIL+ until the end of
+          the period you already paid for. Payments are non-refundable except where the law requires otherwise. Deleting your
+          account also cancels any active subscription.
+        </p>
+      </>
+    ),
+  },
+  {
+    title: 'Safety and your responsibility',
+    body: (
+      <p>
+        We work hard to keep scammers out, but we cannot run background checks or guarantee how other members behave online
+        or in person. Use caution when you meet anyone, never send money, and report anything suspicious.
+      </p>
+    ),
+  },
+  {
+    title: 'Disclaimers and limitation of liability',
+    body: (
+      <>
+        <p>
+          The service is provided &quot;as is&quot; and &quot;as available&quot;, without warranties of any kind, to the
+          extent the law allows. We do not promise that you will find a match or that the service will be uninterrupted or
+          error-free.
+        </p>
+        <p>
+          To the fullest extent permitted by law, Asians in Love is not liable for indirect, incidental or consequential
+          damages, or for the conduct of any member on or off the service. Our total liability for any claim is limited to
+          the amount you paid us in the 12 months before the claim. Nothing in these terms limits rights you have under
+          consumer laws that cannot be waived.
+        </p>
+      </>
+    ),
+  },
+  {
+    title: 'Ending your account',
+    body: (
+      <p>
+        You can delete your account at any time in Settings. We may suspend or remove accounts that break these terms or put
+        other members at risk.
+      </p>
+    ),
+  },
+  {
+    title: 'Changes to these terms',
+    body: (
+      <p>
+        We may update these terms. If a change is significant we will let you know in the app. Continuing to use Asians in
+        Love after a change means you accept the updated terms. Read how we handle your data in our{' '}
+        <Link href="/privacy">Privacy Policy</Link>.
+      </p>
+    ),
+  },
+];
 
 export default function TermsPage() {
   return (
-    <div className="min-h-screen bg-[#F8F7FA] text-[#1C1924] flex flex-col">
-      <header className="sticky top-0 z-30 bg-white/80 backdrop-blur-md border-b border-[#DDD7E5]/60 px-4 py-3 flex items-center gap-3">
-        <Link
-          href="/discover"
-          className="p-1.5 rounded-full hover:bg-[#FAF8FD] text-[#524B5E] hover:text-[#1C1924] transition active:scale-95"
-          aria-label="Back to Discover"
-        >
-          <ArrowLeft className="w-5 h-5" />
-        </Link>
-        <div>
-          <h1 className="text-sm font-semibold text-[#1C1924]">Community Guidelines</h1>
-          <p className="text-[11px] text-[#756D82]">Standards of Respect & Trust</p>
-        </div>
-      </header>
-
-      <main className="flex-1 w-full max-w-lg mx-auto p-4 space-y-4 pb-20">
-        <div className="bg-white rounded-3xl p-5 border border-[#DDD7E5]/70 shadow-xs space-y-3">
-          <div className="w-10 h-10 rounded-2xl bg-[#F3EFFC] flex items-center justify-center text-[#6555b8]">
-            <Heart className="w-5 h-5 fill-[#6555b8]" />
-          </div>
-          <h2 className="text-base font-bold text-[#1C1924]">1. Authentic Intentions Only</h2>
-          <p className="text-xs text-[#524B5E] leading-relaxed">
-            Asians in Love is built exclusively for individuals seeking genuine relationships, dating, and partnership. We actively remove accounts created for casual commercial encounters, content promotion, or deceptive representation.
-          </p>
-        </div>
-
-        <div className="bg-white rounded-3xl p-5 border border-[#DDD7E5]/70 shadow-xs space-y-3">
-          <div className="w-10 h-10 rounded-2xl bg-amber-50 flex items-center justify-center text-amber-600">
-            <AlertTriangle className="w-5 h-5" />
-          </div>
-          <h2 className="text-base font-bold text-[#1C1924]">2. Zero Financial Solicitation</h2>
-          <p className="text-xs text-[#524B5E] leading-relaxed">
-            Never send, request, or offer money, emergency relief, allowance, airfare, or digital payments (GCash, Maya, Wise, Crypto). Any account soliciting or offering funds triggers automated quarantine and permanent trust penalties.
-          </p>
-        </div>
-
-        <div className="bg-white rounded-3xl p-5 border border-[#DDD7E5]/70 shadow-xs space-y-3">
-          <div className="w-10 h-10 rounded-2xl bg-emerald-50 flex items-center justify-center text-emerald-600">
-            <ShieldCheck className="w-5 h-5" />
-          </div>
-          <h2 className="text-base font-bold text-[#1C1924]">3. Respectful Communication</h2>
-          <p className="text-xs text-[#524B5E] leading-relaxed">
-            Consent and mutual dignity are mandatory. Harassment, sexually explicit demands, and aggressive pressure to move conversations off-platform result in immediate review and profile pausing.
-          </p>
-        </div>
-
-        <div className="bg-white rounded-3xl p-5 border border-[#DDD7E5]/70 shadow-xs space-y-3">
-          <div className="w-10 h-10 rounded-2xl bg-purple-50 flex items-center justify-center text-[#6555b8]">
-            <Lock className="w-5 h-5" />
-          </div>
-          <h2 className="text-base font-bold text-[#1C1924]">4. Identity Verification</h2>
-          <p className="text-xs text-[#524B5E] leading-relaxed">
-            To protect our community, all members must complete gesture-based photo verification. Accounts with unverified photos or suspected stolen identities are permanently banned without warning.
-          </p>
-        </div>
-
-        <div className="bg-white rounded-3xl p-5 border border-[#DDD7E5]/70 shadow-xs space-y-3">
-          <div className="w-10 h-10 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600">
-            <ShieldCheck className="w-5 h-5" />
-          </div>
-          <h2 className="text-base font-bold text-[#1C1924]">5. Reporting & Enforcement</h2>
-          <p className="text-xs text-[#524B5E] leading-relaxed">
-            We encourage reporting violations immediately. Our moderation team reviews flagged content within 24 hours. Repeat offenders face permanent suspension and IP-level bans to prevent re-entry.
-          </p>
-        </div>
-      </main>
-
-      <footer className="bg-white border-t border-[#DDD7E5]/60 px-4 py-6 text-center">
-        <p className="text-[10px] text-[#756D82]">
-          Last updated: October 9, 2026
+    <LegalPage
+      eyebrow="Legal"
+      title="Terms of Service"
+      updated="November 2026"
+      intro={
+        <p>
+          These terms are an agreement between you and Asians in Love (asiansin.love). By creating an account or using the
+          service, you agree to them.
         </p>
-        <Link href="/" className="mt-2 inline-block text-xs font-semibold text-[#6555b8] hover:underline">
-          Back to Home
-        </Link>
-      </footer>
-    </div>
+      }
+      sections={sections}
+    />
   );
 }

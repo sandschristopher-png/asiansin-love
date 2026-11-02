@@ -1,10 +1,13 @@
 "use client";
 
-import { useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { createBrowserClient } from "@supabase/ssr";
 import { Eye, EyeOff, Loader2, LogIn } from "lucide-react";
 import { BrandLogo } from "@/components/BrandLogo";
+import { InAppToast } from "@/components/InAppToast";
+
+const RESET_EXPIRED_MESSAGE = "That password reset link has expired or was already used. Request a new one from Forgot?";
 
 export default function LoginPage() {
   const [supabase] = useState(() =>
@@ -19,6 +22,19 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [toast, setToast] = useState<string | null>(null);
+  const closeToast = useCallback(() => setToast(null), []);
+
+  // /auth/callback and /reset-password send members back here when a recovery link is no good.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("notice") !== "reset_expired") return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time read of the URL on mount
+    setToast(RESET_EXPIRED_MESSAGE);
+    params.delete("notice");
+    const qs = params.toString();
+    window.history.replaceState(null, "", window.location.pathname + (qs ? "?" + qs : ""));
+  }, []);
 
   async function handleGoogleSignIn() {
     setGoogleLoading(true);
@@ -65,6 +81,7 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen w-full bg-[#FAF8FD] flex items-center justify-center p-4 sm:p-6 font-sans antialiased selection:bg-[#6555b8]/15 selection:text-[#6555b8]">
+      <InAppToast message={toast} onClose={closeToast} durationMs={7000} />
       <main className="w-full max-w-[420px] bg-white rounded-3xl border border-[#DDD7E5] shadow-xl shadow-[#1C1536]/5 p-7 sm:p-9 space-y-6">
         
         {/* Brand Header */}
@@ -201,7 +218,12 @@ export default function LoginPage() {
           </Link>{" "}and{" "}
           <Link href="/privacy" className="font-semibold text-[#6555B8] hover:underline">
             Privacy Policy
-          </Link>.
+          </Link>
+          . Read our{" "}
+          <Link href="/safety" className="font-semibold text-[#6555B8] hover:underline">
+            Safety Guide
+          </Link>
+          .
         </p>
       </main>
     </div>
