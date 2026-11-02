@@ -145,7 +145,7 @@ function PlusHubContent() {
 
   async function setDestination(city: string, country: string) {
     if (!isPlus) {
-      setStatusMsg('Upgrade to AIL Plus below to activate Travel Status.');
+      setStatusMsg('Upgrade to AIL+ below to activate Travel Status.');
       return;
     }
     setStatusMsg(null);
@@ -278,7 +278,7 @@ function PlusHubContent() {
                   <span>Connecting to Stripe...</span>
                 </>
               ) : (
-                <span>Upgrade to AIL Plus • $14.99/mo</span>
+                <span>Upgrade to AIL+ • $14.99/mo</span>
               )}
             </button>
 
