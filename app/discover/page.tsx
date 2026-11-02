@@ -171,6 +171,9 @@ function DiscoverContent() {
   const initialFeed = getInitialDiscoverFeed();
   const [profiles, setProfiles] = useState<ProfileItem[]>(() => initialFeed);
   const [isLoading, setIsLoading] = useState(() => initialFeed.length === 0);
+  const [pullDistance, setPullDistance] = useState(0);
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const pullStartY = useRef<number | null>(null);
   const [searchQuery, setSearchQuery] = useState(() => searchParams.get('q') || '');
   const [selectedCountry, setSelectedCountry] = useState('All');
   const [searchOpen, setSearchOpen] = useState(false);
@@ -355,6 +358,45 @@ function DiscoverContent() {
     loadFeed();
   }, [router]);
 
+  const refreshFeed = async () => {
+    if (isRefreshing) return;
+    setIsRefreshing(true);
+    try {
+      const res = await fetch('/api/discover', { cache: 'no-store' });
+      if (res.ok) {
+        const payload = await res.json();
+        if (Array.isArray(payload.profiles)) {
+          setProfiles(payload.profiles);
+          if (payload.profiles.length > 0) {
+            try { localStorage.setItem('ail_discover_cache', JSON.stringify({ profiles: payload.profiles })); } catch {}
+          }
+        }
+      }
+    } catch {}
+    setTimeout(() => { setIsRefreshing(false); }, 400);
+  };
+
+  const handlePullStart = (e: React.TouchEvent) => {
+    if (isRefreshing || filtersOpen || searchOpen) return;
+    pullStartY.current = e.touches[0].clientY;
+  };
+
+  const handlePullMove = (e: React.TouchEvent) => {
+    if (pullStartY.current === null) return;
+    if (window.scrollY > 0) { pullStartY.current = null; setPullDistance(0); return; }
+    const dy = e.touches[0].clientY - pullStartY.current;
+    if (dy <= 0) { setPullDistance(0); return; }
+    setPullDistance(Math.min(dy * 0.45, 80));
+  };
+
+  const handlePullEnd = () => {
+    if (pullStartY.current === null) return;
+    pullStartY.current = null;
+    if (pullDistance >= 56) { void refreshFeed(); }
+    setPullDistance(0);
+  };
+
+
   const closeModalWithAnimation = () => {
     setIsModalClosing(true);
     setTimeout(() => {
@@ -528,7 +570,14 @@ function DiscoverContent() {
   const hasMore = visibleLimit < filteredProfiles.length;
 
   return (
-    <div className="w-full min-h-full bg-[#F8F7FA] text-[#1C1924] flex flex-col font-sans animate-[fadeIn_200ms_cubic-bezier(0.16,1,0.3,1)]">
+    <div onTouchStart={handlePullStart} onTouchMove={handlePullMove} onTouchEnd={handlePullEnd} className="w-full min-h-full bg-[#F8F7FA] text-[#1C1924] flex flex-col font-sans animate-[fadeIn_200ms_cubic-bezier(0.16,1,0.3,1)] overscroll-contain">
+      {/* Pull-to-Refresh Indicator */}
+      <div
+        className="flex items-center justify-center overflow-hidden"
+        style={{ height: isRefreshing ? 40 : pullDistance, transition: pullDistance > 0 && !isRefreshing ? 'none' : 'height 300ms cubic-bezier(0.16,1,0.3,1)' }}
+      >
+        <div className="w-5 h-5 border-2 border-[#6555B8] border-t-transparent rounded-full" style={{ transform: `rotate(${Math.min(pullDistance, 56) * 6}deg)` }} />
+      </div>
       <main className="w-full max-w-md mx-auto px-4 pt-4 pb-36 relative">
         {/* Static Pinned Search & Filter Controls on Left + Horizontally Scrolling Categories on Right */}
         <section aria-label="Search and Filters" className="sticky top-0 z-30 w-[calc(100%+2rem)] -mx-4 px-4 py-2 flex items-center gap-3 bg-[#F8F7FA]/95 backdrop-blur-md border-b border-[#EAE5F2]/60">
