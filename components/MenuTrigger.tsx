@@ -21,11 +21,7 @@ export function MenuTrigger({ onClick, isOpen = false, avatarUrl }: MenuTriggerP
       }`}
     >
       {avatarUrl ? (
-        <img
-          src={avatarUrl}
-          alt=""
-          className="absolute inset-0 h-full w-full object-cover"
-        />
+        <img src={avatarUrl} alt="" className="absolute inset-0 h-full w-full object-cover" />
       ) : (
         <svg
           className="w-4.5 h-4.5 fill-current translate-y-0.5"
