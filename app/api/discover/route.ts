@@ -20,6 +20,9 @@ const DISCOVER_COLUMNS = [
   'voice_intro_url',
 ].join(', ');
 
+/** Rhythm badge column from 20261106_reputation_rhythm.sql; the feed falls back without it. */
+const RHYTHM_COLUMNS = 'reply_pace';
+
 export const dynamic = 'force-dynamic';
 
 function normalizeGenderValue(raw?: string | null): 'female' | 'male' | 'female' | 'male' | 'male' {
@@ -88,7 +91,7 @@ export async function GET() {
       const [profRes, blocksRes, favsRes] = await Promise.all([
         serviceClient
           .from('profiles')
-          .select('id, gender, interested_in, seeking_gender, latitude, longitude, interests, intentions, relationship_intent, onboarding_completed')
+          .select('id, gender, interested_in, seeking_gender, latitude, longitude, interests, languages, intentions, relationship_intent, onboarding_completed')
           .eq('id', user.id)
           .maybeSingle(),
         serviceClient
@@ -119,11 +122,12 @@ export async function GET() {
       }
     }
 
-    const { data: allRows, error } = await serviceClient
-      .from('profiles')
-      .select(DISCOVER_COLUMNS)
-      .order('created_at', { ascending: false })
-      .limit(200);
+    const fetchFeed = (cols: string) =>
+      serviceClient.from('profiles').select(cols).order('created_at', { ascending: false }).limit(200);
+    let { data: allRows, error } = await fetchFeed(DISCOVER_COLUMNS + ', ' + RHYTHM_COLUMNS);
+    if (error && /reply_pace/.test(error.message)) {
+      ({ data: allRows, error } = await fetchFeed(DISCOVER_COLUMNS));
+    }
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
@@ -210,6 +214,7 @@ export async function GET() {
           weight: row.weight || '',
           created_at: row.created_at,
           voiceIntroUrl: row.voice_intro_url || null,
+          replyPace: row.reply_pace || null,
         };
       });
 
@@ -224,6 +229,7 @@ export async function GET() {
             latitude: viewerProfile.latitude ?? null,
             longitude: viewerProfile.longitude ?? null,
             interests: Array.isArray(viewerProfile.interests) ? viewerProfile.interests : [],
+            languages: viewerProfile.languages ?? null,
             intent: viewerProfile.relationship_intent || viewerProfile.intentions || '',
             onboarding_completed: viewerProfile.onboarding_completed,
           }

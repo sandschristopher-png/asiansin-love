@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAdminCaller } from '@/lib/adminAuth';
+import { REPUTATION_RULES } from '@/lib/reputation';
 
 // GET /api/admin/moderation - Fetch quarantined messages
 export async function GET() {
@@ -77,7 +78,11 @@ export async function POST(req: NextRequest) {
       const { data, error } = await supabase.rpc('admin_confirm_quarantine', {
         p_message_id: messageId,
         p_admin_id: adminId,
-        p_additional_penalty: Number(penaltyPoints) || 0,
+        // Confirming a quarantined message costs the sender 15 more points unless the admin overrides it.
+        p_additional_penalty:
+          penaltyPoints === undefined || penaltyPoints === null || penaltyPoints === ''
+            ? REPUTATION_RULES.quarantineConfirmed
+            : Math.max(0, Math.round(Number(penaltyPoints) || 0)),
         p_notes: notes || 'Violation confirmed by administrator',
       });
 

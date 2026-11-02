@@ -1,89 +1,198 @@
 ﻿/**
- * Hardened Moderation & Reputation Engine for asiansin.love
- * Tuned with contextual lookback, zero-cost edge verification, and mutual substantive exchange gates.
+ * Moderation engine for asiansin.love.
+ *
+ * Every check runs on several forms of the same text so simple evasion does not get through:
+ *   plain      lowercase raw text
+ *   normalized NFKC, invisible characters stripped, accents removed, whitespace collapsed and
+ *              leetspeak mapped to letters (both the "1 = i" and "1 = l" readings)
+ *   despaced   normalized, with runs of single characters joined ("w h a t s a p p" -> "whatsapp")
+ *   collapsed  normalized with every space / symbol removed (only distinctive terms are matched)
+ * Digit-based checks (phone numbers, "call me at ...") use the un-leeted text, with spelled-out
+ * digits ("nine one seven") converted, so times (7:30), ages and prices are left alone.
+ *
+ * Wordlists live in lib/moderationWordlists.ts; reputation deductions in lib/reputation.ts.
+ * Regression cases: scripts/test-moderation.mjs.
  */
+import {
+  CONTACT_COLLAPSED_TERMS,
+  CONTACT_LINK_PATTERNS,
+  CONTACT_PLATFORM_PATTERNS,
+  COLLAPSED_ABUSE_TERMS,
+  MODERATION_WORDLISTS,
+  NUMBER_WORDS,
+  type Severity,
+  type WordlistCategory,
+} from './moderationWordlists';
 
-export type ModerationAction = 'allow' | 'warn' | 'shadowban' | 'suspend';
+export type { Severity, WordlistCategory } from './moderationWordlists';
 
-export interface ModerationViolation {
-  category:
-    | 'explicit_media_request'
-    | 'wallet_remittance'
-    | 'financial_begging'
-    | 'solicitation_sexpat'
-    | 'crypto_pig_butchering'
-    | 'off_platform_early';
-  penalty: number;
-  matchedKeywords: string[];
-  action: ModerationAction;
-}
+// ---------------------------------------------------------------------------
+// Normalization
+// ---------------------------------------------------------------------------
 
-export interface ModerationResult {
-  isClean: boolean;
-  violations: ModerationViolation[];
-  totalDeduction: number;
-  recommendedAction: ModerationAction;
-  flaggedPhrases: string[];
-}
+// Zero-width / invisible / bidi-control characters used to split words.
+const INVISIBLE_RE =
+  /[­͏؜ᅟᅠ឴឵᠋-᠏​-‏‪-‮⁠-⁯ㅤ︀-️﻿ﾠ]/g;
 
-export const MODERATION_RULES = {
-  // 1. Explicit Photo Demands & Nude Solicitation (-40 pts, quarantine/shadowban)
-  explicit_media_request: {
-    penalty: 40,
-    action: 'shadowban' as ModerationAction,
-    regex: /\b(send\s*nudes?|naked\s*(pics?|photos?)|nude\s*(pics?|photos?)|bold\s*(pics?|photos?)|spicy\s*(pics?|photos?)|pics?\s*without\s*clothes|take\s*off\s*(your\s*)?clothes|show\s*(me\s*)?(your\s*)?body|boob\s*pics?|send\s*(tits|pussy|dick)|dick\s*pic|show\s*(your\s*)?(pussy|chest|private\s*parts)|strip\s*on\s*cam|video\s*call\s*naked|pic\s*trade|nude\s*trade)\b/i,
-  },
-
-  // 2. Regional Mobile Wallets & Begging Rails (-35 pts, warn)
-  wallet_remittance: {
-    penalty: 35,
-    action: 'warn' as ModerationAction,
-    regex: /\b(gcash|g-cash|paymaya|maya\.ph|promptpay|prompt\s*pay|truemoney|true\s*wallet|aba\s*(pay|bank)|wing\s*bank|bakong|momo\s*wallet|zalopay|viettelpay|duitnow|palawan\s*express|cebuana|mlhuillier|western\s*union|moneygram|remitly|worldremit|pasaload|send\s*load)\b/i,
-  },
-
-  // 3. Direct Financial Begging & Hardship Traps (-30 pts, warn)
-  financial_begging: {
-    penalty: 30,
-    action: 'warn' as ModerationAction,
-    regex: /\b(send\s*pamasahe|fare\s*money|money\s*for\s*(my\s*)?rent|help\s*with\s*(my\s*)?rent|hospital\s*bills?|urgent\s*money|need\s*financial\s*(help|support)|monthly\s*allowance|looking\s*for\s*(a\s*)?sponsor|need\s*(a\s*)?sponsor|spoil\s*me\s*financially|generous\s*(man|guy))\b/i,
-  },
-
-  // 4. Sexpat & Escort Solicitation (-45 pts, quarantine/shadowban)
-  solicitation_sexpat: {
-    penalty: 45,
-    action: 'shadowban' as ModerationAction,
-    regex: /\b(bar\s*fine|barfine|what('?s|\s+is)\s+your\s+rate\b|(my|your)\s*rates?\s*(for\s*(the\s*)?(night|hour|date))|hourly\s*rate|overnight\s*rate|short\s*time|long\s*time|pay\s*per\s*meet|\bppm\b|sugar\s*baby|sugar\s*daddy|nsa\s*arrangement|freelance\s*(girl|escort|worker)|happy\s*ending\s*massage|outcall\s*service|incall\s*service)\b/i,
-  },
-
-  // 5. Crypto Pig Butchering (Token + guaranteed return/yield within proximity)
-  crypto_pig_butchering: {
-    penalty: 80,
-    action: 'suspend' as ModerationAction,
-    regex: /\b(crypto|forex|usdt|binance|metamask|trading)\b.{1,45}\b(invest(ment)?|guaranteed?\s*(profit|returns?)|daily\s*yield|passive\s*income|deposit)\b|\b(invest(ment)?|guaranteed?\s*(profit|returns?)|daily\s*yield|passive\s*income|deposit)\b.{1,45}\b(crypto|forex|usdt|binance|metamask|trading)\b/i,
-  },
-
-  // 6. Premature Off-Platform Funneling
-  off_platform_early: {
-    penalty: 15,
-    action: 'warn' as ModerationAction,
-    regex: /\b((add|message|chat|dm|pm|text|contact)\s*me\s*(on|via|at)?\s*(whatsapp|telegram|viber|line|tg|wa|wechat)|here('?s|\s+is)\s+(my\s+)?(whatsapp|telegram|viber|line|tg|wa|wechat)|(my|your)\s*(tg|viber|whatsapp|line|wechat)\s*(is|:)?|\b(whatsapp|telegram|viber|line|wechat|\btg\b)\s*[:#@]\s*[\w\+\.\-_]{4,}|\b(whatsapp|telegram|viber)\b[^.\n]{0,20}\b(\+|0)[\d\s-]{7,14}\b)\b/i,
-  },
+const LEET_COMMON: Record<string, string> = {
+  '@': 'a',
+  '4': 'a',
+  '$': 's',
+  '5': 's',
+  '0': 'o',
+  '3': 'e',
+  '7': 't',
+  '8': 'b',
 };
 
-// Patterns for detecting external contact info sharing
-export const CONTACT_DETECTION_PATTERNS = [
-  /\b(whatsapp|telegram|viber|line|wechat|snapchat|signal|kakaotalk)\b/i,
-  /\b(wa\.me|t\.me|telegram\.me|ig:|instagram\.com)\b/i,
-  /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/,
-  /(?:(?:\+|00)[1-9]\d{0,2}[\s.-]?)?(?:\(?\d{2,4}\)?[\s.-]?)?\d{3,4}[\s.-]?\d{3,4}\b/,
-  /\b(?:\d[\s.-]*){8,14}\d\b/,
-  /\b((add|message|chat|text|contact)\s*me\s*(on|via|at)?\s*(ig|tg|wa)|my\s*(ig|tg|wa)\s*(is|:)?)\b/i,
-];
+function leet(text: string, oneAs: 'i' | 'l'): string {
+  let out = '';
+  for (const ch of text) {
+    if (ch === '1' || ch === '!' || ch === '|') out += oneAs;
+    else out += LEET_COMMON[ch] ?? ch;
+  }
+  return out;
+}
+
+/** Joins runs of 3+ single characters split by separators: "w-h-a-t-s" -> "whats". */
+function despace(text: string): string {
+  return text.replace(/(?<![a-z0-9])(?:[a-z0-9][^a-z0-9\n]{1,3}){2,}[a-z0-9](?![a-z0-9])/g, (m) =>
+    m.replace(/[^a-z0-9]/g, '')
+  );
+}
+
+function baseClean(text: string): string {
+  return text
+    .normalize('NFKC')
+    .replace(INVISIBLE_RE, '')
+    .normalize('NFD')
+    .replace(/[̀-ͯ]/g, '') // Latin combining accents only; Thai / Vietnamese base letters stay
+    .normalize('NFC')
+    .toLowerCase()
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+export interface NormalizedText {
+  plain: string;
+  /** Invisible characters stripped and whitespace collapsed, no leet mapping (digits intact). */
+  cleaned: string;
+  normalized: string;
+  despaced: string;
+  collapsed: string;
+  /** Every letter-based form to run wordlist patterns against. */
+  variants: string[];
+}
+
+export function normalizeForModeration(text: string): NormalizedText {
+  const plain = String(text || '').toLowerCase();
+  const cleaned = baseClean(String(text || ''));
+  const normalized = leet(cleaned, 'i');
+  const normalizedL = leet(cleaned, 'l');
+  const despaced = despace(normalized);
+  const despacedL = despace(normalizedL);
+  const collapsed = normalized.replace(/[^a-z0-9]/g, '');
+  const variants = Array.from(new Set([plain, cleaned, normalized, normalizedL, despaced, despacedL]));
+  return { plain, cleaned, normalized, despaced, collapsed, variants };
+}
+
+/** "nine one seven" -> "9 1 7"; used only for digit checks. */
+function spellDigits(text: string): string {
+  return text.replace(/\b(zero|one|two|three|four|five|six|seven|eight|nine)\b/g, (w) => NUMBER_WORDS[w] ?? w);
+}
+
+/** Number-like tokens written with letters ("O9I7") read back as digits. */
+function unleetDigits(text: string): string {
+  return text.replace(/[0-9oil|]{4,}/g, (tok) => ((tok.match(/\d/g) || []).length >= 3 ? tok.replace(/o/g, '0').replace(/[il|]/g, '1') : tok));
+}
+
+// ---------------------------------------------------------------------------
+// Contact sharing
+// ---------------------------------------------------------------------------
+
+const EMAIL_RE = /\b[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}\b/;
+const EMAIL_OBFUSCATED_RE =
+  /\b[a-z0-9._%+-]{2,}\s*(?:\(at\)|\[at\]|\{at\}|\sat\s)\s*(?:gmail|yahoo|hotmail|outlook|icloud|proton\w*|live|ymail)\s*(?:\.|\(dot\)|\[dot\]|\sdot\s)\s*(?:com|net|me|co)\b/;
+const CALL_ME_AT_RE =
+  /\b(call|text|ring|reach|message|msg|sms|viber|whatsapp)\s+me\s+(at|on|@)\s*(\+?\d[\d\s().-]{5,}\d|@[a-z0-9_.]{3,})/;
+const NUMBER_IS_RE = /\b(my|here('?s|\s+is)\s+my)\s+(number|digits|cell|mobile|phone)\s*(is|:|=)?\s*\+?\d[\d\s().-]{5,}\d/;
+const DIGIT_RUN_RE = /\+?\d[\d\s().-]{5,}\d/g;
+
+/** 8-15 digit runs that look like phone numbers (two plain 4-digit years / round numbers do not). */
+function hasPhoneNumber(text: string): boolean {
+  for (const m of text.match(DIGIT_RUN_RE) || []) {
+    const digits = m.replace(/\D/g, '');
+    if (digits.length < 8 || digits.length > 15) continue;
+    const groups = m.trim().split(/[\s().+-]+/).filter(Boolean);
+    // Lists of years (2019 2020) and round amounts (500 000, 1000 - 2000) are not phone numbers.
+    const allYears = groups.length > 1 && groups.every((g) => g.length === 4 && Number(g) >= 1900 && Number(g) <= 2099);
+    const roundAmounts = groups.length > 1 && groups.slice(1).every((g) => /^0+$/.test(g) || g.endsWith('00')) && groups[0].length <= 4;
+    if (allYears || roundAmounts) continue;
+    return true;
+  }
+  return false;
+}
+
+export interface ContactCheck {
+  detected: boolean;
+  /** Only found after normalization (leetspeak, split letters, invisible characters, spelled digits). */
+  evasion: boolean;
+  matches: string[];
+}
+
+function contactMatchesIn(letterForms: string[], digitForms: string[], collapsed: string | null, direct: boolean): string[] {
+  const found: string[] = [];
+  for (const form of letterForms) {
+    for (const re of CONTACT_PLATFORM_PATTERNS) {
+      const m = form.match(re);
+      if (m) found.push(m[0]);
+    }
+  }
+  if (collapsed) {
+    for (const term of CONTACT_COLLAPSED_TERMS) if (collapsed.includes(term)) found.push(term);
+  }
+  for (const form of digitForms) {
+    // Spelled-out " dot " / "(at)" are evasion, so they only count on the normalized pass.
+    const dotted = direct ? form : form.replace(/\s*(?:\(dot\)|\[dot\]|\sdot\s)\s*/g, '.');
+    for (const re of CONTACT_LINK_PATTERNS) {
+      const m = dotted.match(re);
+      if (m) found.push(m[0]);
+    }
+    for (const re of direct ? [EMAIL_RE, CALL_ME_AT_RE, NUMBER_IS_RE] : [EMAIL_RE, EMAIL_OBFUSCATED_RE, CALL_ME_AT_RE, NUMBER_IS_RE]) {
+      const m = form.match(re);
+      if (m) found.push(m[0]);
+    }
+    if (hasPhoneNumber(form)) found.push('phone number');
+  }
+  return Array.from(new Set(found));
+}
+
+export function detectContactSharing(text: string): ContactCheck {
+  if (!text || typeof text !== 'string') return { detected: false, evasion: false, matches: [] };
+  const n = normalizeForModeration(text);
+
+  const direct = contactMatchesIn([n.plain], [n.plain], null, true);
+  if (direct.length > 0) return { detected: true, evasion: false, matches: direct };
+
+  const evasive = contactMatchesIn(
+    n.variants,
+    Array.from(new Set([n.cleaned, spellDigits(n.cleaned), unleetDigits(spellDigits(n.cleaned)), despace(spellDigits(n.cleaned))])),
+    n.collapsed,
+    false
+  );
+  return { detected: evasive.length > 0, evasion: evasive.length > 0, matches: evasive };
+}
+
+/** Patterns kept for callers that test raw text directly; detectContactSharing is the full check. */
+export const CONTACT_DETECTION_PATTERNS: RegExp[] = [...CONTACT_PLATFORM_PATTERNS, ...CONTACT_LINK_PATTERNS, EMAIL_RE];
 
 export function hasContactSharingIntent(text: string): boolean {
-  if (!text || typeof text !== 'string') return false;
-  return CONTACT_DETECTION_PATTERNS.some((pattern) => pattern.test(text));
+  return detectContactSharing(text).detected;
 }
+
+// ---------------------------------------------------------------------------
+// Substantive-conversation gate (contact sharing unlocks after 3 messages each)
+// ---------------------------------------------------------------------------
 
 /**
  * Validates whether a message has meaningful substance.
@@ -151,108 +260,93 @@ export function evaluateSubstantiveConversation(
   };
 }
 
-const MAX_PER_MESSAGE_PENALTY = 45;
+// ---------------------------------------------------------------------------
+// Scam / solicitation / harassment screening
+// ---------------------------------------------------------------------------
 
-function isSugarMatchNegated(text: string, matchIndex: number): boolean {
-  const windowStart = Math.max(0, matchIndex - 35);
-  const precedingSnippet = text.slice(windowStart, matchIndex).toLowerCase().trim();
-  return /\b(not|never|no|don't|dont|not\s*looking\s*for|hate)\s*(looking\s*for\s*)?(a\s*)?$/i.test(precedingSnippet);
+export interface ModerationViolation {
+  category: WordlistCategory;
+  severity: Severity;
+  matchedKeywords: string[];
 }
 
-export function evaluateMessageModeration(
-  text: string,
-  isUnlocked = false
-): ModerationResult {
-  if (!text || typeof text !== 'string') {
-    return { isClean: true, violations: [], totalDeduction: 0, recommendedAction: 'allow', flaggedPhrases: [] };
-  }
+export interface ModerationResult {
+  isClean: boolean;
+  violations: ModerationViolation[];
+  /** 'high' -> quarantine, 'medium' -> deliver with a caution banner, null -> clean. */
+  highestSeverity: Severity | null;
+  flaggedPhrases: string[];
+}
 
-  const violations: ModerationViolation[] = [];
-  const allMatchedPhrases: string[] = [];
+/** "not looking for a sugar daddy" is a boundary, not solicitation. */
+function isNegated(text: string, matchIndex: number): boolean {
+  const before = text.slice(Math.max(0, matchIndex - 35), matchIndex).trim();
+  return /\b(not|never|no|don'?t|dont|won'?t|hate|against)\s*(looking\s*for\s*|into\s*|want\s*|a\s*)*(an?\s*)?$/.test(before);
+}
 
-  for (const [key, rule] of Object.entries(MODERATION_RULES)) {
-    // If the conversation is mature/unlocked, suppress off_platform_early warnings
-    if (key === 'off_platform_early' && isUnlocked) {
-      continue;
-    }
+const NEGATABLE = /^(sugar|nsa|escort)/;
 
-    const globalRegex = new RegExp(rule.regex.source, 'gi');
-    let match: RegExpExecArray | null;
-    const matchedPhrases: string[] = [];
+export function evaluateMessageModeration(text: string): ModerationResult {
+  const clean: ModerationResult = { isClean: true, violations: [], highestSeverity: null, flaggedPhrases: [] };
+  if (!text || typeof text !== 'string') return clean;
 
-    while ((match = globalRegex.exec(text)) !== null) {
-      const phrase = match[0];
-      const matchIndex = match.index;
+  const n = normalizeForModeration(text);
+  const byCategory = new Map<WordlistCategory, ModerationViolation>();
+  const add = (category: WordlistCategory, severity: Severity, phrase: string) => {
+    const v = byCategory.get(category) ?? { category, severity, matchedKeywords: [] };
+    if (!v.matchedKeywords.includes(phrase)) v.matchedKeywords.push(phrase);
+    byCategory.set(category, v);
+  };
 
-      if (key === 'solicitation_sexpat' && /sugar\s*(baby|daddy)/i.test(phrase)) {
-        if (isSugarMatchNegated(text, matchIndex)) {
-          continue;
+  for (const rule of MODERATION_WORDLISTS) {
+    for (const re of rule.patterns) {
+      for (const form of n.variants) {
+        const g = new RegExp(re.source, 'g');
+        let m: RegExpExecArray | null;
+        while ((m = g.exec(form)) !== null) {
+          if (m[0].length === 0) {
+            g.lastIndex++;
+            continue;
+          }
+          if (NEGATABLE.test(m[0]) && isNegated(form, m.index)) continue;
+          add(rule.category, rule.severity, m[0].trim());
         }
       }
-
-      matchedPhrases.push(phrase);
-    }
-
-    if (matchedPhrases.length > 0) {
-      const uniqueMatches = Array.from(new Set(matchedPhrases));
-      allMatchedPhrases.push(...uniqueMatches);
-
-      violations.push({
-        category: key as ModerationViolation['category'],
-        penalty: rule.penalty,
-        matchedKeywords: uniqueMatches,
-        action: rule.action,
-      });
     }
   }
-
-  if (violations.length === 0) {
-    return { isClean: true, violations: [], totalDeduction: 0, recommendedAction: 'allow', flaggedPhrases: [] };
+  for (const { term, category, severity } of COLLAPSED_ABUSE_TERMS) {
+    if (n.collapsed.includes(term)) add(category, severity, term);
   }
 
-  const hasSuspend = violations.some((v) => v.action === 'suspend');
-  const hasShadowban = violations.some((v) => v.action === 'shadowban');
+  // A payment-rail mention inside an explicit scam request is already covered by financial_scam.
+  if (byCategory.has('financial_scam')) byCategory.delete('wallet_mention');
 
-  const rawDeduction = violations.reduce((acc, v) => acc + v.penalty, 0);
-  const totalDeduction = hasSuspend ? 100 : Math.min(MAX_PER_MESSAGE_PENALTY, rawDeduction);
-
-  const recommendedAction: ModerationAction = hasSuspend
-    ? 'suspend'
-    : hasShadowban
-      ? 'shadowban'
-      : 'warn';
+  const violations = Array.from(byCategory.values());
+  if (violations.length === 0) return clean;
 
   return {
     isClean: false,
     violations,
-    totalDeduction,
-    recommendedAction,
-    flaggedPhrases: allMatchedPhrases,
+    highestSeverity: violations.some((v) => v.severity === 'high') ? 'high' : 'medium',
+    flaggedPhrases: violations.flatMap((v) => v.matchedKeywords),
   };
 }
 
-export function applyPenaltyToScore(currentScore: number, deduction: number): number {
-  return Math.max(0, Math.min(100, currentScore - deduction));
-}
-
-export function detectFinancialSolicitation(text: string): {
-  hasViolation: boolean;
-  matchedKeywords: string[];
-  category: string | null;
-  action: ModerationAction;
-  penalty: number;
-} {
-  const result = evaluateMessageModeration(text);
-  const violation = result.violations.find((v) =>
-    v.category === 'wallet_remittance' ||
-    v.category === 'financial_begging' ||
-    v.category === 'crypto_pig_butchering'
-  );
-  return {
-    hasViolation: !result.isClean,
-    matchedKeywords: result.flaggedPhrases,
-    category: violation ? violation.category : null,
-    action: result.recommendedAction,
-    penalty: result.totalDeduction,
-  };
+/** Bios are public: any high-severity hit or contact detail is rejected outright. */
+export function evaluateBioModeration(bio: string): { ok: boolean; reason?: string } {
+  const text = String(bio || '');
+  if (detectContactSharing(text).detected) {
+    return {
+      ok: false,
+      reason: 'Please keep contact details (phone numbers, socials, messaging apps) out of your bio. You can share them in chat once you both have exchanged a few messages.',
+    };
+  }
+  const mod = evaluateMessageModeration(text);
+  if (mod.highestSeverity === 'high') {
+    return { ok: false, reason: 'Your bio contains wording that is not allowed on asiansin.love. Please revise it.' };
+  }
+  if (mod.violations.some((v) => v.category === 'harassment_insult')) {
+    return { ok: false, reason: 'Please keep your bio friendly and respectful.' };
+  }
+  return { ok: true };
 }

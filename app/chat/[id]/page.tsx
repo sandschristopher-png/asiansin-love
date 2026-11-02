@@ -31,8 +31,12 @@ import { VOICE_NOTE_MAX_MS, formatSeconds } from '@/lib/audio';
 import { InAppToast } from '@/components/InAppToast';
 import { getPresenceStatus } from '@/lib/presence';
 import { usePresentUserIds } from '@/lib/realtimePresence';
+import { toList } from '@/lib/rhythm';
+import { isRestricted } from '@/lib/reputation';
+import { RepBadge, RhythmPill } from '@/components/profile/RhythmBadges';
 
 const VOICE_LOCKED_MESSAGE = `Voice notes unlock after both members exchange ${CONTACT_UNLOCK_TURNS} substantive messages (15+ characters each).`;
+const VOICE_REP_LOCKED_MESSAGE = 'Voice notes are paused while your account is under review. Text messages still work.';
 
 interface ChatMessage {
   id: string;
@@ -51,12 +55,6 @@ interface ChatMessage {
 interface StarterChip {
   label: string;
   text: string;
-}
-
-/** profiles.languages / interests may be an array or a comma-separated string. */
-function toList(v: unknown): string[] {
-  const raw = Array.isArray(v) ? v : typeof v === 'string' ? v.split(',') : [];
-  return raw.map((x) => String(x || '').trim()).filter(Boolean);
 }
 
 /** 2-3 tap-to-fill conversation starters from overlapping interests, languages and their city. */
@@ -130,12 +128,17 @@ export default function ChatConversationPage() {
     country: '',
     lastActive: null as string | null,
     showActive: true,
+    replyPace: null as string | null,
   });
+  const [myRep, setMyRep] = useState(100);
 
   const [icebreakerPrompt, setIcebreakerPrompt] = useState<string | null>(null);
   const [showIcebreaker, setShowIcebreaker] = useState(true);
   const [starterChips, setStarterChips] = useState<StarterChip[]>([]);
   const [contactUnlocked, setContactUnlocked] = useState(false);
+  // Same rules as /api/messages/voice: contact gate unlocked and sender not under review (< 70 rep).
+  const voiceAllowed = contactUnlocked && !isRestricted(myRep);
+  const voiceLockedMessage = isRestricted(myRep) ? VOICE_REP_LOCKED_MESSAGE : VOICE_LOCKED_MESSAGE;
   const [voiceSending, setVoiceSending] = useState(false);
   const voice = useVoiceRecorder(VOICE_NOTE_MAX_MS);
   const [toast, setToast] = useState<string | null>(null);
@@ -270,7 +273,7 @@ export default function ChatConversationPage() {
       const [myProfRes, targetProfRes] = await Promise.all([
         supabase
           .from('profiles')
-          .select('is_plus, plus_enabled, membership_tier, interests, languages')
+          .select('is_plus, plus_enabled, membership_tier, interests, languages, reputation_score')
           .eq('id', user.id)
           .maybeSingle(),
         isUuid
@@ -292,6 +295,7 @@ export default function ChatConversationPage() {
         if (isMounted) setIsPlus(true);
       }
       const myInterests: string[] = Array.isArray(myProf?.interests) ? myProf.interests : [];
+      if (isMounted && typeof myProf?.reputation_score === 'number') setMyRep(myProf.reputation_score);
 
       const profData: any = targetProfRes.data;
       const targetUuid: string | null = profData?.id || (isUuid ? rawParam : null);
@@ -337,7 +341,21 @@ export default function ChatConversationPage() {
           country: profData.country || '',
           lastActive: profData.last_active || null,
           showActive: profData.show_active_status !== false,
+          replyPace: null,
         });
+
+        // Rhythm badge column arrives with 20261106_reputation_rhythm.sql; a missing column must not
+        // break the main profile query, so it is read separately.
+        supabase
+          .from('profiles')
+          .select('reply_pace')
+          .eq('id', targetUuid)
+          .maybeSingle()
+          .then(({ data: rhythm }) => {
+            if (isMounted && rhythm?.reply_pace) {
+              setTargetInfo((prev) => ({ ...prev, replyPace: rhythm.reply_pace as string }));
+            }
+          });
 
         const retiredTags = new Set(['nature walks', 'gaming', 'entrepreneurship']);
         const theirInterests: string[] = (Array.isArray(profData.interests) ? profData.interests : []).filter(
@@ -583,8 +601,8 @@ export default function ChatConversationPage() {
   }, []);
 
   const startVoiceNote = () => {
-    if (!contactUnlocked) {
-      setToast(VOICE_LOCKED_MESSAGE);
+    if (!voiceAllowed) {
+      setToast(voiceLockedMessage);
       return;
     }
     setErrorBanner(null);
@@ -751,11 +769,12 @@ export default function ChatConversationPage() {
                     (Boolean(resolvedTargetUuid && presentIds.has(resolvedTargetUuid)) || Boolean(presence?.isOnline));
                   const activity = !online && presence && presence.statusLabel !== 'Offline' ? presence.statusLabel : '';
                   const label = online ? 'Online' : [activity, city].filter(Boolean).join(' · ');
-                  if (!label) return null;
+                  if (!label && !targetInfo.replyPace) return null;
                   return (
-                    <div className="flex items-center gap-1.5 mt-0.5">
+                    <div className="flex items-center gap-1.5 mt-0.5 min-w-0">
                       {online && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block shrink-0" />}
-                      <span className="text-[11px] text-[#7A7289] font-medium truncate">{label}</span>
+                      {label && <span className="text-[11px] text-[#7A7289] font-medium truncate">{label}</span>}
+                      <RhythmPill field="reply_pace" value={targetInfo.replyPace} className="shrink-0" />
                     </div>
                   );
                 })()}
@@ -766,18 +785,7 @@ export default function ChatConversationPage() {
 
         <div className="flex items-center gap-1.5 shrink-0">
           {!isInitialLoading && (
-            <button
-              type="button"
-              onClick={() => setShowRepModal(true)}
-              className={
-                'px-2.5 py-1 rounded-full text-[10px] font-semibold transition active:scale-95 cursor-pointer border ' +
-                (targetInfo.rep < 60
-                  ? 'bg-amber-50 border-amber-300 text-amber-800'
-                  : 'bg-[#F5F2FC] border-[#E4DDF2] text-[#6555B8] hover:bg-[#EAE3F8]')
-              }
-            >
-              {targetInfo.rep}% Rep
-            </button>
+            <RepBadge score={targetInfo.rep} onClick={() => setShowRepModal(true)} />
           )}
           <button
             type="button"
@@ -844,7 +852,7 @@ export default function ChatConversationPage() {
               </div>
             )}
 
-            {targetInfo.rep < 60 && (
+            {isRestricted(targetInfo.rep) && (
               <div className="mb-3 p-3 rounded-2xl bg-amber-50/90 border border-amber-200 text-xs text-amber-900 flex items-start gap-2.5">
                 <ShieldAlert className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
                 <div className="leading-relaxed">
@@ -1130,17 +1138,17 @@ export default function ChatConversationPage() {
                 <button
                   type="button"
                   onClick={startVoiceNote}
-                  aria-label={contactUnlocked ? 'Record a voice note' : 'Voice notes are locked'}
-                  title={contactUnlocked ? 'Record a voice note (up to 30s)' : VOICE_LOCKED_MESSAGE}
+                  aria-label={voiceAllowed ? 'Record a voice note' : 'Voice notes are locked'}
+                  title={voiceAllowed ? 'Record a voice note (up to 30s)' : voiceLockedMessage}
                   className={`w-10 h-10 rounded-full border flex items-center justify-center transition cursor-pointer active:scale-95 ${
-                    contactUnlocked
+                    voiceAllowed
                       ? 'border-[#E2DBF0] bg-[#F3EFFC] text-[#6555B8] hover:bg-[#EBE5FA]'
                       : 'border-[#ECE8F4] bg-white text-[#B6AEC7]'
                   }`}
                 >
                   <Mic className="w-4 h-4" />
                 </button>
-                {!contactUnlocked && (
+                {!voiceAllowed && (
                   <span
                     aria-hidden
                     className="pointer-events-none absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-white text-[#6555B8] rounded-full flex items-center justify-center shadow-xs border border-[#ECE8F4]"
@@ -1165,7 +1173,7 @@ export default function ChatConversationPage() {
       <InAppToast
         message={toast}
         onClose={closeToast}
-        icon={toast === VOICE_LOCKED_MESSAGE ? <Lock className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
+        icon={toast === VOICE_LOCKED_MESSAGE || toast === VOICE_REP_LOCKED_MESSAGE ? <Lock className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
       />
 
       <UpgradeModal

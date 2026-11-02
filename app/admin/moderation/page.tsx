@@ -15,6 +15,7 @@ import {
   X
 } from 'lucide-react';
 import { AdminTabs } from '@/components/admin/AdminTabs';
+import { REPUTATION_RULES } from '@/lib/reputation';
 
 interface ModeratedMessage {
   id: string;
@@ -43,7 +44,7 @@ export default function AdminModerationPage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [activeMessage, setActiveMessage] = useState<ModeratedMessage | null>(null);
   const [actionLoading, setActionLoading] = useState(false);
-  const [penaltyPoints, setPenaltyPoints] = useState<number>(10);
+  const [penaltyPoints, setPenaltyPoints] = useState<number>(REPUTATION_RULES.quarantineConfirmed);
   const [reviewNotes, setReviewNotes] = useState('');
   const [actionFeedback, setActionFeedback] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 

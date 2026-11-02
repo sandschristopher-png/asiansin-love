@@ -13,11 +13,23 @@ import {
   Sparkles,
 } from 'lucide-react';
 import { AdminTabs } from '@/components/admin/AdminTabs';
+import { getPoseById } from '@/lib/poses';
+import { REPUTATION_RULES } from '@/lib/reputation';
 
+/** Pre-screen shape from older multi-pose submissions. */
 interface AiVerdict {
   isSafe: boolean;
   poseMatchesPrompt: boolean;
   reason: string;
+}
+
+/** Gemini pre-screen stored with each selfie submission (scores only; never grants the badge). */
+interface SelfieReview {
+  pose_matches: boolean;
+  same_person: boolean;
+  face_match_confidence: number;
+  spoof_detected: boolean;
+  summary: string;
 }
 
 interface IdentityItem {
@@ -31,7 +43,10 @@ interface IdentityItem {
     submittedAt: string | null;
     photos: string[];
     poses: string | null;
+    poseId?: string | null;
     ai: AiVerdict | null;
+    review?: SelfieReview | null;
+    fastTrack?: boolean;
   };
 }
 
@@ -52,7 +67,21 @@ interface ReportItem {
   created_at?: string;
 }
 
-type Kind = 'identity' | 'avatar';
+type Kind = 'identity' | 'avatar' | 'report';
+
+const Chip = ({ tone, children }: { tone: 'good' | 'bad' | 'neutral'; children: React.ReactNode }) => (
+  <span
+    className={`inline-flex items-center px-2 py-0.5 rounded-full border text-[10px] font-semibold ${
+      tone === 'good'
+        ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
+        : tone === 'bad'
+          ? 'bg-rose-50 border-rose-200 text-rose-700'
+          : 'bg-[#F3EFFC] border-[#E2DBF0] text-[#6555B8]'
+    }`}
+  >
+    {children}
+  </span>
+);
 
 const nameOf = (p: { username?: string | null; full_name?: string | null; id: string }) =>
   p.username ? `@${p.username}` : p.full_name || `User ${p.id.slice(0, 8)}`;
@@ -65,6 +94,7 @@ export default function AdminVerificationsPage() {
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
+  const [rejectReasons, setRejectReasons] = useState<Record<string, string>>({});
 
   const load = useCallback(async () => {
     try {
@@ -87,27 +117,37 @@ export default function AdminVerificationsPage() {
     load();
   }, [load]);
 
-  const decide = async (kind: Kind, userId: string, action: 'approve' | 'reject') => {
-    const key = `${kind}:${userId}`;
+  /** `id` is the member id, or the report id when kind is 'report'. */
+  const decide = async (kind: Kind, id: string, action: 'approve' | 'reject') => {
+    const key = `${kind}:${id}`;
     try {
       setBusy(key);
       setFeedback(null);
       const res = await fetch('/api/admin/verifications', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ kind, userId, action }),
+        body: JSON.stringify(
+          kind === 'report'
+            ? { kind, reportId: id, action }
+            : { kind, userId: id, action, reason: action === 'reject' ? rejectReasons[id] || '' : undefined }
+        ),
       });
       const data = await res.json();
       if (!res.ok || !data.success) throw new Error(data.error || 'Action failed');
 
-      if (kind === 'identity') setIdentity((prev) => prev.filter((i) => i.id !== userId));
-      else setAvatars((prev) => prev.filter((a) => a.id !== userId));
+      if (kind === 'identity') setIdentity((prev) => prev.filter((i) => i.id !== id));
+      else if (kind === 'avatar') setAvatars((prev) => prev.filter((a) => a.id !== id));
+      else setReports((prev) => prev.filter((r) => r.id !== id));
       setFeedback({
         type: 'success',
         text:
           kind === 'identity'
             ? action === 'approve' ? 'Identity approved. Verified badge is live.' : 'Verification rejected. Member was notified.'
-            : action === 'approve' ? 'Main photo approved.' : 'Main photo rejected. Member was notified.',
+            : kind === 'avatar'
+              ? action === 'approve' ? 'Main photo approved.' : 'Main photo rejected. Member was notified.'
+              : action === 'approve'
+                ? `Report confirmed. Member docked ${REPUTATION_RULES.confirmedReport} reputation points.`
+                : 'Report dismissed.',
       });
     } catch (err: any) {
       setFeedback({ type: 'error', text: err.message || 'Action failed.' });
@@ -116,7 +156,15 @@ export default function AdminVerificationsPage() {
     }
   };
 
-  const ActionButtons = ({ kind, userId }: { kind: Kind; userId: string }) => {
+  const ActionButtons = ({
+    kind,
+    userId,
+    labels = ['Approve', 'Reject'],
+  }: {
+    kind: Kind;
+    userId: string;
+    labels?: [string, string];
+  }) => {
     const isBusy = busy === `${kind}:${userId}`;
     return (
       <div className="grid grid-cols-2 gap-2 pt-1">
@@ -126,7 +174,7 @@ export default function AdminVerificationsPage() {
           className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-[#6555B8] hover:bg-[#5344A6] text-white text-xs font-semibold disabled:opacity-50 min-h-[42px]"
         >
           {isBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
-          Approve
+          {labels[0]}
         </button>
         <button
           onClick={() => decide(kind, userId, 'reject')}
@@ -134,7 +182,7 @@ export default function AdminVerificationsPage() {
           className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 text-xs font-semibold disabled:opacity-50 min-h-[42px]"
         >
           {isBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <XCircle className="w-4 h-4" />}
-          Reject
+          {labels[1]}
         </button>
       </div>
     );
@@ -216,7 +264,7 @@ export default function AdminVerificationsPage() {
             <section className="space-y-3">
               <SectionTitle icon={<BadgeCheck className="w-4 h-4 text-[#6555B8]" />} title="Identity verification" count={identity.length} />
               {identity.length === 0 ? (
-                <Empty text="No pending identity checks." />
+                <Empty text="All verifications caught up" />
               ) : (
                 identity.map((item) => (
                   <div key={item.id} className="p-4 rounded-2xl bg-white border border-[#ECE8F4] shadow-sm space-y-3">
@@ -235,45 +283,96 @@ export default function AdminVerificationsPage() {
                       </div>
                     </div>
 
-                    {item.submission.poses && (
-                      <p className="text-[11px] text-[#6C637B]">
-                        Requested poses: <span className="font-semibold text-[#1C1924]">{item.submission.poses}</span>
-                      </p>
-                    )}
+                    {(() => {
+                      const sub = item.submission;
+                      const pose = getPoseById(sub.poseId);
+                      const review = sub.review;
+                      return (
+                        <>
+                          {sub.photos.length > 0 ? (
+                            <div className="grid grid-cols-3 gap-2">
+                              <figure className="space-y-1">
+                                {item.avatar_url ? (
+                                  <img src={item.avatar_url} alt="Profile photo" className="w-full aspect-[3/4] object-cover rounded-xl border border-[#ECE8F4]" />
+                                ) : (
+                                  <div className="w-full aspect-[3/4] rounded-xl bg-[#F3EFFC]" />
+                                )}
+                                <figcaption className="text-[10px] text-center text-[#9A93A8]">Main photo</figcaption>
+                              </figure>
+                              {sub.photos.map((url, i) => (
+                                <figure key={url} className="space-y-1">
+                                  <a href={url} target="_blank" rel="noreferrer">
+                                    <img src={url} alt={pose ? 'Selfie' : `Pose ${i + 1}`} className="w-full aspect-[3/4] object-cover rounded-xl border border-[#ECE8F4]" />
+                                  </a>
+                                  <figcaption className="text-[10px] text-center text-[#9A93A8]">{pose ? 'Captured selfie' : `Pose ${i + 1}`}</figcaption>
+                                </figure>
+                              ))}
+                              {pose && (
+                                <figure className="space-y-1">
+                                  <img src={pose.image} alt={pose.label} className="w-full aspect-[3/4] object-contain rounded-xl border border-[#ECE8F4] bg-[#F3EFFC]" />
+                                  <figcaption className="text-[10px] text-center text-[#9A93A8] leading-tight">{pose.label}</figcaption>
+                                </figure>
+                              )}
+                            </div>
+                          ) : (
+                            <p className="text-[11px] text-amber-700 bg-amber-50 border border-amber-200 rounded-xl p-2.5">
+                              No stored verification photo was found for this submission.
+                            </p>
+                          )}
 
-                    {item.submission.photos.length > 0 ? (
-                      <div className="grid grid-cols-3 gap-2">
-                        {item.avatar_url && (
-                          <figure className="space-y-1">
-                            <img src={item.avatar_url} alt="Profile photo" className="w-full aspect-square object-cover rounded-xl border border-[#ECE8F4]" />
-                            <figcaption className="text-[10px] text-center text-[#9A93A8]">Profile</figcaption>
-                          </figure>
-                        )}
-                        {item.submission.photos.map((url, i) => (
-                          <figure key={url} className="space-y-1">
-                            <a href={url} target="_blank" rel="noreferrer">
-                              <img src={url} alt={`Pose ${i + 1}`} className="w-full aspect-square object-cover rounded-xl border border-[#ECE8F4]" />
-                            </a>
-                            <figcaption className="text-[10px] text-center text-[#9A93A8]">Pose {i + 1}</figcaption>
-                          </figure>
-                        ))}
-                      </div>
-                    ) : (
-                      <p className="text-[11px] text-amber-700 bg-amber-50 border border-amber-200 rounded-xl p-2.5">
-                        No stored pose photos were found for this submission.
-                      </p>
-                    )}
+                          {!pose && sub.poses && (
+                            <p className="text-[11px] text-[#6C637B]">
+                              Requested poses: <span className="font-semibold text-[#1C1924]">{sub.poses}</span>
+                            </p>
+                          )}
 
-                    {item.submission.ai && (
-                      <div className="flex items-start gap-2 text-[11px] bg-[#F9F8FC] border border-[#ECE8F4] rounded-xl p-2.5 text-[#3D3650]">
-                        <Sparkles className="w-3.5 h-3.5 text-[#6555B8] shrink-0 mt-0.5" />
-                        <span>
-                          AI pre-check: {item.submission.ai.isSafe ? 'safe' : 'NOT safe'},{' '}
-                          {item.submission.ai.poseMatchesPrompt ? 'pose matches' : 'pose does NOT match'}.{' '}
-                          <span className="text-[#6C637B]">{item.submission.ai.reason}</span>
-                        </span>
-                      </div>
-                    )}
+                          {review ? (
+                            <div className="space-y-2 bg-[#F9F8FC] border border-[#ECE8F4] rounded-xl p-2.5">
+                              <div className="flex flex-wrap gap-1.5">
+                                {sub.fastTrack && <Chip tone="neutral">⚡ Fast-track</Chip>}
+                                <Chip tone={review.pose_matches ? 'good' : 'bad'}>
+                                  {review.pose_matches ? 'Pose Matched' : 'Pose Mismatched'}
+                                </Chip>
+                                <Chip tone={review.same_person && review.face_match_confidence >= 85 ? 'good' : review.same_person ? 'neutral' : 'bad'}>
+                                  Match Confidence {review.face_match_confidence}%
+                                </Chip>
+                                <Chip tone={review.spoof_detected ? 'bad' : 'good'}>
+                                  {review.spoof_detected ? 'Spoof Suspect' : 'Spoof Clean'}
+                                </Chip>
+                              </div>
+                              {review.summary && (
+                                <p className="flex items-start gap-1.5 text-[11px] text-[#3D3650]">
+                                  <Sparkles className="w-3.5 h-3.5 text-[#6555B8] shrink-0 mt-0.5" />
+                                  <span>{review.summary}</span>
+                                </p>
+                              )}
+                            </div>
+                          ) : sub.ai ? (
+                            <div className="flex items-start gap-2 text-[11px] bg-[#F9F8FC] border border-[#ECE8F4] rounded-xl p-2.5 text-[#3D3650]">
+                              <Sparkles className="w-3.5 h-3.5 text-[#6555B8] shrink-0 mt-0.5" />
+                              <span>
+                                AI pre-check: {sub.ai.isSafe ? 'safe' : 'NOT safe'},{' '}
+                                {sub.ai.poseMatchesPrompt ? 'pose matches' : 'pose does NOT match'}.{' '}
+                                <span className="text-[#6C637B]">{sub.ai.reason}</span>
+                              </span>
+                            </div>
+                          ) : (
+                            <p className="text-[11px] text-[#6C637B] bg-[#F9F8FC] border border-[#ECE8F4] rounded-xl p-2.5">
+                              AI pre-screen unavailable for this submission. Review the photos manually.
+                            </p>
+                          )}
+                        </>
+                      );
+                    })()}
+
+                    <input
+                      type="text"
+                      value={rejectReasons[item.id] || ''}
+                      onChange={(e) => setRejectReasons((prev) => ({ ...prev, [item.id]: e.target.value }))}
+                      maxLength={300}
+                      placeholder="Rejection reason (optional, sent to the member)"
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-[#ECE8F4] text-xs text-[#1C1924] placeholder:text-[#9A93A8] focus:outline-none focus:border-[#6555B8]"
+                    />
 
                     <ActionButtons kind="identity" userId={item.id} />
                   </div>
@@ -329,6 +428,7 @@ export default function AdminVerificationsPage() {
                       · by <span className="font-mono">{r.reporter_id.slice(0, 8)}</span>
                     </p>
                     {r.details && <p className="text-[#6C637B] break-words">{r.details}</p>}
+                    <ActionButtons kind="report" userId={r.id} labels={[`Confirm (-${REPUTATION_RULES.confirmedReport} rep)`, 'Dismiss']} />
                   </div>
                 ))
               )}

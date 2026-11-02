@@ -19,6 +19,9 @@ import { captureCurrentLocation } from '@/lib/location';
 import { supabase } from '@/lib/supabase/client';
 import { INTENT_OPTIONS } from '@/lib/intents';
 import { resolveCountry } from '@/lib/countries';
+import { evaluateBioModeration } from '@/lib/moderation';
+import { saveBioAndRhythm } from '@/lib/profileApi';
+import { EMPTY_RHYTHM, RhythmSelectors, type RhythmValues } from '@/components/profile/RhythmBadges';
 
 const GENDER_OPTIONS = [
   { val: 'male', label: 'Man' },
@@ -96,6 +99,7 @@ export default function OnboardingPage() {
   const [height, setHeight] = useState('');
   const [weight, setWeight] = useState('');
   const [bio, setBio] = useState('');
+  const [rhythm, setRhythm] = useState<RhythmValues>(EMPTY_RHYTHM);
   
   const [interests, setInterests] = useState<string[]>([]);
 
@@ -328,6 +332,12 @@ export default function OnboardingPage() {
       setErrorMessage('Please write at least 20 characters in your About Me bio.');
       return;
     }
+    // Instant feedback; /api/profile repeats this check server-side when saving.
+    const bioCheck = evaluateBioModeration(bio);
+    if (!bioCheck.ok) {
+      setErrorMessage(bioCheck.reason || 'Please revise your bio.');
+      return;
+    }
     if (interests.length === 0) {
       setErrorMessage('Please select at least one interest or hobby.');
       return;
@@ -448,13 +458,10 @@ export default function OnboardingPage() {
           longitude,
           height,
           weight,
-          bio: bio.trim(),
-          
           intent,
           interests,
           avatar_url: primaryPhoto,
           photos: orderedPhotos,
-          onboarding_completed: true,
           reputation_score: 100,
           reputation_tier: 'Standard',
           updated_at: new Date().toISOString(),
@@ -462,6 +469,21 @@ export default function OnboardingPage() {
 
       if (error) {
         throw new Error(error.message);
+      }
+
+      // Bio + rhythm badges go through the screened server route; onboarding only completes once
+      // the bio is accepted.
+      const extras = await saveBioAndRhythm({ bio: bio.trim(), ...rhythm });
+      if (!extras.ok) {
+        setStep(4);
+        throw new Error(extras.error);
+      }
+      const { error: doneError } = await supabase
+        .from('profiles')
+        .update({ onboarding_completed: true })
+        .eq('id', userId);
+      if (doneError) {
+        throw new Error(doneError.message);
       }
 
       router.push('/profile');
@@ -847,6 +869,11 @@ export default function OnboardingPage() {
                 placeholder="Share a bit about your personality, daily life, and values..."
                 className="w-full p-3.5 rounded-2xl bg-white border border-[#DDD7E5] text-xs sm:text-sm text-[#1C1924] placeholder-[#8C849B] focus:outline-none focus:border-[#6555b8] resize-none"
               />
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-[#F9F8FC] border border-[#ECE8F4] space-y-1">
+              <p className="text-[11px] text-[#6C637B]">Optional: shown as badges on your profile.</p>
+              <RhythmSelectors value={rhythm} onChange={setRhythm} />
             </div>
 
 

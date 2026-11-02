@@ -21,6 +21,9 @@ import { supabase } from '@/lib/supabase/client';
 import { AudioPill } from '@/components/AudioPill';
 import { isTrustedVoiceIntroUrl } from '@/lib/audio';
 import { resolveCountry } from '@/lib/countries';
+import { rhythmOption, sharedTraits, toList } from '@/lib/rhythm';
+import { scoreOf } from '@/lib/reputation';
+import { InCommonCard, RepBadge, RhythmPill } from '@/components/profile/RhythmBadges';
 
 interface HighlightRow {
   tag_id: string;
@@ -74,6 +77,7 @@ export default function PublicProfilePage() {
   const [loading, setLoading] = useState(true);
   const [profile, setProfile] = useState<any>(null);
   const [viewerInterests, setViewerInterests] = useState<string[]>([]);
+  const [viewerLanguages, setViewerLanguages] = useState<string[]>([]);
   const [highlights, setHighlights] = useState<HighlightRow[]>([]);
   const [currentPhotoIdx, setCurrentPhotoIdx] = useState(0);
   const touchStartX = useRef<number | null>(null);
@@ -99,13 +103,14 @@ export default function PublicProfilePage() {
         if (currentUser) {
           const { data: viewerData } = await supabase
             .from('profiles')
-            .select('interests')
+            .select('interests, languages')
             .eq('id', currentUser.id)
             .maybeSingle();
 
           if (Array.isArray(viewerData?.interests)) {
             setViewerInterests(viewerData.interests);
           }
+          setViewerLanguages(toList(viewerData?.languages));
 
           const { data: existingSpark } = await supabase
             .from('sparks')
@@ -274,18 +279,27 @@ export default function PublicProfilePage() {
     profile.looking_for || profile.relationship_goal || profile.relationship_intent || profile.intentions
   );
 
-  const languagesList: string[] = Array.isArray(profile.languages)
-    ? profile.languages
-    : typeof profile.languages === 'string' && profile.languages.trim()
-    ? profile.languages.split(',').map((s: string) => s.trim()).filter(Boolean)
-    : ['English'];
+  const parsedLanguages = toList(profile.languages);
+  const languagesList: string[] = parsedLanguages.length > 0 ? parsedLanguages : ['English'];
+
+  // Interests + languages you both have (shown as the "✨ N in common" card above the bio).
+  const inCommon = sharedTraits(
+    { interests: viewerInterests, languages: viewerLanguages },
+    { interests: targetInterests, languages: parsedLanguages }
+  );
+  const relocationReadiness = rhythmOption('relocation_readiness', profile.relocation_readiness);
+  const timelineIntent = rhythmOption('timeline_intent', profile.timeline_intent);
 
   const vitals = [
     { label: 'Future Plans', value: formatIntent(profile.relationship_intent || profile.relationship_goal) },
     { label: 'Occupation', value: profile.occupation || profile.profession },
     { label: 'Marital Status', value: profile.marital_status },
     { label: 'Beliefs', value: profile.religion },
-    { label: 'Relocation', value: profile.relocation },
+    {
+      label: 'Relocation',
+      value: relocationReadiness ? `${relocationReadiness.emoji} ${relocationReadiness.label}` : profile.relocation,
+    },
+    { label: 'Timeline', value: timelineIntent ? `${timelineIntent.emoji} ${timelineIntent.label}` : null },
     { label: 'Children', value: profile.has_kids },
     { label: 'Wants Children', value: profile.wants_kids },
     { label: 'Height', value: profile.height },
@@ -493,7 +507,16 @@ export default function PublicProfilePage() {
                   Verified
                 </span>
               )}
+              <RepBadge score={scoreOf(profile.reputation_score)} />
             </div>
+
+            {(profile.reply_pace || relocationReadiness || timelineIntent) && (
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                <RhythmPill field="reply_pace" value={profile.reply_pace} variant="glass" />
+                <RhythmPill field="relocation_readiness" value={profile.relocation_readiness} variant="glass" />
+                <RhythmPill field="timeline_intent" value={profile.timeline_intent} variant="glass" />
+              </div>
+            )}
 
             <div className="mt-1 flex items-center gap-1.5 text-xs font-medium text-neutral-200">
               <MapPin className="h-3.5 w-3.5 text-neutral-300 shrink-0" />
@@ -615,6 +638,7 @@ export default function PublicProfilePage() {
           >
             About Me
           </h2>
+          <InCommonCard items={inCommon} />
           <p className="text-xs sm:text-sm text-[#1C1924] leading-relaxed whitespace-pre-line">
             {profile.bio || 'Looking for something genuine and sincere.'}
           </p>

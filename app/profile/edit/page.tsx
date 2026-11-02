@@ -7,6 +7,8 @@ import { ArrowLeft, MapPin, Save, UserCheck, ShieldCheck, Camera, Trash2, Loader
 import { supabase } from '@/lib/supabase/client';
 import UpgradeModal from '@/components/UpgradeModal';
 import { resolveCountry } from '@/lib/countries';
+import { EMPTY_RHYTHM, RhythmSelectors, rhythmFromRow, type RhythmValues } from '@/components/profile/RhythmBadges';
+import { saveBioAndRhythm } from '@/lib/profileApi';
 
 
 
@@ -54,6 +56,7 @@ export default function EditProfilePage() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [usernameStatus, setUsernameStatus] = useState<'idle' | 'checking' | 'available' | 'taken'>('idle');
 
+  const [rhythm, setRhythm] = useState<RhythmValues>(EMPTY_RHYTHM);
   const [formData, setFormData] = useState({
     full_name: '',
     age: '',
@@ -90,6 +93,7 @@ export default function EditProfilePage() {
         .single();
 
       if (data) {
+        setRhythm(rhythmFromRow(data));
         setFormData({
           full_name: data.display_name || data.full_name || '',
           age: data.age ? String(data.age) : '',
@@ -302,9 +306,12 @@ export default function EditProfilePage() {
         country: resolveCountry(formData.city, formData.country),
         profession: formData.profession.trim(),
         relationship_goal: formData.relationship_goal,
-        bio: formData.bio.trim(),
         updated_at: new Date().toISOString(),
       };
+
+      // Bio is screened and saved server-side (with the rhythm badges); a rejected bio stops the save.
+      const extras = await saveBioAndRhythm({ bio: formData.bio.trim(), ...rhythm });
+      if (!extras.ok) throw new Error(extras.error);
 
       if (!initialHasUsername && username.trim().length >= 3 && usernameStatus === 'available') {
         updates.username = username.trim();
@@ -585,41 +592,9 @@ export default function EditProfilePage() {
             <h3 className="text-xs font-bold text-[#6555b8] uppercase tracking-wider flex items-center gap-1.5">
               Relationship Timeline
             </h3>
+            <RhythmSelectors value={rhythm} onChange={setRhythm} />
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <label className="block text-xs font-medium uppercase tracking-wider text-[#9A8CC3]">
-                  Marriage Timeline
-                </label>
-                <select
-                  value={formData.marriage_timeline}
-                  onChange={(e) => setFormData({ ...formData, marriage_timeline: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#9A8CC3]/35 text-[#1C1924] text-sm focus:outline-none focus:border-[#9A8CC3]"
-                >
-                  <option value="Within 6 months">Within 6 months</option>
-                  <option value="Within 1-2 years">Within 1-2 years</option>
-                  <option value="Within 2-3 years">Within 2-3 years</option>
-                  <option value="When the time is right">When the time is right</option>
-                </select>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="block text-xs font-medium uppercase tracking-wider text-[#9A8CC3]">
-                  Relocation Flexibility
-                </label>
-                <select
-                  value={formData.relocation}
-                  onChange={(e) => setFormData({ ...formData, relocation: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#9A8CC3]/35 text-[#1C1924] text-sm focus:outline-none focus:border-[#9A8CC3]"
-                >
-                  <option value="Open to relocation">Open to relocation</option>
-                  <option value="Willing to relocate internationally">Willing to relocate internationally</option>
-                  <option value="Willing to relocate domestically">Willing to relocate domestically</option>
-                  <option value="Prefer partner to relocate">Prefer partner to relocate</option>
-                  <option value="Not open to relocation">Not open to relocation</option>
-                </select>
-              </div>
-
               <div className="space-y-1.5">
                 <label className="block text-xs font-medium uppercase tracking-wider text-[#9A8CC3]">
                   Marital Status

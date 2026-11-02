@@ -1,11 +1,10 @@
 import { createHmac, timingSafeEqual } from 'crypto';
 
-// Face liveness poses (ids match VERIFICATION_POSES in lib/verification.ts). Each session gets
-// 3 distinct poses in random order; any 3 of these 4 always include a frontal pose (blink / smile)
-// for the avatar face match.
-export const POSE_POOL = ['blink', 'turn_left', 'turn_right', 'smile'] as const;
+// Mascot hand poses (ids match VERIFICATION_POSES in lib/poses.ts). Each attempt gets one random
+// pose; the member copies it in a single selfie that Gemini pre-screens and an admin approves.
+export const POSE_POOL = ['peace', 'thumbs_up', 'chin_touch', 'three_fingers'] as const;
 
-export const SEQUENCE_LENGTH = 3;
+export const SEQUENCE_LENGTH = 1;
 export const TOKEN_TTL_MS = 5 * 60 * 1000;
 
 export type VerifyTokenPayload = {

@@ -14,6 +14,8 @@ import { CardPhoto } from '@/components/CardPhoto';
 import { AudioPill } from '@/components/AudioPill';
 import { isTrustedVoiceIntroUrl } from '@/lib/audio';
 import { usePresentUserIds } from '@/lib/realtimePresence';
+import { sharedTraits } from '@/lib/rhythm';
+import { InCommonCard, RhythmPill } from '@/components/profile/RhythmBadges';
 
 const DISCOVERY_MODES = [
   { id: 'all', label: 'All' },
@@ -59,6 +61,8 @@ export interface ProfileItem {
   created_at?: string;
   voiceIntroUrl?: string | null;
   lastActive?: string | null;
+  languages?: string | string[] | null;
+  replyPace?: string | null;
 }
 
 function DiscoverCardPhotoCarousel({
@@ -181,6 +185,10 @@ function DiscoverContent() {
   const [discoveryMode, setDiscoveryMode] = useState<DiscoveryModeId>('all');
   const [currentUserCoords, setCurrentUserCoords] = useState<{ lat: number; lon: number } | null>(null);
   const [viewerSavedGenders, setViewerSavedGenders] = useState<string[]>([]);
+  const [viewerTraits, setViewerTraits] = useState<{ interests: unknown; languages: unknown }>({
+    interests: [],
+    languages: null,
+  });
   const initialFeed = getInitialDiscoverFeed();
   const [profiles, setProfiles] = useState<ProfileItem[]>(() => initialFeed);
   const presentIds = usePresentUserIds();
@@ -338,6 +346,7 @@ function DiscoverContent() {
             if (v.latitude && v.longitude) {
               setCurrentUserCoords({ lat: v.latitude, lon: v.longitude });
             }
+            setViewerTraits({ interests: v.interests ?? [], languages: v.languages ?? null });
             if (Array.isArray(v.interested_in) && v.interested_in.length > 0) {
               setViewerSavedGenders(v.interested_in);
               if (!localStorage.getItem('discover_gender_pref')) {
@@ -780,6 +789,16 @@ function DiscoverContent() {
                       <p className="text-[11px] text-white/90 font-medium mt-0.5 truncate pr-7">
                         {formattedLocation}
                       </p>
+                      {(() => {
+                        const common = sharedTraits(viewerTraits, profile);
+                        if (!profile.replyPace && common.length === 0) return null;
+                        return (
+                          <div className="mt-1 flex flex-col items-start gap-1 min-w-0">
+                            <RhythmPill field="reply_pace" value={profile.replyPace} variant="glass" />
+                            <InCommonCard items={common} compact />
+                          </div>
+                        );
+                      })()}
                     </Link>
                   </div>
                 </div>

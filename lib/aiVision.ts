@@ -1,5 +1,5 @@
 ﻿// lib/aiVision.ts
-import { GoogleGenAI } from '@google/genai';
+import { GoogleGenAI, Type } from '@google/genai';
 
 const ai = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY || '' });
 
@@ -73,5 +73,89 @@ Respond ONLY in valid JSON matching this schema:
       poseMatchesPrompt: true,
       reason: 'AI review bypassed due to processing error; routed to manual admin review.',
     };
+  }
+}
+
+export interface SelfieReviewResult {
+  pose_matches: boolean;
+  same_person: boolean;
+  /** 0-100 */
+  face_match_confidence: number;
+  spoof_detected: boolean;
+  summary: string;
+}
+
+/** Strong pre-screen passes are tagged for the admin queue; the badge is still granted by a human. */
+export const FAST_TRACK_MIN_CONFIDENCE = 85;
+
+export function isFastTrack(r: SelfieReviewResult | null | undefined): boolean {
+  return Boolean(
+    r && r.pose_matches && r.same_person && !r.spoof_detected && r.face_match_confidence >= FAST_TRACK_MIN_CONFIDENCE
+  );
+}
+
+/**
+ * Pre-screens a verification selfie against the member's main photo. Returns null on any error so
+ * callers queue the submission for manual review instead of trusting a fail-open default.
+ * Never use this result to grant verification on its own.
+ */
+export async function reviewVerificationSelfie(opts: {
+  selfie: Buffer;
+  avatar: { data: Buffer; mimeType: string } | null;
+  poseDescription: string;
+}): Promise<SelfieReviewResult | null> {
+  try {
+    const parts: Array<{ text: string } | { inlineData: { data: string; mimeType: string } }> = [
+      {
+        text: `You are pre-screening an identity verification for the dating platform asiansin.love.
+IMAGE 1 is a live selfie taken just now. ${opts.avatar ? 'IMAGE 2 is the member\'s main profile photo.' : 'No profile photo is available; set same_person to false.'}
+The member was asked to copy this pose in the selfie: ${opts.poseDescription}.
+
+Answer strictly:
+- pose_matches: is the person in IMAGE 1 clearly performing that exact pose?
+- same_person: is the face in IMAGE 1 the same person as in IMAGE 2?
+- face_match_confidence: 0-100, how confident you are that they are the same person.
+- spoof_detected: does IMAGE 1 look like a photo of a screen or printed photo, a mask, a deepfake, heavy filters, or otherwise not a live camera capture?
+- summary: one or two short sentences for a human reviewer.`,
+      },
+      { inlineData: { data: opts.selfie.toString('base64'), mimeType: 'image/jpeg' } },
+    ];
+    if (opts.avatar) {
+      parts.push({ inlineData: { data: opts.avatar.data.toString('base64'), mimeType: opts.avatar.mimeType } });
+    }
+
+    const response = await ai.models.generateContent({
+      model: 'gemini-3.8-flash',
+      contents: [{ role: 'user', parts }],
+      config: {
+        responseMimeType: 'application/json',
+        responseSchema: {
+          type: Type.OBJECT,
+          properties: {
+            pose_matches: { type: Type.BOOLEAN },
+            same_person: { type: Type.BOOLEAN },
+            face_match_confidence: { type: Type.INTEGER },
+            spoof_detected: { type: Type.BOOLEAN },
+            summary: { type: Type.STRING },
+          },
+          required: ['pose_matches', 'same_person', 'face_match_confidence', 'spoof_detected', 'summary'],
+        },
+      },
+    });
+
+    const parsed = JSON.parse(response.text || '{}');
+    if (typeof parsed.same_person !== 'boolean' || typeof parsed.pose_matches !== 'boolean') return null;
+    const confidence = Math.round(Number(parsed.face_match_confidence));
+    return {
+      pose_matches: parsed.pose_matches,
+      same_person: parsed.same_person,
+      face_match_confidence: Number.isFinite(confidence) ? Math.max(0, Math.min(100, confidence)) : 0,
+      // Missing / malformed spoof flag counts as suspect.
+      spoof_detected: parsed.spoof_detected !== false,
+      summary: String(parsed.summary || '').slice(0, 500),
+    };
+  } catch (error) {
+    console.error('AI selfie review error:', error);
+    return null;
   }
 }

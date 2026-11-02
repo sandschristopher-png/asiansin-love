@@ -27,6 +27,8 @@ import { PlusBadge } from '@/components/PlusBadge';
 import RepScoreCard from '@/components/RepScoreCard';
 import { ProfileHighlightsEditorRow } from '@/components/ProfileHighlightsEditorRow';
 import { VoiceIntroRecorder } from '@/components/VoiceIntroRecorder';
+import { RhythmPill, RhythmSelectors, rhythmFromRow, type RhythmValues } from '@/components/profile/RhythmBadges';
+import { saveBioAndRhythm } from '@/lib/profileApi';
 
 const QUICK_LANGUAGES = ['English', 'Tagalog', 'Thai', 'Japanese', 'Vietnamese', 'Mandarin', 'Spanish', 'Korean'];
 
@@ -134,6 +136,7 @@ export default function MyProfilePage() {
   const [isLocating, setIsLocating] = useState<boolean>(false);
   const [locError, setLocError] = useState<string | null>(null);
   const [bio, setBio] = useState<string>(() => initialProfile?.bio ?? '');
+  const [rhythm, setRhythm] = useState<RhythmValues>(() => rhythmFromRow(initialProfile));
   const [lookingFor, setLookingFor] = useState<string>(() => initialProfile?.lookingFor ?? '');
   const [interests, setInterests] = useState<string[]>(() => initialProfile?.interests ?? []);
 
@@ -188,6 +191,7 @@ export default function MyProfilePage() {
         if (data.latitude) setLatitude(data.latitude);
         if (data.longitude) setLongitude(data.longitude);
         if (data.bio) setBio(data.bio);
+        setRhythm(rhythmFromRow(data));
         if (data.looking_for) setLookingFor(data.looking_for);
         if (Array.isArray(data.interests)) {
           const retired = new Set(['nature walks', 'gaming', 'entrepreneurship']);
@@ -256,6 +260,7 @@ export default function MyProfilePage() {
             hasKids: data.has_kids || 'No',
             wantsKids: data.wants_kids || 'Yes',
             relocation: data.relocation || 'Can Relocate',
+            ...rhythmFromRow(data),
             userLanguages: data.languages ? (Array.isArray(data.languages) ? data.languages.join(', ') : data.languages) : 'English',
             height: data.height || '',
             weight: data.weight || '',
@@ -310,7 +315,6 @@ export default function MyProfilePage() {
       location,
       location_source: locationSource,
       location_verified_at: locationVerifiedAt,
-      bio: bio.trim(),
       looking_for: lookingFor.trim(),
       interests,
       occupation: profession,
@@ -333,6 +337,13 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
     if (longitude) payload.longitude = longitude;
 
     setSaving(true);
+    // Bio is screened and saved server-side first; a rejected bio stops the whole save.
+    const extras = await saveBioAndRhythm({ bio: bio.trim(), ...rhythm });
+    if (!extras.ok) {
+      setSaving(false);
+      notifyUser({ senderName: 'Profile', avatarUrl: '', message: extras.error, chatUrl: '/profile' });
+      return;
+    }
     const { error } = await supabase.from('profiles').upsert(payload);
     setSaving(false);
 
@@ -673,6 +684,29 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
           ) : (
             <p className="text-xs sm:text-sm text-[#1C1924] leading-relaxed">
               {bio || <span className="text-[#8C849B] italic">No bio written yet.</span>}
+            </p>
+          )}
+        </div>
+
+        {/* MY RHYTHM (reply pace, relocation, timeline) */}
+        <div className="p-5 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-2.5">
+          <span
+            className="text-xs font-bold text-[#6555B8] uppercase tracking-wider"
+            style={{ fontFamily: 'var(--font-brand)' }}
+          >
+            My Rhythm
+          </span>
+          {isEditing ? (
+            <RhythmSelectors value={rhythm} onChange={setRhythm} />
+          ) : rhythm.reply_pace || rhythm.relocation_readiness || rhythm.timeline_intent ? (
+            <div className="flex flex-wrap gap-1.5">
+              <RhythmPill field="reply_pace" value={rhythm.reply_pace} className="text-[11px] px-2.5 py-1" />
+              <RhythmPill field="relocation_readiness" value={rhythm.relocation_readiness} className="text-[11px] px-2.5 py-1" />
+              <RhythmPill field="timeline_intent" value={rhythm.timeline_intent} className="text-[11px] px-2.5 py-1" />
+            </div>
+          ) : (
+            <p className="text-xs text-[#8C849B] italic">
+              Tap Edit Profile Details to show how you message, relocation plans and your timeline.
             </p>
           )}
         </div>

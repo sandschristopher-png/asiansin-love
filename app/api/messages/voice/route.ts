@@ -11,6 +11,7 @@ import { createClient } from '@supabase/supabase-js';
 import { createClient as createSessionClient } from '@/lib/supabase/server';
 import { evaluateSubstantiveConversation } from '@/lib/moderation';
 import { CONTACT_UNLOCK_TURNS } from '@/lib/safety';
+import { canSendVoiceNote, scoreOf } from '@/lib/reputation';
 import { AUDIO_MIME_EXT, VOICE_NOTE_MAX_BYTES, VOICE_NOTE_MAX_MS, baseMime, sniffAudioMime } from '@/lib/audio';
 import { sendPushToUser } from '@/lib/pushSender';
 
@@ -74,6 +75,22 @@ export async function POST(req: Request) {
     .limit(1)
     .maybeSingle();
   if (block) return NextResponse.json({ error: 'You cannot message this member.' }, { status: 403 });
+
+  // Members under review (reputation below 70) cannot send voice notes: audio can't be screened.
+  const { data: senderProfile } = await admin
+    .from('profiles')
+    .select('reputation_score')
+    .eq('id', senderId)
+    .maybeSingle();
+  if (!canSendVoiceNote(scoreOf(senderProfile?.reputation_score))) {
+    return NextResponse.json(
+      {
+        error: 'Voice notes are paused while your account is under review. Text messages still work.',
+        code: 'REPUTATION_VOICE_LOCKED',
+      },
+      { status: 403 }
+    );
+  }
 
   // Contact-reveal gate (same rule as text contact sharing in /api/messages)
   const { data: thread } = await admin

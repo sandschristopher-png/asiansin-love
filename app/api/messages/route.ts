@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 import { cookies } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
 import { createClient } from '@supabase/supabase-js';
-import { evaluateMessageModeration, hasContactSharingIntent, evaluateSubstantiveConversation } from '@/lib/moderation';
+import { evaluateSubstantiveConversation } from '@/lib/moderation';
+import { REPUTATION_RULES, canSendMessage, decideMessageOutcome, isRestricted, scoreOf } from '@/lib/reputation';
 import { applyContactRevealMask, CONTACT_UNLOCK_TURNS } from '@/lib/safety';
 import { createClient as createSessionClient } from '@/lib/supabase/server';
 import { sendPushToUser } from '@/lib/pushSender';
@@ -154,91 +155,32 @@ export async function POST(req: Request) {
       serviceRoleKey
     );
 
-        // 1.5 Substantive Courtship & Contact Gate Check
-    const { data: threadHistory } = await serviceClient
-      .from('messages')
-      .select('sender_id, content')
-      .in('sender_id', [senderId, receiverId])
-      .in('receiver_id', [senderId, receiverId])
-      .eq('is_quarantined', false)
-      .order('created_at', { ascending: false })
-      .limit(40);
-
-    const substantiveCheck = evaluateSubstantiveConversation(
-      threadHistory || [],
-      senderId,
-      receiverId,
-      15,
-      CONTACT_UNLOCK_TURNS
-    );
-
-    // If message contains contact sharing (phone, WA, TG, socials) and threshold is not met:
-    if (hasContactSharingIntent(content) && !substantiveCheck.isUnlocked) {
-      return NextResponse.json(
-        {
-          error: `To protect our members from impersonation and off-platform scams, external contact sharing unlocks after both of you have exchanged at least 3 substantive messages (15+ characters). Progress: You (${substantiveCheck.senderSubstantiveCount}/3) • Partner (${substantiveCheck.receiverSubstantiveCount}/3).`,
-          courtshipLocked: true,
-          progress: {
-            sender: substantiveCheck.senderSubstantiveCount,
-            partner: substantiveCheck.receiverSubstantiveCount,
-            required: 3,
-          },
-        },
-        { status: 400 }
-      );
-    }
-
-    // 2. Moderation Evaluation
-    const mod = evaluateMessageModeration(content, substantiveCheck.isUnlocked);
-
-    if (!mod.isClean) {
-      const { error: penErr } = await serviceClient.rpc('apply_moderation_penalty', {
-        p_user_id: senderId,
-        p_deduction: mod.totalDeduction,
-        p_action: mod.recommendedAction,
-        p_category: mod.violations.map((v: any) => v.category).join(','),
-        p_flagged: mod.flaggedPhrases.join(' | ').slice(0, 300),
-      });
-
-      if (penErr) {
-        console.error('Moderation penalty RPC failed:', penErr.message);
-        return NextResponse.json({ error: 'Message could not be sent.' }, { status: 503 });
-      }
-
-      // Warn Tier: deliver message, receiver sees caution banner
-      if (mod.recommendedAction === 'warn') {
-        const { data: message, error: insertError } = await serviceClient
-          .from('messages')
-          .insert([{ sender_id: senderId, receiver_id: receiverId, content, is_quarantined: false }])
-          .select()
-          .single();
-
-        if (insertError) {
-          return NextResponse.json({ error: insertError.message }, { status: 500 });
-        }
-
-        return NextResponse.json({
-          success: true,
-          message,
-          warning: 'Safety advisory: conversation partner messages triggered caution filters.',
-        });
-      }
-
-      // Shadowban / Suspend Tier: Silently quarantine
-      await serviceClient
-        .from('messages')
-        .insert([{ sender_id: senderId, receiver_id: receiverId, content, is_quarantined: true }]);
-
-      return NextResponse.json({ success: true, delivered: true });
-    }
-
-    // 3. Daily Outreach Limits
+    // 1.5 Sender standing: reputation-based hourly limit (server-enforced)
     const { data: senderProfile } = await serviceClient
       .from('profiles')
-      .select('is_plus, gender, is_verified')
+      .select('is_plus, gender, is_verified, reputation_score')
       .eq('id', senderId)
       .maybeSingle();
+    const senderRep = scoreOf(senderProfile?.reputation_score);
 
+    if (isRestricted(senderRep)) {
+      const { count: sentLastHour } = await serviceClient
+        .from('messages')
+        .select('id', { count: 'exact', head: true })
+        .eq('sender_id', senderId)
+        .gte('created_at', new Date(Date.now() - 60 * 60 * 1000).toISOString());
+      if (!canSendMessage(senderRep, sentLastHour ?? 0)) {
+        return NextResponse.json(
+          {
+            error: `Your account is under review, so you can send up to ${REPUTATION_RULES.restrictedMessagesPerHour} messages per hour. Keep conversations friendly and your reputation recovers over time.`,
+            code: 'REPUTATION_RATE_LIMIT',
+          },
+          { status: 429 }
+        );
+      }
+    }
+
+    // 2. Daily Outreach Limits
     const isPlus = Boolean(senderProfile?.is_plus);
     const isVerifiedWoman =
       senderProfile?.is_verified && senderProfile?.gender === 'female';
@@ -276,7 +218,76 @@ export async function POST(req: Request) {
       }
     }
 
-    // 4. Clean Delivery
+    // 3. Substantive Courtship & Contact Gate + Moderation (raw, normalized and collapsed text)
+    const { data: threadHistory } = await serviceClient
+      .from('messages')
+      .select('sender_id, content')
+      .in('sender_id', [senderId, receiverId])
+      .in('receiver_id', [senderId, receiverId])
+      .eq('is_quarantined', false)
+      .order('created_at', { ascending: false })
+      .limit(40);
+
+    const substantiveCheck = evaluateSubstantiveConversation(
+      threadHistory || [],
+      senderId,
+      receiverId,
+      15,
+      CONTACT_UNLOCK_TURNS
+    );
+
+    const decision = decideMessageOutcome(content, substantiveCheck.isUnlocked);
+    const applyPenalty = async () => {
+      if (decision.deduction <= 0) return null;
+      const { error: penErr } = await serviceClient.rpc('apply_moderation_penalty', {
+        p_user_id: senderId,
+        p_deduction: decision.deduction,
+        p_action: decision.outcome,
+        p_category: decision.category,
+        p_flagged: decision.flagged.join(' | ').slice(0, 300),
+      });
+      if (penErr) console.error('Moderation penalty RPC failed:', penErr.message);
+      return penErr;
+    };
+
+    // High severity (scam, solicitation, explicit request, slur, threat): silently quarantine
+    if (decision.outcome === 'quarantine') {
+      if (await applyPenalty()) {
+        return NextResponse.json({ error: 'Message could not be sent.' }, { status: 503 });
+      }
+      await serviceClient
+        .from('messages')
+        .insert([{ sender_id: senderId, receiver_id: receiverId, content, is_quarantined: true }]);
+
+      return NextResponse.json({ success: true, delivered: true });
+    }
+
+    // Contact details before both members sent 3 substantive messages: friendly soft block
+    // (obfuscated attempts also cost reputation).
+    if (decision.outcome === 'soft_block') {
+      await applyPenalty();
+      return NextResponse.json(
+        {
+          error: `To protect our members from impersonation and off-platform scams, external contact sharing unlocks after both of you have exchanged at least ${CONTACT_UNLOCK_TURNS} substantive messages (15+ characters). Progress: You (${substantiveCheck.senderSubstantiveCount}/${CONTACT_UNLOCK_TURNS}) • Partner (${substantiveCheck.receiverSubstantiveCount}/${CONTACT_UNLOCK_TURNS}).`,
+          courtshipLocked: true,
+          progress: {
+            sender: substantiveCheck.senderSubstantiveCount,
+            partner: substantiveCheck.receiverSubstantiveCount,
+            required: CONTACT_UNLOCK_TURNS,
+          },
+        },
+        { status: 400 }
+      );
+    }
+
+    // Medium severity: deliver, receiver sees a caution banner
+    const warning =
+      decision.outcome === 'deliver_with_warning'
+        ? 'Safety advisory: conversation partner messages triggered caution filters.'
+        : undefined;
+    if (warning) await applyPenalty();
+
+    // 4. Delivery
     const { data: message, error: insertError } = await serviceClient
       .from('messages')
       .insert([{ sender_id: senderId, receiver_id: receiverId, content, is_quarantined: false }])
@@ -311,7 +322,19 @@ export async function POST(req: Request) {
       // Non-blocking notification dispatch
     }
 
-    return NextResponse.json({ success: true, message });
+    // Daily reputation recovery (+1, once per UTC day) for unflagged mutual chatting. The RPC checks
+    // mutuality and flags itself; it is missing until 20261106_reputation_rhythm.sql runs.
+    if (!warning && senderRep < REPUTATION_RULES.max) {
+      const { error: recErr } = await serviceClient.rpc('apply_reputation_recovery', {
+        p_user_id: senderId,
+        p_partner_id: receiverId,
+      });
+      if (recErr && !/apply_reputation_recovery|function/i.test(recErr.message)) {
+        console.warn('[messages] reputation recovery failed:', recErr.message);
+      }
+    }
+
+    return NextResponse.json(warning ? { success: true, message, warning } : { success: true, message });
   } catch (err: unknown) {
     const message = err instanceof Error ? err.message : 'Internal Server Error';
     return NextResponse.json({ error: message }, { status: 500 });
