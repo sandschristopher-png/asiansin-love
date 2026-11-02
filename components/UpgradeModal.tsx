@@ -150,7 +150,7 @@ export default function UpgradeModal({
         </div>
 
         {/* Tier Selector */}
-          <div className="grid grid-cols-3 gap-1.5 mb-3 text-left">
+          <div className="grid grid-cols-2 gap-2 mb-3 text-left">
             {/* 12 Months */}
             <button
               type="button"
