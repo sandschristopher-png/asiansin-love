@@ -161,7 +161,7 @@ export default function UpgradeModal({
 
         {/* Primary CTA Button */}
         <button
-          onClick={() => handleCheckout('monthly')}
+          onClick={() => handleCheckout('1m')}
           disabled={isRedirecting}
           className="w-full py-3 rounded-2xl bg-[#6555B8] hover:bg-[#5747A9] active:bg-[#4C3D97] disabled:opacity-75 disabled:cursor-not-allowed text-white font-semibold text-xs tracking-wider uppercase shadow-md shadow-[#6555B8]/20 transition active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer mb-2"
         >
