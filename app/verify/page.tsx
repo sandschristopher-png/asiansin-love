@@ -10,12 +10,17 @@ import {
   SunMedium,
   AlertCircle,
   X,
+  Eye,
+  ArrowRight,
+  Smile,
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import {
   getPoseById,
   validateAndCompressVerificationImage,
   type CompressionResult,
+  type PoseId,
+  type VerificationPose,
 } from '@/lib/verification';
 import type { BlinkTracker } from '@/lib/poseVerifier';
 import { computeCanvasHash } from '@/lib/verify/phash';
@@ -27,23 +32,35 @@ interface CapturedPhoto {
   hash?: string;
 }
 
-const HOLD_FRAMES_REQUIRED = 8; // ~1 second at 120ms ticks
+const HOLD_MS = 600; // each pose must be held continuously this long before capture
+const MIN_SESSION_MS = 4000; // camera-on to final capture; blocks scripted rapid injection
+const TICK_MS = 100;
+
+/** Illustrated cue for a face pose (no reference photo needed). */
+function PoseGlyph({ pose, size = 'lg' }: { pose: VerificationPose; size?: 'sm' | 'lg' }) {
+  const Icon = pose.id === 'blink' ? Eye : pose.id === 'smile' ? Smile : pose.id === 'turn_left' ? ArrowLeft : ArrowRight;
+  const box = size === 'lg' ? 'w-40 h-40 rounded-3xl' : 'w-20 h-20 rounded-2xl';
+  const icon = size === 'lg' ? 'w-16 h-16' : 'w-8 h-8';
+  return (
+    <div className={`${box} bg-[#F3EFFC] border border-[#E2DBF0] flex items-center justify-center shadow-sm`}>
+      <Icon className={`${icon} text-[#6555B8]`} strokeWidth={1.75} />
+    </div>
+  );
+}
 
 export default function VerifyPage() {
   const router = useRouter();
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const blinkRef = useRef<BlinkTracker>({ eyesClosedSeen: false, blinkPassed: false });
-  const streakRef = useRef(0);
+  const holdStartRef = useRef<number | null>(null);
+  const sessionStartRef = useRef<number>(0);
+  const faceMatchedRef = useRef(false);
   const capturingRef = useRef(false);
   const avatarUrlRef = useRef<string | null>(null);
   const pendingHashRef = useRef<string | null>(null);
   const verifierRef = useRef<typeof import('@/lib/poseVerifier') | null>(null);
-  const lastStatusRef = useRef<{
-    faceDetected: boolean;
-    blinkPassed: boolean;
-    poseMatched: boolean;
-  } | null>(null);
+  const lastStatusRef = useRef<{ poseMatched: boolean; held: boolean } | null>(null);
   const [showFullRef, setShowFullRef] = useState(false);
   const [denyPulse, setDenyPulse] = useState(false);
   const [result, setResult] = useState<'approved' | 'denied' | null>(null);
@@ -90,6 +107,10 @@ export default function VerifyPage() {
             .maybeSingle();
           if (profile?.avatar_url) avatarUrlRef.current = profile.avatar_url;
         }
+        if (!avatarUrlRef.current) {
+          setStartError('Add a clear main profile photo first - verification matches your face against it.');
+          return;
+        }
       } catch {
         if (!cancelled) setStartError('Network error. Please check your connection.');
       } finally {
@@ -119,7 +140,7 @@ export default function VerifyPage() {
         setErrorMsg(result.error || 'Photo could not be processed. Please try again.');
         capturingRef.current = false;
         setHoldProgress(0);
-        streakRef.current = 0;
+        holdStartRef.current = null;
         return;
       }
 
@@ -135,7 +156,7 @@ export default function VerifyPage() {
       const total = sequence.length;
       if (forStep + 1 < total) {
         setLiveHint('Pose ' + (forStep + 1) + ' captured! Next pose...');
-        streakRef.current = 0;
+        holdStartRef.current = null;
         setHoldProgress(0);
         setTimeout(() => setStep(forStep + 1), 900);
       } else {
@@ -160,7 +181,8 @@ export default function VerifyPage() {
         audio: false,
       });
       streamRef.current = stream;
-      streakRef.current = 0;
+      holdStartRef.current = null;
+      sessionStartRef.current = Date.now();
       setHoldProgress(0);
       setCameraOn(true);
       setLiveHint('Getting ready...');
@@ -198,16 +220,19 @@ export default function VerifyPage() {
     canvas.getContext('2d')?.drawImage(video, 0, 0);
     pendingHashRef.current = computeCanvasHash(canvas);
 
-    // Gate 3: biometric match against profile avatar
-    if (avatarUrlRef.current && verifierRef.current) {
+    // 1:1 biometric match against the main profile photo, on a frontal pose (blink / smile).
+    const pose = getPoseById(sequence[step]);
+    if (pose?.frontal && !faceMatchedRef.current && avatarUrlRef.current && verifierRef.current) {
+      setLiveHint('Matching your face to your profile photo...');
       const match = await verifierRef.current.verifySelfieAgainstAvatar(canvas, avatarUrlRef.current);
       if (!match.matched) {
         setErrorMsg(match.error || 'Capture does not match your profile photo. Please retake.');
         capturingRef.current = false;
-        streakRef.current = 0;
+        holdStartRef.current = null;
         setHoldProgress(0);
         return;
       }
+      faceMatchedRef.current = true;
     }
 
     const blob = await new Promise<Blob | null>((resolve) =>
@@ -230,47 +255,58 @@ export default function VerifyPage() {
       stopCamera();
     }
     capturingRef.current = false;
-  }, [processFile, step, stopCamera, sequence.length]);
+  }, [processFile, step, stopCamera, sequence]);
 
-  // Live scan loop: evaluates frames, auto-captures when all gates hold
+  // Live scan loop: evaluates frames, auto-captures once the pose is held for HOLD_MS
   useEffect(() => {
     if (!cameraOn) return;
-    const poseLabel = getPoseById(sequence[step])?.label ?? '';
-    let timer: ReturnType<typeof setInterval>;
+    const poseId = sequence[step] as PoseId | undefined;
+    if (!poseId) return;
+    const isLast = step === sequence.length - 1;
+    // Fresh state for every pose: a blink from the previous step must not count.
+    blinkRef.current = { eyesClosedSeen: false, blinkPassed: false };
+    holdStartRef.current = null;
 
-    timer = setInterval(() => {
+    const timer = setInterval(() => {
       const video = videoRef.current;
       if (!video || capturingRef.current || analyzing || !verifierRef.current) return;
 
-      const status = verifierRef.current.evaluateLiveFrame(video, poseLabel, blinkRef.current);
-      lastStatusRef.current = status;
-      setLiveHint(status.hint);
-
-      if (status.faceDetected && status.blinkPassed && status.poseMatched) {
-        streakRef.current += 1;
+      const status = verifierRef.current.evaluateLiveFrame(video, poseId, blinkRef.current);
+      const now = Date.now();
+      if (status.faceDetected && status.poseMatched) {
+        holdStartRef.current ??= now;
       } else {
-        streakRef.current = 0;
+        holdStartRef.current = null;
       }
-      setHoldProgress(streakRef.current);
+      const heldMs = holdStartRef.current === null ? 0 : now - holdStartRef.current;
+      const held = heldMs >= HOLD_MS;
+      const sessionReady = !isLast || now - sessionStartRef.current >= MIN_SESSION_MS;
+      lastStatusRef.current = { poseMatched: status.poseMatched, held: held && sessionReady };
 
-      if (streakRef.current >= HOLD_FRAMES_REQUIRED) {
-        streakRef.current = 0;
+      setHoldProgress(Math.min(100, (heldMs / HOLD_MS) * 100));
+      setLiveHint(held && !sessionReady ? 'Almost there - keep holding...' : status.hint);
+
+      if (held && sessionReady) {
+        holdStartRef.current = null;
         setHoldProgress(0);
         captureFrame();
       }
-    }, 120);
+    }, TICK_MS);
 
     return () => clearInterval(timer);
   }, [cameraOn, step, sequence, analyzing, captureFrame]);
 
   const handleSubmit = useCallback(async () => {
     if (!attemptToken || photos.length < sequence.length) return;
+    if (!faceMatchedRef.current) {
+      setErrorMsg('We could not match your face to your profile photo. Retake the blink or smile pose.');
+      return;
+    }
     setSubmitting(true);
     setErrorMsg(null);
     try {
       const form = new FormData();
       form.set('attemptId', attemptToken);
-      form.set('blinkVerified', blinkRef.current.blinkPassed ? 'true' : 'false');
       photos.forEach((p, i) => {
         form.append('pose_' + i, p.blob, 'pose-' + i + '.jpg');
       });
@@ -455,20 +491,14 @@ export default function VerifyPage() {
                 <div className="p-3 rounded-2xl bg-[#F8F7FA] border border-[#E5E1EC] space-y-1.5">
                   <span className="text-sm font-medium text-[#1C1924]">{currentPose?.label}</span>
                   <p className="text-xs text-[#6C637B] leading-relaxed">
-                    Match this exact pose in your photo. The order is random and unique to you.
+                    {currentPose?.instruction} The order is random and unique to you.
                   </p>
                 </div>
                 {currentPose && (
                   <div className="flex flex-col items-center justify-center pt-1">
-                    <div className="w-48 h-60 rounded-2xl overflow-hidden border border-[#DDD7E5] bg-[#F8F7FA] shadow-sm">
-                      <img
-                        src={currentPose.image}
-                        alt={currentPose.label + ' reference'}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
+                    <PoseGlyph pose={currentPose} />
                     <span className="text-[10px] text-[#8C849B] mt-1 font-medium">
-                      Sample reference pose
+                      Hold each pose for a moment - it captures automatically
                     </span>
                   </div>
                 )}
@@ -589,7 +619,7 @@ export default function VerifyPage() {
                 <div className="h-1 rounded-full bg-white/30 overflow-hidden mx-4">
                   <div
                     className="h-full bg-[#6555b8] transition-all duration-150"
-                    style={{ width: (holdProgress / HOLD_FRAMES_REQUIRED) * 100 + '%' }}
+                    style={{ width: holdProgress + '%' }}
                   />
                 </div>
               </div>
@@ -605,12 +635,7 @@ export default function VerifyPage() {
                     }}
                     className="relative rounded-xl overflow-hidden border-2 border-white/60 shadow-lg active:scale-95 transition"
                   >
-                    <img
-                      src={currentPose.image}
-                      alt={currentPose.label + ' reference'}
-                      className="w-24 h-32 object-cover"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
+                    <PoseGlyph pose={currentPose} size="sm" />
                     <span className="absolute bottom-1 left-1/2 -translate-x-1/2 text-[9px] font-medium text-white px-1.5 py-0.5 rounded bg-black/50">
                       {currentPose.label}
                     </span>
@@ -625,7 +650,7 @@ export default function VerifyPage() {
                   onClick={(e) => {
                     e.stopPropagation();
                     const s = lastStatusRef.current;
-                    if (s && s.faceDetected && s.blinkPassed && s.poseMatched) {
+                    if (s && s.poseMatched && s.held) {
                       captureFrame();
                     } else {
                       setDenyPulse(true);
@@ -659,17 +684,13 @@ export default function VerifyPage() {
                     >
                       <X className="w-5 h-5 text-white" />
                     </button>
-                    <div className="aspect-[3/4] w-full">
-                      <img
-                        src={currentPose.image}
-                        alt={currentPose.label + ' reference'}
-                        className="w-full h-full object-cover"
-                      />
+                    <div className="w-full flex items-center justify-center py-10 bg-[#F9F8FC]">
+                      <PoseGlyph pose={currentPose} />
                     </div>
                     <div className="p-4 bg-white">
                       <h3 className="text-lg font-medium text-[#1C1924] mb-1">{currentPose.label}</h3>
                       <p className="text-xs text-[#6C637B]">
-                        Match this exact pose. Hold steady until auto-capture.
+                        {currentPose.instruction} Hold steady until auto-capture.
                       </p>
                     </div>
                   </div>

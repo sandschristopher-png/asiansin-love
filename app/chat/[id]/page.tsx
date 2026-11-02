@@ -15,11 +15,19 @@ import {
   Sparkles,
   X,
   ArrowDown,
+  Mic,
+  Lock,
+  Square,
+  Trash2,
+  Loader2,
 } from 'lucide-react';
 import UpgradeModal from '@/components/UpgradeModal';
 import ReputationModal from '@/components/ReputationModal';
 import { supabase } from '@/lib/supabase/client';
 import { applyContactRevealMask, CONTACT_UNLOCK_TURNS } from '@/lib/safety';
+import { AudioPill } from '@/components/AudioPill';
+import { useVoiceRecorder } from '@/lib/useVoiceRecorder';
+import { VOICE_NOTE_MAX_MS, formatSeconds } from '@/lib/audio';
 
 interface ChatMessage {
   id: string;
@@ -31,6 +39,50 @@ interface ChatMessage {
   read?: boolean;
   pending?: boolean;
   wasMasked?: boolean;
+  hasAudio?: boolean;
+  audioDurationMs?: number | null;
+}
+
+interface StarterChip {
+  label: string;
+  text: string;
+}
+
+/** profiles.languages / interests may be an array or a comma-separated string. */
+function toList(v: unknown): string[] {
+  const raw = Array.isArray(v) ? v : typeof v === 'string' ? v.split(',') : [];
+  return raw.map((x) => String(x || '').trim()).filter(Boolean);
+}
+
+/** 2-3 tap-to-fill conversation starters from overlapping interests, languages and their city. */
+function buildStarterChips(opts: {
+  myInterests: string[];
+  theirInterests: string[];
+  myLanguages: string[];
+  theirLanguages: string[];
+  theirCity: string;
+}): StarterChip[] {
+  const chips: StarterChip[] = [];
+  const lower = (xs: string[]) => new Set(xs.map((x) => x.toLowerCase()));
+  const mine = lower(opts.myInterests);
+  const shared = opts.theirInterests.filter((t) => mine.has(t.toLowerCase()));
+
+  for (const interest of shared.slice(0, 2)) {
+    chips.push({ label: `Both into ${interest}`, text: `I saw we're both into ${interest}! What got you into it?` });
+  }
+  const myLangs = lower(opts.myLanguages);
+  const sharedLang = opts.theirLanguages.find((l) => l.toLowerCase() !== 'english' && myLangs.has(l.toLowerCase()));
+  if (sharedLang) {
+    chips.push({ label: `You both speak ${sharedLang}`, text: `I noticed we both speak ${sharedLang}! Where did you learn it?` });
+  }
+  if (opts.theirCity) {
+    chips.push({ label: `Ask about ${opts.theirCity}`, text: `What's your favorite thing about life in ${opts.theirCity}?` });
+  }
+  if (chips.length < 2 && opts.theirInterests[0] && !shared.includes(opts.theirInterests[0])) {
+    const t = opts.theirInterests[0];
+    chips.push({ label: `Ask about ${t}`, text: `I saw you're into ${t} - how did you get started?` });
+  }
+  return chips.slice(0, 3);
 }
 
 function formatTimeShort(iso: string): string {
@@ -75,6 +127,14 @@ export default function ChatConversationPage() {
 
   const [icebreakerPrompt, setIcebreakerPrompt] = useState<string | null>(null);
   const [showIcebreaker, setShowIcebreaker] = useState(true);
+  const [starterChips, setStarterChips] = useState<StarterChip[]>([]);
+  const [contactUnlocked, setContactUnlocked] = useState(false);
+  const [voiceSending, setVoiceSending] = useState(false);
+  const voice = useVoiceRecorder(VOICE_NOTE_MAX_MS);
+  const voicePreviewUrl = React.useMemo(() => (voice.blob ? URL.createObjectURL(voice.blob) : null), [voice.blob]);
+  useEffect(() => () => {
+    if (voicePreviewUrl) URL.revokeObjectURL(voicePreviewUrl);
+  }, [voicePreviewUrl]);
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const [inputText, setInputText] = useState('');
@@ -191,18 +251,18 @@ export default function ChatConversationPage() {
       const [myProfRes, targetProfRes] = await Promise.all([
         supabase
           .from('profiles')
-          .select('is_plus, plus_enabled, membership_tier, interests')
+          .select('is_plus, plus_enabled, membership_tier, interests, languages')
           .eq('id', user.id)
           .maybeSingle(),
         isUuid
           ? supabase
               .from('profiles')
-              .select('id, username, display_name, full_name, avatar_url, reputation_score, city, country, interests')
+              .select('id, username, display_name, full_name, avatar_url, reputation_score, city, country, interests, languages')
               .eq('id', rawParam)
               .maybeSingle()
           : supabase
               .from('profiles')
-              .select('id, username, display_name, full_name, avatar_url, reputation_score, city, country, interests')
+              .select('id, username, display_name, full_name, avatar_url, reputation_score, city, country, interests, languages')
               .or(`username.ilike.%${handleParam}%,display_name.ilike.%${handleParam}%`)
               .limit(1)
               .maybeSingle(),
@@ -266,6 +326,16 @@ export default function ChatConversationPage() {
           myInterests.some((m) => m.toLowerCase() === t.toLowerCase())
         );
 
+        setStarterChips(
+          buildStarterChips({
+            myInterests,
+            theirInterests,
+            myLanguages: toList(myProf?.languages),
+            theirLanguages: toList(profData.languages),
+            theirCity: String(profData.city || '').replace(/^@+/, '').trim(),
+          })
+        );
+
         if (shared.length > 0) {
           setIcebreakerPrompt(
             'Hi ' + cleanHandle.replace(/^@+/, '') + '! I noticed we both enjoy ' + shared[0] + '—what is your favorite part about it?'
@@ -282,6 +352,7 @@ export default function ChatConversationPage() {
       }
 
       contactUnlockedRef.current = Boolean(remoteMsgsRes.contactUnlocked);
+      setContactUnlocked(contactUnlockedRef.current);
 
       if (remoteMsgsRes.messages) {
         setMessages(
@@ -293,6 +364,8 @@ export default function ChatConversationPage() {
             time: formatTimeShort(m.createdAt),
             wasMasked: m.wasMasked,
             read: Boolean(m.read ?? m.is_read),
+            hasAudio: Boolean(m.hasAudio),
+            audioDurationMs: m.audioDurationMs ?? null,
           }))
         );
       }
@@ -353,6 +426,8 @@ export default function ChatConversationPage() {
             time: formatTimeShort(row.created_at),
             read: Boolean(row.is_read ?? row.read ?? false),
             wasMasked: mask.hasBlockedContent,
+            hasAudio: Boolean(row.audio_path),
+            audioDurationMs: row.audio_duration_ms ?? null,
           };
           // Realtime echo of my own send arriving before the HTTP response: swap it into the
           // pending optimistic bubble instead of appending a duplicate.
@@ -375,6 +450,7 @@ export default function ChatConversationPage() {
             .then((d) => {
               if (!d || !isMounted) return;
               contactUnlockedRef.current = Boolean(d.contactUnlocked);
+              setContactUnlocked(contactUnlockedRef.current);
               const fresh = (d.messages || []).find((m: any) => m.id === row.id);
               if (d.contactUnlocked && fresh) {
                 setMessages((prev) =>
@@ -475,6 +551,69 @@ export default function ChatConversationPage() {
     } catch {
       setMessages((prev) => prev.filter((m) => m.id !== tempId));
       setErrorBanner('Network error while sending message.');
+    }
+  };
+
+  const fetchVoiceUrl = useCallback(async (messageId: string) => {
+    const res = await fetch(`/api/messages/voice?id=${messageId}`);
+    if (!res.ok) return null;
+    const data = await res.json().catch(() => null);
+    return (data?.url as string) || null;
+  }, []);
+
+  const startVoiceNote = () => {
+    if (!contactUnlocked) {
+      setShowSafetyNotice(true);
+      setErrorBanner(
+        `Voice notes unlock after you both send ${CONTACT_UNLOCK_TURNS} messages (15+ characters). Keep chatting!`
+      );
+      return;
+    }
+    setErrorBanner(null);
+    voice.start();
+  };
+
+  const sendVoiceNote = async () => {
+    if (!voice.blob || !resolvedTargetUuid) return;
+    setVoiceSending(true);
+    setErrorBanner(null);
+    try {
+      const form = new FormData();
+      form.set('receiverId', resolvedTargetUuid);
+      form.set('durationMs', String(Math.round(voice.durationMs)));
+      form.set('audio', voice.blob, voice.blob.type === 'audio/mp4' ? 'note.m4a' : 'note.webm');
+      const res = await fetch('/api/messages/voice', { method: 'POST', body: form });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        if (data.courtshipLocked) setShowSafetyNotice(true);
+        setErrorBanner(data.error || 'Voice note could not be sent.');
+        return;
+      }
+      const m = data.message;
+      forceScrollNextRef.current = true;
+      setMessages((prev) =>
+        prev.some((x) => x.id === m.id)
+          ? prev
+          : [
+              ...prev,
+              {
+                id: m.id,
+                sender: 'me',
+                text: m.content,
+                createdAt: m.created_at,
+                time: formatTimeShort(m.created_at),
+                read: Boolean(m.is_read),
+                hasAudio: true,
+                audioDurationMs: m.audio_duration_ms ?? voice.durationMs,
+              },
+            ]
+      );
+      voice.reset();
+      setShowIcebreaker(false);
+    } catch {
+      setErrorBanner('Network error while sending voice note.');
+    } finally {
+      setVoiceSending(false);
     }
   };
 
@@ -643,7 +782,7 @@ export default function ChatConversationPage() {
           </div>
         ) : (
           <>
-            {showIcebreaker && icebreakerPrompt && messages.length < 3 && (
+            {showIcebreaker && icebreakerPrompt && messages.length > 0 && messages.length < 3 && (
               <div className="mb-3 p-3.5 rounded-2xl bg-white border border-[#E5DFEE] shadow-[0_2px_10px_rgba(101,85,184,0.05)] space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-[#6555B8]">
@@ -694,7 +833,7 @@ export default function ChatConversationPage() {
               <div className="mb-3 p-3 rounded-2xl bg-[#F5F2FC] border border-[#E2DBF0] text-xs text-[#6555B8] flex items-start gap-2.5">
                 <ShieldAlert className="w-4 h-4 text-[#6555B8] shrink-0 mt-0.5" />
                 <p className="leading-relaxed">
-                  <strong className="font-semibold">Safety Gate:</strong> External contact handles and phone digits unlock after 3 substantive replies from both members.
+                  <strong className="font-semibold">Safety Gate:</strong> Contact details and voice notes unlock after 3 substantive replies from both members.
                 </p>
               </div>
             )}
@@ -716,6 +855,33 @@ export default function ChatConversationPage() {
                 <p className="text-[11px] text-[#7A7289] max-w-[220px] mx-auto leading-relaxed">
                   Send a friendly note to break the ice.
                 </p>
+                {(starterChips.length > 0 || icebreakerPrompt) && (
+                  <div className="pt-3 flex flex-wrap justify-center gap-2 max-w-[320px] mx-auto">
+                    {(starterChips.length > 0
+                      ? starterChips
+                      : [{ label: 'Say hello', text: icebreakerPrompt as string }]
+                    ).map((chip) => (
+                      <button
+                        key={chip.label}
+                        type="button"
+                        onClick={() => {
+                          setInputText(chip.text);
+                          requestAnimationFrame(() => {
+                            const el = textareaRef.current;
+                            if (!el) return;
+                            el.focus();
+                            el.style.height = 'auto';
+                            el.style.height = Math.min(el.scrollHeight, 108) + 'px';
+                          });
+                        }}
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#F3EFFC] border border-[#E2DBF0] text-[#6555B8] text-[11.5px] font-semibold hover:bg-[#EBE5FA] active:scale-95 transition"
+                      >
+                        <Sparkles className="w-3 h-3" />
+                        {chip.label}
+                      </button>
+                    ))}
+                  </div>
+                )}
               </div>
             ) : (
               messages.map((msg, idx) => {
@@ -786,7 +952,17 @@ export default function ChatConversationPage() {
                                 ' shadow-[0_1px_3px_rgba(28,25,36,0.03)]')
                           }
                         >
-                          {msg.text}
+                          {msg.hasAudio ? (
+                            <AudioPill
+                              src={() => fetchVoiceUrl(msg.id)}
+                              label="Voice note"
+                              durationMs={msg.audioDurationMs}
+                              tone={isMe ? 'onBrand' : 'light'}
+                              className="-mx-1"
+                            />
+                          ) : (
+                            msg.text
+                          )}
                         </div>
                       </div>
 
@@ -848,6 +1024,61 @@ export default function ChatConversationPage() {
               Skip the Wait with Plus
             </button>
           </div>
+        ) : voice.state !== 'idle' ? (
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => (voice.state === 'recording' ? voice.cancel() : voice.reset())}
+              disabled={voiceSending}
+              aria-label="Discard voice note"
+              className="w-9 h-9 rounded-full border border-[#E2DCEB] text-[#8C849B] hover:text-rose-600 flex items-center justify-center shrink-0 disabled:opacity-40"
+            >
+              <Trash2 className="w-4 h-4" />
+            </button>
+            <div className="flex-1 h-10 rounded-3xl bg-[#F6F4FA] border border-[#E2DCEB] px-3 flex items-center gap-2 min-w-0">
+              {voice.state === 'recording' ? (
+                <>
+                  <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse shrink-0" />
+                  <span className="text-xs font-semibold text-[#1C1924] tabular-nums shrink-0">
+                    {formatSeconds(voice.elapsedMs)} / {formatSeconds(VOICE_NOTE_MAX_MS)}
+                  </span>
+                  <span className="flex-1 flex items-center gap-[2px] h-5 min-w-0 overflow-hidden" aria-hidden>
+                    {voice.levels.map((l, i) => (
+                      <span key={i} className="flex-1 rounded-full bg-[#6555B8]" style={{ height: `${Math.round(l * 100)}%` }} />
+                    ))}
+                  </span>
+                </>
+              ) : voicePreviewUrl ? (
+                <AudioPill
+                  key={voicePreviewUrl}
+                  src={voicePreviewUrl}
+                  label="Preview"
+                  durationMs={voice.durationMs}
+                  size="sm"
+                />
+              ) : null}
+            </div>
+            {voice.state === 'recording' ? (
+              <button
+                type="button"
+                onClick={voice.stop}
+                aria-label="Stop recording"
+                className="w-9 h-9 rounded-full bg-[#1C1924] text-white flex items-center justify-center shrink-0"
+              >
+                <Square className="w-3.5 h-3.5 fill-current" />
+              </button>
+            ) : (
+              <button
+                type="button"
+                onClick={sendVoiceNote}
+                disabled={voiceSending || !voice.blob}
+                aria-label="Send voice note"
+                className="w-9 h-9 rounded-full bg-[#6555B8] hover:bg-[#52449e] text-white flex items-center justify-center shrink-0 disabled:opacity-40"
+              >
+                {voiceSending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4 translate-x-[0.5px]" />}
+              </button>
+            )}
+          </div>
         ) : (
           <form onSubmit={handleSendMessage} className="flex items-end gap-2">
             <div className="flex-1 bg-[#F6F4FA] border border-[#E2DCEB] focus-within:border-[#6555B8] focus-within:bg-white focus-within:ring-2 focus-within:ring-[#6555B8]/15 rounded-3xl px-3.5 py-2 transition-all flex items-center">
@@ -864,6 +1095,24 @@ export default function ChatConversationPage() {
                 className="w-full bg-transparent text-[#1C1924] placeholder-[#8C849B] text-[13.5px] leading-snug outline-none resize-none max-h-28 overflow-y-auto"
               />
             </div>
+            {!inputText.trim() && (
+              <button
+                type="button"
+                onClick={startVoiceNote}
+                aria-label={contactUnlocked ? 'Record a voice note' : 'Voice notes are locked'}
+                title={contactUnlocked ? 'Record a voice note (up to 30s)' : `Voice notes unlock after ${CONTACT_UNLOCK_TURNS} messages each`}
+                className={`relative w-9 h-9 rounded-full border flex items-center justify-center shrink-0 transition ${
+                  contactUnlocked
+                    ? 'border-[#E2DBF0] bg-[#F3EFFC] text-[#6555B8] hover:bg-[#EBE5FA]'
+                    : 'border-[#ECE8F4] bg-white text-[#B6AEC7]'
+                }`}
+              >
+                <Mic className="w-4 h-4" />
+                {!contactUnlocked && (
+                  <Lock className="absolute -bottom-0.5 -right-0.5 w-3 h-3 p-[1px] rounded-full bg-white text-[#8C849B]" />
+                )}
+              </button>
+            )}
             <button
               type="submit"
               disabled={!inputText.trim()}

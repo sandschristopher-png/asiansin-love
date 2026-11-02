@@ -39,22 +39,29 @@ export async function GET(req: Request) {
 
     const pairFilter = [user.id, targetUserId];
 
-    // Single consolidated query: fetch latest 60 messages descending
-    const { data: rawMessages, error: fetchError } = await serviceClient
-      .from('messages')
-      .select('id, sender_id, receiver_id, content, created_at, is_quarantined, is_read')
-      .in('sender_id', pairFilter)
-      .in('receiver_id', pairFilter)
-      .eq('is_quarantined', false)
-      .order('created_at', { ascending: false })
-      .limit(60);
+    // Single consolidated query: fetch latest 60 messages descending. Voice-note columns come
+    // from 20261105_voice_features.sql; until that migration runs, fall back to text-only.
+    const BASE_COLS = 'id, sender_id, receiver_id, content, created_at, is_quarantined, is_read';
+    const fetchThread = (cols: string) =>
+      serviceClient
+        .from('messages')
+        .select(cols)
+        .in('sender_id', pairFilter)
+        .in('receiver_id', pairFilter)
+        .eq('is_quarantined', false)
+        .order('created_at', { ascending: false })
+        .limit(60);
+    let { data: rawMessages, error: fetchError } = await fetchThread(BASE_COLS + ', audio_path, audio_duration_ms');
+    if (fetchError && /audio_path|audio_duration_ms/.test(fetchError.message)) {
+      ({ data: rawMessages, error: fetchError } = await fetchThread(BASE_COLS));
+    }
 
     if (fetchError) {
       return NextResponse.json({ error: fetchError.message }, { status: 500 });
     }
 
     // Chronological order for the UI
-    const messages = (rawMessages || []).reverse();
+    const messages = ((rawMessages || []) as any[]).reverse();
 
     // Same unlock rule as the POST send gate: both members sent 3 distinct substantive (15+ char)
     // messages within the latest 40.
@@ -71,6 +78,9 @@ export async function GET(req: Request) {
         createdAt: msg.created_at,
         read: Boolean(msg.is_read),
         wasMasked: maskResult.hasBlockedContent,
+        // Voice notes: the client fetches a signed URL from /api/messages/voice?id=...
+        hasAudio: Boolean(msg.audio_path),
+        audioDurationMs: msg.audio_duration_ms ?? null,
       };
     });
 

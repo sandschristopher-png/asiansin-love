@@ -16,6 +16,7 @@ const DISCOVER_COLUMNS = [
   'last_active', 'show_active_status', 'hide_profile',
   'relationship_intent', 'intentions', 'relationship_goal', 'intent', 'looking_for',
   'bio', 'occupation', 'profession', 'languages', 'interests', 'height', 'weight', 'created_at',
+  'voice_intro_url',
 ].join(', ');
 
 export const dynamic = 'force-dynamic';
@@ -84,7 +85,11 @@ export async function GET() {
 
     if (user) {
       const [profRes, blocksRes, favsRes] = await Promise.all([
-        serviceClient.from('profiles').select('*').eq('id', user.id).maybeSingle(),
+        serviceClient
+          .from('profiles')
+          .select('id, gender, interested_in, seeking_gender, latitude, longitude, interests, intentions, relationship_intent, onboarding_completed')
+          .eq('id', user.id)
+          .maybeSingle(),
         serviceClient
           .from('user_blocks')
           .select('blocker_id, blocked_id')
@@ -204,6 +209,7 @@ export async function GET() {
           height: row.height || '',
           weight: row.weight || '',
           created_at: row.created_at,
+          voiceIntroUrl: row.voice_intro_url || null,
         };
       });
 

@@ -93,6 +93,44 @@ function getInitialSparksState(): any {
   return null;
 }
 
+const STATE_CTA_CLASS =
+  'inline-flex items-center justify-center gap-2 h-11 px-6 rounded-full bg-[#6555B8] hover:bg-[#5646A6] text-white text-xs font-semibold shadow-sm active:scale-95 transition-all';
+
+/**
+ * Shared empty / paywall state for every Sparks tab. Fixed art box and reserved text heights
+ * keep the headline and button in the same place when switching tabs.
+ */
+function TabState({
+  art,
+  artAlt,
+  artClassName = '',
+  title,
+  subtitle,
+  cta,
+}: {
+  art: string;
+  artAlt: string;
+  artClassName?: string;
+  title: string;
+  subtitle: string;
+  cta: React.ReactNode;
+}) {
+  return (
+    <div className="animate-fade-in-up flex flex-col items-center text-center pt-4 pb-6 px-4">
+      <div className="w-44 h-44 max-w-[180px] mx-auto mb-3 flex items-center justify-center shrink-0">
+        <img
+          src={art}
+          alt={artAlt}
+          className={`w-full h-full object-contain select-none pointer-events-none ${artClassName}`}
+        />
+      </div>
+      <h2 className="text-base font-bold text-[#1C1924] mb-1.5 min-h-6">{title}</h2>
+      <p className="text-xs text-[#6C637B] max-w-[270px] leading-relaxed mb-5 min-h-[3.75rem]">{subtitle}</p>
+      {cta}
+    </div>
+  );
+}
+
 export default function SparksPage() {
   const router = useRouter();
   const initialSparks = getInitialSparksState();
@@ -294,7 +332,7 @@ export default function SparksPage() {
       <div className="max-w-md mx-auto px-3.5 pt-2">
         {/* Horizontal Sub-Tab Navigation */}
         <div className="sticky top-12 z-30 bg-white/95 backdrop-blur-md border-b border-[#ECE8F4] -mx-3.5 px-3.5 mb-3.5">
-          <div className="flex items-center gap-4 overflow-x-auto no-scrollbar">
+          <div className="grid grid-cols-4">
             {tabs.map((t) => {
               const active = activeTab === t.id;
               return (
@@ -302,11 +340,11 @@ export default function SparksPage() {
                   key={t.id}
                   type="button"
                   onClick={() => setActiveTab(t.id)}
-                  className={`relative py-2.5 text-[13px] font-semibold whitespace-nowrap transition-all duration-150 active:scale-95 cursor-pointer flex items-center gap-1.5 ${
+                  className={`relative py-2.5 px-1 text-[12.5px] font-semibold whitespace-nowrap transition-colors duration-150 cursor-pointer flex items-center justify-center gap-1 min-w-0 ${
                     active ? 'text-[#6555B8]' : 'text-[#8C849B] hover:text-[#1C1924]'
                   }`}
                 >
-                  <span>{t.label}</span>
+                  <span className="truncate">{t.label}</span>
                   {t.count > 0 && (
                     <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold ${
                       active ? 'bg-[#6555B8]/12 text-[#6555B8]' : 'bg-slate-100 text-[#8C849B]'
@@ -314,9 +352,12 @@ export default function SparksPage() {
                       {t.count}
                     </span>
                   )}
-                  {active && (
-                    <span className="absolute bottom-0 left-0 right-0 h-[2.5px] rounded-full bg-[#6555B8] transition-all duration-200" />
-                  )}
+                  <span
+                    aria-hidden
+                    className={`absolute bottom-0 left-2 right-2 h-[2.5px] rounded-full bg-[#6555B8] origin-center transition-transform duration-200 ease-out ${
+                      active ? 'scale-x-100' : 'scale-x-0'
+                    }`}
+                  />
                 </button>
               );
             })}
@@ -325,17 +366,19 @@ export default function SparksPage() {
 
         {/* Visited Tab Paywall for Free Users */}
         {activeTab === 'visited' && !isPlus ? (
-          <div className="animate-fade-in-up flex flex-col items-center justify-center text-center py-10 px-4">
-            <div className="w-16 h-16 rounded-full bg-[#F3F0FA] border border-[#E2DCF3] flex items-center justify-center mb-4 shadow-2xs">
-              <img src="/ail-plus.png" alt="AIL+" className="w-10 h-10 rounded-xl" />
-            </div>
-            <h2 className="text-lg font-bold text-[#1C1924] mb-1.5">See Who Visited Your Profile</h2>
-            <p className="text-xs text-[#6C637B] max-w-[270px] leading-relaxed mb-5">Unlock your real-time visitor history, unblur incoming Sparks, and travel across Southeast Asia with AIL+.</p>
-            <Link href="/settings?upgrade=plus" className="inline-flex items-center gap-2 h-11 px-6 rounded-full bg-[#6555B8] hover:bg-[#5646A6] text-white text-xs font-semibold shadow-sm active:scale-95 transition-all">
-              <Crown className="w-4 h-4 text-amber-300" />
-              <span>Upgrade to AIL+ · $14.99/mo</span>
-            </Link>
-          </div>
+          <TabState
+            art="/ail-plus.png"
+            artAlt="AIL+"
+            artClassName="rounded-[2rem]"
+            title="See Who Visited Your Profile"
+            subtitle="Unlock your real-time visitor history, unblur incoming Sparks, and travel across Southeast Asia with AIL+."
+            cta={
+              <Link href="/settings?upgrade=plus" className={STATE_CTA_CLASS}>
+                <Crown className="w-4 h-4 text-amber-300" />
+                <span>Upgrade to AIL+ · $14.99/mo</span>
+              </Link>
+            }
+          />
         ) : loading ? (
           <div className="grid grid-cols-2 gap-3.5">
             {[0, 1, 2, 3].map((i) => (
@@ -343,14 +386,17 @@ export default function SparksPage() {
             ))}
           </div>
         ) : currentList.length === 0 ? (
-          <div className="animate-fade-in-up flex flex-col items-center justify-center text-center pt-4 pb-6 px-4">
-            <div className="relative w-56 h-44 mx-auto mb-2 flex items-center justify-center">
-              <img src={userGender === 'female' ? '/nomatch-f.png' : '/nomatch-m.png'} alt="No Sparks Yet" className="w-full h-full object-contain select-none pointer-events-none" />
-            </div>
-            <h2 className="text-base font-bold text-[#1C1924] mb-1">{emptyCopy.title}</h2>
-            <p className="text-xs text-[#6C637B] max-w-[260px] leading-relaxed mb-5">{emptyCopy.subtitle}</p>
-            <Link href="/discover" className="inline-flex items-center justify-center h-10 px-6 rounded-full bg-[#6555B8] hover:bg-[#5646A6] text-white text-xs font-semibold shadow-xs active:scale-95 transition-all">Explore Discover Feed</Link>
-          </div>
+          <TabState
+            art={userGender === 'female' ? '/nomatch-f.png' : '/nomatch-m.png'}
+            artAlt={emptyCopy.title}
+            title={emptyCopy.title}
+            subtitle={emptyCopy.subtitle}
+            cta={
+              <Link href="/discover" className={STATE_CTA_CLASS}>
+                Explore Discover Feed
+              </Link>
+            }
+          />
         ) : (
           <>
           <div className="grid grid-cols-2 gap-3.5 animate-fade-in-up">

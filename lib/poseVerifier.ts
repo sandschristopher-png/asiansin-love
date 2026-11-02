@@ -1,16 +1,31 @@
 'use client';
 
-import {
-  FilesetResolver,
-  FaceLandmarker,
-  GestureRecognizer,
-} from '@mediapipe/tasks-vision';
+// Loaded only via `await import('@/lib/poseVerifier')` from /verify once the camera starts, so
+// @mediapipe/tasks-vision and face-api never ship in any route's initial bundle.
+import { FilesetResolver, FaceLandmarker } from '@mediapipe/tasks-vision';
 import * as faceapi from '@vladmandic/face-api';
+import type { PoseId } from '@/lib/verification';
+
+// Keep the WASM runtime in lockstep with the installed @mediapipe/tasks-vision version.
+const MEDIAPIPE_WASM = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1.2.0/wasm';
+const FACE_LANDMARKER_MODEL =
+  'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task';
+const FACE_API_MODELS = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.15/model/';
+
+/** Head must be rotated past this many degrees for the turn poses. */
+export const YAW_THRESHOLD_DEG = 15;
+/** Both mouthSmile blendshapes must exceed this. */
+export const SMILE_THRESHOLD = 0.5;
+/** 1:1 match: face-api descriptor distance must be strictly below this. */
+export const FACE_MATCH_MAX_DISTANCE = 0.5;
+
+const BLINK_CLOSED = 0.5;
+const BLINK_OPEN = 0.2;
 
 let faceLandmarker: FaceLandmarker | null = null;
-let gestureRecognizer: GestureRecognizer | null = null;
 let modelsInitPromise: Promise<void> | null = null;
 
+/** Per-pose state, reset whenever the pose changes. */
 export interface BlinkTracker {
   eyesClosedSeen: boolean;
   blinkPassed: boolean;
@@ -18,218 +33,150 @@ export interface BlinkTracker {
 
 export interface FrameEvaluation {
   faceDetected: boolean;
-  blinkPassed: boolean;
   poseMatched: boolean;
   hint: string;
+  /** Estimated head yaw in degrees: negative = turned to the user's left, positive = right. */
+  yaw: number | null;
 }
 
-/** Loads WASM models from free CDNs once per session. Lazy: call only when camera opens. */
+/** Loads the face models once per session. Call only when the camera opens. */
 export async function initVerifierModels(): Promise<void> {
-  if (faceLandmarker && gestureRecognizer) return;
+  if (faceLandmarker) return;
   if (modelsInitPromise) return modelsInitPromise;
   modelsInitPromise = (async () => {
-    const vision = await FilesetResolver.forVisionTasks(
-      'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@latest/wasm'
-    );
-
-    const [faceModel, gestureModel] = await Promise.all([
-      FaceLandmarker.createFromOptions(vision, {
-        baseOptions: {
-          modelAssetPath:
-            'https://storage.googleapis.com/mediapipe-models/face_landmarker/face_landmarker/float16/1/face_landmarker.task',
-          delegate: 'GPU',
-        },
-        outputFaceBlendshapes: true,
-        runningMode: 'VIDEO',
-        numFaces: 1,
-      }),
-      GestureRecognizer.createFromOptions(vision, {
-        baseOptions: {
-          modelAssetPath:
-            'https://storage.googleapis.com/mediapipe-models/gesture_recognizer/gesture_recognizer/float16/1/gesture_recognizer.task',
-          delegate: 'GPU',
-        },
-        runningMode: 'VIDEO',
-        numHands: 2,
-      }),
-    ]);
-
-    faceLandmarker = faceModel;
-    gestureRecognizer = gestureModel;
-
-    const FACE_MODEL_URL = 'https://cdn.jsdelivr.net/npm/@vladmandic/face-api/model/';
+    const vision = await FilesetResolver.forVisionTasks(MEDIAPIPE_WASM);
+    faceLandmarker = await FaceLandmarker.createFromOptions(vision, {
+      baseOptions: { modelAssetPath: FACE_LANDMARKER_MODEL, delegate: 'GPU' },
+      outputFaceBlendshapes: true,
+      runningMode: 'VIDEO',
+      numFaces: 2, // detect a second face so we can reject it
+    });
     await Promise.all([
-      faceapi.nets.tinyFaceDetector.loadFromUri(FACE_MODEL_URL),
-      faceapi.nets.faceLandmark68Net.loadFromUri(FACE_MODEL_URL),
-      faceapi.nets.faceRecognitionNet.loadFromUri(FACE_MODEL_URL),
+      faceapi.nets.tinyFaceDetector.loadFromUri(FACE_API_MODELS),
+      faceapi.nets.faceLandmark68Net.loadFromUri(FACE_API_MODELS),
+      faceapi.nets.faceRecognitionNet.loadFromUri(FACE_API_MODELS),
     ]);
-  })();
+  })().catch((err) => {
+    modelsInitPromise = null; // allow a retry
+    throw err;
+  });
   return modelsInitPromise;
 }
 
 /**
- * Matches our 4-pose pool using MediaPipe gesture categories plus
- * 21-keypoint finger geometry. Chin-rest uses hand-near-face proximity.
+ * Yaw from face-mesh landmarks (raw, un-mirrored camera image): where the nose tip sits between
+ * the two cheek contour points. Frontal = 0.5. Treating the head as a cylinder,
+ * offset = sin(yaw) / 2. Turning to the user's left moves the nose toward the image's right.
  */
-function matchHandPose(poseTitle: string, gestureResult: unknown, noseY: number | null): boolean {
-  const result = gestureResult as {
-    gestures?: { categoryName: string }[][];
-    landmarks?: { x: number; y: number }[][];
-  };
-  const label = poseTitle.toLowerCase();
-  const topGesture = result.gestures?.[0]?.[0];
-  const lm = result.landmarks?.[0];
-
-  if (!lm || lm.length < 21) return false;
-
-  const indexUp = lm[8].y < lm[6].y;
-  const middleUp = lm[12].y < lm[10].y;
-  const ringUp = lm[16].y < lm[14].y;
-  const pinkyUp = lm[20].y < lm[18].y;
-  const thumbUp = lm[4].y < lm[3].y && lm[4].y < lm[5].y;
-
-  // Peace sign
-  if (label.includes('peace') || label.includes('victory') || label.includes('v sign')) {
-    return (
-      topGesture?.categoryName === 'Victory' ||
-      (indexUp && middleUp && !ringUp && !pinkyUp)
-    );
-  }
-
-  // Three fingers
-  if (label.includes('three') || label.includes('3')) {
-    return (
-      (indexUp && middleUp && ringUp && !pinkyUp) ||
-      (middleUp && ringUp && pinkyUp && !indexUp) ||
-      topGesture?.categoryName === 'ILoveYou'
-    );
-  }
-
-  // Open palm
-  if (label.includes('palm') || label.includes('wave') || label.includes('open') || label.includes('hand') || label.includes('five')) {
-    return (
-      topGesture?.categoryName === 'Open_Palm' ||
-      (indexUp && middleUp && ringUp && pinkyUp)
-    );
-  }
-
-  // Chin rest: any visible hand held near chin height (below nose)
-  if (label.includes('chin')) {
-    if (noseY === null) return false;
-    const wristY = lm[0].y;
-    const handCenterX = (lm[0].x + lm[9].x) / 2;
-    return wristY > noseY - 0.05 && wristY < noseY + 0.25 && handCenterX > 0.15 && handCenterX < 0.85;
-  }
-
-  // Pointing up: single index finger raised
-  if (label.includes('pointing')) {
-    return (
-      topGesture?.categoryName === 'Pointing_Up' ||
-      (indexUp && !middleUp && !ringUp && !pinkyUp)
-    );
-  }
-
-  // Finger heart: thumb tip crossed against index tip
-  if (label.includes('finger heart')) {
-    const dx = lm[4].x - lm[8].x;
-    const dy = lm[4].y - lm[8].y;
-    const tipDist = Math.sqrt(dx * dx + dy * dy);
-    return tipDist < 0.08 && !indexUp;
-  }
-
-  // Thumbs up
-  if (label.includes('thumb')) {
-    return (
-      topGesture?.categoryName === 'Thumb_Up' ||
-      (thumbUp && !indexUp && !middleUp && !ringUp && !pinkyUp)
-    );
-  }
-
-  // Fallback for unmapped custom poses: require a visible hand
-  return true;
+function estimateYawDeg(lm: { x: number; y: number }[]): number | null {
+  const nose = lm[1];
+  const a = lm[234];
+  const b = lm[454];
+  if (!nose || !a || !b) return null;
+  const left = Math.min(a.x, b.x);
+  const right = Math.max(a.x, b.x);
+  const width = right - left;
+  if (width <= 0.01) return null;
+  const ratio = (nose.x - left) / width;
+  const s = Math.max(-1, Math.min(1, (0.5 - ratio) * 2));
+  return (Math.asin(s) * 180) / Math.PI;
 }
 
-/**
- * Evaluates one live video frame: face presence, blink liveness, pose match.
- */
+const score = (cats: { categoryName: string; score: number }[], name: string) =>
+  cats.find((c) => c.categoryName === name)?.score ?? 0;
+
+/** Evaluates one live video frame against the current pose. */
 export function evaluateLiveFrame(
   video: HTMLVideoElement,
-  poseTitle: string,
-  blinkTracker: BlinkTracker
+  pose: PoseId,
+  blink: BlinkTracker
 ): FrameEvaluation {
-  if (!faceLandmarker || !gestureRecognizer || video.readyState < 2) {
-    return { faceDetected: false, blinkPassed: false, poseMatched: false, hint: 'Starting camera...' };
+  if (!faceLandmarker || video.readyState < 2) {
+    return { faceDetected: false, poseMatched: false, hint: 'Starting camera...', yaw: null };
   }
 
-  const now = performance.now();
-  const faceRes = faceLandmarker.detectForVideo(video, now);
-  const landmarks = faceRes.faceLandmarks?.[0];
-  const hasFace = (faceRes.faceLandmarks?.length || 0) === 1;
-
-  if (!hasFace || !landmarks) {
-    return { faceDetected: false, blinkPassed: blinkTracker.blinkPassed, poseMatched: false, hint: 'Center your face in the camera' };
+  const res = faceLandmarker.detectForVideo(video, performance.now());
+  const faces = res.faceLandmarks?.length ?? 0;
+  if (faces === 0) {
+    return { faceDetected: false, poseMatched: false, hint: 'Center your face in the camera', yaw: null };
+  }
+  if (faces > 1) {
+    return { faceDetected: false, poseMatched: false, hint: 'Only one person in the frame, please', yaw: null };
   }
 
-  // Gate 1: blink liveness (once per session)
-  if (!blinkTracker.blinkPassed) {
-    const shapes = faceRes.faceBlendshapes?.[0]?.categories || [];
-    const lBlink = shapes.find((c) => c.categoryName === 'eyeBlinkLeft')?.score || 0;
-    const rBlink = shapes.find((c) => c.categoryName === 'eyeBlinkRight')?.score || 0;
+  const lm = res.faceLandmarks[0];
+  const cats = res.faceBlendshapes?.[0]?.categories ?? [];
+  const yaw = estimateYawDeg(lm);
+  const facingCamera = yaw !== null && Math.abs(yaw) < YAW_THRESHOLD_DEG / 1.5;
 
-    if (lBlink > 0.42 && rBlink > 0.42) {
-      blinkTracker.eyesClosedSeen = true;
-    } else if (blinkTracker.eyesClosedSeen && lBlink < 0.2 && rBlink < 0.2) {
-      blinkTracker.blinkPassed = true;
+  switch (pose) {
+    case 'blink': {
+      const l = score(cats, 'eyeBlinkLeft');
+      const r = score(cats, 'eyeBlinkRight');
+      if (!blink.blinkPassed) {
+        if (l > BLINK_CLOSED && r > BLINK_CLOSED) blink.eyesClosedSeen = true;
+        else if (blink.eyesClosedSeen && l < BLINK_OPEN && r < BLINK_OPEN) blink.blinkPassed = true;
+      }
+      // After the blink, hold eyes open facing the camera (the frame used for the face match).
+      const matched = blink.blinkPassed && facingCamera && l < BLINK_OPEN && r < BLINK_OPEN;
+      return {
+        faceDetected: true,
+        poseMatched: matched,
+        hint: !blink.blinkPassed
+          ? 'Blink both eyes once'
+          : matched
+            ? 'Blink detected - eyes open, hold still...'
+            : 'Look straight at the camera with eyes open',
+        yaw,
+      };
     }
-
-    if (!blinkTracker.blinkPassed) {
-      return { faceDetected: true, blinkPassed: false, poseMatched: false, hint: 'Blink both eyes once to confirm you are live' };
+    case 'turn_left': {
+      const matched = yaw !== null && yaw < -YAW_THRESHOLD_DEG;
+      return { faceDetected: true, poseMatched: matched, hint: matched ? 'Hold it...' : 'Turn your head to your left', yaw };
     }
+    case 'turn_right': {
+      const matched = yaw !== null && yaw > YAW_THRESHOLD_DEG;
+      return { faceDetected: true, poseMatched: matched, hint: matched ? 'Hold it...' : 'Turn your head to your right', yaw };
+    }
+    case 'smile': {
+      const matched =
+        facingCamera &&
+        score(cats, 'mouthSmileLeft') > SMILE_THRESHOLD &&
+        score(cats, 'mouthSmileRight') > SMILE_THRESHOLD;
+      return { faceDetected: true, poseMatched: matched, hint: matched ? 'Great smile - hold it...' : 'Smile at the camera', yaw };
+    }
+    default:
+      return { faceDetected: true, poseMatched: false, hint: 'Unknown pose', yaw };
   }
-
-  // Gate 2: hand pose while face present
-  const gestureRes = gestureRecognizer.recognizeForVideo(video, now);
-  const noseY = landmarks[1]?.y ?? null;
-  const poseMatched = matchHandPose(poseTitle, gestureRes, noseY);
-
-  return {
-    faceDetected: true,
-    blinkPassed: true,
-    poseMatched,
-    hint: poseMatched ? 'Pose matched - hold steady...' : 'Now match the pose: ' + poseTitle,
-  };
 }
 
-/**
- * Gate 3: 1:1 biometric match of the captured frame against the profile avatar.
- */
+/** 1:1 biometric match of a captured frontal frame against the profile avatar. */
 export async function verifySelfieAgainstAvatar(
   selfieCanvas: HTMLCanvasElement,
   avatarUrl: string
 ): Promise<{ matched: boolean; distance: number; error?: string }> {
-  const selfieDet = await faceapi
-    .detectSingleFace(selfieCanvas, new faceapi.TinyFaceDetectorOptions())
-    .withFaceLandmarks()
-    .withFaceDescriptor();
-
+  const opts = new faceapi.TinyFaceDetectorOptions({ inputSize: 416, scoreThreshold: 0.5 });
+  const selfieDet = await faceapi.detectSingleFace(selfieCanvas, opts).withFaceLandmarks().withFaceDescriptor();
   if (!selfieDet) {
-    return { matched: false, distance: 1, error: 'Face was not clear enough in the capture.' };
+    return { matched: false, distance: 1, error: 'Your face was not clear enough in the capture.' };
   }
 
-  const avatarImg = await faceapi.fetchImage(avatarUrl);
-  const avatarDet = await faceapi
-    .detectSingleFace(avatarImg, new faceapi.TinyFaceDetectorOptions())
-    .withFaceLandmarks()
-    .withFaceDescriptor();
-
+  let avatarImg: HTMLImageElement;
+  try {
+    avatarImg = await faceapi.fetchImage(avatarUrl);
+  } catch {
+    return { matched: false, distance: 1, error: 'Could not load your profile photo for the face match.' };
+  }
+  const avatarDet = await faceapi.detectSingleFace(avatarImg, opts).withFaceLandmarks().withFaceDescriptor();
   if (!avatarDet) {
-    return { matched: false, distance: 1, error: 'Could not detect a face in your profile photo.' };
+    return { matched: false, distance: 1, error: 'We could not find a clear face in your main profile photo. Update it and try again.' };
   }
 
   const distance = faceapi.euclideanDistance(selfieDet.descriptor, avatarDet.descriptor);
+  const matched = distance < FACE_MATCH_MAX_DISTANCE;
   return {
-    matched: distance <= 0.55,
+    matched,
     distance: Number(distance.toFixed(3)),
-    error: distance > 0.55 ? 'Capture does not match your profile photo.' : undefined,
+    error: matched ? undefined : 'This capture does not match your main profile photo.',
   };
 }

@@ -1,23 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64">
-  <defs>
-    <style>
-      @font-face {
-        font-family: 'Comfortaa';
-        font-weight: 700;
-        font-style: normal;
-        src: url('data:font/woff2;base64,d09GMgABAAAAAASMABAAAAAACKQAAAQvAAEAAAAAAAAAAAAAAAAAAAAAAAAAAAAAGhwbgQIcgUoGYD9TVEFUKgBMEQgKhCSDVgsSAAE2AiQDIAQgBYRQByAMBxssB8gEHvqc2vuCAMvjKi0rROiMR0kBHSC0uywvIt4A6Eog///HXJ6HZKdrCPGftze9MxXEGiWR8UoyiXheq0RCTKzSNZygZumD4wggDM0pZKgxl2S/LYR4cpHqG9tNIsY985NEoEy0fTFGxgZmJwmaTWFDQSKICyooYmdtKiUdGRkvan+dlxDIpyFAlShOiUJqU+yRTlePc6fiwLWg1hxqMKitc5tUV9pWc0iXa9aYulTT3eaJheZRbIWskHwCuk0MQUfV8am+cYpjWa4sXZYIA6pHQoUFZfAscE4lzOcxQgAB8GnNzYpkSU+jgmRJB7i7Lb1YHCNXNOPVr0eyq6l3rVWoO+hu0M0NxuUZW19SVdFuIK7rL0hxcjiHgSGflgJnPLobaWloeP6KzAUtq9LT1AFkONdQmlIoRpnu2KqEgYcRxhGxl5vs7+3r7SvsK4S2Py0l2yaSIShG1B4JuJlJXsf2vclLKsh4256ZdUaFKclaVEhEdFiodadQfXeFhvvvQPHeHtJj3Sl8d4X678B7uxmuhh2sv/ZQ2m133Sd8z4ZYT+O9PUS/+YMPQv3vvYf3/qeTL75arXms99+Xrwnxvvtuj/+DD4SPmoVY776L9xaPdacQ+7vx3n6cW97fJdVC779/ukUK3RN67JoeDzluPSt8z4X6n8H7dJfjTO0J7UzH+45l7Qlt2fGLz/npNudnzuBH73xeeOnypW+8oHVrez45LeJtede+M42Up1I0U4si/0hWckNzYnZabVxidWrCgnXKE984tAYq5Ja55tp1l6t5Y725s3OtuXnDleSqXZ9rzj+Y58rOMAsKM0xXdl5uV3amWViQaXZlaz362/oVjhF33Bf621ymv60/E/2WHv1U9DP603yaXpeV4C6M1Z/S9af02ITn9B1Ov64f3st1a7sGd+0a3LVrkKSQEu/60QAC/yidydpFdAMfyRLdo9fknV/Z1ssvHI8s/y1Iln+cUnw/+b4d7MHP9jW57Lj/H1ZlVX3OycsIeEov32vH/XuJKj8txG4OkmZIkG6iUmTSraM/baXTKBLGcGz21YI4hMoigWs9yhfBtfnkBpRgnvmVz0uDwMHb9A3yvEwNMrlcaFDYzaJBZSdHDAHsplofQT5hbvFtZAp1v7v2M8AIQwwzHw7OM00pWcpNc/QxywjTzHNnpi3o+8fJZIpZhsjCRSPt1DHFBIM9i/N48JBBrTI4Tj89DFBa81tTTGKQRyY5ZFOgqIwdM5xlausgbhryA55hs/YZJ5aaZkUEFu8vG+SSTQ45GJgMM4ABxNnFR6cYZYC+FakaFtCh8d4cBslIeebU1BAjo4kFei307beahYdxBlhGuLOIh6zeXSdNppCOwdLaUQM3A8zh1lhkgH6GRvQIQqsTDxOAD4tVs7Fk/pmOs68mF2/4cWGfdr9yDgAA') format('woff2');
-      }
-      .ail-brand {
-        font-family: 'Comfortaa', sans-serif;
-        font-weight: 700;
-        font-size: 34px;
-        fill: #FFFFFF;
-        letter-spacing: -0.03em;
-        dominant-baseline: central;
-        text-anchor: middle;
-      }
-    </style>
-  </defs>
-  <rect width="64" height="64" rx="16" fill="#6555B8"/>
-  <text x="32" y="33.5" class="ail-brand">ail</text>
+  <rect width="64" height="64" rx="16" fill="#F3EFFC"/>
+  <g fill="none" stroke="#6555B8" stroke-width="5" stroke-linecap="round" stroke-linejoin="round">
+    <circle cx="23.5" cy="38" r="8"/>
+    <path d="M31.5 30v16"/>
+    <path d="M40.5 32v14"/>
+    <path d="M48.5 18v28"/>
+  </g>
+  <circle cx="40.5" cy="23.5" r="3.1" fill="#6555B8"/>
 </svg>

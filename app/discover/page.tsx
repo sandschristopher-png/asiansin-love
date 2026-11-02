@@ -11,6 +11,8 @@ import { supabase } from '@/lib/supabase/client';
 import { INTENT_OPTIONS, normalizeIntent } from '@/lib/intents';
 import { ActionType, getLocalCardActions, persistCardAction } from '@/lib/interactions';
 import { CardPhoto } from '@/components/CardPhoto';
+import { AudioPill } from '@/components/AudioPill';
+import { isTrustedVoiceIntroUrl } from '@/lib/audio';
 
 const DISCOVERY_MODES = [
   { id: 'all', label: 'All' },
@@ -46,6 +48,7 @@ export interface ProfileItem {
   looking_for?: string;
   interests?: string[];
   created_at?: string;
+  voiceIntroUrl?: string | null;
 }
 
 function DiscoverCardPhotoCarousel({
@@ -709,6 +712,11 @@ function DiscoverContent() {
                     online={profile.online}
                     recentlyActive={profile.recentlyActive}
                   />
+                  {isTrustedVoiceIntroUrl(profile.voiceIntroUrl) && (
+                    <div className="absolute top-[7px] left-6 z-30">
+                      <AudioPill src={profile.voiceIntroUrl} label="Voice" size="sm" />
+                    </div>
+                  )}
                   <button
                     type="button"
                     aria-label={isLiked ? 'Remove Spark' : 'Send Spark'}

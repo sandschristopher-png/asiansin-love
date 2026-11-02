@@ -1,10 +1,11 @@
 import { createHmac, timingSafeEqual } from 'crypto';
 
-// The 4 canonical MediaPipe canned gestures:
-// peace (Victory), palm (Open_Palm), pointing (Pointing_Up), thumbs (Thumb_Up)
-export const POSE_POOL = ['palm', 'peace', 'pointing', 'thumbs'] as const;
+// Face liveness poses (ids match VERIFICATION_POSES in lib/verification.ts). Each session gets
+// 3 distinct poses in random order; any 3 of these 4 always include a frontal pose (blink / smile)
+// for the avatar face match.
+export const POSE_POOL = ['blink', 'turn_left', 'turn_right', 'smile'] as const;
 
-export const SEQUENCE_LENGTH = 2;
+export const SEQUENCE_LENGTH = 3;
 export const TOKEN_TTL_MS = 5 * 60 * 1000;
 
 export type VerifyTokenPayload = {

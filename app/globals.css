@@ -166,3 +166,13 @@ nextjs-portal,
   from { opacity: 0; transform: translateY(-8px) scale(0.98); }
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
+
+/* Voice pill wave bars (components/AudioPill.tsx) */
+@keyframes ailWave {
+  0%, 100% { transform: scaleY(0.35); }
+  50% { transform: scaleY(1); }
+}
+.ail-wave-bar {
+  animation: ailWave 0.9s ease-in-out infinite;
+  transform-origin: center;
+}

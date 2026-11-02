@@ -1,26 +1,19 @@
-export type PoseId =
-  | 'chin'
-  | 'palm'
-  | 'peace'
-  | 'three'
-  | 'thumb'
-  | 'point'
-  | 'finger-heart';
+/** Face-only liveness poses. Ids must match POSE_POOL in lib/verify/token.ts. */
+export type PoseId = 'blink' | 'turn_left' | 'turn_right' | 'smile';
 
 export interface VerificationPose {
   id: PoseId;
   label: string;
-  image: string;
+  instruction: string;
+  /** Frontal poses are used for the 1:1 avatar face match. */
+  frontal: boolean;
 }
 
 export const VERIFICATION_POSES: VerificationPose[] = [
-  { id: 'chin', label: 'Chin rest', image: '/images/verification/pose-chin.png' },
-  { id: 'palm', label: 'Palm up', image: '/images/verification/pose-palm.png' },
-  { id: 'peace', label: 'Peace sign', image: '/images/verification/pose-peace.png' },
-  { id: 'three', label: 'Three fingers', image: '/images/verification/pose-three.png' },
-  { id: 'thumb', label: 'Thumbs up', image: '/images/verification/pose-thumb.png' },
-  { id: 'point', label: 'Pointing up', image: '/images/verification/pose-point.png' },
-  { id: 'finger-heart', label: 'Finger heart', image: '/images/verification/pose-finger-heart.png' },
+  { id: 'blink', label: 'Blink', instruction: 'Look at the camera and blink both eyes once.', frontal: true },
+  { id: 'turn_left', label: 'Turn head left', instruction: 'Slowly turn your head to your left and hold.', frontal: false },
+  { id: 'turn_right', label: 'Turn head right', instruction: 'Slowly turn your head to your right and hold.', frontal: false },
+  { id: 'smile', label: 'Smile', instruction: 'Give the camera a big smile and hold it.', frontal: true },
 ];
 
 export function getPoseById(id: string): VerificationPose | null {

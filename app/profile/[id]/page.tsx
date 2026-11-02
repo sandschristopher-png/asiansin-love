@@ -18,6 +18,9 @@ import {
   Share2
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
+import { AudioPill } from '@/components/AudioPill';
+import { isTrustedVoiceIntroUrl } from '@/lib/audio';
+import { resolveCountry } from '@/lib/countries';
 
 interface HighlightRow {
   tag_id: string;
@@ -244,10 +247,11 @@ export default function PublicProfilePage() {
 
   const displayName = rawHandle.replace(/^@/, '');
   const displayAge = profile.age ? `, ${profile.age}` : '';
+  const resolvedCountry = resolveCountry(profile.city, profile.country);
   const displayLocation =
-    profile.city && profile.country
-      ? `${profile.city}, ${profile.country}`
-      : profile.location || profile.city || profile.country || 'Philippines';
+    profile.city && resolvedCountry
+      ? `${profile.city}, ${resolvedCountry}`
+      : profile.city || resolvedCountry || profile.location || 'Location not shared';
 
   const isVerified = profile.verification_status === 'verified' || Boolean(profile.is_verified);
 
@@ -500,6 +504,12 @@ export default function PublicProfilePage() {
                 </span>
               )}
             </div>
+
+            {isTrustedVoiceIntroUrl(profile.voice_intro_url) && (
+              <div className="mt-3 pointer-events-auto">
+                <AudioPill src={profile.voice_intro_url} label="Hear my voice" />
+              </div>
+            )}
           </div>
         </div>
 

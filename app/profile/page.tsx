@@ -26,6 +26,7 @@ import { INTENT_OPTIONS, normalizeIntent, intentLabel } from '@/lib/intents';
 import { PlusBadge } from '@/components/PlusBadge';
 import RepScoreCard from '@/components/RepScoreCard';
 import { ProfileHighlightsEditorRow } from '@/components/ProfileHighlightsEditorRow';
+import { VoiceIntroRecorder } from '@/components/VoiceIntroRecorder';
 
 const QUICK_LANGUAGES = ['English', 'Tagalog', 'Thai', 'Japanese', 'Vietnamese', 'Mandarin', 'Spanish', 'Korean'];
 
@@ -152,6 +153,7 @@ export default function MyProfilePage() {
   const [userLanguages, setUserLanguages] = useState<string>(() => initialProfile?.userLanguages ?? 'English');
   const [height, setHeight] = useState<string>(() => initialProfile?.height ?? '');
   const [weight, setWeight] = useState<string>(() => initialProfile?.weight ?? '');
+  const [voiceIntroUrl, setVoiceIntroUrl] = useState<string | null>(null);
   const [drinking, setDrinking] = useState<string>(() => initialProfile?.drinking ?? 'No');
   const [smoking, setSmoking] = useState<string>(() => initialProfile?.smoking ?? 'No');
   const [langInput, setLangInput] = useState('');
@@ -215,6 +217,7 @@ export default function MyProfilePage() {
           }
         }
         if (data.weight) setWeight(data.weight);
+        setVoiceIntroUrl(data.voice_intro_url ?? null);
         if (data.drinking) setDrinking(data.drinking);
         if (data.smoking) setSmoking(data.smoking);
         if (data.avatar_url) setAvatarUrl(data.avatar_url);
@@ -592,6 +595,9 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
 
 {/* PROFILE HIGHLIGHTS */}
 <ProfileHighlightsEditorRow />
+
+        {/* VOICE INTRO */}
+        <VoiceIntroRecorder initialUrl={voiceIntroUrl} onChange={setVoiceIntroUrl} />
 
         {/* INTERESTS & HOBBIES */}
         <div className="p-5 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-3">
