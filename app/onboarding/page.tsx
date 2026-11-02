@@ -18,6 +18,7 @@ import {
 import { captureCurrentLocation } from '@/lib/location';
 import { supabase } from '@/lib/supabase/client';
 import { INTENT_OPTIONS } from '@/lib/intents';
+import { resolveCountry } from '@/lib/countries';
 
 const GENDER_OPTIONS = [
   { val: 'male', label: 'Man' },
@@ -423,7 +424,8 @@ export default function OnboardingPage() {
 
       const cleanHandle = username.trim().replace(/[^a-zA-Z0-9_]/g, '');
       const computedAge = calculateAge(birthdate);
-      const formattedLocation = city.trim() + ', ' + country.trim();
+      const resolvedCountry = resolveCountry(city, country);
+      const formattedLocation = city.trim() + ', ' + resolvedCountry;
 
       const { error } = await supabase
         .from('profiles')
@@ -438,7 +440,7 @@ export default function OnboardingPage() {
           birthdate: birthdate || null,
           age: computedAge,
           city: city.trim(),
-          country: country.trim(),
+          country: resolvedCountry,
           location: formattedLocation,
           location_source: 'self_reported',
           location_verified_at: null,

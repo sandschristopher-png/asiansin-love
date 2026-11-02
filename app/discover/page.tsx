@@ -10,6 +10,7 @@ import { Camera, Zap, ChevronLeft, ChevronRight, Search, Heart, X as XIcon, Slid
 import { supabase } from '@/lib/supabase/client';
 import { INTENT_OPTIONS, normalizeIntent } from '@/lib/intents';
 import { ActionType, getLocalCardActions, persistCardAction } from '@/lib/interactions';
+import { CardPhoto } from '@/components/CardPhoto';
 
 const DISCOVERY_MODES = [
   { id: 'all', label: 'All' },
@@ -86,11 +87,10 @@ function DiscoverCardPhotoCarousel({
   return (
     <div className="relative block h-full w-full overflow-hidden bg-[#F2EEF7] select-none">
       <Link href={'/profile/' + profileId} className="absolute inset-0 z-0">
-        <img
+        <CardPhoto
           src={displayPhotos[currentIdx]}
           alt={name}
-          className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500 ease-out"
-          loading="lazy"
+          className="object-cover group-hover:scale-[1.03] transition-transform duration-500 ease-out"
         />
       </Link>
       {displayPhotos.length > 1 && (

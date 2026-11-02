@@ -3,8 +3,12 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import { ShieldCheck, AlertCircle, RefreshCw, X, CheckCircle2 } from 'lucide-react';
-import { FilesetResolver, GestureRecognizer, FaceLandmarker } from '@mediapipe/tasks-vision';
-import * as faceapi from '@vladmandic/face-api';
+import type { GestureRecognizer, FaceLandmarker } from '@mediapipe/tasks-vision';
+
+// Heavy computer-vision libraries are loaded on demand (only once the camera flow starts),
+// never as part of a route's initial bundle.
+const loadVision = () => import('@mediapipe/tasks-vision');
+const loadFaceApi = () => import('@vladmandic/face-api');
 
 export type CanonicalPose = 'palm' | 'peace' | 'pointing' | 'thumbs';
 
@@ -211,6 +215,7 @@ export default function GestureVerifyModal({
     } else {
       setStatusMessage('Matching facial biometric vector against your avatar...');
       try {
+        const faceapi = await loadFaceApi();
         const liveDetection = await faceapi
           .detectSingleFace(video)
           .withFaceLandmarks()
@@ -335,6 +340,10 @@ export default function GestureVerifyModal({
           videoRef.current.srcObject = stream;
         }
 
+        const [{ FilesetResolver, GestureRecognizer, FaceLandmarker }, faceapi] = await Promise.all([
+          loadVision(),
+          loadFaceApi(),
+        ]);
         const vision = await FilesetResolver.forVisionTasks(
           'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@0.10.14/wasm'
         );

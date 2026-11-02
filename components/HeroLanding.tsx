@@ -36,7 +36,7 @@ export function HeroLanding() {
 
           <h1
             className="text-[29px] leading-[1.18] font-bold tracking-tight text-[#1C1924]"
-            style={{ fontFamily: 'var(--font-brand, "Comfortaa", sans-serif)' }}
+            style={{ fontFamily: 'var(--font-brand), sans-serif' }}
           >
             Real connection,
             <br />
@@ -91,7 +91,7 @@ export function HeroLanding() {
             </span>
             <h2
               className="mt-1 text-xl font-bold tracking-tight text-[#1C1924]"
-              style={{ fontFamily: 'var(--font-brand, "Comfortaa", sans-serif)' }}
+              style={{ fontFamily: 'var(--font-brand), sans-serif' }}
             >
               How asiansin.love works
             </h2>
@@ -175,7 +175,7 @@ export function HeroLanding() {
 
           <h2
             className="mt-3 text-lg font-bold tracking-tight text-[#1C1924]"
-            style={{ fontFamily: 'var(--font-brand, "Comfortaa", sans-serif)' }}
+            style={{ fontFamily: 'var(--font-brand), sans-serif' }}
           >
             Know who you&apos;re talking to
           </h2>
@@ -209,7 +209,7 @@ export function HeroLanding() {
 
           <h2
             className="mt-3 text-lg font-bold tracking-tight text-[#1C1924]"
-            style={{ fontFamily: 'var(--font-brand, "Comfortaa", sans-serif)' }}
+            style={{ fontFamily: 'var(--font-brand), sans-serif' }}
           >
             Match on what matters
           </h2>
@@ -243,7 +243,7 @@ export function HeroLanding() {
 
           <h2
             className="mt-3 text-lg font-bold tracking-tight text-[#1C1924]"
-            style={{ fontFamily: 'var(--font-brand, "Comfortaa", sans-serif)' }}
+            style={{ fontFamily: 'var(--font-brand), sans-serif' }}
           >
             A community you can trust
           </h2>
@@ -263,7 +263,7 @@ export function HeroLanding() {
           <Zap className="w-6 h-6 text-white/90 mx-auto fill-current" />
           <h2
             className="mt-3 text-2xl font-bold text-white tracking-tight"
-            style={{ fontFamily: 'var(--font-brand, "Comfortaa", sans-serif)' }}
+            style={{ fontFamily: 'var(--font-brand), sans-serif' }}
           >
             Be one of our first members.
           </h2>

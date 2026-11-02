@@ -1,6 +1,22 @@
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { createClient } from '@supabase/supabase-js';
+import { resolveCountry } from '@/lib/countries';
+
+/**
+ * Only the columns the Discover grid / profile sheet mapping below reads. Never select('*') here:
+ * the feed scans up to 200 rows, and profiles also holds Stripe ids, admin flags and
+ * verification photo paths that must not be loaded for a feed.
+ */
+const DISCOVER_COLUMNS = [
+  'id', 'username', 'display_name', 'full_name', 'name',
+  'age', 'birthdate', 'gender', 'interested_in', 'seeking_gender',
+  'city', 'country', 'location', 'latitude', 'longitude', 'location_source',
+  'avatar_url', 'photos', 'is_verified', 'verification_status', 'is_plus', 'reputation_score',
+  'last_active', 'show_active_status', 'hide_profile',
+  'relationship_intent', 'intentions', 'relationship_goal', 'intent', 'looking_for',
+  'bio', 'occupation', 'profession', 'languages', 'interests', 'height', 'weight', 'created_at',
+].join(', ');
 
 export const dynamic = 'force-dynamic';
 
@@ -99,7 +115,7 @@ export async function GET() {
 
     const { data: allRows, error } = await serviceClient
       .from('profiles')
-      .select('*')
+      .select(DISCOVER_COLUMNS)
       .order('created_at', { ascending: false })
       .limit(200);
 
@@ -111,6 +127,7 @@ export async function GET() {
       .filter((row: any) => {
         if (user && row.id === user.id) return false;
         if (blockedUserIds.has(row.id)) return false;
+        if (row.hide_profile) return false; // Settings > Hide my profile
 
         // Evict seed/test profiles by name
         const lowerName = String(row.username || row.display_name || row.full_name || row.name || '').toLowerCase().trim();
@@ -133,8 +150,11 @@ export async function GET() {
         return Boolean(row.username || row.display_name || row.full_name || row.name || row.avatar_url);
       })
       .map((row: any) => {
-        const countryVal = row.country || 'Philippines';
-        const cityVal = row.city ? row.city + ', ' + countryVal : (row.location || countryVal);
+        // Normalize codes ("US" -> "United States") and let an unambiguous city fix a mismatched
+        // country ("Manila" + "US" -> Philippines). No invented default country.
+        const countryVal = resolveCountry(row.city, row.country);
+        const cityName = String(row.city || '').trim();
+        const cityVal = cityName ? (countryVal ? cityName + ', ' + countryVal : cityName) : countryVal;
         const normGender = normalizeGenderValue(row.gender);
 
         let computedAge = row.age;
@@ -170,11 +190,11 @@ export async function GET() {
           latitude: row.latitude == null || !Number.isFinite(Number(row.latitude)) ? null : Math.round(Number(row.latitude) * 100) / 100,
           longitude: row.longitude == null || !Number.isFinite(Number(row.longitude)) ? null : Math.round(Number(row.longitude) * 100) / 100,
           location_source: row.location_source || 'self_reported',
-          online: Boolean(
-            row.last_active
-              ? Date.now() - new Date(row.last_active).getTime() < 1000 * 60 * 15
-              : true
-          ),
+          // Respect Settings > Show active status; no activity record means not online.
+          online:
+            row.show_active_status !== false &&
+            Boolean(row.last_active) &&
+            Date.now() - new Date(row.last_active).getTime() < 1000 * 60 * 15,
           intent: row.relationship_intent || row.intentions || row.relationship_goal || row.intent || 'Marriage',
           looking_for: row.looking_for || row.intentions || row.relationship_intent || 'Serious Relationship',
           bio: row.bio || '',

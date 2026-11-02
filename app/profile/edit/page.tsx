@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { ArrowLeft, MapPin, Save, UserCheck, ShieldCheck, Camera, Trash2, Loader2, Plus } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import UpgradeModal from '@/components/UpgradeModal';
+import { resolveCountry } from '@/lib/countries';
 
 
 
@@ -298,7 +299,7 @@ export default function EditProfilePage() {
         full_name: formData.full_name.trim(),
         age: formData.age ? parseInt(formData.age, 10) : null,
         city: formData.city.trim(),
-        country: formData.country.trim(),
+        country: resolveCountry(formData.city, formData.country),
         profession: formData.profession.trim(),
         relationship_goal: formData.relationship_goal,
         bio: formData.bio.trim(),

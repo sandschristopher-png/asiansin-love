@@ -111,16 +111,21 @@ a:active,
 }
 
 
-/* Brand typography: Comfortaa for headers / wordmark, Plus Jakarta Sans for UI text.
-   --font-brand and --font-sans are set by next/font in app/layout.tsx. */
+/* Typography: Comfortaa is reserved for the logo wordmark (--font-logo).
+   Every heading, label and body text uses Plus Jakarta Sans (--font-sans).
+   Both variables are set by next/font in app/layout.tsx; --font-brand is kept as an alias
+   so existing style={{ fontFamily: 'var(--font-brand)' }} headings render in Plus Jakarta Sans. */
 :root {
-  --font-logo: var(--font-brand);
+  --font-brand: var(--font-sans);
   color-scheme: light;
 }
 
-.font-logo,
+.font-logo {
+  font-family: var(--font-logo), sans-serif;
+}
+
 .font-brand {
-  font-family: var(--font-brand), sans-serif;
+  font-family: var(--font-sans), sans-serif;
 }
 
 /* Hide Next.js bottom-left N / Issue dev indicator badge */

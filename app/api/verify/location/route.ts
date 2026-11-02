@@ -1,37 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { createClient as createSessionClient } from '@/lib/supabase/server';
+import { COUNTRY_NAMES, normalizeCountry } from '@/lib/countries';
 
 export const runtime = 'nodejs';
 
-const COUNTRY_MAP: Record<string, string> = {
-  PH: 'Philippines',
-  US: 'United States',
-  TH: 'Thailand',
-  VN: 'Vietnam',
-  ID: 'Indonesia',
-  MY: 'Malaysia',
-  SG: 'Singapore',
-  JP: 'Japan',
-  KR: 'South Korea',
-  TW: 'Taiwan',
-  HK: 'Hong Kong',
-  MO: 'Macau',
-  KH: 'Cambodia',
-  MM: 'Myanmar',
-  LA: 'Laos',
-  BN: 'Brunei',
-  AE: 'United Arab Emirates',
-  SA: 'Saudi Arabia',
-  QA: 'Qatar',
-  KW: 'Kuwait',
-  BH: 'Bahrain',
-  OM: 'Oman',
-  CA: 'Canada',
-  AU: 'Australia',
-  GB: 'United Kingdom',
-  NZ: 'New Zealand',
-};
+const COUNTRY_MAP = COUNTRY_NAMES;
 
 const REPUTATION_BOOST = 3;
 const RECHECK_WINDOW_MS = 30 * 24 * 60 * 60 * 1000;
@@ -91,7 +65,7 @@ export async function POST(req: NextRequest) {
       const testCountry = req.headers.get('x-test-country');
       detectedCountryCode = testCountry
         ? testCountry.toUpperCase()
-        : profile.country === 'United States'
+        : normalizeCountry(profile.country) === 'United States'
           ? 'US'
           : 'PH';
       detectedCity = detectedCity || (detectedCountryCode === 'US' ? 'Los Angeles' : 'Manila');
@@ -105,7 +79,7 @@ export async function POST(req: NextRequest) {
     }
 
     const detectedCountryName = COUNTRY_MAP[detectedCountryCode] || detectedCountryCode;
-    const declaredCountry = (profile.country || '').trim();
+    const declaredCountry = normalizeCountry(profile.country); // "US" and "United States" must match
     const isCountryMatch = declaredCountry.toLowerCase() === detectedCountryName.toLowerCase();
 
     if (!isCountryMatch) {

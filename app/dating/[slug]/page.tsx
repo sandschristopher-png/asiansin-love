@@ -46,7 +46,7 @@ export default async function SeoLandingPage({ params }: { params: Promise<{ slu
           <span>Southeast Asia Verified Community</span>
         </div>
 
-        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight" style={{ fontFamily: 'var(--font-logo)' }}>
+        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight" style={{ fontFamily: 'var(--font-sans)' }}>
           {titleFormatted}
         </h1>
 
