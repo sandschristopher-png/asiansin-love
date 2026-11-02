@@ -90,19 +90,19 @@ export function RealtimeMatchToast() {
 
   return (
     <div className="fixed top-5 left-1/2 -translate-x-1/2 z-[100] w-[92%] max-w-sm">
-      <div className="flex items-center justify-between p-3.5 rounded-2xl bg-[#1C1924]/95 text-white border border-[#DDD7E5]/20 shadow-2xl backdrop-blur-md animate-in slide-in-from-top-4 duration-300">
+      <div className="flex items-center justify-between p-3.5 rounded-2xl bg-white/95 text-[#1C1924] border border-[#ECE8F4] shadow-[0_12px_32px_rgba(101,85,184,0.18)] backdrop-blur-md animate-in slide-in-from-top-4 duration-300">
         <div className="flex items-center gap-3">
           <img
             src={match.avatarUrl}
             alt={match.matchedName}
-            className="w-10 h-10 rounded-full object-cover border-2 border-[#8B7BD9]"
+            className="w-10 h-10 rounded-full object-cover border-2 border-[#F3EFFC]"
           />
           <div>
-            <div className="flex items-center gap-1.5 text-xs font-bold text-[#E2DCF7]">
+            <div className="flex items-center gap-1.5 text-xs font-bold text-[#6555B8]">
               <Sparkles className="w-3.5 h-3.5 text-[#E05375]" />
               It's a Match!
             </div>
-            <p className="text-xs text-[#B2A9C4] truncate max-w-[140px]">
+            <p className="text-xs text-[#6C637B] truncate max-w-[140px]">
               {match.matchedName} liked you back
             </p>
           </div>
@@ -119,7 +119,7 @@ export function RealtimeMatchToast() {
           <button
             type="button"
             onClick={() => setVisible(false)}
-            className="p-1 text-white/60 hover:text-white transition"
+            className="p-1 text-[#9A93A8] hover:text-[#1C1924] transition"
           >
             <X className="w-4 h-4" />
           </button>

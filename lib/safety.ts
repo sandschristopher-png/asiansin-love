@@ -4,7 +4,10 @@ export interface MaskResult {
   blockedCount: number;
 }
 
-const REPLACEMENT = "[Hidden until 5 messages]";
+/** Must match the send gate in /api/messages (evaluateSubstantiveConversation, 3 turns each). */
+export const CONTACT_UNLOCK_TURNS = 3;
+
+const REPLACEMENT = "[contact hidden until you both send 3 messages]";
 
 const SAFETY_PATTERNS = [
   // Phone numbers: requires 8+ digits total in typical phone groupings
@@ -34,7 +37,7 @@ const SAFETY_PATTERNS = [
 export function applyContactRevealMask(
   content: string,
   mutualMessageCount: number,
-  unlockThreshold: number = 5
+  unlockThreshold: number = CONTACT_UNLOCK_TURNS
 ): MaskResult {
   if (mutualMessageCount >= unlockThreshold || !content) {
     return { text: content, hasBlockedContent: false, blockedCount: 0 };

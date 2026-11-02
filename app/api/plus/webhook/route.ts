@@ -93,7 +93,26 @@ export async function POST(req: NextRequest) {
       const paid = session.payment_status === 'paid' || session.payment_status === 'no_payment_required';
       if (userId && paid) {
         const metaPlan = session.metadata?.planId;
-        const tier = isTier(metaPlan) ? metaPlan : null;
+        let tier: Tier | null = isTier(metaPlan) ? metaPlan : null;
+
+        // Read the tier from the subscription when the session has none, and make sure the
+        // subscription carries userId + planId so renewal / cancellation events can find the member.
+        const subId = typeof session.subscription === 'string' ? session.subscription : session.subscription?.id;
+        if (subId) {
+          try {
+            const sub = await stripe.subscriptions.retrieve(subId);
+            tier = tier ?? tierFromSubscription(sub);
+            const meta = (sub.metadata || {}) as Record<string, string>;
+            if (meta.userId !== userId || (tier && meta.planId !== tier)) {
+              await stripe.subscriptions.update(subId, {
+                metadata: { ...meta, userId, ...(tier ? { planId: tier } : {}) },
+              });
+            }
+          } catch (e) {
+            console.warn('[webhook] could not read/annotate subscription', subId, e);
+          }
+        }
+
         const err = await applyMembership(admin, userId, true, tier);
         if (err) {
           console.error('[webhook] membership update failed:', userId, err);
@@ -116,10 +135,12 @@ export async function POST(req: NextRequest) {
           try {
             const others = await stripe.subscriptions.list({
               customer: sub.customer as string,
-              status: 'active',
-              limit: 5,
+              status: 'all',
+              limit: 10,
             });
-            stillActiveElsewhere = others.data.some((s) => s.id !== sub.id);
+            stillActiveElsewhere = others.data.some(
+              (s) => s.id !== sub.id && (s.status === 'active' || s.status === 'trialing')
+            );
           } catch (e) {
             console.warn('[webhook] could not check other subscriptions:', e);
           }

@@ -3,14 +3,12 @@ import { createClient } from '@supabase/supabase-js';
 import { createClient as createSessionClient } from '@/lib/supabase/server';
 import { verifyToken, TOKEN_TTL_MS } from '@/lib/verify/token';
 import { evaluateImageWithAI } from '@/lib/aiVision';
-import { sendTelegramVerificationAlert } from '@/lib/adminAlerts';
 
 export const runtime = 'nodejs';
 
 const MIN_ELAPSED_MS = 4000;
 const MAX_ELAPSED_MS = 90000;
 const MAX_PHOTO_BYTES = 10 * 1024 * 1024;
-const SIGNED_URL_TTL_SECONDS = 7 * 24 * 60 * 60;
 const AI_TIMEOUT_MS = 8000;
 
 function getServiceClient() {
@@ -132,15 +130,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Could not save verification status' }, { status: 500 });
   }
 
-  // Build reviewer links (signed URLs, 7 days) and send the Telegram review request.
-  const signedUrls: string[] = [];
-  for (const p of paths) {
-    const { data: signed } = await service.storage
-      .from('verifications')
-      .createSignedUrl(p, SIGNED_URL_TTL_SECONDS);
-    if (signed?.signedUrl) signedUrls.push(signed.signedUrl);
-  }
-
   let aiVerdict:
     | { isSafe: boolean; poseMatchesPrompt: boolean; reason: string }
     | undefined;
@@ -161,18 +150,16 @@ export async function POST(req: Request) {
     console.warn('[verify/submit] AI pre-check skipped:', e);
   }
 
-  if (signedUrls.length > 0) {
-    await sendTelegramVerificationAlert({
-      userId,
-      poseRequested: payload.sequence.join(' then '),
-      selfieUrl: signedUrls[0],
-      extraSelfieUrls: signedUrls.slice(1),
-      avatarUrl: profile?.avatar_url || '(no avatar uploaded)',
-      aiVerdict,
-    });
-  } else {
-    console.error('[verify/submit] no signed URLs - reviewer was not notified for', userId);
-  }
+  // Store the requested poses + AI pre-check next to the photos for the admin review queue
+  // (/admin/verifications reads `<stamp>_meta.json`).
+  const { error: metaError } = await service.storage
+    .from('verifications')
+    .upload(
+      `${userId}/${stamp}_meta.json`,
+      Buffer.from(JSON.stringify({ poses: payload.sequence.join(' then '), ai: aiVerdict ?? null })),
+      { contentType: 'application/json', upsert: true }
+    );
+  if (metaError) console.warn('[verify/submit] review metadata not saved:', metaError.message);
 
   return NextResponse.json({
     verified: false,

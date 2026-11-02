@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient as createServerClient } from '@/lib/supabase/server';
 import { createClient } from '@supabase/supabase-js';
-import { sendTelegramPhotoReviewAlert } from '@/lib/adminAlerts';
 import crypto from 'crypto';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
@@ -187,22 +186,7 @@ export async function POST(req: Request) {
       );
     }
 
-    // 8. Telegram review alert
-    const { data: profile } = await authenticatedClient
-      .from('profiles')
-      .select('gender, full_name')
-      .eq('id', userId)
-      .single();
-
-    await sendTelegramPhotoReviewAlert({
-      userId,
-      userGender: profile?.gender || 'not_specified',
-      photoUrl,
-      photoId: `${userId}_${Date.now()}`,
-      isPrimaryAvatar,
-    }).catch((err) => {
-      console.warn('Telegram alert skipped or failed:', err.message);
-    });
+    // 8. Main photos wait in the admin review queue (/admin/verifications) while avatar_status is pending_review.
 
     return NextResponse.json({
       success: true,

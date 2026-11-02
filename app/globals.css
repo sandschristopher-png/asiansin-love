@@ -111,8 +111,16 @@ a:active,
 }
 
 
-.font-logo {
-  font-family: var(--font-logo), var(--font-brand), sans-serif;
+/* Brand typography: Comfortaa for headers / wordmark, Plus Jakarta Sans for UI text.
+   --font-brand and --font-sans are set by next/font in app/layout.tsx. */
+:root {
+  --font-logo: var(--font-brand);
+  color-scheme: light;
+}
+
+.font-logo,
+.font-brand {
+  font-family: var(--font-brand), sans-serif;
 }
 
 /* Hide Next.js bottom-left N / Issue dev indicator badge */

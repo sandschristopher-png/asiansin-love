@@ -34,7 +34,7 @@ export async function uploadAndProcessAvatar(
 
   const avatarUrl = publicData.publicUrl;
 
-  // 4. Send through photo moderation pipeline (triggers your Telegram ping)
+  // 4. Send through photo moderation pipeline (main photo waits in the admin review queue)
   const res = await fetch('/api/photos/upload', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },

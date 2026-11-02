@@ -19,6 +19,7 @@ import {
 import UpgradeModal from '@/components/UpgradeModal';
 import ReputationModal from '@/components/ReputationModal';
 import { supabase } from '@/lib/supabase/client';
+import { applyContactRevealMask, CONTACT_UNLOCK_TURNS } from '@/lib/safety';
 
 interface ChatMessage {
   id: string;
@@ -29,34 +30,7 @@ interface ChatMessage {
   warning?: string;
   read?: boolean;
   pending?: boolean;
-wasMasked?: boolean;
-}
-
-function sanitizeMessage(text: string): { sanitized: string; wasMasked: boolean } {
-  const normalized = text
-    .toLowerCase()
-    .replace(/[@]/g, 'a')
-    .replace(/[$]/g, 's')
-    .replace(/[0]/g, 'o')
-    .replace(/[1]/g, 'i')
-    .replace(/[\s.\-_]/g, '');
-
-  const offPlatformKeywords = ['whatsapp', 'telegram', 'viber', 'lineid', 'wechat', 'snapchat', 'instagram'];
-  const hasOffPlatformWord = offPlatformKeywords.some((kw) => normalized.includes(kw));
-  const digitClusterTest = /(?:\+?\d[\s.\-_()]*){7,}/;
-  const digitClusterRegex = /(?:\+?\d[\s.\-_()]*){7,}/g;
-  const hasPhoneDigits = digitClusterTest.test(text);
-
-  if (hasOffPlatformWord || hasPhoneDigits) {
-    let masked = text.replace(digitClusterRegex, '[contact info hidden for safety]');
-    offPlatformKeywords.forEach((kw) => {
-      const reg = new RegExp('(' + kw.split('').join('[\\s.\\-_]*') + ')', 'gi');
-      masked = masked.replace(reg, '[contact info hidden for safety]');
-    });
-    return { sanitized: masked, wasMasked: true };
-  }
-
-  return { sanitized: text, wasMasked: false };
+  wasMasked?: boolean;
 }
 
 function formatTimeShort(iso: string): string {
@@ -120,6 +94,8 @@ export default function ChatConversationPage() {
   const hasScrolledInitialRef = useRef(false);
   const isNearBottomRef = useRef(true);
   const forceScrollNextRef = useRef(false);
+  // Server-computed contact-reveal state (GET /api/messages); realtime rows are masked with it too.
+  const contactUnlockedRef = useRef(false);
 
   const scrollToBottom = useCallback((behavior: ScrollBehavior = 'smooth') => {
     const el = scrollContainerRef.current;
@@ -205,6 +181,12 @@ export default function ChatConversationPage() {
       if (isMounted) setCurrentUserId(user.id);
 
       const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(rawParam);
+      // Handles only: strip anything that could alter the PostgREST .or() filter (commas, parens, dots).
+      const handleParam = decodeURIComponent(rawParam).replace(/^@+/, '').replace(/[^a-zA-Z0-9_]/g, '');
+      if (!isUuid && !handleParam) {
+        router.replace('/messages');
+        return;
+      }
 
       const [myProfRes, targetProfRes] = await Promise.all([
         supabase
@@ -221,13 +203,13 @@ export default function ChatConversationPage() {
           : supabase
               .from('profiles')
               .select('id, username, display_name, full_name, avatar_url, reputation_score, city, country, interests')
-              .or(`username.ilike.%${rawParam}%,display_name.ilike.%${rawParam}%`)
+              .or(`username.ilike.%${handleParam}%,display_name.ilike.%${handleParam}%`)
               .limit(1)
               .maybeSingle(),
       ]);
 
       const myProf = myProfRes.data;
-      if (myProf && (myProf.is_plus || myProf.plus_enabled || myProf.membership_tier === 'plus')) {
+      if (myProf && (myProf.is_plus || myProf.plus_enabled || ['12m', '3m', '1m'].includes(myProf.membership_tier))) {
         if (isMounted) setIsPlus(true);
       }
       const myInterests: string[] = Array.isArray(myProf?.interests) ? myProf.interests : [];
@@ -299,6 +281,8 @@ export default function ChatConversationPage() {
         }
       }
 
+      contactUnlockedRef.current = Boolean(remoteMsgsRes.contactUnlocked);
+
       if (remoteMsgsRes.messages) {
         setMessages(
           remoteMsgsRes.messages.map((m: any) => ({
@@ -328,63 +312,81 @@ export default function ChatConversationPage() {
     let isMounted = true;
     const channelName = 'chat_' + [resolvedTargetUuid, currentUserId].sort().join('_');
 
-    console.log('[chat] Setting up realtime channel:', channelName);
     const channel = supabase
       .channel(channelName)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, (payload) => {
         if (!isMounted) return;
-        console.log('[chat] Realtime event:', payload.eventType, (payload.new as any)?.id);
+        const row: any = payload.new;
+        if (!row?.id) return;
+
+        // Only rows between me and THIS conversation partner. RLS delivers every message I can
+        // see, so without this a message from someone else would render inside this thread.
+        const inThisThread =
+          (row.sender_id === currentUserId && row.receiver_id === resolvedTargetUuid) ||
+          (row.sender_id === resolvedTargetUuid && row.receiver_id === currentUserId);
+        if (!inThisThread) return;
 
         if (payload.eventType === 'UPDATE') {
-          const updated: any = payload.new;
-          console.log('[chat] UPDATE event received:', updated?.id, 'is_read:', updated?.is_read, 'read:', updated?.read);
-          const readFlag = updated.is_read ?? updated.read;
+          const readFlag = row.is_read ?? row.read;
           if (typeof readFlag !== 'undefined') {
             setMessages((prev: ChatMessage[]) =>
-              prev.map((m) => (m.id === updated.id ? { ...m, read: Boolean(readFlag) } : m))
+              prev.map((m) => (m.id === row.id ? { ...m, read: Boolean(readFlag) } : m))
             );
           }
           return;
         }
 
-        if (payload.eventType === 'INSERT') {
-          const newRow: any = payload.new;
-          if (newRow.is_quarantined || newRow.is_flagged) {
-            console.log('[chat] Skipping quarantined/flagged message:', newRow.id);
-            return;
-          }
+        if (payload.eventType !== 'INSERT' || row.is_quarantined || row.is_flagged) return;
 
-          const isReceiver = newRow.receiver_id === currentUserId;
-          const isSender = newRow.sender_id === currentUserId;
+        const isMe = row.sender_id === currentUserId;
+        const mask = isMe
+          ? { text: row.content as string, hasBlockedContent: false }
+          : applyContactRevealMask(row.content || '', contactUnlockedRef.current ? CONTACT_UNLOCK_TURNS : 0);
 
-          if (isReceiver || isSender) {
-            const echoIsMine = newRow.sender_id === currentUserId;
-            setMessages((prev) => {
-              if (prev.some((m) => m.id === newRow.id)) return prev;
-              // Drop the optimistic temp copy of my own message now that the DB row arrived
-              // Keep pending optimistic items intact; submitMessage will swap the specific tempId upon HTTP response
-              const cleaned = prev;
-              const isMe = newRow.sender_id === currentUserId;
-              const newMsg = {
-                id: newRow.id,
-                sender: (isMe ? 'me' : 'them') as 'me' | 'them',
-                text: newRow.content,
-                createdAt: newRow.created_at,
-                time: formatTimeShort(newRow.created_at),
-                read: Boolean(newRow.is_read ?? newRow.read ?? true),
-              };
-              console.log('[chat] Adding new message:', newMsg.id, 'from:', newMsg.sender);
-              return [...cleaned, newMsg];
-            });
-          } else {
-            console.log('[chat] Message not for this user, ignoring:', newRow.id);
+        setMessages((prev) => {
+          if (prev.some((m) => m.id === row.id)) return prev;
+          const confirmed: ChatMessage = {
+            id: row.id,
+            sender: isMe ? 'me' : 'them',
+            text: mask.text,
+            createdAt: row.created_at,
+            time: formatTimeShort(row.created_at),
+            read: Boolean(row.is_read ?? row.read ?? false),
+            wasMasked: mask.hasBlockedContent,
+          };
+          // Realtime echo of my own send arriving before the HTTP response: swap it into the
+          // pending optimistic bubble instead of appending a duplicate.
+          if (isMe) {
+            const tempIdx = prev.findIndex((m) => m.pending && m.id.startsWith('temp-') && m.text === row.content);
+            if (tempIdx !== -1) {
+              const next = [...prev];
+              next[tempIdx] = { ...prev[tempIdx], ...confirmed, pending: false };
+              return next;
+            }
           }
+          return [...prev, confirmed];
+        });
+
+        // The gate may have unlocked since this thread loaded: ask the server once before
+        // leaving contact details hidden.
+        if (mask.hasBlockedContent && !contactUnlockedRef.current) {
+          fetch(`/api/messages?target_user_id=${resolvedTargetUuid}`)
+            .then((r) => (r.ok ? r.json() : null))
+            .then((d) => {
+              if (!d || !isMounted) return;
+              contactUnlockedRef.current = Boolean(d.contactUnlocked);
+              const fresh = (d.messages || []).find((m: any) => m.id === row.id);
+              if (d.contactUnlocked && fresh) {
+                setMessages((prev) =>
+                  prev.map((m) => (m.id === row.id ? { ...m, text: fresh.text, wasMasked: fresh.wasMasked } : m))
+                );
+              }
+            })
+            .catch(() => {});
         }
       })
       .subscribe((status) => {
-        if (status === 'SUBSCRIBED') {
-          console.log('[chat] Channel subscribed successfully');
-        } else if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+        if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
           console.error('[chat] Channel error:', status);
         }
       });
@@ -400,15 +402,14 @@ export default function ChatConversationPage() {
     if (!clean || cooldownSeconds > 0 || !resolvedTargetUuid) return;
 
     setErrorBanner(null);
-    const { sanitized, wasMasked } = sanitizeMessage(clean);
-    if (wasMasked) setShowSafetyNotice(true);
+    setShowSafetyNotice(false);
 
     const nowIso = new Date().toISOString();
     const tempId = 'temp-' + Date.now();
     const myNewMsg: ChatMessage = {
       id: tempId,
       sender: 'me',
-      text: sanitized,
+      text: clean,
       createdAt: nowIso,
       time: formatTimeShort(nowIso),
       read: false,
@@ -429,7 +430,7 @@ export default function ChatConversationPage() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           receiverId: resolvedTargetUuid,
-          content: sanitized,
+          content: clean,
         }),
       });
 
@@ -437,6 +438,8 @@ export default function ChatConversationPage() {
 
       if (!res.ok) {
         setMessages((prev) => prev.filter((m) => m.id !== tempId));
+        setInputText((current) => current || clean); // give the draft back so it can be edited
+        if (resData.courtshipLocked) setShowSafetyNotice(true);
         setErrorBanner(resData.error || 'Message could not be delivered.');
         if (resData.code === 'OUTREACH_LIMIT_REACHED') {
           setShowUpgradeModal(true);
@@ -453,7 +456,8 @@ export default function ChatConversationPage() {
       if (resData?.message?.id) {
         setMessages((prev) =>
           prev.map((m) =>
-            m.id === tempId
+            // tempId normally; the real id if the realtime echo already swapped the bubble
+            m.id === tempId || m.id === resData.message.id
               ? {
                   ...m,
                   id: resData.message.id,

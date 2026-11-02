@@ -3,7 +3,7 @@ import { cookies } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
 import { createClient } from '@supabase/supabase-js';
 import { evaluateMessageModeration, hasContactSharingIntent, evaluateSubstantiveConversation } from '@/lib/moderation';
-import { applyContactRevealMask } from '@/lib/safety';
+import { applyContactRevealMask, CONTACT_UNLOCK_TURNS } from '@/lib/safety';
 import { createClient as createSessionClient } from '@/lib/supabase/server';
 import { sendPushToUser } from '@/lib/pushSender';
 
@@ -56,17 +56,10 @@ export async function GET(req: Request) {
     // Chronological order for the UI
     const messages = (rawMessages || []).reverse();
 
-    // Calculate substantive mutual count from the latest 40 messages
-    const sample = messages.slice(-40);
-    let senderCount = 0;
-    let receiverCount = 0;
-    for (const msg of sample) {
-      if ((msg.content || '').trim().length >= 15) {
-        if (msg.sender_id === user.id) senderCount++;
-        else if (msg.sender_id === targetUserId) receiverCount++;
-      }
-    }
-    const mutualCount = Math.min(senderCount, receiverCount);
+    // Same unlock rule as the POST send gate: both members sent 3 distinct substantive (15+ char)
+    // messages within the latest 40.
+    const gate = evaluateSubstantiveConversation(messages.slice(-40), user.id, targetUserId, 15, CONTACT_UNLOCK_TURNS);
+    const mutualCount = Math.min(gate.senderSubstantiveCount, gate.receiverSubstantiveCount);
 
     // Mask contact info and retain is_read status
     const maskedMessages = messages.map((msg) => {
@@ -85,6 +78,7 @@ export async function GET(req: Request) {
       success: true,
       messages: maskedMessages,
       mutualCount,
+      contactUnlocked: gate.isUnlocked,
     });
   } catch (err: any) {
     console.error('GET /api/messages error:', err);
@@ -165,7 +159,7 @@ export async function POST(req: Request) {
       senderId,
       receiverId,
       15,
-      3
+      CONTACT_UNLOCK_TURNS
     );
 
     // If message contains contact sharing (phone, WA, TG, socials) and threshold is not met:

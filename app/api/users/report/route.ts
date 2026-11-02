@@ -30,26 +30,6 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Failed to submit report' }, { status: 500 });
   }
 
-  const token = process.env.TELEGRAM_BOT_TOKEN;
-  const chatId = process.env.ADMIN_TELEGRAM_CHAT_ID;
-  if (token && chatId) {
-    const message =
-`Member Safety Report
-Reporter: ${user.id}
-Reported: ${reportedId}
-Reason: ${reason}
-Details: ${details?.slice(0, 1000) || 'None provided'}
-Status: Pending`;
-    try {
-      await fetch(`https://api.telegram.org/bot${token}/sendMessage`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ chat_id: chatId, text: message }),
-      });
-    } catch (tgErr) {
-      console.error('Telegram alert failed:', tgErr);
-    }
-  }
-
+  // Pending reports are listed in the admin review queue (/admin/verifications).
   return NextResponse.json({ success: true, data });
 }

@@ -356,7 +356,7 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
 
   return (
     <div className="flex-1 flex flex-col w-full bg-[#F8F7FA] text-[#1C1924] font-sans">
-      <main className="flex-1 w-full px-4 pt-4 pb-24 space-y-5">
+      <main className="flex-1 w-full px-4 pt-4 pb-[calc(5rem+env(safe-area-inset-bottom,16px))] space-y-5">
         {saveSuccess && (
           <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center gap-2">
             <Check className="w-4 h-4 text-emerald-600" />

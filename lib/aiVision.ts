@@ -71,7 +71,7 @@ Respond ONLY in valid JSON matching this schema:
       isSafe: true,
       isSexuallySuggestive: false,
       poseMatchesPrompt: true,
-      reason: 'AI review bypassed due to processing error; routed to manual Telegram backup.',
+      reason: 'AI review bypassed due to processing error; routed to manual admin review.',
     };
   }
 }

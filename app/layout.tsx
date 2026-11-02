@@ -2,26 +2,23 @@ import type { Metadata, Viewport } from 'next';
 
 import PwaRegister from "@/components/PwaRegister";
 
-import { Comfortaa, Plus_Jakarta_Sans, Outfit } from 'next/font/google';
-
-const comfortaa = Comfortaa({
-  subsets: ['latin'],
-  display: 'swap',
-  variable: '--font-logo',
-});
+import { Comfortaa, Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 import { LayoutShell } from '@/components/LayoutShell';
 
+// Headers / wordmark: Comfortaa (var(--font-brand); --font-logo is an alias in globals.css)
+const comfortaa = Comfortaa({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-brand',
+});
+
+// UI body text: Plus Jakarta Sans (var(--font-sans), Tailwind's font-sans)
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
   weight: ['400','500','600','700','800'],
+  display: 'swap',
   variable: '--font-sans',
-});
-
-const outfit = Outfit({
-  subsets: ['latin'],
-  weight: ['400','500','600','700','800','900'],
-  variable: '--font-brand',
 });
 
 const SITE_TITLE = 'Asians in Love - Real Connections';
@@ -62,10 +59,10 @@ export default function RootLayout({
 }) {
 
   return (
-    <html lang="en" className={`h-full ${plusJakarta.variable} ${outfit.variable} ${comfortaa.variable}`}>
+    <html lang="en" className={`h-full ${plusJakarta.variable} ${comfortaa.variable}`}>
       <body className="font-sans bg-[#ECE9F1] text-[#1C1924] h-full selection:bg-[#6555B8] selection:text-white antialiased overflow-hidden">
         <LayoutShell>{children}</LayoutShell>
-              <PwaRegister />
+        <PwaRegister />
       </body>
     </html>
   );
