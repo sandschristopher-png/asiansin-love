@@ -14,9 +14,9 @@ import {
   Smartphone,
   EyeOff,
   Loader2,
-  MessageCircle
-} from 'lucide-react';
+  MessageCircle, Trash2, AlertTriangle } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
+import { hardSignOut } from '@/lib/hardSignOut';
 
 type SettingsKey = 'hide_profile' | 'show_active_status' | 'notify_sparks' | 'notify_messages';
 
@@ -33,6 +33,10 @@ export default function SettingsHubPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(() => !cachedSettingsData);
   const [loggingOut, setLoggingOut] = useState(false);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deletingAccount, setDeletingAccount] = useState(false);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+  const [deleteConfirmText, setDeleteConfirmText] = useState('');
   const [savingKey, setSavingKey] = useState<SettingsKey | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [settings, setSettings] = useState(() => cachedSettingsData || {
@@ -102,8 +106,27 @@ export default function SettingsHubPage() {
 
   const handleLogout = async () => {
     setLoggingOut(true);
-    await supabase.auth.signOut();
-    router.push('/login');
+    await hardSignOut();
+    window.location.href = '/';
+  };
+
+  const handleDeleteAccount = async () => {
+    setDeletingAccount(true);
+    setDeleteError(null);
+    try {
+      const res = await fetch('/api/account/delete', { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok || data.error) {
+        setDeleteError(data.error || 'Failed to delete account. Please try again.');
+        setDeletingAccount(false);
+        return;
+      }
+      await hardSignOut();
+      window.location.href = '/';
+    } catch {
+      setDeleteError('Network error. Please try again.');
+      setDeletingAccount(false);
+    }
   };
 
   if (loading) {
@@ -330,8 +353,95 @@ export default function SettingsHubPage() {
             </div>
             {loggingOut && <Loader2 className="w-4 h-4 animate-spin text-[#6555B8]" />}
           </button>
+
+          <div className="my-1 border-t border-[#ECE8F4]" />
+
+          <button
+            type="button"
+            onClick={() => {
+              setDeleteError(null);
+              setDeleteConfirmText('');
+              setShowDeleteModal(true);
+            }}
+            className="w-full flex items-center justify-between p-3 rounded-2xl hover:bg-rose-50/60 transition cursor-pointer text-left group"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center group-hover:bg-rose-100 transition">
+                <Trash2 className="w-4 h-4" />
+              </div>
+              <div>
+                <p className="text-xs font-bold text-rose-600">Delete Account</p>
+                <p className="text-[11px] text-[#6C637B]">Permanently remove profile and data</p>
+              </div>
+            </div>
+          </button>
         </div>
 
+  {/* Account Deletion Confirmation Modal */}
+        {showDeleteModal && (
+          <div
+            className="fixed inset-0 z-[250] flex items-center justify-center p-4 bg-black/60"
+            onClick={() => !deletingAccount && setShowDeleteModal(false)}
+          >
+            <div
+              className="relative w-full max-w-[340px] bg-white rounded-3xl border border-neutral-100 shadow-2xl p-5 text-[#1C1924] flex flex-col"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="w-10 h-10 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mb-3">
+                <AlertTriangle className="w-5 h-5" />
+              </div>
+
+              <h2 className="text-base font-bold text-[#1C1924]">Delete Account?</h2>
+              <p className="text-xs text-[#6C637B] mt-1.5 leading-relaxed">
+                This will permanently delete your profile, photos, chat history, and active matches. This action is immediate and cannot be undone.
+              </p>
+
+              {deleteError && (
+                <div className="mt-3 p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-600 text-[11px] font-medium leading-tight">
+                  {deleteError}
+                </div>
+              )}
+
+              <input
+                type="text"
+                value={deleteConfirmText}
+                onChange={(e) => setDeleteConfirmText(e.target.value)}
+                placeholder="Type DELETE to confirm"
+                disabled={deletingAccount}
+                autoComplete="off"
+                spellCheck={false}
+                className="w-full mt-4 px-3 py-2.5 rounded-xl border border-[#ECE8F4] bg-[#FAF9FD] text-xs text-[#1C1924] placeholder:text-[#8C849B] focus:outline-none focus:border-[#6555B8] transition"
+              />
+
+              <div className="mt-4 space-y-2">
+                <button
+                  type="button"
+                  disabled={deletingAccount || deleteConfirmText !== 'DELETE'}
+                  onClick={handleDeleteAccount}
+                  className="w-full py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 active:bg-rose-800 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold text-xs tracking-wide shadow-sm transition active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer"
+                >
+                  {deletingAccount ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Deleting Account...</span>
+                    </>
+                  ) : (
+                    <span>Permanently Delete</span>
+                  )}
+                </button>
+
+                <button
+                  type="button"
+                  disabled={deletingAccount}
+                  onClick={() => setShowDeleteModal(false)}
+                  className="w-full py-2.5 rounded-xl bg-[#F8F7FA] hover:bg-[#ECE8F4] text-[#6C637B] hover:text-[#1C1924] font-medium text-xs transition cursor-pointer"
+                >
+                  Cancel
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </main>
     </div>
   );
