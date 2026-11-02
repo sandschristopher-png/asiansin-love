@@ -6,9 +6,11 @@ import { usePathname } from 'next/navigation';
 import { Navbar } from '@/components/Navbar';
 import { BottomNav } from '@/components/BottomNav';
 import { RealtimeMatchToast } from '@/components/RealtimeMatchToast';
+import { usePushSubscribe } from '@/lib/usePushSubscribe';
 
 export function LayoutShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  usePushSubscribe();
   const isMarketingOrAuth =
     pathname === '/' ||
     pathname?.startsWith('/login') ||
