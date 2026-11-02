@@ -5,6 +5,12 @@ import { cookies } from 'next/headers';
 
 export const runtime = 'nodejs';
 
+const PLAN_PRICES: Record<'12m' | '3m' | '1m', string | undefined> = {
+  '12m': process.env.STRIPE_PLUS_PRICE_12M,
+  '3m': process.env.STRIPE_PLUS_PRICE_3M,
+  '1m': process.env.STRIPE_PLUS_PRICE_1M,
+};
+
 export async function POST(req: NextRequest) {
   const cookieStore = await cookies();
   const supabase = createServerClient(
@@ -21,15 +27,21 @@ export async function POST(req: NextRequest) {
   }
 
   const secret = process.env.STRIPE_SECRET_KEY;
-  const priceId = process.env.STRIPE_PLUS_PRICE_ID;
-  if (!secret || !priceId) {
+  if (!secret) {
     return NextResponse.json({ error: 'Stripe is not configured yet.' }, { status: 503 });
   }
 
-  // Parse optional returnPath from request body (relative paths only)
+  // Parse planId and optional returnPath from request body (relative paths only)
+  let planId: '12m' | '3m' | '1m' = '12m';
   let returnPath = '/plus';
   try {
     const body = await req.json();
+    if (body?.planId) {
+      if (body.planId !== '12m' && body.planId !== '3m' && body.planId !== '1m') {
+        return NextResponse.json({ error: 'Invalid plan selected.' }, { status: 400 });
+      }
+      planId = body.planId;
+    }
     if (
       body?.returnPath &&
       typeof body.returnPath === 'string' &&
@@ -39,6 +51,11 @@ export async function POST(req: NextRequest) {
       returnPath = body.returnPath;
     }
   } catch {}
+
+  const priceId = PLAN_PRICES[planId];
+  if (!priceId) {
+    return NextResponse.json({ error: `Stripe price for plan '${planId}' is not configured.` }, { status: 503 });
+  }
 
   const stripe = new Stripe(secret);
   const origin = req.headers.get('origin') || 'https://asiansin.love';
@@ -51,7 +68,7 @@ export async function POST(req: NextRequest) {
     cancel_url: `${origin}${returnPath}`,
     client_reference_id: user.id,
     subscription_data: { metadata: { userId: user.id } },
-    metadata: { userId: user.id },
+    metadata: { userId: user.id, planId },
   });
 
   return NextResponse.json({ url: session.url });

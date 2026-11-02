@@ -36,6 +36,7 @@ function PlusHubContent() {
   const [starting, setStarting] = useState(false);
   const [openingPortal, setOpeningPortal] = useState(false);
   const [isPlus, setIsPlus] = useState(false);
+  const [selectedTier, setSelectedTier] = useState<'12m' | '3m' | '1m'>('12m');
   
   // Travel status state
   const [travelIntent, setTravelIntent] = useState<'visiting' | 'current'>('visiting');
@@ -106,7 +107,7 @@ function PlusHubContent() {
       const res = await fetch('/api/plus/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ returnPath: '/plus' }),
+        body: JSON.stringify({ planId: selectedTier, returnPath: '/plus' }),
       });
       const json = await res.json();
       if (res.status === 503) {
@@ -232,57 +233,115 @@ function PlusHubContent() {
           Southeast Asian women use Asians in Love completely free. AIL Plus unlocks full direct messaging, travel status, and a verified profile badge.
         </p>
 
-        {/* Pricing Row */}
-        <div className="rounded-2xl bg-[#FAF9FD] border border-[#ECE6F7] p-3 flex items-center justify-between mb-3 text-left">
-          <div>
-            <span className="text-xs font-bold text-[#1C1924]">Monthly Access</span>
-            <p className="text-[11px] text-[#6C637B]">Cancel anytime in one click</p>
-          </div>
-          <div className="text-right">
-            <span className="text-lg font-bold text-[#1C1924]">$14.99</span>
-            <span className="text-xs text-[#6C637B] ml-0.5">/mo</span>
-          </div>
-        </div>
+        {/* Multi-tier Subscription Selector */}
+          {!isPlus && (
+            <div className="grid grid-cols-3 gap-2 mb-3.5 text-left">
+              {/* 12 Months */}
+              <button
+                type="button"
+                onClick={() => setSelectedTier('12m')}
+                className={`relative rounded-2xl p-2.5 text-left border transition cursor-pointer flex flex-col justify-between ${
+                  selectedTier === '12m'
+                    ? 'border-[#6555B8] bg-[#F3EFFC]/80 ring-1 ring-[#6555B8] shadow-sm'
+                    : 'border-[#ECE6F7] bg-[#FAF9FD] hover:border-[#DDD7E5]'
+                }`}
+              >
+                <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-[#6555B8] text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider whitespace-nowrap">
+                  Best Value
+                </span>
+                <div className="pt-1">
+                  <div className="text-[11px] font-bold text-[#1C1924]">12 Months</div>
+                  <div className="text-[10px] text-[#6555B8] font-semibold">Save 47%</div>
+                </div>
+                <div className="mt-2 pt-1 border-t border-[#ECE6F7]/80">
+                  <div className="text-sm font-bold text-[#1C1924]">$7.99<span className="text-[10px] font-normal text-[#6C637B]">/mo</span></div>
+                  <div className="text-[9px] text-[#8A8199] mt-0.5">$95.88/yr</div>
+                </div>
+              </button>
 
-        {/* Single Primary Action */}
-        {isPlus ? (
-          <button
-            type="button"
-            disabled={openingPortal}
-            onClick={handlePortal}
-            className="w-full py-3 rounded-full font-semibold text-xs tracking-wide flex items-center justify-center gap-2 shadow-sm transition active:scale-[0.99] cursor-pointer bg-[#F3EFFC] border border-[#DDD7E5] text-[#6555B8] hover:bg-[#EAE4F7]"
-          >
-            {openingPortal ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                <span>Loading Stripe Portal...</span>
-              </>
-            ) : (
-              <>
-                <Settings className="w-4 h-4" />
-                <span>Manage Active Subscription</span>
-              </>
-            )}
-          </button>
-        ) : (
-          <>
+              {/* 3 Months */}
+              <button
+                type="button"
+                onClick={() => setSelectedTier('3m')}
+                className={`relative rounded-2xl p-2.5 text-left border transition cursor-pointer flex flex-col justify-between ${
+                  selectedTier === '3m'
+                    ? 'border-[#6555B8] bg-[#F3EFFC]/80 ring-1 ring-[#6555B8] shadow-sm'
+                    : 'border-[#ECE6F7] bg-[#FAF9FD] hover:border-[#DDD7E5]'
+                }`}
+              >
+                <div className="pt-1">
+                  <div className="text-[11px] font-bold text-[#1C1924]">3 Months</div>
+                  <div className="text-[10px] text-[#6555B8] font-semibold">Save 20%</div>
+                </div>
+                <div className="mt-2 pt-1 border-t border-[#ECE6F7]/80">
+                  <div className="text-sm font-bold text-[#1C1924]">$11.99<span className="text-[10px] font-normal text-[#6C637B]">/mo</span></div>
+                  <div className="text-[9px] text-[#8A8199] mt-0.5">$35.97/qtr</div>
+                </div>
+              </button>
+
+              {/* 1 Month */}
+              <button
+                type="button"
+                onClick={() => setSelectedTier('1m')}
+                className={`relative rounded-2xl p-2.5 text-left border transition cursor-pointer flex flex-col justify-between ${
+                  selectedTier === '1m'
+                    ? 'border-[#6555B8] bg-[#F3EFFC]/80 ring-1 ring-[#6555B8] shadow-sm'
+                    : 'border-[#ECE6F7] bg-[#FAF9FD] hover:border-[#DDD7E5]'
+                }`}
+              >
+                <div className="pt-1">
+                  <div className="text-[11px] font-bold text-[#1C1924]">1 Month</div>
+                  <div className="text-[10px] text-[#8A8199]">Standard</div>
+                </div>
+                <div className="mt-2 pt-1 border-t border-[#ECE6F7]/80">
+                  <div className="text-sm font-bold text-[#1C1924]">$14.99<span className="text-[10px] font-normal text-[#6C637B]">/mo</span></div>
+                  <div className="text-[9px] text-[#8A8199] mt-0.5">Billed monthly</div>
+                </div>
+              </button>
+            </div>
+          )}
+
+          {/* Single Primary Action */}
+          {isPlus ? (
             <button
               type="button"
-              disabled={starting || loading}
-              onClick={handleSubscribe}
-              className="w-full py-3 rounded-full font-semibold text-xs tracking-wide flex items-center justify-center gap-2 shadow-sm transition active:scale-[0.99] cursor-pointer bg-[#6555B8] hover:bg-[#5747A9] active:bg-[#4C3D97] text-white disabled:opacity-75"
+              disabled={openingPortal}
+              onClick={handlePortal}
+              className="w-full py-3 rounded-full font-semibold text-xs tracking-wide flex items-center justify-center gap-2 shadow-sm transition active:scale-[0.99] cursor-pointer bg-[#F3EFFC] border border-[#DDD7E5] text-[#6555B8] hover:bg-[#EAE4F7]"
             >
-              {starting ? (
+              {openingPortal ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Connecting to Stripe...</span>
+                  <span>Loading Stripe Portal...</span>
                 </>
               ) : (
-                <span>Upgrade to AIL+ • $14.99/mo</span>
+                <>
+                  <Settings className="w-4 h-4" />
+                  <span>Manage Active Subscription</span>
+                </>
               )}
             </button>
+          ) : (
+            <>
+              <button
+                type="button"
+                disabled={starting || loading}
+                onClick={handleSubscribe}
+                className="w-full py-3 rounded-full font-semibold text-xs tracking-wide flex items-center justify-center gap-2 shadow-sm transition active:scale-[0.99] cursor-pointer bg-[#6555B8] hover:bg-[#5747A9] active:bg-[#4C3D97] text-white disabled:opacity-75"
+              >
+                {starting ? (
+                  <>
+                    <Loader2 className="w-4 h-4 animate-spin" />
+                    <span>Connecting to Stripe...</span>
+                  </>
+                ) : (
+                  <span>
+                    Upgrade to AIL+ • {selectedTier === '12m' ? '$7.99/mo' : selectedTier === '3m' ? '$11.99/mo' : '$14.99/mo'}
+                  </span>
+                )}
+              </button>
 
-            {/* Quiet Link Exclusively For Existing Subscribers Not Detected */}
+              {/* Quiet Link Exclusively For Existing Subscribers Not Detected */}
             <div className="mt-3 flex items-center justify-center">
               <button
                 type="button"
@@ -309,50 +368,92 @@ function PlusHubContent() {
         </div>
       )}
 
-      {/* 3 Core Privileges */}
-      <div className="rounded-3xl bg-white border border-[#ECE8F4] p-4 shadow-sm mb-4 space-y-2.5">
-        <div className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 px-1">
-          Included Privileges
+      {/* Categorized Privileges */}
+        <div className="space-y-3 mb-4">
+          <div className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 px-1">
+            Membership Privileges
+          </div>
+
+          {/* Category 1: Privacy & Discretion */}
+          <div className="rounded-2xl bg-white border border-[#ECE8F4] p-3.5 shadow-sm text-left">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-6 h-6 rounded-lg bg-[#F3EFFC] border border-[#6555B8]/20 text-[#6555B8] flex items-center justify-center shrink-0">
+                <Lock className="w-3.5 h-3.5" />
+              </div>
+              <h3 className="text-xs font-bold text-[#1C1924]">Privacy & Discretion</h3>
+            </div>
+            <div className="space-y-2 pl-8">
+              <div>
+                <div className="text-xs font-semibold text-[#1C1924]">Incognito Profile Browsing</div>
+                <p className="text-[11px] text-[#6C637B] leading-snug">
+                  Browse profile cards discreetly without leaving footprints in their Visited tab.
+                </p>
+              </div>
+              <div>
+                <div className="text-xs font-semibold text-[#1C1924]">Stealth Presence</div>
+                <p className="text-[11px] text-[#6C637B] leading-snug">
+                  Explore connections quietly while keeping your online visibility under your control.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Category 2: Discovery & Sparks */}
+          <div className="rounded-2xl bg-white border border-[#ECE8F4] p-3.5 shadow-sm text-left">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-6 h-6 rounded-lg bg-[#F3EFFC] border border-[#6555B8]/20 text-[#6555B8] flex items-center justify-center shrink-0">
+                <Compass className="w-3.5 h-3.5" />
+              </div>
+              <h3 className="text-xs font-bold text-[#1C1924]">Discovery & Sparks</h3>
+            </div>
+            <div className="space-y-2 pl-8">
+              <div>
+                <div className="text-xs font-semibold text-[#1C1924]">Unblurred Inbound Sparks</div>
+                <p className="text-[11px] text-[#6C637B] leading-snug">
+                  See everyone who liked your profile with zero blur and match instantly.
+                </p>
+              </div>
+              <div>
+                <div className="text-xs font-semibold text-[#1C1924]">Travel Status & Passport Hub</div>
+                <p className="text-[11px] text-[#6C637B] leading-snug">
+                  Set your destination to Cebu, Manila, Bangkok, or Tokyo to connect before your flight.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Category 3: Communication & Trust */}
+          <div className="rounded-2xl bg-white border border-[#ECE8F4] p-3.5 shadow-sm text-left">
+            <div className="flex items-center gap-2 mb-2">
+              <div className="w-6 h-6 rounded-lg bg-[#F3EFFC] border border-[#6555B8]/20 text-[#6555B8] flex items-center justify-center shrink-0">
+                <ShieldCheck className="w-3.5 h-3.5" />
+              </div>
+              <h3 className="text-xs font-bold text-[#1C1924]">Communication & Trust</h3>
+            </div>
+            <div className="space-y-2 pl-8">
+              <div>
+                <div className="text-xs font-semibold text-[#1C1924]">Unlimited Direct Introductions</div>
+                <p className="text-[11px] text-[#6C637B] leading-snug">
+                  Send thoughtful first messages without hitting daily limits or waiting through cooldown timers.
+                </p>
+              </div>
+              <div>
+                <div className="text-xs font-semibold text-[#1C1924]">Verified AIL+ Member Badge</div>
+                <p className="text-[11px] text-[#6C637B] leading-snug">
+                  Displays the purple Plus badge on your profile, signaling verified commitment.
+                </p>
+              </div>
+              <div>
+                <div className="text-xs font-semibold text-[#1C1924]">Custom Member Handle</div>
+                <p className="text-[11px] text-[#6C637B] leading-snug">
+                  Claim and personalize your unique @username handle on Asians in Love.
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
 
-        <div className="flex items-start gap-3 p-2.5 rounded-2xl bg-[#FAF9FD] border border-[#ECE6F7]/70">
-          <div className="w-7 h-7 rounded-lg bg-white border border-[#DDD7E5] text-[#6555B8] flex items-center justify-center shrink-0 shadow-2xs mt-0.5">
-            <Zap className="w-3.5 h-3.5" />
-          </div>
-          <div className="flex-1 min-w-0 text-left">
-            <div className="text-xs font-bold text-[#1C1924]">Unlimited Direct Introductions</div>
-            <p className="text-[11px] text-[#6C637B] mt-0.5 leading-snug">
-              Send thoughtful first messages without hitting daily limits or waiting through cooldown timers.
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-start gap-3 p-2.5 rounded-2xl bg-[#FAF9FD] border border-[#ECE6F7]/70">
-          <div className="w-7 h-7 rounded-lg bg-white border border-[#DDD7E5] text-[#6555B8] flex items-center justify-center shrink-0 shadow-2xs mt-0.5">
-            <Compass className="w-3.5 h-3.5" />
-          </div>
-          <div className="flex-1 min-w-0 text-left">
-            <div className="text-xs font-bold text-[#1C1924]">Travel Status Badge</div>
-            <p className="text-[11px] text-[#6C637B] mt-0.5 leading-snug">
-              Announce "Visiting Soon" or "Currently Here" to match and plan authentic dates before your flight lands.
-            </p>
-          </div>
-        </div>
-
-        <div className="flex items-start gap-3 p-2.5 rounded-2xl bg-[#FAF9FD] border border-[#ECE6F7]/70">
-          <div className="w-7 h-7 rounded-lg bg-white border border-[#DDD7E5] text-[#6555B8] flex items-center justify-center shrink-0 shadow-2xs mt-0.5">
-            <ShieldCheck className="w-3.5 h-3.5" />
-          </div>
-          <div className="flex-1 min-w-0 text-left">
-            <div className="text-xs font-bold text-[#1C1924]">Verified Member Badge</div>
-            <p className="text-[11px] text-[#6C637B] mt-0.5 leading-snug">
-              Displays the purple Plus badge on your profile. Signals verified commitment and separates you from casual time-wasters.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Travel Status Hub */}
+        {/* Travel Status Hub */}
       <div className="rounded-3xl bg-white border border-[#ECE8F4] p-4 shadow-sm mb-4">
         <div className="flex items-center justify-between mb-2.5">
           <div className="text-xs font-bold text-[#1C1924]">Travel Status</div>
