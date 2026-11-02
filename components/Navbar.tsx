@@ -9,6 +9,7 @@ import { User, Settings, LogOut, ArrowLeft, Share2, Check , Zap} from 'lucide-re
 import { supabase } from '@/lib/supabase/client';
 import { hardSignOut } from '@/lib/hardSignOut';
 import { PlusBadge } from './PlusBadge';
+import { MenuTrigger } from '@/components/MenuTrigger';
 export function Navbar() {
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
@@ -215,18 +216,7 @@ export function Navbar() {
               </Link>
             )}
             <div className={`relative ${pathname === "/profile" ? "hidden" : ""}`} ref={menuRef}>
-                <button
-                  type="button"
-                  onClick={() => setMenuOpen(!menuOpen)}
-                  className="w-8 h-8 rounded-full overflow-hidden bg-purple-100 border border-black/10 flex items-center justify-center transition-transform active:scale-95"
-                  title="Account Menu"
-                >
-                  {avatarUrl ? (
-                    <img src={avatarUrl} alt={displayName} className="w-full h-full object-cover" />
-                  ) : (
-                    <User className="w-4 h-4 text-[#6555B8]" />
-                  )}
-                </button>
+                <MenuTrigger onClick={() => setMenuOpen(!menuOpen)} isOpen={menuOpen} avatarUrl={avatarUrl} />
                 {menuOpen && (
                   <div className="absolute right-0 mt-2.5 w-80 rounded-2xl bg-white border border-[#DDD7E5]/40 shadow-xl py-2 z-[200] animate-[notifDropdownIn_0.2s_cubic-bezier(0.16,1,0.3,1)_both]">
                     <div className="px-4 py-2 border-b border-[#DDD7E5]/40 bg-white/95 backdrop-blur-md backdrop-saturate-150 rounded-t-2xl">
