@@ -23,6 +23,8 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: 'Signature check failed: ' + err.message }, { status: 400 });
   }
 
+  console.log('[webhook] event:', event.type, event.id);
+
   const admin = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.SUPABASE_SERVICE_ROLE_KEY!
@@ -31,8 +33,9 @@ export async function POST(req: NextRequest) {
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object as Stripe.Checkout.Session;
     const userId = session.metadata?.userId || session.client_reference_id;
-    if (userId) {
-      await admin.from('profiles').update({ is_plus: true }).eq('id', userId);
+    if (userId && (session.payment_status === 'paid' || session.payment_status === 'no_payment_required')) {
+      const { error } = await admin.from('profiles').update({ is_plus: true }).eq('id', userId);
+      if (error) console.error('[webhook] is_plus=true update failed:', userId, error.message);
     }
   }
 
@@ -41,7 +44,8 @@ export async function POST(req: NextRequest) {
     const userId = (sub.metadata as Record<string, string> | undefined)?.userId;
     if (userId) {
       const active = sub.status === 'active' || sub.status === 'trialing';
-      await admin.from('profiles').update({ is_plus: active }).eq('id', userId);
+      const { error } = await admin.from('profiles').update({ is_plus: active }).eq('id', userId);
+      if (error) console.error('[webhook] is_plus=' + active + ' update failed:', userId, error.message);
     }
   }
 

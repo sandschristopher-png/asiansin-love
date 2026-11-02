@@ -293,7 +293,7 @@ export default function SparksPage() {
       <div className="max-w-md mx-auto px-3.5 pt-2">
         {/* Horizontal Sub-Tab Navigation */}
         <div className="sticky top-12 z-30 bg-white/95 backdrop-blur-md border-b border-[#ECE8F4] -mx-3.5 px-3.5 mb-3.5">
-          <div className="flex items-center gap-5 overflow-x-auto no-scrollbar">
+          <div className="flex items-center gap-4 overflow-x-auto no-scrollbar">
             {tabs.map((t) => {
               const active = activeTab === t.id;
               return (
@@ -307,7 +307,7 @@ export default function SparksPage() {
                 >
                   <span>{t.label}</span>
                   {t.count > 0 && (
-                    <span className={`px-1.5 py-0.2 rounded-full text-[10px] font-bold ${
+                    <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold ${
                       active ? 'bg-[#6555B8]/12 text-[#6555B8]' : 'bg-slate-100 text-[#8C849B]'
                     }`}>
                       {t.count}
