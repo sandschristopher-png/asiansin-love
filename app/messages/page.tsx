@@ -212,8 +212,8 @@ export default function MessagesPage() {
   });
 
   return (
-    <div className="w-full min-h-full bg-[#F9F8FC] text-[#1C1924] flex flex-col font-sans">
-      <main className="flex-1 w-full px-4 pt-3.5 pb-32 space-y-3.5">
+    <div className="w-full min-h-[100dvh] bg-[#F9F8FC] text-[#1C1924] flex flex-col font-sans overscroll-y-contain">
+        <main className="flex-1 w-full px-4 pt-3.5 pb-[calc(6rem+env(safe-area-inset-bottom,16px))] space-y-3.5">
         <div className="flex items-center justify-between gap-2">
           <p className="text-xs text-[#6C637B] font-medium">Direct messages with your connections</p>
 

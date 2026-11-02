@@ -289,7 +289,7 @@ export default function SparksPage() {
   }, [activeTab, currentList, isPlus]);
 
   return (
-    <main className="min-h-[calc(100dvh-3rem)] bg-white pb-28">
+    <main className="min-h-[100dvh] bg-white pb-[calc(6rem+env(safe-area-inset-bottom,16px))] overscroll-y-contain">
       <div className="max-w-md mx-auto px-3.5 pt-2">
         {/* Horizontal Sub-Tab Navigation */}
         <div className="sticky top-12 z-30 bg-white/95 backdrop-blur-md border-b border-[#ECE8F4] -mx-3.5 px-3.5 mb-3.5">
