@@ -6,9 +6,9 @@ import { cookies } from 'next/headers';
 export const runtime = 'nodejs';
 
 const PLAN_PRICES: Record<'12m' | '3m' | '1m', string | undefined> = {
-  '12m': process.env.STRIPE_PLUS_PRICE_12M,
+  '12m': process.env.STRIPE_PLUS_PRICE_12M ?? process.env.STRIPE_PRICE_ANNUAL,
   '3m': process.env.STRIPE_PLUS_PRICE_3M,
-  '1m': process.env.STRIPE_PLUS_PRICE_1M,
+  '1m': process.env.STRIPE_PLUS_PRICE_1M ?? process.env.STRIPE_PRICE_MONTHLY,
 };
 
 export async function POST(req: NextRequest) {
