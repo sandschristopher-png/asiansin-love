@@ -228,7 +228,7 @@ export default function SparksPage() {
           const gated = await resp.json();
           sparkedYou = gated.sparkedYou ?? [];
           visitedYou = gated.visitedYou ?? [];
-          hasFullAccess = true;
+          hasFullAccess = gated.access !== 'preview';
           if (gated.gender === 'female') viewerGender = 'female';
         } else if (resp.status !== 403 && resp.status !== 401) {
           console.error('Sparks gate error:', resp.status);
@@ -362,15 +362,15 @@ export default function SparksPage() {
                   role="tab"
                   aria-selected={active}
                   onClick={() => setActiveTab(t.id)}
-                  className={`inline-flex items-center gap-1.5 py-1.5 whitespace-nowrap shrink-0 transition-colors cursor-pointer ${
-                    active ? 'text-[#2D264B] font-bold text-sm' : 'text-[#8A839E] hover:text-[#2D264B] font-medium text-sm'
+                  className={`inline-flex items-center gap-1 h-8 whitespace-nowrap shrink-0 transition-colors cursor-pointer text-sm ${
+                    active ? 'text-[#6555B8] font-bold' : 'text-black/40 font-medium'
                   }`}
                 >
                   <span>{t.label}</span>
                   {formatBadgeCount(t.count) && (
                     <span
-                      className={`inline-flex items-center justify-center min-w-[18px] h-4 px-1 rounded-full text-[10px] font-bold leading-none tabular-nums ${
-                        active ? 'bg-[#6555B8] text-white' : 'bg-slate-100 text-[#8A839E]'
+                      className={`self-start mt-1 text-[10px] font-bold leading-none tabular-nums ${
+                        active ? 'text-[#6555B8]' : 'text-black/35'
                       }`}
                     >
                       {formatBadgeCount(t.count)}
@@ -386,12 +386,12 @@ export default function SparksPage() {
         {activeTab === 'visited' && !isPlus ? (
           <TabState
             icon={Eye}
-            title="See Who Visited Your Profile"
-            subtitle="Unlock your real-time visitor history, unblur incoming Sparks, and travel across Southeast Asia with AIL+."
+            title={visitedList.length > 0 ? `${formatBadgeCount(visitedList.length)} ${visitedList.length === 1 ? 'member' : 'members'} viewed your profile` : 'See Who Visited Your Profile'}
+            subtitle="See exactly who they are with AIL+, plus every member who sparked you."
             cta={
-              <Link href="/settings?upgrade=plus" className={STATE_CTA_CLASS}>
+              <Link href="/plus" className={STATE_CTA_CLASS}>
                 <Crown className="w-4 h-4 text-amber-300" />
-                <span>Upgrade to AIL+ · $14.99/mo</span>
+                <span>See them with AIL+</span>
               </Link>
             }
           />
@@ -415,8 +415,10 @@ export default function SparksPage() {
         ) : (
           <>
           <div className="grid grid-cols-2 gap-3.5 animate-fade-in-up">
-            {priorityList.map((person) => {
-              const shouldBlur = (activeTab === 'sparked_you' || activeTab === 'visited') && !isPlus;
+            {priorityList.map((person, idx) => {
+              // Free: the newest Spark is a clear preview, the rest stay blurred until AIL+.
+              const shouldBlur =
+                !isPlus && ((activeTab === 'sparked_you' && idx > 0) || activeTab === 'visited');
               const publicName = getPublicName(person);
               const age = getAge(person);
               const photo = shouldBlur ? '/placeholder-avatar.svg' : getPhoto(person);
@@ -425,13 +427,13 @@ export default function SparksPage() {
               return (
                 <div
                   key={person.id}
-                  onClick={() => { if (shouldBlur) { router.push('/settings?upgrade=plus'); } else { router.push(`/profile/${person.id}`); } }}
+                  onClick={() => { if (shouldBlur) { router.push('/plus'); } else { router.push(`/profile/${person.id}`); } }}
                   className="group relative isolate aspect-[3/4] rounded-2xl overflow-hidden bg-slate-100 shadow-xs border border-[#ECE8F4] cursor-pointer active:scale-[0.98] transition-all duration-200"
                 >
                   <SparkCardPhoto src={photo} name={publicName} className={`object-cover transition-transform duration-300 group-hover:scale-105 ${shouldBlur ? 'blur-md scale-110' : ''}`} />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent" />
-                  <div className="absolute top-3 left-3 z-10 px-2.5 py-1 rounded-full bg-black/55 backdrop-blur-md text-white text-[11px] font-semibold">{rep}% Rep</div>
-                  <div className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-[#6555B8]/90 backdrop-blur-md text-white flex items-center justify-center shadow-xs"><Heart strokeWidth={2} className="w-3.5 h-3.5 fill-white" /></div>
+                  {!shouldBlur && <div className="absolute top-3 left-3 z-10 px-2.5 py-1 rounded-full bg-black/60 text-white text-[11px] font-semibold">{rep}% Rep</div>}
+                  <div className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-[#6555B8]/95 text-white flex items-center justify-center shadow-xs"><Heart strokeWidth={2} className="w-3.5 h-3.5 fill-white" /></div>
                   {shouldBlur && (
                     <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/30 p-3 text-center">
                       <div className="w-9 h-9 rounded-full bg-[#6555B8] text-white flex items-center justify-center mb-1.5 shadow-md"><Lock className="w-4 h-4" /></div>

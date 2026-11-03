@@ -272,3 +272,28 @@ nextjs-portal,
 .ail-action-toast-in {
   animation: ailActionToastIn 200ms ease-out both;
 }
+
+/* Liquid Amethyst title on /plus: slow pure-CSS gradient drift (no particles, no JS). */
+@keyframes gradientFlow {
+  0% { background-position: 0% 50%; }
+  100% { background-position: 100% 50%; }
+}
+.animate-gradient-flow {
+  background-size: 240% 240%;
+  animation: gradientFlow 14s ease-in-out infinite alternate;
+}
+@media (prefers-reduced-motion: reduce) {
+  .animate-gradient-flow { animation: none; }
+}
+
+/* Android Chromium / WebView (and iOS Safari) zoom into any focused field under 16px. */
+@media (max-width: 640px) {
+  input:not([type=checkbox]):not([type=radio]):not([type=range]),
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}
+
+/* Blurred placeholder -> photo cross-fade for slow connections. */
+.ail-photo-fade { transition: opacity 360ms ease-out; }

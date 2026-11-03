@@ -4,14 +4,16 @@ import { createClient, SupabaseClient } from '@supabase/supabase-js';
 
 export const runtime = 'nodejs';
 
-type Tier = '12m' | '3m' | '1m';
-const isTier = (v: unknown): v is Tier => v === '12m' || v === '3m' || v === '1m';
+/** '12m' stays for members who subscribed to the retired annual plan. */
+type Tier = '12m' | '6m' | '3m' | '1m';
+const isTier = (v: unknown): v is Tier => v === '12m' || v === '6m' || v === '3m' || v === '1m';
 
 /** price id -> tier, built from the same env vars the checkout route uses. */
 function tierFromPriceId(priceId: string | undefined | null): Tier | null {
   if (!priceId) return null;
   const map: Array<[Tier, Array<string | undefined>]> = [
     ['12m', [process.env.STRIPE_PLUS_PRICE_12M, process.env.STRIPE_PRICE_ANNUAL]],
+    ['6m', [process.env.STRIPE_PLUS_PRICE_6M]],
     ['3m', [process.env.STRIPE_PLUS_PRICE_3M]],
     ['1m', [process.env.STRIPE_PLUS_PRICE_1M, process.env.STRIPE_PRICE_MONTHLY]],
   ];

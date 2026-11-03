@@ -18,7 +18,11 @@ import {
   Share2
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
-import { AudioPill } from '@/components/AudioPill';
+import { VoicePlayer } from '@/components/VoicePlayer';
+import { VisitingBadge } from '@/components/VisitingBadge';
+import { CardPhoto, DETAIL_PHOTO_SIZES } from '@/components/CardPhoto';
+import { DayOneBadge, NewMemberPill, VerifiedLocationBadge } from '@/components/profile/TrustBadges';
+import { getPresenceStatus } from '@/lib/presence';
 import { isTrustedVoiceIntroUrl } from '@/lib/audio';
 import { resolveCountry } from '@/lib/countries';
 import { rhythmOption, sharedTraits, toList } from '@/lib/rhythm';
@@ -293,6 +297,14 @@ export default function PublicProfilePage() {
       : ['/placeholder-avatar.svg'];
 
   const currentImg = photoList[currentPhotoIdx] || photoList[0];
+  const placeholders: Record<string, string> =
+    profile.photo_placeholders && typeof profile.photo_placeholders === 'object' ? profile.photo_placeholders : {};
+  const dayOneNumber: number | null = profile.is_day_one && Number.isInteger(profile.day_one_number) ? profile.day_one_number : null;
+  const travel =
+    profile.is_travel_mode_active && profile.is_plus && profile.visiting_city
+      ? { city: profile.visiting_city, country: profile.visiting_country ?? null, dates: profile.visiting_dates ?? null }
+      : null;
+  const isOnline = profile.show_active_status !== false && getPresenceStatus(profile.last_active).isOnline;
   const hasMultiplePhotos = photoList.length > 1;
 
   const targetInterests: string[] = Array.isArray(profile.interests) ? profile.interests : [];
@@ -335,7 +347,7 @@ export default function PublicProfilePage() {
   // Portal dock directly to document.body so LayoutShell's scroll container never moves it
   const floatingDock = mounted
     ? createPortal(
-        <aside className="fixed bottom-3.5 left-1/2 -translate-x-1/2 w-[calc(100%-1.75rem)] max-w-[390px] z-[90] bg-white/92 backdrop-blur-2xl border border-[#E5E1EC]/80 shadow-[0_12px_36px_rgba(101,85,184,0.18),0_2px_8px_rgba(0,0,0,0.04)] rounded-full p-1.5">
+        <aside className="fixed bottom-3.5 left-1/2 -translate-x-1/2 w-[calc(100%-1.75rem)] max-w-[390px] z-[90] bg-white/95 border border-[#E5E1EC]/80 shadow-[0_12px_36px_rgba(101,85,184,0.18),0_2px_8px_rgba(0,0,0,0.04)] rounded-full p-1.5">
           <div className="grid grid-cols-2 gap-2">
             <button
               type="button"
@@ -377,7 +389,7 @@ export default function PublicProfilePage() {
   return (
     <div className="relative flex-1 w-full bg-[#F8F7FA] text-[#1C1924] font-sans">
       {toastMsg && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[400px] z-[100] px-4 py-2.5 rounded-2xl bg-white/95 border border-[#ECE8F4] text-[#1C1924] text-xs font-semibold text-center shadow-[0_12px_32px_rgba(101,85,184,0.18)] backdrop-blur-md">
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[400px] z-[100] px-4 py-2.5 rounded-2xl bg-white/95 border border-[#ECE8F4] text-[#1C1924] text-xs font-semibold text-center shadow-[0_12px_32px_rgba(101,85,184,0.18)]">
           {toastMsg}
         </div>
       )}
@@ -386,9 +398,9 @@ export default function PublicProfilePage() {
       <div className="w-full px-3.5 pt-3.5 pb-32 space-y-3.5">
         
         {/* 1. HERO PHOTO CARD (4:5 Aspect Ratio + Overlaid Controls + Bottom Scrim) */}
-        <div className="relative aspect-[4/5] w-full rounded-3xl overflow-hidden bg-neutral-200 shadow-xs select-none">
+        <div data-profile-hero className="relative aspect-[4/5] w-full rounded-3xl overflow-hidden bg-[#F2EEF7] shadow-xs select-none">
           <div
-            className="w-full h-full cursor-pointer"
+            className="relative w-full h-full cursor-pointer"
             onClick={(e) => {
               if (!hasMultiplePhotos) return;
               const rect = e.currentTarget.getBoundingClientRect();
@@ -421,11 +433,13 @@ export default function PublicProfilePage() {
               touchStartY.current = null;
             }}
           >
-            <img
+            <CardPhoto
               src={currentImg}
               alt={displayName}
-              className="w-full h-full object-cover pointer-events-none"
-              draggable={false}
+              sizes={DETAIL_PHOTO_SIZES}
+              priority
+              placeholder={placeholders[currentImg] ?? null}
+              className="object-cover pointer-events-none"
             />
           </div>
 
@@ -448,7 +462,7 @@ export default function PublicProfilePage() {
               type="button"
               onClick={() => router.back()}
               aria-label="Go back"
-              className="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-md transition hover:bg-black/60 active:scale-95 shadow-xs cursor-pointer"
+              className="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full bg-black/45 text-white transition hover:bg-black/60 active:scale-95 shadow-xs cursor-pointer"
             >
               <ArrowLeft className="h-5 w-5" />
             </button>
@@ -458,7 +472,7 @@ export default function PublicProfilePage() {
                 type="button"
                 onClick={() => setShowMenu(!showMenu)}
                 aria-label="More options"
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-black/40 text-white backdrop-blur-md transition hover:bg-black/60 active:scale-95 shadow-xs cursor-pointer"
+                className="flex h-10 w-10 items-center justify-center rounded-full bg-black/45 text-white transition hover:bg-black/60 active:scale-95 shadow-xs cursor-pointer"
               >
                 <MoreHorizontal className="h-5 w-5" />
               </button>
@@ -516,51 +530,50 @@ export default function PublicProfilePage() {
             </div>
           </div>
 
-          {/* Bottom Gradient Scrim Overlay with Username & Location */}
-          <div className="absolute inset-x-0 bottom-0 z-10 bg-gradient-to-t from-black/90 via-black/45 to-transparent p-5 pt-24 pointer-events-none">
-            <div className="flex items-center gap-2 flex-wrap">
-              <h1
-                className="text-2xl font-bold tracking-tight text-white"
-                style={{ fontFamily: 'var(--font-brand)' }}
-              >
-                {displayName}{displayAge}
-              </h1>
-
-              {isVerified && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/25 px-2.5 py-0.5 text-[11px] font-bold text-emerald-300 backdrop-blur-xs border border-emerald-400/30">
-                  <ShieldCheck className="h-3.5 w-3.5" />
-                  Verified
-                </span>
-              )}
-            </div>
-
-            <div className="mt-1 flex items-center gap-1.5 text-xs font-medium text-neutral-200">
-              <MapPin className="h-3.5 w-3.5 text-neutral-300 shrink-0" />
-              <span>{displayLocation}</span>
-              {profile.location_source === 'gps_verified' && (
-                <span className="ml-1 shrink-0 whitespace-nowrap inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/90 backdrop-blur-md text-[11px] font-semibold text-[#2D264B] shadow-sm border border-white/40">
-                  <ShieldCheck className="w-3 h-3 text-[#6555B8] stroke-[2.5]" />
-                  Verified Location
-                </span>
-              )}
-            </div>
-
+          {/* New member (7 days) top-left, online status top-right, under the nav buttons */}
+          <div className="absolute top-[4.25rem] left-3.5 z-20 pointer-events-none">
+            <NewMemberPill createdAt={profile.created_at} />
           </div>
+          {isOnline && (
+            <div className="absolute top-[4.6rem] right-5 z-20 pointer-events-none" title="Online now">
+              <span className="block h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white/90 shadow" />
+            </div>
+          )}
+
         </div>
 
-        {/* 2. REPUTATION */}
-        <RepScoreCard score={scoreOf(profile.reputation_score)} />
-
-        {/* 3. VOICE INTRO */}
-        {isTrustedVoiceIntroUrl(profile.voice_intro_url) && (
-          <section className="p-4 rounded-3xl bg-white border border-[#DDD7E5] shadow-2xs flex items-center justify-between gap-3">
-            <div className="min-w-0">
-              <h2 className="text-xs font-bold uppercase tracking-wider text-[#6555B8]">Voice Intro</h2>
-              <p className="text-[11px] text-[#6C637B]">Hear {displayName} say hello</p>
+        {/* 1b. NAME, TRUST ROW, TRAVEL */}
+        <section className="px-1 space-y-2">
+          <div className="flex items-center gap-2 flex-wrap">
+            <h1 className="text-2xl font-black tracking-tight text-[#2D264B]" style={{ fontFamily: 'var(--font-brand)' }}>
+              {displayName}{displayAge}
+            </h1>
+            {isVerified && (
+              <span title="Identity verified">
+                <ShieldCheck className="h-5 w-5 text-[#6555B8]" />
+              </span>
+            )}
+          </div>
+          <div className="flex items-center gap-1.5 text-xs font-medium text-[#6C637B]">
+            <MapPin className="h-3.5 w-3.5 text-[#6555B8] shrink-0" />
+            <span className="truncate">{displayLocation}</span>
+          </div>
+          {(profile.location_source === 'gps_verified' || dayOneNumber) && (
+            <div className="flex items-center gap-2 flex-wrap">
+              {profile.location_source === 'gps_verified' && <VerifiedLocationBadge />}
+              <DayOneBadge number={dayOneNumber} />
             </div>
-            <AudioPill src={profile.voice_intro_url} label="Hear my voice" showProgress />
-          </section>
+          )}
+          <VisitingBadge travel={travel} />
+        </section>
+
+        {/* 2. VOICE INTRO (hidden when none recorded; plays only on tap) */}
+        {isTrustedVoiceIntroUrl(profile.voice_intro_url) && (
+          <VoicePlayer src={profile.voice_intro_url} title={`Hear ${displayName} say hello`} />
         )}
+
+        {/* 3. REPUTATION */}
+        <RepScoreCard score={scoreOf(profile.reputation_score)} />
 
         {/* 4. ABOUT ME (with things in common) */}
         <section className="p-4 rounded-3xl bg-white border border-[#DDD7E5] shadow-2xs space-y-2">
@@ -723,6 +736,25 @@ export default function PublicProfilePage() {
           </section>
         )}
 
+        {/* 9. PHOTO GALLERY */}
+        {hasMultiplePhotos && (
+          <section className="grid grid-cols-3 gap-2" aria-label="Photos">
+            {photoList.map((url, idx) => (
+              <button
+                key={url}
+                type="button"
+                onClick={() => {
+                  setCurrentPhotoIdx(idx);
+                  document.querySelector('[data-profile-hero]')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }}
+                aria-label={`Show photo ${idx + 1}`}
+                className={`relative aspect-[4/5] rounded-2xl overflow-hidden bg-[#F2EEF7] border ${idx === currentPhotoIdx ? 'border-[#6555B8]' : 'border-[#DDD7E5]'}`}
+              >
+                <CardPhoto src={url} alt="" placeholder={placeholders[url] ?? null} className="object-cover" />
+              </button>
+            ))}
+          </section>
+        )}
       </div>
 
       {floatingDock}

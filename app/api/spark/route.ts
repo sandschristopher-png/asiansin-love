@@ -1,6 +1,8 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 import { sendPushToUser } from '@/lib/pushSender'
+import { isPlusProfile } from '@/lib/plus'
+import { FREE_DAILY_SPARKS, PLUS_DAILY_SPARK_FAIR_USE } from '@/lib/plusPlans'
 
 // POST { targetUserId, action?: 'spark' | 'toggle' }
 //   Writes public.sparks (sender_id = me, receiver_id = target); /favorites "You Sparked" reads
@@ -59,9 +61,20 @@ export async function POST(req: Request) {
       .eq('sender_id', user.id)
       .gte('created_at', twentyFourHoursAgo)
 
-    const DAILY_SPARK_CAP = 40
+    // Free: 20 Sparks / 24h. AIL+: unlimited (a fair-use ceiling only stops scripted abuse).
+    const { data: me } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle()
+    const plus = isPlusProfile(me)
+    const DAILY_SPARK_CAP = plus ? PLUS_DAILY_SPARK_FAIR_USE : FREE_DAILY_SPARKS
     if ((sparksLast24h ?? 0) >= DAILY_SPARK_CAP) {
-      return NextResponse.json({ error: 'Daily spark limit reached. Try again later.' }, { status: 429 })
+      return NextResponse.json(
+        {
+          error: plus
+            ? 'You have sent a lot of Sparks today. Take a break and try again later.'
+            : `You've used your ${FREE_DAILY_SPARKS} Sparks for today. AIL+ members get unlimited Sparks.`,
+          code: plus ? 'SPARK_FAIR_USE' : 'SPARK_LIMIT_FREE',
+        },
+        { status: 429 }
+      )
     }
 
     // Insert new spark

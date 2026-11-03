@@ -3,6 +3,7 @@ import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { createClient } from '@supabase/supabase-js';
 import { resolveCountry } from '@/lib/countries';
 import { getPresenceStatus } from '@/lib/presence';
+import { canonicalCountry, countryMatches } from '@/lib/constants/countries';
 
 /**
  * Only the columns the Discover grid / profile sheet mapping below reads. Never select('*') here:
@@ -22,6 +23,9 @@ const DISCOVER_COLUMNS = [
 
 /** Rhythm badge column from 20261106_reputation_rhythm.sql; the feed falls back without it. */
 const RHYTHM_COLUMNS = 'reply_pace';
+/** Travel notice, Day 1 badge and blur previews from 20261108_release_features.sql (optional). */
+const RELEASE_COLUMNS = 'is_travel_mode_active, visiting_city, visiting_country, visiting_dates, is_day_one, day_one_number, photo_placeholders';
+const OPTIONAL_COLUMN_RE = /reply_pace|is_travel_mode_active|visiting_|is_day_one|day_one_number|photo_placeholders/;
 
 export const dynamic = 'force-dynamic';
 
@@ -68,7 +72,7 @@ function normalizeInterestedInList(rawInterestedIn: unknown, rawSeekingGender?: 
   return Array.from(new Set(list));
 }
 
-export async function GET() {
+export async function GET(req: Request) {
   try {
     const sessionClient = await createServerSupabaseClient();
     const { data: { user } } = await sessionClient.auth.getUser();
@@ -93,7 +97,7 @@ export async function GET() {
       const [profRes, blocksRes, favsRes, sparksRes] = await Promise.all([
         serviceClient
           .from('profiles')
-          .select('id, gender, interested_in, seeking_gender, latitude, longitude, interests, languages, intentions, relationship_intent, onboarding_completed, avatar_url')
+          .select('id, gender, interested_in, seeking_gender, latitude, longitude, interests, languages, intentions, relationship_intent, onboarding_completed, avatar_url, is_plus')
           .eq('id', user.id)
           .maybeSingle(),
         serviceClient
@@ -153,10 +157,20 @@ export async function GET() {
       if (targetGender) q = q.or(GENDER_SPELLINGS[targetGender]);
       return q.order('created_at', { ascending: false }).limit(200);
     };
-    let { data: allRows, error } = await fetchFeed(DISCOVER_COLUMNS + ', ' + RHYTHM_COLUMNS);
+    // Newest optional columns first, then progressively older schemas.
+    let { data: allRows, error } = await fetchFeed(DISCOVER_COLUMNS + ', ' + RHYTHM_COLUMNS + ', ' + RELEASE_COLUMNS);
+    if (error && OPTIONAL_COLUMN_RE.test(error.message)) {
+      ({ data: allRows, error } = await fetchFeed(DISCOVER_COLUMNS + ', ' + RHYTHM_COLUMNS));
+    }
     if (error && /reply_pace/.test(error.message)) {
       ({ data: allRows, error } = await fetchFeed(DISCOVER_COLUMNS));
     }
+
+    // ?country= accepts a display name ("Myanmar") or an ISO-3166 alpha-2 code ("MM"), exact match.
+    // Cross-border country filters are an AIL+ feature; free members browse the full feed.
+    const countryParam = viewerProfile?.is_plus
+      ? (new URL(req.url).searchParams.get('country') || '').trim().slice(0, 60)
+      : '';
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
@@ -169,6 +183,7 @@ export async function GET() {
         if (alreadyLikedIds.has(row.id)) return false;
         if (targetGender && normalizeGenderValue(row.gender) !== targetGender) return false;
         if (row.hide_profile) return false; // Settings > Hide my profile
+        if (countryParam && !countryMatches(resolveCountry(row.city, row.country), countryParam)) return false;
 
         // Evict seed/test profiles by name
         const lowerName = String(row.username || row.display_name || row.full_name || row.name || '').toLowerCase().trim();
@@ -246,6 +261,17 @@ export async function GET() {
           created_at: row.created_at,
           voiceIntroUrl: row.voice_intro_url || null,
           replyPace: row.reply_pace || null,
+          travel:
+            row.is_travel_mode_active === true && row.is_plus && row.visiting_city
+              ? {
+                  city: String(row.visiting_city),
+                  country: row.visiting_country ? canonicalCountry(row.visiting_country) : null,
+                  dates: row.visiting_dates || null,
+                }
+              : null,
+          dayOneNumber: row.is_day_one === true && Number.isInteger(row.day_one_number) ? row.day_one_number : null,
+          photoPlaceholders:
+            row.photo_placeholders && typeof row.photo_placeholders === 'object' ? row.photo_placeholders : {},
         };
       });
 
@@ -264,6 +290,7 @@ export async function GET() {
             avatarUrl: viewerProfile.avatar_url ?? null,
             intent: viewerProfile.relationship_intent || viewerProfile.intentions || '',
             onboarding_completed: viewerProfile.onboarding_completed,
+            isPlus: Boolean(viewerProfile.is_plus),
           }
         : null,
       favoriteIds,

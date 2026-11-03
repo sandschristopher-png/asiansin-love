@@ -51,7 +51,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Missing recording' }, { status: 400 });
   }
   if (!Number.isFinite(durationMs) || durationMs < VOICE_INTRO_MIN_MS - 250 || durationMs > VOICE_INTRO_MAX_MS + 500) {
-    return NextResponse.json({ error: 'Your voice intro must be 5 to 10 seconds long.' }, { status: 400 });
+    return NextResponse.json({ error: `Your voice intro must be ${VOICE_INTRO_MIN_MS / 1000} to ${VOICE_INTRO_MAX_MS / 1000} seconds long.` }, { status: 400 });
   }
   if (audio.size === 0 || audio.size > VOICE_INTRO_MAX_BYTES) {
     return NextResponse.json({ error: 'Recording is too large.' }, { status: 400 });

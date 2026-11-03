@@ -22,6 +22,7 @@ import { INTENT_OPTIONS } from '@/lib/intents';
 import { resolveCountry } from '@/lib/countries';
 import { evaluateBioModeration } from '@/lib/moderation';
 import { saveBioAndRhythm } from '@/lib/profileApi';
+import { compressPhoto } from '@/lib/utils/imageCompressor';
 import { EMPTY_RHYTHM, RhythmSelectors, type RhythmValues } from '@/components/profile/RhythmBadges';
 
 /** In-progress answers survive a refresh or accidental navigation (cleared on completion). */
@@ -114,6 +115,7 @@ export default function OnboardingPage() {
   const [photos, setPhotos] = useState<string[]>([]);
   const [primaryIdx, setPrimaryIdx] = useState<number>(0);
   const [uploadingSlot, setUploadingSlot] = useState<number | null>(null);
+  const [photoPlaceholders, setPhotoPlaceholders] = useState<Record<string, string>>({});
 
   // Strict binary matching (Pairs / with.is): men meet women, women meet men.
   const selectGender = (val: string) => {
@@ -374,8 +376,9 @@ export default function OnboardingPage() {
       setErrorMessage('Please select a valid image (JPEG, PNG, or WebP).');
       return;
     }
-    if (file.size > 10 * 1024 * 1024) {
-      setErrorMessage('Photo exceeds the 10MB limit.');
+    // Raw camera files are downsampled in the browser before upload.
+    if (file.size > 25 * 1024 * 1024) {
+      setErrorMessage('Photo exceeds the 25MB limit.');
       return;
     }
 
@@ -383,6 +386,9 @@ export default function OnboardingPage() {
     setErrorMessage(null);
 
     try {
+      // 1440px WebP @ 83% + blurred preview, before it leaves the phone.
+      const compressed = await compressPhoto(file);
+      file = compressed.file;
       const mimeExtMap: Record<string, string> = {
         'image/jpeg': 'jpg',
         'image/png': 'png',
@@ -411,6 +417,10 @@ export default function OnboardingPage() {
         throw new Error('Failed to resolve public URL for uploaded photo.');
       }
 
+      if (compressed.placeholder) {
+        const ph = compressed.placeholder;
+        setPhotoPlaceholders((prev) => ({ ...prev, [photoUrl]: ph }));
+      }
       setPhotos((prev) => {
         const next = [...prev];
         if (slotIdx < next.length) {
@@ -492,6 +502,12 @@ export default function OnboardingPage() {
 
       if (error) {
         throw new Error(error.message);
+      }
+
+      // Blur previews (20261108_release_features.sql); optional, never blocks onboarding.
+      const placeholders = Object.fromEntries(orderedPhotos.filter((u) => photoPlaceholders[u]).map((u) => [u, photoPlaceholders[u]]));
+      if (Object.keys(placeholders).length > 0) {
+        await supabase.from('profiles').update({ photo_placeholders: placeholders }).eq('id', userId);
       }
 
       // Bio + rhythm badges go through the screened server route; onboarding only completes once

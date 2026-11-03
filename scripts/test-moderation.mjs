@@ -164,6 +164,51 @@ for (const [text, expected] of translateCases) {
   check(`translate ${expected ? 'shown' : 'hidden'}: ${text}`, needsTranslation(text) === expected);
 }
 
+// --- Bio rule screen (lib/moderation/textFilter.ts) ----------------------------------
+const { validateBio } = await loadLib('moderation/textFilter');
+const bioRuleCases = [
+  ['url', 'see https://mysite.com', 'link'],
+  ['bare domain', 'visit jenny.love for more', 'link'],
+  ['dot love', 'find me at jenny dot love', 'link'],
+  ['[dot]', 'jenny[dot]com', 'link'],
+  ['.ph domain', 'shop at mystore.ph', 'link'],
+  ['whatsapp', 'message me on WhatsApp', 'messenger'],
+  ['telegram', 'Telegram only', 'messenger'],
+  ['tg handle', 'tg: jenny88', 'messenger'],
+  ['line id', 'Line ID jen88', 'messenger'],
+  ['wechat', 'add my wechat', 'messenger'],
+  ['viber', 'viber me', 'messenger'],
+  ['ig', 'IG jenny.travels', 'messenger'],
+  ['fb', 'fb jenny cruz', 'messenger'],
+  ['phone 7 digits', 'call 555 1234', 'phone'],
+  ['+63', 'text +63 917', 'phone'],
+  ['+66', '+66 81 234 5678', 'phone'],
+  ['+1', '+1 415 555 0100', 'phone'],
+  ['email', 'jenny.cruz@gmail.com', 'email'],
+  ['gcash', 'send gcash pls', 'financial'],
+  ['paypal', 'PayPal accepted', 'financial'],
+  ['crypto', 'into crypto trading', 'financial'],
+  ['usdt', 'USDT', 'financial'],
+  ['allowance', 'looking for allowance', 'financial'],
+  ['sponsor', 'need a sponsor', 'financial'],
+];
+for (const [name, text, category] of bioRuleCases) {
+  const v = validateBio(text);
+  check(`bio rule blocks ${name}`, !v.ok && v.category === category, JSON.stringify(v));
+}
+const bioRuleClean = [
+  'I love cooking adobo for my family and travelling around Cebu.',
+  'Nurse from Davao, 28, love the beach and karaoke nights.',
+  'Looking for a kind, honest man who loves dogs. I am online most evenings.',
+  'Born in 1995. Working in Bangkok since 2019.',
+  'I have a Ph.D in biology and I enjoy line dancing.',
+  '',
+];
+for (const text of bioRuleClean) {
+  const v = validateBio(text);
+  check(`bio rule allows: ${text.slice(0, 40)}`, v.ok, JSON.stringify(v));
+}
+
 const total = passed + failures.length;
 for (const f of failures) console.error('  FAIL', f);
 console.log(`moderation: ${passed}/${total} passed (${((passed / total) * 100).toFixed(1)}%)`);

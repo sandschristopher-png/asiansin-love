@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server';
+import { createClient as createServiceClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
 
 export async function GET(request: Request) {
@@ -33,12 +34,35 @@ export async function GET(request: Request) {
       if (user && !isRecovery) {
         const { data: profile } = await supabase
           .from('profiles')
-          .select('onboarding_completed')
+          .select('onboarding_completed, display_name, full_name')
           .eq('id', user.id)
           .maybeSingle();
 
-        if (!profile || !profile.onboarding_completed) {
+        if (!profile || profile.onboarding_completed !== true) {
           destination = '/onboarding';
+          // Google fills full_name / name with the account's real name, and the new-user trigger
+          // copies it into the profile. Never keep it as a public name: onboarding Step 1 asks for
+          // the member's own handle instead.
+          const googleNames = [user.user_metadata?.full_name, user.user_metadata?.name]
+            .filter((n): n is string => typeof n === 'string' && n.trim().length > 0)
+            .map((n) => n.trim().toLowerCase());
+          const leaks = (v: unknown) => typeof v === 'string' && googleNames.includes(v.trim().toLowerCase());
+          if (profile && googleNames.length > 0 && (leaks(profile.display_name) || leaks(profile.full_name))) {
+            const admin = createServiceClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, {
+              auth: { persistSession: false },
+            });
+            const { error: scrubErr } = await admin
+              .from('profiles')
+              .update({
+                ...(leaks(profile.display_name) ? { display_name: '' } : {}),
+                ...(leaks(profile.full_name) ? { full_name: '' } : {}),
+              })
+              .eq('id', user.id);
+            if (scrubErr) console.warn('[auth/callback] could not clear OAuth name:', scrubErr.message);
+          }
+        } else if (destination === '/onboarding') {
+          // Already onboarded (e.g. "Continue with Google" on /login): straight to Discover.
+          destination = '/discover';
         }
       }
 

@@ -3,23 +3,26 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Loader2, X, Zap } from 'lucide-react';
+import { PLUS_PLANS, type PlusPlanId } from '@/lib/plusPlans';
 
-type PlanId = '1m' | '3m' | '12m';
+type PlanId = PlusPlanId;
 
-/** Mirrors the Stripe prices used by /api/plus/checkout and the /plus page. */
-const PLANS: { id: PlanId; label: string; perMonth: string; note: string; badge?: string }[] = [
-  { id: '1m', label: '1 Month', perMonth: '$14.99/mo', note: 'Billed monthly' },
-  { id: '3m', label: '3 Months', perMonth: '$11.99/mo', note: 'Billed $35.97', badge: 'Most Popular' },
-  { id: '12m', label: '12 Months', perMonth: '$7.99/mo', note: 'Billed $95.88', badge: 'Best Value' },
-];
+/** Mirrors the Stripe prices used by /api/plus/checkout and the /plus page (lib/plusPlans.ts). */
+const PLANS: { id: PlanId; label: string; perMonth: string; note: string; badge?: string }[] = PLUS_PLANS.map((p) => ({
+  id: p.id,
+  label: p.label,
+  perMonth: `${p.perMonth}/mo`,
+  note: p.billingNote,
+  badge: p.badge,
+}));
 
 const PERKS = [
   { emoji: '🕶️', title: 'Private Mode', text: 'Browse stealthily and only be visible to profiles you spark.' },
   { emoji: '👀', title: 'Visitor History', text: 'Unblur everyone who viewed your profile.' },
   { emoji: '✈️', title: 'Passport Roaming', text: 'Browse and spark singles across Manila, Cebu, Bangkok, and Phnom Penh.' },
-  // Accurate to the app: free members can start 5 new conversations a day (Sparks are capped at
-  // 40/day for everyone and Translate is free), so the unlimited perk is new conversations.
+  // Accurate to the app: free members start 5 new conversations and send 20 Sparks a day.
   { emoji: '⚡', title: 'Unlimited introductions', text: 'Start as many new conversations a day as you like (free: 5).' },
+  { emoji: '💜', title: 'Unlimited Sparks', text: 'Spark everyone you like (free: 20 a day).' },
 ];
 
 /**

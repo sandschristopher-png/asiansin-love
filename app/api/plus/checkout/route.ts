@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { DEFAULT_PLUS_PLAN, isPlusPlanId, type PlusPlanId } from '@/lib/plusPlans';
 import Stripe from 'stripe';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 
 export const runtime = 'nodejs';
 
-const PLAN_PRICES: Record<'12m' | '3m' | '1m', string | undefined> = {
-  '12m': process.env.STRIPE_PLUS_PRICE_12M ?? process.env.STRIPE_PRICE_ANNUAL,
+/** Amounts live in lib/plusPlans.ts ($14.99 / $29.99 per 3 months / $47.99 per 6 months). */
+const PLAN_PRICES: Record<PlusPlanId, string | undefined> = {
+  '6m': process.env.STRIPE_PLUS_PRICE_6M,
   '3m': process.env.STRIPE_PLUS_PRICE_3M,
   '1m': process.env.STRIPE_PLUS_PRICE_1M ?? process.env.STRIPE_PRICE_MONTHLY,
 };
@@ -41,12 +43,12 @@ export async function POST(req: NextRequest) {
   }
 
   // Parse planId and optional returnPath from request body (relative paths only)
-  let planId: '12m' | '3m' | '1m' = '12m';
+  let planId: PlusPlanId = DEFAULT_PLUS_PLAN;
   let returnPath = '/plus';
   try {
     const body = await req.json();
     if (body?.planId) {
-      if (body.planId !== '12m' && body.planId !== '3m' && body.planId !== '1m') {
+      if (!isPlusPlanId(body.planId)) {
         return NextResponse.json({ error: 'Invalid plan selected.' }, { status: 400 });
       }
       planId = body.planId;

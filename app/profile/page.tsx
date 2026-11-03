@@ -16,7 +16,9 @@ import {
   Loader2,
   Navigation,
   Clock,
-  ShieldAlert
+  ShieldAlert,
+  Mic,
+  Trash2
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { hardSignOut } from '@/lib/hardSignOut';
@@ -24,7 +26,12 @@ import { INTENT_OPTIONS, normalizeIntent, intentLabel } from '@/lib/intents';
 import { PlusBadge } from '@/components/PlusBadge';
 import RepScoreCard from '@/components/RepScoreCard';
 import { ProfileHighlightsEditorRow } from '@/components/ProfileHighlightsEditorRow';
-import { VoiceIntroRecorder } from '@/components/VoiceIntroRecorder';
+import { VoicePlayer } from '@/components/VoicePlayer';
+import { VoiceRecordModal } from '@/components/VoiceRecordModal';
+import { VisitingBadge, type TravelNotice } from '@/components/VisitingBadge';
+import { DayOneBadge, NewMemberPill, VerifiedLocationBadge } from '@/components/profile/TrustBadges';
+import { isTrustedVoiceIntroUrl } from '@/lib/audio';
+import { BIO_REJECTION_MESSAGE, validateBio } from '@/lib/moderation/textFilter';
 import { RhythmPill, RhythmSelectors, rhythmFromRow, type RhythmValues } from '@/components/profile/RhythmBadges';
 import { saveProfileFields } from '@/lib/profileApi';
 import { useActionToast } from '@/components/ActionToast';
@@ -138,6 +145,7 @@ export default function MyProfilePage() {
   const [bio, setBio] = useState<string>(() => initialProfile?.bio ?? '');
   const [rhythm, setRhythm] = useState<RhythmValues>(() => rhythmFromRow(initialProfile));
   const [saveError, setSaveError] = useState<string | null>(null);
+  const [bioRejected, setBioRejected] = useState(false);
   const [lookingFor, setLookingFor] = useState<string>(() => initialProfile?.lookingFor ?? '');
   const [interests, setInterests] = useState<string[]>(() => initialProfile?.interests ?? []);
 
@@ -158,6 +166,10 @@ export default function MyProfilePage() {
   const [height, setHeight] = useState<string>(() => initialProfile?.height ?? '');
   const [weight, setWeight] = useState<string>(() => initialProfile?.weight ?? '');
   const [voiceIntroUrl, setVoiceIntroUrl] = useState<string | null>(null);
+  const [voiceModalOpen, setVoiceModalOpen] = useState(false);
+  const [dayOneNumber, setDayOneNumber] = useState<number | null>(() => initialProfile?.dayOneNumber ?? null);
+  const [createdAt, setCreatedAt] = useState<string | null>(() => initialProfile?.createdAt ?? null);
+  const [travel, setTravel] = useState<TravelNotice | null>(() => initialProfile?.travel ?? null);
   const [drinking, setDrinking] = useState<string>(() => initialProfile?.drinking ?? 'No');
   const [smoking, setSmoking] = useState<string>(() => initialProfile?.smoking ?? 'No');
   const [langInput, setLangInput] = useState('');
@@ -225,6 +237,14 @@ export default function MyProfilePage() {
         }
         if (data.weight) setWeight(data.weight);
         setVoiceIntroUrl(data.voice_intro_url ?? null);
+        const nextDayOne: number | null = data.is_day_one && Number.isInteger(data.day_one_number) ? data.day_one_number : null;
+        const nextTravel: TravelNotice | null =
+          data.is_travel_mode_active && data.visiting_city
+            ? { city: data.visiting_city, country: data.visiting_country ?? null, dates: data.visiting_dates ?? null }
+            : null;
+        setDayOneNumber(nextDayOne);
+        setCreatedAt(data.created_at ?? null);
+        setTravel(nextTravel);
         if (data.drinking) setDrinking(data.drinking);
         if (data.smoking) setSmoking(data.smoking);
         if (data.avatar_url) setAvatarUrl(data.avatar_url);
@@ -269,6 +289,9 @@ export default function MyProfilePage() {
             weight: data.weight || '',
             drinking: data.drinking || 'No',
             smoking: data.smoking || 'No',
+            dayOneNumber: nextDayOne,
+            createdAt: data.created_at ?? null,
+            travel: nextTravel,
           });
       }
       setLoading(false);
@@ -338,9 +361,27 @@ export default function MyProfilePage() {
     }
   };
 
+  const removeVoiceIntro = async () => {
+    try {
+      const res = await fetch('/api/profile/voice-intro', { method: 'DELETE' });
+      if (!res.ok) throw new Error();
+      setVoiceIntroUrl(null);
+      showActionToast('Voice intro removed', 'check');
+    } catch {
+      showActionToast('Could not remove your voice intro', 'info');
+    }
+  };
+
   const handleSave = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
+
+    if (!validateBio(bio).ok) {
+      setBioRejected(true);
+      showActionToast(BIO_REJECTION_MESSAGE, 'info');
+      return;
+    }
+    setBioRejected(false);
 
     const payload: Record<string, unknown> = {
       display_name: name || username,
@@ -381,6 +422,9 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
       setIsEditing(false);
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 2500);
+    } else if (result.field === 'bio') {
+      setBioRejected(true);
+      showActionToast(BIO_REJECTION_MESSAGE, 'info');
     } else {
       setSaveError(result.error);
     }
@@ -419,6 +463,113 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
           <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center gap-2">
             <Check className="w-4 h-4 text-emerald-600" />
             <span>Profile changes saved!</span>
+          </div>
+        )}
+
+        {/* Framed 4:5 Portrait Card */}
+        <div className="relative aspect-[4/5] w-full rounded-3xl overflow-hidden bg-white border border-[#DDD7E5] flex items-center justify-center select-none shadow-xs">
+          {currentImg ? (
+            <div
+              className="w-full h-full cursor-pointer"
+              onClick={(e) => {
+                if (justSwiped.current) return;
+                const rect = e.currentTarget.getBoundingClientRect();
+                const isLeft = e.clientX - rect.left < rect.width / 2;
+                setCurrentPhotoIdx((prev) =>
+                  isLeft
+                    ? (prev - 1 + photoList.length) % Math.max(photoList.length, 1)
+                    : (prev + 1) % Math.max(photoList.length, 1)
+                );
+              }}
+              onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
+              onTouchEnd={(e) => {
+                const startX = touchStartX.current;
+                if (startX == null) return;
+                const dx = e.changedTouches[0].clientX - startX;
+                if (Math.abs(dx) > 40) {
+                  justSwiped.current = true;
+                  setTimeout(() => { justSwiped.current = false; }, 400);
+                  setCurrentPhotoIdx((prev) =>
+                    dx > 0
+                      ? (prev - 1 + photoList.length) % Math.max(photoList.length, 1)
+                      : (prev + 1) % Math.max(photoList.length, 1)
+                  );
+                }
+                touchStartX.current = null;
+              }}
+            >
+              <img src={currentImg} alt={username} className="w-full h-full object-cover pointer-events-none" draggable={false} />
+            </div>
+          ) : (
+            <Link href="/profile/edit" className="flex flex-col items-center justify-center text-[#6555B8] p-6 text-center">
+              <div className="w-14 h-14 rounded-2xl bg-[#F3EFFC] flex items-center justify-center mb-2">
+                <Camera className="w-7 h-7" />
+              </div>
+              <span className="text-sm font-semibold text-[#1C1924]">Add Your Profile Photos</span>
+              <span className="text-xs text-[#6C637B] mt-0.5">Upload up to 6 photos</span>
+            </Link>
+          )}
+
+          <div className="absolute top-4 left-4 z-10">
+            <NewMemberPill createdAt={createdAt} />
+          </div>
+          <div className="absolute top-4 right-4 z-10" title="Online">
+            <span className="presence-dot h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white/90 shadow block" />
+          </div>
+
+          {/* Photo Manager Pill */}
+          <Link
+            href="/profile/edit"
+            className="absolute bottom-3.5 right-3.5 z-10 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/60 text-white text-xs font-medium hover:bg-black/70 transition shadow-sm"
+          >
+            <Camera className="w-3.5 h-3.5 text-white/90" />
+            <span>{photoList.length > 0 ? photoList.length : 'Add'}</span>
+          </Link>
+
+          {hasMultiple && (
+            <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-1.5 z-10">
+              {photoList.map((_, idx) => (
+                <button
+                  key={idx}
+                  type="button"
+                  onClick={() => setCurrentPhotoIdx(idx)}
+                  className={'h-1.5 rounded-full transition-all ' + (idx === currentPhotoIdx ? 'w-6 bg-white' : 'w-1.5 bg-white/50')}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+
+        {/* Photo gallery (edit mode): delete badges, 1-photo minimum */}
+        {isEditing && photoList.length > 0 && (
+          <div className="space-y-1.5">
+            <div className="flex gap-2 overflow-x-auto no-scrollbar [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pb-1">
+              {photoList.map((url, idx) => (
+                <div key={url} className="relative w-20 aspect-[3/4] shrink-0 rounded-xl overflow-hidden bg-slate-100 border border-[#ECE8F4]">
+                  <img src={url} alt={idx === 0 ? 'Main photo' : `Photo ${idx + 1}`} className="w-full h-full object-cover" />
+                  {idx === 0 && (
+                    <span className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded-full bg-[#6555B8]/90 text-white text-[9px] font-semibold">
+                      Main
+                    </span>
+                  )}
+                  {photoList.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => handleDeletePhoto(url)}
+                      disabled={deletingPhoto !== null}
+                      aria-label={`Delete photo ${idx + 1}`}
+                      className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/60 backdrop-blur-sm text-white flex items-center justify-center hover:bg-red-600 transition-colors z-10 disabled:opacity-60"
+                    >
+                      {deletingPhoto === url ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <X className="w-3.5 h-3.5" />}
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+            {photoList.length <= 1 && (
+              <p className="text-[11px] text-[#8C849B]">Profiles require at least one photo. Add another to replace this one.</p>
+            )}
+            {photoNotice && <p role="alert" className="text-[11px] font-semibold text-rose-600">{photoNotice}</p>}
           </div>
         )}
 
@@ -485,11 +636,12 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
             {locError && <p className="text-[11px] text-rose-600 text-center">{locError}</p>}
           </div>
         ) : (
-          <div className="flex items-center justify-between gap-2 px-1">
+          <div className="space-y-2 px-1">
+          <div className="flex items-center justify-between gap-2">
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <h2
-                  className="text-xl sm:text-[22px] font-bold text-[#1C1924] tracking-tight truncate"
+                  className="text-2xl font-black text-[#2D264B] tracking-tight truncate"
                   style={{ fontFamily: 'var(--font-brand)' }}
                 >
                   {username.replace(/^@/, '')}{age ? ', ' + age : ''}
@@ -506,14 +658,6 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
                 <p className="text-xs font-medium text-[#6C637B] truncate">
                   {location || 'Location not set'}
                 </p>
-                {locationSource === 'gps_verified' && (
-                  <span
-                    title={locationVerifiedAt ? 'Location confirmed ' + formatVerifiedDate(locationVerifiedAt) : 'Location confirmed'}
-                    className="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-[10px] font-semibold text-emerald-700"
-                  >
-                    Location
-                  </span>
-                )}
               </div>
             </div>
 
@@ -523,6 +667,22 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
                 <span>Pending</span>
               </div>
             )}
+          </div>
+
+          {/* Trust row: Verified Location + Day 1 cohort */}
+          {(locationSource === 'gps_verified' || dayOneNumber) && (
+            <div className="flex items-center gap-2 flex-wrap">
+              {locationSource === 'gps_verified' && (
+                <VerifiedLocationBadge
+                  title={locationVerifiedAt ? 'Location confirmed ' + formatVerifiedDate(locationVerifiedAt) : 'Location confirmed'}
+                />
+              )}
+              <DayOneBadge number={dayOneNumber} />
+            </div>
+          )}
+
+          {/* Upcoming travel notice (AIL+) */}
+          <VisitingBadge travel={travel} />
           </div>
         )}
 
@@ -536,116 +696,57 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
               <ShieldAlert className="w-4 h-4 text-[#6555B8] shrink-0" />
               <div>
                 <p className="text-xs font-semibold text-[#1C1924]">Verify your profile</p>
-                <p className="text-[11px] text-[#6C637B]">Confirm identity to unlock full match features</p>
+                <p className="text-[11px] text-[#6C637B]">Free for every member. Verified profiles get more replies.</p>
               </div>
             </div>
             <span className="text-xs font-semibold text-[#6555B8]">Verify &rarr;</span>
           </Link>
         )}
 
-        {/* Framed 4:5 Portrait Card */}
-        <div className="relative aspect-[4/5] w-full rounded-3xl overflow-hidden bg-white border border-[#DDD7E5] flex items-center justify-center select-none shadow-xs">
-          {currentImg ? (
-            <div
-              className="w-full h-full cursor-pointer"
-              onClick={(e) => {
-                if (justSwiped.current) return;
-                const rect = e.currentTarget.getBoundingClientRect();
-                const isLeft = e.clientX - rect.left < rect.width / 2;
-                setCurrentPhotoIdx((prev) =>
-                  isLeft
-                    ? (prev - 1 + photoList.length) % Math.max(photoList.length, 1)
-                    : (prev + 1) % Math.max(photoList.length, 1)
-                );
-              }}
-              onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
-              onTouchEnd={(e) => {
-                const startX = touchStartX.current;
-                if (startX == null) return;
-                const dx = e.changedTouches[0].clientX - startX;
-                if (Math.abs(dx) > 40) {
-                  justSwiped.current = true;
-                  setTimeout(() => { justSwiped.current = false; }, 400);
-                  setCurrentPhotoIdx((prev) =>
-                    dx > 0
-                      ? (prev - 1 + photoList.length) % Math.max(photoList.length, 1)
-                      : (prev + 1) % Math.max(photoList.length, 1)
-                  );
-                }
-                touchStartX.current = null;
-              }}
+        {/* VOICE INTRO */}
+        {isTrustedVoiceIntroUrl(voiceIntroUrl) ? (
+          <VoicePlayer src={voiceIntroUrl} title="Your voice intro" subtitle="Members hear it only when they tap play">
+            <div className="flex flex-col gap-1.5 shrink-0">
+              <button
+                type="button"
+                onClick={() => setVoiceModalOpen(true)}
+                aria-label="Re-record voice intro"
+                className="w-8 h-8 rounded-full border border-[#2D264B]/15 bg-white text-[#6555B8] flex items-center justify-center"
+              >
+                <Mic className="w-3.5 h-3.5" />
+              </button>
+              <button
+                type="button"
+                onClick={removeVoiceIntro}
+                aria-label="Remove voice intro"
+                className="w-8 h-8 rounded-full border border-[#2D264B]/15 bg-white text-[#8C849B] hover:text-rose-600 flex items-center justify-center"
+              >
+                <Trash2 className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </VoicePlayer>
+        ) : (
+          <div className="p-5 rounded-3xl border-2 border-dashed border-[#6555B8]/30 bg-[#F3EFFC]/50 text-center space-y-2">
+            <div className="w-11 h-11 mx-auto rounded-2xl bg-[#6555B8]/10 text-[#6555B8] flex items-center justify-center">
+              <Mic className="w-5 h-5" />
+            </div>
+            <h3 className="text-sm font-bold text-[#2D264B]">Add a 20-Second Voice Intro</h3>
+            <p className="text-xs text-[#6C637B] leading-relaxed">
+              Profiles with a voice intro receive 3x more sparks. Say hello and introduce yourself.
+            </p>
+            <button
+              type="button"
+              onClick={() => setVoiceModalOpen(true)}
+              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-[#6555B8] text-white text-xs font-semibold shadow-sm active:scale-95 transition"
             >
-              <img src={currentImg} alt={username} className="w-full h-full object-cover pointer-events-none" draggable={false} />
-            </div>
-          ) : (
-            <Link href="/profile/edit" className="flex flex-col items-center justify-center text-[#6555B8] p-6 text-center">
-              <div className="w-14 h-14 rounded-2xl bg-[#F3EFFC] flex items-center justify-center mb-2">
-                <Camera className="w-7 h-7" />
-              </div>
-              <span className="text-sm font-semibold text-[#1C1924]">Add Your Profile Photos</span>
-              <span className="text-xs text-[#6C637B] mt-0.5">Upload up to 6 photos</span>
-            </Link>
-          )}
-
-          <div className="absolute top-4 left-4 z-10">
-            <span className="presence-dot h-2.5 w-2.5 rounded-full bg-emerald-500 ring-2 ring-white/90 shadow block" />
-          </div>
-
-          {/* Photo Manager Pill */}
-          <Link
-            href="/profile/edit"
-            className="absolute bottom-3.5 right-3.5 z-10 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/55 backdrop-blur-md text-white text-xs font-medium hover:bg-black/70 transition shadow-sm"
-          >
-            <Camera className="w-3.5 h-3.5 text-white/90" />
-            <span>{photoList.length > 0 ? photoList.length : 'Add'}</span>
-          </Link>
-
-          {hasMultiple && (
-            <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-1.5 z-10">
-              {photoList.map((_, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => setCurrentPhotoIdx(idx)}
-                  className={'h-1.5 rounded-full transition-all ' + (idx === currentPhotoIdx ? 'w-6 bg-white' : 'w-1.5 bg-white/50')}
-                />
-              ))}
-            </div>
-          )}
-        </div>
-
-        {/* Photo gallery (edit mode): delete badges, 1-photo minimum */}
-        {isEditing && photoList.length > 0 && (
-          <div className="space-y-1.5">
-            <div className="flex gap-2 overflow-x-auto no-scrollbar [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pb-1">
-              {photoList.map((url, idx) => (
-                <div key={url} className="relative w-20 aspect-[3/4] shrink-0 rounded-xl overflow-hidden bg-slate-100 border border-[#ECE8F4]">
-                  <img src={url} alt={idx === 0 ? 'Main photo' : `Photo ${idx + 1}`} className="w-full h-full object-cover" />
-                  {idx === 0 && (
-                    <span className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded-full bg-[#6555B8]/90 text-white text-[9px] font-semibold">
-                      Main
-                    </span>
-                  )}
-                  {photoList.length > 1 && (
-                    <button
-                      type="button"
-                      onClick={() => handleDeletePhoto(url)}
-                      disabled={deletingPhoto !== null}
-                      aria-label={`Delete photo ${idx + 1}`}
-                      className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/60 backdrop-blur-sm text-white flex items-center justify-center hover:bg-red-600 transition-colors z-10 disabled:opacity-60"
-                    >
-                      {deletingPhoto === url ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <X className="w-3.5 h-3.5" />}
-                    </button>
-                  )}
-                </div>
-              ))}
-            </div>
-            {photoList.length <= 1 && (
-              <p className="text-[11px] text-[#8C849B]">Profiles require at least one photo. Add another to replace this one.</p>
-            )}
-            {photoNotice && <p role="alert" className="text-[11px] font-semibold text-rose-600">{photoNotice}</p>}
+              <Mic className="w-3.5 h-3.5" /> Record Voice Intro
+            </button>
           </div>
         )}
+        <VoiceRecordModal open={voiceModalOpen} onClose={() => setVoiceModalOpen(false)} onSaved={setVoiceIntroUrl} />
+
+        {/* 2. REPUTATION */}
+        <RepScoreCard score={repScore ?? 100} />
 
         {/* Edit / Save Action Bar */}
           <div className="h-12 w-full flex items-stretch gap-2.5">
@@ -680,11 +781,6 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
             )}
           </div>
 
-        {/* 2. REPUTATION */}
-        <RepScoreCard score={repScore ?? 100} />
-
-        {/* VOICE INTRO */}
-        <VoiceIntroRecorder initialUrl={voiceIntroUrl} onChange={setVoiceIntroUrl} />
 
         {/* ABOUT ME */}
         <div className="p-5 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-2.5">
@@ -700,13 +796,26 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
             )}
           </div>
           {isEditing ? (
+            <>
             <textarea
               value={bio}
-              onChange={(e) => setBio(e.target.value.slice(0, 500))}
+              onChange={(e) => {
+                setBio(e.target.value.slice(0, 500));
+                if (bioRejected && validateBio(e.target.value).ok) setBioRejected(false);
+              }}
               rows={4}
+              aria-invalid={bioRejected}
               placeholder="Share your passions, daily life, and what makes you smile..."
-              className="w-full p-3.5 rounded-2xl bg-[#F8F7FA] border border-[#DDD7E5] text-xs sm:text-sm text-[#1C1924] leading-relaxed placeholder-[#8C849B] focus:outline-none focus:bg-white focus:border-[#6555B8] resize-none"
+              className={`w-full p-3.5 rounded-2xl bg-[#F8F7FA] border text-base sm:text-sm text-[#1C1924] leading-relaxed placeholder-[#8C849B] focus:outline-none focus:bg-white resize-none ${
+                bioRejected ? 'border-amber-500 ring-2 ring-amber-500/20' : 'border-[#DDD7E5] focus:border-[#6555B8]'
+              }`}
             />
+            {bioRejected && (
+              <p className="text-[11px] font-medium text-amber-700">
+                Remove links, social handles, phone numbers, emails and payment apps. You can trade contact details in chat once you have matched.
+              </p>
+            )}
+            </>
           ) : (
             <p className="text-xs sm:text-sm text-[#1C1924] leading-relaxed">
               {bio || <span className="text-[#8C849B] italic">No bio written yet.</span>}

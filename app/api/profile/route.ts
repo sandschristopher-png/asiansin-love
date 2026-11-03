@@ -11,8 +11,11 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { createClient as createSessionClient } from '@/lib/supabase/server';
 import { evaluateBioModeration } from '@/lib/moderation';
+import { BIO_REJECTION_MESSAGE, validateBio } from '@/lib/moderation/textFilter';
 import { isRhythmValue, RHYTHM_FIELDS, type RhythmField } from '@/lib/rhythm';
 import { resolveCountry } from '@/lib/countries';
+import { canonicalCountry } from '@/lib/constants/countries';
+import { isPlusProfile } from '@/lib/plus';
 
 export const runtime = 'nodejs';
 
@@ -45,7 +48,7 @@ const TEXT_FIELDS: Record<string, { max: number; screen?: boolean; label: string
 
 const RHYTHM_COLUMN_RE = /reply_pace|relocation_readiness|timeline_intent/;
 
-type Updates = Record<string, string | number | string[] | null>;
+type Updates = Record<string, string | number | boolean | string[] | null>;
 const bad = (error: string, field: string, status = 400) => NextResponse.json({ error, field }, { status });
 
 export async function PATCH(req: Request) {
@@ -69,6 +72,8 @@ export async function PATCH(req: Request) {
     if (typeof body.bio !== 'string') return bad('Bio must be text.', 'bio');
     const bio = body.bio.trim();
     if (bio.length > MAX_BIO_CHARS) return bad(`Bio can be up to ${MAX_BIO_CHARS} characters.`, 'bio');
+    const rules = validateBio(bio);
+    if (!rules.ok) return NextResponse.json({ error: BIO_REJECTION_MESSAGE, field: 'bio', code: 'bio_rule', category: rules.category }, { status: 400 });
     const verdict = evaluateBioModeration(bio);
     if (!verdict.ok) return bad(verdict.reason || 'Please revise your bio.', 'bio', 422);
     updates.bio = bio;
@@ -133,13 +138,45 @@ export async function PATCH(req: Request) {
     updates[key] = v as string | null;
   }
 
-  if (Object.keys(updates).length === 0) {
-    return NextResponse.json({ success: true });
-  }
-
   const service = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, {
     auth: { persistSession: false },
   });
+
+  // "Visiting:" travel notice (AIL+). Columns from 20261108_release_features.sql.
+  const travelKeys = ['visiting_city', 'visiting_country', 'visiting_dates', 'is_travel_mode_active'];
+  if (travelKeys.some((k) => k in body)) {
+    for (const [key, max, label] of [
+      ['visiting_city', 80, 'Destination city'],
+      ['visiting_country', 80, 'Destination country'],
+      ['visiting_dates', 40, 'Travel dates'],
+    ] as const) {
+      if (!(key in body)) continue;
+      const v = body[key];
+      if (v === null || v === '') {
+        updates[key] = null;
+        continue;
+      }
+      if (typeof v !== 'string') return bad(`${label} must be text.`, key);
+      const text = v.trim();
+      if (text.length > max) return bad(`${label} can be up to ${max} characters.`, key);
+      if (!validateBio(text).ok) return bad(`${label}: ${BIO_REJECTION_MESSAGE}`, key);
+      updates[key] = key === 'visiting_country' ? canonicalCountry(text) : text;
+    }
+    if ('is_travel_mode_active' in body) {
+      const on = body.is_travel_mode_active === true;
+      if (on) {
+        const { data: me } = await service.from('profiles').select('*').eq('id', userId).maybeSingle();
+        if (!isPlusProfile(me)) return bad('Travel notice is an AIL+ feature.', 'is_travel_mode_active', 403);
+        const city = 'visiting_city' in updates ? updates.visiting_city : me?.visiting_city;
+        if (!city) return bad('Add the city you are visiting first.', 'visiting_city');
+      }
+      updates.is_travel_mode_active = on;
+    }
+  }
+
+  if (Object.keys(updates).length === 0) {
+    return NextResponse.json({ success: true });
+  }
   const save = (fields: Updates) =>
     service.from('profiles').update({ ...fields, updated_at: new Date().toISOString() }).eq('id', userId).select('id');
 
@@ -158,6 +195,9 @@ export async function PATCH(req: Request) {
     }
   }
 
+  if (error && /visiting_|is_travel_mode_active/.test(error.message)) {
+    return NextResponse.json({ error: 'Travel notice is not available yet. Please try again later.' }, { status: 503 });
+  }
   if (error) {
     console.error('[api/profile] update failed:', error.message);
     return NextResponse.json({ error: 'Could not save your profile.' }, { status: 500 });

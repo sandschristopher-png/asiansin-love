@@ -26,6 +26,12 @@ export const COUNTRY_NAMES: Record<string, string> = {
   AU: 'Australia',
   GB: 'United Kingdom',
   NZ: 'New Zealand',
+  TL: 'Timor-Leste',
+  DE: 'Germany',
+  NL: 'Netherlands',
+  SE: 'Sweden',
+  NO: 'Norway',
+  FR: 'France',
 };
 
 const ALIASES: Record<string, string> = {

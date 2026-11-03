@@ -3,7 +3,6 @@
 import React from 'react';
 import Link from 'next/link';
 import { HelpCircle } from 'lucide-react';
-import { RepBadge } from '@/components/profile/RhythmBadges';
 
 export interface RepScoreCardProps {
   score?: number;
@@ -27,8 +26,6 @@ export function RepScoreCard({
         <div className="flex-1 min-w-0 pr-3">
           <h3 className="text-sm font-semibold tracking-tight text-[#1C1924]">Reputation Score</h3>
           <p className="text-xs text-[#756D82]">Community trust & conduct health</p>
-          {/* Trust standing: "9X% Rep" / "Fair Rep" / "Low Rep / Under Review" */}
-          <RepBadge score={clampedScore} className="mt-1.5" />
         </div>
 
         <div className="shrink-0 flex items-center justify-center gap-0.5 px-3 py-1.5 rounded-xl bg-[#6555B8]/10 text-[#6555B8] font-bold text-sm whitespace-nowrap min-w-fit">

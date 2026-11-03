@@ -10,6 +10,9 @@ import { resolveCountry } from '@/lib/countries';
 import { EMPTY_RHYTHM, RhythmSelectors, rhythmFromRow, type RhythmValues } from '@/components/profile/RhythmBadges';
 import { saveProfileFields } from '@/lib/profileApi';
 import { useActionToast } from '@/components/ActionToast';
+import { compressPhoto } from '@/lib/utils/imageCompressor';
+import { BIO_REJECTION_MESSAGE, validateBio } from '@/lib/moderation/textFilter';
+import { isPlusProfile } from '@/lib/plus';
 
 
 
@@ -59,6 +62,10 @@ export default function EditProfilePage() {
 
   const [rhythm, setRhythm] = useState<RhythmValues>(EMPTY_RHYTHM);
   const showActionToast = useActionToast();
+  const [bioRejected, setBioRejected] = useState(false);
+  // "Visiting:" travel notice (AIL+)
+  const [isPlus, setIsPlus] = useState(false);
+  const [travel, setTravel] = useState({ active: false, city: '', country: '', dates: '' });
   const [formData, setFormData] = useState({
     full_name: '',
     age: '',
@@ -96,6 +103,13 @@ export default function EditProfilePage() {
 
       if (data) {
         setRhythm(rhythmFromRow(data));
+        setIsPlus(isPlusProfile(data));
+        setTravel({
+          active: data.is_travel_mode_active === true,
+          city: data.visiting_city || '',
+          country: data.visiting_country || '',
+          dates: data.visiting_dates || '',
+        });
         setFormData({
           full_name: data.display_name || data.full_name || '',
           age: data.age ? String(data.age) : '',
@@ -198,10 +212,13 @@ export default function EditProfilePage() {
     setStatusMsg(null);
 
     try {
+      // 1440px WebP @ 83% + blurred preview, before it leaves the phone.
+      const compressed = await compressPhoto(file);
       const formData = new FormData();
-      formData.append('file', file);
+      formData.append('file', compressed.file);
+      if (compressed.placeholder) formData.append('placeholder', compressed.placeholder);
       const isPrimary = slotIdx === 0;
-      formData.append('isPrimaryAvatar', isPrimary ? 'true' : 'false');
+      formData.append('isPrimary', isPrimary ? 'true' : 'false');
 
       const res = await fetch('/api/photos/upload', {
         method: 'POST',
@@ -290,8 +307,16 @@ export default function EditProfilePage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSaving(true);
     setStatusMsg(null);
+
+    // Instant client check; PATCH /api/profile enforces the same rules (HTTP 400).
+    if (!validateBio(formData.bio).ok) {
+      setBioRejected(true);
+      showActionToast(BIO_REJECTION_MESSAGE, 'info');
+      return;
+    }
+    setBioRejected(false);
+    setSaving(true);
 
     try {
       const { data: { user } } = await supabase.auth.getUser();
@@ -308,8 +333,23 @@ export default function EditProfilePage() {
         relationship_goal: formData.relationship_goal,
         bio: formData.bio.trim(),
         ...rhythm,
+        ...(isPlus
+          ? {
+              visiting_city: travel.city.trim(),
+              visiting_country: travel.country.trim(),
+              visiting_dates: travel.dates.trim(),
+              is_travel_mode_active: travel.active && Boolean(travel.city.trim()),
+            }
+          : {}),
       });
-      if (!saved.ok) throw new Error(saved.error);
+      if (!saved.ok) {
+        if (saved.field === 'bio') {
+          setBioRejected(true);
+          showActionToast(BIO_REJECTION_MESSAGE, 'info');
+          return;
+        }
+        throw new Error(saved.error);
+      }
 
       // First-time username claim stays a direct update (uniqueness is checked live above).
       if (!initialHasUsername && username.trim().length >= 3 && usernameStatus === 'available') {
@@ -372,8 +412,8 @@ export default function EditProfilePage() {
           <div
             className={`p-3.5 rounded-2xl text-xs font-semibold border ${
               statusMsg.type === 'success'
-                ? 'bg-emerald-950/40 border-emerald-500/40 text-emerald-200'
-                : 'bg-rose-950/40 border-rose-500/40 text-rose-200'
+                ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
+                : 'bg-rose-50 border-rose-200 text-rose-700'
             }`}
           >
             {statusMsg.text}
@@ -819,10 +859,78 @@ export default function EditProfilePage() {
             <textarea
               rows={4}
               value={formData.bio}
-              onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-              placeholder="Tell sincere community members about your values and relationship goals..."
-              className="w-full px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#9A8CC3]/35 text-[#1C1924] text-sm focus:outline-none focus:border-[#9A8CC3]"
+              onChange={(e) => {
+                setFormData({ ...formData, bio: e.target.value });
+                if (bioRejected && validateBio(e.target.value).ok) setBioRejected(false);
+              }}
+              aria-invalid={bioRejected}
+              aria-describedby="bio-helper"
+              placeholder="Tell members about your values, your days and what kind of connection you want..."
+              className={`w-full px-4 py-2.5 rounded-xl bg-[#FFFFFF] border text-[#1C1924] text-base sm:text-sm focus:outline-none ${
+                bioRejected ? 'border-amber-500 ring-2 ring-amber-500/20 focus:border-amber-500' : 'border-[#9A8CC3]/35 focus:border-[#9A8CC3]'
+              }`}
             />
+            <p id="bio-helper" className={`text-[11px] ${bioRejected ? 'text-amber-700 font-medium' : 'text-[#8C849B]'}`}>
+              {bioRejected
+                ? 'Remove links, social handles, phone numbers, emails and payment apps. You can trade contact details in chat once you have matched.'
+                : 'No links, social handles or contact info. Keep it about you.'}
+            </p>
+          </div>
+
+          {/* Upcoming travel notice (AIL+) */}
+          <div className="p-4 rounded-2xl bg-white border border-[#9A8CC3]/35 space-y-3">
+            <div className="flex items-start justify-between gap-3">
+              <div>
+                <h3 className="text-xs font-bold text-[#6555b8] uppercase tracking-wider">Upcoming Travel Notice</h3>
+                <p className="text-[11px] text-[#756D82] mt-0.5">
+                  Show a &ldquo;Visiting:&rdquo; badge on Discover and your profile before your trip.
+                </p>
+              </div>
+              {isPlus ? (
+                <button
+                  type="button"
+                  role="switch"
+                  aria-checked={travel.active}
+                  aria-label="Travel notice"
+                  onClick={() => setTravel((t) => ({ ...t, active: !t.active }))}
+                  className={'w-10 h-6 rounded-full transition-colors relative shrink-0 ' + (travel.active ? 'bg-[#6555B8]' : 'bg-[#DDD7E5]')}
+                >
+                  <span className={'absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-all ' + (travel.active ? 'left-5' : 'left-1')} />
+                </button>
+              ) : (
+                <Link href="/plus" className="shrink-0 text-[10px] font-bold bg-[#6555b8] text-white px-2 py-1 rounded-full">
+                  AIL+
+                </Link>
+              )}
+            </div>
+            {isPlus && (
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                <input
+                  type="text"
+                  value={travel.city}
+                  maxLength={80}
+                  onChange={(e) => setTravel((t) => ({ ...t, city: e.target.value }))}
+                  placeholder="City (e.g. Cebu)"
+                  className="w-full px-4 py-2.5 rounded-xl bg-white border border-[#9A8CC3]/35 text-[#1C1924] text-base sm:text-sm focus:outline-none focus:border-[#9A8CC3]"
+                />
+                <input
+                  type="text"
+                  value={travel.country}
+                  maxLength={80}
+                  onChange={(e) => setTravel((t) => ({ ...t, country: e.target.value }))}
+                  placeholder="Country"
+                  className="w-full px-4 py-2.5 rounded-xl bg-white border border-[#9A8CC3]/35 text-[#1C1924] text-base sm:text-sm focus:outline-none focus:border-[#9A8CC3]"
+                />
+                <input
+                  type="text"
+                  value={travel.dates}
+                  maxLength={40}
+                  onChange={(e) => setTravel((t) => ({ ...t, dates: e.target.value }))}
+                  placeholder="When (e.g. December 2026)"
+                  className="w-full px-4 py-2.5 rounded-xl bg-white border border-[#9A8CC3]/35 text-[#1C1924] text-base sm:text-sm focus:outline-none focus:border-[#9A8CC3]"
+                />
+              </div>
+            )}
           </div>
 
           <button

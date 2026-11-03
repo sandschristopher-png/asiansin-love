@@ -197,7 +197,28 @@ export async function POST(req: Request) {
         .limit(1)
         .maybeSingle();
 
-      if (!mutualReply) {
+      // A mutual Spark (both sparked each other) is a match: messaging it is unlimited for everyone.
+      const { data: theirSpark } = mutualReply
+        ? { data: null }
+        : await serviceClient
+            .from('sparks')
+            .select('id')
+            .eq('sender_id', receiverId)
+            .eq('receiver_id', senderId)
+            .limit(1)
+            .maybeSingle();
+      const { data: mySpark } = mutualReply || !theirSpark
+        ? { data: null }
+        : await serviceClient
+            .from('sparks')
+            .select('id')
+            .eq('sender_id', senderId)
+            .eq('receiver_id', receiverId)
+            .limit(1)
+            .maybeSingle();
+      const isMutualMatch = Boolean(theirSpark && mySpark);
+
+      if (!mutualReply && !isMutualMatch) {
         const startOfToday = new Date();
         startOfToday.setUTCHours(0, 0, 0, 0);
 

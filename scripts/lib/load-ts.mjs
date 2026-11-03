@@ -25,7 +25,9 @@ function build(libName, seen) {
     deps.push(name);
     return `${kw}${q}./${name}.mjs${q}`;
   });
-  fs.writeFileSync(path.join(OUT, `${libName}.mjs`), rewritten);
+  const outFile = path.join(OUT, `${libName}.mjs`);
+  fs.mkdirSync(path.dirname(outFile), { recursive: true });
+  fs.writeFileSync(outFile, rewritten);
   deps.forEach((d) => build(d, seen));
 }
 

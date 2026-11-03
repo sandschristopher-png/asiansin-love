@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import VerifiedBadge from '@/components/VerifiedBadge';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Camera, ChevronDown, ChevronLeft, ChevronRight, Search, Heart, X as XIcon, SlidersHorizontal, RotateCcw } from 'lucide-react';
+import { Camera, ChevronDown, ChevronLeft, ChevronRight, Compass, Search, X as XIcon, SlidersHorizontal, RotateCcw } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { INTENT_OPTIONS, normalizeIntent } from '@/lib/intents';
 import { ActionType, getLocalCardActions, persistCardAction } from '@/lib/interactions';
@@ -18,6 +18,64 @@ import { InCommonCard, RhythmPill } from '@/components/profile/RhythmBadges';
 import { SparkHeartButton } from '@/components/SparkHeartButton';
 import { MutualSparkModal } from '@/components/MutualSparkModal';
 import { useActionToast } from '@/components/ActionToast';
+import { VisitingBadge, type TravelNotice } from '@/components/VisitingBadge';
+import { NewMemberPill } from '@/components/profile/TrustBadges';
+import {
+  ALL_COUNTRIES_VALUE,
+  OTHER_COUNTRY_VALUE,
+  countriesForSeeking,
+  countryMatches,
+} from '@/lib/constants/countries';
+
+/** Regional spotlight pill: filters the already-loaded feed (no extra query). */
+const SPOTLIGHT_COUNTRY = 'Myanmar';
+const NEAR_ME_KM = 150;
+
+/** Great-circle distance (haversine). */
+function distanceKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
+  const toRad = (d: number) => (d * Math.PI) / 180;
+  const dLat = toRad(lat2 - lat1);
+  const dLon = toRad(lon2 - lon1);
+  const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+  return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+}
+
+const DEFAULT_MIN_AGE = 18;
+const DEFAULT_MAX_AGE = 99;
+const AGE_OPTIONS = Array.from({ length: DEFAULT_MAX_AGE - DEFAULT_MIN_AGE + 1 }, (_, i) => i + DEFAULT_MIN_AGE);
+
+/** Grey rounded placeholder cards (feed loading and category switches). */
+function FeedSkeleton({ count = 8 }: { count?: number }) {
+  return (
+    <>
+      {Array.from({ length: count }).map((_, i) => (
+        <div
+          key={i}
+          aria-hidden
+          className="rounded-2xl overflow-hidden aspect-[4/5] w-full bg-[#EAE8F0] animate-pulse border border-[#DDD7E5] relative"
+        >
+          <div className="absolute inset-x-0 bottom-0 p-3 space-y-2">
+            <div className="h-4 bg-white/50 rounded-full w-2/3" />
+            <div className="h-3 bg-white/40 rounded-full w-1/2" />
+          </div>
+        </div>
+      ))}
+    </>
+  );
+}
+
+function FeedSkeletonPage() {
+  return (
+    <div className="w-full min-h-full bg-[#F8F7FA]" aria-busy="true" aria-label="Loading discover feed">
+      <main className="w-full max-w-md mx-auto px-4 pt-4 pb-36">
+        <div className="h-12" />
+        <div className="grid grid-cols-2 gap-3.5 w-full">
+          <FeedSkeleton />
+        </div>
+      </main>
+    </div>
+  );
+}
 
 const DISCOVERY_MODES = [
   { id: 'all', label: 'All' },
@@ -65,6 +123,9 @@ export interface ProfileItem {
   lastActive?: string | null;
   languages?: string | string[] | null;
   replyPace?: string | null;
+  travel?: TravelNotice | null;
+  dayOneNumber?: number | null;
+  photoPlaceholders?: Record<string, string>;
 }
 
 function DiscoverCardPhotoCarousel({
@@ -75,6 +136,8 @@ function DiscoverCardPhotoCarousel({
   repScore,
   online,
   recentlyActive,
+  createdAt,
+  placeholders,
   priority = false,
 }: {
   profileId: string;
@@ -84,6 +147,8 @@ function DiscoverCardPhotoCarousel({
   repScore: number;
   online: boolean;
   recentlyActive?: boolean;
+  createdAt?: string;
+  placeholders?: Record<string, string>;
   priority?: boolean;
 }) {
   const [currentIdx, setCurrentIdx] = useState(0);
@@ -112,16 +177,18 @@ function DiscoverCardPhotoCarousel({
           src={displayPhotos[currentIdx]}
           alt={name}
           priority={priority && currentIdx === 0}
+          placeholder={placeholders?.[displayPhotos[currentIdx]] ?? null}
           className="object-cover group-hover:scale-[1.03] transition-transform duration-500 ease-out"
         />
       </Link>
       {displayPhotos.length > 1 && (
-        <span className="absolute bottom-2.5 right-2.5 z-20 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-black/55 backdrop-blur-2xs text-white text-[10px] font-semibold pointer-events-none">
+        <span className="absolute bottom-2.5 right-2.5 z-20 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-black/60 text-white text-[10px] font-semibold pointer-events-none">
           <Camera className="w-3 h-3" />
           {displayPhotos.length}
         </span>
       )}
       <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 z-20 pointer-events-none">
+        <NewMemberPill createdAt={createdAt} />
         {online ? (
           <span className="h-2 w-2 rounded-full bg-emerald-500 ring-2 ring-white/90 shadow-xs shrink-0 animate-[pulse_3s_ease-in-out_infinite]" />
         ) : recentlyActive ? (
@@ -133,7 +200,7 @@ function DiscoverCardPhotoCarousel({
           <button
             type="button"
             onClick={handlePrev}
-            className="pointer-events-auto p-1.5 rounded-full bg-black/40 hover:bg-black/70 text-white backdrop-blur-xs transition active:scale-90 cursor-pointer"
+            className="pointer-events-auto p-1.5 rounded-full bg-black/45 hover:bg-black/70 text-white transition active:scale-90 cursor-pointer"
             aria-label="Previous photo"
           >
             <ChevronLeft className="w-4 h-4" />
@@ -141,7 +208,7 @@ function DiscoverCardPhotoCarousel({
           <button
             type="button"
             onClick={handleNext}
-            className="pointer-events-auto p-1.5 rounded-full bg-black/40 hover:bg-black/70 text-white backdrop-blur-xs transition active:scale-90 cursor-pointer"
+            className="pointer-events-auto p-1.5 rounded-full bg-black/45 hover:bg-black/70 text-white transition active:scale-90 cursor-pointer"
             aria-label="Next photo"
           >
             <ChevronRight className="w-4 h-4" />
@@ -168,6 +235,9 @@ function normalizeGenderValue(raw?: string | null): 'female' | 'male' | 'male' {
 // server already filtered (opposite gender, not sparked, not blocked). The old localStorage copy
 // survived reloads and painted stale, unfiltered cards before the real feed arrived.
 let memoryDiscoverCache: { profiles: ProfileItem[] } | null = null;
+function clearDiscoverCache() {
+  memoryDiscoverCache = null;
+}
 function getInitialDiscoverFeed(): ProfileItem[] {
   return memoryDiscoverCache?.profiles?.length ? memoryDiscoverCache.profiles.slice() : [];
 }
@@ -191,7 +261,24 @@ function DiscoverContent() {
   const [isRefreshing, setIsRefreshing] = useState(false);
   const pullStartY = useRef<number | null>(null);
   const [searchQuery, setSearchQuery] = useState(() => searchParams.get('q') || '');
-  const [selectedCountry, setSelectedCountry] = useState('All');
+  const [selectedCountry, setSelectedCountry] = useState(ALL_COUNTRIES_VALUE);
+  // Gender being browsed (opposite of the viewer): picks the regional country list.
+  const [seekingGender, setSeekingGender] = useState<'female' | 'male' | null>(null);
+  const countryOptions = countriesForSeeking(seekingGender);
+  // Cross-border country filters (incl. the regional spotlight) are AIL+.
+  const [viewerIsPlus, setViewerIsPlus] = useState(false);
+  const countryLocked = !viewerIsPlus;
+  const [categorySwitching, setCategorySwitching] = useState(false);
+  const switchTimer = useRef<number | null>(null);
+  /** Short skeleton cross-fade so a category switch never flashes a half-filtered grid. */
+  const flashSkeleton = () => {
+    if (switchTimer.current !== null) window.clearTimeout(switchTimer.current);
+    setCategorySwitching(true);
+    switchTimer.current = window.setTimeout(() => setCategorySwitching(false), 220);
+  };
+  useEffect(() => () => {
+    if (switchTimer.current !== null) window.clearTimeout(switchTimer.current);
+  }, []);
   const [searchOpen, setSearchOpen] = useState(false);
   const [searchAnimating, setSearchAnimating] = useState(false);
   const [searchClosing, setSearchClosing] = useState(false);
@@ -211,11 +298,11 @@ function DiscoverContent() {
 
   const [filtersOpen, setFiltersOpen] = useState(false);
   const showActionToast = useActionToast();
-  const [minAge, setMinAge] = useState<number>(18);
-  const [maxAge, setMaxAge] = useState<number>(65);
-  const [draftMinAge, setDraftMinAge] = useState<number>(18);
-  const [draftMaxAge, setDraftMaxAge] = useState<number>(65);
-  const [draftCountry, setDraftCountry] = useState<string>('All');
+  const [minAge, setMinAge] = useState<number>(DEFAULT_MIN_AGE);
+  const [maxAge, setMaxAge] = useState<number>(DEFAULT_MAX_AGE);
+  const [draftMinAge, setDraftMinAge] = useState<number>(DEFAULT_MIN_AGE);
+  const [draftMaxAge, setDraftMaxAge] = useState<number>(DEFAULT_MAX_AGE);
+  const [draftCountry, setDraftCountry] = useState<string>(ALL_COUNTRIES_VALUE);
   const [draftIntent, setDraftIntent] = useState<string>('all');
   const [draftVerifiedOnly, setDraftVerifiedOnly] = useState<boolean>(false);
   const [draftActiveNowOnly, setDraftActiveNowOnly] = useState<boolean>(false);
@@ -307,7 +394,7 @@ function DiscoverContent() {
 
     async function loadFeed() {
       // Keep the loading state until the server's filtered feed arrives (no stale cards first).
-      if (profiles.length === 0) setIsLoading(true);
+      if (memoryDiscoverCache === null) setIsLoading(true);
       try {
         const res = await fetch('/api/discover', { cache: 'no-store' });
         if (res.status === 401) {
@@ -328,6 +415,8 @@ function DiscoverContent() {
             }
             setViewerTraits({ interests: v.interests ?? [], languages: v.languages ?? null });
             setViewerAvatar(v.avatarUrl ?? null);
+            setSeekingGender(v.gender === 'male' ? 'female' : v.gender === 'female' ? 'male' : null);
+            setViewerIsPlus(v.isPlus === true);
           }
           if (Array.isArray(payload.favoriteIds)) {
             setCardActions((prev) => {
@@ -361,9 +450,8 @@ function DiscoverContent() {
     loadFeed();
   }, [router]);
 
-  const refreshFeed = async () => {
-    if (isRefreshing) return;
-    setIsRefreshing(true);
+  /** Re-reads the server-filtered feed (pull-to-refresh, filter reset, dev spark reset). */
+  const fetchProfiles = async () => {
     try {
       const res = await fetch('/api/discover', { cache: 'no-store' });
       if (res.ok) {
@@ -382,6 +470,12 @@ function DiscoverContent() {
         }
       }
     } catch {}
+  };
+
+  const refreshFeed = async () => {
+    if (isRefreshing) return;
+    setIsRefreshing(true);
+    await fetchProfiles();
     setTimeout(() => { setIsRefreshing(false); }, 400);
   };
 
@@ -501,9 +595,9 @@ function DiscoverContent() {
 
   const activeFiltersCount = useMemo(() => {
     let count = 0;
-    if (selectedCountry.toLowerCase() !== 'all') count++;
-    if (minAge > 18 || maxAge < 65) count++;
-    if (selectedIntent !== 'All') count++;
+    if (selectedCountry.toLowerCase() !== ALL_COUNTRIES_VALUE.toLowerCase()) count++;
+    if (minAge > DEFAULT_MIN_AGE || maxAge < DEFAULT_MAX_AGE) count++;
+    if (selectedIntent !== 'all') count++;
     if (verifiedOnly) count++;
     if (activeNowOnly) count++;
     if (discoveryMode !== 'all') count++;
@@ -512,16 +606,47 @@ function DiscoverContent() {
 
   const hasActiveFilters = activeFiltersCount > 0;
 
+  /** Defaults everywhere (sheet drafts + applied filters), fresh feed, soft toast. */
   const resetAndApplyFilters = () => {
     resetFilters();
-    showActionToast('Filters reset to default', 'info');
-    setSelectedCountry('All');
+    setSelectedCountry(ALL_COUNTRIES_VALUE);
     setSelectedIntent('all');
-    setMinAge(18);
-    setMaxAge(65);
+    setMinAge(DEFAULT_MIN_AGE);
+    setMaxAge(DEFAULT_MAX_AGE);
     setVerifiedOnly(false);
     setActiveNowOnly(false);
     setDiscoveryMode('all');
+    setSearchQuery('');
+    setVisibleLimit(BATCH_SIZE);
+    clearDiscoverCache();
+    try {
+      localStorage.removeItem('ail_discover_filters');
+      sessionStorage.removeItem('ail_discover_filters');
+    } catch {}
+    void fetchProfiles();
+    showActionToast('Filters reset to default', 'info');
+  };
+
+  const [resettingSparks, setResettingSparks] = useState(false);
+  /** Development only: clears the viewer's sent sparks so test accounts reappear. */
+  const resetMySparksDev = async () => {
+    setResettingSparks(true);
+    try {
+      const res = await fetch('/api/dev/reset-sparks', { method: 'POST' });
+      if (!res.ok) throw new Error();
+      setCardActions({});
+      try {
+        localStorage.removeItem('ail_liked_ids');
+        localStorage.removeItem('ail_passed_ids');
+        sessionStorage.removeItem('ail_sparks_fast_cache_v2');
+      } catch {}
+      await fetchProfiles();
+      showActionToast('Sparks reset (dev)', 'check');
+    } catch {
+      showActionToast('Could not reset sparks', 'info');
+    } finally {
+      setResettingSparks(false);
+    }
   };
 
   const applyFilters = () => {
@@ -532,14 +657,15 @@ function DiscoverContent() {
     setVerifiedOnly(draftVerifiedOnly);
     setActiveNowOnly(draftActiveNowOnly);
     setDiscoveryMode(draftMode);
+    flashSkeleton();
     closeFiltersWithAnimation();
   };
 
   const resetFilters = () => {
-    setDraftCountry('All');
+    setDraftCountry(ALL_COUNTRIES_VALUE);
     setDraftIntent('all');
-    setDraftMinAge(18);
-    setDraftMaxAge(65);
+    setDraftMinAge(DEFAULT_MIN_AGE);
+    setDraftMaxAge(DEFAULT_MAX_AGE);
     setDraftVerifiedOnly(false);
     setDraftActiveNowOnly(false);
     setDraftMode('all');
@@ -548,9 +674,7 @@ function DiscoverContent() {
   const filteredProfiles = useMemo(() => {
     return profiles.filter((profile) => {
       if (cardActions[profile.id] === 'pass') return false;
-      const matchesCountry =
-        selectedCountry.toLowerCase() === 'all' ||
-        (profile.country || '').toLowerCase() === selectedCountry.toLowerCase();
+      const matchesCountry = countryMatches(profile.country, selectedCountry, countryOptions);
       const q = searchQuery.toLowerCase().trim();
       const searchableName = (profile.username || profile.name || '').toLowerCase();
       const matchesQuery = !q || searchableName.includes(q) || profile.location.toLowerCase().includes(q);
@@ -560,7 +684,11 @@ function DiscoverContent() {
       const matchesOnline = !activeNowOnly || profile.online || presentIds.has(profile.id);
       const matchesDiscoveryMode = (() => {
         if (discoveryMode === 'online') return Boolean(profile.online || presentIds.has(profile.id) || profile.recentlyActive);
-        if (discoveryMode === 'near_me') return true;
+        if (discoveryMode === 'near_me') {
+          // Within NEAR_ME_KM of the viewer; without coordinates on either side, keep the card.
+          if (!currentUserCoords || profile.latitude == null || profile.longitude == null) return true;
+          return distanceKm(currentUserCoords.lat, currentUserCoords.lon, profile.latitude, profile.longitude) <= NEAR_ME_KM;
+        }
         if (discoveryMode === 'new') {
           const createdAt = profile.created_at ? new Date(profile.created_at).getTime() : 0;
           return createdAt > Date.now() - 30 * 24 * 60 * 60 * 1000;
@@ -577,7 +705,9 @@ function DiscoverContent() {
         matchesDiscoveryMode
       );
     });
-  }, [profiles, cardActions, selectedCountry, searchQuery, minAge, maxAge, selectedIntent, verifiedOnly, activeNowOnly, discoveryMode, presentIds]);
+  }, [profiles, cardActions, currentUserCoords, selectedCountry, countryOptions, searchQuery, minAge, maxAge, selectedIntent, verifiedOnly, activeNowOnly, discoveryMode, presentIds]);
+
+  const isDefaultFeed = activeFiltersCount === 0 && !searchQuery.trim();
 
   const visibleProfiles = filteredProfiles.slice(0, visibleLimit);
   const hasMore = visibleLimit < filteredProfiles.length;
@@ -604,7 +734,7 @@ function DiscoverContent() {
       </div>
       <main className="w-full max-w-md mx-auto px-4 pt-4 pb-36 relative">
         {/* Static Pinned Search & Filter Controls on Left + Horizontally Scrolling Categories on Right */}
-        <section aria-label="Search and Filters" className="sticky top-0 z-30 w-[calc(100%+2rem)] -mx-4 px-4 py-2 flex items-center gap-3 bg-[#F8F7FA]/95 backdrop-blur-md border-b border-[#EAE5F2]/60">
+        <section aria-label="Search and Filters" className="sticky top-0 z-30 w-[calc(100%+2rem)] -mx-4 px-4 py-2 flex items-center gap-3 bg-[#F8F7FA]/95 border-b border-[#EAE5F2]/60">
           <div className={`flex items-center gap-1.5 ${searchOpen || searchQuery ? 'flex-1 min-w-0' : 'hidden'}`}>
             {searchOpen || searchQuery ? (
               <div className={`flex-1 min-w-0 h-9 flex items-center gap-1 bg-white border border-[#DDD7E5] focus-within:border-[#6555B8] rounded-full pl-3 pr-2 shadow-2xs transition-all ${searchAnimating ? 'animate-[slideIn_200ms_cubic-bezier(0.16,1,0.3,1)]' : ''} ${searchClosing ? 'animate-[slideOut_180ms_ease-in_forwards]' : ''}`}>
@@ -622,7 +752,7 @@ function DiscoverContent() {
                     data-lpignore="true"
                     data-form-type="other"
                     placeholder="City or username"
-                  className="flex-1 w-full bg-transparent text-xs text-[#1C1924] placeholder-[#8C849B] focus:outline-none"
+                  className="flex-1 w-full bg-transparent text-base sm:text-xs text-[#1C1924] placeholder-[#8C849B] focus:outline-none"
                 />
                 <button
                   type="button"
@@ -655,7 +785,10 @@ function DiscoverContent() {
                   <button
                     key={mode.id}
                     type="button"
-                    onClick={() => setDiscoveryMode(mode.id)}
+                    onClick={() => {
+                      if (mode.id !== discoveryMode) flashSkeleton();
+                      setDiscoveryMode(mode.id);
+                    }}
                     className={`shrink-0 text-sm h-8 flex items-center transition-colors ${
                       active ? 'text-[#6555B8] font-bold' : 'text-black/40 font-medium'
                     }`}
@@ -665,6 +798,26 @@ function DiscoverContent() {
                   </button>
                 );
               })}
+              {seekingGender !== 'male' && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (countryLocked) {
+                      showActionToast('Country spotlights are an AIL+ feature', 'info');
+                      router.push('/plus');
+                      return;
+                    }
+                    flashSkeleton();
+                    setSelectedCountry((c) => (c === SPOTLIGHT_COUNTRY ? ALL_COUNTRIES_VALUE : SPOTLIGHT_COUNTRY));
+                  }}
+                  aria-pressed={selectedCountry === SPOTLIGHT_COUNTRY}
+                  className={`shrink-0 text-sm h-8 flex items-center transition-colors ${
+                    selectedCountry === SPOTLIGHT_COUNTRY ? 'text-[#6555B8] font-bold' : 'text-black/40 font-medium'
+                  }`}
+                >
+                  Spotlight: {SPOTLIGHT_COUNTRY}
+                </button>
+              )}
             </div>
           </div>
           )}
@@ -696,18 +849,8 @@ function DiscoverContent() {
 
         {/* 2-Column Feed Grid */}
         <div className="grid grid-cols-2 gap-3.5 w-full animate-fade-in-up">
-          {isLoading ? (
-            Array.from({ length: 8 }).map((_, i) => (
-              <div
-                key={i}
-                className="rounded-2xl overflow-hidden aspect-[4/5] w-full bg-[#EAE8F0] animate-pulse border border-[#DDD7E5] relative"
-              >
-                <div className="absolute inset-x-0 bottom-0 p-3 space-y-2">
-                  <div className="h-4 bg-white/40 rounded-full w-2/3" />
-                  <div className="h-3 bg-white/30 rounded-full w-1/2" />
-                </div>
-              </div>
-            ))
+          {isLoading || categorySwitching ? (
+            <FeedSkeleton count={isLoading ? 8 : Math.min(8, Math.max(2, visibleProfiles.length))} />
           ) : (
             visibleProfiles.map((profile, cardIdx) => {
               const state = cardActions[profile.id];
@@ -732,13 +875,10 @@ function DiscoverContent() {
                     repScore={profile.repScore}
                     online={profile.online || presentIds.has(profile.id)}
                     recentlyActive={profile.recentlyActive}
-                    priority={cardIdx < 2}
+                    createdAt={profile.created_at}
+                    placeholders={profile.photoPlaceholders}
+                    priority={cardIdx === 0}
                   />
-                  {isTrustedVoiceIntroUrl(profile.voiceIntroUrl) && (
-                    <div className="absolute top-[7px] left-6 z-30">
-                      <AudioPill src={profile.voiceIntroUrl} label="Voice" size="sm" />
-                    </div>
-                  )}
                   <SparkHeartButton
                     sparked={isLiked}
                     name={displayName}
@@ -746,6 +886,15 @@ function DiscoverContent() {
                     className="absolute top-3 right-3 z-20"
                   />
                   <div className="absolute bottom-0 inset-x-0 pt-10 pb-3 px-3 z-10 pointer-events-none bg-gradient-to-t from-black/65 via-black/25 to-transparent">
+                    {(profile.travel || isTrustedVoiceIntroUrl(profile.voiceIntroUrl)) && (
+                      <div className="mb-1.5 flex flex-col items-start gap-1 pr-7 pointer-events-auto">
+                        {/* Tap-to-play only; never autoplays */}
+                        {isTrustedVoiceIntroUrl(profile.voiceIntroUrl) && (
+                          <AudioPill src={profile.voiceIntroUrl} label="Voice" size="sm" />
+                        )}
+                        <VisitingBadge travel={profile.travel} variant="glass" />
+                      </div>
+                    )}
                     <Link href={'/profile/' + profile.id} className="block min-w-0 pointer-events-auto">
                       <div className="flex items-center min-w-0">
                         <h3
@@ -786,12 +935,45 @@ function DiscoverContent() {
         </div>
 
         {sparkLimitNotice && (
-          <div className="fixed top-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[400px] z-50 px-4 py-2.5 rounded-2xl bg-white/95 border border-[#ECE8F4] text-[#1C1924] text-[13px] font-medium shadow-[0_12px_32px_rgba(101,85,184,0.18)] backdrop-blur-md text-center">
+          <div className="fixed top-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[400px] z-50 px-4 py-2.5 rounded-2xl bg-white/95 border border-[#ECE8F4] text-[#1C1924] text-[13px] font-medium shadow-[0_12px_32px_rgba(101,85,184,0.18)] text-center">
             {sparkLimitNotice}
           </div>
         )}
 
-        {!isLoading && filteredProfiles.length === 0 && (
+        {!isLoading && !categorySwitching && filteredProfiles.length === 0 && isDefaultFeed && (
+          <div className="mt-4 p-8 rounded-2xl bg-white border border-[#DDD7E5] text-center space-y-3 shadow-xs">
+            <div className="w-12 h-12 mx-auto rounded-2xl bg-[#F3EFFC] flex items-center justify-center text-[#6555B8]">
+              <Compass className="w-5 h-5" />
+            </div>
+            <p className="text-base font-bold text-[#1C1924]" style={{ fontFamily: 'var(--font-brand)' }}>
+              You&apos;re All Caught Up
+            </p>
+            <p className="text-xs text-[#6C637B] leading-relaxed">
+              You have seen everyone new for now. Check back soon, or see who has sparked you.
+            </p>
+            <Link
+              href="/favorites"
+              className="inline-flex items-center gap-1.5 px-5 py-2.5 text-xs font-semibold rounded-full bg-[#6555B8] text-white hover:bg-[#52449e] transition shadow-sm"
+            >
+              View Your Sparks
+            </Link>
+            {process.env.NODE_ENV === 'development' && (
+              <div>
+                <button
+                  type="button"
+                  onClick={resetMySparksDev}
+                  disabled={resettingSparks}
+                  className="mt-1 inline-flex items-center gap-1.5 px-4 py-2 text-[11px] font-semibold rounded-full border border-dashed border-amber-400 text-amber-700 bg-amber-50 disabled:opacity-50"
+                >
+                  <RotateCcw className="w-3 h-3" />
+                  {resettingSparks ? 'Resetting...' : 'Reset My Sparks (Dev Only)'}
+                </button>
+              </div>
+            )}
+          </div>
+        )}
+
+        {!isLoading && !categorySwitching && filteredProfiles.length === 0 && !isDefaultFeed && (
           <div className="mt-4 p-8 rounded-2xl bg-white border border-[#DDD7E5] text-center space-y-3 shadow-xs">
             <div className="w-12 h-12 mx-auto rounded-2xl bg-[#F3EFFC] flex items-center justify-center text-[#6555B8]">
               <Search className="w-5 h-5" />
@@ -823,7 +1005,7 @@ function DiscoverContent() {
         )}
 
         {lastPassed && (
-          <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[60] flex items-center gap-3 px-4 py-2.5 rounded-full bg-white/95 border border-[#DDD7E5] shadow-2xl backdrop-blur-md">
+          <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[60] flex items-center gap-3 px-4 py-2.5 rounded-full bg-white/95 border border-[#DDD7E5] shadow-2xl">
             <span className="text-xs text-[#1C1924]">
               Passed <strong>{lastPassed.name}</strong>
             </span>
@@ -851,7 +1033,7 @@ function DiscoverContent() {
               {/* Dimmed backdrop */}
               <div
                 className={
-                  'fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity duration-200 ' +
+                  'fixed inset-0 bg-black/60 transition-opacity duration-200 ' +
                   (filtersClosing ? 'opacity-0' : 'opacity-100')
                 }
                 onClick={closeFiltersWithAnimation}
@@ -921,7 +1103,7 @@ function DiscoverContent() {
                             onChange={(e) => setDraftMinAge(Math.min(Number(e.target.value), draftMaxAge))}
                             className="w-full appearance-none bg-slate-50 border border-slate-200 text-[#2D264B] font-medium rounded-xl pl-3 pr-9 py-2 text-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#6555B8]/30"
                           >
-                            {Array.from({ length: 48 }, (_, i) => i + 18).map((age) => (
+                            {AGE_OPTIONS.map((age) => (
                               <option key={age} value={age} className="bg-white text-[#2D264B]">{age}</option>
                             ))}
                           </select>
@@ -935,7 +1117,7 @@ function DiscoverContent() {
                             onChange={(e) => setDraftMaxAge(Math.max(Number(e.target.value), draftMinAge))}
                             className="w-full appearance-none bg-slate-50 border border-slate-200 text-[#2D264B] font-medium rounded-xl pl-3 pr-9 py-2 text-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#6555B8]/30"
                           >
-                            {Array.from({ length: 48 }, (_, i) => i + 18).map((age) => (
+                            {AGE_OPTIONS.map((age) => (
                               <option key={age} value={age} className="bg-white text-[#2D264B]">{age}</option>
                             ))}
                           </select>
@@ -945,20 +1127,27 @@ function DiscoverContent() {
                     </div>
 
                     <div>
-                      <label className="text-[11px] font-bold text-[#6C637B] uppercase tracking-wider block mb-2">
-                        Country
+                      <label className="text-[11px] font-bold text-[#6C637B] uppercase tracking-wider mb-2 flex items-center justify-between">
+                        <span>Country</span>
+                        {countryLocked && (
+                          <Link href="/plus" className="normal-case tracking-normal text-[10px] font-bold bg-[#6555B8] text-white px-2 py-0.5 rounded-full">
+                            AIL+
+                          </Link>
+                        )}
                       </label>
                       <div className="relative">
                         <select
                           aria-label="Country"
-                          value={draftCountry}
+                          disabled={countryLocked}
+                          value={countryLocked ? ALL_COUNTRIES_VALUE : draftCountry}
                           onChange={(e) => setDraftCountry(e.target.value)}
-                          className="w-full appearance-none bg-slate-50 border border-slate-200 text-[#2D264B] font-medium rounded-xl pl-3 pr-9 py-2 text-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#6555B8]/30"
+                          className="w-full appearance-none bg-slate-50 border border-slate-200 text-[#2D264B] font-medium rounded-xl pl-3 pr-9 py-2 text-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#6555B8]/30 disabled:opacity-60 disabled:cursor-not-allowed"
                         >
-                          <option value="All" className="bg-white text-[#2D264B]">All Countries</option>
-                          {Array.from(new Set(profiles.map((pr) => (pr.country || '').trim()).filter(Boolean))).sort().map((c) => (
-                            <option key={c} value={c} className="bg-white text-[#2D264B]">{c}</option>
+                          <option value={ALL_COUNTRIES_VALUE} className="bg-white text-[#2D264B]">All Countries</option>
+                          {countryOptions.map((c) => (
+                            <option key={c.code} value={c.name} className="bg-white text-[#2D264B]">{c.name}</option>
                           ))}
+                          <option value={OTHER_COUNTRY_VALUE} className="bg-white text-[#2D264B]">Other</option>
                         </select>
                         <ChevronDown aria-hidden className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                       </div>
@@ -1031,10 +1220,13 @@ function DiscoverContent() {
                   </div>
 
                   {/* Sticky Footer */}
-                  <div className="px-5 py-3 pb-[max(1rem,env(safe-area-inset-bottom))] bg-white/95 backdrop-blur-md border-t border-[#ECE8F2] flex items-center gap-3 shrink-0">
+                  <div className="px-5 py-3 pb-[max(1rem,env(safe-area-inset-bottom))] bg-white border-t border-[#ECE8F2] flex items-center gap-3 shrink-0">
                     <button
                       type="button"
-                      onClick={resetFilters}
+                      onClick={() => {
+                        resetAndApplyFilters();
+                        closeFiltersWithAnimation();
+                      }}
                       className="py-2.5 px-4 rounded-full text-xs font-semibold text-[#6C637B] hover:text-[#1C1924] hover:bg-[#F8F7FA] transition cursor-pointer"
                     >
                       Reset
@@ -1069,7 +1261,7 @@ function DiscoverContent() {
 
 function DiscoverFeed() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#F8F7FA] text-[#1C1924] p-8 text-center text-xs">Loading discover feed...</div>}>
+    <Suspense fallback={<FeedSkeletonPage />}>
       <DiscoverContent />
     </Suspense>
   );
@@ -1098,11 +1290,7 @@ export default function AuthGate() {
   }, [router]);
 
   if (authState === 'loading') {
-    return (
-      <div className="min-h-screen bg-[#F8F7FA] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-10 w-10 border-4 border-[#6555B8] border-t-transparent"></div>
-      </div>
-    );
+    return <FeedSkeletonPage />;
   }
   return <DiscoverFeed />;
 }

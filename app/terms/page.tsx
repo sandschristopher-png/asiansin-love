@@ -76,8 +76,8 @@ const sections: LegalSection[] = [
         <p>AIL+ is an optional paid membership, billed in US dollars through Stripe:</p>
         <ul>
           <li>Monthly: $14.99 per month, billed every month.</li>
-          <li>3 months: $11.99 per month, billed $35.97 every 3 months.</li>
-          <li>12 months: $7.99 per month, billed $95.88 every year.</li>
+          <li>3 months: $29.99 every 3 months ($9.99 per month).</li>
+          <li>6 months: $47.99 every 6 months ($7.99 per month).</li>
         </ul>
         <p>
           Subscriptions <strong>renew automatically</strong> at the end of each period until you cancel. Taxes may apply.

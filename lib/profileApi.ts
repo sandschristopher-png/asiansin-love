@@ -1,6 +1,6 @@
 import type { RhythmValues } from '@/components/profile/RhythmBadges';
 
-type SaveResult = { ok: true } | { ok: false; error: string };
+type SaveResult = { ok: true } | { ok: false; error: string; field?: string };
 
 /**
  * Saves the member's own profile through PATCH /api/profile, which screens public text (bio,
@@ -14,7 +14,7 @@ export async function saveProfileFields(fields: Record<string, unknown>): Promis
       body: JSON.stringify(fields),
     });
     const data = await res.json().catch(() => ({}));
-    if (!res.ok) return { ok: false, error: data.error || 'Could not save your profile.' };
+    if (!res.ok) return { ok: false, error: data.error || 'Could not save your profile.', field: data.field };
     return { ok: true };
   } catch {
     return { ok: false, error: 'Network error. Please check your connection.' };

@@ -72,7 +72,15 @@ export async function POST(req: Request) {
 
     const formData = await req.formData();
     const file = (formData.get('photo') || formData.get('file')) as File | null;
-    const isPrimaryAvatar = formData.get('isPrimary') !== 'false';
+    const isPrimaryAvatar = (formData.get('isPrimary') ?? formData.get('isPrimaryAvatar')) !== 'false';
+    // Tiny blurred preview from lib/utils/imageCompressor.ts (shown while the photo streams in).
+    const rawPlaceholder = formData.get('placeholder');
+    const placeholder =
+      typeof rawPlaceholder === 'string' &&
+      rawPlaceholder.length <= 4096 &&
+      /^data:image\/(?:webp|jpeg);base64,[A-Za-z0-9+/=]+$/.test(rawPlaceholder)
+        ? rawPlaceholder
+        : null;
 
     if (!file) {
       return NextResponse.json({ error: 'No photo file provided' }, { status: 400 });
@@ -184,6 +192,22 @@ export async function POST(req: Request) {
         { error: `Failed updating profile photos: ${profileUpdateError.message}` },
         { status: 500 }
       );
+    }
+
+    // Blur previews live in profiles.photo_placeholders (20261108_release_features.sql); optional.
+    if (placeholder) {
+      const { data: phRow, error: phReadErr } = await serviceClient
+        .from('profiles')
+        .select('photo_placeholders')
+        .eq('id', userId)
+        .maybeSingle();
+      if (!phReadErr) {
+        const current = (phRow?.photo_placeholders && typeof phRow.photo_placeholders === 'object' ? phRow.photo_placeholders : {}) as Record<string, string>;
+        const next: Record<string, string> = {};
+        for (const url of updatedPhotos) if (current[url]) next[url] = current[url];
+        next[photoUrl] = placeholder;
+        await serviceClient.from('profiles').update({ photo_placeholders: next }).eq('id', userId);
+      }
     }
 
     // 8. Main photos wait in the admin review queue (/admin/verifications) while avatar_status is pending_review.

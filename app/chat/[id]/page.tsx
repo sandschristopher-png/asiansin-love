@@ -326,7 +326,7 @@ export default function ChatConversationPage() {
       ]);
 
       const myProf = myProfRes.data;
-      if (myProf && (myProf.is_plus || myProf.plus_enabled || ['12m', '3m', '1m'].includes(myProf.membership_tier))) {
+      if (myProf && (myProf.is_plus || myProf.plus_enabled || ['12m', '6m', '3m', '1m'].includes(myProf.membership_tier))) {
         if (isMounted) setIsPlus(true);
       }
       const myInterests: string[] = Array.isArray(myProf?.interests) ? myProf.interests : [];
@@ -1126,7 +1126,8 @@ export default function ChatConversationPage() {
                               </button>
                             </>
                           )}
-                          {isMe && !msg.pending && (
+                          {/* Delivered / Read indicators: AIL+ (free members see timestamps only) */}
+                          {isMe && !msg.pending && isPlus && (
                             msg.read ? (
                               <CheckCheck className="w-3 h-3 text-[#6555B8]" />
                             ) : (

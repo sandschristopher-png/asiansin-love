@@ -34,6 +34,8 @@ export function BottomNav() {
   const cleanPath = pathname?.replace(/\/+$/, '') || '';
   const isPublicProfile = cleanPath.startsWith('/profile/') && !['/profile/edit', '/profile/reputation'].includes(cleanPath);
   const isChat = pathname.startsWith("/chat");
+  // /plus has its own pinned checkout bar and a back arrow (it is a subpage, not a root tab).
+  const isPlusRoute = cleanPath === '/plus';
 
 
 
@@ -69,7 +71,7 @@ export function BottomNav() {
     };
   }, []);
 
-  if (!user || isPublicProfile || isChat || PUBLIC_ROUTES.includes(pathname) || pathname?.startsWith('/onboarding')) {
+  if (!user || isPublicProfile || isChat || isPlusRoute || PUBLIC_ROUTES.includes(pathname) || pathname?.startsWith('/onboarding')) {
     return null;
   }
 
@@ -82,11 +84,11 @@ export function BottomNav() {
 
   return (
     <div 
-      className={`fixed bottom-[max(0.875rem,env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 w-[calc(100%-1.75rem)] max-w-[390px] z-50 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
+      className={`fixed bottom-0 pb-[max(0.5rem,env(safe-area-inset-bottom))] left-1/2 -translate-x-1/2 w-[calc(100%-1.75rem)] max-w-[390px] z-50 transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${
         isKeyboardOpen ? 'translate-y-24 opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'
       }`}
     >
-      <nav className="bg-white/92 backdrop-blur-2xl border border-[#E5E1EC]/80 shadow-[0_12px_36px_rgba(101,85,184,0.14),0_2px_8px_rgba(0,0,0,0.04)] rounded-full px-2 py-1.5 flex items-center justify-around select-none">
+      <nav className="bg-white/95 border border-[#E5E1EC]/80 shadow-[0_12px_36px_rgba(101,85,184,0.14),0_2px_8px_rgba(0,0,0,0.04)] rounded-full px-2 py-1.5 flex items-center justify-around select-none">
         {navItems.map((item) => {
           const active = isActive(item.href);
           const Icon = item.icon;
@@ -110,7 +112,7 @@ export function BottomNav() {
                 />
                 {Boolean(item.badge && item.badge > 0) && (
                   <span className="absolute -top-1 -right-2.5 min-w-[16px] h-4 px-1 rounded-full bg-[#E05375] text-[10px] font-bold text-white flex items-center justify-center shadow-xs pointer-events-none">
-                    {item.badge! > 9 ? '9+' : item.badge}
+                    {item.badge! > 99 ? '99+' : item.badge}
                   </span>
                 )}
               </div>

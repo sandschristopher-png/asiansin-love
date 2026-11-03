@@ -61,11 +61,11 @@ export async function middleware(request: NextRequest) {
 
     const { data: profile } = await adminClient
       .from('profiles')
-      .select('is_admin')
+      .select('*')
       .eq('id', user.id)
       .single();
 
-    if (!profile?.is_admin) {
+    if (!(profile?.role === 'admin' || profile?.is_admin === true)) {
       return NextResponse.redirect(new URL('/discover', request.url));
     }
     return response;

@@ -1,0 +1,37 @@
+import React from 'react';
+
+export interface TravelNotice {
+  city: string;
+  country?: string | null;
+  dates?: string | null;
+}
+
+/** "✈️ Visiting: Cebu in December 2026" (AIL+ travel notice) on Discover cards and profiles. */
+export function VisitingBadge({
+  travel,
+  variant = 'light',
+  className = '',
+}: {
+  travel: TravelNotice | null | undefined;
+  /** `glass` sits on a photo scrim (Discover cards); `light` on the page background. */
+  variant?: 'light' | 'glass';
+  className?: string;
+}) {
+  if (!travel?.city) return null;
+  const label = `Visiting: ${travel.city}${travel.dates ? ` in ${travel.dates}` : ''}`;
+  const tone =
+    variant === 'glass'
+      ? 'bg-white/90 text-[#2D264B] border-white/40 text-[10px] px-2 py-0.5'
+      : 'bg-[#F3EFFC] text-[#2D264B] border-[#6555B8]/20 text-xs px-3 py-1';
+  return (
+    <span
+      title={travel.country ? `${label}, ${travel.country}` : label}
+      className={`inline-flex items-center gap-1 max-w-full rounded-full border font-semibold shadow-sm ${tone} ${className}`}
+    >
+      <span aria-hidden>✈️</span>
+      <span className="truncate">{label}</span>
+    </span>
+  );
+}
+
+export default VisitingBadge;

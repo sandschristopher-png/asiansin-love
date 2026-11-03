@@ -30,11 +30,12 @@ export async function verifyAdminCaller(): Promise<AdminAuthResult> {
   const adminDb = getServiceRoleClient();
   const { data: profile, error: profErr } = await adminDb
     .from('profiles')
-    .select('id, is_admin')
+    .select('*')
     .eq('id', user.id)
     .single();
 
-  if (profErr || !profile?.is_admin) {
+  // role = 'admin' (20261108_release_features.sql) or the older is_admin flag.
+  if (profErr || !(profile?.role === 'admin' || profile?.is_admin === true)) {
     return { authorized: false, status: 403, error: 'Forbidden: Admin privilege required' };
   }
 

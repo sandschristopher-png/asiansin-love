@@ -48,7 +48,7 @@ export default function UpgradeModal({
     }
   };
 
-  const [selectedTier, setSelectedTier] = useState<'12m' | '3m' | '1m'>('12m');
+  const [selectedTier, setSelectedTier] = useState<'6m' | '3m' | '1m'>('6m');
 
   const handleCheckout = async (planId: string = '1m') => {
     if (onSelectPlan) {
@@ -147,12 +147,12 @@ export default function UpgradeModal({
 
         {/* Tier Selector */}
           <div className="grid grid-cols-2 gap-2 mb-3 text-left">
-            {/* 12 Months */}
+            {/* 6 Months */}
             <button
               type="button"
-              onClick={() => setSelectedTier('12m')}
+              onClick={() => setSelectedTier('6m')}
               className={`relative rounded-xl p-2 text-left border transition cursor-pointer flex flex-col justify-between ${
-                selectedTier === '12m'
+                selectedTier === '6m'
                   ? 'border-[#6555B8] bg-[#F3EFFC]/80 ring-1 ring-[#6555B8] shadow-xs'
                   : 'border-[#ECE6F7] bg-[#FAF9FD] hover:border-[#DDD7E5]'
               }`}
@@ -161,7 +161,7 @@ export default function UpgradeModal({
                 Save 47%
               </span>
               <div className="pt-0.5">
-                <div className="text-[10px] font-bold text-[#1C1924]">12 Mo</div>
+                <div className="text-[10px] font-bold text-[#1C1924]">6 Mo</div>
                 <div className="text-[9px] text-[#6555B8] font-semibold">Best Value</div>
               </div>
               <div className="mt-1 pt-1 border-t border-[#ECE6F7]/80">
@@ -205,7 +205,7 @@ export default function UpgradeModal({
             ) : (
               <>
                 <span>
-                  Upgrade to AIL+ • {selectedTier === '12m' ? '$7.99/mo' : '$14.99/mo'}
+                  Upgrade to AIL+ • {selectedTier === '6m' ? '$47.99 / 6 mo' : '$14.99/mo'}
                 </span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </>

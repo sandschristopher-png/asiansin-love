@@ -1,10 +1,11 @@
 /** Shared limits and helpers for voice intros and in-chat voice notes. */
 
-export const VOICE_INTRO_MIN_MS = 5000;
-export const VOICE_INTRO_MAX_MS = 10000;
+export const VOICE_INTRO_MIN_MS = 3000;
+/** 20 s at 32 kbps mono Opus is ~80 KB: light enough for provincial 3G. */
+export const VOICE_INTRO_MAX_MS = 20000;
 export const VOICE_NOTE_MAX_MS = 60000;
 
-/** Upload caps (opus at ~32 kbps is ~40 KB for 10 s; AAC on iOS is larger). */
+/** Upload caps (opus at ~32 kbps is ~80 KB for 20 s; AAC on iOS is larger). */
 export const VOICE_INTRO_MAX_BYTES = 1024 * 1024;
 export const VOICE_NOTE_MAX_BYTES = 2 * 1024 * 1024;
 

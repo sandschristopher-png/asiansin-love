@@ -69,5 +69,13 @@ export async function POST(req: Request) {
     console.error('[onboarding] could not complete:', error.message);
     return NextResponse.json({ error: 'Could not complete onboarding. Please try again.' }, { status: 500 });
   }
-  return NextResponse.json({ success: true });
+
+  // Day 1 founding cohort (first 100 verified men + 100 verified women, 90 days of AIL+).
+  // Atomic in SQL; a full cohort, an unverified member or a missing migration just returns null.
+  let dayOneNumber: number | null = null;
+  const { data: slot, error: slotErr } = await admin.rpc('claim_day_one_slot', { p_user_id: userId });
+  if (slotErr) console.warn('[onboarding] day one claim skipped:', slotErr.message);
+  else if (typeof slot === 'number') dayOneNumber = slot;
+
+  return NextResponse.json({ success: true, dayOneNumber });
 }

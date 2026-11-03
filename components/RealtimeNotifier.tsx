@@ -110,12 +110,12 @@ export function RealtimeNotifier() {
       return data;
     };
 
-    const notify = async (t: NotificationToastData) => {
+    const showNotificationToast = async (t: NotificationToastData) => {
       if (cancelled) return;
       setToast(t);
       if (typeof window !== 'undefined' && 'vibrate' in navigator) {
         try {
-          navigator.vibrate([15, 45, 15]);
+          navigator.vibrate([20, 60, 20]);
         } catch {}
       }
 
@@ -161,18 +161,26 @@ export function RealtimeNotifier() {
         // A. messages
         .on(
           'postgres_changes',
-          { event: '*', schema: 'public', table: 'messages', filter: `receiver_id=eq.${uid}` },
+          // No Postgres filter string (brittle with realtime + RLS): RLS already limits rows to my own
+          // conversations, and the receiver check below keeps only messages sent TO me.
+          { event: '*', schema: 'public', table: 'messages' },
           async (payload) => {
+            const row = (payload.new || {}) as { id: string; sender_id: string; receiver_id?: string; content?: string | null; is_quarantined?: boolean | null; audio_path?: string | null };
+            const old = (payload.old || {}) as { receiver_id?: string };
+            if (row.receiver_id !== uid && old.receiver_id !== uid) return;
             refreshUnreadMessages(uid);
-            if (payload.eventType !== 'INSERT') return;
-            const row = payload.new as { id: string; sender_id: string; content?: string | null; is_quarantined?: boolean | null; audio_path?: string | null };
-            if (!row?.sender_id || row.is_quarantined) return;
+            if (payload.eventType !== 'INSERT' || row.receiver_id !== uid) return;
+            if (!row.sender_id || row.is_quarantined) return;
             const actor = await fetchActor(row.sender_id);
-            // That conversation is already open (/chat/{id} or /chat/{username}): no toast.
-            const open = (pathRef.current || '').match(/^\/chat\/([^/?#]+)/)?.[1];
+            // Only that exact conversation, open and on screen, swallows the toast. Discover, Sparks,
+            // Profile, the /messages inbox, other chats or a background tab all still notify.
+            const open = (pathRef.current || '').match(/^\/(?:chat|messages)\/([^/?#]+)/)?.[1];
             const openKey = open ? decodeURIComponent(open).replace(/^@+/, '').toLowerCase() : null;
-            if (openKey && (openKey === row.sender_id.toLowerCase() || openKey === String(actor?.username || '').toLowerCase())) return;
-            notify({
+            const onThatChat =
+              openKey !== null &&
+              (openKey === row.sender_id.toLowerCase() || openKey === String(actor?.username || '').toLowerCase());
+            if (onThatChat && document.visibilityState === 'visible') return;
+            showNotificationToast({
               key: `m-${row.id}`,
               kind: 'message',
               actorId: row.sender_id,
@@ -201,7 +209,7 @@ export function RealtimeNotifier() {
               setNotificationCounts({ unseenSparks: getNotificationCounts().unseenSparks + 1 });
             }
             const kind: NotificationKind = mutual ? 'mutual' : 'spark';
-            notify({
+            showNotificationToast({
               key: `s-${row.id}`,
               kind,
               actorId: row.sender_id,
@@ -222,7 +230,7 @@ export function RealtimeNotifier() {
             if (!row?.viewer_id || row.viewer_id === uid) return;
             const actor = await fetchActor(row.viewer_id);
             const name = actorName(actor, 'Someone');
-            notify({
+            showNotificationToast({
               key: `v-${row.id}`,
               kind: 'visit',
               actorId: row.viewer_id,

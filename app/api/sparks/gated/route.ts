@@ -19,9 +19,7 @@ export async function GET() {
   }
 
   // AIL+ unlocks Sparked You / Visited for men; women always have full access for free.
-  if (!me?.is_plus && me?.gender !== 'female') {
-    return NextResponse.json({ error: 'plus_required' }, { status: 403 });
-  }
+  const fullAccess = Boolean(me?.is_plus) || me?.gender === 'female';
 
   const { data: sparkedYou, error: e1 } = await supabase.rpc('get_sparked_you_profiles');
   if (e1) return NextResponse.json({ error: e1.message }, { status: 500 });
@@ -29,5 +27,19 @@ export async function GET() {
   const { data: visitedYou, error: e2 } = await supabase.rpc('get_visited_you_profiles');
   if (e2) return NextResponse.json({ error: e2.message }, { status: 500 });
 
-  return NextResponse.json({ sparkedYou: sparkedYou ?? [], visitedYou: visitedYou ?? [], gender: me?.gender ?? null, lookingFor: me?.looking_for ?? null });
+  if (!fullAccess) {
+    // Free preview: the newest Spark in full, then only counts. Locked rows carry no profile data,
+    // so nothing about those members ever reaches the browser.
+    const sparked = (sparkedYou ?? []) as unknown[];
+    const visited = (visitedYou ?? []) as unknown[];
+    return NextResponse.json({
+      access: 'preview',
+      sparkedYou: [...sparked.slice(0, 1), ...sparked.slice(1).map((_, i) => ({ id: `locked-sparked-${i}`, locked: true }))],
+      visitedYou: visited.map((_, i) => ({ id: `locked-visited-${i}`, locked: true })),
+      gender: me?.gender ?? null,
+      lookingFor: me?.looking_for ?? null,
+    });
+  }
+
+  return NextResponse.json({ access: 'full', sparkedYou: sparkedYou ?? [], visitedYou: visitedYou ?? [], gender: me?.gender ?? null, lookingFor: me?.looking_for ?? null });
 }

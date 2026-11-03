@@ -178,6 +178,13 @@ export async function POST(req: NextRequest) {
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
     if (!data || data.length === 0) return NextResponse.json({ error: 'User not found' }, { status: 404 });
 
+    // Approved members who already finished onboarding join the Day 1 cohort if a slot is left
+    // (the claim also runs at POST /api/onboarding for members verified before finishing).
+    if (approve) {
+      const { error: slotErr } = await admin.rpc('claim_day_one_slot', { p_user_id: userId });
+      if (slotErr) console.warn('[admin/verifications] day one claim skipped:', slotErr.message);
+    }
+
     // Rejected: purge the selfie (and any legacy pose photos); the small review-metadata JSON stays
     // as an audit trail of the decision.
     if (!approve) {

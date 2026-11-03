@@ -2,63 +2,78 @@
 
 import React, { useEffect, useState, Suspense } from 'react';
 import Link from 'next/link';
-import { useSearchParams } from 'next/navigation';
-import { 
-  Zap, 
-  Compass, 
-  ShieldCheck, 
-  Check, 
-  MapPin, 
-  MessageSquare, 
-  CheckCircle2, 
-  Loader2, 
-  Lock, 
-  Settings,
-  ArrowRight,
-  ExternalLink
-} from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { ArrowLeft, Check, CheckCircle2, ChevronDown, Compass, Loader2, Lock, MessageSquare, Settings, X } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
+import { isPlusProfile } from '@/lib/plus';
+import { DEFAULT_PLUS_PLAN, FREE_DAILY_SPARKS, PLUS_PLANS, plusPlan, type PlusPlanId } from '@/lib/plusPlans';
 
-const QUICK_HUBS = [
-  { city: 'Cebu City', country: 'Philippines' },
-  { city: 'Manila', country: 'Philippines' },
-  { city: 'Bangkok', country: 'Thailand' },
-  { city: 'Tokyo', country: 'Japan' },
-  { city: 'Kuala Lumpur', country: 'Malaysia' },
-  { city: 'Bali', country: 'Indonesia' },
-];
+type Cell = { text: string; included: boolean | null };
 
-/** Free vs AIL+ matrix: keep in sync with the real limits (api/messages, api/spark, settings). */
-const COMPARISON: { feature: string; free: string; plus: string }[] = [
-  { feature: 'Browse & send Sparks', free: '40/day', plus: '40/day' },
-  { feature: 'New conversations per day', free: '5', plus: 'Unlimited' },
-  { feature: 'See who sparked you', free: 'Blurred', plus: '✓' },
-  { feature: 'Visitor history', free: '—', plus: '✓' },
-  { feature: 'Private Mode (men)', free: '—', plus: '✓' },
-  { feature: 'Passport / travel mode', free: '—', plus: '✓' },
-  { feature: 'Verified badge, voice intro, Translate', free: '✓', plus: '✓' },
+/**
+ * Free vs AIL+ side by side. Every row is wired: keep in sync with /api/spark (daily Sparks),
+ * /api/messages (mutual matches), /api/sparks/gated (previews), /api/discover (country filters),
+ * the chat read indicators and /api/profile (travel notice). `included: null` = same for both.
+ */
+const MATRIX: { feature: string; free: Cell; plus: Cell }[] = [
+  { feature: 'Identity Verification', free: { text: 'Free for Everyone', included: null }, plus: { text: 'Free for Everyone', included: null } },
+  { feature: 'Mutual Match Messaging', free: { text: 'Unlimited', included: null }, plus: { text: 'Unlimited', included: null } },
+  { feature: 'Anti-Scam Safety Gate', free: { text: 'Active for All', included: null }, plus: { text: 'Active for All', included: null } },
+  { feature: 'Upcoming Travel Notice', free: { text: 'Local Only', included: false }, plus: { text: '"Visiting:" Badge on Discover & Profile', included: true } },
+  { feature: 'Cross-Border Country Filters', free: { text: 'Local / Near Me', included: false }, plus: { text: 'All 11 SEA Nations', included: true } },
+  { feature: 'Daily Sparks', free: { text: `${FREE_DAILY_SPARKS} / day`, included: false }, plus: { text: 'Unlimited', included: true } },
+  { feature: 'See Who Viewed You', free: { text: 'Blurred Count', included: false }, plus: { text: 'Full Unblurred Grid', included: true } },
+  { feature: 'See Who Sparked You', free: { text: '1 Preview', included: false }, plus: { text: 'Full Unblurred Grid', included: true } },
+  { feature: 'Message Read Receipts', free: { text: 'Timestamps Only', included: false }, plus: { text: 'Delivered & Read Indicators', included: true } },
+  { feature: 'AIL Plus Member Badge', free: { text: 'Standard', included: false }, plus: { text: 'Discreet Plus Badge', included: true } },
 ];
 
 const FAQ: { q: string; a: string }[] = [
   {
-    q: 'How much does AIL+ cost?',
-    a: '$14.99 billed monthly, $11.99/month billed $35.97 every 3 months, or $7.99/month billed $95.88 every year. Prices are in US dollars and taxes may apply.',
+    q: 'Is verification really free?',
+    a: 'Yes. Selfie and location verification are free for every member, always. Verified profiles keep the community safe, so they are never behind a paywall.',
   },
   {
-    q: 'Does it renew automatically?',
-    a: 'Yes. Your plan renews at the end of each period until you cancel.',
+    q: 'What does the travel notice do?',
+    a: 'Add the city and month of an upcoming trip in Edit Profile. A "Visiting:" badge then shows on your Discover card and profile so members there can say hello before you land.',
   },
   {
-    q: 'How do I cancel or change my card?',
-    a: 'Settings → Manage Subscription opens the Stripe billing portal, where you can cancel or update your payment method yourself. You keep AIL+ until the end of the period you paid for.',
+    q: 'Do women need AIL+?',
+    a: 'No. Women see who sparked and viewed them for free. AIL+ adds unlimited Sparks, country filters, the travel notice, read receipts and the Plus badge for anyone who wants them.',
   },
   {
-    q: 'Is AIL+ required for women?',
-    a: 'No. Women can use Asians in Love, including Private Mode, completely free.',
+    q: 'What happens to my matches if I stop paying?',
+    a: 'Nothing is deleted. Your matches and conversations stay; only the AIL+ extras switch off at the end of the period you paid for.',
   },
 ];
 
+const BILLING_TERMS: string[] = [
+  'Prices are in US dollars and are charged by Stripe. Taxes may apply.',
+  '1 Month renews every month at $14.99. 3 Months renews at $29.99 every 3 months. 6 Months renews at $47.99 every 6 months.',
+  'Plans renew automatically until you cancel. Cancel any time in Settings → Manage Subscription; you keep AIL+ until the end of the paid period.',
+  'Unlimited Sparks are subject to fair use to stop automated spam.',
+];
+
+function Mark({ cell, plus }: { cell: Cell; plus: boolean }) {
+  if (cell.included === true) return <Check className="w-3.5 h-3.5 shrink-0 text-emerald-300" strokeWidth={3} aria-label="Included" />;
+  if (cell.included === false) return <X className="w-3.5 h-3.5 shrink-0 text-white/30" strokeWidth={3} aria-label="Not included" />;
+  return <Check className={`w-3.5 h-3.5 shrink-0 ${plus ? 'text-purple-200' : 'text-white/50'}`} strokeWidth={3} aria-hidden />;
+}
+
+function Drawer({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <details className="group rounded-2xl bg-white/[0.04] border border-white/10 px-4 py-3">
+      <summary className="cursor-pointer list-none flex items-center justify-between gap-2 text-sm font-semibold text-white">
+        {title}
+        <ChevronDown className="w-4 h-4 text-purple-200 transition-transform group-open:rotate-180" />
+      </summary>
+      <div className="mt-3 space-y-3">{children}</div>
+    </details>
+  );
+}
+
 function PlusHubContent() {
+  const router = useRouter();
   const searchParams = useSearchParams();
   const isPostCheckoutSuccess = searchParams.get('success') === '1';
 
@@ -66,18 +81,9 @@ function PlusHubContent() {
   const [starting, setStarting] = useState(false);
   const [openingPortal, setOpeningPortal] = useState(false);
   const [isPlus, setIsPlus] = useState(false);
-  const [selectedTier, setSelectedTier] = useState<'12m' | '3m' | '1m'>('12m');
-  
-  // Travel status state
-  const [travelIntent, setTravelIntent] = useState<'visiting' | 'current'>('visiting');
-  const [travelCity, setTravelCity] = useState('');
-  const [travelCountry, setTravelCountry] = useState('');
-  const [customCity, setCustomCity] = useState('');
-
+  const [selectedPlan, setSelectedPlan] = useState<PlusPlanId>(DEFAULT_PLUS_PLAN);
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
   const [isVerifyingPlus, setIsVerifyingPlus] = useState(isPostCheckoutSuccess);
-
-  const sb = supabase;
 
   useEffect(() => {
     let mounted = true;
@@ -86,33 +92,22 @@ function PlusHubContent() {
 
     async function checkProfile() {
       try {
-        const { data: { user } } = await sb.auth.getUser();
+        const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
           if (mounted) setLoading(false);
           return;
         }
-
-        const { data: prof } = await sb
-          .from('profiles')
-          .select('is_plus, travel_city, travel_country')
-          .eq('id', user.id)
-          .maybeSingle();
-
+        const { data: prof } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle();
         if (mounted && prof) {
-          const hasPlus = Boolean(prof.is_plus);
+          const hasPlus = isPlusProfile(prof);
           setIsPlus(hasPlus);
-          setTravelCity(prof.travel_city || '');
-          setTravelCountry(prof.travel_country || '');
-
+          // Stripe's webhook can land a moment after the redirect back here.
           if (isPostCheckoutSuccess && !hasPlus && pollCount < maxPolls) {
             pollCount++;
             setTimeout(checkProfile, 1500);
             return;
           }
-
-          if (hasPlus) {
-            setIsVerifyingPlus(false);
-          }
+          if (hasPlus) setIsVerifyingPlus(false);
         }
       } catch (e) {
         console.error(e);
@@ -137,7 +132,7 @@ function PlusHubContent() {
       const res = await fetch('/api/plus/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ planId: selectedTier, returnPath: '/plus' }),
+        body: JSON.stringify({ planId: selectedPlan, returnPath: '/plus' }),
       });
       const json = await res.json();
       if (res.status === 503) {
@@ -145,7 +140,7 @@ function PlusHubContent() {
         return;
       }
       if (!res.ok || !json.url) {
-        setStatusMsg(json.error || 'Could not initiate checkout.');
+        setStatusMsg(json.error || 'Could not start checkout.');
         return;
       }
       window.location.href = json.url;
@@ -178,423 +173,198 @@ function PlusHubContent() {
     }
   }
 
-  async function setDestination(city: string, country: string) {
-    if (!isPlus) {
-      setStatusMsg('Upgrade to AIL+ below to activate Travel Status.');
-      return;
-    }
-    setStatusMsg(null);
-    try {
-      const res = await fetch('/api/plus/passport', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ city, country }),
-      });
-      if (!res.ok) {
-        const json = await res.json().catch(() => ({}));
-        throw new Error(json.error || 'Failed to update location.');
-      }
-      setTravelCity(city);
-      setTravelCountry(country);
-      setCustomCity('');
-      const label = travelIntent === 'visiting' ? 'Visiting Soon' : 'Currently Here';
-      setStatusMsg(`Location updated to ${city}, ${country} (${label}).`);
-    } catch (err: any) {
-      setStatusMsg(err?.message || 'Failed to update location.');
-    }
-  }
-
-  function handleCustomSubmit(e: React.FormEvent) {
-    e.preventDefault();
-    const trimmed = customCity.trim();
-    if (!trimmed) return;
-    const parts = trimmed.split(',').map((p) => p.trim());
-    setDestination(parts[0], parts[1] || '');
-  }
+  const plan = plusPlan(selectedPlan);
 
   return (
-    <div className="w-full pb-28 pt-3 px-4">
-      {/* Post-Checkout Return Banner */}
-      {isPostCheckoutSuccess && (
-        <div className="mb-4 p-4 rounded-3xl bg-white border border-emerald-100 shadow-sm flex flex-col items-center text-center">
-          <div className="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center mb-2">
-            {isVerifyingPlus && !isPlus ? (
-              <Loader2 className="w-5 h-5 animate-spin" />
-            ) : (
-              <CheckCircle2 className="w-6 h-6" />
-            )}
-          </div>
-          <h2 className="text-base font-bold text-[#1C1924]">
-            {isPlus ? 'Welcome to AIL Plus!' : 'Confirming Membership...'}
-          </h2>
-          <p className="text-xs text-[#6C637B] mt-0.5 mb-3">
-            {isPlus ? 'Your full access is now active.' : 'Finalizing upgrade with Stripe...'}
-          </p>
-          <div className="flex items-center gap-2 w-full">
-            <Link
-              href="/chat"
-              className="flex-1 py-2 rounded-full bg-[#6555B8] text-white text-xs font-semibold flex items-center justify-center gap-1.5 shadow-sm"
-            >
-              <MessageSquare className="w-3.5 h-3.5" />
-              <span>Messages</span>
-            </Link>
-            <Link
-              href="/discover"
-              className="flex-1 py-2 rounded-full bg-white border border-[#DDD7E5] text-[#6555B8] text-xs font-semibold flex items-center justify-center gap-1.5"
-            >
-              <Compass className="w-3.5 h-3.5" />
-              <span>Discover</span>
-            </Link>
-          </div>
-        </div>
-      )}
-
-      {/* Hero Card */}
-      <div className="rounded-3xl bg-white border border-[#ECE8F4] p-5 shadow-sm mb-4 text-center">
-        {/* Brand mark: Lucide icon in a gradient squircle (no illustrations) */}
-        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#6555B8] to-[#433682] flex items-center justify-center text-white mx-auto mb-4 shadow-md shadow-[#6555B8]/25">
-          <Zap className="w-7 h-7 fill-current" strokeWidth={1.75} />
+    <div className="flex-1 w-full min-h-full bg-[#161128] text-white">
+      <div className="px-4 pt-3 pb-[calc(7.5rem+env(safe-area-inset-bottom))] space-y-6">
+        {/* Subpage header */}
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => (window.history.length > 1 ? router.back() : router.push('/discover'))}
+            aria-label="Back"
+            className="w-9 h-9 -ml-1 rounded-full flex items-center justify-center text-white/80 hover:bg-white/10 transition"
+          >
+            <ArrowLeft className="w-5 h-5" />
+          </button>
+          <span className="text-xs font-semibold uppercase tracking-[0.2em] text-purple-200/80">AIL Plus</span>
         </div>
 
-        <h1 className="text-xl font-bold text-[#1C1924] tracking-tight">
-          Real connection, without limits.
-        </h1>
-        <p className="text-xs text-[#6C637B] leading-relaxed mt-1 mb-4 max-w-[310px] mx-auto">
-          Southeast Asian women use Asians in Love completely free. AIL Plus unlocks unlimited new conversations, Private Mode, visitor history, and travel status.
-        </p>
-
-        {/* Multi-tier Subscription Selector */}
-          {!isPlus && (
-            <div className="grid grid-cols-3 gap-2 mb-3.5 text-left">
-              {/* 12 Months */}
-              <button
-                type="button"
-                onClick={() => setSelectedTier('12m')}
-                className={`relative rounded-2xl p-2.5 text-left border transition cursor-pointer flex flex-col justify-between ${
-                  selectedTier === '12m'
-                    ? 'border-[#6555B8] bg-[#F3EFFC]/80 ring-1 ring-[#6555B8] shadow-sm'
-                    : 'border-[#ECE6F7] bg-[#FAF9FD] hover:border-[#DDD7E5]'
-                }`}
-              >
-                <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 bg-[#6555B8] text-white text-[9px] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider whitespace-nowrap">
-                  Best Value
-                </span>
-                <div className="pt-1">
-                  <div className="text-[11px] font-bold text-[#1C1924]">12 Months</div>
-                  <div className="text-[10px] text-[#6555B8] font-semibold">Save 47%</div>
-                </div>
-                <div className="mt-2 pt-1 border-t border-[#ECE6F7]/80">
-                  <div className="text-sm font-bold text-[#1C1924]">$7.99<span className="text-[10px] font-normal text-[#6C637B]">/mo</span></div>
-                  <div className="text-[9px] text-[#8A8199] mt-0.5">$95.88/yr</div>
-                </div>
-              </button>
-
-              {/* 3 Months */}
-              <button
-                type="button"
-                onClick={() => setSelectedTier('3m')}
-                className={`relative rounded-2xl p-2.5 text-left border transition cursor-pointer flex flex-col justify-between ${
-                  selectedTier === '3m'
-                    ? 'border-[#6555B8] bg-[#F3EFFC]/80 ring-1 ring-[#6555B8] shadow-sm'
-                    : 'border-[#ECE6F7] bg-[#FAF9FD] hover:border-[#DDD7E5]'
-                }`}
-              >
-                <div className="pt-1">
-                  <div className="text-[11px] font-bold text-[#1C1924]">3 Months</div>
-                  <div className="text-[10px] text-[#6555B8] font-semibold">Save 20%</div>
-                </div>
-                <div className="mt-2 pt-1 border-t border-[#ECE6F7]/80">
-                  <div className="text-sm font-bold text-[#1C1924]">$11.99<span className="text-[10px] font-normal text-[#6C637B]">/mo</span></div>
-                  <div className="text-[9px] text-[#8A8199] mt-0.5">$35.97/qtr</div>
-                </div>
-              </button>
-
-              {/* 1 Month */}
-              <button
-                type="button"
-                onClick={() => setSelectedTier('1m')}
-                className={`relative rounded-2xl p-2.5 text-left border transition cursor-pointer flex flex-col justify-between ${
-                  selectedTier === '1m'
-                    ? 'border-[#6555B8] bg-[#F3EFFC]/80 ring-1 ring-[#6555B8] shadow-sm'
-                    : 'border-[#ECE6F7] bg-[#FAF9FD] hover:border-[#DDD7E5]'
-                }`}
-              >
-                <div className="pt-1">
-                  <div className="text-[11px] font-bold text-[#1C1924]">1 Month</div>
-                  <div className="text-[10px] text-[#8A8199]">Standard</div>
-                </div>
-                <div className="mt-2 pt-1 border-t border-[#ECE6F7]/80">
-                  <div className="text-sm font-bold text-[#1C1924]">$14.99<span className="text-[10px] font-normal text-[#6C637B]">/mo</span></div>
-                  <div className="text-[9px] text-[#8A8199] mt-0.5">Billed monthly</div>
-                </div>
-              </button>
+        {isPostCheckoutSuccess && (
+          <div className="p-4 rounded-3xl bg-white/[0.06] border border-emerald-300/30 flex flex-col items-center text-center">
+            <div className="w-10 h-10 rounded-full bg-emerald-400/15 text-emerald-300 flex items-center justify-center mb-2">
+              {isVerifyingPlus && !isPlus ? <Loader2 className="w-5 h-5 animate-spin" /> : <CheckCircle2 className="w-6 h-6" />}
             </div>
-          )}
-
-          {/* Single Primary Action */}
-          {isPlus ? (
-            <button
-              type="button"
-              disabled={openingPortal}
-              onClick={handlePortal}
-              className="w-full py-3 rounded-full font-semibold text-xs tracking-wide flex items-center justify-center gap-2 shadow-sm transition active:scale-[0.99] cursor-pointer bg-[#F3EFFC] border border-[#DDD7E5] text-[#6555B8] hover:bg-[#EAE4F7]"
-            >
-              {openingPortal ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Loading Stripe Portal...</span>
-                </>
-              ) : (
-                <>
-                  <Settings className="w-4 h-4" />
-                  <span>Manage Active Subscription</span>
-                </>
-              )}
-            </button>
-          ) : (
-            <>
-              <button
-                type="button"
-                disabled={starting || loading}
-                onClick={handleSubscribe}
-                className="w-full py-3 rounded-full font-semibold text-xs tracking-wide flex items-center justify-center gap-2 shadow-sm transition active:scale-[0.99] cursor-pointer bg-[#6555B8] hover:bg-[#5747A9] active:bg-[#4C3D97] text-white disabled:opacity-75"
-              >
-                {starting ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    <span>Connecting to Stripe...</span>
-                  </>
-                ) : (
-                  <span>
-                    Upgrade to AIL+ • {selectedTier === '12m' ? '$7.99/mo' : selectedTier === '3m' ? '$11.99/mo' : '$14.99/mo'}
-                  </span>
-                )}
-              </button>
-
-              {/* Quiet Link Exclusively For Existing Subscribers Not Detected */}
-            <div className="mt-3 flex items-center justify-center">
-              <button
-                type="button"
-                disabled={openingPortal}
-                onClick={handlePortal}
-                className="text-[11px] font-medium text-[#6555B8] hover:underline flex items-center gap-1 cursor-pointer disabled:opacity-50"
-              >
-                <span>Already subscribed? Manage billing</span>
-                <ExternalLink className="w-3 h-3" />
-              </button>
+            <h2 className="text-base font-bold">{isPlus ? 'Welcome to AIL Plus' : 'Confirming your membership...'}</h2>
+            <p className="text-xs text-white/60 mt-0.5 mb-3">{isPlus ? 'Everything below is now unlocked.' : 'Finishing up with Stripe.'}</p>
+            <div className="flex items-center gap-2 w-full">
+              <Link href="/messages" className="flex-1 py-2 rounded-full bg-[#6555B8] text-white text-xs font-semibold flex items-center justify-center gap-1.5">
+                <MessageSquare className="w-3.5 h-3.5" /> Messages
+              </Link>
+              <Link href="/discover" className="flex-1 py-2 rounded-full border border-white/20 text-white text-xs font-semibold flex items-center justify-center gap-1.5">
+                <Compass className="w-3.5 h-3.5" /> Discover
+              </Link>
             </div>
-          </>
+          </div>
         )}
 
-        <div className="flex items-center justify-center gap-1 text-[10px] text-neutral-400 mt-2.5">
-          <Lock className="w-3 h-3 text-neutral-400" />
-          <span>Encrypted checkout via Stripe</span>
-        </div>
+        {/* Hero */}
+        <header className="text-center space-y-2.5 pt-2">
+          <h1
+            className="text-[34px] leading-[1.05] font-black tracking-tight text-transparent bg-clip-text bg-[linear-gradient(90deg,#f3e8ff_0%,#d8b4fe_30%,#fbcfe8_60%,#f3e8ff_100%)] animate-gradient-flow"
+            style={{ fontFamily: 'var(--font-brand)' }}
+          >
+            Date across borders.
+          </h1>
+          <p className="text-sm text-white/70 leading-relaxed max-w-[320px] mx-auto">
+            Plan the trip, filter by country and see everyone who sparked you. Verification and matched messaging stay free for everyone.
+          </p>
+        </header>
+
+        {statusMsg && (
+          <div className="p-3 rounded-2xl bg-white/[0.06] border border-white/15 text-xs font-medium text-purple-100 text-center">{statusMsg}</div>
+        )}
+
+        {/* Plans */}
+        {!isPlus && (
+          <section aria-label="Choose a plan" className="grid grid-cols-3 gap-2" role="radiogroup">
+            {PLUS_PLANS.map((p) => {
+              const active = p.id === selectedPlan;
+              return (
+                <button
+                  key={p.id}
+                  type="button"
+                  role="radio"
+                  aria-checked={active}
+                  onClick={() => setSelectedPlan(p.id)}
+                  className={`relative rounded-2xl px-2.5 pt-4 pb-3 text-left border transition flex flex-col gap-1 ${
+                    active ? 'border-purple-300 bg-white/[0.09] ring-1 ring-purple-300' : 'border-white/10 bg-white/[0.03] hover:border-white/25'
+                  }`}
+                >
+                  {p.badge && (
+                    <span
+                      className={`absolute -top-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${
+                        p.badge === 'Most Popular' ? 'bg-purple-200 text-[#2D264B]' : 'bg-[#6555B8] text-white'
+                      }`}
+                    >
+                      {p.badge}
+                    </span>
+                  )}
+                  <span className="text-[11px] font-bold text-white/90">{p.label}</span>
+                  <span className="text-lg font-black leading-none">
+                    {p.total}
+                    <span className="ml-1 text-[10px] font-medium text-white/50">{p.totalSuffix}</span>
+                  </span>
+                  <span className="text-[10px] text-white/55">
+                    {p.months > 1 ? `${p.perMonth} / mo` : p.billingNote}
+                  </span>
+                  {p.savings && <span className="text-[10px] font-semibold text-emerald-300">{p.savings}</span>}
+                </button>
+              );
+            })}
+          </section>
+        )}
+
+        {/* Free vs AIL+ */}
+        <section aria-label="Free and AIL Plus compared" className="rounded-3xl border border-white/10 overflow-hidden">
+          <div className="grid grid-cols-[1.1fr_1fr_1fr] text-[10px] font-bold uppercase tracking-wider">
+            <span className="px-3 py-3 text-white/40">Feature</span>
+            <span className="px-2.5 py-3 text-center text-white/60 bg-white/[0.03]">Free</span>
+            <span className="px-2.5 py-3 text-center text-purple-100 bg-[#6555B8]/25">AIL+</span>
+          </div>
+          {MATRIX.map((row) => (
+            <div key={row.feature} className="grid grid-cols-[1.1fr_1fr_1fr] border-t border-white/[0.07] text-[11px]">
+              <span className="px-3 py-3 font-semibold text-white/90 leading-snug">{row.feature}</span>
+              <span className="px-2.5 py-3 bg-white/[0.03] text-white/60 flex items-start gap-1.5 leading-snug">
+                <Mark cell={row.free} plus={false} />
+                <span>{row.free.text}</span>
+              </span>
+              <span className="px-2.5 py-3 bg-[#6555B8]/15 text-white flex items-start gap-1.5 leading-snug font-medium">
+                <Mark cell={row.plus} plus />
+                <span>{row.plus.text}</span>
+              </span>
+            </div>
+          ))}
+        </section>
+
+        {/* Drawers */}
+        <section className="space-y-2.5">
+          <Drawer title="Questions">
+            {FAQ.map((f) => (
+              <div key={f.q}>
+                <p className="text-xs font-semibold text-white">{f.q}</p>
+                <p className="mt-1 text-xs text-white/60 leading-relaxed">{f.a}</p>
+              </div>
+            ))}
+          </Drawer>
+          <Drawer title="Billing Terms">
+            <ul className="space-y-2 list-disc pl-4 text-xs text-white/60 leading-relaxed">
+              {BILLING_TERMS.map((t) => (
+                <li key={t}>{t}</li>
+              ))}
+            </ul>
+            <p className="text-xs text-white/60">
+              Full details in our{' '}
+              <Link href="/terms" className="font-semibold text-purple-200 underline">
+                Terms of Service
+              </Link>
+              .
+            </p>
+          </Drawer>
+        </section>
+
+        <p className="flex items-center justify-center gap-1 text-[10px] text-white/40">
+          <Lock className="w-3 h-3" /> Encrypted checkout by Stripe
+        </p>
       </div>
 
-      {statusMsg && (
-        <div className="mb-4 p-2.5 rounded-2xl bg-[#6555B8]/10 border border-[#6555B8]/20 text-xs font-medium text-[#6555B8] text-center animate-in fade-in">
-          {statusMsg}
-        </div>
-      )}
-
-      {/* Free vs AIL+ (values mirror the app's real limits) */}
-      <div className="mb-4 rounded-2xl bg-white border border-[#ECE8F4] shadow-sm overflow-hidden">
-        <div className="grid grid-cols-[1fr_64px_64px] px-3.5 py-2.5 bg-[#F9F8FC] text-[10px] font-bold uppercase tracking-wider text-[#8A8199]">
-          <span>Feature</span>
-          <span className="text-center">Free</span>
-          <span className="text-center text-[#6555B8]">AIL+</span>
-        </div>
-        {COMPARISON.map((row) => (
-          <div key={row.feature} className="grid grid-cols-[1fr_64px_64px] items-center px-3.5 py-2.5 border-t border-[#F3F0F8] text-xs">
-            <span className="font-medium text-[#1C1924] pr-2">{row.feature}</span>
-            <span className="text-center text-[#6C637B]">{row.free}</span>
-            <span className="text-center font-semibold text-[#6555B8]">{row.plus}</span>
-          </div>
-        ))}
-      </div>
-
-      {/* Billing FAQ */}
-      <div className="mb-4 space-y-2">
-        <div className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 px-1">Billing FAQ</div>
-        {FAQ.map((f) => (
-          <details key={f.q} className="group rounded-2xl bg-white border border-[#ECE8F4] px-3.5 py-3 shadow-sm">
-            <summary className="cursor-pointer list-none text-xs font-semibold text-[#1C1924] flex items-center justify-between gap-2">
-              {f.q}
-              <span aria-hidden className="text-[#6555B8] transition-transform group-open:rotate-45">+</span>
-            </summary>
-            <p className="mt-2 text-xs text-[#524B5E] leading-relaxed">{f.a}</p>
-          </details>
-        ))}
-      </div>
-
-      {/* Categorized Privileges */}
-        <div className="space-y-3 mb-4">
-          <div className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 px-1">
-            Membership Privileges
-          </div>
-
-          {/* Category 1: Privacy & Discretion */}
-          <div className="rounded-2xl bg-white border border-[#ECE8F4] p-3.5 shadow-sm text-left">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-6 h-6 rounded-lg bg-[#F3EFFC] border border-[#6555B8]/20 text-[#6555B8] flex items-center justify-center shrink-0">
-                <Lock className="w-3.5 h-3.5" />
-              </div>
-              <h3 className="text-xs font-bold text-[#1C1924]">Privacy & Discretion</h3>
-            </div>
-            <div className="space-y-2 pl-8">
-              <div>
-                <div className="text-xs font-semibold text-[#1C1924]">Incognito Profile Browsing</div>
-                <p className="text-[11px] text-[#6C637B] leading-snug">
-                  Browse profile cards discreetly without leaving footprints in their Visited tab.
-                </p>
-              </div>
-              <div>
-                <div className="text-xs font-semibold text-[#1C1924]">Stealth Presence</div>
-                <p className="text-[11px] text-[#6C637B] leading-snug">
-                  Explore connections quietly while keeping your online visibility under your control.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Category 2: Discovery & Sparks */}
-          <div className="rounded-2xl bg-white border border-[#ECE8F4] p-3.5 shadow-sm text-left">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-6 h-6 rounded-lg bg-[#F3EFFC] border border-[#6555B8]/20 text-[#6555B8] flex items-center justify-center shrink-0">
-                <Compass className="w-3.5 h-3.5" />
-              </div>
-              <h3 className="text-xs font-bold text-[#1C1924]">Discovery & Sparks</h3>
-            </div>
-            <div className="space-y-2 pl-8">
-              <div>
-                <div className="text-xs font-semibold text-[#1C1924]">Unblurred Inbound Sparks</div>
-                <p className="text-[11px] text-[#6C637B] leading-snug">
-                  See everyone who liked your profile with zero blur and match instantly.
-                </p>
-              </div>
-              <div>
-                <div className="text-xs font-semibold text-[#1C1924]">Travel Status & Passport Hub</div>
-                <p className="text-[11px] text-[#6C637B] leading-snug">
-                  Set your destination to Cebu, Manila, Bangkok, or Tokyo to connect before your flight.
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Category 3: Communication & Trust */}
-          <div className="rounded-2xl bg-white border border-[#ECE8F4] p-3.5 shadow-sm text-left">
-            <div className="flex items-center gap-2 mb-2">
-              <div className="w-6 h-6 rounded-lg bg-[#F3EFFC] border border-[#6555B8]/20 text-[#6555B8] flex items-center justify-center shrink-0">
-                <ShieldCheck className="w-3.5 h-3.5" />
-              </div>
-              <h3 className="text-xs font-bold text-[#1C1924]">Communication & Trust</h3>
-            </div>
-            <div className="space-y-2 pl-8">
-              <div>
-                <div className="text-xs font-semibold text-[#1C1924]">Unlimited Direct Introductions</div>
-                <p className="text-[11px] text-[#6C637B] leading-snug">
-                  Send thoughtful first messages without hitting daily limits or waiting through cooldown timers.
-                </p>
-              </div>
-              <div>
-                <div className="text-xs font-semibold text-[#1C1924]">Verified AIL+ Member Badge</div>
-                <p className="text-[11px] text-[#6C637B] leading-snug">
-                  Displays the purple Plus badge on your profile, signaling verified commitment.
-                </p>
-              </div>
-              <div>
-                <div className="text-xs font-semibold text-[#1C1924]">Custom Member Handle</div>
-                <p className="text-[11px] text-[#6C637B] leading-snug">
-                  Claim and personalize your unique @username handle on Asians in Love.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Travel Status Hub */}
-      <div className="rounded-3xl bg-white border border-[#ECE8F4] p-4 shadow-sm mb-4">
-        <div className="flex items-center justify-between mb-2.5">
-          <div className="text-xs font-bold text-[#1C1924]">Travel Status</div>
-          <span className="text-[10px] font-semibold text-[#6555B8] bg-[#F3EFFC] px-2 py-0.5 rounded-full border border-[#DDD7E5]/60 flex items-center gap-1">
-            {travelIntent === 'visiting' ? <Compass className="w-3 h-3 text-[#6555B8]" /> : <MapPin className="w-3 h-3 text-[#6555B8]" />}
-            <span>{travelCity ? `${travelCity} • ${travelIntent === 'visiting' ? 'Visiting Soon' : 'In Town'}` : 'GPS Default'}</span>
-          </span>
-        </div>
-
-        {/* Intent Segmented Control */}
-        <div className="flex p-0.5 rounded-full bg-[#FAF9FD] border border-[#ECE6F7] mb-2.5">
+      {/* Pinned checkout bar */}
+      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] z-50 bg-[#161128]/95 border-t border-white/10 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+        {isPlus ? (
           <button
             type="button"
-            disabled={!isPlus}
-            onClick={() => setTravelIntent('visiting')}
-            className={`flex-1 py-1 rounded-full text-[11px] font-semibold flex items-center justify-center gap-1 transition cursor-pointer ${
-              travelIntent === 'visiting'
-                ? 'bg-[#6555B8] text-white shadow-xs'
-                : 'text-[#6555B8] hover:bg-[#F3EFFC]'
-            } disabled:opacity-50`}
+            disabled={openingPortal}
+            onClick={handlePortal}
+            className="w-full h-12 rounded-full bg-white/10 border border-white/20 text-white text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-60"
           >
-            <Compass className="w-3 h-3" />
-            <span>Visiting Soon</span>
+            {openingPortal ? <Loader2 className="w-4 h-4 animate-spin" /> : <Settings className="w-4 h-4" />}
+            Manage Subscription
           </button>
-          <button
-            type="button"
-            disabled={!isPlus}
-            onClick={() => setTravelIntent('current')}
-            className={`flex-1 py-1 rounded-full text-[11px] font-semibold flex items-center justify-center gap-1 transition cursor-pointer ${
-              travelIntent === 'current'
-                ? 'bg-[#6555B8] text-white shadow-xs'
-                : 'text-[#6555B8] hover:bg-[#F3EFFC]'
-            } disabled:opacity-50`}
-          >
-            <MapPin className="w-3 h-3" />
-            <span>Currently Here</span>
-          </button>
-        </div>
-
-        {/* Custom City Input */}
-        <form onSubmit={handleCustomSubmit} className="relative mb-2.5">
-          <input
-            type="text"
-            disabled={!isPlus}
-            value={customCity}
-            onChange={(e) => setCustomCity(e.target.value)}
-            placeholder="Search or enter city (e.g. Cebu City, Manila)..."
-            className="w-full h-8 pl-3 pr-8 rounded-xl bg-[#FAF9FD] border border-[#ECE6F7] text-xs text-[#1C1924] placeholder:text-neutral-400 focus:outline-none focus:border-[#6555B8] disabled:opacity-50"
-          />
-          {customCity.trim() && (
-            <button
-              type="submit"
-              disabled={!isPlus}
-              className="absolute right-1 top-1 w-6 h-6 rounded-lg bg-[#6555B8] text-white flex items-center justify-center hover:bg-[#5747A9] transition cursor-pointer"
+        ) : (
+          <div className="flex items-center gap-2.5">
+            <Link
+              href="/discover"
+              className="h-12 px-5 rounded-full border border-white/20 text-white/80 text-sm font-semibold flex items-center justify-center hover:bg-white/5 transition"
             >
-              <ArrowRight className="w-3 h-3" />
+              Keep Free
+            </Link>
+            <button
+              type="button"
+              disabled={starting || loading}
+              onClick={handleSubscribe}
+              className="flex-1 h-12 rounded-full bg-gradient-to-r from-[#7B6AD0] to-[#6555B8] text-white text-sm font-bold flex items-center justify-center gap-2 shadow-[0_8px_24px_rgba(101,85,184,0.45)] active:scale-[0.99] transition disabled:opacity-70"
+            >
+              {starting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" /> Opening checkout...
+                </>
+              ) : (
+                <>Upgrade to Plus · {plan.total}</>
+              )}
             </button>
-          )}
-        </form>
-
-        {/* Quick Hub Chips */}
-        <div className="flex flex-wrap gap-1.5">
-          {QUICK_HUBS.map((hub) => {
-            const active = travelCity.toLowerCase() === hub.city.toLowerCase();
-            return (
-              <button
-                key={hub.city}
-                type="button"
-                disabled={!isPlus}
-                onClick={() => setDestination(hub.city, hub.country)}
-                className={`px-2.5 py-1 rounded-xl text-[11px] font-medium border transition cursor-pointer ${
-                  active
-                    ? 'bg-[#6555B8] border-[#6555B8] text-white shadow-xs'
-                    : 'bg-[#FAF9FD] border-[#ECE6F7] text-[#1C1924] hover:border-[#6555B8]/50 disabled:opacity-40 disabled:cursor-not-allowed'
-                }`}
-              >
-                {hub.city}
-              </button>
-            );
-          })}
-        </div>
+          </div>
+        )}
+        {!isPlus && (
+          <button
+            type="button"
+            disabled={openingPortal}
+            onClick={handlePortal}
+            className="mt-2 w-full text-[11px] text-white/45 hover:text-white/70 disabled:opacity-50"
+          >
+            Already subscribed? Manage billing
+          </button>
+        )}
       </div>
     </div>
   );
@@ -602,7 +372,7 @@ function PlusHubContent() {
 
 export default function AilPlusPage() {
   return (
-    <Suspense fallback={<div className="w-full min-h-dvh bg-[#F8F6FC] pb-28" />}>
+    <Suspense fallback={<div className="flex-1 w-full min-h-full bg-[#161128]" />}>
       <PlusHubContent />
     </Suspense>
   );

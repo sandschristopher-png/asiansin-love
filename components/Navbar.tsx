@@ -156,9 +156,12 @@ export function Navbar() {
     return null;
   };
   const pageTitle = getPageTitle();
+  // Root bottom-nav tabs never show a back arrow; only subpages do.
+  const ROOT_TABS = ['/discover', '/favorites', '/messages', '/profile'];
+  const showBack = !ROOT_TABS.includes((pathname || '').replace(/\/+$/, ''));
   if (isChatThread || pathname === '/plus' || (pathname || '').startsWith('/plus/') || pathname === '/profile/edit' || (pathname || '').startsWith('/profile/edit/') || pathname === '/settings' || (pathname || '').startsWith('/settings/')) return null;
   return (
-    <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md backdrop-saturate-150 transition-all">
+    <header className="sticky top-0 z-40 w-full bg-white/95 transition-all">
       <div className="w-full px-4 h-12 flex items-center justify-between relative">
         <div className="flex items-center gap-2 min-w-0">
           <div
@@ -170,6 +173,7 @@ export function Navbar() {
               <BrandLogo href={user ? "/discover" : "/"} size="lg" />
             ) : (
               <div className="flex items-center gap-2.5">
+                {showBack && (
                 <button
                   type="button"
                   onClick={() => { if (typeof window !== "undefined" && window.history.length > 1) router.back(); else router.push("/discover"); }}
@@ -178,6 +182,7 @@ export function Navbar() {
                 >
                   <ArrowLeft className="w-5 h-5" />
                 </button>
+                )}
                 <h1
                   className="text-[19px] sm:text-[21px] font-semibold text-[#4C3B75] tracking-[-0.025em] leading-snug pb-0.5 select-none truncate"
                   style={{ fontFamily: 'var(--font-brand)' }}

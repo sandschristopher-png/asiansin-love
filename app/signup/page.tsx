@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { BrandLogo } from '@/components/BrandLogo';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
+import { GoogleAuthButton } from '@/components/GoogleAuthButton';
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -71,18 +72,21 @@ export default function SignUpPage() {
           Join asiansin.love
         </h1>
         <p className="text-sm text-[#1C1924] mt-1">
-          A welcoming, verified community for sincere relationships.
+          Verified members across Southeast Asia and beyond, here for real dating.
         </p>
       </div>
 
       <div className="rounded-3xl bg-[#FFFFFF] border border-[#9A8CC3]/35 p-6 sm:p-8 shadow-2xl space-y-5">
+        <GoogleAuthButton onError={setErrorMsg} />
+
         {errorMsg && (
-          <div className="p-3 rounded-xl bg-rose-950/80 border border-rose-500/50 text-rose-200 text-xs font-semibold animate-in fade-in">
+          <div className="p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold">
             {errorMsg}
           </div>
         )}
 
-        <form onSubmit={handleSignUp} className="space-y-4">          <div>
+        <form onSubmit={handleSignUp} className="space-y-4">
+          <div>
             <label className="text-xs font-medium uppercase tracking-wider text-[#9A8CC3] block mb-1">
               Email Address
             </label>
