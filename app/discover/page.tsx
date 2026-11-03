@@ -6,7 +6,7 @@ import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import VerifiedBadge from '@/components/VerifiedBadge';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Camera, ChevronLeft, ChevronRight, Search, Heart, X as XIcon, SlidersHorizontal, RotateCcw } from 'lucide-react';
+import { Camera, ChevronDown, ChevronLeft, ChevronRight, Search, Heart, X as XIcon, SlidersHorizontal, RotateCcw } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { INTENT_OPTIONS, normalizeIntent } from '@/lib/intents';
 import { ActionType, getLocalCardActions, persistCardAction } from '@/lib/interactions';
@@ -1012,25 +1012,33 @@ function DiscoverContent() {
                         Age Range
                       </label>
                       <div className="flex items-center gap-2.5">
-                        <select
-                          value={draftMinAge}
-                          onChange={(e) => setDraftMinAge(Math.min(Number(e.target.value), draftMaxAge))}
-                          className="flex-1 py-2 px-3 rounded-xl border border-[#DDD7E5] bg-white text-xs text-[#1C1924] cursor-pointer focus:outline-none focus:border-[#6555B8]"
-                        >
-                          {Array.from({ length: 48 }, (_, i) => i + 18).map((age) => (
-                            <option key={age} value={age}>{age}</option>
-                          ))}
-                        </select>
+                        <div className="relative flex-1">
+                          <select
+                            aria-label="Minimum age"
+                            value={draftMinAge}
+                            onChange={(e) => setDraftMinAge(Math.min(Number(e.target.value), draftMaxAge))}
+                            className="w-full appearance-none bg-slate-50 border border-slate-200 text-[#2D264B] font-medium rounded-xl pl-3 pr-9 py-2 text-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#6555B8]/30"
+                          >
+                            {Array.from({ length: 48 }, (_, i) => i + 18).map((age) => (
+                              <option key={age} value={age} className="bg-white text-[#2D264B]">{age}</option>
+                            ))}
+                          </select>
+                          <ChevronDown aria-hidden className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                        </div>
                         <span className="text-xs text-[#6C637B] font-medium">to</span>
-                        <select
-                          value={draftMaxAge}
-                          onChange={(e) => setDraftMaxAge(Math.max(Number(e.target.value), draftMinAge))}
-                          className="flex-1 py-2 px-3 rounded-xl border border-[#DDD7E5] bg-white text-xs text-[#1C1924] cursor-pointer focus:outline-none focus:border-[#6555B8]"
-                        >
-                          {Array.from({ length: 48 }, (_, i) => i + 18).map((age) => (
-                            <option key={age} value={age}>{age}</option>
-                          ))}
-                        </select>
+                        <div className="relative flex-1">
+                          <select
+                            aria-label="Maximum age"
+                            value={draftMaxAge}
+                            onChange={(e) => setDraftMaxAge(Math.max(Number(e.target.value), draftMinAge))}
+                            className="w-full appearance-none bg-slate-50 border border-slate-200 text-[#2D264B] font-medium rounded-xl pl-3 pr-9 py-2 text-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#6555B8]/30"
+                          >
+                            {Array.from({ length: 48 }, (_, i) => i + 18).map((age) => (
+                              <option key={age} value={age} className="bg-white text-[#2D264B]">{age}</option>
+                            ))}
+                          </select>
+                          <ChevronDown aria-hidden className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                        </div>
                       </div>
                     </div>
 
@@ -1038,16 +1046,20 @@ function DiscoverContent() {
                       <label className="text-[11px] font-bold text-[#6C637B] uppercase tracking-wider block mb-2">
                         Country
                       </label>
-                      <select
-                        value={draftCountry}
-                        onChange={(e) => setDraftCountry(e.target.value)}
-                        className="w-full py-2 px-3 rounded-xl border border-[#DDD7E5] bg-white text-xs text-[#1C1924] cursor-pointer focus:outline-none focus:border-[#6555B8]"
-                      >
-                        <option value="All">All Countries</option>
-                        {Array.from(new Set(profiles.map((pr) => (pr.country || '').trim()).filter(Boolean))).sort().map((c) => (
-                          <option key={c} value={c}>{c}</option>
-                        ))}
-                      </select>
+                      <div className="relative">
+                        <select
+                          aria-label="Country"
+                          value={draftCountry}
+                          onChange={(e) => setDraftCountry(e.target.value)}
+                          className="w-full appearance-none bg-slate-50 border border-slate-200 text-[#2D264B] font-medium rounded-xl pl-3 pr-9 py-2 text-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#6555B8]/30"
+                        >
+                          <option value="All" className="bg-white text-[#2D264B]">All Countries</option>
+                          {Array.from(new Set(profiles.map((pr) => (pr.country || '').trim()).filter(Boolean))).sort().map((c) => (
+                            <option key={c} value={c} className="bg-white text-[#2D264B]">{c}</option>
+                          ))}
+                        </select>
+                        <ChevronDown aria-hidden className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                      </div>
                     </div>
 
                     <div>

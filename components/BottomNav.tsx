@@ -56,7 +56,8 @@ export function BottomNav() {
         .from('messages')
         .select('*', { count: 'exact', head: true })
         .eq('receiver_id', uid)
-        .eq('is_read', false);
+        .eq('is_read', false)
+        .eq('is_quarantined', false); // held-for-review messages are never shown, so never counted
 
       if (isCancelled) return;
       setUnreadCount(count || 0);
@@ -78,7 +79,8 @@ export function BottomNav() {
               .from('messages')
               .select('*', { count: 'exact', head: true })
               .eq('receiver_id', uid)
-              .eq('is_read', false);
+              .eq('is_read', false)
+              .eq('is_quarantined', false);
             if (!isCancelled) {
               setUnreadCount(freshCount || 0);
             }

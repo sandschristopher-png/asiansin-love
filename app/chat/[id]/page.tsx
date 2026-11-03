@@ -34,6 +34,7 @@ import { usePresentUserIds } from '@/lib/realtimePresence';
 import { toList } from '@/lib/rhythm';
 import { needsTranslation } from '@/lib/language';
 import { localTimeIn, timeZoneFor } from '@/lib/timezone';
+import { evaluateSubstantiveConversation } from '@/lib/moderation';
 import { isRestricted } from '@/lib/reputation';
 import { RepBadge, RhythmPill } from '@/components/profile/RhythmBadges';
 
@@ -134,7 +135,6 @@ export default function ChatConversationPage() {
   });
   const [myRep, setMyRep] = useState(100);
   const [sharedInterests, setSharedInterests] = useState<string[]>([]);
-  const [gateProgress, setGateProgress] = useState<{ mine: number; theirs: number } | null>(null);
   // Re-render once a minute so the match's local time stays current.
   const [clockTick, setClockTick] = useState(0);
   useEffect(() => {
@@ -147,8 +147,6 @@ export default function ChatConversationPage() {
   const [starterChips, setStarterChips] = useState<StarterChip[]>([]);
   const [contactUnlocked, setContactUnlocked] = useState(false);
   // Same rules as /api/messages/voice: contact gate unlocked and sender not under review (< 70 rep).
-  const voiceAllowed = contactUnlocked && !isRestricted(myRep);
-  const voiceLockedMessage = isRestricted(myRep) ? VOICE_REP_LOCKED_MESSAGE : VOICE_LOCKED_MESSAGE;
   const [voiceSending, setVoiceSending] = useState(false);
   const voice = useVoiceRecorder(VOICE_NOTE_MAX_MS);
   const [toast, setToast] = useState<string | null>(null);
@@ -173,6 +171,29 @@ export default function ChatConversationPage() {
   }, [voicePreviewUrl]);
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  // Live Safety Gate: same rule as /api/messages (each member needs CONTACT_UNLOCK_TURNS distinct messages of
+  // 15+ characters and 3+ words, within the latest 40), recomputed as messages are sent and received.
+  // The server stays the authority for contact sharing and voice notes.
+  const liveGate = React.useMemo(
+    () =>
+      evaluateSubstantiveConversation(
+        messages
+          .filter((m) => !m.pending && !m.hasAudio)
+          .slice(-40)
+          .map((m) => ({ sender_id: m.sender, content: m.text })),
+        'me',
+        'them',
+        15,
+        CONTACT_UNLOCK_TURNS
+      ),
+    [messages]
+  );
+  const gateUnlocked = contactUnlocked || liveGate.isUnlocked;
+  // Same rules as /api/messages/voice: gate unlocked and sender not under review (< 70 rep).
+  const voiceAllowed = gateUnlocked && !isRestricted(myRep);
+  const voiceLockedMessage = isRestricted(myRep) ? VOICE_REP_LOCKED_MESSAGE : VOICE_LOCKED_MESSAGE;
+  // Locked when the chat opened: lets the banner announce the unlock when it happens here.
+  const [gateLockedOnOpen, setGateLockedOnOpen] = useState(false);
   const [inputText, setInputText] = useState('');
   const [sentCount, setSentCount] = useState(0);
   const [isPlus, setIsPlus] = useState(false);
@@ -407,9 +428,8 @@ export default function ChatConversationPage() {
 
       contactUnlockedRef.current = Boolean(remoteMsgsRes.contactUnlocked);
       setContactUnlocked(contactUnlockedRef.current);
-      if (typeof remoteMsgsRes.senderCount === 'number') {
-        setGateProgress({ mine: remoteMsgsRes.senderCount, theirs: remoteMsgsRes.partnerCount ?? 0 });
-      }
+      setGateLockedOnOpen(!contactUnlockedRef.current);
+
 
       if (remoteMsgsRes.messages) {
         setMessages(
@@ -1138,10 +1158,18 @@ export default function ChatConversationPage() {
 
       {/* Docked Flex Composer (Never overlaps message feed) */}
       <div className="shrink-0 w-full bg-white/95 backdrop-blur-md border-t border-[#ECE8F4] px-3 pt-2 pb-[max(0.625rem,env(safe-area-inset-bottom))] z-20">
-        {!contactUnlocked && gateProgress && !isInitialLoading && (
-          <p className="mb-1.5 text-center text-[10.5px] text-[#7A7289]" aria-live="polite">
-            🛡️ Safety Gate: {Math.min(gateProgress.mine, gateProgress.theirs)}/{CONTACT_UNLOCK_TURNS} messages exchanged to
-            unlock voice notes and contact sharing.
+        {!isInitialLoading && !gateUnlocked && (
+          // Each member needs their own 3; showing only the lower count read as "0/3" mid-chat.
+          <p className="mb-1.5 text-center text-[10.5px] leading-snug text-[#7A7289]" aria-live="polite">
+            🛡️ Safety Gate: you {Math.min(liveGate.senderSubstantiveCount, CONTACT_UNLOCK_TURNS)}/{CONTACT_UNLOCK_TURNS} ·{' '}
+            {targetInfo.name || 'them'} {Math.min(liveGate.receiverSubstantiveCount, CONTACT_UNLOCK_TURNS)}/{CONTACT_UNLOCK_TURNS} messages
+            exchanged to unlock voice notes and contact sharing.
+            <span className="block text-[10px] text-[#9A93A8]">Messages count when they have a few words (15+ characters).</span>
+          </p>
+        )}
+        {!isInitialLoading && gateUnlocked && gateLockedOnOpen && (
+          <p className="mb-1.5 text-center text-[10.5px] font-medium text-emerald-700" aria-live="polite">
+            🛡️ Trust Gate unlocked. Voice notes and contact sharing enabled.
           </p>
         )}
         {cooldownSeconds > 0 ? (

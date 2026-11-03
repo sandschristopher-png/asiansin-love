@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation';
 import { Navbar } from '@/components/Navbar';
 import { BottomNav } from '@/components/BottomNav';
 import { RealtimeMatchToast } from '@/components/RealtimeMatchToast';
+import { MessageNotifier } from '@/components/MessageNotifier';
 
 export function LayoutShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -39,6 +40,8 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
         </main>
         <HeartbeatProvider />
         <RealtimeMatchToast />
+        {/* Incoming-message toasts on every route except auth / onboarding screens */}
+        {!isMarketingOrAuth && <MessageNotifier />}
       </div>
       {!isMarketingOrAuth && !isChat && <BottomNav />}
     </div>

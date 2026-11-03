@@ -254,3 +254,12 @@ nextjs-portal,
     animation: none !important;
   }
 }
+
+/* In-app message toast (components/NotificationToast.tsx): slide down from above the screen */
+@keyframes ailToastIn {
+  from { transform: translateY(-100%); opacity: 0; }
+  to { transform: translateY(12px); opacity: 1; }
+}
+.ail-toast-in {
+  animation: ailToastIn 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
