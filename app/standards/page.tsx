@@ -84,10 +84,10 @@ export default function CommunityStandardsPage() {
 
           <div className="pt-4 border-t border-[#9A8CC3]/20 text-center">
             <Link
-              href="/discover"
+              href="/settings"
               className="inline-block px-8 py-3.5 rounded-2xl bg-[#6555B8] hover:bg-[#7D4B9F] text-white text-xs sm:text-sm font-medium shadow-lg shadow-[#6555B8]/40 transition active:scale-[0.98]"
             >
-              Back to Profiles
+              Back to Settings
             </Link>
           </div>
 

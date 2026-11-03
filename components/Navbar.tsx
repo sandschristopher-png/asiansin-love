@@ -158,7 +158,7 @@ export function Navbar() {
   const pageTitle = getPageTitle();
   if (isChatThread || pathname === '/plus' || (pathname || '').startsWith('/plus/') || pathname === '/profile/edit' || (pathname || '').startsWith('/profile/edit/') || pathname === '/settings' || (pathname || '').startsWith('/settings/')) return null;
   return (
-    <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md backdrop-saturate-150 border-b border-[#DDD7E5]/40 shadow-[0_2px_12px_rgba(0,0,0,0.03)] transition-all border-[#ECE8F4]/80">
+    <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md backdrop-saturate-150 transition-all">
       <div className="w-full px-4 h-12 flex items-center justify-between relative">
         <div className="flex items-center gap-2 min-w-0">
           <div

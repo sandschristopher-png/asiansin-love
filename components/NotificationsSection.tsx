@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Bell, MessageSquare, Eye, Heart, ShieldCheck, ShieldAlert, BadgeCheck } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
@@ -28,7 +28,12 @@ const TYPE_META: Record<string, { icon: any; line: (n: Notification) => string; 
   },
   message: {
     icon: MessageSquare,
-    line: (n) => `${n.actor?.username ?? 'Someone'} sent you a message`,
+    line: (n) => {
+      const count = Number(n.payload?.grouped ?? 1);
+      return count > 1
+        ? `${n.actor?.username ?? 'Someone'} sent you ${count} messages`
+        : `${n.actor?.username ?? 'Someone'} sent you a message`;
+    },
     route: (n) => `/chat/${n.actor?.id ?? ''}`
   },
   profile_visit: {
@@ -52,6 +57,32 @@ TYPE_META['favorite'] = TYPE_META.spark_received;
 TYPE_META['spark'] = TYPE_META.spark_received;
 TYPE_META['match'] = TYPE_META.mutual_match;
 TYPE_META['visit'] = TYPE_META.profile_visit;
+
+/**
+ * One row per conversation for message alerts: keeps the newest alert per sender (the list is
+ * newest-first) and records how many it stands for in payload.grouped.
+ */
+function groupMessageAlerts(list: Notification[]): Notification[] {
+  const bySender = new Map<string, Notification>();
+  const out: Notification[] = [];
+  for (const n of list) {
+    const sender = n.type === 'message' ? n.actor?.id : undefined;
+    if (!sender) {
+      out.push(n);
+      continue;
+    }
+    const kept = bySender.get(sender);
+    if (kept) {
+      kept.payload = { ...kept.payload, grouped: Number(kept.payload?.grouped ?? 1) + 1 };
+      if (!n.is_read) kept.is_read = false;
+      continue;
+    }
+    const copy = { ...n, payload: { ...(n.payload || {}), grouped: 1 } };
+    bySender.set(sender, copy);
+    out.push(copy);
+  }
+  return out;
+}
 
 function timeAgo(iso: string): string {
   const s = Math.floor((Date.now() - new Date(iso).getTime()) / 1000);
@@ -151,6 +182,8 @@ export default function NotificationsSection({ initial, onNavigate }: { initial?
     }
   }, [initial]);
 
+  const visible = useMemo(() => groupMessageAlerts(notifications), [notifications]);
+
   const handleOpen = (n: Notification) => {
     fetch('/api/notifications', { method: 'POST' }).catch(() => {});
     setUnread(0);
@@ -181,7 +214,7 @@ export default function NotificationsSection({ initial, onNavigate }: { initial?
         {unread > 0 && <span className="text-[10px] font-semibold text-[#6555B8]">{unread} new</span>}
       </div>
       <div className="mx-2 mb-2 flex max-h-[160px] flex-col gap-1.5 overflow-y-auto rounded-2xl border border-[#E5E1EC] bg-white/95 backdrop-blur-md shadow-lg [&::-webkit-scrollbar]:hidden [scrollbar-width:none]/70 p-1.5">
-        {notifications.slice(0, 8).map(n => {
+        {visible.slice(0, 8).map(n => {
           const meta = TYPE_META[n.type];
           if (!meta) return null;
           const Icon = meta.icon;
@@ -203,7 +236,7 @@ export default function NotificationsSection({ initial, onNavigate }: { initial?
             </button>
           );
         })}
-        {notifications.length > 5 && (
+        {visible.length > 5 && (
           <button onClick={() => { router.push('/notifications'); onNavigate?.(); }} className="px-2 py-1 text-[11px] font-semibold text-[#6555B8]">
             View all
           </button>

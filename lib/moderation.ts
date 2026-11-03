@@ -32,7 +32,7 @@ export type { Severity, WordlistCategory } from './moderationWordlists';
 
 // Zero-width / invisible / bidi-control characters used to split words.
 const INVISIBLE_RE =
-  /[­͏؜ᅟᅠ឴឵᠋-᠏​-‏‪-‮⁠-⁯ㅤ︀-️﻿ﾠ]/g;
+  /[\u00AD\u034F\u061C\u115F\u1160\u17B4\u17B5\u180B-\u180F\u200B-\u200F\u202A-\u202E\u2060-\u206F\u3164\uFE00-\uFE0F\uFEFF\uFFA0]/g;
 
 const LEET_COMMON: Record<string, string> = {
   '@': 'a',

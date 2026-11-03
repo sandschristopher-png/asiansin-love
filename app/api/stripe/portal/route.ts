@@ -14,26 +14,36 @@ export const runtime = 'nodejs';
 const RETURN_PATHS = new Set(['/settings', '/plus']);
 
 async function findCustomerId(stripe: Stripe, userId: string, email: string | undefined): Promise<string | null> {
-  if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    const admin = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY, {
-      auth: { persistSession: false },
-    });
+  const admin = process.env.SUPABASE_SERVICE_ROLE_KEY
+    ? createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY, {
+        auth: { persistSession: false },
+      })
+    : null;
+
+  // 1. The id stored on the profile, if it still exists in Stripe.
+  if (admin) {
     const { data: profile } = await admin.from('profiles').select('stripe_customer_id').eq('id', userId).maybeSingle();
-    if (typeof profile?.stripe_customer_id === 'string' && profile.stripe_customer_id.startsWith('cus_')) {
-      return profile.stripe_customer_id;
+    const stored = profile?.stripe_customer_id;
+    if (typeof stored === 'string' && stored.startsWith('cus_')) {
+      const customer = await stripe.customers.retrieve(stored).catch(() => null);
+      if (customer && !('deleted' in customer && customer.deleted)) return stored;
     }
   }
 
+  // 2. Fall back to checkout metadata, then the account email; link what we find to the profile.
   const search = await stripe.customers
     .search({ query: `metadata['userId']:'${userId}'`, limit: 1 })
     .catch(() => ({ data: [] as Stripe.Customer[] }));
-  if (search.data.length > 0) return search.data[0].id;
-
-  if (email) {
-    const customers = await stripe.customers.list({ email, limit: 1 });
-    if (customers.data.length > 0) return customers.data[0].id;
+  let found = search.data[0]?.id ?? null;
+  if (!found && email) {
+    const customers = await stripe.customers.list({ email, limit: 1 }).catch(() => ({ data: [] as Stripe.Customer[] }));
+    found = customers.data[0]?.id ?? null;
   }
-  return null;
+  if (found && admin) {
+    const { error } = await admin.from('profiles').update({ stripe_customer_id: found }).eq('id', userId);
+    if (error) console.warn('[stripe/portal] could not link stripe_customer_id:', error.message);
+  }
+  return found;
 }
 
 export async function POST(req: NextRequest) {
@@ -68,10 +78,7 @@ export async function POST(req: NextRequest) {
   try {
     const customerId = await findCustomerId(stripe, user.id, user.email ?? undefined);
     if (!customerId) {
-      return NextResponse.json(
-        { error: 'No active billing record found. If you recently subscribed, please allow a moment for Stripe to sync.' },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: 'No active Stripe billing profile found' }, { status: 400 });
     }
 
     const session = await stripe.billingPortal.sessions.create({

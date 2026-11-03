@@ -29,7 +29,7 @@ export function LegalPage({
 }) {
   return (
     <div className="min-h-full bg-[#F9F8FC] text-[#1C1924]">
-      <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-md border-b border-[#ECE8F4] px-4 py-3 flex items-center gap-3">
+      <header className="sticky top-0 z-30 bg-white/90 backdrop-blur-md px-4 py-3 flex items-center gap-3">
         <Link
           href="/"
           className="w-9 h-9 rounded-full flex items-center justify-center text-[#524B5E] hover:text-[#6555B8] hover:bg-[#F3EFFC] transition"
@@ -43,7 +43,7 @@ export function LegalPage({
         </div>
       </header>
 
-      <main className="w-full max-w-[430px] mx-auto px-4 pt-4 pb-[calc(6rem+env(safe-area-inset-bottom,16px))] space-y-3">
+      <main className="w-full max-w-[430px] mx-auto px-4 pt-4 pb-[calc(6rem+env(safe-area-inset-bottom,24px))] space-y-3">
         <div className="p-4 rounded-3xl bg-white border border-[#ECE8F4] space-y-2">
           <div className="text-xs text-[#524B5E] leading-relaxed space-y-2">{intro}</div>
           <p className="text-[10px] text-[#8C849B]">Last updated {updated}</p>

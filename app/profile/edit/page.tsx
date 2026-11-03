@@ -8,7 +8,7 @@ import { supabase } from '@/lib/supabase/client';
 import UpgradeModal from '@/components/UpgradeModal';
 import { resolveCountry } from '@/lib/countries';
 import { EMPTY_RHYTHM, RhythmSelectors, rhythmFromRow, type RhythmValues } from '@/components/profile/RhythmBadges';
-import { saveBioAndRhythm } from '@/lib/profileApi';
+import { saveProfileFields } from '@/lib/profileApi';
 
 
 
@@ -297,8 +297,8 @@ export default function EditProfilePage() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Not authenticated');
 
-      const updates: Record<string, any> = {
-        id: user.id,
+      // One screened, whitelisted save through PATCH /api/profile (bio, rhythm and details).
+      const saved = await saveProfileFields({
         display_name: formData.full_name.trim() || 'Member',
         full_name: formData.full_name.trim(),
         age: formData.age ? parseInt(formData.age, 10) : null,
@@ -306,22 +306,19 @@ export default function EditProfilePage() {
         country: resolveCountry(formData.city, formData.country),
         profession: formData.profession.trim(),
         relationship_goal: formData.relationship_goal,
-        updated_at: new Date().toISOString(),
-      };
+        bio: formData.bio.trim(),
+        ...rhythm,
+      });
+      if (!saved.ok) throw new Error(saved.error);
 
-      // Bio is screened and saved server-side (with the rhythm badges); a rejected bio stops the save.
-      const extras = await saveBioAndRhythm({ bio: formData.bio.trim(), ...rhythm });
-      if (!extras.ok) throw new Error(extras.error);
-
+      // First-time username claim stays a direct update (uniqueness is checked live above).
       if (!initialHasUsername && username.trim().length >= 3 && usernameStatus === 'available') {
-        updates.username = username.trim();
+        const { error } = await supabase
+          .from('profiles')
+          .update({ username: username.trim() })
+          .eq('id', user.id);
+        if (error) throw error;
       }
-
-      const { error } = await supabase
-        .from('profiles')
-        .upsert(updates);
-
-      if (error) throw error;
 
       setStatusMsg({ type: 'success', text: 'Profile updated successfully!' });
       setTimeout(() => {

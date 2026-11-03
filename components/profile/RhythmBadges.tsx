@@ -57,14 +57,14 @@ export function RhythmPill({
   );
 }
 
-/** "✨ N in common" card (full) or a one-line chip row (compact) for Discover cards. */
+/** "N in common" card (full) or a one-line plain-text chip (compact) for Discover cards. No emoji: the compact chip lives in a ~170px card column and needs every pixel. */
 export function InCommonCard({ items, compact = false }: { items: string[]; compact?: boolean }) {
   if (items.length === 0) return null;
   if (compact) {
     return (
       <span className="inline-flex max-w-full items-center px-2 py-0.5 rounded-full bg-[#F3EFFC] border border-[#6555B8]/30 text-[10px] text-[#6555B8]">
         <span className="truncate">
-          <span className="font-bold">✨ {items.length} in common:</span> {items.slice(0, 2).join(', ')}
+          <span className="font-bold">{items.length} in common:</span> {items.slice(0, 2).join(', ')}
         </span>
       </span>
     );
@@ -72,7 +72,7 @@ export function InCommonCard({ items, compact = false }: { items: string[]; comp
   return (
     <div className="p-3 rounded-2xl bg-[#F3EFFC] border border-[#6555B8]/30 space-y-2">
       <p className="text-xs font-bold text-[#6555B8]">
-        ✨ {items.length} in common
+        {items.length} in common
       </p>
       <div className="flex flex-wrap gap-1.5">
         {items.map((item) => (

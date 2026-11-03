@@ -32,10 +32,11 @@ import { InAppToast } from '@/components/InAppToast';
 import { getPresenceStatus } from '@/lib/presence';
 import { usePresentUserIds } from '@/lib/realtimePresence';
 import { toList } from '@/lib/rhythm';
+import { needsTranslation } from '@/lib/language';
 import { isRestricted } from '@/lib/reputation';
 import { RepBadge, RhythmPill } from '@/components/profile/RhythmBadges';
 
-const VOICE_LOCKED_MESSAGE = `Voice notes unlock after both members exchange ${CONTACT_UNLOCK_TURNS} substantive messages (15+ characters each).`;
+const VOICE_LOCKED_MESSAGE = `Voice notes unlock after both members exchange ${CONTACT_UNLOCK_TURNS} substantive messages.`;
 const VOICE_REP_LOCKED_MESSAGE = 'Voice notes are paused while your account is under review. Text messages still work.';
 
 interface ChatMessage {
@@ -970,12 +971,13 @@ export default function ChatConversationPage() {
                   formatDateDivider(nextMsg.createdAt) === currentDayLabel &&
                   Math.abs(new Date(nextMsg.createdAt).getTime() - new Date(msg.createdAt).getTime()) < 120000;
 
-                // Incoming text from the other member (not voice notes, masked text or optimistic bubbles).
+                // Incoming, non-English text from the other member (not voice notes, masked text or
+                // optimistic bubbles). Plain English like "Hi" / "Test" gets no Translate link.
                 const canTranslate =
                   !isMe &&
                   !msg.hasAudio &&
                   !msg.wasMasked &&
-                  Boolean(msg.text?.trim()) &&
+                  needsTranslation(msg.text || '') &&
                   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(msg.id);
 
                 return (

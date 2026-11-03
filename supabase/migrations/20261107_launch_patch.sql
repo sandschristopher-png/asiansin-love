@@ -1,5 +1,5 @@
 -- =====================================================================
--- 20261107_moderation_log_alignment.sql        (asiansin.love)
+-- 20261107_launch_patch.sql        (asiansin.love)
 --
 -- The live public.moderation_log table has these columns:
 --   id, user_id, actor_id, category, action, flagged_text, points_deducted, created_at

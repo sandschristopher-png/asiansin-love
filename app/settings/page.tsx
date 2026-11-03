@@ -42,6 +42,7 @@ export default function SettingsHubPage() {
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isPlus, setIsPlus] = useState(false);
   const [openingPortal, setOpeningPortal] = useState(false);
+  const [portalError, setPortalError] = useState<string | null>(null);
   const [settings, setSettings] = useState(() => cachedSettingsData || {
     hide_profile: false,
     show_active_status: true,
@@ -117,19 +118,32 @@ export default function SettingsHubPage() {
 
   const openBillingPortal = async () => {
     setOpeningPortal(true);
-    setErrorMsg(null);
+    setPortalError(null);
+    // Never spin forever: give up after 15 s and show an error instead.
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => controller.abort(), 15000);
     try {
       const res = await fetch('/api/stripe/portal', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ return_path: '/settings' }),
+        signal: controller.signal,
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok || !data.url) throw new Error(data.error || 'Could not open the billing portal.');
       window.location.href = data.url;
     } catch (err) {
-      setErrorMsg(err instanceof Error ? err.message : 'Could not open the billing portal.');
+      const aborted = err instanceof DOMException && err.name === 'AbortError';
+      setPortalError(
+        aborted
+          ? 'The billing portal took too long to respond. Please try again.'
+          : err instanceof Error
+            ? err.message
+            : 'Could not open the billing portal.'
+      );
       setOpeningPortal(false);
+    } finally {
+      window.clearTimeout(timer);
     }
   };
 
@@ -412,6 +426,11 @@ export default function SettingsHubPage() {
                 <ChevronRight className="w-4 h-4 text-[#8C849B]" />
               )}
             </button>
+            {portalError && (
+              <p role="alert" className="mx-3 mb-2 rounded-xl bg-rose-50 border border-rose-200 px-3 py-2 text-[11px] font-semibold text-rose-700">
+                {portalError}
+              </p>
+            )}
           </div>
         )}
 

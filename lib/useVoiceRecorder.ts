@@ -42,9 +42,16 @@ export function useVoiceRecorder(maxMs: number) {
     teardown();
   }, [teardown]);
 
-  const stop = useCallback(() => {
-    if (recorderRef.current?.state === 'recording') recorderRef.current.stop();
+  /** Mic off now: the system recording indicator should not wait for the async onstop event. */
+  const releaseMic = useCallback(() => {
+    streamRef.current?.getTracks().forEach((t) => t.stop());
   }, []);
+
+  const stop = useCallback(() => {
+    // stop() first so MediaRecorder flushes the buffered audio, then release the tracks.
+    if (recorderRef.current?.state === 'recording') recorderRef.current.stop();
+    releaseMic();
+  }, [releaseMic]);
 
   const start = useCallback(async () => {
     setError(null);
@@ -91,7 +98,14 @@ export function useVoiceRecorder(maxMs: number) {
       // Waveform is decorative; recording still works without it.
     }
 
-    const recorder = new MediaRecorder(stream, { mimeType: mime, audioBitsPerSecond: 32000 });
+    let recorder: MediaRecorder;
+    try {
+      recorder = new MediaRecorder(stream, { mimeType: mime, audioBitsPerSecond: 32000 });
+    } catch {
+      teardown();
+      setError('Voice recording is not supported in this browser.');
+      return;
+    }
     recorderRef.current = recorder;
     recorder.ondataavailable = (e) => {
       if (e.data.size > 0) chunksRef.current.push(e.data);
@@ -114,15 +128,18 @@ export function useVoiceRecorder(maxMs: number) {
     setState('recording');
     // Hard stop even if the animation loop is throttled (background tab).
     window.setTimeout(() => {
-      if (recorderRef.current === recorder && recorder.state === 'recording') recorder.stop();
+      if (recorderRef.current === recorder && recorder.state === 'recording') {
+        recorder.stop();
+        releaseMic();
+      }
     }, maxMs + 250);
-  }, [maxMs, stop, teardown]);
+  }, [maxMs, stop, teardown, releaseMic]);
 
   /** Stop without keeping the clip. */
   const cancel = useCallback(() => {
     discardRef.current = true;
     if (recorderRef.current?.state === 'recording') recorderRef.current.stop();
-    else teardown();
+    teardown();
     setBlob(null);
     setElapsedMs(0);
     setState('idle');

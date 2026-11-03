@@ -1,20 +1,52 @@
 // app/api/profile/route.ts
-//   PATCH { bio?, reply_pace?, relocation_readiness?, timeline_intent? }
+//   PATCH { bio?, reply_pace?, relocation_readiness?, timeline_intent?, ...member-editable fields }
 //
-// Bios are public, so they are screened (contact details, scams, solicitation, slurs) and saved
-// with the service role; after 20261106_reputation_rhythm.sql runs, members can no longer write
-// `bio` from the browser. The rhythm badges are validated against their CHECK values here too.
-// Only these fields are written: never forward other keys with the service role.
+// Saves the member's own profile with the service role. Public free text (bio, "looking for",
+// occupation) is screened for contact details, scams, solicitation and slurs first; after
+// 20261106_reputation_rhythm.sql runs, members can no longer write `bio` from the browser.
+//
+// The service role bypasses guard_profile_protected_columns, so ONLY the keys listed in
+// TEXT_FIELDS / the explicit handlers below are ever written. Never forward other keys.
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { createClient as createSessionClient } from '@/lib/supabase/server';
 import { evaluateBioModeration } from '@/lib/moderation';
 import { isRhythmValue, RHYTHM_FIELDS, type RhythmField } from '@/lib/rhythm';
+import { resolveCountry } from '@/lib/countries';
 
 export const runtime = 'nodejs';
 
 const MAX_BIO_CHARS = 500;
 const RHYTHM_KEYS = Object.keys(RHYTHM_FIELDS) as RhythmField[];
+
+/** Plain member-editable text columns and their max length. `screen` = public text to moderate. */
+const TEXT_FIELDS: Record<string, { max: number; screen?: boolean; label: string }> = {
+  display_name: { max: 40, label: 'Name' },
+  full_name: { max: 60, label: 'Name' },
+  location: { max: 120, label: 'City & Country' },
+  city: { max: 80, label: 'City' },
+  looking_for: { max: 200, screen: true, label: '"What I\'m looking for"' },
+  occupation: { max: 80, screen: true, label: 'Occupation' },
+  profession: { max: 80, screen: true, label: 'Occupation' },
+  relationship_intent: { max: 60, label: 'Future plans' },
+  intentions: { max: 60, label: 'Future plans' },
+  relationship_goal: { max: 60, label: 'Relationship goal' },
+  religion: { max: 60, label: 'Beliefs' },
+  marital_status: { max: 60, label: 'Marital status' },
+  has_kids: { max: 60, label: 'Children' },
+  wants_kids: { max: 60, label: 'Wants children' },
+  relocation: { max: 80, label: 'Relocation' },
+  languages: { max: 200, label: 'Languages' },
+  height: { max: 20, label: 'Height' },
+  weight: { max: 20, label: 'Weight' },
+  drinking: { max: 40, label: 'Drinking' },
+  smoking: { max: 40, label: 'Smoking' },
+};
+
+const RHYTHM_COLUMN_RE = /reply_pace|relocation_readiness|timeline_intent/;
+
+type Updates = Record<string, string | number | string[] | null>;
+const bad = (error: string, field: string, status = 400) => NextResponse.json({ error, field }, { status });
 
 export async function PATCH(req: Request) {
   const supabase = await createSessionClient();
@@ -31,50 +63,99 @@ export async function PATCH(req: Request) {
     return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
   }
 
-  const updates: Record<string, string | null> = {};
+  const updates: Updates = {};
 
   if ('bio' in body) {
-    if (typeof body.bio !== 'string') {
-      return NextResponse.json({ error: 'Bio must be text.' }, { status: 400 });
-    }
+    if (typeof body.bio !== 'string') return bad('Bio must be text.', 'bio');
     const bio = body.bio.trim();
-    if (bio.length > MAX_BIO_CHARS) {
-      return NextResponse.json({ error: `Bio can be up to ${MAX_BIO_CHARS} characters.`, field: 'bio' }, { status: 400 });
-    }
+    if (bio.length > MAX_BIO_CHARS) return bad(`Bio can be up to ${MAX_BIO_CHARS} characters.`, 'bio');
     const verdict = evaluateBioModeration(bio);
-    if (!verdict.ok) {
-      return NextResponse.json({ error: verdict.reason, field: 'bio' }, { status: 422 });
-    }
+    if (!verdict.ok) return bad(verdict.reason || 'Please revise your bio.', 'bio', 422);
     updates.bio = bio;
   }
 
-  const rhythm: Record<string, string | null> = {};
+  for (const [key, spec] of Object.entries(TEXT_FIELDS)) {
+    if (!(key in body)) continue;
+    const v = body[key];
+    if (v === null || v === '') {
+      updates[key] = null;
+      continue;
+    }
+    if (typeof v !== 'string') return bad(`${spec.label} must be text.`, key);
+    const text = v.trim();
+    if (text.length > spec.max) return bad(`${spec.label} can be up to ${spec.max} characters.`, key);
+    if (spec.screen) {
+      const verdict = evaluateBioModeration(text);
+      if (!verdict.ok) return bad(`${spec.label}: ${verdict.reason}`, key, 422);
+    }
+    updates[key] = text;
+  }
+
+  if ('country' in body) {
+    const country = typeof body.country === 'string' ? body.country.trim().slice(0, 80) : '';
+    const city = typeof updates.city === 'string' ? updates.city : '';
+    updates.country = country ? resolveCountry(city, country) || country : null;
+  }
+
+  if ('age' in body) {
+    const age = body.age === null || body.age === '' ? null : Math.round(Number(body.age));
+    if (age !== null && (!Number.isFinite(age) || age < 18 || age > 99)) return bad('Age must be between 18 and 99.', 'age');
+    updates.age = age;
+  }
+
+  if ('interests' in body) {
+    const list = Array.isArray(body.interests) ? body.interests : null;
+    if (!list || list.length > 30 || list.some((t) => typeof t !== 'string' || t.length > 60)) {
+      return bad('Invalid interests.', 'interests');
+    }
+    updates.interests = Array.from(new Set(list.map((t) => (t as string).trim()).filter(Boolean)));
+  }
+
+  for (const key of ['latitude', 'longitude'] as const) {
+    if (!(key in body) || body[key] === null) continue;
+    const n = Number(body[key]);
+    const limit = key === 'latitude' ? 90 : 180;
+    if (!Number.isFinite(n) || Math.abs(n) > limit) return bad('Invalid location.', key);
+    updates[key] = n;
+  }
+
+  // Location can only be downgraded to self-reported here; GPS verification is granted by
+  // /api/verify/location alone.
+  if (body.location_source === 'self_reported') {
+    updates.location_source = 'self_reported';
+    updates.location_verified_at = null;
+  }
+
   for (const key of RHYTHM_KEYS) {
     if (!(key in body)) continue;
     const v = body[key];
-    if (v !== null && !isRhythmValue(key, v)) {
-      return NextResponse.json({ error: `Invalid ${key.replace(/_/g, ' ')}.`, field: key }, { status: 400 });
-    }
-    rhythm[key] = v as string | null;
+    if (v !== null && !isRhythmValue(key, v)) return bad(`Invalid ${key.replace(/_/g, ' ')}.`, key);
+    updates[key] = v as string | null;
   }
 
-  if (Object.keys(updates).length === 0 && Object.keys(rhythm).length === 0) {
+  if (Object.keys(updates).length === 0) {
     return NextResponse.json({ success: true });
   }
 
   const service = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, {
     auth: { persistSession: false },
   });
-  const save = (fields: Record<string, string | null>) =>
+  const save = (fields: Updates) =>
     service.from('profiles').update({ ...fields, updated_at: new Date().toISOString() }).eq('id', userId).select('id');
 
-  let { data: rows, error } = await save({ ...updates, ...rhythm });
-  let rhythmSaved = Object.keys(rhythm).length > 0;
+  let rhythmSaved = RHYTHM_KEYS.some((k) => k in updates);
+  let { data: rows, error } = await save(updates);
 
-  // Rhythm columns arrive with 20261106_reputation_rhythm.sql; until then save the bio alone.
-  if (error && /reply_pace|relocation_readiness|timeline_intent/.test(error.message)) {
+  // Rhythm columns arrive with 20261106_reputation_rhythm.sql; until then save everything else.
+  if (error && RHYTHM_COLUMN_RE.test(error.message)) {
     rhythmSaved = false;
-    ({ data: rows, error } = Object.keys(updates).length ? await save(updates) : { data: [{ id: userId }], error: null });
+    const withoutRhythm = Object.fromEntries(Object.entries(updates).filter(([k]) => !RHYTHM_KEYS.includes(k as RhythmField)));
+    if (Object.keys(withoutRhythm).length) {
+      ({ data: rows, error } = await save(withoutRhythm));
+    } else {
+      rows = [{ id: userId }];
+      error = null;
+    }
   }
 
   if (error) {

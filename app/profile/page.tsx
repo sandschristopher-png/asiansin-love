@@ -1,7 +1,6 @@
 'use client';
 
 import { captureCurrentLocation, formatVerifiedDate } from '@/lib/location';
-import { notifyUser } from '@/components/InAppToast';
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -14,7 +13,6 @@ import {
   Check,
   Camera,
   X,
-  ChevronDown,
   Loader2,
   Navigation,
   Clock,
@@ -28,7 +26,8 @@ import RepScoreCard from '@/components/RepScoreCard';
 import { ProfileHighlightsEditorRow } from '@/components/ProfileHighlightsEditorRow';
 import { VoiceIntroRecorder } from '@/components/VoiceIntroRecorder';
 import { RhythmPill, RhythmSelectors, rhythmFromRow, type RhythmValues } from '@/components/profile/RhythmBadges';
-import { saveBioAndRhythm } from '@/lib/profileApi';
+import { saveProfileFields } from '@/lib/profileApi';
+import { SelectSheet } from '@/components/SelectSheet';
 
 const QUICK_LANGUAGES = ['English', 'Tagalog', 'Thai', 'Japanese', 'Vietnamese', 'Mandarin', 'Spanish', 'Korean'];
 
@@ -137,6 +136,7 @@ export default function MyProfilePage() {
   const [locError, setLocError] = useState<string | null>(null);
   const [bio, setBio] = useState<string>(() => initialProfile?.bio ?? '');
   const [rhythm, setRhythm] = useState<RhythmValues>(() => rhythmFromRow(initialProfile));
+  const [saveError, setSaveError] = useState<string | null>(null);
   const [lookingFor, setLookingFor] = useState<string>(() => initialProfile?.lookingFor ?? '');
   const [interests, setInterests] = useState<string[]>(() => initialProfile?.interests ?? []);
 
@@ -307,14 +307,15 @@ export default function MyProfilePage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    const payload: Record<string, any> = {
-      id: user.id,
+    const payload: Record<string, unknown> = {
       display_name: name || username,
       full_name: name || username,
       age: age && !isNaN(Number(age)) ? Number(age) : null,
       location,
+      // The server only accepts a downgrade to self-reported; GPS verification is server-granted.
       location_source: locationSource,
-      location_verified_at: locationVerifiedAt,
+      bio: bio.trim(),
+      ...rhythm,
       looking_for: lookingFor.trim(),
       interests,
       occupation: profession,
@@ -330,29 +331,23 @@ export default function MyProfilePage() {
 weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(weight)) ? String(weight) : null); return kg ? kg + ' kg' : null; })(),
       drinking,
       smoking,
-      updated_at: new Date().toISOString(),
     };
 
     if (latitude) payload.latitude = latitude;
     if (longitude) payload.longitude = longitude;
 
     setSaving(true);
-    // Bio is screened and saved server-side first; a rejected bio stops the whole save.
-    const extras = await saveBioAndRhythm({ bio: bio.trim(), ...rhythm });
-    if (!extras.ok) {
-      setSaving(false);
-      notifyUser({ senderName: 'Profile', avatarUrl: '', message: extras.error, chatUrl: '/profile' });
-      return;
-    }
-    const { error } = await supabase.from('profiles').upsert(payload);
+    setSaveError(null);
+    // One screened, whitelisted save for every field (bio, rhythm, vitals, location...).
+    const result = await saveProfileFields(payload);
     setSaving(false);
 
-    if (!error) {
+    if (result.ok) {
       setIsEditing(false);
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 2500);
     } else {
-      notifyUser({ senderName: 'Profile', avatarUrl: '', message: 'Could not update profile: ' + error.message, chatUrl: '/profile' });
+      setSaveError(result.error);
     }
   };
 
@@ -371,6 +366,14 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
   return (
     <div className="flex-1 flex flex-col w-full bg-[#F8F7FA] text-[#1C1924] font-sans">
       <main className="flex-1 w-full px-4 pt-4 pb-[calc(5rem+env(safe-area-inset-bottom,16px))] space-y-5">
+        {saveError && (
+          <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold flex items-start justify-between gap-3">
+            <span>{saveError}</span>
+            <button type="button" onClick={() => setSaveError(null)} className="underline shrink-0">
+              Dismiss
+            </button>
+          </div>
+        )}
         {saveSuccess && (
           <div className="p-3.5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-800 text-xs font-semibold flex items-center gap-2">
             <Check className="w-4 h-4 text-emerald-600" />
@@ -787,19 +790,13 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
             <div className="flex items-center justify-between gap-2 pb-3 border-b border-[#F0EDF5]">
               <span className="font-semibold text-[#6C637B]">Height</span>
               {isEditing ? (
-                <div className="relative">
-                  <select
-                    value={height}
-                    onChange={(e) => setHeight(e.target.value)}
-                    className="appearance-none pr-8 pl-3 py-1.5 rounded-xl bg-[#F3EFFC] border border-[#6555B8]/20 text-xs font-semibold text-[#6555B8] focus:outline-none"
-                  >
-                    <option value="">Select height</option>
-                    {HEIGHT_OPTIONS.map((opt) => (
-                      <option key={opt} value={opt}>{opt}</option>
-                    ))}
-                  </select>
-                  <ChevronDown className="w-3.5 h-3.5 text-[#6555B8] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                </div>
+                <SelectSheet
+                  label="Height"
+                  value={height}
+                  options={HEIGHT_OPTIONS}
+                  onChange={setHeight}
+                  placeholder="Select height"
+                />
               ) : (
                 <span className="font-semibold text-[#1C1924]">{height || 'Not specified'}</span>
               )}
@@ -809,19 +806,13 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
             <div className="flex items-center justify-between gap-2 pb-3 border-b border-[#F0EDF5]">
               <span className="font-semibold text-[#6C637B]">Weight</span>
               {isEditing ? (
-                <div className="relative">
-                  <select
-                    value={weight}
-                    onChange={(e) => setWeight(e.target.value)}
-                    className="appearance-none pr-8 pl-3 py-1.5 rounded-xl bg-[#F3EFFC] border border-[#6555B8]/20 text-xs font-semibold text-[#6555B8] focus:outline-none"
-                  >
-                    <option value="">Select weight</option>
-                    {WEIGHT_OPTIONS.map((opt) => (
-                      <option key={opt} value={opt}>{opt}</option>
-                    ))}
-                  </select>
-                  <ChevronDown className="w-3.5 h-3.5 text-[#6555B8] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                </div>
+                <SelectSheet
+                  label="Weight"
+                  value={weight}
+                  options={WEIGHT_OPTIONS}
+                  onChange={setWeight}
+                  placeholder="Select weight"
+                />
               ) : (
                 <span className="font-semibold text-[#1C1924]">{weight || 'Not specified'}</span>
               )}
@@ -847,18 +838,12 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
             <div className="flex items-center justify-between gap-2 pb-3 border-b border-[#F0EDF5]">
               <span className="font-semibold text-[#6C637B]">Marital Status</span>
               {isEditing ? (
-                <div className="relative">
-                  <select
-                    value={maritalStatus}
-                    onChange={(e) => setMaritalStatus(e.target.value)}
-                    className="appearance-none pr-8 pl-3 py-1.5 rounded-xl bg-[#F3EFFC] border border-[#6555B8]/20 text-xs font-semibold text-[#6555B8] focus:outline-none"
-                  >
-                    {MARITAL_OPTIONS.map((opt) => (
-                      <option key={opt} value={opt}>{opt}</option>
-                    ))}
-                  </select>
-                  <ChevronDown className="w-3.5 h-3.5 text-[#6555B8] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                </div>
+                <SelectSheet
+                  label="Marital Status"
+                  value={maritalStatus}
+                  options={MARITAL_OPTIONS}
+                  onChange={setMaritalStatus}
+                />
               ) : (
                 <span className="font-semibold text-[#1C1924]">{maritalStatus || 'Not specified'}</span>
               )}
@@ -868,18 +853,12 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
             <div className="flex items-center justify-between gap-2 pb-3 border-b border-[#F0EDF5]">
               <span className="font-semibold text-[#6C637B]">Beliefs</span>
               {isEditing ? (
-                <div className="relative">
-                  <select
-                    value={religion}
-                    onChange={(e) => setReligion(e.target.value)}
-                    className="appearance-none pr-8 pl-3 py-1.5 rounded-xl bg-[#F3EFFC] border border-[#6555B8]/20 text-xs font-semibold text-[#6555B8] focus:outline-none"
-                  >
-                    {RELIGION_OPTIONS.map((opt) => (
-                      <option key={opt} value={opt}>{opt}</option>
-                    ))}
-                  </select>
-                  <ChevronDown className="w-3.5 h-3.5 text-[#6555B8] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                </div>
+                <SelectSheet
+                  label="Beliefs"
+                  value={religion}
+                  options={RELIGION_OPTIONS}
+                  onChange={setReligion}
+                />
               ) : (
                 <span className="font-semibold text-[#1C1924]">{religion || 'Not specified'}</span>
               )}
@@ -889,18 +868,12 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
             <div className="flex items-center justify-between gap-2">
               <span className="font-semibold text-[#6C637B]">Relocation</span>
               {isEditing ? (
-                <div className="relative">
-                  <select
-                    value={relocation}
-                    onChange={(e) => setRelocation(e.target.value)}
-                    className="appearance-none pr-8 pl-3 py-1.5 rounded-xl bg-[#F3EFFC] border border-[#6555B8]/20 text-xs font-semibold text-[#6555B8] focus:outline-none"
-                  >
-                    {RELOCATION_OPTIONS.map((opt) => (
-                      <option key={opt} value={opt}>{opt}</option>
-                    ))}
-                  </select>
-                  <ChevronDown className="w-3.5 h-3.5 text-[#6555B8] absolute right-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                </div>
+                <SelectSheet
+                  label="Relocation"
+                  value={relocation}
+                  options={RELOCATION_OPTIONS}
+                  onChange={setRelocation}
+                />
               ) : (
                 <span className="font-semibold text-[#1C1924]">{relocation || 'Not specified'}</span>
               )}

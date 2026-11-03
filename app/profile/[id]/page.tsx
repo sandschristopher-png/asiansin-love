@@ -282,7 +282,7 @@ export default function PublicProfilePage() {
   const parsedLanguages = toList(profile.languages);
   const languagesList: string[] = parsedLanguages.length > 0 ? parsedLanguages : ['English'];
 
-  // Interests + languages you both have (shown as the "✨ N in common" card above the bio).
+  // Interests + languages you both have (shown as the "N in common" card above the bio).
   const inCommon = sharedTraits(
     { interests: viewerInterests, languages: viewerLanguages },
     { interests: targetInterests, languages: parsedLanguages }

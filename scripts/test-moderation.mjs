@@ -13,7 +13,7 @@ function check(name, ok, detail = '') {
 }
 
 // --- Normalizer -------------------------------------------------------------
-const n = normalizeForModeration('W​h-a-t-s-A-p-p  m3   n0w');
+const n = normalizeForModeration('W\u200bh-a-t-s-A-p-p  m3   n0w');
 check('normalizer strips zero-width + collapses', n.collapsed.includes('whatsapp'), n.collapsed);
 check('normalizer collapses whitespace', !/\s{2,}/.test(n.normalized), n.normalized);
 check('normalizer leet map', normalizeForModeration('s3nd m0n3y').normalized === 'send money');
@@ -36,7 +36,7 @@ const contactCases = [
   ['hyphen split', 'w-h-a-t-s-a-p-p me', true],
   ['dot split', 't.e.l.e.g.r.a.m', true],
   ['spaced letters', 'find me on w h a t s a p p', true],
-  ['zero width', 'what​sapp', true],
+  ['zero width', 'what\u200bsapp', true],
   ['leet', 'wh@ts@pp m3', true],
   ['leet telegram', 'te1egr4m', true],
   ['fullwidth', 'ｔｅｌｅｇｒａｍ', true],
@@ -44,7 +44,7 @@ const contactCases = [
   ['mixed spelled digits', 'my number is nine one seven 555 1234', true],
   ['letters for digits', 'O9I7 555 I234', true],
   ['obfuscated email', 'jennyc at gmail dot com', true],
-  ['zero-width phone', '0917​123​4567', true],
+  ['zero-width phone', '0917\u200b123\u200b4567', true],
   ['symbol split platform', 'snap*chat me', true],
   ['dot spelled link', 't dot me/jenny', true],
 ];
@@ -136,6 +136,33 @@ check('bio: contact rejected', !evaluateBioModeration('Add me on IG: jen.travels
 check('bio: leet contact rejected', !evaluateBioModeration('wh@ts@pp me').ok);
 check('bio: scam rejected', !evaluateBioModeration('Looking for a sponsor, send money').ok);
 check('bio: normal bio ok', evaluateBioModeration('Nurse from Davao. I love beaches, karaoke and long talks. 5 2 and proud!').ok);
+
+// --- Translate button: only for non-English messages (lib/language.ts) -----------------
+const { needsTranslation } = await loadLib('language');
+const translateCases = [
+  ['Kumusta ka na? Miss na kita', true],
+  ['Ingat ka palagi po', true],
+  ['Unsa imong ginabuhat karon?', true],
+  ['Gwapa kaayo ka bitaw', true],
+  ['Apa kabar sayang?', true],
+  ['Sawasdee khrap, sabai dee mai?', true],
+  ['Anh yeu em nhieu lam', true],
+  ['Em ăn cơm chưa?', true],
+  ['คิดถึงนะ', true],
+  ['ok na ba?', true],
+  ['Test', false],
+  ['Hi', false],
+  ['How was your day? 😊', false],
+  ['I miss you so much', false],
+  ['Do you speak Hindi or Tagalog?', false],
+  ['Hey man, may I call you later?', false],
+  ['Lang and Ilan are my cousins', false],
+  ['See you at 7:30!', false],
+  ['❤️👨‍👩‍👧', false],
+];
+for (const [text, expected] of translateCases) {
+  check(`translate ${expected ? 'shown' : 'hidden'}: ${text}`, needsTranslation(text) === expected);
+}
 
 const total = passed + failures.length;
 for (const f of failures) console.error('  FAIL', f);
