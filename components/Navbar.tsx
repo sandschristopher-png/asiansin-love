@@ -1,5 +1,6 @@
 'use client';
 import { BrandLogo } from '@/components/BrandLogo';
+import { isPlusProfile } from '@/lib/plus';
 import NotificationsSection from '@/components/NotificationsSection';
 import { notifyUser } from '@/components/InAppToast';
 import React, { useEffect, useState, useRef } from 'react';
@@ -182,7 +183,14 @@ export function Navbar() {
             style={{ animation: 'fadeInTitle 220ms ease-out forwards' }}
           >
             {!pageTitle ? (
-              <BrandLogo href={user ? "/discover" : "/"} size="header" />
+              <div className="flex items-center gap-1.5">
+                <BrandLogo href={user ? "/discover" : "/"} size="header" />
+                {user && isPlusProfile(profile) && (
+                  <span className="inline-flex items-center text-[10px] font-bold px-1.5 py-0.5 rounded-md tracking-wider uppercase bg-gradient-to-r from-[#8C71F5]/10 to-[#EC4899]/10 border border-[#8C71F5]/20 text-[#8C71F5]">
+                    PLUS
+                  </span>
+                )}
+              </div>
             ) : (
               <div className="flex items-center gap-2.5">
                 {showBack && (

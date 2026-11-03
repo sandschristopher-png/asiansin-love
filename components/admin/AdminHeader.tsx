@@ -11,8 +11,8 @@ const TABS = [
   { href: '/admin', label: 'Reports', match: (p: string) => p === '/admin' || p.startsWith('/admin/reports') },
   { href: '/admin/photos', label: 'Photos', match: (p: string) => p.startsWith('/admin/photos') },
   { href: '/admin/members', label: 'Members', match: (p: string) => p.startsWith('/admin/members') },
-  { href: '/admin/verifications', label: 'ID Checks', match: (p: string) => p.startsWith('/admin/verifications') },
-  { href: '/admin/moderation', label: 'Messages', match: (p: string) => p.startsWith('/admin/moderation') },
+  { href: '/admin/verifications', label: 'IDs', match: (p: string) => p.startsWith('/admin/verifications') },
+  { href: '/admin/moderation', label: 'Chat', match: (p: string) => p.startsWith('/admin/moderation') },
 ];
 
 const ROLE_BADGE: Record<AdminRole, string> = {
@@ -62,7 +62,7 @@ export function AdminHeader({ name, role }: { name: string; role: AdminRole }) {
       </header>
       <nav
         ref={navRef}
-        className="w-full min-w-0 flex items-center gap-2 overflow-x-auto whitespace-nowrap no-scrollbar scroll-smooth touch-pan-x overscroll-x-contain px-4 py-2 border-b border-[#ECE8F4] bg-[#FAF8FD] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden after:content-[''] after:shrink-0 after:w-2"
+        className="w-full min-w-0 flex items-center justify-between gap-1.5 overflow-x-auto whitespace-nowrap no-scrollbar scroll-smooth touch-pan-x overscroll-x-contain px-4 py-2 border-b border-[#ECE8F4] bg-[#FAF8FD] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
         aria-label="Admin sections"
       >
         {TABS.map(({ href, label, match }) => {
@@ -72,8 +72,8 @@ export function AdminHeader({ name, role }: { name: string; role: AdminRole }) {
               key={href}
               href={href}
               aria-current={active ? 'page' : undefined}
-              className={`shrink-0 whitespace-nowrap rounded-full px-3.5 py-1.5 text-xs font-semibold transition-colors ${
-                active ? 'bg-[#2D264B] text-white' : 'bg-white text-neutral-600 border border-[#ECE8F4] hover:text-[#2D264B]'
+              className={`shrink-0 whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-semibold border transition-colors ${
+                active ? 'bg-[#2D264B] text-white border-[#2D264B] shadow-2xs' : 'bg-white text-neutral-600 border-[#ECE8F4] hover:bg-neutral-50'
               }`}
             >
               {label}
