@@ -5,11 +5,10 @@ import { notifyUser } from '@/components/InAppToast';
 import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { User, Settings, LogOut, ArrowLeft, Share2, Check , Zap} from 'lucide-react';
+import { User, Settings, LogOut, ArrowLeft, Share2, Check, Zap, Menu } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { hardSignOut } from '@/lib/hardSignOut';
 import { PlusBadge } from './PlusBadge';
-import { MenuTrigger } from '@/components/MenuTrigger';
 export function Navbar() {
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
@@ -128,11 +127,16 @@ export function Navbar() {
         setMenuOpen(false);
       }
     }
+    function handleKey(event: KeyboardEvent) {
+      if (event.key === 'Escape') setMenuOpen(false);
+    }
     document.addEventListener('pointerdown', handleClickOutside);
     document.addEventListener('touchstart', handleClickOutside);
+    document.addEventListener('keydown', handleKey);
     return () => {
       document.removeEventListener('pointerdown', handleClickOutside);
       document.removeEventListener('touchstart', handleClickOutside);
+      document.removeEventListener('keydown', handleKey);
     };
   }, []);
   const handleSignOut = async () => {
@@ -144,7 +148,6 @@ export function Navbar() {
     window.location.href = '/';
   };
   const displayName = profile?.username || 'Member';
-  const avatarUrl = profile?.avatar_url || user?.user_metadata?.avatar_url || null;
   const getPageTitle = () => {
     if (!pathname || pathname === '/' || pathname === '/discover') return null;
     if (pathname.startsWith('/favorites') || pathname.startsWith('/saved')) return 'Sparks';
@@ -161,8 +164,9 @@ export function Navbar() {
   const showBack = !ROOT_TABS.includes((pathname || '').replace(/\/+$/, ''));
   if (isChatThread || pathname === '/plus' || (pathname || '').startsWith('/plus/') || pathname === '/profile/edit' || (pathname || '').startsWith('/profile/edit/') || pathname === '/settings' || (pathname || '').startsWith('/settings/')) return null;
   return (
-    <header className="sticky top-0 z-40 w-full bg-white/95 transition-all">
-      <div className="w-full px-4 h-12 flex items-center justify-between relative">
+    // On Discover the frosted filter bar sits directly below: drop the divider so both read as one surface.
+    <header className={`sticky top-0 z-40 w-full bg-white/80 backdrop-blur-md border-b ${pathname === '/discover' ? 'border-transparent' : 'border-[#ECE8F4]/80'}`}>
+      <div className="max-w-[430px] mx-auto px-4 h-14 flex items-center justify-between relative">
         <div className="flex items-center gap-2 min-w-0">
           <div
             key={pageTitle || 'brand-home'}
@@ -170,7 +174,7 @@ export function Navbar() {
             style={{ animation: 'fadeInTitle 220ms ease-out forwards' }}
           >
             {!pageTitle ? (
-              <BrandLogo href={user ? "/discover" : "/"} textSize="text-[22px]" />
+              <BrandLogo href={user ? "/discover" : "/"} size="header" />
             ) : (
               <div className="flex items-center gap-2.5">
                 {showBack && (
@@ -221,7 +225,19 @@ export function Navbar() {
               </Link>
             )}
             <div className={`relative ${pathname === "/profile" ? "hidden" : ""}`} ref={menuRef}>
-                <MenuTrigger onClick={() => setMenuOpen(!menuOpen)} isOpen={menuOpen} avatarUrl={avatarUrl} />
+                <button
+                  type="button"
+                  onClick={() => setMenuOpen(!menuOpen)}
+                  aria-label={hasUnread ? 'Open menu (unread notifications)' : 'Open menu'}
+                  aria-haspopup="menu"
+                  aria-expanded={menuOpen}
+                  className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-[#F3EFFC] text-[#2D264B] transition-colors relative"
+                >
+                  <Menu className="w-5 h-5" />
+                  {hasUnread && (
+                    <span aria-hidden className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#EC4899] ring-2 ring-white" />
+                  )}
+                </button>
                 {menuOpen && (
                   <div className="absolute right-0 mt-2.5 w-80 rounded-2xl bg-white border border-[#DDD7E5]/40 shadow-xl py-2 z-[200] animate-[notifDropdownIn_0.2s_cubic-bezier(0.16,1,0.3,1)_both]">
                     <div className="px-4 py-2 border-b border-[#DDD7E5]/40 bg-white/95 backdrop-blur-md backdrop-saturate-150 rounded-t-2xl">

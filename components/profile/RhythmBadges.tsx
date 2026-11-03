@@ -66,7 +66,7 @@ export function InCommonCard({ items, compact = false }: { items: string[]; comp
   if (items.length === 0) return null;
   if (compact) {
     return (
-      <span className="inline-flex items-center whitespace-nowrap text-[11px] px-2.5 py-0.5 font-medium rounded-full bg-white/90 backdrop-blur-sm text-[#2D264B] shadow-sm">
+      <span className="inline-flex items-center whitespace-nowrap bg-black/35 backdrop-blur-md border border-white/20 text-white font-medium text-xs px-2.5 py-1 rounded-full">
         {items.length === 1 ? '1 thing in common' : `${items.length} things in common`}
       </span>
     );

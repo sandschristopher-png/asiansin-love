@@ -2,72 +2,108 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { ShieldCheck, Heart, ChevronRight, Flag, Check, Zap } from 'lucide-react';
+import { ShieldCheck, Heart, ChevronRight, Flag, Check, Zap, Target, BadgeCheck, MessageCircleHeart, Sparkles, MapPin } from 'lucide-react';
 import { BrandLogo } from '@/components/BrandLogo';
+
+/** Portrait used in the hero's in-app preview card. Must be an image we have rights to show. */
+const HERO_PORTRAIT_SRC = '/jennalyn.png';
+
+const STEPS = [
+  {
+    Icon: Target,
+    title: 'Share what you want',
+    desc: 'Set your intentions and communication rhythm up front.',
+  },
+  {
+    Icon: BadgeCheck,
+    title: 'Browse verified members',
+    desc: 'Genuine profiles screened with photo verification and reputation scores.',
+  },
+  {
+    Icon: MessageCircleHeart,
+    title: 'Connect with confidence',
+    desc: 'Sparks, voice notes, and contact-reveal safety guards that protect your privacy.',
+  },
+];
+
+const GLASS_PILL =
+  'inline-flex items-center gap-1 bg-black/35 backdrop-blur-md border border-white/20 text-white font-medium text-xs px-2.5 py-1 rounded-full';
 
 export function HeroLanding() {
   return (
-    <div className="min-h-screen bg-[#FDFCFE] text-[#1C1924] selection:bg-[#6555B8]/15 selection:text-[#6555B8]">
-      {/* ===== Header ===== */}
-      <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-[#F1EDF9]">
-        <div className="max-w-md mx-auto px-5 h-14 flex items-center justify-between">
-          <BrandLogo href="/" size="sm" />
+    <div className="bg-gradient-to-b from-white via-[#FAF8FD] to-white min-h-screen text-[#1C1924] selection:bg-[#6555B8]/15 selection:text-[#6555B8]">
+      {/* ===== Frosted header ===== */}
+      <header className="sticky top-0 z-40 w-full bg-white/80 backdrop-blur-md border-b border-[#ECE8F4]/80">
+        <div className="max-w-[430px] mx-auto px-4 h-14 flex items-center justify-between">
+          <BrandLogo href="/" size="header" />
           <Link
             href="/login"
-            className="px-4 py-1.5 rounded-full border border-[#DDD5EE] bg-[#FAF8FE] text-[#6555B8] text-xs font-semibold hover:bg-[#F3EFFC] hover:border-[#6555B8]/40 active:scale-95 transition"
+            className="px-4 py-1.5 rounded-full text-[#2D264B] text-sm font-semibold hover:bg-[#F3EFFC] active:scale-95 transition-colors"
           >
             Sign In
           </Link>
         </div>
       </header>
 
-      {/* ===== Hero Section ===== */}
+      {/* ===== Hero ===== */}
       <section className="overflow-hidden">
-        <div className="max-w-md mx-auto px-5 pt-8 pb-10 text-center relative">
-          <div
-            className="absolute top-6 left-1/2 -translate-x-1/2 w-80 h-80 rounded-full bg-gradient-to-b from-[#EFEAFB]/80 via-[#F7F4FD]/50 to-transparent -z-10 blur-3xl pointer-events-none"
-            aria-hidden="true"
-          />
-
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F5F1FD] border border-[#E8DFF7] text-[#6555B8] text-[11px] font-semibold tracking-tight mb-4">
-            <span className="w-1.5 h-1.5 rounded-full bg-[#6555B8]" />
-            <span>Southeast Asia &amp; Worldwide</span>
-          </div>
-
-          <h1
-            className="text-[29px] leading-[1.18] font-bold tracking-tight text-[#1C1924]"
-            style={{ fontFamily: 'var(--font-brand), sans-serif' }}
-          >
-            Real connection,
-            <br />
-            <span className="text-[#6555B8]">without the guesswork.</span>
+        <div className="max-w-md mx-auto px-5 pt-10 pb-12 text-center">
+          <p className="text-xs font-bold tracking-[0.18em] uppercase text-[#8C71F5] mb-3">Modern Matchmaking</p>
+          <h1 className="font-brand font-extrabold text-3xl sm:text-4xl text-[#2D264B] tracking-tight leading-[1.15]">
+            Real connection, without the guesswork.
           </h1>
-
-          <p className="mt-3 text-[13.5px] text-[#6C637B] leading-relaxed max-w-[325px] mx-auto">
-            Genuine singles across Southeast Asia. Verified profiles, honest intentions, and a community built for something real.
+          <p className="mt-3 text-[14px] text-[#6C637B] leading-relaxed max-w-[330px] mx-auto">
+            Genuine singles across Southeast Asia and beyond. Verified profiles, clear intentions, and a community built for something real.
           </p>
 
-          <div className="mt-6 relative mx-auto w-[240px]">
-            <div className="relative w-[240px] h-[220px] rounded-[52px_24px_52px_24px] bg-gradient-to-b from-[#F3EEFC] via-[#FAF8FE] to-white border border-[#E9E1F7] shadow-[0_10px_28px_-6px_rgba(101,85,184,0.12)] overflow-hidden flex items-end justify-center">
-              <div className="relative w-[215px] h-[208px] translate-y-[2px]">
+          {/* In-app preview card */}
+          <div className="relative mt-9 mb-2 isolate">
+            <div
+              aria-hidden
+              className="absolute -inset-4 bg-gradient-to-tr from-[#8C71F5]/20 via-[#EC4899]/15 to-transparent blur-2xl -z-10 rounded-full"
+            />
+            <figure className="relative max-w-[280px] mx-auto rounded-3xl overflow-hidden shadow-xl border border-white/60 bg-white text-left">
+              <div className="relative aspect-[4/5]">
                 <Image
-                  src="/hero-woman.png"
-                  alt="A woman using asiansin.love"
+                  src={HERO_PORTRAIT_SRC}
+                  alt="Example member profile in the asiansinlove app"
                   fill
-                  sizes="215px"
-                  className="object-contain object-bottom"
+                  sizes="280px"
+                  className="object-cover"
                   priority
                 />
+                <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                <span className={`absolute top-3 left-3 ${GLASS_PILL}`}>
+                  <Sparkles className="w-3 h-3" aria-hidden /> 2 things in common
+                </span>
+                <figcaption className="absolute inset-x-0 bottom-0 p-4 text-white">
+                  <p className="flex items-center gap-1.5 text-lg font-bold font-brand">
+                    Mika, 27
+                    <BadgeCheck className="w-4 h-4 text-[#8C71F5] fill-white" aria-label="Photo verified" />
+                  </p>
+                  <div className="mt-1.5 flex flex-wrap gap-1.5">
+                    <span className={GLASS_PILL}>
+                      <MapPin className="w-3 h-3" aria-hidden /> Manila
+                    </span>
+                    <span className={GLASS_PILL}>
+                      <Zap className="w-3 h-3" aria-hidden /> Fast Replier
+                    </span>
+                  </div>
+                </figcaption>
               </div>
-            </div>
-
-            <div className="absolute -bottom-2 -left-2 z-10 inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/95 backdrop-blur-sm border border-[#E6DEFB] shadow-[0_4px_12px_rgba(28,25,36,0.06)] text-[10.5px] font-bold text-[#6555B8]">
-              <ShieldCheck className="w-3.5 h-3.5 text-[#6555B8]" />
-              <span>Photo Verified</span>
-            </div>
+              <div className="flex items-center justify-between px-4 py-3">
+                <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#6555B8]">
+                  <ShieldCheck className="w-3.5 h-3.5" aria-hidden /> 98% Rep
+                </span>
+                <span className="inline-flex items-center gap-1.5 h-8 px-3.5 rounded-full bg-[#6555B8] text-white text-xs font-semibold">
+                  <Heart className="w-3.5 h-3.5 fill-current" aria-hidden /> Spark
+                </span>
+              </div>
+            </figure>
+            <p className="mt-3 text-[11px] text-[#9A93A8]">Example profile</p>
           </div>
 
-          <div className="mt-8">
+          <div className="mt-6">
             <Link
               href="/signup"
               className="inline-flex items-center justify-center w-full max-w-[300px] mx-auto py-3.5 rounded-full bg-[#6555B8] text-white text-sm font-semibold hover:bg-[#5545A8] active:scale-[0.99] transition shadow-[0_8px_20px_-4px_rgba(101,85,184,0.38)]"
@@ -82,70 +118,25 @@ export function HeroLanding() {
         </div>
       </section>
 
-      {/* ===== How it works ===== */}
-      <section className="bg-[#FAF8FE] py-12 border-y border-[#EFEAF7]">
+      {/* ===== How connections happen ===== */}
+      <section className="py-12 border-y border-[#EFEAF7] bg-[#FAF8FD]/60">
         <div className="max-w-md mx-auto px-5">
           <div className="text-center">
-            <span className="text-[11px] font-bold uppercase tracking-widest text-[#6555B8]">
-              Simple &amp; Intentional
-            </span>
-            <h2
-              className="mt-1 text-xl font-bold tracking-tight text-[#1C1924]"
-              style={{ fontFamily: 'var(--font-brand), sans-serif' }}
-            >
-              How asiansin.love works
-            </h2>
+            <h2 className="font-brand text-xl font-extrabold tracking-tight text-[#2D264B]">How connections happen</h2>
             <p className="mt-1.5 text-[13px] text-[#6C637B]">
               Match on intention, not luck. Three steps to meeting someone real.
             </p>
           </div>
 
-          <div className="mt-6 flex justify-center">
-            <div className="relative w-[230px] h-[200px] rounded-[36px_36px_20px_20px] bg-gradient-to-b from-[#F3EEFC]/80 to-white/60 border border-[#EAE3F6] p-2 flex items-end justify-center overflow-hidden">
-              <div className="relative w-[210px] h-[190px] translate-y-[2px] translate-x-[10px]">
-                <Image
-                  src="/hero-couple.png"
-                  alt="A happy couple"
-                  fill
-                  sizes="210px"
-                  className="object-contain object-bottom"
-                />
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-6 space-y-2.5">
-            {[
-              {
-                step: '1',
-                title: 'Share what you want',
-                desc: 'Create your profile and state what you are genuinely looking for.',
-              },
-              {
-                step: '2',
-                title: 'Browse verified locals',
-                desc: 'Meet verified members in Manila, Bangkok, Phnom Penh, and beyond.',
-              },
-              {
-                step: '3',
-                title: 'Chat with confidence',
-                desc: 'Match, talk, and connect with people who want the same things you do.',
-              },
-            ].map((item) => (
-              <div
-                key={item.step}
-                className="flex items-start gap-3.5 p-3.5 rounded-2xl bg-white border border-[#EDE7F6] shadow-[0_2px_8px_rgba(28,25,36,0.02)]"
-              >
-                <span className="w-6 h-6 shrink-0 rounded-full bg-[#6555B8] text-white text-xs font-bold flex items-center justify-center mt-0.5">
-                  {item.step}
+          <div className="mt-6 space-y-3">
+            {STEPS.map(({ Icon, title, desc }) => (
+              <div key={title} className="bg-white rounded-2xl p-5 border border-[#ECE8F4] shadow-xs flex items-start gap-4">
+                <span className="w-10 h-10 shrink-0 rounded-xl bg-[#F3EFFC] text-[#6555B8] flex items-center justify-center">
+                  <Icon className="w-5 h-5" aria-hidden />
                 </span>
                 <div className="min-w-0">
-                  <p className="text-[13.5px] font-bold text-[#1C1924] leading-snug">
-                    {item.title}
-                  </p>
-                  <p className="text-[12px] text-[#6C637B] leading-relaxed mt-0.5">
-                    {item.desc}
-                  </p>
+                  <p className="text-[14px] font-bold text-[#2D264B] leading-snug">{title}</p>
+                  <p className="text-[12.5px] text-[#6C637B] leading-relaxed mt-1">{desc}</p>
                 </div>
               </div>
             ))}
@@ -291,7 +282,7 @@ export function HeroLanding() {
       {/* ===== Footer ===== */}
       <footer className="bg-white py-8 border-t border-[#F3EFFC]">
         <div className="max-w-md mx-auto px-5 text-center space-y-2">
-          <BrandLogo href="/" size="sm" className="justify-center" />
+          <BrandLogo href="/" size="md" className="justify-center" />
           <p className="text-xs text-[#8C849B]">
             Real connection for genuine singles across Southeast Asia.
           </p>

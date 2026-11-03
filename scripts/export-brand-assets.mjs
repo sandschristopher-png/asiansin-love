@@ -1,9 +1,10 @@
-// Exports every brand asset from the real Playwrite IT Moderna glyph outlines.
+// Exports every brand asset from the real Plus Jakarta Sans glyph outlines.
 //   node scripts/export-brand-assets.mjs
 //
-// Source font: scripts/fonts/PlaywriteITModerna-Variable.ttf (google/fonts, SIL OFL - see
-// scripts/fonts/OFL.txt). opentype.js reads the glyph outlines directly, so the mark is the
-// font's own lowercase "a" as vector paths - no text rendering, no system-font fallback.
+// Source font: scripts/fonts/PlusJakartaSans-ExtraBold.ttf (Tokotype, SIL OFL - see
+// scripts/fonts/PlusJakartaSans-OFL.txt), the same family as the font-brand wordmark.
+// opentype.js reads the glyph outlines directly, so the mark is the font's own lowercase "a"
+// as vector paths - no text rendering, no system-font fallback.
 //
 // Mark   : gradient "a" (#8C71F5 -> #C084FC -> #EC4899) on a #2D264B squircle (rx 128 @ 512).
 // Outputs: see OUTPUTS at the bottom. Re-run after changing colors or the font.
@@ -20,7 +21,7 @@ const BG = '#2D264B';
 const INK = '#2D264B';
 const STOPS = ['#8C71F5', '#C084FC', '#EC4899'];
 
-const fontBuf = readFileSync(out('scripts/fonts/PlaywriteITModerna-Variable.ttf'));
+const fontBuf = readFileSync(out('scripts/fonts/PlusJakartaSans-ExtraBold.ttf'));
 const font = opentype.parse(fontBuf.buffer.slice(fontBuf.byteOffset, fontBuf.byteOffset + fontBuf.byteLength));
 
 const gradientDef = (id, x1 = 0, y1 = 0, x2 = 1, y2 = 1) => `<linearGradient id="${id}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}">
@@ -62,15 +63,16 @@ function markSvg({ bg = 'squircle', fill = 'gradient', inkRatio = 0.6 }) {
 `;
 }
 
-/** 1024x240 transparent lockup: "asiansin" in deep velvet + ".love" in the gradient. */
+/** 1024x240 transparent lockup: "asiansin" in deep velvet + "love" in the gradient (no dot). */
 function wordmarkSvg() {
   const W = 1024;
   const H = 240;
   const size = 150;
-  const opts = { kerning: true, features: { liga: true, rlig: true } };
+  // Matches the UI wordmark's tracking-[-0.03em].
+  const opts = { kerning: true, letterSpacing: -0.03, features: { liga: true, rlig: true } };
   const a = font.getPath('asiansin', 0, 0, size, opts);
   const advA = font.getAdvanceWidth('asiansin', size, opts);
-  const b = font.getPath('.love', advA, 0, size, opts);
+  const b = font.getPath('love', advA, 0, size, opts);
   const boxA = a.getBoundingBox();
   const boxB = b.getBoundingBox();
   const x1 = Math.min(boxA.x1, boxB.x1);
@@ -156,4 +158,4 @@ for (const [rel, data] of OUTPUTS) {
   writeFileSync(out(rel), data);
   console.log('wrote', rel);
 }
-console.log(`${OUTPUTS.length} brand assets exported from the Playwrite IT Moderna "a" glyph.`);
+console.log(`${OUTPUTS.length} brand assets exported from the Plus Jakarta Sans ExtraBold "a" glyph.`);

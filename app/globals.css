@@ -111,8 +111,8 @@ a:active,
 }
 
 
-/* Typography: Playwrite IT Moderna is reserved for brand marks - the asiansin.love wordmark and
-   the ail+ badge (--font-logo).
+/* Typography: Playwrite IT Moderna is reserved for the ail+ member badge (--font-logo).
+   The asiansinlove wordmark and headlines use font-brand (Plus Jakarta Sans 600-800).
    Every heading, label and body text uses Plus Jakarta Sans (--font-sans).
    Both variables are set by next/font in app/layout.tsx; --font-brand is kept as an alias
    so existing style={{ fontFamily: 'var(--font-brand)' }} headings render in Plus Jakarta Sans. */

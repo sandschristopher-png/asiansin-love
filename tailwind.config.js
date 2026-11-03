@@ -9,8 +9,8 @@ module.exports = {
     extend: {
       fontFamily: {
         sans: ['var(--font-sans)', 'sans-serif'],
-        brand: ['var(--font-sans)', 'sans-serif'],
-        logo: ['var(--font-logo)', 'cursive'], // brand marks only (Playwrite IT Moderna)
+        brand: ['var(--font-brand)', 'sans-serif'],
+        logo: ['var(--font-logo)', 'cursive'], // ail+ badge only (Playwrite IT Moderna)
       },
       colors: {
         plum: {

@@ -6,8 +6,8 @@ import { Playwrite_IT_Moderna, Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 import { LayoutShell } from '@/components/LayoutShell';
 
-// Playwrite IT Moderna: brand marks ONLY - the asiansin.love wordmark (components/BrandLogo.tsx)
-// and the ail+ badge (components/PlusBadge.tsx), via var(--font-logo) / .font-logo.
+// Playwrite IT Moderna: the ail+ member badge ONLY (components/PlusBadge.tsx), via
+// var(--font-logo) / .font-logo. The asiansinlove wordmark is Plus Jakarta Sans (font-brand).
 // Playwrite ships without a 'latin' subset in next/font, so it is not preloaded; display: swap
 // keeps the cursive fallback visible until it loads.
 const playwrite = Playwrite_IT_Moderna({
@@ -18,7 +18,8 @@ const playwrite = Playwrite_IT_Moderna({
 });
 
 // Plus Jakarta Sans: everything else - headings, labels, badges, buttons, body.
-// var(--font-sans) is Tailwind's font-sans; var(--font-brand) is aliased to it in globals.css.
+// var(--font-sans) is Tailwind's font-sans; var(--font-brand) / font-brand (wordmark, headlines)
+// is aliased to the same font in globals.css, so the family is downloaded once.
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
   weight: ['400','500','600','700','800'],
