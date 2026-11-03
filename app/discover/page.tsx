@@ -16,7 +16,8 @@ import { isTrustedVoiceIntroUrl } from '@/lib/audio';
 import { usePresentUserIds } from '@/lib/realtimePresence';
 import { sharedTraits } from '@/lib/rhythm';
 import { InCommonCard, RhythmPill } from '@/components/profile/RhythmBadges';
-import { SparkingHeart } from '@/components/icons/SparkingHeart';
+import { SparkHeartButton } from '@/components/SparkHeartButton';
+import { MutualSparkModal } from '@/components/MutualSparkModal';
 
 const DISCOVERY_MODES = [
   { id: 'all', label: 'All' },
@@ -74,6 +75,7 @@ function DiscoverCardPhotoCarousel({
   repScore,
   online,
   recentlyActive,
+  priority = false,
 }: {
   profileId: string;
   photos?: string[];
@@ -82,6 +84,7 @@ function DiscoverCardPhotoCarousel({
   repScore: number;
   online: boolean;
   recentlyActive?: boolean;
+  priority?: boolean;
 }) {
   const [currentIdx, setCurrentIdx] = useState(0);
   const rawList = (photos && photos.length > 0 ? photos : [avatarUrl]).filter(
@@ -108,6 +111,7 @@ function DiscoverCardPhotoCarousel({
         <CardPhoto
           src={displayPhotos[currentIdx]}
           alt={name}
+          priority={priority && currentIdx === 0}
           className="object-cover group-hover:scale-[1.03] transition-transform duration-500 ease-out"
         />
       </Link>
@@ -186,6 +190,7 @@ function DiscoverContent() {
   const [discoveryMode, setDiscoveryMode] = useState<DiscoveryModeId>('all');
   const [currentUserCoords, setCurrentUserCoords] = useState<{ lat: number; lon: number } | null>(null);
   const [viewerSavedGenders, setViewerSavedGenders] = useState<string[]>([]);
+  const [viewerAvatar, setViewerAvatar] = useState<string | null>(null);
   const [viewerTraits, setViewerTraits] = useState<{ interests: unknown; languages: unknown }>({
     interests: [],
     languages: null,
@@ -348,6 +353,7 @@ function DiscoverContent() {
               setCurrentUserCoords({ lat: v.latitude, lon: v.longitude });
             }
             setViewerTraits({ interests: v.interests ?? [], languages: v.languages ?? null });
+            setViewerAvatar(v.avatarUrl ?? null);
             if (Array.isArray(v.interested_in) && v.interested_in.length > 0) {
               setViewerSavedGenders(v.interested_in);
               if (!localStorage.getItem('discover_gender_pref')) {
@@ -445,6 +451,12 @@ function DiscoverContent() {
   const triggerAction = async (id: string, action: ActionType, name?: string, avatarUrl?: string) => {
     const currentAction = cardActions[id];
     const isCurrentlyActive = currentAction === action;
+    // A Spark is one-way from the card (Pairs / with.is): no un-spark, no double send.
+    if (action === 'like' && isCurrentlyActive) return;
+    if (action === 'like') {
+      setSparkLimitNotice(`Spark sent to ${name || 'this member'}`);
+      setTimeout(() => setSparkLimitNotice((cur) => (cur?.startsWith('Spark sent') ? null : cur)), 2200);
+    }
     setCardActions((prev) => {
       const next = { ...prev };
       if (isCurrentlyActive) {
@@ -483,7 +495,7 @@ function DiscoverContent() {
           setTimeout(() => setSparkLimitNotice(null), 4000);
           return;
         }
-        if (data?.mutual) {
+        if (data?.mutual || data?.is_mutual) {
           playMatchChime();
           setMatchedModalProfile({ id, name: name || 'Member', avatarUrl: avatarUrl || '/placeholder-avatar.svg' });
         }
@@ -722,7 +734,7 @@ function DiscoverContent() {
               </div>
             ))
           ) : (
-            visibleProfiles.map((profile) => {
+            visibleProfiles.map((profile, cardIdx) => {
               const state = cardActions[profile.id];
               const isLiked = state === 'like';
               const displayName = profile.username || profile.name || 'Member';
@@ -745,29 +757,19 @@ function DiscoverContent() {
                     repScore={profile.repScore}
                     online={profile.online || presentIds.has(profile.id)}
                     recentlyActive={profile.recentlyActive}
+                    priority={cardIdx < 2}
                   />
                   {isTrustedVoiceIntroUrl(profile.voiceIntroUrl) && (
                     <div className="absolute top-[7px] left-6 z-30">
                       <AudioPill src={profile.voiceIntroUrl} label="Voice" size="sm" />
                     </div>
                   )}
-                  <button
-                    type="button"
-                    aria-label={isLiked ? 'Remove Spark' : 'Send Spark'}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      e.preventDefault();
-                      triggerAction(profile.id, 'like', displayName, profile.avatarUrl);
-                    }}
-                    className={
-                      'absolute top-2.5 right-2.5 z-20 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-200 active:scale-90 cursor-pointer ' +
-                      (isLiked
-                        ? 'bg-[#6555B8] text-white shadow-md'
-                        : 'bg-black/45 text-white hover:bg-black/65 backdrop-blur-xs')
-                    }
-                  >
-                    <SparkingHeart className={'w-4 h-4 ' + (isLiked ? 'fill-white' : '')} />
-                  </button>
+                  <SparkHeartButton
+                    sparked={isLiked}
+                    name={displayName}
+                    onSpark={() => triggerAction(profile.id, 'like', displayName, profile.avatarUrl)}
+                    className="absolute top-2.5 right-2.5 z-20"
+                  />
                   <div className="absolute bottom-0 inset-x-0 pt-10 pb-3 px-3 z-10 pointer-events-none bg-gradient-to-t from-black/65 via-black/25 to-transparent">
                     <Link href={'/profile/' + profile.id} className="block min-w-0 pointer-events-auto">
                       <div className="flex items-center min-w-0">
@@ -1085,49 +1087,14 @@ function DiscoverContent() {
           )}
 
       {matchedModalProfile && (
-        <div
-          onClick={closeModalWithAnimation}
-          className={
-            'fixed inset-0 z-[999] flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm transition-opacity duration-200 ' +
-            (isModalClosing ? 'opacity-0 pointer-events-none' : 'opacity-100')
-          }
-        >
-          <div
-            role="dialog"
-            aria-modal="true"
-            onClick={(e) => e.stopPropagation()}
-            className={
-              'w-full max-w-sm rounded-3xl bg-white border border-[#DDD7E5]/70 p-6 shadow-2xl flex flex-col items-center text-center transform transition-all duration-200 ' +
-              (isModalClosing ? 'scale-90 opacity-0' : 'scale-100 opacity-100')
-            }
-          >
-            <div className="w-12 h-12 rounded-full bg-rose-50 flex items-center justify-center mb-3">
-              <Heart className="w-6 h-6 text-rose-500 fill-rose-500" />
-            </div>
-            <h3 className="text-xl font-bold text-[#1C1924]" style={{ fontFamily: 'var(--font-brand)' }}>
-              It&apos;s a Match!
-            </h3>
-            <p className="text-xs text-[#6C637B] mt-1.5">You and <span className="font-semibold text-[#1C1924]">{matchedModalProfile.name}</span> connected.</p>
-            <div className="my-5 w-20 h-20 rounded-full border-4 border-[#6555B8]/20 overflow-hidden shadow-md">
-              <img src={matchedModalProfile.avatarUrl || '/placeholder-avatar.svg'} alt="" className="w-full h-full object-cover" />
-            </div>
-            <div className="w-full flex flex-col gap-2 mt-1">
-              <Link
-                href={'/chat/' + matchedModalProfile.id}
-                className="w-full py-3 px-4 rounded-full bg-[#6555B8] hover:bg-[#52449e] text-white text-xs font-semibold shadow-md transition flex items-center justify-center gap-2"
-              >
-                Say Hello
-              </Link>
-              <button
-                type="button"
-                onClick={closeModalWithAnimation}
-                className="w-full py-2.5 px-4 rounded-full text-xs font-semibold text-[#6C637B] hover:text-[#1C1924] hover:bg-[#F3EFFC] transition cursor-pointer"
-              >
-                Keep Browsing
-              </button>
-            </div>
-          </div>
-        </div>
+        <MutualSparkModal
+          name={matchedModalProfile.name}
+          theirAvatar={matchedModalProfile.avatarUrl}
+          myAvatar={viewerAvatar}
+          chatHref={'/chat/' + matchedModalProfile.id}
+          closing={isModalClosing}
+          onClose={closeModalWithAnimation}
+        />
       )}
     </div>
   );

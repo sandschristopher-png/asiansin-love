@@ -86,12 +86,14 @@ export async function GET() {
     let viewerProfile: Record<string, any> | null = null;
     let viewerInterestedIn: string[] = [];
     let favoriteIds: string[] = [];
+    // Already sparked (sparks table, the "You Sparked" tab) or favourited: never shown again.
+    const alreadyLikedIds = new Set<string>();
 
     if (user) {
-      const [profRes, blocksRes, favsRes] = await Promise.all([
+      const [profRes, blocksRes, favsRes, sparksRes] = await Promise.all([
         serviceClient
           .from('profiles')
-          .select('id, gender, interested_in, seeking_gender, latitude, longitude, interests, languages, intentions, relationship_intent, onboarding_completed')
+          .select('id, gender, interested_in, seeking_gender, latitude, longitude, interests, languages, intentions, relationship_intent, onboarding_completed, avatar_url')
           .eq('id', user.id)
           .maybeSingle(),
         serviceClient
@@ -102,6 +104,10 @@ export async function GET() {
           .from('favorites')
           .select('favorite_profile_id')
           .eq('user_id', user.id),
+        serviceClient
+          .from('sparks')
+          .select('receiver_id')
+          .eq('sender_id', user.id),
       ]);
 
       if (profRes.data) {
@@ -120,10 +126,25 @@ export async function GET() {
       if (favsRes.data) {
         favoriteIds = favsRes.data.map((f: any) => f.favorite_profile_id);
       }
+      favoriteIds.forEach((id) => alreadyLikedIds.add(id));
+      (sparksRes.data as { receiver_id: string | null }[] | null)?.forEach((r) => r.receiver_id && alreadyLikedIds.add(r.receiver_id));
     }
 
-    const fetchFeed = (cols: string) =>
-      serviceClient.from('profiles').select(cols).order('created_at', { ascending: false }).limit(200);
+    // Strict binary matching (Pairs / with.is model): men see women, women see men. Raw gender
+    // values vary ("female", "Woman", "F"...), so the query matches the common spellings and the
+    // normalized check in the filter below is the source of truth.
+    const viewerGender = viewerProfile?.gender ? normalizeGenderValue(viewerProfile.gender) : null;
+    const targetGender = viewerGender === 'male' ? 'female' : viewerGender === 'female' ? 'male' : null;
+    const GENDER_SPELLINGS: Record<'male' | 'female', string> = {
+      female: 'gender.ilike.female,gender.ilike.woman,gender.ilike.f,gender.ilike.lady',
+      male: 'gender.ilike.male,gender.ilike.man,gender.ilike.m,gender.ilike.guy',
+    };
+
+    const fetchFeed = (cols: string) => {
+      let q = serviceClient.from('profiles').select(cols).neq('id', user.id);
+      if (targetGender) q = q.or(GENDER_SPELLINGS[targetGender]);
+      return q.order('created_at', { ascending: false }).limit(200);
+    };
     let { data: allRows, error } = await fetchFeed(DISCOVER_COLUMNS + ', ' + RHYTHM_COLUMNS);
     if (error && /reply_pace/.test(error.message)) {
       ({ data: allRows, error } = await fetchFeed(DISCOVER_COLUMNS));
@@ -137,6 +158,8 @@ export async function GET() {
       .filter((row: any) => {
         if (user && row.id === user.id) return false;
         if (blockedUserIds.has(row.id)) return false;
+        if (alreadyLikedIds.has(row.id)) return false;
+        if (targetGender && normalizeGenderValue(row.gender) !== targetGender) return false;
         if (row.hide_profile) return false; // Settings > Hide my profile
 
         // Evict seed/test profiles by name
@@ -230,6 +253,7 @@ export async function GET() {
             longitude: viewerProfile.longitude ?? null,
             interests: Array.isArray(viewerProfile.interests) ? viewerProfile.interests : [],
             languages: viewerProfile.languages ?? null,
+            avatarUrl: viewerProfile.avatar_url ?? null,
             intent: viewerProfile.relationship_intent || viewerProfile.intentions || '',
             onboarding_completed: viewerProfile.onboarding_completed,
           }

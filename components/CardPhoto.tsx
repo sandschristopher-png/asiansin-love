@@ -24,11 +24,14 @@ export function CardPhoto({
   alt,
   className = '',
   sizes = CARD_PHOTO_SIZES,
+  priority = false,
 }: {
   src: string;
   alt: string;
   className?: string;
   sizes?: string;
+  /** First visible row: load eagerly with high fetch priority (LCP). */
+  priority?: boolean;
 }) {
   if (isOptimizable(src)) {
     return (
@@ -37,7 +40,7 @@ export function CardPhoto({
         alt={alt}
         fill
         sizes={sizes}
-        loading="lazy"
+        {...(priority ? { priority: true } : { loading: 'lazy' as const })}
         unoptimized={src.endsWith('.svg')}
         className={className}
       />

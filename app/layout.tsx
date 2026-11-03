@@ -6,12 +6,13 @@ import { Comfortaa, Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 import { LayoutShell } from '@/components/LayoutShell';
 
-// Comfortaa: the "asiansinlove" logo wordmark ONLY (var(--font-logo), used by BrandLogo and the
-// two inline wordmarks in SideMenuDrawer / Footer).
+// Comfortaa: the "asiansin.love" wordmark ONLY (var(--font-comfortaa) / .font-comfortaa, used by
+// components/BrandLogo.tsx, which the header, side menu and footer all render).
 const comfortaa = Comfortaa({
   subsets: ['latin'],
+  weight: ['700'],
   display: 'swap',
-  variable: '--font-logo',
+  variable: '--font-comfortaa',
 });
 
 // Plus Jakarta Sans: everything else - headings, labels, badges, buttons, body.

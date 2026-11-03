@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { ShieldCheck, HeartHandshake, Ban, Users, ArrowLeft } from 'lucide-react';
 
 
@@ -33,6 +34,13 @@ export default function CommunityStandardsPage() {
     },
   ];
 
+  const router = useRouter();
+  // Opened from Settings, the side menu or a link: go back to wherever the member came from.
+  const goBack = () => {
+    if (typeof window !== 'undefined' && window.history.length > 1) router.back();
+    else router.push('/settings');
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-[#F8F7FA] text-[#1C1924]">
 
@@ -40,13 +48,14 @@ export default function CommunityStandardsPage() {
         
         {/* Navigation */}
         <div className="mb-4">
-          <Link
-            href="/discover"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#9A8CC3] hover:text-[#1C1924] transition"
+          <button
+            type="button"
+            onClick={goBack}
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#9A8CC3] hover:text-[#1C1924] transition cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Back to Discover</span>
-          </Link>
+            <span>Back</span>
+          </button>
         </div>
 
         {/* Editorial Card */}

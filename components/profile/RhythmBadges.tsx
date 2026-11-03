@@ -62,7 +62,7 @@ export function InCommonCard({ items, compact = false }: { items: string[]; comp
   if (items.length === 0) return null;
   if (compact) {
     return (
-      <span className="inline-flex max-w-full items-center px-2 py-0.5 rounded-full bg-[#F3EFFC] border border-[#6555B8]/30 text-[10px] text-[#6555B8]">
+      <span className="inline-flex max-w-full items-center px-2 py-0.5 rounded-full bg-[#F3EFFC] border border-[#6555B8]/30 text-[11px] leading-tight tracking-tight text-[#6555B8]">
         <span className="truncate">
           <span className="font-bold">{items.length} in common:</span> {items.slice(0, 2).join(', ')}
         </span>

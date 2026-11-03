@@ -28,6 +28,36 @@ const QUICK_HUBS = [
   { city: 'Bali', country: 'Indonesia' },
 ];
 
+/** Free vs AIL+ matrix: keep in sync with the real limits (api/messages, api/spark, settings). */
+const COMPARISON: { feature: string; free: string; plus: string }[] = [
+  { feature: 'Browse & send Sparks', free: '40/day', plus: '40/day' },
+  { feature: 'New conversations per day', free: '5', plus: 'Unlimited' },
+  { feature: 'See who sparked you', free: 'Blurred', plus: '✓' },
+  { feature: 'Visitor history', free: '—', plus: '✓' },
+  { feature: 'Private Mode (men)', free: '—', plus: '✓' },
+  { feature: 'Passport / travel mode', free: '—', plus: '✓' },
+  { feature: 'Verified badge, voice intro, Translate', free: '✓', plus: '✓' },
+];
+
+const FAQ: { q: string; a: string }[] = [
+  {
+    q: 'How much does AIL+ cost?',
+    a: '$14.99 billed monthly, $11.99/month billed $35.97 every 3 months, or $7.99/month billed $95.88 every year. Prices are in US dollars and taxes may apply.',
+  },
+  {
+    q: 'Does it renew automatically?',
+    a: 'Yes. Your plan renews at the end of each period until you cancel.',
+  },
+  {
+    q: 'How do I cancel or change my card?',
+    a: 'Settings → Manage Subscription opens the Stripe billing portal, where you can cancel or update your payment method yourself. You keep AIL+ until the end of the period you paid for.',
+  },
+  {
+    q: 'Is AIL+ required for women?',
+    a: 'No. Women can use Asians in Love, including Private Mode, completely free.',
+  },
+];
+
 function PlusHubContent() {
   const searchParams = useSearchParams();
   const isPostCheckoutSuccess = searchParams.get('success') === '1';
@@ -371,6 +401,36 @@ function PlusHubContent() {
           {statusMsg}
         </div>
       )}
+
+      {/* Free vs AIL+ (values mirror the app's real limits) */}
+      <div className="mb-4 rounded-2xl bg-white border border-[#ECE8F4] shadow-sm overflow-hidden">
+        <div className="grid grid-cols-[1fr_64px_64px] px-3.5 py-2.5 bg-[#F9F8FC] text-[10px] font-bold uppercase tracking-wider text-[#8A8199]">
+          <span>Feature</span>
+          <span className="text-center">Free</span>
+          <span className="text-center text-[#6555B8]">AIL+</span>
+        </div>
+        {COMPARISON.map((row) => (
+          <div key={row.feature} className="grid grid-cols-[1fr_64px_64px] items-center px-3.5 py-2.5 border-t border-[#F3F0F8] text-xs">
+            <span className="font-medium text-[#1C1924] pr-2">{row.feature}</span>
+            <span className="text-center text-[#6C637B]">{row.free}</span>
+            <span className="text-center font-semibold text-[#6555B8]">{row.plus}</span>
+          </div>
+        ))}
+      </div>
+
+      {/* Billing FAQ */}
+      <div className="mb-4 space-y-2">
+        <div className="text-[10px] font-bold uppercase tracking-wider text-neutral-400 px-1">Billing FAQ</div>
+        {FAQ.map((f) => (
+          <details key={f.q} className="group rounded-2xl bg-white border border-[#ECE8F4] px-3.5 py-3 shadow-sm">
+            <summary className="cursor-pointer list-none text-xs font-semibold text-[#1C1924] flex items-center justify-between gap-2">
+              {f.q}
+              <span aria-hidden className="text-[#6555B8] transition-transform group-open:rotate-45">+</span>
+            </summary>
+            <p className="mt-2 text-xs text-[#524B5E] leading-relaxed">{f.a}</p>
+          </details>
+        ))}
+      </div>
 
       {/* Categorized Privileges */}
         <div className="space-y-3 mb-4">

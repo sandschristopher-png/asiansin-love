@@ -50,17 +50,20 @@ export function SelectSheet({
 
       {open && (
         <div
-          className="fixed inset-0 z-[70] flex items-end justify-center bg-black/50 backdrop-blur-sm"
+          className="fixed inset-0 z-[70] flex items-end justify-center bg-black/50 backdrop-blur-sm ail-fade-in"
           onClick={() => setOpen(false)}
           role="dialog"
           aria-modal="true"
           aria-label={label}
         >
           <div
-            className="w-full max-w-[430px] max-h-[75dvh] flex flex-col rounded-t-3xl bg-white border border-[#DDD7E5] shadow-xl"
+            className="w-full max-w-[430px] max-h-[75dvh] flex flex-col rounded-t-3xl bg-white border border-[#DDD7E5] shadow-xl ail-sheet-up"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between px-5 pt-4 pb-3 border-b border-[#F0EDF5] shrink-0">
+            <div className="pt-2.5 shrink-0" aria-hidden>
+              <div className="w-10 h-1 rounded-full bg-slate-300 mx-auto mb-3" />
+            </div>
+            <div className="flex items-center justify-between px-5 pb-3 border-b border-[#F0EDF5] shrink-0">
               <h3 className="text-sm font-bold text-[#1C1924]">{label}</h3>
               <button
                 type="button"

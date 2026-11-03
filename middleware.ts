@@ -7,6 +7,9 @@ const PROTECTED_PREFIXES = [
   '/favorites', '/notifications', '/verify',
 ];
 
+/** Value = the member's id once profiles.onboarding_completed is confirmed true. */
+const ONBOARDED_COOKIE = 'ail_onb';
+
 export async function middleware(request: NextRequest) {
   let response = NextResponse.next({
     request: {
@@ -68,14 +71,51 @@ export async function middleware(request: NextRequest) {
     return response;
   }
 
-  // Onboarding is public: new sign-ups flow through it freely
-  if (pathname.startsWith('/onboarding')) {
-    return response;
-  }
-
   const isProtectedRoute = PROTECTED_PREFIXES.some(
     (prefix) => pathname === prefix || pathname.startsWith(prefix + '/')
   );
+  const isOnboarding = pathname.startsWith('/onboarding');
+
+  // --- ONBOARDING GUARD ---
+  // Signed-in members who haven't finished onboarding are kept on /onboarding; finished members
+  // never see it again. onboarding_completed never flips back, so once confirmed it is cached in
+  // a per-user cookie and the profile lookup is skipped on later requests.
+  if (user && (isProtectedRoute || isOnboarding)) {
+    let onboarded = request.cookies.get(ONBOARDED_COOKIE)?.value === user.id;
+    if (!onboarded && supabaseServiceKey) {
+      const adminClient = createClient(supabaseUrl, supabaseServiceKey, { auth: { persistSession: false } });
+      const { data: profile, error } = await adminClient
+        .from('profiles')
+        .select('onboarding_completed')
+        .eq('id', user.id)
+        .maybeSingle();
+      // A failed lookup must not trap anyone: treat as onboarded and check again next request.
+      onboarded = error ? true : Boolean(profile?.onboarding_completed);
+      if (!error && onboarded) {
+        response.cookies.set(ONBOARDED_COOKIE, user.id, {
+          path: '/',
+          httpOnly: true,
+          sameSite: 'lax',
+          secure: process.env.NODE_ENV === 'production',
+          maxAge: 60 * 60 * 24 * 30,
+        });
+      }
+    }
+
+    if (isOnboarding && onboarded) {
+      const redirect = NextResponse.redirect(new URL('/discover', request.url));
+      redirect.cookies.set(ONBOARDED_COOKIE, user.id, { path: '/', httpOnly: true, sameSite: 'lax', maxAge: 60 * 60 * 24 * 30 });
+      return redirect;
+    }
+    if (isProtectedRoute && !onboarded) {
+      return NextResponse.redirect(new URL('/onboarding', request.url));
+    }
+  }
+
+  // Onboarding itself is open to signed-out visitors and unfinished members.
+  if (isOnboarding) {
+    return response;
+  }
 
   // --- LOGGED-OUT VISITORS ---
   if (!user) {

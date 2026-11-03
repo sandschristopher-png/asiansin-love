@@ -163,7 +163,9 @@ export default function MyProfilePage() {
 
   useEffect(() => {
     async function loadUserData() {
-      const { data: { user } } = await supabase.auth.getUser();
+      // Local session read (no extra network round trip before the profile query); RLS still applies.
+      const { data: { session } } = await supabase.auth.getSession();
+      const user = session?.user;
       if (!user) {
         router.push('/login');
         return;
@@ -352,9 +354,15 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
   };
 
   if (loading) {
+    // Same shapes as the loaded page (4:5 photo, action bar, rep card, sections) so nothing jumps.
     return (
-      <div className="min-h-screen bg-[#F8F7FA] flex items-center justify-center">
-        <Loader2 className="w-8 h-8 animate-spin text-[#6555B8]" />
+      <div className="flex-1 w-full bg-[#F8F7FA] px-4 pt-4 space-y-5" aria-busy="true" aria-label="Loading profile">
+        <div className="h-14 rounded-3xl ail-shimmer" />
+        <div className="aspect-[4/5] w-full rounded-3xl ail-shimmer" />
+        <div className="h-11 rounded-2xl ail-shimmer" />
+        <div className="h-24 rounded-3xl ail-shimmer" />
+        <div className="h-20 rounded-3xl ail-shimmer" />
+        <div className="h-28 rounded-3xl ail-shimmer" />
       </div>
     );
   }
@@ -606,13 +614,42 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
             )}
           </div>
 
+        {/* 2. REPUTATION */}
         <RepScoreCard score={repScore ?? 100} />
-
-{/* PROFILE HIGHLIGHTS */}
-<ProfileHighlightsEditorRow />
 
         {/* VOICE INTRO */}
         <VoiceIntroRecorder initialUrl={voiceIntroUrl} onChange={setVoiceIntroUrl} />
+
+        {/* ABOUT ME */}
+        <div className="p-5 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-2.5">
+          <div className="flex items-center justify-between">
+            <span
+              className="text-xs font-bold text-[#6555B8] uppercase tracking-wider"
+              style={{ fontFamily: 'var(--font-brand)' }}
+            >
+              About Me
+            </span>
+            {isEditing && (
+              <span className="text-[11px] font-medium text-[#8C849B]">{bio.length}/500</span>
+            )}
+          </div>
+          {isEditing ? (
+            <textarea
+              value={bio}
+              onChange={(e) => setBio(e.target.value.slice(0, 500))}
+              rows={4}
+              placeholder="Share your passions, daily life, and what makes you smile..."
+              className="w-full p-3.5 rounded-2xl bg-[#F8F7FA] border border-[#DDD7E5] text-xs sm:text-sm text-[#1C1924] leading-relaxed placeholder-[#8C849B] focus:outline-none focus:bg-white focus:border-[#6555B8] resize-none"
+            />
+          ) : (
+            <p className="text-xs sm:text-sm text-[#1C1924] leading-relaxed">
+              {bio || <span className="text-[#8C849B] italic">No bio written yet.</span>}
+            </p>
+          )}
+        </div>
+
+        {/* PROFILE HIGHLIGHTS */}
+        <ProfileHighlightsEditorRow />
 
         {/* INTERESTS & HOBBIES */}
         <div className="p-5 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-3">
@@ -664,54 +701,6 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
           )}
         </div>
 
-        {/* ABOUT ME */}
-        <div className="p-5 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-2.5">
-          <div className="flex items-center justify-between">
-            <span
-              className="text-xs font-bold text-[#6555B8] uppercase tracking-wider"
-              style={{ fontFamily: 'var(--font-brand)' }}
-            >
-              About Me
-            </span>
-            {isEditing && (
-              <span className="text-[11px] font-medium text-[#8C849B]">{bio.length}/500</span>
-            )}
-          </div>
-          {isEditing ? (
-            <textarea
-              value={bio}
-              onChange={(e) => setBio(e.target.value.slice(0, 500))}
-              rows={4}
-              placeholder="Share your passions, daily life, and what makes you smile..."
-              className="w-full p-3.5 rounded-2xl bg-[#F8F7FA] border border-[#DDD7E5] text-xs sm:text-sm text-[#1C1924] leading-relaxed placeholder-[#8C849B] focus:outline-none focus:bg-white focus:border-[#6555B8] resize-none"
-            />
-          ) : (
-            <p className="text-xs sm:text-sm text-[#1C1924] leading-relaxed">
-              {bio || <span className="text-[#8C849B] italic">No bio written yet.</span>}
-            </p>
-          )}
-        </div>
-
-        {/* MY RHYTHM (reply pace, relocation, timeline) */}
-        <div className="p-5 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-2.5">
-          <h3 className="block text-xs font-bold text-[#6555B8] uppercase tracking-wider leading-normal">
-            My Rhythm
-          </h3>
-          {isEditing ? (
-            <RhythmSelectors value={rhythm} onChange={setRhythm} />
-          ) : rhythm.reply_pace || rhythm.relocation_readiness || rhythm.timeline_intent ? (
-            <div className="flex flex-wrap gap-1.5">
-              <RhythmPill field="reply_pace" value={rhythm.reply_pace} className="text-[11px] px-2.5 py-1" />
-              <RhythmPill field="relocation_readiness" value={rhythm.relocation_readiness} className="text-[11px] px-2.5 py-1" />
-              <RhythmPill field="timeline_intent" value={rhythm.timeline_intent} className="text-[11px] px-2.5 py-1" />
-            </div>
-          ) : (
-            <p className="text-xs text-[#8C849B] italic">
-              Tap Edit Profile Details to show how you message, relocation plans and your timeline.
-            </p>
-          )}
-        </div>
-
         {/* WHAT THEY'RE LOOKING FOR */}
         <div className="p-5 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-2.5">
           <div className="flex items-center justify-between">
@@ -743,6 +732,26 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
           ) : (
             <p className="text-xs sm:text-sm text-[#1C1924] leading-relaxed">
               {lookingFor ? toIntentLabel(lookingFor) : <span className="text-[#8C849B] italic">No preferences added yet.</span>}
+            </p>
+          )}
+        </div>
+
+        {/* MY RHYTHM (reply pace, relocation, timeline) */}
+        <div className="p-5 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-2.5">
+          <h3 className="block text-xs font-bold text-[#6555B8] uppercase tracking-wider leading-normal">
+            My Rhythm
+          </h3>
+          {isEditing ? (
+            <RhythmSelectors value={rhythm} onChange={setRhythm} />
+          ) : rhythm.reply_pace || rhythm.relocation_readiness || rhythm.timeline_intent ? (
+            <div className="flex flex-wrap gap-1.5">
+              <RhythmPill field="reply_pace" value={rhythm.reply_pace} className="text-[11px] px-2.5 py-1" />
+              <RhythmPill field="relocation_readiness" value={rhythm.relocation_readiness} className="text-[11px] px-2.5 py-1" />
+              <RhythmPill field="timeline_intent" value={rhythm.timeline_intent} className="text-[11px] px-2.5 py-1" />
+            </div>
+          ) : (
+            <p className="text-xs text-[#8C849B] italic">
+              Tap Edit Profile Details to show how you message, relocation plans and your timeline.
             </p>
           )}
         </div>
@@ -958,6 +967,7 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
             </div>
           )}
         </div>
+
       </main>
     </div>
   );

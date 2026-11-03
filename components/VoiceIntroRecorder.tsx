@@ -1,8 +1,9 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { Mic, Square, RotateCcw, Trash2, Check, Loader2 } from 'lucide-react';
 import { AudioPill } from '@/components/AudioPill';
+import { InAppToast } from '@/components/InAppToast';
 import { useVoiceRecorder } from '@/lib/useVoiceRecorder';
 import { VOICE_INTRO_MAX_MS, VOICE_INTRO_MIN_MS, formatSeconds, isTrustedVoiceIntroUrl } from '@/lib/audio';
 
@@ -20,7 +21,9 @@ export function VoiceIntroRecorder({
   const rec = useVoiceRecorder(VOICE_INTRO_MAX_MS);
   const [savedUrl, setSavedUrl] = useState<string | null>(isTrustedVoiceIntroUrl(initialUrl) ? initialUrl : null);
   const [saving, setSaving] = useState(false);
+  // Short-lived success toast ("Voice intro saved."), not a permanent line under the card.
   const [notice, setNotice] = useState<string | null>(null);
+  const clearNotice = useCallback(() => setNotice(null), []);
 
   useEffect(() => {
     setSavedUrl(isTrustedVoiceIntroUrl(initialUrl) ? initialUrl : null);
@@ -169,7 +172,7 @@ export function VoiceIntroRecorder({
       )}
 
       {rec.error && <p className="text-[11px] text-rose-600">{rec.error}</p>}
-      {notice && !rec.error && <p className="text-[11px] text-emerald-600">{notice}</p>}
+      <InAppToast message={rec.error ? null : notice} onClose={clearNotice} durationMs={3000} icon={<Check className="w-3.5 h-3.5" />} />
     </section>
   );
 }

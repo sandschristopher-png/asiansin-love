@@ -17,8 +17,11 @@ const PUBLIC_ROUTES = [
   '/login',
   '/signup',
   '/forgot-password',
+  '/reset-password',
+  // Legal & safety reading pages: no floating nav over the text.
   '/terms',
   '/privacy',
+  '/safety',
   '/standards',
   '/pricing'
 ];

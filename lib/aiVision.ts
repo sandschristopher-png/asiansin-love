@@ -160,32 +160,37 @@ Answer strictly:
   }
 }
 
+const TRANSLATION_SYSTEM_INSTRUCTION =
+  'You are a machine translation filter for a dating app. Translate the dating message into natural English. ' +
+  'Accurately translate Taglish, Bisaya, Thai, or colloquial Asian slang. Return ONLY the raw translated text string. ' +
+  'Never include quotes, explanations, romanization, or conversational notes.';
+
+export type TranslationResult = { ok: true; text: string } | { ok: false; rateLimited: boolean };
+
 /**
- * Natural, tone-preserving translation of one chat message (Taglish, Bisaya, Thai slang...).
- * Returns null on any error so the caller can show "unavailable".
+ * Deterministic one-message translation (temperature 0.1, max 150 output tokens). The message is
+ * passed as data under a fixed system instruction, so text inside it can't change the task.
  */
-export async function translateChatMessage(text: string, targetLanguage = 'English'): Promise<string | null> {
+export async function translateChatMessage(text: string, targetLanguage = 'English'): Promise<TranslationResult> {
   try {
     const response = await ai.models.generateContent({
       model: 'gemini-3.8-flash',
-      contents: [
-        {
-          role: 'user',
-          parts: [
-            {
-              text: `Translate this dating app message naturally into ${targetLanguage}. Preserve casual emotional tone, Taglish/Bisaya nuances, or Thai slang. If it is already in ${targetLanguage}, return it unchanged. Return only the raw translated text string.
-
-Message:
-"""${text}"""`,
-            },
-          ],
-        },
-      ],
+      contents: [{ role: 'user', parts: [{ text }] }],
+      config: {
+        systemInstruction:
+          targetLanguage === 'English'
+            ? TRANSLATION_SYSTEM_INSTRUCTION
+            : TRANSLATION_SYSTEM_INSTRUCTION.replace('into natural English', `into natural ${targetLanguage}`),
+        temperature: 0.1,
+        maxOutputTokens: 150,
+      },
     });
-    const out = (response.text || '').trim().replace(/^"""|"""$/g, '').trim();
-    return out ? out.slice(0, 4000) : null;
+    const out = (response.text || '').trim().replace(/^["“”']+|["“”']+$/g, '').trim();
+    return out ? { ok: true, text: out.slice(0, 2000) } : { ok: false, rateLimited: false };
   } catch (error) {
+    const status = (error as { status?: number })?.status;
+    const rateLimited = status === 429 || /429|quota|rate/i.test(String((error as Error)?.message || ''));
     console.error('AI translation error:', error);
-    return null;
+    return { ok: false, rateLimited };
   }
 }

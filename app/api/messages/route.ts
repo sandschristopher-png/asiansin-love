@@ -89,6 +89,9 @@ export async function GET(req: Request) {
       success: true,
       messages: maskedMessages,
       mutualCount,
+      // Safety-gate progress for the chat composer badge.
+      senderCount: Math.min(gate.senderSubstantiveCount, CONTACT_UNLOCK_TURNS),
+      partnerCount: Math.min(gate.receiverSubstantiveCount, CONTACT_UNLOCK_TURNS),
       contactUnlocked: gate.isUnlocked,
     });
   } catch (err: any) {

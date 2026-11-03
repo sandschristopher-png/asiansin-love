@@ -27,7 +27,7 @@ export function Navbar() {
   }, [pathname]);
   const handleInviteShare = async () => {
     const shareData = {
-      title: `asiansinlove`,
+      title: 'asiansin.love',
       text: 'Find meaningful connections on Asians in Love:',
       url: typeof window !== 'undefined' ? window.location.origin : 'https://asiansin.love',
     };

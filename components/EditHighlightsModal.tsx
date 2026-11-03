@@ -87,13 +87,16 @@ export function EditHighlightsModal({
   // z-[70]: above the floating BottomNav (z-50) so Save Highlights is never trapped under it.
   return (
     <div
-      className="fixed inset-0 z-[70] flex items-end justify-center bg-black/50 backdrop-blur-sm sm:items-center p-0 sm:p-4"
+      className="fixed inset-0 z-[70] flex items-end justify-center bg-black/50 backdrop-blur-sm sm:items-center p-0 sm:p-4 ail-fade-in"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-lg rounded-t-3xl sm:rounded-3xl border border-[#DDD7E5] bg-[#F8F7FA] shadow-xl max-h-[90dvh] flex flex-col"
+        className="w-full max-w-lg rounded-t-3xl sm:rounded-3xl border border-[#DDD7E5] bg-[#F8F7FA] shadow-xl max-h-[90dvh] flex flex-col ail-sheet-up"
         onClick={(e) => e.stopPropagation()}
       >
+        <div className="pt-2.5 shrink-0 sm:hidden" aria-hidden>
+          <div className="w-10 h-1 rounded-full bg-slate-300 mx-auto mb-1" />
+        </div>
         <div className="flex items-center justify-between px-5 pt-4 pb-3 border-b border-[#EEE9F3] shrink-0">
           <h3 className="text-sm font-bold text-[#1C1924]">
             Curate Your Top 3 Highlights

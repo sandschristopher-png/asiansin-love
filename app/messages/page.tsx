@@ -3,7 +3,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { MessageCircle, Search, ChevronRight, ShieldCheck, Loader2 } from 'lucide-react';
+import { MessageCircle, Search, ChevronRight, ShieldCheck } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 
 interface ConversationItem {
@@ -74,7 +74,9 @@ export default function MessagesPage() {
           .from('messages')
           .select('id, sender_id, receiver_id, content, created_at, is_read, is_quarantined')
           .or('sender_id.eq.' + userId + ',receiver_id.eq.' + userId)
-          .order('created_at', { ascending: false });
+          .order('created_at', { ascending: false })
+          // Newest 500 are plenty to build the conversation list; never scan the full history.
+          .limit(500);
 
         if (error || !msgs || msgs.length === 0) {
           if (isMountedRef.current) {
@@ -173,9 +175,11 @@ export default function MessagesPage() {
     let channel: any = null;
 
     async function init() {
+      // Local session read (no network round trip); RLS still scopes every query to this member.
       const {
-        data: { user },
-      } = await supabase.auth.getUser();
+        data: { session },
+      } = await supabase.auth.getSession();
+      const user = session?.user;
       if (!user) {
         if (isMountedRef.current) router.replace('/');
         return;
@@ -263,9 +267,16 @@ export default function MessagesPage() {
 
         <div className="space-y-2">
           {loading ? (
-            <div className="py-16 text-center space-y-2">
-              <Loader2 className="w-5 h-5 text-[#6555B8] animate-spin mx-auto" />
-              <p className="text-xs text-[#6C637B]">Loading conversations...</p>
+            <div className="space-y-2" aria-busy="true" aria-label="Loading conversations">
+              {Array.from({ length: 6 }).map((_, i) => (
+                <div key={i} className="flex items-center gap-3 p-3 rounded-3xl bg-white border border-[#F0EDF5]">
+                  <div className="w-12 h-12 rounded-full ail-shimmer shrink-0" />
+                  <div className="flex-1 space-y-2">
+                    <div className="h-3 w-1/3 rounded-full ail-shimmer" />
+                    <div className="h-2.5 w-2/3 rounded-full ail-shimmer" />
+                  </div>
+                </div>
+              ))}
             </div>
           ) : filteredConversations.length === 0 ? (
             <div className="bg-white border border-[#E5DFEE] rounded-3xl px-4 py-8 text-center space-y-3">

@@ -118,7 +118,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Unsupported audio format.' }, { status: 400 });
   }
 
-  const path = `${senderId}/${randomUUID()}.${AUDIO_MIME_EXT[sniffed]}`;
+  // voice-notes/{senderId}/{conversationId}_{timestamp}.{ext}: a conversation is keyed by the other
+  // member's id (/chat/{id}); the short random suffix keeps same-millisecond sends distinct. The
+  // sender-folder prefix is what GET checks before signing a URL.
+  const path = `${senderId}/${receiverId}_${Date.now()}_${randomUUID().slice(0, 8)}.${AUDIO_MIME_EXT[sniffed]}`;
   const { error: upErr } = await admin.storage.from(BUCKET).upload(path, buf, { contentType: sniffed, upsert: false });
   if (upErr) {
     console.error('[voice-note] upload failed:', upErr.message);

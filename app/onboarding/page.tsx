@@ -24,6 +24,9 @@ import { evaluateBioModeration } from '@/lib/moderation';
 import { saveBioAndRhythm } from '@/lib/profileApi';
 import { EMPTY_RHYTHM, RhythmSelectors, type RhythmValues } from '@/components/profile/RhythmBadges';
 
+/** In-progress answers survive a refresh or accidental navigation (cleared on completion). */
+const DRAFT_KEY = 'ail_onboarding_draft_v1';
+
 const GENDER_OPTIONS = [
   { val: 'male', label: 'Man' },
   { val: 'female', label: 'Woman' },
@@ -68,6 +71,9 @@ const COUNTRIES = [
 export default function OnboardingPage() {
   const router = useRouter();
   const [step, setStep] = useState(1);
+  // Location integrity: VPN / proxy / datacenter connections can't finish onboarding.
+  const [vpnBlocked, setVpnBlocked] = useState(false);
+  const [draftRestored, setDraftRestored] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -109,6 +115,12 @@ export default function OnboardingPage() {
   const [primaryIdx, setPrimaryIdx] = useState<number>(0);
   const [uploadingSlot, setUploadingSlot] = useState<number | null>(null);
 
+  // Strict binary matching (Pairs / with.is): men meet women, women meet men.
+  const selectGender = (val: string) => {
+    setGender(val);
+    setInterestedIn([val === 'male' ? 'female' : 'male']);
+  };
+
   useEffect(() => {
     async function checkAuth() {
       const { data: { user } } = await supabase.auth.getUser();
@@ -130,13 +142,17 @@ export default function OnboardingPage() {
       }
 
       if (profile) {
-        if (profile.username && !profile.username.startsWith('user_')) {
-          setUsername(profile.username);
+        // Google sign-ups get a handle derived from their real name; ask for a fresh one instead.
+        const googleName = String(user.user_metadata?.full_name || user.user_metadata?.name || '')
+          .toLowerCase()
+          .replace(/[^a-z0-9]/g, '');
+        const handle = String(profile.username || '');
+        const fromRealName =
+          googleName.length >= 3 && handle.toLowerCase().replace(/[^a-z0-9]/g, '').includes(googleName.slice(0, 6));
+        if (handle && !handle.startsWith('user_') && !fromRealName) {
+          setUsername(handle);
         }
-        if (profile.gender) setGender(profile.gender);
-        if (Array.isArray(profile.interested_in) && profile.interested_in.length > 0) {
-          setInterestedIn(profile.interested_in);
-        }
+        if (profile.gender === 'male' || profile.gender === 'female') selectGender(profile.gender);
         if (profile.birthdate) setBirthdate(profile.birthdate);
         if (profile.city) setCity(profile.city);
         if (profile.country) setCountry(profile.country);
@@ -152,9 +168,45 @@ export default function OnboardingPage() {
           setPhotos([profile.avatar_url]);
         }
       }
+
+      try {
+        const raw = sessionStorage.getItem(DRAFT_KEY);
+        const d = raw ? JSON.parse(raw) : null;
+        if (d && d.userId === user.id) {
+          if (d.username) setUsername(d.username);
+          if (d.gender === 'male' || d.gender === 'female') selectGender(d.gender);
+          if (d.intent) setIntent(d.intent);
+          if (d.birthdate) setBirthdate(d.birthdate);
+          if (d.city) setCity(d.city);
+          if (d.country) setCountry(d.country);
+          if (d.height) setHeight(d.height);
+          if (d.weight) setWeight(d.weight);
+          if (typeof d.bio === 'string' && d.bio) setBio(d.bio);
+          if (Array.isArray(d.interests)) setInterests(d.interests);
+          if (d.rhythm) setRhythm({ ...EMPTY_RHYTHM, ...d.rhythm });
+          if (Number.isInteger(d.step) && d.step >= 1 && d.step <= 5) setStep(d.step);
+        }
+      } catch {}
+      setDraftRestored(true);
+
+      // Early heads-up; the real gate runs again on POST /api/onboarding.
+      fetch('/api/onboarding')
+        .then((r) => r.json())
+        .then((d) => setVpnBlocked(Boolean(d?.blocked)))
+        .catch(() => {});
     }
     checkAuth();
   }, [router]);
+
+  useEffect(() => {
+    if (!draftRestored || !userId) return;
+    try {
+      sessionStorage.setItem(
+        DRAFT_KEY,
+        JSON.stringify({ userId, step, username, gender, intent, birthdate, city, country, height, weight, bio, interests, rhythm })
+      );
+    } catch {}
+  }, [draftRestored, userId, step, username, gender, intent, birthdate, city, country, height, weight, bio, interests, rhythm]);
 
   // Step 1: Debounced case-insensitive check against profiles.username
   useEffect(() => {
@@ -175,41 +227,15 @@ export default function OnboardingPage() {
     const timer = setTimeout(async () => {
       setIsCheckingUsername(true);
       try {
-        let query = supabase
-          .from('profiles')
-          .select('id, username')
-          .ilike('username', clean);
-
-        if (userId) {
-          query = query.neq('id', userId);
-        }
-
-        const { data: existing, error } = await query.maybeSingle();
-        if (error) {
-          setUsernameStatus({ available: false, error: error.message });
-          return;
-        }
-
-        if (!existing) {
+        // Exact, case-insensitive check on the server (ILIKE "_" wildcards escaped there).
+        const res = await fetch('/api/profile/check-username?username=' + encodeURIComponent(clean));
+        const data = await res.json().catch(() => ({}));
+        if (data.available) {
           setUsernameStatus({ available: true });
+        } else if (Array.isArray(data.suggestions)) {
+          setUsernameStatus({ available: false, suggestions: data.suggestions });
         } else {
-          const base = clean.slice(0, 15);
-          const candidates = [
-            base + '_lv',
-            base + '_' + Math.floor(Math.random() * 89 + 10),
-            ('real_' + base).slice(0, 20),
-            base + '_ph',
-          ];
-          const { data: takenRows } = await supabase
-            .from('profiles')
-            .select('username')
-            .in('username', candidates);
-          const takenSet = new Set((takenRows || []).map((r: any) => String(r.username || '').toLowerCase()));
-          const suggestions = candidates.filter((c) => !takenSet.has(c.toLowerCase())).slice(0, 3);
-          setUsernameStatus({
-            available: false,
-            suggestions,
-          });
+          setUsernameStatus({ available: false, error: data.error || 'Could not verify username availability.' });
         }
       } catch {
         setUsernameStatus({ available: false, error: 'Could not verify username availability.' });
@@ -221,11 +247,6 @@ export default function OnboardingPage() {
     return () => clearTimeout(timer);
   }, [username, userId]);
 
-  const toggleInterestedIn = (val: string) => {
-    setInterestedIn((prev) =>
-      prev.includes(val) ? prev.filter((item) => item !== val) : [...prev, val]
-    );
-  };
 
   const toggleHobby = (tag: string) => {
     setInterests((prev) =>
@@ -448,6 +469,7 @@ export default function OnboardingPage() {
           gender,
           interested_in: interestedIn,
         seeking_gender: interestedIn[0] === 'female' ? 'female' : 'male',
+          target_gender: interestedIn[0] === 'female' ? 'female' : 'male',
           birthdate: birthdate || null,
           age: computedAge,
           city: city.trim(),
@@ -479,13 +501,16 @@ export default function OnboardingPage() {
         setStep(4);
         throw new Error(extras.error);
       }
-      const { error: doneError } = await supabase
-        .from('profiles')
-        .update({ onboarding_completed: true })
-        .eq('id', userId);
-      if (doneError) {
-        throw new Error(doneError.message);
+      const done = await fetch('/api/onboarding', { method: 'POST' });
+      const doneData = await done.json().catch(() => ({}));
+      if (done.status === 403 && doneData.error === 'vpn_detected') {
+        setVpnBlocked(true);
+        throw new Error(doneData.message || 'Please disable your VPN or proxy to complete onboarding.');
       }
+      if (!done.ok) {
+        throw new Error(doneData.error || 'Could not complete onboarding. Please try again.');
+      }
+      try { sessionStorage.removeItem(DRAFT_KEY); } catch {}
 
       router.push('/profile');
       router.refresh();
@@ -553,6 +578,27 @@ export default function OnboardingPage() {
         )}
 
         {/* STEP 1: USERNAME SELECTION */}
+        {vpnBlocked && (
+          <div role="alert" className="rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3.5 space-y-1">
+            <p className="text-sm font-bold text-amber-900">VPN or Proxy Detected</p>
+            <p className="text-xs text-amber-900/90 leading-relaxed">
+              Please turn off your VPN/Private Relay connection to verify your location and continue.
+            </p>
+            <button
+              type="button"
+              onClick={() => {
+                fetch('/api/onboarding')
+                  .then((r) => r.json())
+                  .then((d) => setVpnBlocked(Boolean(d?.blocked)))
+                  .catch(() => {});
+              }}
+              className="text-xs font-semibold text-amber-900 underline"
+            >
+              I turned it off, check again
+            </button>
+          </div>
+        )}
+
         {step === 1 && (
           <form onSubmit={handleStep1Next} className="space-y-5">
             <div>
@@ -636,7 +682,7 @@ export default function OnboardingPage() {
                   <button
                     key={g.val}
                     type="button"
-                    onClick={() => setGender(g.val)}
+                    onClick={() => selectGender(g.val)}
                     className={
                       'py-2.5 px-3 rounded-2xl text-xs font-semibold border transition active:scale-95 flex items-center justify-center gap-1.5 ' +
                       (gender === g.val
@@ -650,39 +696,11 @@ export default function OnboardingPage() {
               </div>
             </div>
 
-            <div>
-              <label className="text-xs font-semibold text-[#1C1924] block mb-1">
-                I am interested in: <span className="text-[#6C637B] font-normal">(Select all that apply)</span>
-              </label>
-              <div className="grid grid-cols-3 gap-2 pt-1">
-                {INTERESTED_IN_OPTIONS.map((opt) => {
-                  const checked = interestedIn.includes(opt.val);
-                  return (
-                    <button
-                      key={opt.val}
-                      type="button"
-                      onClick={() => toggleInterestedIn(opt.val)}
-                      className={
-                        'py-2.5 px-3 rounded-2xl text-xs font-semibold border transition active:scale-95 flex items-center justify-between ' +
-                        (checked
-                          ? 'bg-[#F3EFFC] border-[#6555b8] text-[#6555b8] shadow-xs'
-                          : 'bg-white border-[#DDD7E5] text-[#524B5E] hover:border-[#6555b8]/40')
-                      }
-                    >
-                      <span>{opt.label}</span>
-                      <span
-                        className={
-                          'w-4 h-4 rounded-md flex items-center justify-center border ' +
-                          (checked ? 'bg-[#6555b8] border-[#6555b8] text-white' : 'border-[#CFC8DC] bg-white')
-                        }
-                      >
-                        {checked && <Check className="w-3 h-3 stroke-[3]" />}
-                      </span>
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
+            {gender && (
+              <p className="-mt-3 text-[11px] text-[#6C637B]">
+                You&apos;ll meet {gender === 'male' ? 'women' : 'men'} on Asians in Love.
+              </p>
+            )}
 
             <div>
               <label className="text-xs font-semibold text-[#1C1924] block mb-1">

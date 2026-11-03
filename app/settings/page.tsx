@@ -18,6 +18,7 @@ import {
 import { supabase } from '@/lib/supabase/client';
 import { hardSignOut } from '@/lib/hardSignOut';
 import { PushDeviceRow } from '@/components/PushDeviceRow';
+import { AILPlusModal } from '@/components/AILPlusModal';
 
 type SettingsKey = 'hide_profile' | 'show_active_status' | 'notify_sparks' | 'notify_messages';
 
@@ -41,6 +42,8 @@ export default function SettingsHubPage() {
   const [savingKey, setSavingKey] = useState<SettingsKey | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isPlus, setIsPlus] = useState(false);
+  const [gender, setGender] = useState<string | null>(null);
+  const [plusModalOpen, setPlusModalOpen] = useState(false);
   const [openingPortal, setOpeningPortal] = useState(false);
   const [portalError, setPortalError] = useState<string | null>(null);
   const [settings, setSettings] = useState(() => cachedSettingsData || {
@@ -67,10 +70,13 @@ export default function SettingsHubPage() {
       // AIL+ members get a "Manage Subscription" row (Stripe billing portal).
       supabase
         .from('profiles')
-        .select('is_plus')
+        .select('is_plus, gender')
         .eq('id', user.id)
         .maybeSingle()
-        .then(({ data: plus }) => setIsPlus(Boolean(plus?.is_plus)));
+        .then(({ data: plus }) => {
+          setIsPlus(Boolean(plus?.is_plus));
+          setGender(plus?.gender ?? null);
+        });
 
       if (error) {
         // Column(s) missing — remind to run the migration
@@ -92,6 +98,11 @@ export default function SettingsHubPage() {
 
   const handleToggle = async (key: SettingsKey) => {
     const nextVal = !settings[key];
+    // Private Mode is free for women; men need AIL+ (also enforced in the database).
+    if (key === 'hide_profile' && nextVal && gender === 'male' && !isPlus) {
+      setPlusModalOpen(true);
+      return;
+    }
     setSettings((prev) => ({ ...prev, [key]: nextVal }));
     setErrorMsg(null);
     setSavingKey(key);
@@ -249,7 +260,7 @@ export default function SettingsHubPage() {
         </h1>
       </header>
 
-      <main className="max-w-md mx-auto px-4 py-5 space-y-4 pb-32">
+      <main className="max-w-md mx-auto px-4 pt-5 space-y-4 pb-[calc(6rem+env(safe-area-inset-bottom,24px))]">
 
         {errorMsg && (
           <div className="rounded-2xl bg-rose-50 border border-rose-200 px-4 py-3 text-xs font-semibold text-rose-700">
@@ -308,8 +319,12 @@ export default function SettingsHubPage() {
 
           <SettingRow
             icon={<EyeOff className="w-4 h-4" />}
-            title="Pause Profile (Break Mode)"
-            subtitle="Hide from discovery stack while keeping existing chats"
+            title="Private Mode (Pause Profile)"
+            subtitle={
+              gender === 'male' && !isPlus
+                ? 'AIL+ · Hide from Discover while keeping your chats'
+                : 'Hide from Discover while keeping your chats'
+            }
             on={settings.hide_profile}
             busy={savingKey === 'hide_profile'}
             onClick={() => handleToggle('hide_profile')}
@@ -542,6 +557,12 @@ export default function SettingsHubPage() {
             </div>
           </div>
         )}
+      <AILPlusModal
+        open={plusModalOpen}
+        onClose={() => setPlusModalOpen(false)}
+        title="Unlock Private Mode with AIL+"
+        returnPath="/settings"
+      />
       </main>
     </div>
   );

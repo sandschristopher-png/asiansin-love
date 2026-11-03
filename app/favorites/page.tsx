@@ -184,14 +184,22 @@ export default function SparksPage() {
           process.env.NEXT_PUBLIC_SUPABASE_URL!,
           process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
         );
-        const { data: { user } } = await supabaseClient.auth.getUser();
+        // Local session read (no network round trip); RLS and /api/sparks/gated still verify it.
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        const user = session?.user;
         
         if (!user) {
           if (isMounted) setLoading(false);
           return;
         }
 
-                // Server-side gated fetch — no client-side bypass possible
+        // Outbound / inbound sparks load in parallel with the gated fetch (no waterfall).
+        const sparksPromise = Promise.allSettled([
+          supabaseClient.from('sparks').select('receiver_id, created_at').eq('sender_id', user.id).order('created_at', { ascending: false }),
+          supabaseClient.from('sparks').select('sender_id, created_at').eq('receiver_id', user.id).order('created_at', { ascending: false })
+        ]);
+
+        // Server-side gated fetch — no client-side bypass possible
         const resp = await fetch('/api/sparks/gated');
         if (resp.status === 403 || resp.status === 401) {
           // Not Plus or not authenticated: show paywall, empty gated data
@@ -215,10 +223,7 @@ export default function SparksPage() {
         const { sparkedYou, visitedYou } = await resp.json();
 
         // Fetch your own outbound sparks and mutuals (these are safe to read directly)
-        const [outSparksRes, inSparksRes] = await Promise.allSettled([
-          supabaseClient.from('sparks').select('receiver_id, created_at').eq('sender_id', user.id).order('created_at', { ascending: false }),
-          supabaseClient.from('sparks').select('sender_id, created_at').eq('receiver_id', user.id).order('created_at', { ascending: false })
-        ]);
+        const [outSparksRes, inSparksRes] = await sparksPromise;
 
         const unwrap = <T,>(r: PromiseSettledResult<T>): T | null =>
           r.status === 'fulfilled' ? r.value : null;
@@ -334,7 +339,18 @@ export default function SparksPage() {
         {/* Horizontal Sub-Tab Navigation */}
         {/* Borderless: only the purple underline marks the active tab. */}
         <div className="sticky top-12 z-30 bg-white/95 backdrop-blur-md -mx-3.5 px-3.5 mb-3.5">
-          <div className="grid grid-cols-4">
+          <div className="relative grid grid-cols-4 text-center">
+            {/* One underline that glides between tabs (GPU transform, 200 ms standard curve). */}
+            <span
+              aria-hidden
+              className="absolute bottom-0 left-0 h-[2.5px] w-1/4 px-2 pointer-events-none"
+              style={{
+                transform: `translateX(${Math.max(0, tabs.findIndex((t) => t.id === activeTab)) * 100}%)`,
+                transition: 'transform 200ms cubic-bezier(0.4, 0, 0.2, 1)',
+              }}
+            >
+              <span className="block h-full w-full rounded-full bg-[#6555B8]" />
+            </span>
             {tabs.map((t) => {
               const active = activeTab === t.id;
               return (
@@ -342,7 +358,7 @@ export default function SparksPage() {
                   key={t.id}
                   type="button"
                   onClick={() => setActiveTab(t.id)}
-                  className={`relative py-2.5 px-1 text-[12.5px] font-semibold whitespace-nowrap transition-colors duration-150 cursor-pointer flex items-center justify-center gap-1 min-w-0 ${
+                  className={`relative py-2.5 px-1.5 text-[12px] font-semibold whitespace-nowrap transition-colors duration-150 cursor-pointer flex items-center justify-center gap-1 min-w-0 ${
                     active ? 'text-[#6555B8]' : 'text-[#8C849B] hover:text-[#1C1924]'
                   }`}
                 >
@@ -354,12 +370,6 @@ export default function SparksPage() {
                       {t.count}
                     </span>
                   )}
-                  <span
-                    aria-hidden
-                    className={`absolute bottom-0 left-2 right-2 h-[2.5px] rounded-full bg-[#6555B8] origin-center transition-transform duration-200 ease-out ${
-                      active ? 'scale-x-100' : 'scale-x-0'
-                    }`}
-                  />
                 </button>
               );
             })}
@@ -384,7 +394,7 @@ export default function SparksPage() {
         ) : loading ? (
           <div className="grid grid-cols-2 gap-3.5">
             {[0, 1, 2, 3].map((i) => (
-              <div key={i} className="aspect-[3/4] rounded-2xl bg-[#F4F2F8] animate-pulse" />
+              <div key={i} className="aspect-[3/4] rounded-2xl ail-shimmer" />
             ))}
           </div>
         ) : currentList.length === 0 ? (

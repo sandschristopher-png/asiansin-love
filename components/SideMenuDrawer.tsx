@@ -22,6 +22,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { hardSignOut } from '@/lib/hardSignOut';
+import { BrandLogo } from '@/components/BrandLogo';
 
 interface SideMenuDrawerProps {
   isOpen: boolean;
@@ -137,13 +138,7 @@ export function SideMenuDrawer({ isOpen, onClose, onOpenFilters }: SideMenuDrawe
       >
         <div>
           <div className="flex items-center justify-between px-5 pt-4 pb-2">
-            <span
-              className="text-base font-bold tracking-tight lowercase inline-flex items-baseline"
-              style={{ fontFamily: 'var(--font-logo), sans-serif', fontWeight: 700 }}
-            >
-              <span className="text-[#1C1924] tracking-[-0.05em]">asians</span>
-              <span className="text-[#6555B8] tracking-[-0.05em]">inlove</span>
-            </span>
+            <BrandLogo href="" textSize="text-base" />
             <button
               type="button"
               onClick={onClose}

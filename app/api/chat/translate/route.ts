@@ -1,5 +1,6 @@
 // app/api/chat/translate/route.ts
-//   POST { message_id, text, target_language? } -> { translation }
+//   POST { message_id, conversation_id?, text, target_language? } -> { translation }
+//        on Gemini 429 / failure: 503 { error: 'rate_limited', fallback_text }
 //
 // 1-tap translation of an incoming chat message with Gemini Flash. Only a participant of the
 // message can translate it, and the text is what that member already sees (masked contact
@@ -35,7 +36,7 @@ export async function POST(req: Request) {
   }
   const userId = data.user.id;
 
-  let body: { message_id?: unknown; text?: unknown; target_language?: unknown };
+  let body: { message_id?: unknown; conversation_id?: unknown; text?: unknown; target_language?: unknown };
   try {
     body = await req.json();
   } catch {
@@ -53,7 +54,7 @@ export async function POST(req: Request) {
   const targetLanguage = /^[\p{L} ()-]{2,40}$/u.test(rawTarget) ? rawTarget : 'English';
 
   if (rateLimited(userId)) {
-    return NextResponse.json({ error: 'Too many translations. Try again in a minute.' }, { status: 429 });
+    return NextResponse.json({ error: 'rate_limited', fallback_text: text }, { status: 429 });
   }
 
   const service = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, {
@@ -64,17 +65,25 @@ export async function POST(req: Request) {
     .select('sender_id, receiver_id, is_quarantined')
     .eq('id', body.message_id)
     .maybeSingle();
-  if (!msg || (msg.sender_id !== userId && msg.receiver_id !== userId) || msg.is_quarantined) {
+  if (!msg || msg.is_quarantined) {
     return NextResponse.json({ error: 'Message not found.' }, { status: 404 });
   }
+  // The caller must be one of the two members of this conversation. A conversation is
+  // identified by the other member's id (/chat/{id}); when given it must match too.
+  const isParticipant = msg.sender_id === userId || msg.receiver_id === userId;
+  const partnerId = msg.sender_id === userId ? msg.receiver_id : msg.sender_id;
+  if (!isParticipant || (isUUID(body.conversation_id) && body.conversation_id !== partnerId)) {
+    return NextResponse.json({ error: 'Forbidden' }, { status: 403 });
+  }
 
-  const translation = await Promise.race([
+  const result = await Promise.race([
     translateChatMessage(text, targetLanguage),
     new Promise<null>((resolve) => setTimeout(() => resolve(null), TIMEOUT_MS)),
   ]);
-  if (!translation) {
-    return NextResponse.json({ error: 'Translation is unavailable right now.' }, { status: 503 });
+  // Graceful fallback: the client keeps showing the original text and a subtle toast.
+  if (!result || !result.ok) {
+    return NextResponse.json({ error: 'rate_limited', fallback_text: text }, { status: 503 });
   }
 
-  return NextResponse.json({ translation, target_language: targetLanguage });
+  return NextResponse.json({ translation: result.text, target_language: targetLanguage });
 }

@@ -116,8 +116,23 @@ export function AudioPill({
         )}
       </span>
       {showProgress ? (
+        <span className="flex items-center gap-1.5">
+        <span className={`flex items-center gap-[2px] h-3.5`} aria-hidden>
+          {BARS.slice(0, 5).map((h, i) => (
+            <span
+              key={i}
+              className={`w-[2.5px] rounded-full ${onBrand ? 'bg-white' : 'bg-[#6555B8]'} ${playing ? 'ail-wave-bar' : ''}`}
+              style={{
+                height: playing ? `${h * 100}%` : '35%',
+                opacity: playing ? 1 : 0.6,
+                animationDelay: `${i * 110}ms`,
+                transition: 'height 150ms ease-out',
+              }}
+            />
+          ))}
+        </span>
         <span
-          className={`relative h-1 w-24 rounded-full overflow-hidden ${onBrand ? 'bg-white/30' : 'bg-[#6555B8]/20'}`}
+          className={`relative h-1 w-16 rounded-full overflow-hidden ${onBrand ? 'bg-white/30' : 'bg-[#6555B8]/20'}`}
           role="progressbar"
           aria-label={`${label} progress`}
           aria-valuemin={0}
@@ -128,6 +143,7 @@ export function AudioPill({
             className={`absolute inset-y-0 left-0 rounded-full transition-[width] duration-200 ease-linear ${onBrand ? 'bg-white' : 'bg-[#6555B8]'}`}
             style={{ width: `${progress * 100}%` }}
           />
+        </span>
         </span>
       ) : (
       <span className={`flex items-center gap-[2px] ${sm ? 'h-3' : 'h-4'}`} aria-hidden>

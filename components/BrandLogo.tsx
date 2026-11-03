@@ -17,17 +17,20 @@ const SIZE_CLASS: Record<'sm' | 'md' | 'lg', string> = {
 };
 
 export function BrandLogo({ className = '', href = '/discover', size = 'md', textSize = '' }: BrandLogoProps) {
+  // "asiansin.love" in Comfortaa: slate "asiansin" + gradient ".love".
   const wordmark = (
     <span
       className={[
         textSize || SIZE_CLASS[size],
-        'leading-none font-bold lowercase select-none inline-flex items-baseline',
+        'font-comfortaa leading-none lowercase select-none inline-flex items-center',
         className,
       ].filter(Boolean).join(' ')}
-      style={{ fontFamily: 'var(--font-logo), sans-serif', fontWeight: 700, letterSpacing: '-0.02em' }}
+      aria-label="asiansin.love"
     >
-      <span className="text-[#1C1924]">asians</span>
-      <span className="text-[#6555B8]">inlove</span>
+      <span className="text-[#2D264B] font-bold tracking-tight">asiansin</span>
+      <span className="bg-gradient-to-r from-[#6555B8] to-[#9D8CFC] bg-clip-text text-transparent font-extrabold tracking-tight">
+        .love
+      </span>
     </span>
   );
 

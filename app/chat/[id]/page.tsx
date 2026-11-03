@@ -33,6 +33,7 @@ import { getPresenceStatus } from '@/lib/presence';
 import { usePresentUserIds } from '@/lib/realtimePresence';
 import { toList } from '@/lib/rhythm';
 import { needsTranslation } from '@/lib/language';
+import { localTimeIn, timeZoneFor } from '@/lib/timezone';
 import { isRestricted } from '@/lib/reputation';
 import { RepBadge, RhythmPill } from '@/components/profile/RhythmBadges';
 
@@ -132,6 +133,14 @@ export default function ChatConversationPage() {
     replyPace: null as string | null,
   });
   const [myRep, setMyRep] = useState(100);
+  const [sharedInterests, setSharedInterests] = useState<string[]>([]);
+  const [gateProgress, setGateProgress] = useState<{ mine: number; theirs: number } | null>(null);
+  // Re-render once a minute so the match's local time stays current.
+  const [clockTick, setClockTick] = useState(0);
+  useEffect(() => {
+    const t = window.setInterval(() => setClockTick((n) => n + 1), 60_000);
+    return () => window.clearInterval(t);
+  }, []);
 
   const [icebreakerPrompt, setIcebreakerPrompt] = useState<string | null>(null);
   const [showIcebreaker, setShowIcebreaker] = useState(true);
@@ -370,6 +379,7 @@ export default function ChatConversationPage() {
           myInterests.some((m) => m.toLowerCase() === t.toLowerCase())
         );
 
+        setSharedInterests(shared);
         setStarterChips(
           buildStarterChips({
             myInterests,
@@ -397,6 +407,9 @@ export default function ChatConversationPage() {
 
       contactUnlockedRef.current = Boolean(remoteMsgsRes.contactUnlocked);
       setContactUnlocked(contactUnlockedRef.current);
+      if (typeof remoteMsgsRes.senderCount === 'number') {
+        setGateProgress({ mine: remoteMsgsRes.senderCount, theirs: remoteMsgsRes.partnerCount ?? 0 });
+      }
 
       if (remoteMsgsRes.messages) {
         setMessages(
@@ -617,14 +630,19 @@ export default function ChatConversationPage() {
       const res = await fetch('/api/chat/translate', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ message_id: msg.id, text: msg.text, target_language: 'English' }),
+        body: JSON.stringify({
+          message_id: msg.id,
+          conversation_id: resolvedTargetUuid,
+          text: msg.text,
+          target_language: 'English',
+        }),
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok || !data.translation) throw new Error(data.error || 'Translation is unavailable right now.');
+      if (!res.ok || !data.translation) throw new Error('Translation temporarily unavailable');
       setTranslations((prev) => ({ ...prev, [msg.id]: { text: data.translation, showing: true, loading: false } }));
     } catch (err) {
       setTranslations((prev) => ({ ...prev, [msg.id]: { showing: false, loading: false } }));
-      setToast(err instanceof Error ? err.message : 'Translation is unavailable right now.');
+      setToast('Translation temporarily unavailable');
     }
   };
 
@@ -796,12 +814,20 @@ export default function ChatConversationPage() {
                     targetInfo.showActive &&
                     (Boolean(resolvedTargetUuid && presentIds.has(resolvedTargetUuid)) || Boolean(presence?.isOnline));
                   const activity = !online && presence && presence.statusLabel !== 'Offline' ? presence.statusLabel : '';
-                  const label = online ? 'Online' : [activity, city].filter(Boolean).join(' · ');
-                  if (!label && !targetInfo.replyPace) return null;
+                  void clockTick; // minute re-render for the local time
+                  const localTime = localTimeIn(timeZoneFor(city, targetInfo.country));
+                  const cityLabel = city ? (localTime ? `${city.split(',')[0]} ${localTime}` : city) : '';
+                  const label = online ? 'Online' : activity;
+                  if (!label && !cityLabel && !targetInfo.replyPace) return null;
                   return (
                     <div className="flex items-center gap-1.5 mt-0.5 min-w-0">
                       {online && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block shrink-0" />}
-                      {label && <span className="text-[11px] text-[#7A7289] font-medium truncate">{label}</span>}
+                      {label && <span className="text-[11px] text-[#7A7289] font-medium truncate shrink-0">{label}</span>}
+                      {cityLabel && (
+                        <span className="px-1.5 py-px rounded-full bg-[#F3EFFC] text-[10px] font-semibold text-[#6555B8] whitespace-nowrap truncate">
+                          {cityLabel}
+                        </span>
+                      )}
                       <RhythmPill field="reply_pace" value={targetInfo.replyPace} className="shrink-0" />
                     </div>
                   );
@@ -918,8 +944,10 @@ export default function ChatConversationPage() {
                 <p className="text-xs font-semibold text-[#1C1924]">
                   Start a conversation with  {targetInfo.name}
                 </p>
-                <p className="text-[11px] text-[#7A7289] max-w-[220px] mx-auto leading-relaxed">
-                  Send a friendly note to break the ice.
+                <p className="text-[11px] text-[#7A7289] max-w-[240px] mx-auto leading-relaxed">
+                  {sharedInterests.length > 0
+                    ? `You both love ${sharedInterests.slice(0, 2).join(' & ')}!`
+                    : 'Send a friendly note to break the ice.'}
                 </p>
                 {(starterChips.length > 0 || icebreakerPrompt) && (
                   <div className="pt-3 flex flex-wrap justify-center gap-2 max-w-[320px] mx-auto">
@@ -1038,7 +1066,10 @@ export default function ChatConversationPage() {
                             />
                           ) : translations[msg.id]?.showing && translations[msg.id]?.text ? (
                             <span className="block">
-                              <span className="block italic text-[#3D3650]">{translations[msg.id]?.text}</span>
+                              <span className="block">{msg.text}</span>
+                              <span className="block mt-1.5 pt-1.5 border-t border-[#ECE8F4] italic text-[#3D3650]">
+                                {translations[msg.id]?.text}
+                              </span>
                               <span className="mt-1.5 inline-flex items-center px-1.5 py-0.5 rounded-md bg-[#F3EFFC] text-[9.5px] font-semibold not-italic text-[#6555B8]">
                                 Translated
                               </span>
@@ -1107,6 +1138,12 @@ export default function ChatConversationPage() {
 
       {/* Docked Flex Composer (Never overlaps message feed) */}
       <div className="shrink-0 w-full bg-white/95 backdrop-blur-md border-t border-[#ECE8F4] px-3 pt-2 pb-[max(0.625rem,env(safe-area-inset-bottom))] z-20">
+        {!contactUnlocked && gateProgress && !isInitialLoading && (
+          <p className="mb-1.5 text-center text-[10.5px] text-[#7A7289]" aria-live="polite">
+            🛡️ Safety Gate: {Math.min(gateProgress.mine, gateProgress.theirs)}/{CONTACT_UNLOCK_TURNS} messages exchanged to
+            unlock voice notes and contact sharing.
+          </p>
+        )}
         {cooldownSeconds > 0 ? (
           <div className="p-3 rounded-2xl bg-[#F8F7FA] border border-[#DDD7E5] flex flex-col items-center gap-2 shadow-xs text-center">
             <div className="flex items-center gap-1.5 text-xs text-[#524B5E]">

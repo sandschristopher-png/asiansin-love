@@ -22,7 +22,8 @@ import { isTrustedVoiceIntroUrl } from '@/lib/audio';
 import { resolveCountry } from '@/lib/countries';
 import { rhythmOption, sharedTraits, toList } from '@/lib/rhythm';
 import { scoreOf } from '@/lib/reputation';
-import { InCommonCard, RepBadge, RhythmPill } from '@/components/profile/RhythmBadges';
+import { InCommonCard, RhythmPill } from '@/components/profile/RhythmBadges';
+import RepScoreCard from '@/components/RepScoreCard';
 import { SparkingHeart } from '@/components/icons/SparkingHeart';
 
 interface HighlightRow {
@@ -220,8 +221,11 @@ export default function PublicProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F8F7FA] flex items-center justify-center">
-        <Loader2 className="w-7 h-7 animate-spin text-[#6555B8]" />
+      <div className="w-full px-3.5 pt-3.5 space-y-3.5 bg-[#F8F7FA]" aria-busy="true" aria-label="Loading profile">
+        <div className="aspect-[4/5] w-full rounded-3xl ail-shimmer" />
+        <div className="h-24 rounded-3xl ail-shimmer" />
+        <div className="h-16 rounded-3xl ail-shimmer" />
+        <div className="h-28 rounded-3xl ail-shimmer" />
       </div>
     );
   }
@@ -505,16 +509,7 @@ export default function PublicProfilePage() {
                   Verified
                 </span>
               )}
-              <RepBadge score={scoreOf(profile.reputation_score)} />
             </div>
-
-            {(profile.reply_pace || relocationReadiness || timelineIntent) && (
-              <div className="mt-2 flex flex-wrap gap-1.5">
-                <RhythmPill field="reply_pace" value={profile.reply_pace} variant="glass" />
-                <RhythmPill field="relocation_readiness" value={profile.relocation_readiness} variant="glass" />
-                <RhythmPill field="timeline_intent" value={profile.timeline_intent} variant="glass" />
-              </div>
-            )}
 
             <div className="mt-1 flex items-center gap-1.5 text-xs font-medium text-neutral-200">
               <MapPin className="h-3.5 w-3.5 text-neutral-300 shrink-0" />
@@ -526,15 +521,38 @@ export default function PublicProfilePage() {
               )}
             </div>
 
-            {isTrustedVoiceIntroUrl(profile.voice_intro_url) && (
-              <div className="mt-3 pointer-events-auto">
-                <AudioPill src={profile.voice_intro_url} label="Hear my voice" tone="onBrand" showProgress />
-              </div>
-            )}
           </div>
         </div>
 
-        {/* 2. HIGHLIGHTS & MINI-STORIES */}
+        {/* 2. REPUTATION */}
+        <RepScoreCard score={scoreOf(profile.reputation_score)} />
+
+        {/* 3. VOICE INTRO */}
+        {isTrustedVoiceIntroUrl(profile.voice_intro_url) && (
+          <section className="p-4 rounded-3xl bg-white border border-[#DDD7E5] shadow-2xs flex items-center justify-between gap-3">
+            <div className="min-w-0">
+              <h2 className="text-xs font-bold uppercase tracking-wider text-[#6555B8]">Voice Intro</h2>
+              <p className="text-[11px] text-[#6C637B]">Hear {displayName} say hello</p>
+            </div>
+            <AudioPill src={profile.voice_intro_url} label="Hear my voice" showProgress />
+          </section>
+        )}
+
+        {/* 4. ABOUT ME (with things in common) */}
+        <section className="p-4 rounded-3xl bg-white border border-[#DDD7E5] shadow-2xs space-y-2">
+          <h2
+            className="text-xs font-bold uppercase tracking-wider text-[#6555B8]"
+            style={{ fontFamily: 'var(--font-brand)' }}
+          >
+            About Me
+          </h2>
+          <InCommonCard items={inCommon} />
+          <p className="text-xs sm:text-sm text-[#1C1924] leading-relaxed whitespace-pre-line">
+            {profile.bio || 'Looking for something genuine and sincere.'}
+          </p>
+        </section>
+
+        {/* 5. HIGHLIGHTS & MINI-STORIES */}
         {highlights.length > 0 && (
           <section className="p-4 rounded-3xl bg-white border border-[#DDD7E5] shadow-2xs space-y-3">
             <div className="flex items-center justify-between">
@@ -574,7 +592,7 @@ export default function PublicProfilePage() {
           </section>
         )}
 
-        {/* 3. INTERESTS & THINGS IN COMMON */}
+        {/* 6. INTERESTS & THINGS IN COMMON */}
         {targetInterests.length > 0 && (
           <section className="p-4 rounded-3xl bg-white border border-[#DDD7E5] shadow-2xs space-y-3">
             <div className="flex items-center justify-between">
@@ -628,36 +646,29 @@ export default function PublicProfilePage() {
           </section>
         )}
 
-        {/* 4. ABOUT ME */}
-        <section className="p-4 rounded-3xl bg-white border border-[#DDD7E5] shadow-2xs space-y-2">
-          <h2
-            className="text-xs font-bold uppercase tracking-wider text-[#6555B8]"
-            style={{ fontFamily: 'var(--font-brand)' }}
-          >
-            About Me
-          </h2>
-          <InCommonCard items={inCommon} />
-          <p className="text-xs sm:text-sm text-[#1C1924] leading-relaxed whitespace-pre-line">
-            {profile.bio || 'Looking for something genuine and sincere.'}
-          </p>
-        </section>
-
-        {/* 5. WHAT I'M LOOKING FOR */}
-        {lookingForText && (
-          <section className="p-4 rounded-3xl bg-white border border-[#DDD7E5] shadow-2xs space-y-1.5">
+        {/* 7. WHAT I'M LOOKING FOR & MY RHYTHM */}
+        {(lookingForText || profile.reply_pace || relocationReadiness || timelineIntent) && (
+          <section className="p-4 rounded-3xl bg-white border border-[#DDD7E5] shadow-2xs space-y-2">
             <h2
               className="text-xs font-bold uppercase tracking-wider text-[#6555B8]"
               style={{ fontFamily: 'var(--font-brand)' }}
             >
               What I&apos;m Looking For
             </h2>
-            <p className="text-xs sm:text-sm font-semibold text-[#1C1924]">
-              {lookingForText}
-            </p>
+            {lookingForText && (
+              <p className="text-xs sm:text-sm font-semibold text-[#1C1924]">{lookingForText}</p>
+            )}
+            {(profile.reply_pace || relocationReadiness || timelineIntent) && (
+              <div className="flex flex-wrap gap-1.5 pt-0.5">
+                <RhythmPill field="reply_pace" value={profile.reply_pace} className="text-[11px] px-2.5 py-1" />
+                <RhythmPill field="relocation_readiness" value={profile.relocation_readiness} className="text-[11px] px-2.5 py-1" />
+                <RhythmPill field="timeline_intent" value={profile.timeline_intent} className="text-[11px] px-2.5 py-1" />
+              </div>
+            )}
           </section>
         )}
 
-        {/* 6. VITALS & LIFESTYLE */}
+        {/* 8. VITALS, LIFESTYLE & LANGUAGES */}
         {vitals.length > 0 && (
           <section className="p-4 rounded-3xl bg-white border border-[#DDD7E5] shadow-2xs space-y-3">
             <h2
@@ -677,7 +688,7 @@ export default function PublicProfilePage() {
           </section>
         )}
 
-        {/* 7. LANGUAGES SPOKEN */}
+        {/* 8b. LANGUAGES SPOKEN */}
         {languagesList.length > 0 && (
           <section className="p-4 rounded-3xl bg-white border border-[#DDD7E5] shadow-2xs space-y-2.5">
             <h2
@@ -699,6 +710,7 @@ export default function PublicProfilePage() {
             </div>
           </section>
         )}
+
       </div>
 
       {floatingDock}

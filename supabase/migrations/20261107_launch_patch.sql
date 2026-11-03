@@ -13,7 +13,11 @@
 -- 3. user_reports.status: makes sure the admin queue's 'resolved' / 'dismissed' values are allowed
 --    if a CHECK constraint exists (existing values are kept).
 --
--- Signatures are unchanged, so grants stay service_role only (re-asserted below).
+-- 4. onboarding_completed is server-only (POST /api/onboarding, behind the VPN / proxy gate);
+--    hide_profile (Private Mode) needs AIL+ for men, free for women.
+-- 5. Performance indexes for messages, favorites, sparks, profiles and user_highlights.
+--
+-- Function signatures are unchanged, so grants stay service_role only (re-asserted below).
 -- Safe to re-run.
 -- =====================================================================
 
@@ -158,6 +162,65 @@ begin
     'alter table public.user_reports add constraint user_reports_status_check check (status is null or status = any (%L::text[]))',
     v_values
   );
+end;
+$$;
+
+-- 4. Member-flag guards ------------------------------------------------
+--   onboarding_completed: only POST /api/onboarding (service role, after the VPN / proxy gate)
+--     can mark onboarding done.
+--   hide_profile (Private Mode): free for women; men need AIL+. Turning it OFF is always allowed.
+create or replace function public.guard_profile_member_flags()
+returns trigger
+language plpgsql
+set search_path = public
+as $$
+begin
+  -- Trusted contexts: no end-user JWT, or the service role.
+  if auth.uid() is null or coalesce(auth.role(), '') = 'service_role' then
+    return NEW;
+  end if;
+
+  if TG_OP = 'INSERT' then
+    NEW.onboarding_completed := false;
+  elsif NEW.onboarding_completed is distinct from OLD.onboarding_completed then
+    NEW.onboarding_completed := OLD.onboarding_completed;
+  end if;
+
+  if coalesce(NEW.hide_profile, false)
+     and (TG_OP = 'INSERT' or not coalesce(OLD.hide_profile, false))
+     and lower(coalesce(NEW.gender, '')) = 'male'
+     and not coalesce(NEW.is_plus, false) then
+    NEW.hide_profile := case when TG_OP = 'INSERT' then false else OLD.hide_profile end;
+  end if;
+
+  return NEW;
+end;
+$$;
+
+revoke all on function public.guard_profile_member_flags() from public, anon, authenticated;
+grant execute on function public.guard_profile_member_flags() to service_role;
+
+drop trigger if exists trg_guard_profile_member_flags on public.profiles;
+create trigger trg_guard_profile_member_flags
+  before insert or update of onboarding_completed, hide_profile on public.profiles
+  for each row execute function public.guard_profile_member_flags();
+
+-- 5. Performance indexes (real table / column names; skipped if a table is missing) ----------
+create index if not exists idx_messages_conversation_created on public.messages (conversation_id, created_at desc);
+create index if not exists idx_messages_pair_created on public.messages (sender_id, receiver_id, created_at desc);
+create index if not exists idx_messages_receiver_created on public.messages (receiver_id, created_at desc);
+create index if not exists idx_favorites_user_target on public.favorites (user_id, favorite_profile_id);
+create index if not exists idx_sparks_sender on public.sparks (sender_id, created_at desc);
+create index if not exists idx_sparks_receiver on public.sparks (receiver_id, created_at desc);
+create index if not exists idx_profiles_last_active on public.profiles (last_active_at desc);
+create index if not exists idx_profiles_created on public.profiles (created_at desc);
+
+do $$
+begin
+  -- Profile Highlights live in user_highlights (not profile_highlights).
+  if to_regclass('public.user_highlights') is not null then
+    execute 'create index if not exists idx_user_highlights_user on public.user_highlights (user_id)';
+  end if;
 end;
 $$;
 
