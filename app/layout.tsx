@@ -6,7 +6,7 @@ import { Playwrite_IT_Moderna, Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 import { LayoutShell } from '@/components/LayoutShell';
 
-// Playwrite IT Moderna: the ail+ member badge ONLY (components/PlusBadge.tsx), via
+// Playwrite IT Moderna: the ail+ member badge ONLY (components/AilBadge.tsx), via
 // var(--font-logo) / .font-logo. The asiansinlove wordmark is Plus Jakarta Sans (font-brand).
 // Playwrite ships without a 'latin' subset in next/font, so it is not preloaded; display: swap
 // keeps the cursive fallback visible until it loads.
@@ -31,7 +31,7 @@ const SITE_TITLE = 'Asians in Love - Real Connections';
 const SITE_DESCRIPTION =
   'Meet genuine singles across Southeast Asia. Safe, real connections with sparks, chats, and meaningful relationships.';
 
-// Social share cards (Open Graph / Twitter). public/og-image.png is built by scripts/generate-og-image.mjs.
+// Social share cards (Open Graph / Twitter). public/og-image.png is built by scripts/export-brand-assets.mjs.
 const SHARE_TITLE = 'Asians in Love — Intentional Dating for Singles in Asia & Beyond';
 const SHARE_DESCRIPTION =
   'High-trust Asian dating featuring 1-shot gesture verification, voice intros, and community reputation.';

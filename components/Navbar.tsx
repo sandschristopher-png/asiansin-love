@@ -8,7 +8,7 @@ import { useRouter, usePathname } from 'next/navigation';
 import { User, Settings, LogOut, ArrowLeft, Share2, Check, Zap, Menu } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { hardSignOut } from '@/lib/hardSignOut';
-import { PlusBadge } from './PlusBadge';
+import { AilBadge } from './AilBadge';
 export function Navbar() {
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
@@ -242,7 +242,7 @@ export function Navbar() {
                   <div className="absolute right-0 mt-2.5 w-80 rounded-2xl bg-white border border-[#DDD7E5]/40 shadow-xl py-2 z-[200] animate-[notifDropdownIn_0.2s_cubic-bezier(0.16,1,0.3,1)_both]">
                     <div className="px-4 py-2 border-b border-[#DDD7E5]/40 bg-white/95 backdrop-blur-md backdrop-saturate-150 rounded-t-2xl">
                       <p className="text-[11px] uppercase font-medium tracking-wider text-gray-400">Signed In As</p>
-                      <p className="text-sm font-semibold text-gray-900 truncate inline-flex items-center gap-1.5">{(profile?.username || displayName).replace(/^@/, '')}{profile?.is_plus && <PlusBadge size="sm" />}</p>
+                      <p className="text-sm font-semibold text-gray-900 truncate inline-flex items-center gap-1.5">{(profile?.username || displayName).replace(/^@/, '')}{profile?.is_plus && <AilBadge />}</p>
                     </div>
                   <NotificationsSection initial={prefetchedNotifs} onNavigate={() => setMenuOpen(false)} />
                     <div className="py-1">

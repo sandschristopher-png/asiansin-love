@@ -209,6 +209,54 @@ for (const text of bioRuleClean) {
   check(`bio rule allows: ${text.slice(0, 40)}`, v.ok, JSON.stringify(v));
 }
 
+// --- Profile moderator (lib/moderation/profileModerator.ts) ----------------------------------
+const { moderateProfileText, penaltyFor } = await loadLib('moderation/profileModerator');
+const profileCases = [
+  // [name, text, expected violations, must contain in sanitized, must NOT contain in sanitized]
+  ['phone digits', 'Call me 0917 123 4567 anytime', ['PHONE'], '[contact removed]', '4567'],
+  ['phone intl', 'text +63 917 555 1234 ok', ['PHONE'], '[contact removed]', '1234'],
+  ['phone spelled', 'zero nine one seven one two three four five six seven', ['PHONE'], '[contact removed]', 'seven'],
+  ['url scheme', 'see https://jenny.example/x', ['URL'], '[link removed]', 'https'],
+  ['domain', 'visit jenny.com tonight', ['URL'], '[link removed]', 'jenny.com'],
+  ['dot com spelled', 'jenny dot com', ['URL'], '[link removed]', 'dot com'],
+  ['ig handle', 'IG: @jen_92', ['HANDLE'], '[handle removed]', 'jen_92'],
+  ['whatsapp handle', 'whatsapp jenny92 please', ['HANDLE'], '[handle removed]', 'jenny92'],
+  ['funnel', 'add me on telegram', ['HANDLE'], '[handle removed]', 'telegram'],
+  ['email', 'email jen@gmail.com', ['HANDLE'], '[handle removed]', 'gmail'],
+  ['sugar', 'Looking for a sugar daddy', ['COMMERCIAL_SOLICITATION'], 'sugar daddy', null],
+  ['sugar spaced', 's u g a r d a d d y', ['COMMERCIAL_SOLICITATION'], null, null],
+  ['sugar leet', '$ugar b@by here', ['COMMERCIAL_SOLICITATION'], null, null],
+  ['ppm', 'ppm only, no time wasters', ['COMMERCIAL_SOLICITATION'], null, null],
+  ['payment gcash', 'send gcash pls', ['PAYMENT'], null, null],
+  ['payment crypto', 'I can teach you bitcoin trading', ['PAYMENT'], null, null],
+];
+for (const [name, text, expected, has, hasNot] of profileCases) {
+  const r = moderateProfileText(text);
+  const ok =
+    expected.every((v) => r.violations.includes(v)) &&
+    (has === null || r.sanitizedText.includes(has)) &&
+    (hasNot === null || !r.sanitizedText.includes(hasNot));
+  check(`profile: ${name}`, ok, JSON.stringify(r));
+}
+const profileClean = [
+  'I love line dancing and my favorite line is from Titanic',
+  'I love instagram photography',
+  'I work in call center, night shift',
+  'Born in 1995. Working in Bangkok since 2019.',
+  'I have a Ph.D in biology.',
+  'Teacher, 29, 5ft 4in, love karaoke and the beach',
+];
+for (const text of profileClean) {
+  const r = moderateProfileText(text);
+  check(`profile clean: ${text.slice(0, 40)}`, r.isClean && r.sanitizedText === text, JSON.stringify(r));
+}
+check('profile penalty: phone 10', penaltyFor(['PHONE']) === 10);
+check('profile penalty: handle 5', penaltyFor(['HANDLE']) === 5);
+check('profile penalty: phone+url = 20', penaltyFor(['PHONE', 'URL']) === 20);
+check('profile penalty: capped at 25', penaltyFor(['PHONE', 'URL', 'PAYMENT']) === 25);
+check('profile penalty: commercial 25', penaltyFor(['COMMERCIAL_SOLICITATION']) === 25);
+check('profile penalty: dup types counted once', penaltyFor(['HANDLE', 'HANDLE']) === 5);
+
 const total = passed + failures.length;
 for (const f of failures) console.error('  FAIL', f);
 console.log(`moderation: ${passed}/${total} passed (${((passed / total) * 100).toFixed(1)}%)`);

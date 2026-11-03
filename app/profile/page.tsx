@@ -23,7 +23,7 @@ import {
 import { supabase } from '@/lib/supabase/client';
 import { hardSignOut } from '@/lib/hardSignOut';
 import { INTENT_OPTIONS, normalizeIntent, intentLabel } from '@/lib/intents';
-import { PlusBadge } from '@/components/PlusBadge';
+import { AilBadge } from '@/components/AilBadge';
 import RepScoreCard from '@/components/RepScoreCard';
 import { ProfileHighlightsEditorRow } from '@/components/ProfileHighlightsEditorRow';
 import { VoicePlayer } from '@/components/VoicePlayer';
@@ -31,7 +31,7 @@ import { VoiceRecordModal } from '@/components/VoiceRecordModal';
 import { VisitingBadge, type TravelNotice } from '@/components/VisitingBadge';
 import { DayOneBadge, NewMemberPill, VerifiedLocationBadge } from '@/components/profile/TrustBadges';
 import { isTrustedVoiceIntroUrl } from '@/lib/audio';
-import { BIO_REJECTION_MESSAGE, validateBio } from '@/lib/moderation/textFilter';
+import { BIO_REJECTION_MESSAGE } from '@/lib/moderation/textFilter';
 import { RhythmPill, RhythmSelectors, rhythmFromRow, type RhythmValues } from '@/components/profile/RhythmBadges';
 import { saveProfileFields } from '@/lib/profileApi';
 import { useActionToast } from '@/components/ActionToast';
@@ -376,11 +376,8 @@ export default function MyProfilePage() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
-    if (!validateBio(bio).ok) {
-      setBioRejected(true);
-      showActionToast(BIO_REJECTION_MESSAGE, 'info');
-      return;
-    }
+    // Contact details are masked server-side (lib/moderation/profileModerator); only payment /
+    // commercial terms are refused, so there is no client-side pre-block any more.
     setBioRejected(false);
 
     const payload: Record<string, unknown> = {
@@ -419,12 +416,16 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
     setSaving(false);
 
     if (result.ok) {
+      if (result.sanitized?.bio !== undefined) setBio(result.sanitized.bio);
+      if (result.sanitized?.looking_for !== undefined) setLookingFor(result.sanitized.looking_for);
+      if (result.sanitized?.occupation !== undefined) setProfession(result.sanitized.occupation);
+      if (result.notice) showActionToast(result.notice, 'info');
       setIsEditing(false);
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 2500);
     } else if (result.field === 'bio') {
       setBioRejected(true);
-      showActionToast(BIO_REJECTION_MESSAGE, 'info');
+      showActionToast(result.error || BIO_REJECTION_MESSAGE, 'info');
     } else {
       setSaveError(result.error);
     }
@@ -646,7 +647,7 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
                 >
                   {username.replace(/^@/, '')}{age ? ', ' + age : ''}
                 </h2>
-                {isPlus && <PlusBadge size="sm" />}
+                {isPlus && <AilBadge />}
                 {verificationStatus === 'verified' && (
                   <span title="Verified Member">
                     <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
@@ -801,7 +802,7 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
               value={bio}
               onChange={(e) => {
                 setBio(e.target.value.slice(0, 500));
-                if (bioRejected && validateBio(e.target.value).ok) setBioRejected(false);
+                if (bioRejected) setBioRejected(false);
               }}
               rows={4}
               aria-invalid={bioRejected}

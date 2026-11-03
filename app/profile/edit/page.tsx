@@ -11,7 +11,7 @@ import { EMPTY_RHYTHM, RhythmSelectors, rhythmFromRow, type RhythmValues } from 
 import { saveProfileFields } from '@/lib/profileApi';
 import { useActionToast } from '@/components/ActionToast';
 import { compressPhoto } from '@/lib/utils/imageCompressor';
-import { BIO_REJECTION_MESSAGE, validateBio } from '@/lib/moderation/textFilter';
+import { BIO_REJECTION_MESSAGE } from '@/lib/moderation/textFilter';
 import { isPlusProfile } from '@/lib/plus';
 
 
@@ -309,12 +309,7 @@ export default function EditProfilePage() {
     e.preventDefault();
     setStatusMsg(null);
 
-    // Instant client check; PATCH /api/profile enforces the same rules (HTTP 400).
-    if (!validateBio(formData.bio).ok) {
-      setBioRejected(true);
-      showActionToast(BIO_REJECTION_MESSAGE, 'info');
-      return;
-    }
+    // PATCH /api/profile masks contact details and refuses only payment / commercial terms.
     setBioRejected(false);
     setSaving(true);
 
@@ -345,11 +340,14 @@ export default function EditProfilePage() {
       if (!saved.ok) {
         if (saved.field === 'bio') {
           setBioRejected(true);
-          showActionToast(BIO_REJECTION_MESSAGE, 'info');
+          showActionToast(saved.error || BIO_REJECTION_MESSAGE, 'info');
           return;
         }
         throw new Error(saved.error);
       }
+      if (saved.sanitized?.bio !== undefined) setFormData((prev) => ({ ...prev, bio: saved.sanitized!.bio }));
+      if (saved.sanitized?.profession !== undefined) setFormData((prev) => ({ ...prev, profession: saved.sanitized!.profession }));
+      if (saved.notice) showActionToast(saved.notice, 'info');
 
       // First-time username claim stays a direct update (uniqueness is checked live above).
       if (!initialHasUsername && username.trim().length >= 3 && usernameStatus === 'available') {
@@ -861,7 +859,7 @@ export default function EditProfilePage() {
               value={formData.bio}
               onChange={(e) => {
                 setFormData({ ...formData, bio: e.target.value });
-                if (bioRejected && validateBio(e.target.value).ok) setBioRejected(false);
+                if (bioRejected) setBioRejected(false);
               }}
               aria-invalid={bioRejected}
               aria-describedby="bio-helper"

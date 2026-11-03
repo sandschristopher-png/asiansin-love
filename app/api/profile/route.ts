@@ -2,7 +2,9 @@
 //   PATCH { bio?, reply_pace?, relocation_readiness?, timeline_intent?, ...member-editable fields }
 //
 // Saves the member's own profile with the service role. Public free text (bio, "looking for",
-// occupation) is screened for contact details, scams, solicitation and slurs first; after
+// occupation) goes through lib/moderation/profileModerator: contact details are masked and the
+// cleaned text is saved; payment / commercial terms block the save; newly introduced violations
+// cost reputation (lib/moderation/profilePenalty). Slurs / conduct still use lib/moderation. After
 // 20261106_reputation_rhythm.sql runs, members can no longer write `bio` from the browser.
 //
 // The service role bypasses guard_profile_protected_columns, so ONLY the keys listed in
@@ -12,6 +14,14 @@ import { createClient } from '@supabase/supabase-js';
 import { createClient as createSessionClient } from '@/lib/supabase/server';
 import { evaluateBioModeration } from '@/lib/moderation';
 import { BIO_REJECTION_MESSAGE, validateBio } from '@/lib/moderation/textFilter';
+import { PROFILE_BLOCK_MESSAGE } from '@/lib/moderation/profileModerator';
+import {
+  chargeProfileViolations,
+  isBlocked,
+  sanitizedNotice,
+  screenText,
+  type ScreenedText,
+} from '@/lib/moderation/profilePenalty';
 import { isRhythmValue, RHYTHM_FIELDS, type RhythmField } from '@/lib/rhythm';
 import { resolveCountry } from '@/lib/countries';
 import { canonicalCountry } from '@/lib/constants/countries';
@@ -67,16 +77,45 @@ export async function PATCH(req: Request) {
   }
 
   const updates: Updates = {};
+  const screened: ScreenedText[] = [];
+
+  const service = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, {
+    auth: { persistSession: false },
+  });
+
+  // Stored values of the public text fields in this save ("newly introduced" comparison).
+  const SCREENED_KEYS = ['bio', ...Object.keys(TEXT_FIELDS).filter((k) => TEXT_FIELDS[k].screen)];
+  const editing = SCREENED_KEYS.filter((k) => typeof body[k] === 'string' && (body[k] as string).trim());
+  let stored: Record<string, unknown> = {};
+  if (editing.length) {
+    const { data: row } = await service.from('profiles').select(editing.join(', ')).eq('id', userId).maybeSingle();
+    stored = (row as Record<string, unknown> | null) || {};
+  }
+
+  /** Mask contact details, block payment / commercial terms, then the conduct (slur) check. */
+  const screen = (key: string, label: string, text: string): NextResponse | string => {
+    const item = screenText(key, text, typeof stored[key] === 'string' ? (stored[key] as string) : null);
+    if (item.result.violations.length) screened.push(item);
+    if (isBlocked(item)) return bad(`${label}: ${PROFILE_BLOCK_MESSAGE}`, key, 422);
+    const verdict = evaluateBioModeration(item.result.sanitizedText);
+    if (!verdict.ok) return bad(`${label}: ${verdict.reason || 'Please revise this text.'}`, key, 422);
+    return item.result.sanitizedText;
+  };
+
+  /** Charges a blocked attempt before answering (re-submitting the same text is free). */
+  const reject = async (res: NextResponse) => {
+    const blocked = screened.filter(isBlocked);
+    if (blocked.length) await chargeProfileViolations(service, userId, blocked, 'profile_blocked');
+    return res;
+  };
 
   if ('bio' in body) {
     if (typeof body.bio !== 'string') return bad('Bio must be text.', 'bio');
     const bio = body.bio.trim();
     if (bio.length > MAX_BIO_CHARS) return bad(`Bio can be up to ${MAX_BIO_CHARS} characters.`, 'bio');
-    const rules = validateBio(bio);
-    if (!rules.ok) return NextResponse.json({ error: BIO_REJECTION_MESSAGE, field: 'bio', code: 'bio_rule', category: rules.category }, { status: 400 });
-    const verdict = evaluateBioModeration(bio);
-    if (!verdict.ok) return bad(verdict.reason || 'Please revise your bio.', 'bio', 422);
-    updates.bio = bio;
+    const out = bio ? screen('bio', 'Bio', bio) : '';
+    if (out instanceof NextResponse) return reject(out);
+    updates.bio = out;
   }
 
   for (const [key, spec] of Object.entries(TEXT_FIELDS)) {
@@ -90,8 +129,10 @@ export async function PATCH(req: Request) {
     const text = v.trim();
     if (text.length > spec.max) return bad(`${spec.label} can be up to ${spec.max} characters.`, key);
     if (spec.screen) {
-      const verdict = evaluateBioModeration(text);
-      if (!verdict.ok) return bad(`${spec.label}: ${verdict.reason}`, key, 422);
+      const out = screen(key, spec.label, text);
+      if (out instanceof NextResponse) return reject(out);
+      updates[key] = out;
+      continue;
     }
     updates[key] = text;
   }
@@ -137,10 +178,6 @@ export async function PATCH(req: Request) {
     if (v !== null && !isRhythmValue(key, v)) return bad(`Invalid ${key.replace(/_/g, ' ')}.`, key);
     updates[key] = v as string | null;
   }
-
-  const service = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, {
-    auth: { persistSession: false },
-  });
 
   // "Visiting:" travel notice (AIL+). Columns from 20261108_release_features.sql.
   const travelKeys = ['visiting_city', 'visiting_country', 'visiting_dates', 'is_travel_mode_active'];
@@ -206,5 +243,14 @@ export async function PATCH(req: Request) {
     return NextResponse.json({ error: 'Profile not found.' }, { status: 404 });
   }
 
-  return NextResponse.json({ success: true, rhythmSaved });
+  // Saved: charge newly introduced (masked) contact violations and tell the member what changed.
+  const penalty = screened.length ? await chargeProfileViolations(service, userId, screened, 'profile_sanitized') : 0;
+  const sanitized = Object.fromEntries(
+    screened.filter((it) => it.result.sanitizedText !== it.raw.trim()).map((it) => [it.field, it.result.sanitizedText])
+  );
+  return NextResponse.json({
+    success: true,
+    rhythmSaved,
+    ...(Object.keys(sanitized).length ? { sanitized, notice: sanitizedNotice(screened), penalty } : {}),
+  });
 }

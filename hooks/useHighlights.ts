@@ -48,11 +48,15 @@ export function useHighlights() {
   ): Promise<boolean> => {
     setIsSaving(true);
     try {
-      const { error } = await supabase.rpc('update_user_highlights', {
-        p_highlights: payload,
+      // Screened server-side (contact details masked, payment / commercial terms refused).
+      const res = await fetch('/api/profile/highlights', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ highlights: payload }),
       });
-      if (error) {
-        console.error('[useHighlights] Save error:', error.message);
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        console.error('[useHighlights] Save error:', data.error || res.status);
         return false;
       }
       await fetchInterests();
