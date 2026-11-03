@@ -260,7 +260,7 @@ function PlusHubContent() {
           Real connection, without limits.
         </h1>
         <p className="text-xs text-[#6C637B] leading-relaxed mt-1 mb-4 max-w-[310px] mx-auto">
-          Southeast Asian women use Asians in Love completely free. AIL Plus unlocks full direct messaging, travel status, and a verified profile badge.
+          Southeast Asian women use Asians in Love completely free. AIL Plus unlocks unlimited new conversations, Private Mode, visitor history, and travel status.
         </p>
 
         {/* Multi-tier Subscription Selector */}
