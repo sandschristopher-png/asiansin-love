@@ -15,6 +15,7 @@ import {
   Lightbulb,
   X,
   ArrowDown,
+  ShieldCheck,
   Mic,
   Lock,
   Square,
@@ -37,8 +38,9 @@ import { localTimeIn, timeZoneFor } from '@/lib/timezone';
 import { evaluateSubstantiveConversation } from '@/lib/moderation';
 import { isRestricted } from '@/lib/reputation';
 import { RepBadge, RhythmPill } from '@/components/profile/RhythmBadges';
+import { hapticError, hapticSuccess, hapticTap } from '@/lib/utils/haptics';
 
-const VOICE_LOCKED_MESSAGE = `Voice notes unlock after both members exchange ${CONTACT_UNLOCK_TURNS} substantive messages.`;
+const VOICE_LOCKED_MESSAGE = `Voice notes unlock after both members exchange ${CONTACT_UNLOCK_TURNS} substantive messages (15+ characters each).`;
 const VOICE_REP_LOCKED_MESSAGE = 'Voice notes are paused while your account is under review. Text messages still work.';
 
 interface ChatMessage {
@@ -668,9 +670,11 @@ export default function ChatConversationPage() {
 
   const startVoiceNote = () => {
     if (!voiceAllowed) {
+      hapticError();
       setToast(voiceLockedMessage);
       return;
     }
+    hapticTap();
     setErrorBanner(null);
     voice.start(); // getUserMedia({ audio }) + live waveform; Trash / Stop / Send in the composer
   };
@@ -711,6 +715,7 @@ export default function ChatConversationPage() {
             ]
       );
       voice.reset();
+      hapticSuccess();
       setShowIcebreaker(false);
     } catch {
       setErrorBanner('Network error while sending voice note.');
@@ -1162,7 +1167,7 @@ export default function ChatConversationPage() {
         {!isInitialLoading && !gateUnlocked && (
           // Each member needs their own 3; showing only the lower count read as "0/3" mid-chat.
           <p className="mb-1.5 text-center text-[10.5px] leading-snug text-[#7A7289]" aria-live="polite">
-            🛡️ Safety Gate: you {Math.min(liveGate.senderSubstantiveCount, CONTACT_UNLOCK_TURNS)}/{CONTACT_UNLOCK_TURNS} ·{' '}
+            <ShieldCheck className="w-3 h-3 inline-block -mt-0.5 mr-1 text-[#6555B8]" aria-hidden />Safety Gate: you {Math.min(liveGate.senderSubstantiveCount, CONTACT_UNLOCK_TURNS)}/{CONTACT_UNLOCK_TURNS} ·{' '}
             {targetInfo.name || 'them'} {Math.min(liveGate.receiverSubstantiveCount, CONTACT_UNLOCK_TURNS)}/{CONTACT_UNLOCK_TURNS} messages
             exchanged to unlock voice notes and contact sharing.
             <span className="block text-[10px] text-[#9A93A8]">Messages count when they have a few words (15+ characters).</span>
@@ -1170,7 +1175,7 @@ export default function ChatConversationPage() {
         )}
         {!isInitialLoading && gateUnlocked && gateLockedOnOpen && (
           <p className="mb-1.5 text-center text-[10.5px] font-medium text-emerald-700" aria-live="polite">
-            🛡️ Trust Gate unlocked. Voice notes and contact sharing enabled.
+            <ShieldCheck className="w-3 h-3 inline-block -mt-0.5 mr-1" aria-hidden />Trust Gate unlocked. Voice notes and contact sharing enabled.
           </p>
         )}
         {cooldownSeconds > 0 ? (

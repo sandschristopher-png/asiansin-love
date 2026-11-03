@@ -1,17 +1,17 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { DEFAULT_PLUS_PLAN, isPlusPlanId, type PlusPlanId } from '@/lib/plusPlans';
+import { PLUS_PRICE_IDS } from '@/lib/stripePrices';
 import Stripe from 'stripe';
 import { createServerClient } from '@supabase/ssr';
 import { cookies } from 'next/headers';
 
 export const runtime = 'nodejs';
 
-/** Amounts live in lib/plusPlans.ts ($14.99 / $29.99 per 3 months / $47.99 per 6 months). */
-const PLAN_PRICES: Record<PlusPlanId, string | undefined> = {
-  '6m': process.env.STRIPE_PLUS_PRICE_6M,
-  '3m': process.env.STRIPE_PLUS_PRICE_3M,
-  '1m': process.env.STRIPE_PLUS_PRICE_1M ?? process.env.STRIPE_PRICE_MONTHLY,
-};
+/**
+ * Amounts live in lib/plusPlans.ts; Stripe ids in lib/stripePrices.ts. Each plan is ONE flat
+ * recurring price ($29.99 every 3 months, never 3 x monthly) charged with quantity 1.
+ */
+const PLAN_PRICES: Record<PlusPlanId, string> = PLUS_PRICE_IDS;
 
 const SITE_ORIGIN = (process.env.NEXT_PUBLIC_SITE_URL || 'https://asiansin.love').replace(/\/$/, '');
 // Only these origins may be used for Stripe's success/cancel redirects.

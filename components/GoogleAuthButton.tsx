@@ -48,7 +48,7 @@ export function GoogleAuthButton({ onError }: { onError?: (message: string) => v
       <div className="relative flex items-center justify-center">
         <div className="w-full border-t border-[#F0EDF5]" />
         <span className="absolute bg-white px-3 text-[10px] font-bold uppercase tracking-widest text-[#9E97A9]">
-          or with email
+          OR WITH EMAIL
         </span>
       </div>
     </div>

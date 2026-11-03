@@ -187,7 +187,7 @@ export function RealtimeNotifier() {
               name: actorName(actor, 'New message'),
               avatarUrl: actor?.avatar_url ?? null,
               // Contact details stay hidden in previews, as in a locked chat.
-              preview: row.audio_path ? '🎤 Voice note' : applyContactRevealMask(String(row.content || ''), 0).text || 'Sent you a message',
+              preview: row.audio_path ? 'Voice note' : applyContactRevealMask(String(row.content || ''), 0).text || 'Sent you a message',
               href: `/chat/${row.sender_id}`,
             });
           }

@@ -51,7 +51,7 @@ export function RhythmPill({
     <span
       className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] font-semibold whitespace-nowrap ${tone} ${className}`}
     >
-      <span aria-hidden>{opt.emoji}</span>
+      <opt.icon className="w-3 h-3 shrink-0" aria-hidden />
       <span>{opt.label}</span>
     </span>
   );
@@ -121,7 +121,7 @@ export function RhythmSelector({
                   : 'bg-white border-[#DDD7E5] text-[#1C1924] hover:bg-[#F3EFFC]'
               }`}
             >
-              <span aria-hidden>{o.emoji}</span>
+              <o.icon className="w-3.5 h-3.5 shrink-0" aria-hidden />
               <span>{o.label}</span>
             </button>
           );

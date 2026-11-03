@@ -7,29 +7,33 @@
  * constraint would reject. The old columns are left untouched.
  */
 
+import type { LucideIcon } from 'lucide-react';
+import { Gem, HeartHandshake, House, MapPin, Moon, Phone, Plane, Sprout, Turtle, Zap } from 'lucide-react';
+
 export interface RhythmOption<V extends string = string> {
   value: V;
-  emoji: string;
+  /** Lucide icon (the UI never renders emoji). */
+  icon: LucideIcon;
   label: string;
 }
 
 export const REPLY_PACE_OPTIONS = [
-  { value: 'fast_replier', emoji: '⚡', label: 'Fast Replier' },
-  { value: 'evenings_only', emoji: '🌙', label: 'Evenings & Weekends' },
-  { value: 'slow_thoughtful', emoji: '🐢', label: 'Slow & Thoughtful' },
-  { value: 'prefers_calls', emoji: '📞', label: 'Prefers Voice Calls' },
+  { value: 'fast_replier', icon: Zap, label: 'Fast Replier' },
+  { value: 'evenings_only', icon: Moon, label: 'Evenings & Weekends' },
+  { value: 'slow_thoughtful', icon: Turtle, label: 'Slow & Thoughtful' },
+  { value: 'prefers_calls', icon: Phone, label: 'Prefers Voice Calls' },
 ] as const satisfies readonly RhythmOption[];
 
 export const RELOCATION_READINESS_OPTIONS = [
-  { value: 'open_to_relocate', emoji: '✈️', label: 'Open to Relocate' },
-  { value: 'prefer_partner_relocate', emoji: '🏡', label: 'Partner Relocates' },
-  { value: 'rooted_in_city', emoji: '📍', label: 'Rooted in My City' },
+  { value: 'open_to_relocate', icon: Plane, label: 'Open to Relocate' },
+  { value: 'prefer_partner_relocate', icon: House, label: 'Partner Relocates' },
+  { value: 'rooted_in_city', icon: MapPin, label: 'Rooted in My City' },
 ] as const satisfies readonly RhythmOption[];
 
 export const TIMELINE_INTENT_OPTIONS = [
-  { value: 'marriage_1_2_years', emoji: '💍', label: 'Marriage in 1-2 Years' },
-  { value: 'long_term_dating', emoji: '💞', label: 'Long-term Dating' },
-  { value: 'exploring', emoji: '🌱', label: 'Exploring' },
+  { value: 'marriage_1_2_years', icon: Gem, label: 'Marriage in 1-2 Years' },
+  { value: 'long_term_dating', icon: HeartHandshake, label: 'Long-term Dating' },
+  { value: 'exploring', icon: Sprout, label: 'Exploring' },
 ] as const satisfies readonly RhythmOption[];
 
 export type ReplyPace = (typeof REPLY_PACE_OPTIONS)[number]['value'];

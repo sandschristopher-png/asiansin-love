@@ -6,6 +6,7 @@ import { BrandLogo } from '@/components/BrandLogo';
 import { useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
 import { GoogleAuthButton } from '@/components/GoogleAuthButton';
+import { AuthTrustFooter } from '@/components/AuthTrustFooter';
 
 export default function SignUpPage() {
   const router = useRouter();
@@ -68,7 +69,7 @@ export default function SignUpPage() {
     <main className="max-w-md mx-auto w-full px-4 py-12 flex-1 flex flex-col justify-center">
       <div className="text-center mb-6">
           <BrandLogo size="md" className="mb-4" />
-        <h1 className="text-2xl sm:text-3xl font-medium text-[#1C1924]  font-[family-name:var(--font-nunito)]">
+        <h1 className="text-2xl sm:text-3xl font-medium text-[#1C1924]">
           Join asiansin.love
         </h1>
         <p className="text-sm text-[#1C1924] mt-1">
@@ -96,7 +97,7 @@ export default function SignUpPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="name@example.com"
-              className="w-full px-4 py-2.5 rounded-2xl bg-[#FFFFFF] border border-[#9A8CC3]/40 text-[#1C1924] text-sm focus:outline-none focus:border-[#9A8CC3] placeholder-[#756D82]/60 transition"
+              className="w-full px-4 py-2.5 rounded-2xl bg-white border border-slate-200 text-base text-[#1C1924] placeholder:text-[#A8A1B5] focus:outline-none focus:border-[#6555B8] focus:ring-4 focus:ring-[#6555B8]/15 transition"
             />
           </div>
 
@@ -111,7 +112,7 @@ export default function SignUpPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Minimum 6 characters"
-              className="w-full px-4 py-2.5 rounded-2xl bg-[#FFFFFF] border border-[#9A8CC3]/40 text-[#1C1924] text-sm focus:outline-none focus:border-[#9A8CC3] placeholder-[#756D82]/60 transition"
+              className="w-full px-4 py-2.5 rounded-2xl bg-white border border-slate-200 text-base text-[#1C1924] placeholder:text-[#A8A1B5] focus:outline-none focus:border-[#6555B8] focus:ring-4 focus:ring-[#6555B8]/15 transition"
             />
           </div>
 
@@ -123,6 +124,8 @@ export default function SignUpPage() {
             {loading ? 'Creating Account...' : 'Create Account'}
           </button>
         </form>
+
+        <AuthTrustFooter />
 
         <p className="text-[11px] leading-relaxed text-[#8C849B] text-center">
           By creating an account you confirm you are 18+ and agree to our{' '}

@@ -6,37 +6,41 @@ import Link from 'next/link';
 interface BrandLogoProps {
   className?: string;
   href?: string;
+  /** sm 24px, md 36px, lg 48px */
   size?: 'sm' | 'md' | 'lg';
+  /** Overrides `size` with any text-* class (header / footer / drawer sizes). */
   textSize?: string;
+  /** White "asiansin" for dark surfaces. */
+  onDark?: boolean;
 }
 
 const SIZE_CLASS: Record<'sm' | 'md' | 'lg', string> = {
-  sm: 'text-[15px]',
-  md: 'text-[17px]',
-  lg: 'text-[20px]',
+  sm: 'text-[24px]',
+  md: 'text-[36px]',
+  lg: 'text-[48px]',
 };
 
-export function BrandLogo({ className = '', href = '/discover', size = 'md', textSize = '' }: BrandLogoProps) {
-  // "asiansin.love" in Comfortaa: slate "asiansin" + gradient ".love".
+export function BrandLogo({ className = '', href = '/discover', size = 'md', textSize = '', onDark = false }: BrandLogoProps) {
+  // "asiansin.love" in Playwrite IT Moderna: deep velvet "asiansin" + liquid gradient ".love".
   const wordmark = (
     <span
       className={[
         textSize || SIZE_CLASS[size],
-        'font-comfortaa leading-none lowercase select-none inline-flex items-center',
+        // Script glyphs overhang their box: generous line-height so nothing is clipped.
+        'font-logo leading-[1.3] lowercase select-none inline-flex items-baseline whitespace-nowrap',
         className,
       ].filter(Boolean).join(' ')}
       aria-label="asiansin.love"
     >
-      <span className="text-[#2D264B] font-bold tracking-tight">asiansin</span>
-      <span className="bg-gradient-to-r from-[#6555B8] to-[#9D8CFC] bg-clip-text text-transparent font-extrabold tracking-tight">
-        .love
-      </span>
+      <span className={onDark ? 'text-white' : 'text-[#2D264B]'}>asiansin</span>
+      {/* background-clip:text only paints inside the box: pad it so the flourishes keep their gradient. */}
+      <span className="text-brand-gradient pr-[0.12em] -mr-[0.12em] pb-[0.08em]">.love</span>
     </span>
   );
 
   if (href) {
     return (
-      <Link href={href} className="inline-flex items-center focus:outline-none">
+      <Link href={href} aria-label="asiansin.love home" className="inline-flex items-center focus:outline-none">
         {wordmark}
       </Link>
     );

@@ -18,6 +18,7 @@ import {
 import { supabase } from '@/lib/supabase/client';
 import { hardSignOut } from '@/lib/hardSignOut';
 import { PushDeviceRow } from '@/components/PushDeviceRow';
+import { HapticsRow } from '@/components/HapticsRow';
 import { AlertPrefsRows } from '@/components/AlertPrefsRows';
 import { AILPlusModal } from '@/components/AILPlusModal';
 
@@ -369,6 +370,7 @@ export default function SettingsHubPage() {
 
           <PushDeviceRow />
           <AlertPrefsRows />
+          <HapticsRow />
         </div>
 
         {/* CARD 4: SAFETY & SUPPORT */}

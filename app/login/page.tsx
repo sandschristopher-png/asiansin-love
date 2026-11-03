@@ -7,6 +7,7 @@ import { Eye, EyeOff, Loader2, LogIn } from "lucide-react";
 import { BrandLogo } from "@/components/BrandLogo";
 import { InAppToast } from "@/components/InAppToast";
 import { GoogleAuthButton } from "@/components/GoogleAuthButton";
+import { AuthTrustFooter } from '@/components/AuthTrustFooter';
 
 const RESET_EXPIRED_MESSAGE = "That password reset link has expired or was already used. Request a new one from Forgot?";
 
@@ -99,7 +100,7 @@ export default function LoginPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder="you@example.com"
-              className="w-full py-3 px-4 rounded-2xl bg-white border border-[#DDD7E5] text-xs text-[#1C1924] placeholder:text-[#A8A1B5] focus:outline-none focus:border-[#6555B8] focus:ring-4 focus:ring-[#6555B8]/10 transition"
+              className="w-full py-3 px-4 rounded-2xl bg-white border border-slate-200 text-base text-[#1C1924] placeholder:text-[#A8A1B5] focus:outline-none focus:border-[#6555B8] focus:ring-4 focus:ring-[#6555B8]/15 transition"
             />
           </div>
 
@@ -121,7 +122,7 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 placeholder="Your password"
-                className="w-full py-3 px-4 pr-11 rounded-2xl bg-white border border-[#DDD7E5] text-xs text-[#1C1924] placeholder:text-[#A8A1B5] focus:outline-none focus:border-[#6555B8] focus:ring-4 focus:ring-[#6555B8]/10 transition"
+                className="w-full py-3 px-4 pr-11 rounded-2xl bg-white border border-slate-200 text-base text-[#1C1924] placeholder:text-[#A8A1B5] focus:outline-none focus:border-[#6555B8] focus:ring-4 focus:ring-[#6555B8]/15 transition"
               />
               <button
                 type="button"
@@ -160,6 +161,8 @@ export default function LoginPage() {
             )}
           </button>
         </form>
+
+        <AuthTrustFooter />
 
         {/* Bottom Signup Action */}
         <div className="pt-2 text-center text-xs text-[#6C637B]">

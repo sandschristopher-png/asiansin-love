@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { supabase } from '@/lib/supabase/client';
+import { Bell } from 'lucide-react';
 
 interface NotificationItem {
   id: string;
@@ -155,7 +156,7 @@ export default function NotificationsPage() {
 
         {!loading && notifications.length === 0 && (
           <div className="rounded-3xl bg-[#FFFFFF] border border-[#9A8CC3]/35 p-10 shadow-2xl text-center space-y-2">
-            <span className="text-3xl">🔔</span>
+            <Bell className="w-8 h-8 text-[#6555B8]" aria-hidden />
             <h3 className="text-sm font-medium text-[#1C1924]">All caught up!</h3>
             <p className="text-sm text-[#1C1924]">You have no unread notifications right now.</p>
           </div>

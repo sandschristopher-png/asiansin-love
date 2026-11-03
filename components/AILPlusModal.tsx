@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Loader2, X, Zap } from 'lucide-react';
+import { Eye, EyeOff, Heart, Loader2, Plane, X, Zap } from 'lucide-react';
 import { PLUS_PLANS, type PlusPlanId } from '@/lib/plusPlans';
 
 type PlanId = PlusPlanId;
@@ -17,12 +17,12 @@ const PLANS: { id: PlanId; label: string; perMonth: string; note: string; badge?
 }));
 
 const PERKS = [
-  { emoji: '🕶️', title: 'Private Mode', text: 'Browse stealthily and only be visible to profiles you spark.' },
-  { emoji: '👀', title: 'Visitor History', text: 'Unblur everyone who viewed your profile.' },
-  { emoji: '✈️', title: 'Passport Roaming', text: 'Browse and spark singles across Manila, Cebu, Bangkok, and Phnom Penh.' },
+  { Icon: EyeOff, title: 'Private Mode', text: 'Browse stealthily and only be visible to profiles you spark.' },
+  { Icon: Eye, title: 'Visitor History', text: 'Unblur everyone who viewed your profile.' },
+  { Icon: Plane, title: 'Passport Roaming', text: 'Browse and spark singles across Manila, Cebu, Bangkok, and Phnom Penh.' },
   // Accurate to the app: free members start 5 new conversations and send 20 Sparks a day.
-  { emoji: '⚡', title: 'Unlimited introductions', text: 'Start as many new conversations a day as you like (free: 5).' },
-  { emoji: '💜', title: 'Unlimited Sparks', text: 'Spark everyone you like (free: 20 a day).' },
+  { Icon: Zap, title: 'Unlimited introductions', text: 'Start as many new conversations a day as you like (free: 5).' },
+  { Icon: Heart, title: 'Unlimited Sparks', text: 'Spark everyone you like (free: 20 a day).' },
 ];
 
 /**
@@ -107,7 +107,7 @@ export function AILPlusModal({
           <ul className="space-y-2.5">
             {PERKS.map((p) => (
               <li key={p.title} className="flex items-start gap-2.5 text-xs text-[#524B5E] leading-relaxed">
-                <span aria-hidden className="text-base leading-none">{p.emoji}</span>
+                <p.Icon className="w-4 h-4 text-[#6555B8] shrink-0" aria-hidden />
                 <span>
                   <span className="font-semibold text-[#1C1924]">{p.title}:</span> {p.text}
                 </span>

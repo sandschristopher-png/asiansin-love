@@ -31,6 +31,7 @@ import { InCommonCard, RhythmPill } from '@/components/profile/RhythmBadges';
 import RepScoreCard from '@/components/RepScoreCard';
 import { ReportModal } from '@/components/ReportModal';
 import { useActionToast } from '@/components/ActionToast';
+import { interestIcon, interestIconOrDefault } from '@/lib/interestIcons';
 
 interface HighlightRow {
   tag_id: string;
@@ -39,28 +40,6 @@ interface HighlightRow {
   story: string;
 }
 
-const HOBBY_ICONS: Record<string, string> = {
-  'Cooking & Food': '🍳',
-  'Beach & Ocean': '🏝️',
-  'Island Hopping': '⛵',
-  'Family First': '🏡',
-  'Travel': '✈️',
-  'Movies & Cinema': '🎬',
-  'Music & Karaoke': '🎤',
-  'Fitness & Gym': '💪',
-  'Health & Wellness': '🌿',
-  'Coffee & Cafes': '☕',
-  'Hiking & Outdoors': '🥾',
-  'Faith & Church': '🙏',
-  'Homebody': '🛋️',
-  'Nightlife & Bars': '🍸',
-  'Shopping & Malls': '🛍️',
-  'Photography': '📸',
-  'Pets & Animals': '🐾',
-  'Mobile Gaming & Esports': '🎮',
-  'Art & Design': '🎨',
-  'Business & Career': '💼',
-};
 
 function formatIntent(val: unknown): string {
   if (!val) return '';
@@ -167,8 +146,8 @@ export default function PublicProfilePage() {
               hlData.map((h: any) => ({
                 tag_id: h.tag_id,
                 label: h.interest_tags?.label || h.interest_tags?.name || 'Highlight',
-                // Never fall back to (or show) a sparkle emoji.
-                icon: h.interest_tags?.icon && !h.interest_tags.icon.includes('\u2728') ? h.interest_tags.icon : '💬',
+                // Stored tag icons may be emoji: the UI renders a Lucide icon from the label instead.
+                icon: '',
                 story: h.highlight_story || '',
               }))
             );
@@ -334,9 +313,9 @@ export default function PublicProfilePage() {
     { label: 'Beliefs', value: profile.religion },
     {
       label: 'Relocation',
-      value: relocationReadiness ? `${relocationReadiness.emoji} ${relocationReadiness.label}` : profile.relocation,
+      value: relocationReadiness ? relocationReadiness.label : profile.relocation,
     },
-    { label: 'Timeline', value: timelineIntent ? `${timelineIntent.emoji} ${timelineIntent.label}` : null },
+    { label: 'Timeline', value: timelineIntent ? timelineIntent.label : null },
     { label: 'Children', value: profile.has_kids },
     { label: 'Wants Children', value: profile.wants_kids },
     { label: 'Height', value: profile.height },
@@ -611,11 +590,14 @@ export default function PublicProfilePage() {
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <span className="text-base">{item.icon}</span>
+                      {(() => {
+                        const Icon = interestIconOrDefault(item.label);
+                        return <Icon className="w-4 h-4 text-[#6555B8] shrink-0" aria-hidden />;
+                      })()}
                       <span className="text-xs font-bold text-[#1C1924]">{item.label}</span>
                     </div>
                     <span className="text-[11px] font-semibold text-[#6555B8]">
-                      Reply 💬
+                      <span className="inline-flex items-center gap-1">Reply <MessageCircle className="w-3 h-3" aria-hidden /></span>
                     </span>
                   </div>
                   {item.story && (
@@ -652,7 +634,7 @@ export default function PublicProfilePage() {
                 const isShared = sharedInterests.some(
                   (s) => s.toLowerCase() === String(tag).toLowerCase()
                 );
-                const icon = HOBBY_ICONS[tag];
+                const Icon = interestIcon(tag);
                 return (
                   <span
                     key={tag}
@@ -662,7 +644,7 @@ export default function PublicProfilePage() {
                         : 'border-transparent bg-[#F6F5F9] text-[#2D264B]'
                     }`}
                   >
-                    {icon && !icon.includes('\u2728') && <span aria-hidden>{icon}</span>}
+                    {Icon && <Icon className="w-3.5 h-3.5 shrink-0" aria-hidden />}
                     <span>{tag}</span>
                   </span>
                 );

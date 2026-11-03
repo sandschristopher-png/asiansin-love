@@ -2,17 +2,19 @@ import type { Metadata, Viewport } from 'next';
 
 import PwaRegister from "@/components/PwaRegister";
 
-import { Comfortaa, Plus_Jakarta_Sans } from 'next/font/google';
+import { Playwrite_IT_Moderna, Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 import { LayoutShell } from '@/components/LayoutShell';
 
-// Comfortaa: the "asiansin.love" wordmark ONLY (var(--font-comfortaa) / .font-comfortaa, used by
-// components/BrandLogo.tsx, which the header, side menu and footer all render).
-const comfortaa = Comfortaa({
-  subsets: ['latin'],
-  weight: ['700'],
+// Playwrite IT Moderna: brand marks ONLY - the asiansin.love wordmark (components/BrandLogo.tsx)
+// and the ail+ badge (components/PlusBadge.tsx), via var(--font-logo) / .font-logo.
+// Playwrite ships without a 'latin' subset in next/font, so it is not preloaded; display: swap
+// keeps the cursive fallback visible until it loads.
+const playwrite = Playwrite_IT_Moderna({
+  weight: ['400'],
   display: 'swap',
-  variable: '--font-comfortaa',
+  variable: '--font-logo',
+  fallback: ['cursive'],
 });
 
 // Plus Jakarta Sans: everything else - headings, labels, badges, buttons, body.
@@ -74,7 +76,7 @@ export default function RootLayout({
 }) {
 
   return (
-    <html lang="en" className={`h-full ${plusJakarta.variable} ${comfortaa.variable}`}>
+    <html lang="en" className={`h-full ${plusJakarta.variable} ${playwrite.variable}`}>
       <body className="font-sans bg-[#ECE9F1] text-[#1C1924] h-full selection:bg-[#6555B8] selection:text-white antialiased overflow-hidden">
         <LayoutShell>{children}</LayoutShell>
         <PwaRegister />

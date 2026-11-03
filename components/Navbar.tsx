@@ -170,7 +170,7 @@ export function Navbar() {
             style={{ animation: 'fadeInTitle 220ms ease-out forwards' }}
           >
             {!pageTitle ? (
-              <BrandLogo href={user ? "/discover" : "/"} size="lg" />
+              <BrandLogo href={user ? "/discover" : "/"} textSize="text-[22px]" />
             ) : (
               <div className="flex items-center gap-2.5">
                 {showBack && (

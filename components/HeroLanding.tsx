@@ -11,7 +11,7 @@ export function HeroLanding() {
       {/* ===== Header ===== */}
       <header className="sticky top-0 z-40 bg-white/90 backdrop-blur-md border-b border-[#F1EDF9]">
         <div className="max-w-md mx-auto px-5 h-14 flex items-center justify-between">
-          <BrandLogo href="/" size="md" />
+          <BrandLogo href="/" size="sm" />
           <Link
             href="/login"
             className="px-4 py-1.5 rounded-full border border-[#DDD5EE] bg-[#FAF8FE] text-[#6555B8] text-xs font-semibold hover:bg-[#F3EFFC] hover:border-[#6555B8]/40 active:scale-95 transition"

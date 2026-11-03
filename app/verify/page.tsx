@@ -7,6 +7,7 @@ import { supabase } from '@/lib/supabase/client';
 import { getPoseById, type VerificationPose } from '@/lib/poses';
 import type { FaceGateResult } from '@/lib/faceGate';
 import { FACE_GATE_MESSAGES, FACE_MIN_CONFIDENCE, type FaceGateStatus } from '@/lib/faceGateMessages';
+import { hapticError, hapticPhotoSnap } from '@/lib/utils/haptics';
 
 /** Sent with the selfie; the server rejects anything that isn't exactly one confident face. */
 interface FaceCheck {
@@ -240,9 +241,11 @@ export default function VerifyPage() {
     const check = gate && gateState === 'ready' ? gate.evaluateFaceFrame(video, video.clientWidth, video.clientHeight) : null;
     if (!check || check.status !== 'ok') {
       if (check) setFaceStatus(check.status);
+      hapticError();
       setErrorMsg('Face not verified. Please align your face in the oval.');
       return;
     }
+    hapticPhotoSnap();
     const { snap, error } = await snapshotFromVideo(video);
     if (!snap) {
       setErrorMsg(error || 'Could not capture photo. Please try again.');

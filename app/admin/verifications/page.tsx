@@ -11,6 +11,7 @@ import {
   ImageIcon,
   Flag,
   ScanFace,
+  Zap,
 } from 'lucide-react';
 import { AdminTabs } from '@/components/admin/AdminTabs';
 import { getPoseById } from '@/lib/poses';
@@ -343,7 +344,11 @@ export default function AdminVerificationsPage() {
                           {review ? (
                             <div className="space-y-2 bg-[#F9F8FC] border border-[#ECE8F4] rounded-xl p-2.5">
                               <div className="flex flex-wrap gap-1.5">
-                                {sub.fastTrack && <Chip tone="neutral">⚡ Fast-track</Chip>}
+                                {sub.fastTrack && (
+                      <Chip tone="neutral">
+                        <span className="inline-flex items-center gap-1"><Zap className="w-3 h-3" aria-hidden /> Fast-track</span>
+                      </Chip>
+                    )}
                                 <Chip tone={review.pose_matches ? 'good' : 'bad'}>
                                   {review.pose_matches ? 'Pose Matched' : 'Pose Mismatched'}
                                 </Chip>

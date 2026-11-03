@@ -1,4 +1,5 @@
 import React from 'react';
+import { Plane } from 'lucide-react';
 
 export interface TravelNotice {
   city: string;
@@ -28,7 +29,7 @@ export function VisitingBadge({
       title={travel.country ? `${label}, ${travel.country}` : label}
       className={`inline-flex items-center gap-1 max-w-full rounded-full border font-semibold shadow-sm ${tone} ${className}`}
     >
-      <span aria-hidden>✈️</span>
+      <Plane className="w-3 h-3 shrink-0" aria-hidden />
       <span className="truncate">{label}</span>
     </span>
   );

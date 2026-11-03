@@ -202,7 +202,7 @@ export async function POST(req: NextRequest) {
     const { error: notifErr } = await admin.from('notifications').insert({
       user_id: userId,
       type: 'verification',
-      title: approve ? 'Identity Verified! ✅' : 'Verification Update',
+      title: approve ? 'Identity verified' : 'Verification update',
       description: approve
         ? 'Your identity has been verified. The verified checkmark is now active on your profile.'
         : 'Your selfie verification could not be approved.' +

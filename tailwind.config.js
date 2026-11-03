@@ -10,7 +10,7 @@ module.exports = {
       fontFamily: {
         sans: ['var(--font-sans)', 'sans-serif'],
         brand: ['var(--font-sans)', 'sans-serif'],
-        logo: ['var(--font-logo)', 'sans-serif'], // logo wordmark only
+        logo: ['var(--font-logo)', 'cursive'], // brand marks only (Playwrite IT Moderna)
       },
       colors: {
         plum: {

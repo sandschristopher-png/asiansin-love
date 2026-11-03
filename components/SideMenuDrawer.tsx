@@ -181,7 +181,7 @@ export function SideMenuDrawer({ isOpen, onClose, onOpenFilters }: SideMenuDrawe
                   </span>
                   <div className="flex items-center gap-1.5 mt-1">
                     <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#F3EFFC] text-[#6555B8] border border-[#E2D9F3]">
-                      🛡️ {profile.reputationScore}% Rep
+                      <ShieldCheck className="w-3 h-3 inline-block -mt-px mr-0.5" aria-hidden />{profile.reputationScore}% Rep
                     </span>
                     {profile.isVerified && (
                       <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
