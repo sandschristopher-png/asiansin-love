@@ -82,6 +82,8 @@ export interface SelfieReviewResult {
   /** 0-100 */
   face_match_confidence: number;
   spoof_detected: boolean;
+  /** Human faces clearly visible in the selfie (a hand or object alone = 0). */
+  face_count: number;
   summary: string;
 }
 
@@ -90,7 +92,12 @@ export const FAST_TRACK_MIN_CONFIDENCE = 85;
 
 export function isFastTrack(r: SelfieReviewResult | null | undefined): boolean {
   return Boolean(
-    r && r.pose_matches && r.same_person && !r.spoof_detected && r.face_match_confidence >= FAST_TRACK_MIN_CONFIDENCE
+    r &&
+      r.face_count === 1 &&
+      r.pose_matches &&
+      r.same_person &&
+      !r.spoof_detected &&
+      r.face_match_confidence >= FAST_TRACK_MIN_CONFIDENCE
   );
 }
 
@@ -116,6 +123,7 @@ Answer strictly:
 - same_person: is the face in IMAGE 1 the same person as in IMAGE 2?
 - face_match_confidence: 0-100, how confident you are that they are the same person.
 - spoof_detected: does IMAGE 1 look like a photo of a screen or printed photo, a mask, a deepfake, heavy filters, or otherwise not a live camera capture?
+- face_count: how many human faces are clearly visible in IMAGE 1 (0 if it shows only a hand, an object, a wall, or a face too covered to see).
 - summary: one or two short sentences for a human reviewer.`,
       },
       { inlineData: { data: opts.selfie.toString('base64'), mimeType: 'image/jpeg' } },
@@ -136,9 +144,10 @@ Answer strictly:
             same_person: { type: Type.BOOLEAN },
             face_match_confidence: { type: Type.INTEGER },
             spoof_detected: { type: Type.BOOLEAN },
+            face_count: { type: Type.INTEGER },
             summary: { type: Type.STRING },
           },
-          required: ['pose_matches', 'same_person', 'face_match_confidence', 'spoof_detected', 'summary'],
+          required: ['pose_matches', 'same_person', 'face_match_confidence', 'spoof_detected', 'face_count', 'summary'],
         },
       },
     });
@@ -152,6 +161,8 @@ Answer strictly:
       face_match_confidence: Number.isFinite(confidence) ? Math.max(0, Math.min(100, confidence)) : 0,
       // Missing / malformed spoof flag counts as suspect.
       spoof_detected: parsed.spoof_detected !== false,
+      // Unknown counts as 1 here: only an explicit 0 / 2+ from the model rejects a submission.
+      face_count: Number.isFinite(Number(parsed.face_count)) ? Math.max(0, Math.round(Number(parsed.face_count))) : 1,
       summary: String(parsed.summary || '').slice(0, 500),
     };
   } catch (error) {

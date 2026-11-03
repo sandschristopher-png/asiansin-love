@@ -1,9 +1,12 @@
 // app/api/verify/submit/route.ts
-//   POST multipart { attemptId, selfie } -> stores the selfie privately, asks Gemini to pre-screen it
-//   against the main photo, and queues the member for admin review.
+//   POST multipart { attemptId, selfie, faceCheck } -> validates the attempt, asks Gemini to
+//   pre-screen the selfie against the main photo, then stores it privately and queues the member
+//   for admin review.
 //
+// Fail fast: a selfie without exactly one detected face (client face gate metadata, then the AI
+// face count) is rejected with 400 BEFORE anything is uploaded or marked 'pending'.
 // The AI only scores and flags. The verified badge is NEVER granted here: verification_status is
-// always set to 'pending' and an admin approves it at /admin/verifications.
+// set to 'pending' and an admin approves it at /admin/verifications.
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { createClient as createSessionClient } from '@/lib/supabase/server';
@@ -19,6 +22,27 @@ const MAX_PHOTO_BYTES = 10 * 1024 * 1024;
 const MAX_AVATAR_BYTES = 8 * 1024 * 1024;
 const AI_TIMEOUT_MS = 15000;
 const AVATAR_FETCH_TIMEOUT_MS = 5000;
+const MIN_FACE_CONFIDENCE = 0.8;
+const NO_FACE_ERROR = 'Biometric validation failed: No valid face detected';
+
+/** Client face-gate metadata (lib/faceGate.ts): exactly one face at >= 0.8 confidence. */
+function validFaceCheck(raw: FormDataEntryValue | null, issuedAt: number): boolean {
+  if (typeof raw !== 'string') return false;
+  try {
+    const c = JSON.parse(raw) as Record<string, unknown>;
+    const checkedAt = Number(c.checked_at);
+    return (
+      c.detector === 'mediapipe_face_landmarker' &&
+      c.face_count === 1 &&
+      Number(c.min_confidence) >= MIN_FACE_CONFIDENCE &&
+      Number.isFinite(checkedAt) &&
+      checkedAt >= issuedAt &&
+      checkedAt <= Date.now() + 60_000
+    );
+  } catch {
+    return false;
+  }
+}
 
 function getServiceClient() {
   return createClient(
@@ -96,6 +120,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Verification session expired. Here is a new pose to copy.' }, { status: 410 });
   }
 
+  if (!validFaceCheck(form.get('faceCheck'), payload.issuedAt)) {
+    return NextResponse.json({ error: NO_FACE_ERROR }, { status: 400 });
+  }
+
   const blob = form.get('selfie');
   if (!blob || typeof blob === 'string') {
     return NextResponse.json({ error: 'Missing selfie' }, { status: 400 });
@@ -129,6 +157,26 @@ export async function POST(req: Request) {
     );
   }
 
+  // Fail safe: an AI error or timeout leaves ai = null and the submission still goes to an admin.
+  let ai: SelfieReviewResult | null = null;
+  try {
+    const avatar = await fetchAvatar(profile.avatar_url);
+    ai = await Promise.race([
+      reviewVerificationSelfie({ selfie, avatar, poseDescription: pose.aiDescription }),
+      new Promise<null>((resolve) => setTimeout(() => resolve(null), AI_TIMEOUT_MS)),
+    ]);
+  } catch (e) {
+    console.warn('[verify/submit] AI pre-screen skipped:', e);
+  }
+  // Explicit "no face" / "several faces" from the AI: reject now, nothing stored, not pending.
+  // (An AI error or timeout still queues the selfie for a human, per the fail-safe rule.)
+  if (ai && ai.face_count !== 1) {
+    return NextResponse.json(
+      { error: ai.face_count === 0 ? NO_FACE_ERROR : 'Biometric validation failed: Only one person may be in the photo' },
+      { status: 400 }
+    );
+  }
+
   // Private bucket; latest selfie per member (admins read it through signed URLs).
   const selfiePath = `${userId}/selfie.jpg`;
   const { error: uploadError } = await service.storage
@@ -142,17 +190,6 @@ export async function POST(req: Request) {
     );
   }
 
-  // Fail safe: an AI error or timeout leaves ai = null and the submission still goes to an admin.
-  let ai: SelfieReviewResult | null = null;
-  try {
-    const avatar = await fetchAvatar(profile.avatar_url);
-    ai = await Promise.race([
-      reviewVerificationSelfie({ selfie, avatar, poseDescription: pose.aiDescription }),
-      new Promise<null>((resolve) => setTimeout(() => resolve(null), AI_TIMEOUT_MS)),
-    ]);
-  } catch (e) {
-    console.warn('[verify/submit] AI pre-screen skipped:', e);
-  }
   const fastTrack = isFastTrack(ai);
 
   // Review metadata for /admin/verifications (reads the newest `<stamp>_meta.json`).

@@ -2,9 +2,22 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Camera, ShieldCheck, Loader2, AlertCircle, X, RotateCcw, ScanFace } from 'lucide-react';
+import { ArrowLeft, Camera, ShieldCheck, Loader2, AlertCircle, X, RotateCcw, ScanFace, RefreshCw } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { getPoseById, type VerificationPose } from '@/lib/poses';
+import type { FaceGateResult } from '@/lib/faceGate';
+import { FACE_GATE_MESSAGES, FACE_MIN_CONFIDENCE, type FaceGateStatus } from '@/lib/faceGateMessages';
+
+/** Sent with the selfie; the server rejects anything that isn't exactly one confident face. */
+interface FaceCheck {
+  detector: 'mediapipe_face_landmarker';
+  face_count: number;
+  min_confidence: number;
+  width_ratio: number | null;
+  checked_at: number;
+}
+
+const GATE_TICK_MS = 150;
 
 const MAX_DIM = 1200; // longest edge of the uploaded selfie
 const JPEG_QUALITY = 0.85;
@@ -12,13 +25,14 @@ const JPEG_QUALITY = 0.85;
 interface Snapshot {
   blob: Blob;
   previewUrl: string;
+  faceCheck: FaceCheck;
 }
 
 /**
  * Grabs the current video frame (un-mirrored: the CSS flip is display-only), scales it to
  * MAX_DIM and rejects frames that are too dark or blown out to be reviewable.
  */
-async function snapshotFromVideo(video: HTMLVideoElement): Promise<{ snap?: Snapshot; error?: string }> {
+async function snapshotFromVideo(video: HTMLVideoElement): Promise<{ snap?: Omit<Snapshot, 'faceCheck'>; error?: string }> {
   const w = video.videoWidth;
   const h = video.videoHeight;
   if (!w || !h) return { error: 'Camera is still starting. Try again in a moment.' };
@@ -83,6 +97,14 @@ export default function VerifyPage() {
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [done, setDone] = useState<{ fastTrack: boolean; message: string } | null>(null);
+
+  // Live single-face gate (MediaPipe, loaded when the camera opens). The shutter only works while
+  // the current frame has exactly one confident face, centered in the oval. Nothing advances on a
+  // timer: no face, no capture.
+  const gateRef = useRef<typeof import('@/lib/faceGate') | null>(null);
+  const [gateState, setGateState] = useState<'idle' | 'loading' | 'ready' | 'error'>('idle');
+  const [faceStatus, setFaceStatus] = useState<FaceGateStatus>('no_face');
+  const lastResultRef = useRef<FaceGateResult | null>(null);
 
   /** Server issues one random pose in a signed, short-lived token. */
   const requestChallenge = useCallback(async () => {
@@ -151,6 +173,8 @@ export default function VerifyPage() {
 
   const startCamera = useCallback(async () => {
     setErrorMsg(null);
+    setFaceStatus('no_face');
+    lastResultRef.current = null;
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'user', width: { ideal: 960 }, height: { ideal: 1280 } },
@@ -160,8 +184,44 @@ export default function VerifyPage() {
       setCameraOn(true);
     } catch {
       setErrorMsg('Live camera is required for verification. Please allow camera access and try again.');
+      return;
+    }
+    setGateState('loading');
+    try {
+      gateRef.current = gateRef.current ?? (await import('@/lib/faceGate'));
+      await gateRef.current.initFaceGate();
+      setGateState('ready');
+    } catch {
+      setGateState('error');
     }
   }, []);
+
+  /** Stuck? Release the stream and start over without reloading the page. */
+  const restartCamera = useCallback(() => {
+    streamRef.current?.getTracks().forEach((t) => t.stop());
+    streamRef.current = null;
+    setCameraOn(false);
+    startCamera();
+  }, [startCamera]);
+
+  // Gate loop: re-evaluates the live frame; only status changes re-render.
+  useEffect(() => {
+    if (!cameraOn || gateState !== 'ready') return;
+    const timer = window.setInterval(() => {
+      const video = videoRef.current;
+      const gate = gateRef.current;
+      if (!video || !gate) return;
+      try {
+        const result = gate.evaluateFaceFrame(video, video.clientWidth, video.clientHeight);
+        lastResultRef.current = result;
+        setFaceStatus((prev) => (prev === result.status ? prev : result.status));
+      } catch {
+        lastResultRef.current = null;
+        setFaceStatus('no_face');
+      }
+    }, GATE_TICK_MS);
+    return () => window.clearInterval(timer);
+  }, [cameraOn, gateState]);
 
   // Attach the stream once the video element is mounted
   useEffect(() => {
@@ -173,16 +233,34 @@ export default function VerifyPage() {
 
   const takeSnapshot = useCallback(async () => {
     const video = videoRef.current;
+    const gate = gateRef.current;
     if (!video) return;
+    // Synchronous re-check of this exact frame: the shutter never fires on a hand, an object,
+    // an empty frame or a second face.
+    const check = gate && gateState === 'ready' ? gate.evaluateFaceFrame(video, video.clientWidth, video.clientHeight) : null;
+    if (!check || check.status !== 'ok') {
+      if (check) setFaceStatus(check.status);
+      setErrorMsg('Face not verified. Please align your face in the oval.');
+      return;
+    }
     const { snap, error } = await snapshotFromVideo(video);
     if (!snap) {
       setErrorMsg(error || 'Could not capture photo. Please try again.');
       return;
     }
     setErrorMsg(null);
-    setSnapshot(snap);
+    setSnapshot({
+      ...snap,
+      faceCheck: {
+        detector: 'mediapipe_face_landmarker',
+        face_count: check.faceCount,
+        min_confidence: FACE_MIN_CONFIDENCE,
+        width_ratio: check.widthRatio,
+        checked_at: Date.now(),
+      },
+    });
     stopCamera();
-  }, [stopCamera]);
+  }, [stopCamera, gateState]);
 
   const retake = useCallback(() => {
     if (snapshot) URL.revokeObjectURL(snapshot.previewUrl);
@@ -198,6 +276,7 @@ export default function VerifyPage() {
       const form = new FormData();
       form.set('attemptId', attemptToken);
       form.append('selfie', snapshot.blob, 'selfie.jpg');
+      form.set('faceCheck', JSON.stringify(snapshot.faceCheck));
       const res = await fetch('/api/verify/submit', { method: 'POST', body: form });
       const data = await res.json();
       if (res.status === 410) {
@@ -280,10 +359,43 @@ export default function VerifyPage() {
             className="absolute inset-0 w-full h-full object-cover scale-x-[-1]"
           />
 
-          {/* Oval face guide */}
+          {/* Oval face guide (same geometry as guideOval() in lib/faceGate.ts) + live feedback pill */}
           <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="w-[68%] max-w-[300px] aspect-[3/4] rounded-[50%] border-[3px] border-white/85 shadow-[0_0_0_9999px_rgba(0,0,0,0.35)]" />
+            <div className="relative w-[68%] max-w-[300px] aspect-[3/4]">
+              <div
+                className={`absolute inset-0 rounded-[50%] border-[3px] shadow-[0_0_0_9999px_rgba(0,0,0,0.35)] transition-colors ${
+                  gateState === 'ready' && faceStatus === 'ok' ? 'border-emerald-400' : 'border-white/85'
+                }`}
+              />
+              <div
+                role="status"
+                aria-live="polite"
+                className="absolute -top-12 left-1/2 -translate-x-1/2 whitespace-nowrap inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white text-[#1C1924] text-xs font-semibold shadow-lg"
+              >
+                <span
+                  aria-hidden
+                  className={`w-2 h-2 rounded-full ${
+                    gateState === 'ready' && faceStatus === 'ok' ? 'bg-emerald-500' : gateState === 'error' ? 'bg-rose-500' : 'bg-amber-400'
+                  }`}
+                />
+                {gateState === 'loading' || gateState === 'idle'
+                  ? 'Starting face check...'
+                  : gateState === 'error'
+                    ? "Couldn't start the face check. Tap Restart."
+                    : FACE_GATE_MESSAGES[faceStatus]}
+              </div>
+            </div>
           </div>
+
+          <button
+            type="button"
+            onClick={restartCamera}
+            className="absolute top-20 right-4 h-10 px-3 rounded-full bg-black/40 backdrop-blur border border-white/30 inline-flex items-center gap-1.5 text-white text-xs font-semibold active:scale-95 transition z-50"
+            aria-label="Restart camera"
+          >
+            <RefreshCw className="w-4 h-4" />
+            Restart
+          </button>
 
           <button
             type="button"
@@ -312,12 +424,15 @@ export default function VerifyPage() {
             <button
               type="button"
               onClick={takeSnapshot}
-              className="h-20 w-20 rounded-full bg-white border-4 border-[#6555B8] flex items-center justify-center active:scale-95 transition shadow-lg"
+              disabled={gateState !== 'ready' || faceStatus !== 'ok'}
+              className="h-20 w-20 rounded-full bg-white border-4 border-[#6555B8] flex items-center justify-center active:scale-95 transition shadow-lg disabled:opacity-40 disabled:border-white/60 disabled:active:scale-100"
               aria-label="Take photo"
             >
               <Camera className="w-7 h-7 text-[#6555B8]" />
             </button>
-            <span className="text-[11px] text-white/85 font-medium">Face in the oval, pose clearly visible</span>
+            <span className="text-[11px] text-white/85 font-medium">
+              {gateState === 'ready' && faceStatus === 'ok' ? 'Do the pose, then tap to capture' : 'Face in the oval, pose clearly visible'}
+            </span>
           </div>
         </div>
       ) : snapshot ? (
