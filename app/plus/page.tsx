@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useEffect, useState, Suspense } from 'react';
+import React, { useEffect, useState, useSyncExternalStore, Suspense } from 'react';
+import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ArrowLeft, Check, CheckCircle2, ChevronDown, Compass, Loader2, Lock, MessageSquare, Settings, X } from 'lucide-react';
@@ -84,6 +85,11 @@ function PlusHubContent() {
   const [selectedPlan, setSelectedPlan] = useState<PlusPlanId>(DEFAULT_PLUS_PLAN);
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
   const [isVerifyingPlus, setIsVerifyingPlus] = useState(isPostCheckoutSuccess);
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  );
 
   useEffect(() => {
     let mounted = true;
@@ -319,7 +325,8 @@ function PlusHubContent() {
         </p>
       </div>
 
-      {/* Pinned checkout bar */}
+      {/* Pinned checkout bar: portaled to <body> so the route transition's transform can't trap it */}
+      {mounted && createPortal(
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] z-50 bg-[#161128]/95 border-t border-white/10 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
         {isPlus ? (
           <button
@@ -365,7 +372,9 @@ function PlusHubContent() {
             Already subscribed? Manage billing
           </button>
         )}
-      </div>
+      </div>,
+      document.body
+      )}
     </div>
   );
 }

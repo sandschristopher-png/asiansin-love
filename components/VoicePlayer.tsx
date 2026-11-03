@@ -124,7 +124,8 @@ function VoicePlayerCard({
         <div className="flex items-baseline justify-between gap-2">
           <p className="text-xs font-bold text-[#2D264B] truncate">{title}</p>
           <span className="text-[11px] font-medium text-[#6C637B] tabular-nums shrink-0">
-            {formatSeconds(positionMs)} / {totalMs > 0 ? formatSeconds(totalMs) : '--:--'}
+            {/* WebM from MediaRecorder reports no length until played: show elapsed only then */}
+            {totalMs > 0 ? `${formatSeconds(positionMs)} / ${formatSeconds(totalMs)}` : formatSeconds(positionMs)}
           </span>
         </div>
         <div className="mt-1.5 flex items-center gap-[3px] h-6" aria-hidden>
