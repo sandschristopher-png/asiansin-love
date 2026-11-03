@@ -32,9 +32,6 @@ import { HEIGHT_MAX_CM, HEIGHT_MIN_CM } from '@/lib/lifestyle';
 import { readLanguages } from '@/lib/constants/languages';
 import { ReputationBadge } from '@/components/ReputationBadge';
 
-/** Regional spotlight pill: filters the already-loaded feed (no extra query). */
-const SPOTLIGHT_COUNTRY = 'Myanmar';
-const NEAR_ME_KM = 150;
 
 /** Great-circle distance (haversine). */
 function distanceKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
@@ -57,7 +54,7 @@ function FeedSkeleton({ count = 8 }: { count?: number }) {
         <div
           key={i}
           aria-hidden
-          className="rounded-2xl overflow-hidden aspect-[4/5] w-full bg-[#EAE8F0] animate-pulse border border-[#DDD7E5] relative"
+          className="rounded-2xl overflow-hidden aspect-[3/4] w-full bg-[#EAE8F0] animate-pulse border border-[#DDD7E5] relative"
         >
           <div className="absolute inset-x-0 bottom-0 p-3 space-y-2">
             <div className="h-4 bg-white/50 rounded-full w-2/3" />
@@ -74,7 +71,7 @@ function FeedSkeletonPage() {
     <div className="w-full min-h-full bg-[#F8F7FA]" aria-busy="true" aria-label="Loading discover feed">
       <main className="w-full max-w-md mx-auto px-4 pt-4 pb-36">
         <div className="h-12" />
-        <div className="grid grid-cols-2 gap-3.5 w-full">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 w-full">
           <FeedSkeleton />
         </div>
       </main>
@@ -133,6 +130,21 @@ export interface ProfileItem {
   photoPlaceholders?: Record<string, string>;
   heightCm?: number | null;
   lifestyle?: Record<string, string>;
+  /** The viewer already sparked / favourited this member (filled heart; card stays in the feed). */
+  hasSparked?: boolean;
+}
+
+/**
+ * Discover is an open directory: sparked members stay in the feed. The server's hasSparked flag is
+ * the truth for every card in the feed (filled heart), overriding any stale local "like".
+ */
+function reconcileSparks(prev: Record<string, ActionType>, feed: ProfileItem[]): Record<string, ActionType> {
+  const next = { ...prev };
+  for (const p of feed) {
+    if (p.hasSparked) next[p.id] = 'like';
+    else if (next[p.id] === 'like') delete next[p.id];
+  }
+  return next;
 }
 
 /** Quick "Habits" filter chips; a profile must have set the habit to match. */
@@ -460,16 +472,7 @@ function DiscoverContent() {
             });
           }
           if (Array.isArray(payload.profiles)) {
-            // The server drops everyone already sparked, so a profile in this feed is NOT sparked:
-            // clear any stale local "like" (localStorage) that would show a filled, dead heart.
-            const feedIds = new Set<string>(payload.profiles.map((p: ProfileItem) => p.id));
-            setCardActions((prev) => {
-              const next = { ...prev };
-              for (const id of Object.keys(next)) {
-                if (next[id] === 'like' && feedIds.has(id)) delete next[id];
-              }
-              return next;
-            });
+            setCardActions((prev) => reconcileSparks(prev, payload.profiles));
             setProfiles(payload.profiles);
           }
         }
@@ -491,15 +494,7 @@ function DiscoverContent() {
       if (res.ok) {
         const payload = await res.json();
         if (Array.isArray(payload.profiles)) {
-          // Same reconciliation as the first load: feed profiles are never sparked server-side.
-          const feedIds = new Set<string>(payload.profiles.map((p: ProfileItem) => p.id));
-          setCardActions((prev) => {
-            const next = { ...prev };
-            for (const id of Object.keys(next)) {
-              if (next[id] === 'like' && feedIds.has(id)) delete next[id];
-            }
-            return next;
-          });
+          setCardActions((prev) => reconcileSparks(prev, payload.profiles));
           setProfiles(payload.profiles);
         }
       }
@@ -746,19 +741,9 @@ function DiscoverContent() {
       const matchesHabits = selectedHabits.every((id) => HABIT_FILTERS.find((hf) => hf.id === id)?.test(life) ?? true);
       const matchesVerified = !verifiedOnly || profile.verified;
       const matchesOnline = !activeNowOnly || profile.online || presentIds.has(profile.id);
-      const matchesDiscoveryMode = (() => {
-        if (discoveryMode === 'online') return Boolean(profile.online || presentIds.has(profile.id) || profile.recentlyActive);
-        if (discoveryMode === 'near_me') {
-          // Within NEAR_ME_KM of the viewer; without coordinates on either side, keep the card.
-          if (!currentUserCoords || profile.latitude == null || profile.longitude == null) return true;
-          return distanceKm(currentUserCoords.lat, currentUserCoords.lon, profile.latitude, profile.longitude) <= NEAR_ME_KM;
-        }
-        if (discoveryMode === 'new') {
-          const createdAt = profile.created_at ? new Date(profile.created_at).getTime() : 0;
-          return createdAt > Date.now() - 30 * 24 * 60 * 60 * 1000;
-        }
-        return true;
-      })();
+      // Online filters; Near Me and New only re-order the full directory (sorted below).
+      const matchesDiscoveryMode =
+        discoveryMode !== 'online' || Boolean(profile.online || presentIds.has(profile.id) || profile.recentlyActive);
       return (
         matchesCountry &&
         matchesQuery &&
@@ -771,6 +756,19 @@ function DiscoverContent() {
         matchesOnline &&
         matchesDiscoveryMode
       );
+    }).sort((x, y) => {
+      if (discoveryMode === 'near_me') {
+        // Closest first; members without coordinates (either side) go last.
+        const d = (p: ProfileItem) =>
+          currentUserCoords && p.latitude != null && p.longitude != null
+            ? distanceKm(currentUserCoords.lat, currentUserCoords.lon, p.latitude, p.longitude)
+            : Number.POSITIVE_INFINITY;
+        return d(x) - d(y);
+      }
+      if (discoveryMode === 'new') {
+        return (y.created_at ? Date.parse(y.created_at) : 0) - (x.created_at ? Date.parse(x.created_at) : 0);
+      }
+      return 0;
     });
   }, [profiles, cardActions, currentUserCoords, selectedCountry, countryOptions, searchQuery, minAge, maxAge, selectedIntents, heightNarrowed, heightRange, selectedLanguages, selectedHabits, verifiedOnly, activeNowOnly, discoveryMode, presentIds]);
 
@@ -845,7 +843,7 @@ function DiscoverContent() {
           {/* Horizontally Scrolling Category Pills */}
           {!(searchOpen || searchQuery) && (
           <div className="flex-1 min-w-0 overflow-x-auto no-scrollbar touch-pan-x select-none cursor-grab active:cursor-grabbing" onWheel={(e) => { if (e.deltaY !== 0) { e.currentTarget.scrollLeft += e.deltaY; } }} onMouseDown={(e) => { const el = e.currentTarget; el.dataset.dragging = "1"; el.dataset.startX = String(e.pageX); el.dataset.scrollLeft = String(el.scrollLeft); }} onMouseMove={(e) => { const el = e.currentTarget; if (el.dataset.dragging !== "1") return; e.preventDefault(); el.scrollLeft = Number(el.dataset.scrollLeft) - (e.pageX - Number(el.dataset.startX)) * 1.3; }} onMouseUp={(e) => { e.currentTarget.dataset.dragging = "0"; }} onMouseLeave={(e) => { e.currentTarget.dataset.dragging = "0"; }}>
-            <div className="flex items-center gap-5 w-max">
+            <div className="flex items-center gap-2 py-2 w-max">
               {DISCOVERY_MODES.map((mode) => {
                 const active = discoveryMode === mode.id;
                 return (
@@ -856,8 +854,9 @@ function DiscoverContent() {
                       if (mode.id !== discoveryMode) flashSkeleton();
                       setDiscoveryMode(mode.id);
                     }}
-                    className={`shrink-0 text-sm h-8 flex items-center transition-colors ${
-                      active ? 'text-[#6555B8] font-bold' : 'text-black/40 font-medium'
+                    aria-pressed={active}
+                    className={`shrink-0 whitespace-nowrap text-sm h-8 px-3 rounded-full flex items-center transition-colors ${
+                      active ? 'bg-[#F3EFFC] text-[#6555B8] font-bold' : 'text-black/45 font-medium hover:text-[#2D264B]'
                     }`}
                     
                   >
@@ -865,26 +864,6 @@ function DiscoverContent() {
                   </button>
                 );
               })}
-              {seekingGender !== 'male' && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (countryLocked) {
-                      showActionToast('Country spotlights are an AIL+ feature', 'info');
-                      router.push('/plus');
-                      return;
-                    }
-                    flashSkeleton();
-                    setSelectedCountry((c) => (c === SPOTLIGHT_COUNTRY ? ALL_COUNTRIES_VALUE : SPOTLIGHT_COUNTRY));
-                  }}
-                  aria-pressed={selectedCountry === SPOTLIGHT_COUNTRY}
-                  className={`shrink-0 text-sm h-8 flex items-center transition-colors ${
-                    selectedCountry === SPOTLIGHT_COUNTRY ? 'text-[#6555B8] font-bold' : 'text-black/40 font-medium'
-                  }`}
-                >
-                  Spotlight: {SPOTLIGHT_COUNTRY}
-                </button>
-              )}
             </div>
           </div>
           )}
@@ -915,7 +894,8 @@ function DiscoverContent() {
         </section>
 
         {/* 2-Column Feed Grid */}
-        <div className="grid grid-cols-2 gap-3.5 w-full animate-fade-in-up">
+        {/* Uniform 2-column directory grid (same rhythm and 3:4 cards as Sparks) */}
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 w-full animate-fade-in-up">
           {isLoading || categorySwitching ? (
             <FeedSkeleton count={isLoading ? 8 : Math.min(8, Math.max(2, visibleProfiles.length))} />
           ) : (
@@ -929,12 +909,10 @@ function DiscoverContent() {
                 cityPart && countryPart && cityPart.toLowerCase() !== countryPart.toLowerCase()
                   ? `${cityPart}, ${countryPart}`
                   : cityPart || countryPart || 'Unknown';
-              // One result: keep the normal card size, centered, instead of hugging the left column.
-              const single = visibleProfiles.length === 1;
               return (
                 <div
                   key={profile.id}
-                  className={`${single ? 'col-span-2 justify-self-center !w-[calc(50%-0.4375rem)] ' : ''}group relative isolate rounded-2xl overflow-hidden aspect-[4/5] w-full bg-[#F2EEF7] border border-[#DDD7E5]/70 shadow-xs hover:shadow-md transition-all duration-300 select-none`}
+                  className={`group relative isolate rounded-2xl overflow-hidden aspect-[3/4] w-full bg-[#F2EEF7] border border-[#DDD7E5]/70 shadow-xs hover:shadow-md transition-all duration-300 select-none`}
                 >
                   <DiscoverCardPhotoCarousel
                     profileId={profile.id}

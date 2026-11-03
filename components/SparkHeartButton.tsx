@@ -69,7 +69,7 @@ export function SparkHeartButton({
       <span className={`inline-flex ${isPopping ? 'animate-heart-pop' : ''}`}>
         <Heart
           className={`w-7 h-7 stroke-[2.2] transition-colors duration-200 ${
-            isSparked ? 'fill-[#EC4899]' : 'fill-white/20 hover:fill-[#EC4899]'
+            isSparked ? 'fill-[#EC4899] text-[#EC4899]' : 'stroke-white fill-white/10 hover:fill-[#EC4899]'
           }`}
         />
       </span>

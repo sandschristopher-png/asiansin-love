@@ -96,7 +96,8 @@ export async function GET(req: Request) {
     let viewerProfile: Record<string, any> | null = null;
     let viewerInterestedIn: string[] = [];
     let favoriteIds: string[] = [];
-    // Already sparked (sparks table, the "You Sparked" tab) or favourited: never shown again.
+    // Already sparked (sparks table, the "You Sparked" tab) or favourited. Discover is an open
+    // directory (Pairs / with.is): these stay in the feed, flagged hasSparked for a filled heart.
     const alreadyLikedIds = new Set<string>();
 
     if (user) {
@@ -153,11 +154,10 @@ export async function GET(req: Request) {
       male: 'gender.ilike.male,gender.ilike.man,gender.ilike.m,gender.ilike.guy',
     };
 
-    // Exclusions happen in SQL (self, blocked, already sparked / favourited), so the 200-row window
-    // is spent on real candidates and nothing unfiltered ever reaches the client. The JS filter
-    // below repeats them as a safety net.
+    // Exclusions happen in SQL (self and blocked in either direction only); the JS filter below
+    // repeats them as a safety net. Sparked members are NOT excluded.
     const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-    const excludedIds = Array.from(new Set([user.id, ...blockedUserIds, ...alreadyLikedIds])).filter((id) => UUID_RE.test(id));
+    const excludedIds = Array.from(new Set([user.id, ...blockedUserIds])).filter((id) => UUID_RE.test(id));
     const fetchFeed = (cols: string) => {
       let q = serviceClient.from('profiles').select(cols).not('id', 'in', `(${excludedIds.join(',')})`);
       if (targetGender) q = q.or(GENDER_SPELLINGS[targetGender]);
@@ -189,7 +189,6 @@ export async function GET(req: Request) {
       .filter((row: any) => {
         if (user && row.id === user.id) return false;
         if (blockedUserIds.has(row.id)) return false;
-        if (alreadyLikedIds.has(row.id)) return false;
         if (targetGender && normalizeGenderValue(row.gender) !== targetGender) return false;
         if (row.hide_profile) return false; // Settings > Hide my profile
         if (countryParam && !countryMatches(resolveCountry(row.city, row.country), countryParam)) return false;
@@ -272,6 +271,8 @@ export async function GET(req: Request) {
           ),
           created_at: row.created_at,
           voiceIntroUrl: row.voice_intro_url || null,
+          // Viewer already sparked / favourited this member: the card shows a filled heart.
+          hasSparked: alreadyLikedIds.has(row.id),
           replyPace: row.reply_pace || null,
           travel:
             row.is_travel_mode_active === true && row.is_plus && row.visiting_city
@@ -306,6 +307,8 @@ export async function GET(req: Request) {
           }
         : null,
       favoriteIds,
+      // Everyone the viewer has sparked or favourited (for hearts outside the 200-row window too).
+      sparkedIds: Array.from(alreadyLikedIds),
       profiles,
     });
   } catch (err: any) {
