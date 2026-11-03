@@ -3,36 +3,40 @@
 import React, { useEffect, useState } from 'react';
 import { Loader2, X } from 'lucide-react';
 
+/** Must match REPORT_CATEGORIES in app/api/reports/route.ts. */
 const CATEGORIES: { id: string; label: string }[] = [
-  { id: 'fake_profile', label: 'Fake profile, catfish, or stolen photos' },
-  { id: 'financial_scam', label: 'Asking for money, wire transfers, crypto, or financial aid' },
-  { id: 'commercial_solicitation', label: 'Commercial solicitation, selling content, or escort services' },
-  { id: 'inappropriate_content', label: 'Inappropriate photos, nudity, or offensive behavior' },
+  { id: 'commercial_solicitation', label: 'Commercial solicitation / Selling services or products' },
+  { id: 'financial_scam', label: 'Asking for money / Financial fraud' },
+  { id: 'off_platform_steering', label: 'Asking for off-platform contact too quickly (WhatsApp/Telegram/Line)' },
+  { id: 'inappropriate_content', label: 'Inappropriate or abusive language' },
+  { id: 'fake_profile', label: 'Fake photos or impersonation' },
   { id: 'underage', label: 'Underage member (must be 18+)' },
-  { id: 'off_platform_steering', label: 'Aggressive steering off-platform (WhatsApp, Telegram, Line)' },
-  { id: 'other', label: 'Other safety concern' },
+  { id: 'other', label: 'Other community concern' },
 ];
 
 /**
- * Reason-based "Report Profile" bottom sheet (z-[70], above the BottomNav). Posts to /api/reports
- * and, unless unticked, also blocks the member. `onDone(blocked)` fires after a successful report.
+ * "Report Member" bottom sheet (z-[70], above the BottomNav). Posts to /api/reports, which files a
+ * pending report for the admin review queue. Blocking is offered afterwards by the caller
+ * (`onDone`), so a report never silently blocks.
  */
 export function ReportModal({
   open,
   reportedId,
   name,
+  context,
   onClose,
   onDone,
 }: {
   open: boolean;
   reportedId: string;
   name: string;
+  /** Where the report is filed from (kept with the report for moderators). */
+  context?: 'chat' | 'profile';
   onClose: () => void;
   onDone: (blocked: boolean) => void;
 }) {
   const [category, setCategory] = useState<string | null>(null);
   const [details, setDetails] = useState('');
-  const [alsoBlock, setAlsoBlock] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -53,7 +57,7 @@ export function ReportModal({
       const res = await fetch('/api/reports', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reported_id: reportedId, reason_category: category, details, block: alsoBlock }),
+        body: JSON.stringify({ reported_id: reportedId, reason_category: category, details, block: false, context }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || 'Could not submit your report.');
@@ -82,10 +86,12 @@ export function ReportModal({
         <div className="pt-2.5 shrink-0" aria-hidden>
           <div className="w-10 h-1 rounded-full bg-slate-300 mx-auto mb-2" />
         </div>
-        <div className="flex items-start justify-between gap-3 px-5 pb-3 border-b border-[#F0EDF5] shrink-0">
+        <div className="flex items-start justify-between gap-3 px-5 pb-3 border-b border-[#ECE8F4] shrink-0">
           <div className="min-w-0">
-            <h2 className="text-base font-bold text-[#2D264B]">Report Profile</h2>
-            <p className="text-xs text-[#8A839E] truncate">{name}</p>
+            <h2 className="font-brand text-base font-bold text-[#2D264B]">Report Member</h2>
+            <p className="text-xs text-[#6C637B] leading-relaxed mt-0.5">
+              Reports are confidential. We review every report to protect community safety.
+            </p>
           </div>
           <button
             type="button"
@@ -98,7 +104,7 @@ export function ReportModal({
         </div>
 
         <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain px-5 py-4 space-y-4">
-          <div className="space-y-2" role="radiogroup" aria-label="Reason">
+          <div className="space-y-2" role="radiogroup" aria-label={`Reason for reporting ${name}`}>
             {CATEGORIES.map((c) => {
               const selected = category === c.id;
               return (
@@ -131,19 +137,9 @@ export function ReportModal({
             onChange={(e) => setDetails(e.target.value.slice(0, 300))}
             maxLength={300}
             rows={3}
-            placeholder="Provide any additional context (optional)..."
-            className="w-full p-3 rounded-2xl bg-[#F9F8FC] border border-[#ECE8F4] text-xs text-[#2D264B] placeholder:text-[#A8A1B5] focus:outline-none focus:border-[#6555B8] resize-none"
+            placeholder="Provide additional context (optional)..."
+            className="w-full p-3 rounded-2xl bg-[#F9F8FC] border border-[#ECE8F4] text-base sm:text-xs text-[#2D264B] placeholder:text-[#A8A1B5] focus:outline-none focus:border-[#6555B8] resize-none"
           />
-
-          <label className="flex items-start gap-2.5 text-xs text-[#2D264B] cursor-pointer select-none">
-            <input
-              type="checkbox"
-              checked={alsoBlock}
-              onChange={(e) => setAlsoBlock(e.target.checked)}
-              className="mt-0.5 w-4 h-4 accent-[#6555B8]"
-            />
-            <span>Also block {name} so they cannot view your profile or message you.</span>
-          </label>
 
           {error && (
             <p role="alert" className="rounded-xl bg-rose-50 border border-rose-200 px-3 py-2 text-[11px] font-semibold text-rose-700">
@@ -152,15 +148,18 @@ export function ReportModal({
           )}
         </div>
 
-        <div className="px-5 pt-2 pb-[calc(1rem+env(safe-area-inset-bottom,16px))] shrink-0">
+        <div className="px-5 pt-2 pb-[calc(1rem+env(safe-area-inset-bottom,16px))] shrink-0 space-y-1.5">
           <button
             type="button"
             onClick={submit}
             disabled={!category || submitting}
-            className="w-full inline-flex items-center justify-center gap-2 bg-[#6555B8] hover:bg-[#524496] text-white font-semibold text-sm py-2.5 rounded-full shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full inline-flex items-center justify-center gap-2 bg-[#2D264B] text-white rounded-xl py-2.5 font-semibold text-sm hover:bg-[#3D3464] transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
             Submit Report
+          </button>
+          <button type="button" onClick={onClose} className="w-full py-2 text-neutral-500 hover:text-neutral-700 text-sm">
+            Cancel
           </button>
         </div>
       </div>

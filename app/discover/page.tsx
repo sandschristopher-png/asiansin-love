@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import VerifiedBadge from '@/components/VerifiedBadge';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Camera, ChevronDown, ChevronLeft, ChevronRight, Compass, Search, X as XIcon, SlidersHorizontal, RotateCcw } from 'lucide-react';
+import { Camera, ChevronDown, ChevronLeft, ChevronRight, Compass, Search, X as XIcon, SlidersHorizontal, RotateCcw, MapPin } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { INTENT_OPTIONS, normalizeIntent } from '@/lib/intents';
 import { ActionType, getLocalCardActions, persistCardAction } from '@/lib/interactions';
@@ -31,6 +31,9 @@ import { LanguagePicker } from '@/components/profile/LifestyleFields';
 import { HEIGHT_MAX_CM, HEIGHT_MIN_CM } from '@/lib/lifestyle';
 import { readLanguages } from '@/lib/constants/languages';
 import { ReputationBadge } from '@/components/ReputationBadge';
+
+/** "Near Me" radius only when the viewer has no country on their profile. */
+const NEAR_ME_FALLBACK_KM = 150;
 
 
 /** Great-circle distance (haversine). */
@@ -282,6 +285,8 @@ function DiscoverContent() {
 
   const [discoveryMode, setDiscoveryMode] = useState<DiscoveryModeId>('all');
   const [currentUserCoords, setCurrentUserCoords] = useState<{ lat: number; lon: number } | null>(null);
+  /** Viewer's own city / country from their profile ("Near Me" never crosses countries). */
+  const [viewerPlace, setViewerPlace] = useState<{ city: string; country: string } | null>(null);
   const [viewerAvatar, setViewerAvatar] = useState<string | null>(null);
   const [viewerTraits, setViewerTraits] = useState<{ interests: unknown; languages: unknown }>({
     interests: [],
@@ -457,6 +462,7 @@ function DiscoverContent() {
             if (v.latitude && v.longitude) {
               setCurrentUserCoords({ lat: v.latitude, lon: v.longitude });
             }
+            setViewerPlace(v.country ? { city: String(v.city || ''), country: String(v.country) } : null);
             setViewerTraits({ interests: v.interests ?? [], languages: v.languages ?? null });
             setViewerAvatar(v.avatarUrl ?? null);
             setSeekingGender(v.gender === 'male' ? 'female' : v.gender === 'female' ? 'male' : null);
@@ -720,6 +726,22 @@ function DiscoverContent() {
     setDraftMode('all');
   };
 
+  const cityOf = (p: ProfileItem) => (p.location || '').split(',')[0].trim().toLowerCase();
+  /**
+   * "Near Me": the viewer's own country only (same city sorts first). Without a country on the
+   * viewer's profile, fall back to a NEAR_ME_FALLBACK_KM (150 km) radius from their coordinates. Members
+   * in another country never qualify.
+   */
+  const isNearViewer = (p: ProfileItem): boolean => {
+    if (viewerPlace?.country) {
+      return (p.country || '').trim().toLowerCase() === viewerPlace.country.trim().toLowerCase();
+    }
+    if (currentUserCoords && p.latitude != null && p.longitude != null) {
+      return distanceKm(currentUserCoords.lat, currentUserCoords.lon, p.latitude, p.longitude) <= NEAR_ME_FALLBACK_KM;
+    }
+    return false;
+  };
+
   const filteredProfiles = useMemo(() => {
     return profiles.filter((profile) => {
       if (cardActions[profile.id] === 'pass') return false;
@@ -741,9 +763,13 @@ function DiscoverContent() {
       const matchesHabits = selectedHabits.every((id) => HABIT_FILTERS.find((hf) => hf.id === id)?.test(life) ?? true);
       const matchesVerified = !verifiedOnly || profile.verified;
       const matchesOnline = !activeNowOnly || profile.online || presentIds.has(profile.id);
-      // Online filters; Near Me and New only re-order the full directory (sorted below).
+      // Online and Near Me filter; New only re-orders the full directory (sorted below).
       const matchesDiscoveryMode =
-        discoveryMode !== 'online' || Boolean(profile.online || presentIds.has(profile.id) || profile.recentlyActive);
+        discoveryMode === 'online'
+          ? Boolean(profile.online || presentIds.has(profile.id) || profile.recentlyActive)
+          : discoveryMode === 'near_me'
+            ? isNearViewer(profile)
+            : true;
       return (
         matchesCountry &&
         matchesQuery &&
@@ -758,7 +784,9 @@ function DiscoverContent() {
       );
     }).sort((x, y) => {
       if (discoveryMode === 'near_me') {
-        // Closest first; members without coordinates (either side) go last.
+        // Same city first, then closest; members without coordinates go last.
+        const sameCity = (p: ProfileItem) => (viewerPlace?.city && cityOf(p) === viewerPlace.city.trim().toLowerCase() ? 0 : 1);
+        if (sameCity(x) !== sameCity(y)) return sameCity(x) - sameCity(y);
         const d = (p: ProfileItem) =>
           currentUserCoords && p.latitude != null && p.longitude != null
             ? distanceKm(currentUserCoords.lat, currentUserCoords.lon, p.latitude, p.longitude)
@@ -770,7 +798,7 @@ function DiscoverContent() {
       }
       return 0;
     });
-  }, [profiles, cardActions, currentUserCoords, selectedCountry, countryOptions, searchQuery, minAge, maxAge, selectedIntents, heightNarrowed, heightRange, selectedLanguages, selectedHabits, verifiedOnly, activeNowOnly, discoveryMode, presentIds]);
+  }, [profiles, cardActions, currentUserCoords, selectedCountry, countryOptions, searchQuery, minAge, maxAge, selectedIntents, heightNarrowed, heightRange, selectedLanguages, selectedHabits, verifiedOnly, activeNowOnly, discoveryMode, presentIds, viewerPlace]);
 
   const isDefaultFeed = activeFiltersCount === 0 && !searchQuery.trim();
 
@@ -987,6 +1015,25 @@ function DiscoverContent() {
           </div>
         )}
 
+        {!isLoading && !categorySwitching && filteredProfiles.length === 0 && discoveryMode === 'near_me' && (
+          <div className="mt-4 p-8 rounded-2xl bg-white border border-[#ECE8F4] text-center space-y-3 shadow-xs">
+            <div className="w-12 h-12 mx-auto rounded-2xl bg-[#F3EFFC] flex items-center justify-center text-[#6555B8]">
+              <MapPin className="w-5 h-5" aria-hidden />
+            </div>
+            <p className="font-brand text-base font-bold text-[#2D264B]">No members near your location yet.</p>
+            <p className="text-xs text-[#6C637B] leading-relaxed max-w-[280px] mx-auto">
+              Explore the All or Online tabs to meet genuine singles across Southeast Asia.
+            </p>
+            <button
+              type="button"
+              onClick={() => setDiscoveryMode('all')}
+              className="inline-flex items-center gap-1.5 px-5 py-2.5 text-xs font-semibold rounded-full bg-[#6555B8] text-white hover:bg-[#52449e] transition shadow-sm cursor-pointer"
+            >
+              Browse All
+            </button>
+          </div>
+        )}
+
         {!isLoading && !categorySwitching && filteredProfiles.length === 0 && isDefaultFeed && (
           <div className="mt-4 p-8 rounded-2xl bg-white border border-[#DDD7E5] text-center space-y-3 shadow-xs">
             <div className="w-12 h-12 mx-auto rounded-2xl bg-[#F3EFFC] flex items-center justify-center text-[#6555B8]">
@@ -1020,7 +1067,7 @@ function DiscoverContent() {
           </div>
         )}
 
-        {!isLoading && !categorySwitching && filteredProfiles.length === 0 && !isDefaultFeed && (
+        {!isLoading && !categorySwitching && filteredProfiles.length === 0 && !isDefaultFeed && discoveryMode !== 'near_me' && (
           <div className="mt-4 p-8 rounded-2xl bg-white border border-[#DDD7E5] text-center space-y-3 shadow-xs">
             <div className="w-12 h-12 mx-auto rounded-2xl bg-[#F3EFFC] flex items-center justify-center text-[#6555B8]">
               <Search className="w-5 h-5" />

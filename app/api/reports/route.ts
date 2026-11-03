@@ -10,14 +10,15 @@ import { createClient } from '@/lib/supabase/server';
 
 export const runtime = 'nodejs';
 
+/** Must match the reasons in components/ReportModal.tsx. */
 const REPORT_CATEGORIES = {
-  fake_profile: 'Fake profile, catfish, or stolen photos',
-  financial_scam: 'Asking for money, wire transfers, crypto, or financial aid',
-  commercial_solicitation: 'Commercial solicitation, selling content, or escort services',
-  inappropriate_content: 'Inappropriate photos, nudity, or offensive behavior',
+  commercial_solicitation: 'Commercial solicitation / Selling services or products',
+  financial_scam: 'Asking for money / Financial fraud',
+  off_platform_steering: 'Asking for off-platform contact too quickly (WhatsApp/Telegram/Line)',
+  inappropriate_content: 'Inappropriate or abusive language',
+  fake_profile: 'Fake photos or impersonation',
   underage: 'Underage member (must be 18+)',
-  off_platform_steering: 'Aggressive steering off-platform (WhatsApp, Telegram, Line)',
-  other: 'Other safety concern',
+  other: 'Other community concern',
 } as const;
 type ReportCategory = keyof typeof REPORT_CATEGORIES;
 
@@ -39,7 +40,7 @@ export async function POST(req: Request) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  let body: { reported_id?: unknown; reason_category?: unknown; details?: unknown; block?: unknown };
+  let body: { reported_id?: unknown; reason_category?: unknown; details?: unknown; block?: unknown; context?: unknown };
   try {
     body = await req.json();
   } catch {
@@ -56,7 +57,10 @@ export async function POST(req: Request) {
   }
   if (reportedId === user.id) return NextResponse.json({ error: 'You cannot report yourself.' }, { status: 400 });
 
-  const details = typeof body.details === 'string' ? body.details.trim().slice(0, 300) : '';
+  // Where the report was filed (chat / profile) is kept with the details for moderators.
+  const context = body.context === 'chat' || body.context === 'profile' ? body.context : null;
+  const rawDetails = typeof body.details === 'string' ? body.details.trim().slice(0, 300) : '';
+  const details = context ? `[from ${context}] ${rawDetails}`.trim() : rawDetails;
   const cat = category as ReportCategory;
 
   const insert = (reason: string, text: string | null) =>

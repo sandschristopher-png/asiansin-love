@@ -13,11 +13,14 @@ export function InAppToast({
   icon,
   onClose,
   durationMs = 4000,
+  action,
 }: {
   message: string | null;
   icon?: React.ReactNode;
   onClose: () => void;
   durationMs?: number;
+  /** Optional one-tap follow-up (e.g. "Block" after a report). */
+  action?: { label: string; onClick: () => void };
 }) {
   useEffect(() => {
     if (!message) return;
@@ -31,6 +34,18 @@ export function InAppToast({
       <div className="flex items-start gap-2.5 px-3.5 py-3 rounded-2xl bg-white/95 backdrop-blur-md border border-[#ECE8F4] shadow-[0_12px_32px_rgba(101,85,184,0.18)] text-xs text-[#1C1924]">
         {icon && <span className="shrink-0 mt-0.5 text-[#6555B8]">{icon}</span>}
         <p className="flex-1 leading-relaxed">{message}</p>
+        {action && (
+          <button
+            type="button"
+            onClick={() => {
+              action.onClick();
+              onClose();
+            }}
+            className="shrink-0 self-center px-3 py-1 rounded-full bg-[#2D264B] text-white text-[11px] font-semibold hover:bg-[#3D3464]"
+          >
+            {action.label}
+          </button>
+        )}
         <button type="button" onClick={onClose} aria-label="Dismiss" className="shrink-0 text-[#9A93A8] hover:text-[#1C1924]">
           <X className="w-3.5 h-3.5" />
         </button>

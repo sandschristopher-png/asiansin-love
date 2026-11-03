@@ -753,10 +753,11 @@ export default function PublicProfilePage() {
         open={reportOpen}
         reportedId={targetUserId}
         name={displayName}
+        context="profile"
         onClose={() => setReportOpen(false)}
         onDone={(blocked) => {
           setReportOpen(false);
-          showActionToast('Report received. Our moderation team will review.', 'shield');
+          showActionToast('Thank you for keeping our community safe. Our team is reviewing this profile.', 'shield');
           if (blocked) setTimeout(() => router.push('/discover'), 1200);
         }}
       />

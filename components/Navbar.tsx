@@ -5,7 +5,7 @@ import { notifyUser } from '@/components/InAppToast';
 import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { User, Settings, LogOut, ArrowLeft, Share2, Check, Zap, Menu } from 'lucide-react';
+import { User, Settings, LogOut, ArrowLeft, Share2, Check, Menu } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { hardSignOut } from '@/lib/hardSignOut';
 import { AilBadge } from './AilBadge';
@@ -249,7 +249,7 @@ export function Navbar() {
                   <div className="absolute right-0 mt-2.5 w-80 rounded-2xl bg-white border border-[#DDD7E5]/40 shadow-xl py-2 z-[200] animate-[notifDropdownIn_0.2s_cubic-bezier(0.16,1,0.3,1)_both]">
                     <div className="px-4 py-2 border-b border-[#DDD7E5]/40 bg-white/95 backdrop-blur-md backdrop-saturate-150 rounded-t-2xl">
                       <p className="text-[11px] uppercase font-medium tracking-wider text-gray-400">Signed In As</p>
-                      <p className="text-sm font-semibold text-gray-900 truncate inline-flex items-center gap-1.5">{(profile?.username || displayName).replace(/^@/, '')}{profile?.is_plus && <AilBadge />}</p>
+                      <p className="text-sm font-semibold text-gray-900 truncate inline-flex items-center gap-1.5">{(profile?.username || displayName).replace(/^@/, '')}{profile?.is_plus && <AilBadge variant="soft" />}</p>
                     </div>
                   <NotificationsSection initial={prefetchedNotifs} onNavigate={() => setMenuOpen(false)} />
                     <div className="py-1">
@@ -259,7 +259,9 @@ export function Navbar() {
                         className="flex items-center justify-between px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
                       >
                         <div className="flex items-center gap-3">
-                          <Zap className="w-4 h-4 text-[#6555B8]" />
+                          {/* Unified brand mark (the gradient "a") instead of a generic icon */}
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src="/logo-mark-transparent.png" alt="" aria-hidden className="w-4 h-4 object-contain" />
                           <span className="font-medium text-[#1C1924]">AIL Plus</span>
                         </div>
                         {profile?.is_plus ? (

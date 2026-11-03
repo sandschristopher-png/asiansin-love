@@ -104,7 +104,7 @@ export async function GET(req: Request) {
       const [profRes, blocksRes, favsRes, sparksRes] = await Promise.all([
         serviceClient
           .from('profiles')
-          .select('id, gender, interested_in, seeking_gender, latitude, longitude, interests, languages, intentions, relationship_intent, onboarding_completed, avatar_url, is_plus')
+          .select('id, gender, interested_in, seeking_gender, latitude, longitude, city, country, interests, languages, intentions, relationship_intent, onboarding_completed, avatar_url, is_plus')
           .eq('id', user.id)
           .maybeSingle(),
         serviceClient
@@ -301,6 +301,9 @@ export async function GET(req: Request) {
             interests: Array.isArray(viewerProfile.interests) ? viewerProfile.interests : [],
             languages: viewerProfile.languages ?? null,
             avatarUrl: viewerProfile.avatar_url ?? null,
+            // "Near Me" matches on the viewer's own city / country (normalized like the feed's).
+            city: viewerProfile.city ?? null,
+            country: resolveCountry(viewerProfile.city, viewerProfile.country) || null,
             intent: viewerProfile.relationship_intent || viewerProfile.intentions || '',
             onboarding_completed: viewerProfile.onboarding_completed,
             isPlus: Boolean(viewerProfile.is_plus),

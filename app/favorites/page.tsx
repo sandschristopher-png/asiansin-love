@@ -397,7 +397,7 @@ export default function SparksPage() {
             }
           />
         ) : loading ? (
-          <div className="grid grid-cols-2 gap-3.5">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4">
             {[0, 1, 2, 3].map((i) => (
               <div key={i} className="aspect-[3/4] rounded-2xl ail-shimmer" />
             ))}
@@ -415,7 +415,7 @@ export default function SparksPage() {
           />
         ) : (
           <>
-          <div className="grid grid-cols-2 gap-3.5 animate-fade-in-up">
+          <div className="grid grid-cols-2 gap-3 sm:gap-4 animate-fade-in-up">
             {priorityList.map((person, idx) => {
               // Free: the newest Spark is a clear preview, the rest stay blurred until AIL+.
               const shouldBlur =
@@ -429,21 +429,23 @@ export default function SparksPage() {
                 <div
                   key={person.id}
                   onClick={() => { if (shouldBlur) { router.push('/plus'); } else { router.push(`/profile/${person.id}`); } }}
-                  className="group relative isolate aspect-[3/4] rounded-2xl overflow-hidden bg-slate-100 shadow-xs border border-[#ECE8F4] cursor-pointer active:scale-[0.98] transition-all duration-200"
+                  className="group relative isolate aspect-[3/4] rounded-2xl overflow-hidden bg-[#F2EEF7] border border-[#DDD7E5]/70 shadow-xs hover:shadow-md cursor-pointer active:scale-[0.98] transition-all duration-300"
                 >
                   <SparkCardPhoto src={photo} name={publicName} className={`object-cover transition-transform duration-300 group-hover:scale-105 ${shouldBlur ? 'blur-md scale-110' : ''}`} />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent" />
-                  {!shouldBlur && <ReputationBadge score={rep} variant="frosted" size="xs" className="absolute top-3 left-3 z-10" />}
-                  <div className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-[#6555B8]/95 text-white flex items-center justify-center shadow-xs"><Heart strokeWidth={2} className="w-3.5 h-3.5 fill-white" /></div>
+                  {/* Same overlay layout as Discover cards (top-left Reputation, top-right heart). */}
+                  {!shouldBlur && <ReputationBadge score={rep} variant="frosted" size="xs" className="absolute top-2.5 left-2.5 z-20" />}
+                  <span aria-hidden className="absolute top-3 right-3 z-20 p-1 text-[#EC4899] drop-shadow-[0_2px_5px_rgba(0,0,0,0.45)]">
+                    <Heart className="w-7 h-7 stroke-[2.2] fill-[#EC4899] text-[#EC4899]" />
+                  </span>
                   {shouldBlur && (
                     <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/30 p-3 text-center">
                       <div className="w-9 h-9 rounded-full bg-[#6555B8] text-white flex items-center justify-center mb-1.5 shadow-md"><Lock className="w-4 h-4" /></div>
                       <span className="text-[11px] font-bold text-white drop-shadow">Tap to Unblur with AIL+</span>
                     </div>
                   )}
-                  <div className="absolute bottom-2.5 left-3 right-3 text-white">
-                    <div className="font-bold text-[15px] leading-tight truncate">{shouldBlur ? (activeTab === 'visited' ? 'Someone Visited You' : 'Someone Sparked You') : `${publicName}${age ? `, ${age}` : ''}`}</div>
-                    <div className="text-[11px] text-white/85 truncate mt-0.5">{location}</div>
+                  <div className="absolute bottom-0 inset-x-0 pt-10 pb-3 px-3 z-10 pointer-events-none bg-gradient-to-t from-black/65 via-black/25 to-transparent text-white">
+                    <h3 className="font-brand text-sm font-bold leading-tight truncate">{shouldBlur ? (activeTab === 'visited' ? 'Someone Visited You' : 'Someone Sparked You') : `${publicName}${age ? `, ${age}` : ''}`}</h3>
+                    <p className="text-[11px] text-white/90 font-medium mt-0.5 truncate pr-7">{location}</p>
                   </div>
                 </div>
               );

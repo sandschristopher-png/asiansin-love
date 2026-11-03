@@ -15,7 +15,7 @@ import {
   Lightbulb,
   X,
   ArrowDown,
-  ShieldCheck,
+  Sparkles,
   Mic,
   Lock,
   Square,
@@ -39,6 +39,7 @@ import { evaluateSubstantiveConversation } from '@/lib/moderation';
 import { isRestricted } from '@/lib/reputation';
 import { RepBadge, RhythmPill } from '@/components/profile/RhythmBadges';
 import { hapticError, hapticSuccess, hapticTap } from '@/lib/utils/haptics';
+import { ReportModal } from '@/components/ReportModal';
 
 const VOICE_LOCKED_MESSAGE = `Voice notes unlock after both members exchange ${CONTACT_UNLOCK_TURNS} substantive messages (15+ characters each).`;
 const VOICE_REP_LOCKED_MESSAGE = 'Voice notes are paused while your account is under review. Text messages still work.';
@@ -204,7 +205,8 @@ export default function ChatConversationPage() {
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [showRepModal, setShowRepModal] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
-  const [actionDoneMsg, setActionDoneMsg] = useState<string | null>(null);
+  const [reportThanks, setReportThanks] = useState(false);
+  const closeReportThanks = useCallback(() => setReportThanks(false), []);
   const [errorBanner, setErrorBanner] = useState<string | null>(null);
   const [showScrollPill, setShowScrollPill] = useState(false);
 
@@ -751,32 +753,8 @@ export default function ChatConversationPage() {
         body: JSON.stringify({ blockedId: target }),
       });
       if (res.ok) {
-        setActionDoneMsg('User has been blocked. Redirecting to messages...');
-        setTimeout(() => {
-          setShowReportModal(false);
-          setActionDoneMsg(null);
-          router.push('/messages');
-        }, 1200);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const handleReportUser = async (reason: string = 'harassment') => {
-    const target = resolvedTargetUuid || rawParam;
-    try {
-      const res = await fetch('/api/users/report', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reportedId: target, reason }),
-      });
-      if (res.ok) {
-        setActionDoneMsg('Report submitted. Thank you for keeping Asians in Love safe.');
-        setTimeout(() => {
-          setShowReportModal(false);
-          setActionDoneMsg(null);
-        }, 1500);
+        setToast('Member blocked. Taking you back to Messages...');
+        setTimeout(() => router.push('/messages'), 1200);
       }
     } catch (err) {
       console.error(err);
@@ -881,7 +859,7 @@ export default function ChatConversationPage() {
       <div
         ref={scrollContainerRef}
         onScroll={handleContainerScroll}
-        className="flex-1 min-h-0 overflow-y-auto px-3.5 py-4 overscroll-contain"
+        className="flex-1 min-h-0 overflow-y-auto px-3.5 py-4 overscroll-contain no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
       >
         {isInitialLoading ? (
           <div className="space-y-4 py-4 animate-pulse">
@@ -1164,18 +1142,37 @@ export default function ChatConversationPage() {
 
       {/* Docked Flex Composer (Never overlaps message feed) */}
       <div className="shrink-0 w-full bg-white/95 backdrop-blur-md border-t border-[#ECE8F4] px-3 pt-2 pb-[max(0.625rem,env(safe-area-inset-bottom))] z-20">
-        {!isInitialLoading && !gateUnlocked && (
-          // Each member needs their own 3; showing only the lower count read as "0/3" mid-chat.
-          <p className="mb-1.5 text-center text-[10.5px] leading-snug text-[#7A7289]" aria-live="polite">
-            <ShieldCheck className="w-3 h-3 inline-block -mt-0.5 mr-1 text-[#6555B8]" aria-hidden />Safety Gate: you {Math.min(liveGate.senderSubstantiveCount, CONTACT_UNLOCK_TURNS)}/{CONTACT_UNLOCK_TURNS} ·{' '}
-            {targetInfo.name || 'them'} {Math.min(liveGate.receiverSubstantiveCount, CONTACT_UNLOCK_TURNS)}/{CONTACT_UNLOCK_TURNS} messages
-            exchanged to unlock voice notes and contact sharing.
-            <span className="block text-[10px] text-[#9A93A8]">Messages count when they have a few words (15+ characters).</span>
-          </p>
-        )}
+        {!isInitialLoading && !gateUnlocked && (() => {
+          // One friendly line; shows whichever side still needs messages (each member needs 3).
+          const mine = Math.min(liveGate.senderSubstantiveCount, CONTACT_UNLOCK_TURNS);
+          const theirs = Math.min(liveGate.receiverSubstantiveCount, CONTACT_UNLOCK_TURNS);
+          const them = targetInfo.name || 'them';
+          const progress =
+            mine < CONTACT_UNLOCK_TURNS && theirs < CONTACT_UNLOCK_TURNS
+              ? `You: ${mine}/${CONTACT_UNLOCK_TURNS} · ${them}: ${theirs}/${CONTACT_UNLOCK_TURNS}`
+              : mine < CONTACT_UNLOCK_TURNS
+                ? `You: ${mine}/${CONTACT_UNLOCK_TURNS}`
+                : `${them}: ${theirs}/${CONTACT_UNLOCK_TURNS}`;
+          return (
+            <p
+              className="text-xs text-neutral-500 bg-[#FAF8FD] border border-[#ECE8F4] py-1.5 px-3 rounded-xl mx-auto mb-2 text-center max-w-md flex items-center justify-center gap-1.5"
+              aria-live="polite"
+              title="Messages count when they have a few words (15+ characters)."
+            >
+              <Lock className="w-3.5 h-3.5 shrink-0 text-[#8C71F5]" aria-hidden />
+              <span>
+                Voice notes &amp; contact sharing unlock after {CONTACT_UNLOCK_TURNS} meaningful messages each ({progress})
+              </span>
+            </p>
+          );
+        })()}
         {!isInitialLoading && gateUnlocked && gateLockedOnOpen && (
-          <p className="mb-1.5 text-center text-[10.5px] font-medium text-emerald-700" aria-live="polite">
-            <ShieldCheck className="w-3 h-3 inline-block -mt-0.5 mr-1" aria-hidden />Trust Gate unlocked. Voice notes and contact sharing enabled.
+          <p
+            className="text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 py-1.5 px-3 rounded-xl mx-auto mb-2 text-center max-w-md flex items-center justify-center gap-1.5"
+            aria-live="polite"
+          >
+            <Sparkles className="w-3.5 h-3.5 shrink-0" aria-hidden />
+            <span>Safety Gate unlocked · Voice notes &amp; direct sharing now available</span>
           </p>
         )}
         {cooldownSeconds > 0 ? (
@@ -1321,56 +1318,24 @@ export default function ChatConversationPage() {
         name={targetInfo.name}
         score={targetInfo.rep}
       />
-      {showReportModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-xs">
-          <div className="w-full max-w-sm rounded-3xl bg-white p-6 shadow-2xl border border-[#DDD7E5]">
-            <div className="flex items-center gap-2 text-rose-600">
-              <ShieldAlert className="h-5 w-5" />
-              <h3
-                className="font-bold text-[#1C1924]"
-                style={{ fontFamily: 'var(--font-brand)' }}
-              >
-                Safety &amp; Moderation
-              </h3>
-            </div>
-            <p className="mt-2 text-xs text-[#6C637B] leading-relaxed">
-              Take action regarding this member. Reports are reviewed by moderators within 24 hours.
-            </p>
-            {actionDoneMsg ? (
-              <div className="mt-4 rounded-2xl bg-emerald-50 border border-emerald-200 p-3 text-center text-xs font-medium text-emerald-800">
-                {actionDoneMsg}
-              </div>
-            ) : (
-              <div className="mt-5 space-y-2">
-                <button
-                  type="button"
-                  onClick={handleBlockUser}
-                  className="w-full rounded-2xl border border-[#DDD7E5] py-2.5 text-xs font-semibold text-[#1C1924] hover:bg-[#F3EFFC] transition cursor-pointer"
-                >
-                  Block Member
-                </button>
-                <button
-                  type="button"
-                  onClick={() => handleReportUser('harassment')}
-                  className="w-full rounded-2xl bg-rose-600 hover:bg-rose-700 py-2.5 text-xs font-semibold text-white shadow-sm transition cursor-pointer"
-                >
-                  Report Violation / Scammer
-                </button>
-              </div>
-            )}
-            <button
-              type="button"
-              onClick={() => {
-                setShowReportModal(false);
-                setActionDoneMsg(null);
-              }}
-              className="mt-3 w-full py-1.5 text-xs text-[#8C849B] hover:text-[#1C1924] transition cursor-pointer"
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
+      <ReportModal
+        open={showReportModal}
+        reportedId={resolvedTargetUuid || rawParam}
+        name={targetInfo.name || 'this member'}
+        context="chat"
+        onClose={() => setShowReportModal(false)}
+        onDone={() => {
+          setShowReportModal(false);
+          setReportThanks(true);
+        }}
+      />
+      <InAppToast
+        message={reportThanks ? 'Thank you for keeping our community safe. Our team is reviewing this profile.' : null}
+        onClose={closeReportThanks}
+        durationMs={8000}
+        icon={<ShieldAlert className="w-3.5 h-3.5" />}
+        action={{ label: `Block ${targetInfo.name || 'member'}`, onClick: handleBlockUser }}
+      />
     </div>
   );
 }
