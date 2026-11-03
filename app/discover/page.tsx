@@ -164,23 +164,12 @@ function normalizeGenderValue(raw?: string | null): 'female' | 'male' | 'male' {
 }
 
 
-// Universal SWR Module Cache for Discover Feed
+// In-memory cache for instant tab switching within this session. It only ever holds feeds the
+// server already filtered (opposite gender, not sparked, not blocked). The old localStorage copy
+// survived reloads and painted stale, unfiltered cards before the real feed arrived.
 let memoryDiscoverCache: { profiles: ProfileItem[] } | null = null;
 function getInitialDiscoverFeed(): ProfileItem[] {
-  if (memoryDiscoverCache?.profiles?.length) return memoryDiscoverCache.profiles.slice();
-  if (typeof window !== 'undefined') {
-    try {
-      const cachedRaw = localStorage.getItem('ail_discover_cache');
-      if (cachedRaw) {
-        const cached = JSON.parse(cachedRaw);
-        if (Array.isArray(cached?.profiles) && cached.profiles.length > 0) {
-          memoryDiscoverCache = { profiles: cached.profiles };
-          return cached.profiles.slice();
-        }
-      }
-    } catch {}
-  }
-  return [];
+  return memoryDiscoverCache?.profiles?.length ? memoryDiscoverCache.profiles.slice() : [];
 }
 
 function DiscoverContent() {
@@ -189,7 +178,6 @@ function DiscoverContent() {
 
   const [discoveryMode, setDiscoveryMode] = useState<DiscoveryModeId>('all');
   const [currentUserCoords, setCurrentUserCoords] = useState<{ lat: number; lon: number } | null>(null);
-  const [viewerSavedGenders, setViewerSavedGenders] = useState<string[]>([]);
   const [viewerAvatar, setViewerAvatar] = useState<string | null>(null);
   const [viewerTraits, setViewerTraits] = useState<{ interests: unknown; languages: unknown }>({
     interests: [],
@@ -209,47 +197,23 @@ function DiscoverContent() {
   const [searchClosing, setSearchClosing] = useState(false);
 
   useEffect(() => {
-    if (profiles.length > 0) {
-      memoryDiscoverCache = { profiles };
-      try {
-        localStorage.setItem('ail_discover_cache', JSON.stringify({ profiles }));
-      } catch {}
-    }
+    if (profiles.length > 0) memoryDiscoverCache = { profiles };
   }, [profiles]);
 
-  const [selectedGenders, setSelectedGenders] = useState<string[]>(() => {
-    if (typeof window !== 'undefined') {
-      const stored = localStorage.getItem('discover_gender_pref');
-      if (stored !== null) {
-        try {
-          const parsed = JSON.parse(stored);
-          if (Array.isArray(parsed)) return parsed;
-        } catch {}
-      }
-    }
-    return [];
-  });
-
+  // One-time cleanup of keys from the old client-side feed / gender filter.
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      try {
-        localStorage.setItem('discover_gender_pref', JSON.stringify(selectedGenders));
-      } catch {}
-    }
-  }, [selectedGenders]);
+    try {
+      localStorage.removeItem('ail_discover_cache');
+      localStorage.removeItem('discover_gender_pref');
+    } catch {}
+  }, []);
 
-  const toggleGender = (gender: string) => {
-    setSelectedGenders((prev) =>
-      prev.includes(gender) ? prev.filter((g) => g !== gender) : [...prev, gender]
-    );
-  };
 
   const [filtersOpen, setFiltersOpen] = useState(false);
   const [minAge, setMinAge] = useState<number>(18);
   const [maxAge, setMaxAge] = useState<number>(65);
   const [draftMinAge, setDraftMinAge] = useState<number>(18);
   const [draftMaxAge, setDraftMaxAge] = useState<number>(65);
-  const [draftGenders, setDraftGenders] = useState<string[]>([]);
   const [draftCountry, setDraftCountry] = useState<string>('All');
   const [draftIntent, setDraftIntent] = useState<string>('all');
   const [draftVerifiedOnly, setDraftVerifiedOnly] = useState<boolean>(false);
@@ -307,7 +271,6 @@ function DiscoverContent() {
     if (filtersOpen) {
       setDraftMinAge(minAge);
       setDraftMaxAge(maxAge);
-      setDraftGenders(selectedGenders);
       setDraftCountry(selectedCountry);
       setDraftIntent(selectedIntent);
       setDraftVerifiedOnly(verifiedOnly);
@@ -320,7 +283,7 @@ function DiscoverContent() {
     return () => {
       document.body.style.overflow = '';
     };
-  }, [filtersOpen, minAge, maxAge, selectedGenders, selectedCountry, selectedIntent, verifiedOnly, activeNowOnly, discoveryMode]);
+  }, [filtersOpen, minAge, maxAge, selectedCountry, selectedIntent, verifiedOnly, activeNowOnly, discoveryMode]);
 
   useEffect(() => {
     const handleMutualMatch = (e: CustomEvent<{ targetId: string }>) => {
@@ -339,18 +302,8 @@ function DiscoverContent() {
     setCardActions(local);
 
     async function loadFeed() {
-      let hydrated = false;
-      try {
-        const cachedRaw = localStorage.getItem('ail_discover_cache');
-        if (cachedRaw) {
-          const cached = JSON.parse(cachedRaw);
-          if (Array.isArray(cached.profiles) && cached.profiles.length > 0) {
-            setProfiles(cached.profiles);
-            hydrated = true;
-          }
-        }
-      } catch {}
-      if (!hydrated && profiles.length === 0) setIsLoading(true);
+      // Keep the loading state until the server's filtered feed arrives (no stale cards first).
+      if (profiles.length === 0) setIsLoading(true);
       try {
         const res = await fetch('/api/discover', { cache: 'no-store' });
         if (res.status === 401) {
@@ -371,12 +324,6 @@ function DiscoverContent() {
             }
             setViewerTraits({ interests: v.interests ?? [], languages: v.languages ?? null });
             setViewerAvatar(v.avatarUrl ?? null);
-            if (Array.isArray(v.interested_in) && v.interested_in.length > 0) {
-              setViewerSavedGenders(v.interested_in);
-              if (!localStorage.getItem('discover_gender_pref')) {
-                setSelectedGenders(v.interested_in);
-              }
-            }
           }
           if (Array.isArray(payload.favoriteIds)) {
             setCardActions((prev) => {
@@ -399,11 +346,6 @@ function DiscoverContent() {
               return next;
             });
             setProfiles(payload.profiles);
-            if (payload.profiles.length > 0) {
-              try {
-                localStorage.setItem('ail_discover_cache', JSON.stringify({ profiles: payload.profiles }));
-              } catch {}
-            }
           }
         }
       } catch (err) {
@@ -433,9 +375,6 @@ function DiscoverContent() {
             return next;
           });
           setProfiles(payload.profiles);
-          if (payload.profiles.length > 0) {
-            try { localStorage.setItem('ail_discover_cache', JSON.stringify({ profiles: payload.profiles })); } catch {}
-          }
         }
       }
     } catch {}
@@ -561,19 +500,13 @@ function DiscoverContent() {
     if (verifiedOnly) count++;
     if (activeNowOnly) count++;
     if (discoveryMode !== 'all') count++;
-    if (
-      selectedGenders.length > 0 &&
-      (viewerSavedGenders.length === 0 ||
-        selectedGenders.slice().sort().join(',') !== viewerSavedGenders.slice().sort().join(','))
-    ) count++;
     return count;
-  }, [selectedCountry, minAge, maxAge, selectedIntent, verifiedOnly, activeNowOnly, discoveryMode, selectedGenders, viewerSavedGenders]);
+  }, [selectedCountry, minAge, maxAge, selectedIntent, verifiedOnly, activeNowOnly, discoveryMode]);
 
   const hasActiveFilters = activeFiltersCount > 0;
 
   const resetAndApplyFilters = () => {
     resetFilters();
-    setSelectedGenders(viewerSavedGenders);
     setSelectedCountry('All');
     setSelectedIntent('all');
     setMinAge(18);
@@ -586,7 +519,6 @@ function DiscoverContent() {
   const applyFilters = () => {
     setMinAge(draftMinAge);
     setMaxAge(draftMaxAge);
-    setSelectedGenders(draftGenders);
     setSelectedCountry(draftCountry);
     setSelectedIntent(draftIntent);
     setVerifiedOnly(draftVerifiedOnly);
@@ -596,7 +528,6 @@ function DiscoverContent() {
   };
 
   const resetFilters = () => {
-    setDraftGenders(viewerSavedGenders);
     setDraftCountry('All');
     setDraftIntent('all');
     setDraftMinAge(18);
@@ -612,7 +543,6 @@ function DiscoverContent() {
       const matchesCountry =
         selectedCountry.toLowerCase() === 'all' ||
         (profile.country || '').toLowerCase() === selectedCountry.toLowerCase();
-      const matchesGender = selectedGenders.length === 0 || selectedGenders.includes(profile.gender);
       const q = searchQuery.toLowerCase().trim();
       const searchableName = (profile.username || profile.name || '').toLowerCase();
       const matchesQuery = !q || searchableName.includes(q) || profile.location.toLowerCase().includes(q);
@@ -631,7 +561,6 @@ function DiscoverContent() {
       })();
       return (
         matchesCountry &&
-        matchesGender &&
         matchesQuery &&
         matchesAge &&
         matchesIntent &&
@@ -640,7 +569,7 @@ function DiscoverContent() {
         matchesDiscoveryMode
       );
     });
-  }, [profiles, cardActions, selectedCountry, selectedGenders, searchQuery, minAge, maxAge, selectedIntent, verifiedOnly, activeNowOnly, discoveryMode, presentIds]);
+  }, [profiles, cardActions, selectedCountry, searchQuery, minAge, maxAge, selectedIntent, verifiedOnly, activeNowOnly, discoveryMode, presentIds]);
 
   const visibleProfiles = filteredProfiles.slice(0, visibleLimit);
   const hasMore = visibleLimit < filteredProfiles.length;
@@ -972,41 +901,6 @@ function DiscoverContent() {
 
                   {/* Scrollable Form Body with hidden scrollbar */}
                   <div className="flex-1 min-h-0 overflow-y-auto overscroll-contain touch-pan-y px-5 py-4 space-y-5 no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-                    <div>
-                      <label className="text-[11px] font-bold text-[#6C637B] uppercase tracking-wider block mb-2">
-                        Interested In
-                      </label>
-                      <div className="flex flex-wrap gap-2">
-                        {[
-                          { id: 'female', label: 'Women' },
-                          { id: 'male', label: 'Men' },
-                        ].map((item) => {
-                          const isSelected = draftGenders.includes(item.id);
-                          return (
-                            <button
-                              key={item.id}
-                              type="button"
-                              onClick={() => {
-                                setDraftGenders(
-                                  draftGenders.includes(item.id)
-                                    ? draftGenders.filter((g) => g !== item.id)
-                                    : [...draftGenders, item.id]
-                                );
-                              }}
-                              className={
-                                'py-1.5 px-3.5 rounded-full border text-xs font-semibold transition-all cursor-pointer active:scale-95 ' +
-                                (isSelected
-                                  ? 'bg-[#6555B8] text-white border-[#6555B8] shadow-2xs'
-                                  : 'bg-white text-[#1C1924] border-[#DDD7E5] hover:border-[#6555B8]/40')
-                              }
-                            >
-                              {item.label}
-                            </button>
-                          );
-                        })}
-                      </div>
-                    </div>
-
                     <div>
                       <label className="text-[11px] font-bold text-[#6C637B] uppercase tracking-wider block mb-2">
                         Age Range

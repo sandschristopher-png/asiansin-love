@@ -305,6 +305,36 @@ export default function MyProfilePage() {
     );
   };
 
+  // Photo delete (edit mode): /api/profile/photo keeps at least one photo, promotes the next one
+  // when the main photo goes, and removes the file from storage.
+  const [photoNotice, setPhotoNotice] = useState<string | null>(null);
+  const [deletingPhoto, setDeletingPhoto] = useState<string | null>(null);
+  const handleDeletePhoto = async (url: string) => {
+    const gallery = photos.length > 0 ? photos : avatarUrl ? [avatarUrl] : [];
+    if (gallery.length <= 1) {
+      setPhotoNotice('Profiles require at least one photo.');
+      return;
+    }
+    setPhotoNotice(null);
+    setDeletingPhoto(url);
+    try {
+      const res = await fetch('/api/profile/photo', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Could not remove the photo.');
+      if (Array.isArray(data.photos)) setPhotos(data.photos);
+      if (typeof data.avatar_url === 'string') setAvatarUrl(data.avatar_url);
+      setCurrentPhotoIdx(0);
+    } catch (err) {
+      setPhotoNotice(err instanceof Error ? err.message : 'Could not remove the photo.');
+    } finally {
+      setDeletingPhoto(null);
+    }
+  };
+
   const handleSave = async () => {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
@@ -580,6 +610,39 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
             </div>
           )}
         </div>
+
+        {/* Photo gallery (edit mode): delete badges, 1-photo minimum */}
+        {isEditing && photoList.length > 0 && (
+          <div className="space-y-1.5">
+            <div className="flex gap-2 overflow-x-auto no-scrollbar [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pb-1">
+              {photoList.map((url, idx) => (
+                <div key={url} className="relative w-20 aspect-[3/4] shrink-0 rounded-xl overflow-hidden bg-slate-100 border border-[#ECE8F4]">
+                  <img src={url} alt={idx === 0 ? 'Main photo' : `Photo ${idx + 1}`} className="w-full h-full object-cover" />
+                  {idx === 0 && (
+                    <span className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded-full bg-[#6555B8]/90 text-white text-[9px] font-semibold">
+                      Main
+                    </span>
+                  )}
+                  {photoList.length > 1 && (
+                    <button
+                      type="button"
+                      onClick={() => handleDeletePhoto(url)}
+                      disabled={deletingPhoto !== null}
+                      aria-label={`Delete photo ${idx + 1}`}
+                      className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/60 backdrop-blur-sm text-white flex items-center justify-center hover:bg-red-600 transition-colors z-10 disabled:opacity-60"
+                    >
+                      {deletingPhoto === url ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <X className="w-3.5 h-3.5" />}
+                    </button>
+                  )}
+                </div>
+              ))}
+            </div>
+            {photoList.length <= 1 && (
+              <p className="text-[11px] text-[#8C849B]">Profiles require at least one photo. Add another to replace this one.</p>
+            )}
+            {photoNotice && <p role="alert" className="text-[11px] font-semibold text-rose-600">{photoNotice}</p>}
+          </div>
+        )}
 
         {/* Edit / Save Action Bar */}
           <div className="h-12 w-full flex items-stretch gap-2.5">

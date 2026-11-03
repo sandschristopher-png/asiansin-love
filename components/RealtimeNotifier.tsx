@@ -4,7 +4,6 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
 import { applyContactRevealMask } from '@/lib/safety';
-import { playPop } from '@/lib/sound';
 import { alertPrefs, getNotificationCounts, setNotificationCounts } from '@/lib/notificationStore';
 import { NotificationToast, type NotificationKind, type NotificationToastData } from '@/components/NotificationToast';
 
@@ -42,8 +41,8 @@ function sparksSeenAt(): string {
  *   B. new Sparks to me          -> toast + Sparks badge
  *   C. a Spark that makes it mutual -> celebration toast, tap opens the chat
  *   D. profile visits            -> toast for members with Visitor History (AIL+, or women)
- * Each event also vibrates, plays a soft pop (if sound is on) and, while the tab is hidden and
- * web push isn't already covering this device, raises a browser notification.
+ * Silent by design: each event shows the toast and gives a short haptic pulse (no sounds). While
+ * the tab is hidden and web push isn't already covering this device, it raises a browser alert.
  */
 export function RealtimeNotifier() {
   const router = useRouter();
@@ -114,10 +113,11 @@ export function RealtimeNotifier() {
     const notify = async (t: NotificationToastData) => {
       if (cancelled) return;
       setToast(t);
-      try {
-        navigator.vibrate?.([15, 45, 15]);
-      } catch {}
-      if (alertPrefs.soundEnabled()) playPop();
+      if (typeof window !== 'undefined' && 'vibrate' in navigator) {
+        try {
+          navigator.vibrate([15, 45, 15]);
+        } catch {}
+      }
 
       // Background tab: native alert, unless this device already gets web push (no duplicates).
       if (
@@ -134,7 +134,7 @@ export function RealtimeNotifier() {
         } catch {}
         if (!hasPush) {
           try {
-            const n = new Notification(t.name, { body: t.preview, icon: t.avatarUrl || '/icon-192.png', tag: t.key });
+            const n = new Notification(t.name, { body: t.preview, icon: t.avatarUrl || '/icon-192.png', tag: t.key, silent: true });
             n.onclick = () => {
               window.focus();
               router.push(t.href);

@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { BellRing, Volume2 } from 'lucide-react';
+import { BellRing } from 'lucide-react';
 import { alertPrefs } from '@/lib/notificationStore';
 
 function Toggle({ on }: { on: boolean }) {
@@ -16,11 +16,10 @@ function Toggle({ on }: { on: boolean }) {
 }
 
 /**
- * Settings rows for this device's in-app alerts: the notification sound and browser alerts
- * (shown while the tab is in the background). Web push has its own row (PushDeviceRow).
+ * Settings row for this device's browser alerts (shown while the tab is in the background).
+ * In-app alerts are silent: toast + haptic only. Web push has its own row (PushDeviceRow).
  */
 export function AlertPrefsRows() {
-  const [sound, setSound] = useState(() => (typeof window === 'undefined' ? true : alertPrefs.soundEnabled()));
   const [browser, setBrowser] = useState(() =>
     typeof window === 'undefined' || typeof Notification === 'undefined'
       ? false
@@ -71,27 +70,6 @@ export function AlertPrefsRows() {
       </button>
       {note && <p className="mx-3 -mt-1 mb-1 text-[11px] font-medium text-rose-600">{note}</p>}
 
-      <button
-        type="button"
-        role="switch"
-        aria-checked={sound}
-        onClick={() => {
-          alertPrefs.setSoundEnabled(!sound);
-          setSound(!sound);
-        }}
-        className={rowCls}
-      >
-        <span className="flex items-center gap-3 min-w-0">
-          <span className="w-8 h-8 rounded-xl bg-[#F3EFFC] text-[#6555B8] flex items-center justify-center shrink-0">
-            <Volume2 className="w-4 h-4" />
-          </span>
-          <span className="min-w-0">
-            <span className="block text-xs font-bold text-[#1C1924]">Notification Sound</span>
-            <span className="block text-[11px] text-[#6C637B]">A soft pop for new messages and Sparks</span>
-          </span>
-        </span>
-        <Toggle on={sound} />
-      </button>
     </>
   );
 }

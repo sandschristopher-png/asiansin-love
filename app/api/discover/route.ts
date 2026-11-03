@@ -143,8 +143,13 @@ export async function GET() {
       male: 'gender.ilike.male,gender.ilike.man,gender.ilike.m,gender.ilike.guy',
     };
 
+    // Exclusions happen in SQL (self, blocked, already sparked / favourited), so the 200-row window
+    // is spent on real candidates and nothing unfiltered ever reaches the client. The JS filter
+    // below repeats them as a safety net.
+    const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+    const excludedIds = Array.from(new Set([user.id, ...blockedUserIds, ...alreadyLikedIds])).filter((id) => UUID_RE.test(id));
     const fetchFeed = (cols: string) => {
-      let q = serviceClient.from('profiles').select(cols).neq('id', user.id);
+      let q = serviceClient.from('profiles').select(cols).not('id', 'in', `(${excludedIds.join(',')})`);
       if (targetGender) q = q.or(GENDER_SPELLINGS[targetGender]);
       return q.order('created_at', { ascending: false }).limit(200);
     };

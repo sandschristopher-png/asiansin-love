@@ -36,9 +36,9 @@ export function useNotificationCounts(): NotificationCounts {
 }
 
 // ---- Member alert preferences (this device) -------------------------------------------------
-// Sound + browser alerts are per-device choices, so they live in localStorage.
+// Browser alerts are a per-device choice, so it lives in localStorage. (No sounds: alerts are
+// visual + haptic only.)
 
-const SOUND_KEY = 'ail_alert_sound';
 const BROWSER_KEY = 'ail_alert_browser';
 
 function readFlag(key: string, fallback: boolean): boolean {
@@ -59,8 +59,6 @@ function writeFlag(key: string, on: boolean) {
 }
 
 export const alertPrefs = {
-  soundEnabled: () => readFlag(SOUND_KEY, true),
-  setSoundEnabled: (on: boolean) => writeFlag(SOUND_KEY, on),
   browserAlertsEnabled: () => readFlag(BROWSER_KEY, true),
   setBrowserAlertsEnabled: (on: boolean) => writeFlag(BROWSER_KEY, on),
 };
