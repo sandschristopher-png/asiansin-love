@@ -2,7 +2,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { ArrowLeft, Camera, ShieldCheck, Loader2, AlertCircle, X, RotateCcw, Sparkles } from 'lucide-react';
+import { ArrowLeft, Camera, ShieldCheck, Loader2, AlertCircle, X, RotateCcw, ScanFace } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { getPoseById, type VerificationPose } from '@/lib/poses';
 
@@ -358,7 +358,7 @@ export default function VerifyPage() {
               onClick={handleSubmit}
               className="py-3.5 rounded-2xl bg-[#6555B8] hover:bg-[#52449E] text-white text-xs font-semibold flex items-center justify-center gap-1.5 shadow-md shadow-[#6555B8]/30 active:scale-95 transition disabled:opacity-60"
             >
-              {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
+              {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <ScanFace className="w-4 h-4" />}
               {submitting ? 'Checking...' : 'Verify with AI'}
             </button>
           </div>

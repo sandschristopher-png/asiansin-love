@@ -2,7 +2,6 @@
 
 import { useState } from 'react'
 import { createClient } from '@/lib/supabase/client'
-import { SparkingHeart } from '@/components/icons/SparkingHeart'
 import { Heart, Check, Loader2 } from 'lucide-react'
 
 interface ProfileActionsProps {
@@ -109,11 +108,11 @@ export function ProfileActions({
         ) : sparked ? (
           <>
             <Check className="h-4 w-4" />
-            <span>Sparked (✨)</span>
+            <span>Sparked</span>
           </>
         ) : (
           <>
-            <SparkingHeart className="h-4 w-4" />
+            <Heart strokeWidth={2} className="h-4 w-4" />
             <span>Send Spark</span>
           </>
         )}

@@ -3,7 +3,7 @@ import { Logo } from '@/components/Logo'
 import { 
 
   ShieldCheck, 
-  Sparkles, 
+  Heart, 
   Plane, 
   ArrowRight, 
   EyeOff, 
@@ -28,7 +28,7 @@ const features = [
     desc: "Visiting Southeast Asia? Pin your arrival dates and target city directly so locals know when you will be physically in town. Zero endless pen-pal syndrome.",
   },
   {
-    icon: Sparkles,
+    icon: Heart,
     title: "Spark Chemistry",
     desc: "Replace low-effort winks and mindless right-swiping. Direct mutual chat opens the moment two people Spark each other.",
   },

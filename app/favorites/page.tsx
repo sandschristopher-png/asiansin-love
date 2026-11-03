@@ -3,10 +3,9 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Lock, Crown } from 'lucide-react';
+import { Lock, Crown, Heart } from 'lucide-react';
 import { createBrowserClient } from '@supabase/ssr';
 import { CardPhoto } from '@/components/CardPhoto';
-import { SparkingHeart } from '@/components/icons/SparkingHeart';
 
 type SparkTab = 'sparked' | 'sparked_you' | 'mutual' | 'visited';
 
@@ -428,7 +427,7 @@ export default function SparksPage() {
                   <CardPhoto src={photo} alt={publicName} className={`object-cover transition-transform duration-300 group-hover:scale-105 ${shouldBlur ? 'blur-md scale-110' : ''}`} />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent" />
                   <div className="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full bg-black/55 backdrop-blur-md text-white text-[11px] font-semibold">{rep}% Rep</div>
-                  <div className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-[#6555B8]/90 backdrop-blur-md text-white flex items-center justify-center shadow-xs"><SparkingHeart className="w-3.5 h-3.5 fill-white" /></div>
+                  <div className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-[#6555B8]/90 backdrop-blur-md text-white flex items-center justify-center shadow-xs"><Heart strokeWidth={2} className="w-3.5 h-3.5 fill-white" /></div>
                   {shouldBlur && (
                     <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/30 p-3 text-center">
                       <div className="w-9 h-9 rounded-full bg-[#6555B8] text-white flex items-center justify-center mb-1.5 shadow-md"><Lock className="w-4 h-4" /></div>

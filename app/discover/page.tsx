@@ -768,7 +768,7 @@ function DiscoverContent() {
                     sparked={isLiked}
                     name={displayName}
                     onSpark={() => triggerAction(profile.id, 'like', displayName, profile.avatarUrl)}
-                    className="absolute top-2.5 right-2.5 z-20"
+                    className="absolute top-3 right-3 z-20"
                   />
                   <div className="absolute bottom-0 inset-x-0 pt-10 pb-3 px-3 z-10 pointer-events-none bg-gradient-to-t from-black/65 via-black/25 to-transparent">
                     <Link href={'/profile/' + profile.id} className="block min-w-0 pointer-events-auto">

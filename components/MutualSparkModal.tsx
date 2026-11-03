@@ -3,12 +3,10 @@
 import React from 'react';
 import Link from 'next/link';
 
-const RING = 10;
-
 /**
  * "It's a Mutual Spark!" celebration: dimmed backdrop, modal pops in (0.92 -> 1), the two
- * avatars slide together into an overlapping pair and a single lilac/gold particle ring bursts
- * behind them. The primary action opens the chat, which only exists after a mutual Spark.
+ * avatars slide together into an overlapping pair (no particles or sparkles). The primary
+ * action opens the chat, which only exists after a mutual Spark.
  */
 export function MutualSparkModal({
   name,
@@ -42,20 +40,6 @@ export function MutualSparkModal({
         }`}
       >
         <div className="relative my-3 h-24 w-40 flex items-center justify-center">
-          <span aria-hidden className="absolute inset-0">
-            {Array.from({ length: RING }).map((_, i) => (
-              <span
-                key={i}
-                className="ail-ring-particle"
-                style={
-                  {
-                    '--angle': `${(360 / RING) * i}deg`,
-                    backgroundColor: i % 2 === 0 ? '#9D8CFC' : '#FCD34D',
-                  } as React.CSSProperties
-                }
-              />
-            ))}
-          </span>
           {/* Two 80px avatars overlapping by 12px */}
           <img
             src={myAvatar || '/placeholder-avatar.svg'}

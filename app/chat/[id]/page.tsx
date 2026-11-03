@@ -12,7 +12,7 @@ import {
   Check,
   CheckCheck,
   Clock,
-  Sparkles,
+  Lightbulb,
   X,
   ArrowDown,
   Mic,
@@ -878,7 +878,7 @@ export default function ChatConversationPage() {
               <div className="mb-3 p-3.5 rounded-2xl bg-white border border-[#E5DFEE] shadow-[0_2px_10px_rgba(101,85,184,0.05)] space-y-2">
                 <div className="flex items-center justify-between">
                   <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-[#6555B8]">
-                    <Sparkles className="w-3.5 h-3.5 text-[#6555B8]" />
+                    <Lightbulb className="w-3.5 h-3.5 text-[#6555B8]" />
                     <span>Conversation Starter</span>
                   </span>
                   <button
@@ -946,7 +946,7 @@ export default function ChatConversationPage() {
                 </p>
                 <p className="text-[11px] text-[#7A7289] max-w-[240px] mx-auto leading-relaxed">
                   {sharedInterests.length > 0
-                    ? `You both love ${sharedInterests.slice(0, 2).join(' & ')}!`
+                    ? `You both love ${sharedInterests.slice(0, 2).join(' & ')}! Break the ice with a suggestion below.`
                     : 'Send a friendly note to break the ice.'}
                 </p>
                 {(starterChips.length > 0 || icebreakerPrompt) && (
@@ -970,7 +970,7 @@ export default function ChatConversationPage() {
                         }}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#F3EFFC] border border-[#E2DBF0] text-[#6555B8] text-[11.5px] font-semibold hover:bg-[#EBE5FA] active:scale-95 transition"
                       >
-                        <Sparkles className="w-3 h-3" />
+                        <Lightbulb className="w-3 h-3" />
                         {chip.label}
                       </button>
                     ))}

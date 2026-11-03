@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { Sparkles, MessageCircle, X } from 'lucide-react';
+import { Heart, MessageCircle, X } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { playMatchChime } from '@/lib/sound';
 
@@ -99,7 +99,7 @@ export function RealtimeMatchToast() {
           />
           <div>
             <div className="flex items-center gap-1.5 text-xs font-bold text-[#6555B8]">
-              <Sparkles className="w-3.5 h-3.5 text-[#E05375]" />
+              <Heart className="w-3.5 h-3.5 text-[#E05375] fill-[#E05375]" />
               It's a Match!
             </div>
             <p className="text-xs text-[#6C637B] truncate max-w-[140px]">

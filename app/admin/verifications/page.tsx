@@ -10,7 +10,7 @@ import {
   AlertTriangle,
   ImageIcon,
   Flag,
-  Sparkles,
+  ScanFace,
 } from 'lucide-react';
 import { AdminTabs } from '@/components/admin/AdminTabs';
 import { getPoseById } from '@/lib/poses';
@@ -342,14 +342,14 @@ export default function AdminVerificationsPage() {
                               </div>
                               {review.summary && (
                                 <p className="flex items-start gap-1.5 text-[11px] text-[#3D3650]">
-                                  <Sparkles className="w-3.5 h-3.5 text-[#6555B8] shrink-0 mt-0.5" />
+                                  <ScanFace className="w-3.5 h-3.5 text-[#6555B8] shrink-0 mt-0.5" />
                                   <span>{review.summary}</span>
                                 </p>
                               )}
                             </div>
                           ) : sub.ai ? (
                             <div className="flex items-start gap-2 text-[11px] bg-[#F9F8FC] border border-[#ECE8F4] rounded-xl p-2.5 text-[#3D3650]">
-                              <Sparkles className="w-3.5 h-3.5 text-[#6555B8] shrink-0 mt-0.5" />
+                              <ScanFace className="w-3.5 h-3.5 text-[#6555B8] shrink-0 mt-0.5" />
                               <span>
                                 AI pre-check: {sub.ai.isSafe ? 'safe' : 'NOT safe'},{' '}
                                 {sub.ai.poseMatchesPrompt ? 'pose matches' : 'pose does NOT match'}.{' '}

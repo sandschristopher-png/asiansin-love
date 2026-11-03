@@ -57,15 +57,17 @@ export function RhythmPill({
   );
 }
 
-/** "N in common" card (full) or a one-line plain-text chip (compact) for Discover cards. No emoji: the compact chip lives in a ~170px card column and needs every pixel. */
+/**
+ * "N in common" card (full, with the shared items) or a count-only chip (compact) for Discover
+ * cards: "1 thing in common" / "3 things in common". No item names and no emoji, so it never
+ * truncates in the ~170px card column.
+ */
 export function InCommonCard({ items, compact = false }: { items: string[]; compact?: boolean }) {
   if (items.length === 0) return null;
   if (compact) {
     return (
-      <span className="inline-flex max-w-full items-center px-2 py-0.5 rounded-full bg-[#F3EFFC] border border-[#6555B8]/30 text-[11px] leading-tight tracking-tight text-[#6555B8]">
-        <span className="truncate">
-          <span className="font-bold">{items.length} in common:</span> {items.slice(0, 2).join(', ')}
-        </span>
+      <span className="inline-flex items-center whitespace-nowrap text-[11px] px-2.5 py-0.5 font-medium rounded-full bg-white/90 backdrop-blur-sm text-[#2D264B] shadow-sm">
+        {items.length === 1 ? '1 thing in common' : `${items.length} things in common`}
       </span>
     );
   }

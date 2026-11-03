@@ -4,7 +4,6 @@ import { useEffect, useMemo, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Bell, MessageSquare, Eye, Heart, ShieldCheck, ShieldAlert, BadgeCheck } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
-import { SparkingHeart } from '@/components/icons/SparkingHeart';
 
 type Notification = {
   id: string;
@@ -17,7 +16,7 @@ type Notification = {
 
 const TYPE_META: Record<string, { icon: any; line: (n: Notification) => string; route: (n: Notification) => string }> = {
   spark_received: {
-    icon: SparkingHeart,
+    icon: Heart,
     line: (n) => `${n.actor?.username ?? 'Someone'} sparked your profile`,
     route: () => '/favorites?tab=you-sparked'
   },

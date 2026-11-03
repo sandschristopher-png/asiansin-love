@@ -10,7 +10,6 @@ import {
   User 
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
-import { SparkingHeart } from '@/components/icons/SparkingHeart';
 
 const PUBLIC_ROUTES = [
   '/',
@@ -136,7 +135,7 @@ export function BottomNav() {
 
   const navItems = [
     { href: '/discover', label: 'Discover', icon: Compass },
-    { href: '/favorites', label: 'Sparks', icon: SparkingHeart },
+    { href: '/favorites', label: 'Sparks', icon: Heart },
     { href: '/messages', label: 'Messages', icon: MessageCircle, badge: unreadCount },
     { href: '/profile', label: 'Profile', icon: User },
   ];

@@ -9,7 +9,7 @@ import {
   CheckCircle2,
   Camera,
   Loader2,
-  Sparkles,
+  Heart,
   ShieldCheck,
   Trash2,
   Plus,
@@ -537,7 +537,7 @@ export default function OnboardingPage() {
         <div className="space-y-3 border-b border-[#F0EDF5] pb-5">
           <div className="flex items-center justify-between">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F3EFFC] text-[#6555b8] text-xs font-medium tracking-wide">
-              <Sparkles className="w-3.5 h-3.5 text-[#6555b8]" />
+              <Heart className="w-3.5 h-3.5 text-[#6555b8]" />
               <span>Step {step} of 5</span>
             </span>
             <div className="flex items-center gap-1.5">

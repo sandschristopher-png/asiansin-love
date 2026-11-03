@@ -9,7 +9,8 @@ import {
   MapPin,
   ShieldCheck,
   MessageCircle,
-  Sparkles,
+  Tag,
+  Heart,
   ShieldAlert,
   Ban,
   Languages,
@@ -24,7 +25,6 @@ import { rhythmOption, sharedTraits, toList } from '@/lib/rhythm';
 import { scoreOf } from '@/lib/reputation';
 import { InCommonCard, RhythmPill } from '@/components/profile/RhythmBadges';
 import RepScoreCard from '@/components/RepScoreCard';
-import { SparkingHeart } from '@/components/icons/SparkingHeart';
 
 interface HighlightRow {
   tag_id: string;
@@ -144,7 +144,8 @@ export default function PublicProfilePage() {
               hlData.map((h: any) => ({
                 tag_id: h.tag_id,
                 label: h.interest_tags?.label || h.interest_tags?.name || 'Highlight',
-                icon: h.interest_tags?.icon || '✨',
+                // Never fall back to (or show) a sparkle emoji.
+                icon: h.interest_tags?.icon && !h.interest_tags.icon.includes('\u2728') ? h.interest_tags.icon : '💬',
                 story: h.highlight_story || '',
               }))
             );
@@ -330,7 +331,8 @@ export default function PublicProfilePage() {
                 <Loader2 className="h-4 w-4 animate-spin text-[#6555B8]" />
               ) : (
                 <>
-                  <SparkingHeart
+                  <Heart
+                    strokeWidth={2}
                     className={`h-4 w-4 ${isSparked ? 'text-[#6555B8] fill-[#6555B8]' : 'text-[#8A839E]'}`}
                   />
                   <span>{isSparked ? 'Sparked' : 'Spark'}</span>
@@ -592,32 +594,20 @@ export default function PublicProfilePage() {
           </section>
         )}
 
-        {/* 6. INTERESTS & THINGS IN COMMON */}
+        {/* 6. INTERESTS & HOBBIES */}
         {targetInterests.length > 0 && (
           <section className="p-4 rounded-3xl bg-white border border-[#DDD7E5] shadow-2xs space-y-3">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-7 h-7 rounded-full bg-[#F3EFFC] text-[#6555B8] flex items-center justify-center shrink-0">
-                  <Sparkles className="w-3.5 h-3.5" />
-                </div>
-                <div>
-                  <h2
-                    className="text-xs font-bold uppercase tracking-wider text-[#1C1924]"
-                    style={{ fontFamily: 'var(--font-brand)' }}
-                  >
-                    Interests &amp; Things in Common
-                  </h2>
-                  <p className="text-[11px] text-[#6C637B]">
-                    {sharedInterests.length > 0
-                      ? `You share ${sharedInterests.length} interest${sharedInterests.length > 1 ? 's' : ''} & values`
-                      : `${displayName}'s hobbies & passions`}
-                  </p>
-                </div>
-              </div>
-
+            <div className="flex items-center justify-between gap-2">
+              <h2
+                className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#6555B8]"
+                style={{ fontFamily: 'var(--font-brand)' }}
+              >
+                <Tag className="w-3.5 h-3.5" />
+                Interests &amp; Hobbies
+              </h2>
               {sharedInterests.length > 0 && (
-                <span className="px-2.5 py-1 rounded-full bg-[#6555B8] text-white text-[10px] font-bold shrink-0">
-                  {sharedInterests.length} Shared
+                <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#6555B8]/10 text-[#6555B8] font-medium shrink-0">
+                  {sharedInterests.length} in common
                 </span>
               )}
             </div>
@@ -627,17 +617,17 @@ export default function PublicProfilePage() {
                 const isShared = sharedInterests.some(
                   (s) => s.toLowerCase() === String(tag).toLowerCase()
                 );
-                const icon = HOBBY_ICONS[tag] || '✨';
+                const icon = HOBBY_ICONS[tag];
                 return (
                   <span
                     key={tag}
-                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs transition ${
+                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium transition ${
                       isShared
-                        ? 'bg-[#F3EFFC] border border-[#6555B8]/40 font-bold text-[#6555B8]'
-                        : 'bg-[#F8F7FA] border border-[#DDD7E5] font-medium text-[#524B5E]'
+                        ? 'border-[#6555B8] text-[#6555B8] bg-[#6555B8]/5'
+                        : 'border-transparent bg-[#F6F5F9] text-[#2D264B]'
                     }`}
                   >
-                    <span>{icon}</span>
+                    {icon && !icon.includes('\u2728') && <span aria-hidden>{icon}</span>}
                     <span>{tag}</span>
                   </span>
                 );

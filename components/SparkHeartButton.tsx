@@ -3,14 +3,16 @@
 import React, { useState } from 'react';
 import { Heart } from 'lucide-react';
 
-const PARTICLES = 8;
-
 /**
  * Discover-card Spark button (Pairs / with.is model): a symmetric heart that only ever sends a
  * Spark. It never turns into a message button; chat opens only after a mutual Spark.
- *   unsparked: glass circle, purple outline heart
- *   tap:       spring bounce + 8-particle lilac/gold burst + 12 ms haptic, heart fills purple
+ *   unsparked: white glass circle, purple outline heart
+ *   tap:       340 ms spring pop + 12 ms haptic, heart fills purple (no particles / sparkles)
  *   sparked:   filled heart, disabled (no un-spark from the card)
+ *
+ * Position it with `className` (e.g. "absolute top-3 right-3 z-20"). The component sets no
+ * `position` of its own: a built-in `relative` would override a caller's `absolute` (Tailwind
+ * emits `relative` later) and push the button out of the card.
  */
 export function SparkHeartButton({
   sparked,
@@ -23,8 +25,8 @@ export function SparkHeartButton({
   name: string;
   className?: string;
 }) {
-  // Bumping the key restarts the CSS animations on every tap.
-  const [burstKey, setBurstKey] = useState(0);
+  // Bumping the key remounts the icon so the spring replays on every tap.
+  const [popKey, setPopKey] = useState(0);
 
   return (
     <button
@@ -36,7 +38,7 @@ export function SparkHeartButton({
         e.stopPropagation();
         e.preventDefault();
         if (sparked) return;
-        setBurstKey((k) => k + 1);
+        setPopKey((k) => k + 1);
         try {
           navigator.vibrate?.(12);
         } catch {
@@ -44,29 +46,12 @@ export function SparkHeartButton({
         }
         onSpark();
       }}
-      className={`relative w-9 h-9 rounded-full flex items-center justify-center bg-white/85 backdrop-blur-md border border-white/70 shadow-[0_2px_8px_rgba(28,25,36,0.18)] cursor-pointer disabled:cursor-default transition-transform active:scale-95 ${className}`}
+      className={`w-10 h-10 rounded-full bg-white/80 backdrop-blur-md shadow-md flex items-center justify-center transition-transform active:scale-95 cursor-pointer disabled:cursor-default ${className}`}
     >
-      {burstKey > 0 && (
-        <span key={`burst-${burstKey}`} aria-hidden className="absolute inset-0 pointer-events-none">
-          {Array.from({ length: PARTICLES }).map((_, i) => (
-            <span
-              key={i}
-              className="ail-spark-particle"
-              style={
-                {
-                  '--angle': `${(360 / PARTICLES) * i}deg`,
-                  backgroundColor: i % 2 === 0 ? '#9D8CFC' : '#FCD34D',
-                } as React.CSSProperties
-              }
-            />
-          ))}
-        </span>
-      )}
-      {/* Lucide's heart is drawn slightly low in its 24px box; a 0.5px lift centers it optically. */}
       <Heart
-        key={`heart-${burstKey}`}
+        key={popKey}
         strokeWidth={2}
-        className={`w-[18px] h-[18px] -translate-y-[0.5px] ${burstKey > 0 ? 'ail-heart-spring' : ''}`}
+        className={`w-5 h-5 ${popKey > 0 ? 'ail-heart-spring' : ''}`}
         stroke="#6555B8"
         fill={sparked ? '#6555B8' : 'none'}
       />

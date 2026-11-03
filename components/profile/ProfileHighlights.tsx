@@ -42,7 +42,9 @@ export function ProfileHighlights({
       <div className="space-y-2.5 pt-1">
         {highlights.map((h) => {
           const label = h.interest_tags?.label || "Interest";
-          const icon = h.interest_tags?.icon || "\u2728";
+          // No sparkle emoji anywhere (also when the tag row itself stores one).
+          const rawIcon = h.interest_tags?.icon || "";
+          const icon = rawIcon && !rawIcon.includes("\u2728") ? rawIcon : "\u{1F4AC}";
           return (
             <div key={h.tag_id} className="p-3 rounded-2xl bg-[#FAF8FD] border border-[#DDD7E5]/70">
               <div className="flex items-center gap-2">
