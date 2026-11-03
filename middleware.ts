@@ -47,27 +47,11 @@ export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
   const hasVisitedBefore = request.cookies.get('ail_returning')?.value === '1';
 
-  // --- ADMIN ROUTE GUARD ---
+  // --- ADMIN ROUTES ---
+  // No redirect here (a redirect to /login or away would reveal that /admin exists).
+  // app/admin/layout.tsx checks the staff role server-side and renders a plain 404 otherwise;
+  // every /api/admin/* route re-checks with verifyAdminCaller().
   if (pathname.startsWith('/admin')) {
-    if (!user) {
-      const loginUrl = new URL('/login', request.url);
-      loginUrl.searchParams.set('redirect', pathname);
-      return NextResponse.redirect(loginUrl);
-    }
-
-    const adminClient = createClient(supabaseUrl, supabaseServiceKey, {
-      auth: { persistSession: false },
-    });
-
-    const { data: profile } = await adminClient
-      .from('profiles')
-      .select('*')
-      .eq('id', user.id)
-      .single();
-
-    if (!(profile?.role === 'admin' || profile?.is_admin === true)) {
-      return NextResponse.redirect(new URL('/discover', request.url));
-    }
     return response;
   }
 

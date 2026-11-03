@@ -14,7 +14,6 @@ import {
   Loader2,
   X
 } from 'lucide-react';
-import { AdminTabs } from '@/components/admin/AdminTabs';
 import { REPUTATION_RULES } from '@/lib/reputation';
 import { ReputationBadge } from '@/components/ReputationBadge';
 
@@ -154,7 +153,6 @@ export default function AdminModerationPage() {
             </button>
           </div>
 
-            <AdminTabs />
 
           {/* Search Bar */}
           <div className="relative">

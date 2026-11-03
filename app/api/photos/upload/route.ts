@@ -179,12 +179,18 @@ export async function POST(req: Request) {
     if (isPrimaryAvatar) {
       updatePayload.avatar_url = photoUrl;
       updatePayload.avatar_status = 'pending_review';
+      updatePayload.photo_review_status = 'pending';
     }
 
-    const { error: profileUpdateError } = await serviceClient
+    let { error: profileUpdateError } = await serviceClient
       .from('profiles')
       .update(updatePayload)
       .eq('id', userId);
+    // photo_review_status arrives with 20261112_admin_console.sql; retry without it until then.
+    if (profileUpdateError && /photo_review_status/.test(profileUpdateError.message)) {
+      delete updatePayload.photo_review_status;
+      ({ error: profileUpdateError } = await serviceClient.from('profiles').update(updatePayload).eq('id', userId));
+    }
 
     if (profileUpdateError) {
       console.error('Profile update failed:', profileUpdateError);
@@ -210,7 +216,7 @@ export async function POST(req: Request) {
       }
     }
 
-    // 8. Main photos wait in the admin review queue (/admin/verifications) while avatar_status is pending_review.
+    // 8. Main photos wait in the admin review queue (/admin/photos) while avatar_status is pending_review.
 
     return NextResponse.json({
       success: true,

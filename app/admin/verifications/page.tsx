@@ -13,7 +13,6 @@ import {
   ScanFace,
   Zap,
 } from 'lucide-react';
-import { AdminTabs } from '@/components/admin/AdminTabs';
 import { getPoseById } from '@/lib/poses';
 import { REPUTATION_RULES } from '@/lib/reputation';
 
@@ -232,7 +231,6 @@ export default function AdminVerificationsPage() {
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
             </button>
           </div>
-          <AdminTabs />
         </header>
 
         {feedback && (

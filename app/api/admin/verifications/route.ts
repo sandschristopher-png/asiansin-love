@@ -170,7 +170,6 @@ export async function POST(req: NextRequest) {
       .update({
         verification_status: target,
         is_verified: approve,
-        verified_at: approve ? new Date().toISOString() : null,
       })
       .eq('id', userId)
       .select('id');

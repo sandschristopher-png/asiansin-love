@@ -5,7 +5,8 @@ import { notifyUser } from '@/components/InAppToast';
 import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { User, Settings, LogOut, ArrowLeft, Share2, Check, Menu } from 'lucide-react';
+import { User, Settings, LogOut, ArrowLeft, Share2, Check, Menu, ShieldAlert } from 'lucide-react';
+import { adminRoleOf, isStaff } from '@/lib/adminRoles';
 import { supabase } from '@/lib/supabase/client';
 import { hardSignOut } from '@/lib/hardSignOut';
 import { AilBadge } from './AilBadge';
@@ -73,7 +74,7 @@ export function Navbar() {
         checkUnread(user.id);
         const { data } = await supabase
           .from('profiles')
-          .select('username, display_name, avatar_url, is_plus')
+          .select('*')
           .eq('id', user.id)
           .single();
         if (data) setProfile(data);
@@ -114,7 +115,7 @@ export function Navbar() {
         checkUnread(currentUser.id);
         const { data } = await supabase
           .from('profiles')
-          .select('username, display_name, avatar_url, is_plus')
+          .select('*')
           .eq('id', currentUser.id)
           .single();
         if (data) setProfile(data);
@@ -286,6 +287,17 @@ export function Navbar() {
                         <Settings className="w-4 h-4 text-[#6555B8]" />
                         <span>Settings</span>
                       </Link>
+                      {isStaff(adminRoleOf(profile)) && (
+                        // Staff only: never rendered for members.
+                        <Link
+                          href="/admin"
+                          onClick={() => setMenuOpen(false)}
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                        >
+                          <ShieldAlert className="w-4 h-4 text-[#6555B8]" />
+                          <span>Admin Console</span>
+                        </Link>
+                      )}
                       <button
                         type="button"
                         onClick={handleInviteShare}
