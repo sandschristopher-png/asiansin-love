@@ -209,7 +209,7 @@ create trigger trg_guard_profile_member_flags
 create index if not exists idx_messages_conversation_created on public.messages (conversation_id, created_at desc);
 create index if not exists idx_messages_pair_created on public.messages (sender_id, receiver_id, created_at desc);
 create index if not exists idx_messages_receiver_created on public.messages (receiver_id, created_at desc);
-create index if not exists idx_favorites_user_target on public.favorites (user_id, favorite_profile_id);
+create index if not exists idx_favorites_user_target on public.favorites (user_id, favorite_id);
 create index if not exists idx_sparks_sender on public.sparks (sender_id, created_at desc);
 create index if not exists idx_sparks_receiver on public.sparks (receiver_id, created_at desc);
 create index if not exists idx_profiles_last_active on public.profiles (last_active_at desc);

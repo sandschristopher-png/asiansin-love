@@ -175,7 +175,8 @@ export default function PublicProfilePage() {
       const res = await fetch('/api/spark', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ targetUserId }),
+        // This button is a real on/off toggle (Discover cards only ever add a Spark).
+        body: JSON.stringify({ targetUserId, action: 'toggle' }),
       });
 
       const data = await res.json().catch(() => ({}));

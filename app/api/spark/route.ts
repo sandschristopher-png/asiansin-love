@@ -2,6 +2,12 @@ import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 import { sendPushToUser } from '@/lib/pushSender'
 
+// POST { targetUserId, action?: 'spark' | 'toggle' }
+//   Writes public.sparks (sender_id = me, receiver_id = target); /favorites "You Sparked" reads
+//   the same rows. 'spark' (default, Discover) is idempotent: an existing spark is kept, never
+//   removed, so a stale card can't silently undo it. 'toggle' (profile page button) un-sparks.
+//   -> { success, sparked, is_mutual, mutual }
+
 export async function POST(req: Request) {
   try {
     const supabase = await createClient()
@@ -11,8 +17,10 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    const { targetUserId } = await req.json()
-    if (!targetUserId || targetUserId === user.id) {
+    const body = await req.json().catch(() => ({}))
+    const targetUserId: unknown = body?.targetUserId
+    const action: 'spark' | 'toggle' = body?.action === 'toggle' ? 'toggle' : 'spark'
+    if (typeof targetUserId !== 'string' || !targetUserId || targetUserId === user.id) {
       return NextResponse.json({ error: 'Invalid target user' }, { status: 400 })
     }
 
@@ -25,9 +33,22 @@ export async function POST(req: Request) {
       .maybeSingle()
 
     if (existing) {
-      // Toggle off / remove spark
-      await supabase.from('sparks').delete().eq('id', existing.id)
-      return NextResponse.json({ sparked: false })
+      if (action === 'toggle') {
+        const { error: deleteError } = await supabase.from('sparks').delete().eq('id', existing.id)
+        if (deleteError) {
+          console.error('[api/spark] un-spark failed:', deleteError.message)
+          return NextResponse.json({ error: 'Could not remove your Spark.' }, { status: 500 })
+        }
+        return NextResponse.json({ success: true, sparked: false, is_mutual: false, mutual: false })
+      }
+      // Already sparked: keep it and report the current mutual state.
+      const { data: mutualExisting } = await supabase
+        .from('sparks')
+        .select('id')
+        .eq('sender_id', targetUserId)
+        .eq('receiver_id', user.id)
+        .maybeSingle()
+      return NextResponse.json({ success: true, sparked: true, is_mutual: !!mutualExisting, mutual: !!mutualExisting })
     }
 
     // Anti-spam barrier: cap outbound sparks per rolling 24h window
@@ -50,7 +71,8 @@ export async function POST(req: Request) {
     })
 
     if (insertError) {
-      return NextResponse.json({ error: insertError.message }, { status: 500 })
+      console.error('[api/spark] insert into sparks failed:', insertError.code, insertError.message, insertError.details)
+      return NextResponse.json({ error: 'Could not send your Spark. Please try again.' }, { status: 500 })
     }
 
     // Check if mutual spark exists
@@ -99,7 +121,7 @@ export async function POST(req: Request) {
       }).catch((e) => console.error('[Push] spark regular error:', e))
     }
 
-    return NextResponse.json({ sparked: true, mutual: !!mutual })
+    return NextResponse.json({ success: true, sparked: true, is_mutual: !!mutual, mutual: !!mutual })
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 })
   }

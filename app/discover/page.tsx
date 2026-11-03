@@ -371,6 +371,16 @@ function DiscoverContent() {
             });
           }
           if (Array.isArray(payload.profiles)) {
+            // The server drops everyone already sparked, so a profile in this feed is NOT sparked:
+            // clear any stale local "like" (localStorage) that would show a filled, dead heart.
+            const feedIds = new Set<string>(payload.profiles.map((p: ProfileItem) => p.id));
+            setCardActions((prev) => {
+              const next = { ...prev };
+              for (const id of Object.keys(next)) {
+                if (next[id] === 'like' && feedIds.has(id)) delete next[id];
+              }
+              return next;
+            });
             setProfiles(payload.profiles);
             if (payload.profiles.length > 0) {
               try {
@@ -396,6 +406,15 @@ function DiscoverContent() {
       if (res.ok) {
         const payload = await res.json();
         if (Array.isArray(payload.profiles)) {
+          // Same reconciliation as the first load: feed profiles are never sparked server-side.
+          const feedIds = new Set<string>(payload.profiles.map((p: ProfileItem) => p.id));
+          setCardActions((prev) => {
+            const next = { ...prev };
+            for (const id of Object.keys(next)) {
+              if (next[id] === 'like' && feedIds.has(id)) delete next[id];
+            }
+            return next;
+          });
           setProfiles(payload.profiles);
           if (payload.profiles.length > 0) {
             try { localStorage.setItem('ail_discover_cache', JSON.stringify({ profiles: payload.profiles })); } catch {}

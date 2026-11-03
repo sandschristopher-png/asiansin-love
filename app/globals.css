@@ -188,16 +188,29 @@ nextjs-portal,
   animation: ailShimmer 1.4s linear infinite;
 }
 
-/* Spark tap: spring pop on the heart (components/SparkHeartButton.tsx). No particles / sparkles. */
-@keyframes ailHeartSpring {
-  0% { transform: scale(1); }
-  20% { transform: scale(0.82); }
-  55% { transform: scale(1.3); }
-  80% { transform: scale(0.96); }
-  100% { transform: scale(1); }
+/* Spark tap: spring pop on the Discover heart (components/SparkHeartButton.tsx). No particles /
+   sparkles. Applied to a wrapper span (HTML transforms animate reliably in iOS Safari, SVG roots
+   less so) and deliberately kept under reduced-motion: it is a small, tap-triggered response. */
+@keyframes heart-pop {
+  0% {
+    transform: scale(1);
+  }
+  25% {
+    transform: scale(0.78);
+  }
+  60% {
+    transform: scale(1.32);
+  }
+  82% {
+    transform: scale(0.96);
+  }
+  100% {
+    transform: scale(1);
+  }
 }
-.ail-heart-spring {
-  animation: ailHeartSpring 340ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+.animate-heart-pop {
+  animation: heart-pop 360ms cubic-bezier(0.175, 0.885, 0.32, 1.275) both;
   will-change: transform;
 }
 /* Bottom sheets: slide up with the iOS deceleration curve */
@@ -236,7 +249,7 @@ nextjs-portal,
 .ail-avatar-left { animation: ailAvatarLeft 480ms cubic-bezier(0.16, 1, 0.3, 1) both; }
 .ail-avatar-right { animation: ailAvatarRight 480ms cubic-bezier(0.16, 1, 0.3, 1) both; }
 @media (prefers-reduced-motion: reduce) {
-  .ail-shimmer, .ail-heart-spring, .ail-sheet-up, .ail-modal-pop,
+  .ail-shimmer, .ail-sheet-up, .ail-modal-pop,
   .ail-avatar-left, .ail-avatar-right, .ail-wave-bar {
     animation: none !important;
   }

@@ -200,26 +200,21 @@ export default function SparksPage() {
 
         // Server-side gated fetch — no client-side bypass possible
         const resp = await fetch('/api/sparks/gated');
-        if (resp.status === 403 || resp.status === 401) {
-          // Not Plus or not authenticated: show paywall, empty gated data
-          if (isMounted) {
-            setIsPlus(false);
-            setSparkedList([]);
-            setSparkedYouList([]);
-            setMutualList([]);
-            setVisitedList([]);
-            setLoading(false);
-          }
-          return;
-        }
-
-        if (!resp.ok) {
+        // Sparked You / Visited are gated (AIL+ for men, free for women). "You Sparked" and
+        // "Mutual" are the member's own sparks and always load, whatever the gate says.
+        let sparkedYou: ProfileCardData[] = [];
+        let visitedYou: ProfileCardData[] = [];
+        let hasFullAccess = false;
+        let viewerGender: 'male' | 'female' = 'male';
+        if (resp.ok) {
+          const gated = await resp.json();
+          sparkedYou = gated.sparkedYou ?? [];
+          visitedYou = gated.visitedYou ?? [];
+          hasFullAccess = true;
+          if (gated.gender === 'female') viewerGender = 'female';
+        } else if (resp.status !== 403 && resp.status !== 401) {
           console.error('Sparks gate error:', resp.status);
-          if (isMounted) setLoading(false);
-          return;
         }
-
-        const { sparkedYou, visitedYou } = await resp.json();
 
         // Fetch your own outbound sparks and mutuals (these are safe to read directly)
         const [outSparksRes, inSparksRes] = await sparksPromise;
@@ -260,9 +255,9 @@ export default function SparksPage() {
 
         if (!isMounted) return;
 
-        setUserGender('male');
+        setUserGender(viewerGender);
         setRecentInboundCount(recentInbound);
-        setIsPlus(true); // Server confirmed Plus
+        setIsPlus(hasFullAccess); // server-confirmed access to the gated tabs
         setSparkedList(sparkedProfiles);
         setSparkedYouList(sparkedYouProfiles);
         setMutualList(mutualProfiles);
@@ -271,8 +266,8 @@ export default function SparksPage() {
 
         try {
           const cachePayload: CachedSparksState = {
-            userGender: 'male',
-            isPlus: true,
+            userGender: viewerGender,
+            isPlus: hasFullAccess,
             sparked: sparkedProfiles,
             sparkedYou: sparkedYouProfiles,
             mutual: mutualProfiles,

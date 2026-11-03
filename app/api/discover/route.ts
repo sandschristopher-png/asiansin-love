@@ -102,7 +102,7 @@ export async function GET() {
           .or('blocker_id.eq.' + user.id + ',blocked_id.eq.' + user.id),
         serviceClient
           .from('favorites')
-          .select('favorite_profile_id')
+          .select('favorite_id')
           .eq('user_id', user.id),
         serviceClient
           .from('sparks')
@@ -124,7 +124,10 @@ export async function GET() {
       });
 
       if (favsRes.data) {
-        favoriteIds = favsRes.data.map((f: any) => f.favorite_profile_id);
+        // Live column is favorites.favorite_id (FK profiles.id).
+        favoriteIds = (favsRes.data as { favorite_id: string | null }[])
+          .map((f) => f.favorite_id)
+          .filter((id): id is string => typeof id === 'string');
       }
       favoriteIds.forEach((id) => alreadyLikedIds.add(id));
       (sparksRes.data as { receiver_id: string | null }[] | null)?.forEach((r) => r.receiver_id && alreadyLikedIds.add(r.receiver_id));
