@@ -25,13 +25,16 @@ import { DayOneBadge, NewMemberPill, VerifiedLocationBadge } from '@/components/
 import { getPresenceStatus } from '@/lib/presence';
 import { isTrustedVoiceIntroUrl } from '@/lib/audio';
 import { resolveCountry } from '@/lib/countries';
-import { rhythmOption, sharedTraits, toList } from '@/lib/rhythm';
+import { rhythmOption, sharedTraits } from '@/lib/rhythm';
 import { scoreOf } from '@/lib/reputation';
 import { InCommonCard, RhythmPill } from '@/components/profile/RhythmBadges';
 import RepScoreCard from '@/components/RepScoreCard';
 import { ReportModal } from '@/components/ReportModal';
 import { useActionToast } from '@/components/ActionToast';
 import { interestIcon, interestIconOrDefault } from '@/lib/interestIcons';
+import { languageLabel, readLanguages } from '@/lib/constants/languages';
+import { formatHeight, lifestyleOption, readHeightCm, readLifestyle } from '@/lib/lifestyle';
+import { LifestyleBadges } from '@/components/profile/LifestyleFields';
 
 interface HighlightRow {
   tag_id: string;
@@ -113,7 +116,7 @@ export default function PublicProfilePage() {
           if (Array.isArray(viewerData?.interests)) {
             setViewerInterests(viewerData.interests);
           }
-          setViewerLanguages(toList(viewerData?.languages));
+          setViewerLanguages(readLanguages(viewerData?.languages));
 
           const { data: existingSpark } = await supabase
             .from('sparks')
@@ -295,7 +298,7 @@ export default function PublicProfilePage() {
     profile.looking_for || profile.relationship_goal || profile.relationship_intent || profile.intentions
   );
 
-  const parsedLanguages = toList(profile.languages);
+  const parsedLanguages = readLanguages(profile.languages);
   const languagesList: string[] = parsedLanguages.length > 0 ? parsedLanguages : ['English'];
 
   // Interests + languages you both have (shown as the "N in common" card above the bio).
@@ -318,10 +321,14 @@ export default function PublicProfilePage() {
     { label: 'Timeline', value: timelineIntent ? timelineIntent.label : null },
     { label: 'Children', value: profile.has_kids },
     { label: 'Wants Children', value: profile.wants_kids },
-    { label: 'Height', value: profile.height },
-    { label: 'Drinks', value: profile.drinking },
-    { label: 'Smokes', value: profile.smoking },
+    { label: 'Height', value: formatHeight(readHeightCm(profile.height_cm, profile.height)) },
+    { label: 'Drinks', value: lifestyleOption('drinking', readLifestyle('drinking', profile.drinking))?.label },
+    { label: 'Smokes', value: lifestyleOption('smoking', readLifestyle('smoking', profile.smoking))?.label },
   ].filter((item) => Boolean(item.value && String(item.value).trim()));
+  // Self-expression badges (body type, tattoos, piercings, fitness); drinking / smoking are vitals rows.
+  const lifestyleBadges = Object.fromEntries(
+    (['body_type', 'tattoos', 'piercings', 'fitness_rhythm'] as const).map((k) => [k, readLifestyle(k, profile[k])])
+  );
 
   // Portal dock directly to document.body so LayoutShell's scroll container never moves it
   const floatingDock = mounted
@@ -684,6 +691,7 @@ export default function PublicProfilePage() {
             >
               Vitals &amp; Lifestyle
             </h2>
+            <LifestyleBadges values={lifestyleBadges} />
             <div className="divide-y divide-[#F0EDF5] text-xs">
               {vitals.map((item) => (
                 <div key={item.label} className="flex items-center justify-between py-2.5 first:pt-1 last:pb-0">
@@ -708,7 +716,7 @@ export default function PublicProfilePage() {
             <div className="flex flex-wrap gap-1.5">
               {languagesList.map((lang) => (
                 <span
-                  key={lang}
+                  key={languageLabel(lang)}
                   className="px-3 py-1 rounded-full bg-[#F8F7FA] border border-[#DDD7E5] text-xs font-semibold text-[#1C1924]"
                 >
                   {lang}

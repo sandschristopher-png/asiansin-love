@@ -42,7 +42,7 @@ export const MASK = {
 } as const;
 
 export const PROFILE_BLOCK_MESSAGE =
-  'Payments, gifts, sponsorship and paid arrangements are not allowed on asiansinlove. Please remove that part and save again.';
+  'Payments, gifts, sponsorship and paid arrangements are not allowed on asiansin.love. Please remove that part and save again.';
 
 const BLOCKING: ProfileViolation[] = ['PAYMENT', 'COMMERCIAL_SOLICITATION'];
 

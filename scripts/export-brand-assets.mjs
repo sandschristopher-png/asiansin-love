@@ -63,7 +63,7 @@ function markSvg({ bg = 'squircle', fill = 'gradient', inkRatio = 0.6 }) {
 `;
 }
 
-/** 1024x240 transparent lockup: "asiansin" in deep velvet + "love" in the gradient (no dot). */
+/** 1024x240 transparent lockup: "asiansin" in deep velvet + ".love" in the gradient. */
 function wordmarkSvg() {
   const W = 1024;
   const H = 240;
@@ -72,7 +72,7 @@ function wordmarkSvg() {
   const opts = { kerning: true, letterSpacing: -0.03, features: { liga: true, rlig: true } };
   const a = font.getPath('asiansin', 0, 0, size, opts);
   const advA = font.getAdvanceWidth('asiansin', size, opts);
-  const b = font.getPath('love', advA, 0, size, opts);
+  const b = font.getPath('.love', advA, 0, size, opts);
   const boxA = a.getBoundingBox();
   const boxB = b.getBoundingBox();
   const x1 = Math.min(boxA.x1, boxB.x1);
@@ -96,7 +96,7 @@ function wordmarkSvg() {
 
 /**
  * 1200x630 Open Graph / Twitter share card: soft lilac canvas, squircle "a" mark, the
- * asiansinlove lockup and the hero line - all drawn from glyph outlines (no system fonts).
+ * asiansin.love lockup and the hero line - all drawn from glyph outlines (no system fonts).
  */
 function ogSvg() {
   const W = 1200;
@@ -111,12 +111,12 @@ function ogSvg() {
     return `<path d="${font.getPath(text, LEFT, y, fit, opts).toPathData(2)}" fill="${fill}"/>`;
   };
 
-  // Wordmark at 104px: "asiansin" ink + "love" gradient.
+  // Wordmark at 104px: "asiansin" ink + ".love" gradient.
   const wmSize = 104;
   const wmY = 352;
   const advA = font.getAdvanceWidth('asiansin', wmSize, opts);
   const wmA = font.getPath('asiansin', LEFT, wmY, wmSize, opts).toPathData(2);
-  const wmB = font.getPath('love', LEFT + advA, wmY, wmSize, opts).toPathData(2);
+  const wmB = font.getPath('.love', LEFT + advA, wmY, wmSize, opts).toPathData(2);
 
   // Mark: 132px squircle with the gradient "a".
   const MARK = 132;

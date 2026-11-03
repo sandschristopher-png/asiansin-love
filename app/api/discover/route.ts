@@ -4,6 +4,8 @@ import { createClient } from '@supabase/supabase-js';
 import { resolveCountry } from '@/lib/countries';
 import { getPresenceStatus } from '@/lib/presence';
 import { canonicalCountry, countryMatches } from '@/lib/constants/countries';
+import { readLanguages } from '@/lib/constants/languages';
+import { LIFESTYLE_KEYS, readHeightCm, readLifestyle } from '@/lib/lifestyle';
 
 /**
  * Only the columns the Discover grid / profile sheet mapping below reads. Never select('*') here:
@@ -17,7 +19,9 @@ const DISCOVER_COLUMNS = [
   'avatar_url', 'photos', 'is_verified', 'verification_status', 'is_plus', 'reputation_score',
   'last_active', 'show_active_status', 'hide_profile',
   'relationship_intent', 'intentions', 'relationship_goal', 'intent', 'looking_for',
-  'bio', 'occupation', 'profession', 'languages', 'interests', 'height', 'weight', 'created_at',
+  // No weight: never loaded for the feed (non-transactional profiles, no numeric weight).
+  'bio', 'occupation', 'profession', 'languages', 'interests', 'height', 'height_cm', 'created_at',
+  'body_type', 'drinking', 'smoking',
   'voice_intro_url',
 ].join(', ');
 
@@ -25,7 +29,9 @@ const DISCOVER_COLUMNS = [
 const RHYTHM_COLUMNS = 'reply_pace';
 /** Travel notice, Day 1 badge and blur previews from 20261108_release_features.sql (optional). */
 const RELEASE_COLUMNS = 'is_travel_mode_active, visiting_city, visiting_country, visiting_dates, is_day_one, day_one_number, photo_placeholders';
-const OPTIONAL_COLUMN_RE = /reply_pace|is_travel_mode_active|visiting_|is_day_one|day_one_number|photo_placeholders/;
+/** Lifestyle badges from 20261109_lifestyle_attributes.sql (optional). */
+const LIFESTYLE_COLUMNS = 'tattoos, piercings, fitness_rhythm';
+const OPTIONAL_COLUMN_RE = /reply_pace|is_travel_mode_active|visiting_|is_day_one|day_one_number|photo_placeholders|tattoos|piercings|fitness_rhythm/;
 
 export const dynamic = 'force-dynamic';
 
@@ -158,12 +164,15 @@ export async function GET(req: Request) {
       return q.order('created_at', { ascending: false }).limit(200);
     };
     // Newest optional columns first, then progressively older schemas.
-    let { data: allRows, error } = await fetchFeed(DISCOVER_COLUMNS + ', ' + RHYTHM_COLUMNS + ', ' + RELEASE_COLUMNS);
-    if (error && OPTIONAL_COLUMN_RE.test(error.message)) {
-      ({ data: allRows, error } = await fetchFeed(DISCOVER_COLUMNS + ', ' + RHYTHM_COLUMNS));
-    }
-    if (error && /reply_pace/.test(error.message)) {
-      ({ data: allRows, error } = await fetchFeed(DISCOVER_COLUMNS));
+    const tiers = [
+      [DISCOVER_COLUMNS, RHYTHM_COLUMNS, RELEASE_COLUMNS, LIFESTYLE_COLUMNS],
+      [DISCOVER_COLUMNS, RHYTHM_COLUMNS, RELEASE_COLUMNS],
+      [DISCOVER_COLUMNS, RHYTHM_COLUMNS],
+      [DISCOVER_COLUMNS],
+    ].map((t) => t.join(', '));
+    let { data: allRows, error } = await fetchFeed(tiers[0]);
+    for (let i = 1; i < tiers.length && error && OPTIONAL_COLUMN_RE.test(error.message); i++) {
+      ({ data: allRows, error } = await fetchFeed(tiers[i]));
     }
 
     // ?country= accepts a display name ("Myanmar") or an ISO-3166 alpha-2 code ("MM"), exact match.
@@ -254,10 +263,13 @@ export async function GET(req: Request) {
           looking_for: row.looking_for || row.intentions || row.relationship_intent || 'Serious Relationship',
           bio: row.bio || '',
           occupation: row.occupation || row.profession || '',
-          languages: row.languages || 'English',
+          languages: readLanguages(row.languages),
           interests: Array.isArray(row.interests) ? row.interests : [],
           height: row.height || '',
-          weight: row.weight || '',
+          heightCm: readHeightCm(row.height_cm, row.height),
+          lifestyle: Object.fromEntries(
+            LIFESTYLE_KEYS.map((k) => [k, readLifestyle(k, row[k])]).filter(([, v]) => v)
+          ),
           created_at: row.created_at,
           voiceIntroUrl: row.voice_intro_url || null,
           replyPace: row.reply_pace || null,

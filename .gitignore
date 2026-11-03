@@ -62,3 +62,6 @@ build-output*.txt
 # Patch artifacts & local notes
 patches/**/.applied
 asiansinlove_context.md
+
+# Local Claude Code config
+.claude/

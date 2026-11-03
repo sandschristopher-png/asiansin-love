@@ -10,6 +10,8 @@
 import type { LucideIcon } from 'lucide-react';
 import { Gem, HeartHandshake, House, MapPin, Moon, Phone, Plane, Sprout, Turtle, Zap } from 'lucide-react';
 
+import { readLanguages } from '@/lib/constants/languages';
+
 export interface RhythmOption<V extends string = string> {
   value: V;
   /** Lucide icon (the UI never renders emoji). */
@@ -67,10 +69,10 @@ export function sharedTraits(
   viewer: { interests?: unknown; languages?: unknown },
   target: { interests?: unknown; languages?: unknown }
 ): string[] {
-  const mine = new Set([...toList(viewer.interests), ...toList(viewer.languages)].map((s) => s.toLowerCase()));
+  const mine = new Set([...toList(viewer.interests), ...readLanguages(viewer.languages)].map((s) => s.toLowerCase()));
   const seen = new Set<string>();
   const out: string[] = [];
-  for (const item of [...toList(target.interests), ...toList(target.languages)]) {
+  for (const item of [...toList(target.interests), ...readLanguages(target.languages)]) {
     const key = item.toLowerCase();
     if (mine.has(key) && !seen.has(key)) {
       seen.add(key);

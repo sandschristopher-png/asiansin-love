@@ -7,7 +7,7 @@ import './globals.css';
 import { LayoutShell } from '@/components/LayoutShell';
 
 // Playwrite IT Moderna: the ail+ member badge ONLY (components/AilBadge.tsx), via
-// var(--font-logo) / .font-logo. The asiansinlove wordmark is Plus Jakarta Sans (font-brand).
+// var(--font-logo) / .font-logo. The asiansin.love wordmark is Plus Jakarta Sans (font-brand).
 // Playwrite ships without a 'latin' subset in next/font, so it is not preloaded; display: swap
 // keeps the cursive fallback visible until it loads.
 const playwrite = Playwrite_IT_Moderna({

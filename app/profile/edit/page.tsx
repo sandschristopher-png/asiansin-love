@@ -13,6 +13,9 @@ import { useActionToast } from '@/components/ActionToast';
 import { compressPhoto } from '@/lib/utils/imageCompressor';
 import { BIO_REJECTION_MESSAGE } from '@/lib/moderation/textFilter';
 import { isPlusProfile } from '@/lib/plus';
+import { HeightInput, LanguagePicker, LifestylePills } from '@/components/profile/LifestyleFields';
+import { readLanguages } from '@/lib/constants/languages';
+import { LIFESTYLE_KEYS, readHeightCm, readLifestyle, type LifestyleValues } from '@/lib/lifestyle';
 
 
 
@@ -80,12 +83,12 @@ export default function EditProfilePage() {
     has_kids: 'No',
     living_situation: 'Lives independently',
     religion: 'Christian (Catholic)',
-    languages: 'English, Tagalog',
-    height: '',
-    drinking: 'Socially',
-    smoking: 'No',
     bio: '',
   });
+  // Languages (text[]), height in cm and lifestyle enums are saved through PATCH /api/profile.
+  const [languages, setLanguages] = useState<string[]>(['English']);
+  const [heightCm, setHeightCm] = useState<number | null>(null);
+  const [lifestyle, setLifestyle] = useState<LifestyleValues>({});
 
   useEffect(() => {
     async function loadProfile() {
@@ -124,12 +127,11 @@ export default function EditProfilePage() {
           has_kids: data.has_kids || 'No',
           living_situation: data.living_situation || 'Lives independently',
           religion: data.religion || 'Christian (Catholic)',
-          languages: Array.isArray(data.languages) ? data.languages.join(', ') : (data.languages || 'English, Tagalog'),
-          height: data.height ? String(data.height) : '',
-          drinking: data.drinking || 'Socially',
-          smoking: data.smoking || 'No',
           bio: data.bio || '',
         });
+        setLanguages(readLanguages(data.languages));
+        setHeightCm(readHeightCm(data.height_cm, data.height));
+        setLifestyle(Object.fromEntries(LIFESTYLE_KEYS.map((k) => [k, readLifestyle(k, data[k])])) as LifestyleValues);
 
         if (data.username) {
           setUsername(data.username);
@@ -328,6 +330,9 @@ export default function EditProfilePage() {
         relationship_goal: formData.relationship_goal,
         bio: formData.bio.trim(),
         ...rhythm,
+        languages,
+        height_cm: heightCm,
+        ...lifestyle,
         ...(isPlus
           ? {
               visiting_city: travel.city.trim(),
@@ -790,63 +795,17 @@ export default function EditProfilePage() {
               Lifestyle & Background
             </h3>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <div className="space-y-1.5">
-                <label className="block text-xs font-medium uppercase tracking-wider text-[#9A8CC3]">
-                  Languages (Comma Separated)
-                </label>
-                <input
-                  type="text"
-                  value={formData.languages}
-                  onChange={(e) => setFormData({ ...formData, languages: e.target.value })}
-                  placeholder="English, Tagalog, Japanese"
-                  className="w-full px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#9A8CC3]/35 text-[#1C1924] text-sm focus:outline-none focus:border-[#9A8CC3]"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="block text-xs font-medium uppercase tracking-wider text-[#9A8CC3]">
-                  Height
-                </label>
-                <input
-                  type="text"
-                  value={formData.height}
-                  onChange={(e) => setFormData({ ...formData, height: e.target.value })}
-                  placeholder="e.g. 165 cm or 5'5"
-                  className="w-full px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#9A8CC3]/35 text-[#1C1924] text-sm focus:outline-none focus:border-[#9A8CC3]"
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="block text-xs font-medium uppercase tracking-wider text-[#9A8CC3]">
-                  Drinks
-                </label>
-                <select
-                  value={formData.drinking}
-                  onChange={(e) => setFormData({ ...formData, drinking: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#9A8CC3]/35 text-[#1C1924] text-sm focus:outline-none focus:border-[#9A8CC3]"
-                >
-                  <option value="Never">Never</option>
-                  <option value="Socially">Socially</option>
-                  <option value="Regularly">Regularly</option>
-                </select>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="block text-xs font-medium uppercase tracking-wider text-[#9A8CC3]">
-                  Smokes
-                </label>
-                <select
-                  value={formData.smoking}
-                  onChange={(e) => setFormData({ ...formData, smoking: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#9A8CC3]/35 text-[#1C1924] text-sm focus:outline-none focus:border-[#9A8CC3]"
-                >
-                  <option value="No">No</option>
-                  <option value="Socially">Socially</option>
-                  <option value="Yes">Yes</option>
-                </select>
-              </div>
+            <div className="space-y-1.5">
+              <label className="block text-xs font-medium uppercase tracking-wider text-[#9A8CC3]">Languages</label>
+              <LanguagePicker value={languages} onChange={setLanguages} />
             </div>
+
+            <div className="flex items-center justify-between gap-3">
+              <label className="text-xs font-medium uppercase tracking-wider text-[#9A8CC3]">Height</label>
+              <HeightInput valueCm={heightCm} onChange={setHeightCm} />
+            </div>
+
+            <LifestylePills values={lifestyle} onChange={(field, value) => setLifestyle((prev) => ({ ...prev, [field]: value }))} />
           </div>
 
           {/* Bio */}

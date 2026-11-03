@@ -26,6 +26,16 @@ import { isRhythmValue, RHYTHM_FIELDS, type RhythmField } from '@/lib/rhythm';
 import { resolveCountry } from '@/lib/countries';
 import { canonicalCountry } from '@/lib/constants/countries';
 import { isPlusProfile } from '@/lib/plus';
+import { normalizeLanguages } from '@/lib/constants/languages';
+import {
+  HEIGHT_MAX_CM,
+  HEIGHT_MIN_CM,
+  LIFESTYLE_KEYS,
+  NEW_LIFESTYLE_COLUMNS,
+  isLifestyleValue,
+  normalizeDrinking,
+  normalizeSmoking,
+} from '@/lib/lifestyle';
 
 export const runtime = 'nodejs';
 
@@ -49,14 +59,10 @@ const TEXT_FIELDS: Record<string, { max: number; screen?: boolean; label: string
   has_kids: { max: 60, label: 'Children' },
   wants_kids: { max: 60, label: 'Wants children' },
   relocation: { max: 80, label: 'Relocation' },
-  languages: { max: 200, label: 'Languages' },
-  height: { max: 20, label: 'Height' },
-  weight: { max: 20, label: 'Weight' },
-  drinking: { max: 40, label: 'Drinking' },
-  smoking: { max: 40, label: 'Smoking' },
 };
 
 const RHYTHM_COLUMN_RE = /reply_pace|relocation_readiness|timeline_intent/;
+const LIFESTYLE_COLUMN_RE = /tattoos|piercings|fitness_rhythm/;
 
 type Updates = Record<string, string | number | boolean | string[] | null>;
 const bad = (error: string, field: string, status = 400) => NextResponse.json({ error, field }, { status });
@@ -172,6 +178,36 @@ export async function PATCH(req: Request) {
     updates.location_verified_at = null;
   }
 
+  // Languages: canonical text[] of offered languages (lib/constants/languages.ts).
+  if ('languages' in body) {
+    updates.languages = normalizeLanguages(body.languages);
+  }
+
+  // Height in cm (the legacy free-text `height` column is kept in sync for older readers).
+  // Weight is intentionally not accepted: no numeric weight on asiansin.love.
+  if ('height_cm' in body) {
+    const raw = body.height_cm;
+    const cm = raw === null || raw === '' ? null : Math.round(Number(raw));
+    if (cm !== null && (!Number.isFinite(cm) || cm < HEIGHT_MIN_CM || cm > HEIGHT_MAX_CM)) {
+      return bad(`Height must be between ${HEIGHT_MIN_CM} and ${HEIGHT_MAX_CM} cm.`, 'height_cm');
+    }
+    updates.height_cm = cm;
+    updates.height = cm === null ? null : `${cm} cm`;
+  }
+
+  // Lifestyle enums (drinking / smoking also accept older free labels and store the enum).
+  for (const key of LIFESTYLE_KEYS) {
+    if (!(key in body)) continue;
+    const v = body[key];
+    if (v === null || v === '') {
+      updates[key] = null;
+      continue;
+    }
+    const value = key === 'drinking' ? normalizeDrinking(v) : key === 'smoking' ? normalizeSmoking(v) : v;
+    if (!isLifestyleValue(key, value)) return bad(`Invalid ${key.replace(/_/g, ' ')}.`, key);
+    updates[key] = value as string;
+  }
+
   for (const key of RHYTHM_KEYS) {
     if (!(key in body)) continue;
     const v = body[key];
@@ -218,14 +254,24 @@ export async function PATCH(req: Request) {
     service.from('profiles').update({ ...fields, updated_at: new Date().toISOString() }).eq('id', userId).select('id');
 
   let rhythmSaved = RHYTHM_KEYS.some((k) => k in updates);
-  let { data: rows, error } = await save(updates);
+  let lifestyleSaved = NEW_LIFESTYLE_COLUMNS.some((k) => k in updates);
+  let pending: Updates = updates;
+  let { data: rows, error } = await save(pending);
 
-  // Rhythm columns arrive with 20261106_reputation_rhythm.sql; until then save everything else.
-  if (error && RHYTHM_COLUMN_RE.test(error.message)) {
-    rhythmSaved = false;
-    const withoutRhythm = Object.fromEntries(Object.entries(updates).filter(([k]) => !RHYTHM_KEYS.includes(k as RhythmField)));
-    if (Object.keys(withoutRhythm).length) {
-      ({ data: rows, error } = await save(withoutRhythm));
+  // Optional columns that arrive with later migrations: until they run, save everything else.
+  //   rhythm (reply_pace, ...)              20261106_reputation_rhythm.sql
+  //   tattoos / piercings / fitness_rhythm  20261109_lifestyle_attributes.sql
+  const OPTIONAL_GROUPS: { re: RegExp; keys: string[]; onDrop: () => void }[] = [
+    { re: RHYTHM_COLUMN_RE, keys: RHYTHM_KEYS, onDrop: () => (rhythmSaved = false) },
+    { re: LIFESTYLE_COLUMN_RE, keys: NEW_LIFESTYLE_COLUMNS, onDrop: () => (lifestyleSaved = false) },
+  ];
+  for (let attempt = 0; attempt < OPTIONAL_GROUPS.length && error; attempt++) {
+    const group = OPTIONAL_GROUPS.find((g) => g.re.test(error!.message) && g.keys.some((k) => k in pending));
+    if (!group) break;
+    group.onDrop();
+    pending = Object.fromEntries(Object.entries(pending).filter(([k]) => !group.keys.includes(k)));
+    if (Object.keys(pending).length) {
+      ({ data: rows, error } = await save(pending));
     } else {
       rows = [{ id: userId }];
       error = null;
@@ -251,6 +297,7 @@ export async function PATCH(req: Request) {
   return NextResponse.json({
     success: true,
     rhythmSaved,
+    lifestyleSaved,
     ...(Object.keys(sanitized).length ? { sanitized, notice: sanitizedNotice(screened), penalty } : {}),
   });
 }

@@ -26,6 +26,10 @@ import {
   countriesForSeeking,
   countryMatches,
 } from '@/lib/constants/countries';
+import { HeightRangeSlider } from '@/components/filters/HeightRangeSlider';
+import { LanguagePicker } from '@/components/profile/LifestyleFields';
+import { HEIGHT_MAX_CM, HEIGHT_MIN_CM } from '@/lib/lifestyle';
+import { readLanguages } from '@/lib/constants/languages';
 
 /** Regional spotlight pill: filters the already-loaded feed (no extra query). */
 const SPOTLIGHT_COUNTRY = 'Myanmar';
@@ -126,7 +130,23 @@ export interface ProfileItem {
   travel?: TravelNotice | null;
   dayOneNumber?: number | null;
   photoPlaceholders?: Record<string, string>;
+  heightCm?: number | null;
+  lifestyle?: Record<string, string>;
 }
+
+/** Quick "Habits" filter chips; a profile must have set the habit to match. */
+const HABIT_FILTERS: { id: string; label: string; test: (l: Record<string, string>) => boolean }[] = [
+  { id: 'non_drinker', label: 'Non-drinker', test: (l) => l.drinking === 'non_drinker' },
+  { id: 'light_drinker', label: 'Drinks socially or less', test: (l) => l.drinking === 'non_drinker' || l.drinking === 'socially' },
+  { id: 'non_smoker', label: 'Non-smoker', test: (l) => l.smoking === 'non_smoker' },
+  { id: 'smoke_free', label: 'No cigarettes', test: (l) => l.smoking === 'non_smoker' || l.smoking === 'vape_only' },
+  { id: 'active', label: 'Active lifestyle', test: (l) => ['daily_workouts', 'walks_and_hiking', 'weekend_warrior'].includes(l.fitness_rhythm) },
+];
+const FILTER_CHIP =
+  'py-1.5 px-3.5 rounded-full border text-xs font-semibold transition-all cursor-pointer active:scale-95 ';
+const FILTER_CHIP_ON = 'bg-[#6555B8] text-white border-[#6555B8] shadow-2xs';
+const FILTER_CHIP_OFF = 'bg-white text-[#1C1924] border-[#DDD7E5] hover:border-[#6555B8]/40';
+const toggleIn = (list: string[], v: string) => (list.includes(v) ? list.filter((x) => x !== v) : [...list, v]);
 
 function DiscoverCardPhotoCarousel({
   profileId,
@@ -303,11 +323,18 @@ function DiscoverContent() {
   const [draftMinAge, setDraftMinAge] = useState<number>(DEFAULT_MIN_AGE);
   const [draftMaxAge, setDraftMaxAge] = useState<number>(DEFAULT_MAX_AGE);
   const [draftCountry, setDraftCountry] = useState<string>(ALL_COUNTRIES_VALUE);
-  const [draftIntent, setDraftIntent] = useState<string>('all');
+  const [draftIntents, setDraftIntents] = useState<string[]>([]);
+  const [draftHeight, setDraftHeight] = useState<[number, number]>([HEIGHT_MIN_CM, HEIGHT_MAX_CM]);
+  const [draftLanguages, setDraftLanguages] = useState<string[]>([]);
+  const [draftHabits, setDraftHabits] = useState<string[]>([]);
   const [draftVerifiedOnly, setDraftVerifiedOnly] = useState<boolean>(false);
   const [draftActiveNowOnly, setDraftActiveNowOnly] = useState<boolean>(false);
   const [draftMode, setDraftMode] = useState<DiscoveryModeId>('all');
-  const [selectedIntent, setSelectedIntent] = useState<string>('all');
+  const [selectedIntents, setSelectedIntents] = useState<string[]>([]);
+  const [heightRange, setHeightRange] = useState<[number, number]>([HEIGHT_MIN_CM, HEIGHT_MAX_CM]);
+  const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
+  const [selectedHabits, setSelectedHabits] = useState<string[]>([]);
+  const heightNarrowed = heightRange[0] > HEIGHT_MIN_CM || heightRange[1] < HEIGHT_MAX_CM;
   const [verifiedOnly, setVerifiedOnly] = useState<boolean>(false);
   const [activeNowOnly, setActiveNowOnly] = useState<boolean>(false);
 
@@ -360,7 +387,10 @@ function DiscoverContent() {
       setDraftMinAge(minAge);
       setDraftMaxAge(maxAge);
       setDraftCountry(selectedCountry);
-      setDraftIntent(selectedIntent);
+      setDraftIntents(selectedIntents);
+      setDraftHeight(heightRange);
+      setDraftLanguages(selectedLanguages);
+      setDraftHabits(selectedHabits);
       setDraftVerifiedOnly(verifiedOnly);
       setDraftActiveNowOnly(activeNowOnly);
       setDraftMode(discoveryMode);
@@ -371,7 +401,7 @@ function DiscoverContent() {
     return () => {
       document.body.style.overflow = '';
     };
-  }, [filtersOpen, minAge, maxAge, selectedCountry, selectedIntent, verifiedOnly, activeNowOnly, discoveryMode]);
+  }, [filtersOpen, minAge, maxAge, selectedCountry, selectedIntents, heightRange, selectedLanguages, selectedHabits, verifiedOnly, activeNowOnly, discoveryMode]);
 
   useEffect(() => {
     const handleMutualMatch = (e: CustomEvent<{ targetId: string }>) => {
@@ -597,12 +627,15 @@ function DiscoverContent() {
     let count = 0;
     if (selectedCountry.toLowerCase() !== ALL_COUNTRIES_VALUE.toLowerCase()) count++;
     if (minAge > DEFAULT_MIN_AGE || maxAge < DEFAULT_MAX_AGE) count++;
-    if (selectedIntent !== 'all') count++;
+    if (selectedIntents.length) count++;
+    if (heightNarrowed) count++;
+    if (selectedLanguages.length) count++;
+    if (selectedHabits.length) count++;
     if (verifiedOnly) count++;
     if (activeNowOnly) count++;
     if (discoveryMode !== 'all') count++;
     return count;
-  }, [selectedCountry, minAge, maxAge, selectedIntent, verifiedOnly, activeNowOnly, discoveryMode]);
+  }, [selectedCountry, minAge, maxAge, selectedIntents, heightNarrowed, selectedLanguages, selectedHabits, verifiedOnly, activeNowOnly, discoveryMode]);
 
   const hasActiveFilters = activeFiltersCount > 0;
 
@@ -610,7 +643,10 @@ function DiscoverContent() {
   const resetAndApplyFilters = () => {
     resetFilters();
     setSelectedCountry(ALL_COUNTRIES_VALUE);
-    setSelectedIntent('all');
+    setSelectedIntents([]);
+    setHeightRange([HEIGHT_MIN_CM, HEIGHT_MAX_CM]);
+    setSelectedLanguages([]);
+    setSelectedHabits([]);
     setMinAge(DEFAULT_MIN_AGE);
     setMaxAge(DEFAULT_MAX_AGE);
     setVerifiedOnly(false);
@@ -653,7 +689,10 @@ function DiscoverContent() {
     setMinAge(draftMinAge);
     setMaxAge(draftMaxAge);
     setSelectedCountry(draftCountry);
-    setSelectedIntent(draftIntent);
+    setSelectedIntents(draftIntents);
+    setHeightRange(draftHeight);
+    setSelectedLanguages(draftLanguages);
+    setSelectedHabits(draftHabits);
     setVerifiedOnly(draftVerifiedOnly);
     setActiveNowOnly(draftActiveNowOnly);
     setDiscoveryMode(draftMode);
@@ -663,7 +702,10 @@ function DiscoverContent() {
 
   const resetFilters = () => {
     setDraftCountry(ALL_COUNTRIES_VALUE);
-    setDraftIntent('all');
+    setDraftIntents([]);
+    setDraftHeight([HEIGHT_MIN_CM, HEIGHT_MAX_CM]);
+    setDraftLanguages([]);
+    setDraftHabits([]);
     setDraftMinAge(DEFAULT_MIN_AGE);
     setDraftMaxAge(DEFAULT_MAX_AGE);
     setDraftVerifiedOnly(false);
@@ -679,7 +721,17 @@ function DiscoverContent() {
       const searchableName = (profile.username || profile.name || '').toLowerCase();
       const matchesQuery = !q || searchableName.includes(q) || profile.location.toLowerCase().includes(q);
       const matchesAge = profile.age >= minAge && profile.age <= maxAge;
-      const matchesIntent = selectedIntent === 'all' || !profile.intent || normalizeIntent(profile.intent) === normalizeIntent(selectedIntent);
+      const matchesIntent =
+        selectedIntents.length === 0 ||
+        !profile.intent ||
+        selectedIntents.some((i) => normalizeIntent(i) === normalizeIntent(profile.intent));
+      // Height: unknown heights only drop out once the range is narrowed.
+      const h = profile.heightCm ?? null;
+      const matchesHeight = !heightNarrowed || (h !== null && h >= heightRange[0] && h <= heightRange[1]);
+      const matchesLanguage =
+        selectedLanguages.length === 0 || readLanguages(profile.languages).some((l) => selectedLanguages.includes(l));
+      const life = profile.lifestyle || {};
+      const matchesHabits = selectedHabits.every((id) => HABIT_FILTERS.find((hf) => hf.id === id)?.test(life) ?? true);
       const matchesVerified = !verifiedOnly || profile.verified;
       const matchesOnline = !activeNowOnly || profile.online || presentIds.has(profile.id);
       const matchesDiscoveryMode = (() => {
@@ -700,12 +752,15 @@ function DiscoverContent() {
         matchesQuery &&
         matchesAge &&
         matchesIntent &&
+        matchesHeight &&
+        matchesLanguage &&
+        matchesHabits &&
         matchesVerified &&
         matchesOnline &&
         matchesDiscoveryMode
       );
     });
-  }, [profiles, cardActions, currentUserCoords, selectedCountry, countryOptions, searchQuery, minAge, maxAge, selectedIntent, verifiedOnly, activeNowOnly, discoveryMode, presentIds]);
+  }, [profiles, cardActions, currentUserCoords, selectedCountry, countryOptions, searchQuery, minAge, maxAge, selectedIntents, heightNarrowed, heightRange, selectedLanguages, selectedHabits, verifiedOnly, activeNowOnly, discoveryMode, presentIds]);
 
   const isDefaultFeed = activeFiltersCount === 0 && !searchQuery.trim();
 
@@ -1158,19 +1213,55 @@ function DiscoverContent() {
                         Looking For
                       </label>
                       <div className="flex flex-wrap gap-2">
-                        {[{value: 'all', label: 'All'}, ...INTENT_OPTIONS].map((option) => (
+                        <button
+                          type="button"
+                          onClick={() => setDraftIntents([])}
+                          className={FILTER_CHIP + (draftIntents.length === 0 ? FILTER_CHIP_ON : FILTER_CHIP_OFF)}
+                        >
+                          Any
+                        </button>
+                        {INTENT_OPTIONS.map((option) => (
                           <button
                             key={option.value}
                             type="button"
-                            onClick={() => setDraftIntent(option.value)}
-                            className={
-                              'py-1.5 px-3.5 rounded-full border text-xs font-semibold transition-all cursor-pointer active:scale-95 ' +
-                              (draftIntent === option.value
-                                ? 'bg-[#6555B8] text-white border-[#6555B8] shadow-2xs'
-                                : 'bg-white text-[#1C1924] border-[#DDD7E5] hover:border-[#6555B8]/40')
-                            }
+                            aria-pressed={draftIntents.includes(option.value)}
+                            onClick={() => setDraftIntents((prev) => toggleIn(prev, option.value))}
+                            className={FILTER_CHIP + (draftIntents.includes(option.value) ? FILTER_CHIP_ON : FILTER_CHIP_OFF)}
                           >
                             {option.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+
+                    <div>
+                      <label className="text-[11px] font-bold text-[#6C637B] uppercase tracking-wider block mb-2">
+                        Height
+                      </label>
+                      <HeightRangeSlider min={HEIGHT_MIN_CM} max={HEIGHT_MAX_CM} value={draftHeight} onChange={setDraftHeight} />
+                    </div>
+
+                    <div>
+                      <label className="text-[11px] font-bold text-[#6C637B] uppercase tracking-wider block mb-2">
+                        Speaks
+                      </label>
+                      <LanguagePicker value={draftLanguages} onChange={setDraftLanguages} max={6} placeholder="Search languages" />
+                    </div>
+
+                    <div>
+                      <label className="text-[11px] font-bold text-[#6C637B] uppercase tracking-wider block mb-2">
+                        Habits
+                      </label>
+                      <div className="flex flex-wrap gap-2">
+                        {HABIT_FILTERS.map((hf) => (
+                          <button
+                            key={hf.id}
+                            type="button"
+                            aria-pressed={draftHabits.includes(hf.id)}
+                            onClick={() => setDraftHabits((prev) => toggleIn(prev, hf.id))}
+                            className={FILTER_CHIP + (draftHabits.includes(hf.id) ? FILTER_CHIP_ON : FILTER_CHIP_OFF)}
+                          >
+                            {hf.label}
                           </button>
                         ))}
                       </div>

@@ -36,8 +36,9 @@ import { RhythmPill, RhythmSelectors, rhythmFromRow, type RhythmValues } from '@
 import { saveProfileFields } from '@/lib/profileApi';
 import { useActionToast } from '@/components/ActionToast';
 import { SelectSheet } from '@/components/SelectSheet';
-
-const QUICK_LANGUAGES = ['English', 'Tagalog', 'Thai', 'Japanese', 'Vietnamese', 'Mandarin', 'Spanish', 'Korean'];
+import { HeightInput, LanguagePicker, LifestyleBadges, LifestylePills } from '@/components/profile/LifestyleFields';
+import { languageLabel, readLanguages } from '@/lib/constants/languages';
+import { LIFESTYLE_KEYS, formatHeight, readHeightCm, readLifestyle, type LifestyleValues } from '@/lib/lifestyle';
 
 const INTENT_CHIP_OPTIONS = INTENT_OPTIONS;
 
@@ -48,25 +49,6 @@ const toIntentChipValue = (v: unknown): string => normalizeIntent(v) || 'serious
 const RELIGION_OPTIONS = ['Catholic', 'Christian', 'Buddhist', 'Muslim', 'Spiritual', 'None', 'Other'];
 const MARITAL_OPTIONS = ['Never Married', 'Divorced', 'Widowed', 'Separated'];
 const RELOCATION_OPTIONS = ['Can Relocate', 'Open to Either', 'Cannot Relocate', 'Other'];
-
-const HEIGHT_OPTIONS = [
-  '4\'8" (142 cm)', '4\'9" (145 cm)', '4\'10" (147 cm)', '4\'11" (150 cm)',
-  '5\'0" (152 cm)', '5\'1" (155 cm)', '5\'2" (157 cm)', '5\'3" (160 cm)',
-  '5\'4" (163 cm)', '5\'5" (165 cm)', '5\'6" (168 cm)', '5\'7" (170 cm)',
-  '5\'8" (173 cm)', '5\'9" (175 cm)', '5\'10" (178 cm)', '5\'11" (180 cm)',
-  '6\'0" (183 cm)', '6\'1" (185 cm)', '6\'2" (188 cm)', '6\'3" (191 cm)',
-  '6\'4" (193 cm)', '6\'5" (196 cm)', '6\'6" (198 cm)', '6\'7" (201 cm)'
-];
-
-const WEIGHT_OPTIONS = [
-  '40 kg (88 lbs)', '42 kg (93 lbs)', '45 kg (99 lbs)', '48 kg (106 lbs)',
-  '50 kg (110 lbs)', '52 kg (115 lbs)', '55 kg (121 lbs)', '58 kg (128 lbs)',
-  '60 kg (132 lbs)', '63 kg (139 lbs)', '65 kg (143 lbs)', '68 kg (150 lbs)',
-  '70 kg (154 lbs)', '73 kg (161 lbs)', '75 kg (165 lbs)', '78 kg (172 lbs)',
-  '80 kg (176 lbs)', '85 kg (187 lbs)', '90 kg (198 lbs)', '95 kg (209 lbs)',
-  '100 kg (220 lbs)', '105 kg (231 lbs)', '110 kg (243 lbs)', '115 kg (254 lbs)',
-  '120 kg (265 lbs)'
-];
 
 const HOBBY_TAGS = [
   'Cooking & Food',
@@ -163,16 +145,13 @@ export default function MyProfilePage() {
   const [wantsKids, setWantsKids] = useState<string>(() => initialProfile?.wantsKids ?? 'Yes');
   const [relocation, setRelocation] = useState<string>(() => initialProfile?.relocation ?? 'Can Relocate');
   const [userLanguages, setUserLanguages] = useState<string>(() => initialProfile?.userLanguages ?? 'English');
-  const [height, setHeight] = useState<string>(() => initialProfile?.height ?? '');
-  const [weight, setWeight] = useState<string>(() => initialProfile?.weight ?? '');
+  const [heightCm, setHeightCm] = useState<number | null>(() => readHeightCm(initialProfile?.heightCm, initialProfile?.height));
   const [voiceIntroUrl, setVoiceIntroUrl] = useState<string | null>(null);
   const [voiceModalOpen, setVoiceModalOpen] = useState(false);
   const [dayOneNumber, setDayOneNumber] = useState<number | null>(() => initialProfile?.dayOneNumber ?? null);
   const [createdAt, setCreatedAt] = useState<string | null>(() => initialProfile?.createdAt ?? null);
   const [travel, setTravel] = useState<TravelNotice | null>(() => initialProfile?.travel ?? null);
-  const [drinking, setDrinking] = useState<string>(() => initialProfile?.drinking ?? 'No');
-  const [smoking, setSmoking] = useState<string>(() => initialProfile?.smoking ?? 'No');
-  const [langInput, setLangInput] = useState('');
+  const [lifestyle, setLifestyle] = useState<LifestyleValues>(() => initialProfile?.lifestyle ?? {});
 
   useEffect(() => {
     async function loadUserData() {
@@ -219,23 +198,13 @@ export default function MyProfilePage() {
         if (data.has_kids) setHasKids(data.has_kids);
         if (data.wants_kids) setWantsKids(data.wants_kids);
         if (data.relocation) setRelocation(data.relocation);
-        if (data.languages) {
-          setUserLanguages(Array.isArray(data.languages) ? data.languages.join(', ') : data.languages);
-        }
+        if (data.languages) setUserLanguages(readLanguages(data.languages).join(', '));
         if (data.is_plus) setIsPlus(true);
         if (typeof data.reputation_score === 'number') setRepScore(data.reputation_score);
 
-        if (data.height) {
-          const raw = String(data.height).trim();
-          const cmMatch = raw.match(/(\d+)\s*cm/i);
-          if (cmMatch) {
-            const matchedOption = HEIGHT_OPTIONS.find((opt) => opt.includes('(' + cmMatch[1] + ' cm)'));
-            setHeight(matchedOption || raw);
-          } else {
-            setHeight(raw);
-          }
-        }
-        if (data.weight) setWeight(data.weight);
+        setHeightCm(readHeightCm(data.height_cm, data.height));
+        const nextLifestyle = Object.fromEntries(LIFESTYLE_KEYS.map((k) => [k, readLifestyle(k, data[k])])) as LifestyleValues;
+        setLifestyle(nextLifestyle);
         setVoiceIntroUrl(data.voice_intro_url ?? null);
         const nextDayOne: number | null = data.is_day_one && Number.isInteger(data.day_one_number) ? data.day_one_number : null;
         const nextTravel: TravelNotice | null =
@@ -245,8 +214,6 @@ export default function MyProfilePage() {
         setDayOneNumber(nextDayOne);
         setCreatedAt(data.created_at ?? null);
         setTravel(nextTravel);
-        if (data.drinking) setDrinking(data.drinking);
-        if (data.smoking) setSmoking(data.smoking);
         if (data.avatar_url) setAvatarUrl(data.avatar_url);
         if (data.verification_status) {
           setVerificationStatus(data.verification_status);
@@ -284,11 +251,9 @@ export default function MyProfilePage() {
             wantsKids: data.wants_kids || 'Yes',
             relocation: data.relocation || 'Can Relocate',
             ...rhythmFromRow(data),
-            userLanguages: data.languages ? (Array.isArray(data.languages) ? data.languages.join(', ') : data.languages) : 'English',
-            height: data.height || '',
-            weight: data.weight || '',
-            drinking: data.drinking || 'No',
-            smoking: data.smoking || 'No',
+            userLanguages: readLanguages(data.languages).join(', ') || 'English',
+            heightCm: readHeightCm(data.height_cm, data.height),
+            lifestyle: Object.fromEntries(LIFESTYLE_KEYS.map((k) => [k, readLifestyle(k, data[k])])),
             dayOneNumber: nextDayOne,
             createdAt: data.created_at ?? null,
             travel: nextTravel,
@@ -299,29 +264,7 @@ export default function MyProfilePage() {
     loadUserData();
   }, [router]);
 
-  const currentLanguages = userLanguages
-    ? userLanguages.split(',').map((s: string) => s.trim()).filter(Boolean)
-    : [];
-
-  const handleAddLanguage = (lang: string) => {
-    const trimmed = lang.trim();
-    if (!trimmed) return;
-    if (!currentLanguages.some((l: string) => l.toLowerCase() === trimmed.toLowerCase())) {
-      const updated = [...currentLanguages, trimmed].join(', ');
-      setUserLanguages(updated);
-    }
-    setLangInput('');
-  };
-
-  const handleRemoveLanguage = (langToRemove: string) => {
-    const updated = currentLanguages.filter((l: string) => l.toLowerCase() !== langToRemove.toLowerCase()).join(', ');
-    setUserLanguages(updated);
-  };
-
-  const extractUnit = (label: string, unit: string): string | null => {
-    const m = String(label).match(new RegExp('\\((\\d+) ' + unit + '\\)'));
-    return m ? m[1] : null;
-  };
+  const currentLanguages = readLanguages(userLanguages);
 
   const toggleHobby = (tag: string) => {
     setInterests((prev) =>
@@ -399,11 +342,9 @@ export default function MyProfilePage() {
       has_kids: hasKids,
       wants_kids: wantsKids,
       relocation,
-      languages: userLanguages,
-      height: (() => { const cm = extractUnit(height, 'cm') || (/^\\d+$/.test(String(height)) ? String(height) : null); return cm ? cm + ' cm' : null; })(),
-weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(weight)) ? String(weight) : null); return kg ? kg + ' kg' : null; })(),
-      drinking,
-      smoking,
+      languages: currentLanguages,
+      height_cm: heightCm,
+      ...lifestyle,
     };
 
     if (latitude) payload.latitude = latitude;
@@ -975,31 +916,9 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
             <div className="flex items-center justify-between gap-2 pb-3 border-b border-[#F0EDF5]">
               <span className="font-semibold text-[#6C637B]">Height</span>
               {isEditing ? (
-                <SelectSheet
-                  label="Height"
-                  value={height}
-                  options={HEIGHT_OPTIONS}
-                  onChange={setHeight}
-                  placeholder="Select height"
-                />
+                <HeightInput valueCm={heightCm} onChange={setHeightCm} />
               ) : (
-                <span className="font-semibold text-[#1C1924]">{height || 'Not specified'}</span>
-              )}
-            </div>
-
-            {/* Weight */}
-            <div className="flex items-center justify-between gap-2 pb-3 border-b border-[#F0EDF5]">
-              <span className="font-semibold text-[#6C637B]">Weight</span>
-              {isEditing ? (
-                <SelectSheet
-                  label="Weight"
-                  value={weight}
-                  options={WEIGHT_OPTIONS}
-                  onChange={setWeight}
-                  placeholder="Select weight"
-                />
-              ) : (
-                <span className="font-semibold text-[#1C1924]">{weight || 'Not specified'}</span>
+                <span className="font-semibold text-[#1C1924]">{formatHeight(heightCm) || 'Not specified'}</span>
               )}
             </div>
 
@@ -1077,55 +996,10 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
           </h3>
 
           {isEditing ? (
-            <div className="space-y-3">
-              <div className="flex flex-wrap gap-1.5">
-                {currentLanguages.map((lang) => (
-                  <span
-                    key={lang}
-                    className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-[#F3EFFC] border border-[#DDD7E5] text-xs font-semibold text-[#6555B8]"
-                  >
-                    {lang}
-                    <button
-                      type="button"
-                      onClick={() => handleRemoveLanguage(lang)}
-                      className="hover:text-rose-600 transition"
-                    >
-                      <X className="w-3 h-3" />
-                    </button>
-                  </span>
-                ))}
-              </div>
-
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  placeholder="Add language"
-                  value={langInput}
-                  onChange={(e) => setLangInput(e.target.value)}
-                  className="flex-1 px-3.5 py-2 rounded-2xl bg-[#F8F7FA] border border-[#DDD7E5] text-xs font-semibold text-[#1C1924] focus:outline-none focus:border-[#6555B8]"
-                />
-                <button
-                  type="button"
-                  onClick={() => handleAddLanguage(langInput)}
-                  className="px-4 py-2 rounded-2xl bg-[#6555B8] text-white text-xs font-semibold hover:bg-[#52449e] transition"
-                >
-                  Add
-                </button>
-              </div>
-
-              <div className="flex flex-wrap gap-1 pt-1">
-                {QUICK_LANGUAGES.map((ql) => (
-                  <button
-                    key={ql}
-                    type="button"
-                    onClick={() => handleAddLanguage(ql)}
-                    className="px-2.5 py-1 rounded-xl bg-[#F8F7FA] border border-[#DDD7E5] text-[11px] font-medium text-[#524B5E] hover:border-[#6555B8] hover:text-[#6555B8] transition"
-                  >
-                    + {ql}
-                  </button>
-                ))}
-              </div>
-            </div>
+            <LanguagePicker
+              value={currentLanguages}
+              onChange={(next) => setUserLanguages(next.join(', '))}
+            />
           ) : (
             <div className="flex flex-wrap gap-1.5">
               {currentLanguages.length > 0 ? (
@@ -1134,13 +1008,28 @@ weight: (() => { const kg = extractUnit(weight, 'kg') || (/^\\d+$/.test(String(w
                     key={lang}
                     className="px-3 py-1 rounded-full bg-[#F8F7FA] border border-[#DDD7E5] text-xs font-semibold text-[#1C1924]"
                   >
-                    {lang}
+                    {languageLabel(lang)}
                   </span>
                 ))
               ) : (
                 <span className="text-xs text-[#8C849B]">English</span>
               )}
             </div>
+          )}
+        </div>
+
+        {/* LIFESTYLE */}
+        <div className="p-5 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-3">
+          <h3 className="text-xs font-bold text-[#6555B8] uppercase tracking-wider" style={{ fontFamily: 'var(--font-brand)' }}>
+            Lifestyle
+          </h3>
+          {isEditing ? (
+            <LifestylePills values={lifestyle} onChange={(field, value) => setLifestyle((prev) => ({ ...prev, [field]: value }))} />
+          ) : (
+            <LifestyleBadges values={lifestyle} />
+          )}
+          {!isEditing && !LIFESTYLE_KEYS.some((k) => lifestyle[k]) && (
+            <p className="text-xs text-[#8C849B]">Add your lifestyle in Edit to help matches get to know you.</p>
           )}
         </div>
 

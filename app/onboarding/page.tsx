@@ -24,6 +24,7 @@ import { evaluateBioModeration } from '@/lib/moderation';
 import { saveBioAndRhythm } from '@/lib/profileApi';
 import { compressPhoto } from '@/lib/utils/imageCompressor';
 import { EMPTY_RHYTHM, RhythmSelectors, type RhythmValues } from '@/components/profile/RhythmBadges';
+import { readHeightCm } from '@/lib/lifestyle';
 
 /** In-progress answers survive a refresh or accidental navigation (cleared on completion). */
 const DRAFT_KEY = 'ail_onboarding_draft_v1';
@@ -45,16 +46,6 @@ const HEIGHT_OPTIONS = [
   '5\'8" (173 cm)', '5\'9" (175 cm)', '5\'10" (178 cm)', '5\'11" (180 cm)',
   '6\'0" (183 cm)', '6\'1" (185 cm)', '6\'2" (188 cm)', '6\'3" (191 cm)',
   '6\'4" (193 cm)', '6\'5" (196 cm)', '6\'6" (198 cm)', '6\'7" (201 cm)'
-];
-
-const WEIGHT_OPTIONS = [
-  '40 kg (88 lbs)', '42 kg (93 lbs)', '45 kg (99 lbs)', '48 kg (106 lbs)',
-  '50 kg (110 lbs)', '52 kg (115 lbs)', '55 kg (121 lbs)', '58 kg (128 lbs)',
-  '60 kg (132 lbs)', '63 kg (139 lbs)', '65 kg (143 lbs)', '68 kg (150 lbs)',
-  '70 kg (154 lbs)', '73 kg (161 lbs)', '75 kg (165 lbs)', '78 kg (172 lbs)',
-  '80 kg (176 lbs)', '85 kg (187 lbs)', '90 kg (198 lbs)', '95 kg (209 lbs)',
-  '100 kg (220 lbs)', '105 kg (231 lbs)', '110 kg (243 lbs)', '115 kg (254 lbs)',
-  '120 kg (265 lbs)'
 ];
 
 const HOBBY_TAGS = [
@@ -105,7 +96,6 @@ export default function OnboardingPage() {
 
   // Step 4: Profile Details
   const [height, setHeight] = useState('');
-  const [weight, setWeight] = useState('');
   const [bio, setBio] = useState('');
   const [rhythm, setRhythm] = useState<RhythmValues>(EMPTY_RHYTHM);
   
@@ -159,7 +149,6 @@ export default function OnboardingPage() {
         if (profile.city) setCity(profile.city);
         if (profile.country) setCountry(profile.country);
         if (profile.height) setHeight(profile.height);
-        if (profile.weight) setWeight(profile.weight);
         if (profile.bio) setBio(profile.bio);
         
     if (profile.intent) setIntent(profile.intent);
@@ -182,7 +171,6 @@ export default function OnboardingPage() {
           if (d.city) setCity(d.city);
           if (d.country) setCountry(d.country);
           if (d.height) setHeight(d.height);
-          if (d.weight) setWeight(d.weight);
           if (typeof d.bio === 'string' && d.bio) setBio(d.bio);
           if (Array.isArray(d.interests)) setInterests(d.interests);
           if (d.rhythm) setRhythm({ ...EMPTY_RHYTHM, ...d.rhythm });
@@ -205,10 +193,10 @@ export default function OnboardingPage() {
     try {
       sessionStorage.setItem(
         DRAFT_KEY,
-        JSON.stringify({ userId, step, username, gender, intent, birthdate, city, country, height, weight, bio, interests, rhythm })
+        JSON.stringify({ userId, step, username, gender, intent, birthdate, city, country, height, bio, interests, rhythm })
       );
     } catch {}
-  }, [draftRestored, userId, step, username, gender, intent, birthdate, city, country, height, weight, bio, interests, rhythm]);
+  }, [draftRestored, userId, step, username, gender, intent, birthdate, city, country, height, bio, interests, rhythm]);
 
   // Step 1: Debounced case-insensitive check against profiles.username
   useEffect(() => {
@@ -346,10 +334,6 @@ export default function OnboardingPage() {
     e.preventDefault();
     if (!height) {
       setErrorMessage('Please select your height.');
-      return;
-    }
-    if (!weight) {
-      setErrorMessage('Please select your weight.');
       return;
     }
     if (bio.trim().length < 20) {
@@ -490,7 +474,7 @@ export default function OnboardingPage() {
           latitude,
           longitude,
           height,
-          weight,
+          height_cm: readHeightCm(null, height),
           intent,
           interests,
           avatar_url: primaryPhoto,
@@ -581,7 +565,7 @@ export default function OnboardingPage() {
               {step === 1 && 'Claim your unique username on Asians in Love (3 to 20 characters, letters, numbers, and underscores).'}
               {step === 2 && 'Select how you identify and who you are interested in meeting.'}
               {step === 3 && 'Use GPS or enter your city and country manually.'}
-              {step === 4 && 'Share your height, weight, bio, what you are looking for, and your hobbies.'}
+              {step === 4 && 'Share your height, bio, what you are looking for, and your hobbies.'}
               {step === 5 && 'Upload 1 to 6 photos and choose your primary portrait.'}
             </p>
           </div>
@@ -875,21 +859,6 @@ export default function OnboardingPage() {
                 </select>
               </div>
 
-              <div>
-                <label className="text-xs font-semibold text-[#1C1924] block mb-1.5">
-                  Weight
-                </label>
-                <select
-                  value={weight}
-                  onChange={(e) => setWeight(e.target.value)}
-                  className="w-full px-4 py-3 rounded-2xl bg-white border border-[#DDD7E5] text-xs sm:text-sm text-[#1C1924] focus:outline-none focus:border-[#6555b8]"
-                >
-                  <option value="">Select weight</option>
-                  {WEIGHT_OPTIONS.map((w) => (
-                    <option key={w} value={w}>{w}</option>
-                  ))}
-                </select>
-              </div>
             </div>
 
             <div>
@@ -955,7 +924,7 @@ export default function OnboardingPage() {
               <button
                 type="submit"
                 className="w-2/3 py-3 rounded-2xl bg-[#6555b8] hover:bg-[#52449e] text-white text-xs font-semibold shadow-md transition disabled:opacity-40"
-                disabled={!height || !weight || bio.trim().length < 20 || interests.length === 0}
+                disabled={!height || bio.trim().length < 20 || interests.length === 0}
               >
                 Continue to Photos
               </button>

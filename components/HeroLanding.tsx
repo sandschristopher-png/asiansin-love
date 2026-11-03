@@ -66,7 +66,7 @@ export function HeroLanding() {
               <div className="relative aspect-[4/5]">
                 <Image
                   src={HERO_PORTRAIT_SRC}
-                  alt="Example member profile in the asiansinlove app"
+                  alt="Example member profile in the asiansin.love app"
                   fill
                   sizes="280px"
                   className="object-cover"

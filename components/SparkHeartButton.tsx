@@ -8,9 +8,9 @@ const POP_MS = 380; // a little longer than the 360 ms .animate-heart-pop so it 
 /**
  * Discover-card Spark button (Pairs / with.is model): a symmetric heart that only ever sends a
  * Spark. It never turns into a message button; chat opens only after a mutual Spark.
- *   unsparked: white glass circle, purple outline heart
- *   tap:       360 ms spring pop + 12 ms haptic, heart fills purple (no particles / sparkles)
- *   sparked:   filled heart, disabled (no un-spark from the card)
+ *   unsparked: borderless white heart floating on the photo (drop shadow for contrast, no circle)
+ *   tap:       360 ms spring pop + 12 ms haptic, heart fills rose (no particles / sparkles)
+ *   sparked:   filled rose heart, disabled (no un-spark from the card)
  *
  * Position it with `className` (e.g. "absolute top-3 right-3 z-20"). The component sets no
  * `position` of its own: a built-in `relative` would override a caller's `absolute` (Tailwind
@@ -62,14 +62,15 @@ export function SparkHeartButton({
         }
         onSpark();
       }}
-      className={`w-10 h-10 rounded-full bg-white/80 backdrop-blur-md shadow-md flex items-center justify-center transition-transform active:scale-95 cursor-pointer disabled:cursor-default ${className}`}
+      className={`p-1 transition-transform duration-150 active:scale-125 drop-shadow-[0_2px_5px_rgba(0,0,0,0.45)] cursor-pointer disabled:cursor-default ${
+        isSparked ? 'text-[#EC4899]' : 'text-white hover:text-[#EC4899]'
+      } ${className}`}
     >
       <span className={`inline-flex ${isPopping ? 'animate-heart-pop' : ''}`}>
         <Heart
-          strokeWidth={2}
-          className="w-5 h-5 transition-colors duration-200"
-          stroke="#6555B8"
-          fill={isSparked ? '#6555B8' : 'none'}
+          className={`w-7 h-7 stroke-[2.2] transition-colors duration-200 ${
+            isSparked ? 'fill-[#EC4899]' : 'fill-white/20 hover:fill-[#EC4899]'
+          }`}
         />
       </span>
     </button>

@@ -9,8 +9,13 @@ import { User, Settings, LogOut, ArrowLeft, Share2, Check, Zap, Menu } from 'luc
 import { supabase } from '@/lib/supabase/client';
 import { hardSignOut } from '@/lib/hardSignOut';
 import { AilBadge } from './AilBadge';
+/** Signed-in areas: the header never offers "Sign In" here (middleware already requires a session). */
+const IN_APP_PREFIXES = ['/discover', '/messages', '/favorites', '/profile', '/notifications', '/chat', '/settings', '/plus', '/verify'];
+
 export function Navbar() {
   const [user, setUser] = useState<any>(null);
+  // True until the first auth check resolves: render a placeholder, never a flash of "Sign In".
+  const [authLoading, setAuthLoading] = useState(true);
   const [profile, setProfile] = useState<any>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
@@ -63,6 +68,7 @@ export function Navbar() {
       fetch('/api/notifications').then(r => r.ok ? r.json() : null).then(d => { if (d) setPrefetchedNotifs({ notifications: d.notifications, unread_count: d.unread_count }); }).catch(() => {});
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
+      setAuthLoading(false);
       if (user) {
         checkUnread(user.id);
         const { data } = await supabase
@@ -103,6 +109,7 @@ export function Navbar() {
     const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
       const currentUser = session?.user ?? null;
       setUser(currentUser);
+      setAuthLoading(false);
       if (currentUser) {
         checkUnread(currentUser.id);
         const { data } = await supabase
@@ -306,13 +313,16 @@ export function Navbar() {
                 )}
               </div>
             </>
-          ) : (
+          ) : !authLoading && !IN_APP_PREFIXES.some((p) => pathname === p || pathname?.startsWith(p + '/')) ? (
             <Link
               href="/login"
               className="px-4 py-1.5 rounded-full bg-[#6555B8] hover:bg-[#5343A3] text-white text-xs font-semibold tracking-wide transition shadow-sm"
             >
               Sign In
             </Link>
+          ) : (
+            // Auth still resolving (or an in-app route): hold the Menu button's space, show nothing.
+            <div className="w-9 h-9 rounded-full bg-transparent" aria-hidden />
           )}
         </div>
       </div>
