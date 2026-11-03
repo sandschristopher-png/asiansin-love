@@ -2,64 +2,66 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { ArrowLeft, BadgeCheck, Flag, Image as ImageIcon, MessageSquareWarning, Users } from 'lucide-react';
+import { LogOut } from 'lucide-react';
 import { BrandLogo } from '@/components/BrandLogo';
 import { ADMIN_ROLE_LABEL, type AdminRole } from '@/lib/adminRoles';
 
 const TABS = [
-  { href: '/admin', label: 'Reports', Icon: Flag, match: (p: string) => p === '/admin' || p.startsWith('/admin/reports') },
-  { href: '/admin/photos', label: 'Photo Review', Icon: ImageIcon, match: (p: string) => p.startsWith('/admin/photos') },
-  { href: '/admin/members', label: 'Members & Roles', Icon: Users, match: (p: string) => p.startsWith('/admin/members') },
-  { href: '/admin/verifications', label: 'ID Checks', Icon: BadgeCheck, match: (p: string) => p.startsWith('/admin/verifications') },
-  { href: '/admin/moderation', label: 'Messages', Icon: MessageSquareWarning, match: (p: string) => p.startsWith('/admin/moderation') },
+  { href: '/admin', label: 'Reports', match: (p: string) => p === '/admin' || p.startsWith('/admin/reports') },
+  { href: '/admin/photos', label: 'Photos', match: (p: string) => p.startsWith('/admin/photos') },
+  { href: '/admin/members', label: 'Members', match: (p: string) => p.startsWith('/admin/members') },
+  { href: '/admin/verifications', label: 'ID Checks', match: (p: string) => p.startsWith('/admin/verifications') },
+  { href: '/admin/moderation', label: 'Messages', match: (p: string) => p.startsWith('/admin/moderation') },
 ];
 
-/** Admin Console top bar: wordmark + Admin badge, section tabs, signed-in staff badge. */
+const ROLE_BADGE: Record<AdminRole, string> = {
+  super_admin: 'bg-gradient-to-r from-[#8C71F5] to-[#EC4899] text-white',
+  moderator: 'bg-[#8C71F5]/10 text-[#6555B8] border border-[#8C71F5]/25',
+  member: 'bg-[#F9F8FC] text-[#6C637B] border border-[#ECE8F4]',
+};
+
+/** Admin Console mobile header (wordmark, ADMIN pill, staff badge, Exit) + pill tab bar. */
 export function AdminHeader({ name, role }: { name: string; role: AdminRole }) {
   const pathname = usePathname() || '/admin';
   return (
-    <header className="sticky top-0 z-40 bg-white/85 backdrop-blur-md border-b border-[#ECE8F4]">
-      <div className="px-4 sm:px-6 h-14 flex items-center justify-between gap-3">
-        <div className="flex items-center gap-2 min-w-0">
+    <div className="sticky top-0 z-30">
+      <header className="h-14 bg-white/95 backdrop-blur-md border-b border-[#ECE8F4] px-4 flex items-center justify-between gap-2">
+        <div className="flex items-center gap-1.5 min-w-0">
           <BrandLogo size="header" href="/admin" />
-          <span className="px-2 py-0.5 rounded-full bg-[#F3EFFC] border border-[#E2DBF0] text-[10px] font-bold uppercase tracking-wider text-[#6555B8]">
-            Admin
-          </span>
+          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[#8C71F5]/10 text-[#8C71F5]">ADMIN</span>
         </div>
-        <span className="hidden sm:inline-flex items-center gap-1.5 text-xs text-[#6C637B] truncate">
-          Signed in as <strong className="text-[#2D264B]">{name}</strong>
-          <span className="px-2 py-0.5 rounded-full bg-[#2D264B] text-white text-[10px] font-semibold">{ADMIN_ROLE_LABEL[role]}</span>
-        </span>
-      </div>
-      <nav className="px-2 sm:px-4 flex items-center gap-1 overflow-x-auto no-scrollbar" aria-label="Admin sections">
-        {TABS.map(({ href, label, Icon, match }) => {
+        <div className="flex items-center gap-2.5 min-w-0">
+          <span className="flex items-center gap-1 min-w-0">
+            <span className="text-xs font-semibold text-[#2D264B] truncate max-w-[72px]">{name}</span>
+            <span className={`shrink-0 rounded-full px-1.5 py-0.5 text-[10px] font-bold ${ROLE_BADGE[role]}`}>{ADMIN_ROLE_LABEL[role]}</span>
+          </span>
+          <Link href="/discover" className="shrink-0 text-xs text-neutral-500 hover:text-neutral-800 flex items-center gap-1">
+            <LogOut className="w-3.5 h-3.5" aria-hidden />
+            Exit
+          </Link>
+        </div>
+      </header>
+      <nav
+        className="flex items-center gap-2 overflow-x-auto no-scrollbar px-4 py-2.5 border-b border-[#ECE8F4] bg-[#FAF8FD]"
+        aria-label="Admin sections"
+      >
+        {TABS.map(({ href, label, match }) => {
           const active = match(pathname);
           return (
             <Link
               key={href}
               href={href}
               aria-current={active ? 'page' : undefined}
-              className={`shrink-0 inline-flex items-center gap-1.5 px-3 py-2.5 text-xs font-semibold border-b-2 transition-colors ${
-                active ? 'border-[#6555B8] text-[#6555B8]' : 'border-transparent text-[#6C637B] hover:text-[#2D264B]'
+              className={`shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold transition-colors ${
+                active ? 'bg-[#2D264B] text-white' : 'bg-white text-neutral-600 border border-[#ECE8F4] hover:text-[#2D264B]'
               }`}
             >
-              <Icon className="w-3.5 h-3.5" aria-hidden />
               {label}
             </Link>
           );
         })}
-        <Link
-          href="/discover"
-          className="shrink-0 ml-auto inline-flex items-center gap-1.5 px-3 py-2.5 text-xs font-semibold text-[#6C637B] hover:text-[#2D264B]"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" aria-hidden />
-          Back to App
-        </Link>
       </nav>
-      <p className="sm:hidden px-4 pb-2 text-[11px] text-[#6C637B]">
-        Signed in as <strong className="text-[#2D264B]">{name}</strong> ({ADMIN_ROLE_LABEL[role]})
-      </p>
-    </header>
+    </div>
   );
 }
 

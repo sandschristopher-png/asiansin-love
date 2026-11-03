@@ -16,6 +16,7 @@ import { isPlusProfile } from '@/lib/plus';
 import { HeightInput, LanguagePicker, LifestylePills } from '@/components/profile/LifestyleFields';
 import { readLanguages } from '@/lib/constants/languages';
 import { LIFESTYLE_KEYS, readHeightCm, readLifestyle, type LifestyleValues } from '@/lib/lifestyle';
+import { AilPlusBadge } from '@/components/ui/AilPlusBadge';
 
 
 
@@ -523,7 +524,7 @@ export default function EditProfilePage() {
             {initialHasUsername ? (
               <div className="flex items-center justify-between">
                 <span className="font-mono text-sm text-[#1C1924] font-medium">{username}</span>
-                <button type="button" onClick={() => setShowUpgradeModal(true)} className="text-xs px-2.5 py-1 rounded-lg bg-[#F3EFFC] border border-[#DDD7E5] text-[#6555b8] hover:bg-[#EAE0F5] transition flex items-center gap-1.5 font-medium cursor-pointer" title="Change handle with AIL+"><span>Handle Locked</span><span className="text-[10px] font-bold bg-[#6555b8] text-white px-1.5 py-[2px] rounded-full">AIL+</span></button>
+                <button type="button" onClick={() => setShowUpgradeModal(true)} className="text-xs px-2.5 py-1 rounded-lg bg-[#F3EFFC] border border-[#DDD7E5] text-[#6555b8] hover:bg-[#EAE0F5] transition flex items-center gap-1.5 font-medium cursor-pointer" title="Change handle with AIL+"><span>Handle Locked</span><AilPlusBadge size="sm" /></button>
               </div>
             ) : (
               <div>
@@ -855,8 +856,8 @@ export default function EditProfilePage() {
                   <span className={'absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-all ' + (travel.active ? 'left-5' : 'left-1')} />
                 </button>
               ) : (
-                <Link href="/plus" className="shrink-0 text-[10px] font-bold bg-[#6555b8] text-white px-2 py-1 rounded-full">
-                  AIL+
+                <Link href="/plus" className="shrink-0" aria-label="Unlock with ail+">
+                  <AilPlusBadge size="sm" />
                 </Link>
               )}
             </div>

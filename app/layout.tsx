@@ -2,22 +2,11 @@ import type { Metadata, Viewport } from 'next';
 
 import PwaRegister from "@/components/PwaRegister";
 
-import { Playwrite_IT_Moderna, Plus_Jakarta_Sans } from 'next/font/google';
+import { Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 import { LayoutShell } from '@/components/LayoutShell';
 
-// Playwrite IT Moderna: the ail+ member badge ONLY (components/AilBadge.tsx), via
-// var(--font-logo) / .font-logo. The asiansin.love wordmark is Plus Jakarta Sans (font-brand).
-// Playwrite ships without a 'latin' subset in next/font, so it is not preloaded; display: swap
-// keeps the cursive fallback visible until it loads.
-const playwrite = Playwrite_IT_Moderna({
-  weight: ['400'],
-  display: 'swap',
-  variable: '--font-logo',
-  fallback: ['cursive'],
-});
-
-// Plus Jakarta Sans: everything else - headings, labels, badges, buttons, body.
+// Plus Jakarta Sans: the only typeface - headings, labels, badges, buttons, body.
 // var(--font-sans) is Tailwind's font-sans; var(--font-brand) / font-brand (wordmark, headlines)
 // is aliased to the same font in globals.css, so the family is downloaded once.
 const plusJakarta = Plus_Jakarta_Sans({
@@ -77,7 +66,7 @@ export default function RootLayout({
 }) {
 
   return (
-    <html lang="en" className={`h-full ${plusJakarta.variable} ${playwrite.variable}`}>
+    <html lang="en" className={`h-full ${plusJakarta.variable}`}>
       <body className="font-sans bg-[#ECE9F1] text-[#1C1924] h-full selection:bg-[#6555B8] selection:text-white antialiased overflow-hidden">
         <LayoutShell>{children}</LayoutShell>
         <PwaRegister />

@@ -205,18 +205,16 @@ export default function AdminVerificationsPage() {
   );
 
   return (
-    <div className="min-h-full bg-[#F9F8FC] text-[#1C1924] pb-[calc(5rem+env(safe-area-inset-bottom,16px))]">
-      <div className="px-4 pt-6 space-y-5">
-        <header className="space-y-3 border-b border-[#ECE8F4] pb-4">
+    <div className="text-[#1C1924]">
+      <div className="space-y-4">
+        <header className="space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <div className="p-2 bg-[#F3EFFC] border border-[#E5E1EC] rounded-xl text-[#6555B8]">
-                <BadgeCheck className="w-5 h-5" />
+                <BadgeCheck className="w-4 h-4" />
               </div>
               <div>
-                <h1 className="text-xl font-bold tracking-tight" style={{ fontFamily: 'var(--font-brand)' }}>
-                  Verification Queue
-                </h1>
+                <h1 className="text-lg font-bold text-[#2D264B]">ID Checks</h1>
                 <p className="text-xs text-[#6C637B]">
                   {loading ? 'Loading...' : `${identity.length} pending identity check${identity.length === 1 ? '' : 's'}`} · main photos · reports
                 </p>

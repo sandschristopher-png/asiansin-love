@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useCallback, useEffect, useState } from 'react';
-import { BadgeCheck, CheckCircle2, ImageOff, MapPin, RefreshCw, XCircle } from 'lucide-react';
+import { BadgeCheck, CheckCircle2, ImageOff, MapPin, RefreshCw, X, XCircle } from 'lucide-react';
 import { ReputationBadge } from '@/components/ReputationBadge';
 import { AdminAvatar, AdminButton, EmptyState, Loading, Notice, PageTitle, adminFetch, timeAgo } from '@/components/admin/ui';
 
@@ -25,6 +25,7 @@ function PhotoCard({ member, onDone }: { member: PendingMember; onDone: (id: str
   const [points, setPoints] = useState(0);
   const [busy, setBusy] = useState<string | null>(null);
   const [error, setError] = useState('');
+  const [expanded, setExpanded] = useState<string | null>(null);
 
   const run = async (action: string, extra: Record<string, unknown> = {}) => {
     setBusy(action);
@@ -51,7 +52,7 @@ function PhotoCard({ member, onDone }: { member: PendingMember; onDone: (id: str
     });
 
   return (
-    <article className="rounded-2xl border border-[#ECE8F4] bg-white p-4 shadow-xs">
+    <article className="p-4 rounded-2xl border border-[#ECE8F4] bg-white mb-3 shadow-2xs">
       <div className="flex items-center gap-3">
         <AdminAvatar url={member.avatarUrl} name={member.name} size={44} />
         <div className="min-w-0 flex-1">
@@ -84,11 +85,12 @@ function PhotoCard({ member, onDone }: { member: PendingMember; onDone: (id: str
               <button
                 type="button"
                 key={url}
-                onClick={() => rejecting && toggle(url)}
+                onClick={() => (rejecting ? toggle(url) : setExpanded(url))}
+                aria-label={rejecting ? `Flag photo` : `Expand photo`}
                 aria-pressed={rejecting ? flagged : undefined}
                 className={`relative aspect-[3/4] overflow-hidden rounded-xl border ${
                   flagged ? 'border-rose-500 ring-2 ring-rose-300' : 'border-[#ECE8F4]'
-                } ${rejecting ? 'cursor-pointer' : 'cursor-default'}`}
+                } cursor-pointer`}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={url} alt={`${member.name} photo`} className={`w-full h-full object-cover ${flagged ? 'opacity-50' : ''}`} />
@@ -116,7 +118,7 @@ function PhotoCard({ member, onDone }: { member: PendingMember; onDone: (id: str
             onChange={(e) => setReason(e.target.value)}
             maxLength={200}
             placeholder="Reason shown to the member (optional)"
-            className="w-full rounded-xl border border-[#ECE8F4] bg-white px-3 py-2 text-sm outline-none focus:border-[#8C71F5]"
+            className="w-full h-10 rounded-xl border border-[#ECE8F4] bg-white px-3 text-sm outline-none focus:border-[#8C71F5]"
           />
           <div className="flex flex-wrap items-center gap-2">
             <label className="text-xs text-[#6C637B]" htmlFor={`pen-${member.id}`}>
@@ -126,38 +128,42 @@ function PhotoCard({ member, onDone }: { member: PendingMember; onDone: (id: str
               id={`pen-${member.id}`}
               value={points}
               onChange={(e) => setPoints(Number(e.target.value))}
-              className="rounded-lg border border-[#ECE8F4] bg-white px-2 py-1 text-xs"
+              className="h-9 rounded-lg border border-[#ECE8F4] bg-white px-2 text-sm"
             >
               <option value={0}>None</option>
               <option value={5}>-5%</option>
               <option value={10}>-10%</option>
               <option value={20}>-20%</option>
             </select>
+          </div>
+          <div className="grid grid-cols-2 gap-2">
+            <AdminButton size="lg" onClick={() => setRejecting(false)} disabled={!!busy}>
+              Cancel
+            </AdminButton>
             <AdminButton
+              size="lg"
               tone="danger"
-              className="ml-auto"
               busy={busy === 'reject'}
               disabled={selected.size === 0 || !!busy}
               onClick={() => run('reject', { removePhotos: [...selected], reason: reason || undefined, points })}
             >
               Remove photos
             </AdminButton>
-            <AdminButton onClick={() => setRejecting(false)} disabled={!!busy}>
-              Cancel
-            </AdminButton>
           </div>
         </div>
       ) : (
-        <div className="mt-3 flex flex-wrap gap-2">
-          <AdminButton tone="primary" busy={busy === 'approve'} disabled={!!busy} onClick={() => run('approve')}>
-            <CheckCircle2 className="w-3.5 h-3.5" aria-hidden />
+        <div className="mt-3 grid grid-cols-2 gap-2">
+          <AdminButton size="lg" tone="primary" busy={busy === 'approve'} disabled={!!busy} onClick={() => run('approve')}>
+            <CheckCircle2 className="w-4 h-4" aria-hidden />
             Approve
           </AdminButton>
-          <AdminButton tone="danger" disabled={!!busy || member.photos.length === 0} onClick={() => setRejecting(true)}>
-            <ImageOff className="w-3.5 h-3.5" aria-hidden />
+          <AdminButton size="lg" tone="danger" disabled={!!busy || member.photos.length === 0} onClick={() => setRejecting(true)}>
+            <ImageOff className="w-4 h-4" aria-hidden />
             Reject
           </AdminButton>
           <AdminButton
+            size="lg"
+            className="col-span-2"
             busy={busy === 'verify' || busy === 'unverify'}
             disabled={!!busy}
             onClick={() => run(verified ? 'unverify' : 'verify')}
@@ -165,6 +171,16 @@ function PhotoCard({ member, onDone }: { member: PendingMember; onDone: (id: str
             <BadgeCheck className="w-3.5 h-3.5" aria-hidden />
             {verified ? 'Remove Verified Badge' : 'Verify Badge'}
           </AdminButton>
+        </div>
+      )}
+
+      {expanded && (
+        <div className="fixed inset-0 z-50 bg-[#1C1924]/90 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Photo" onClick={() => setExpanded(null)}>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={expanded} alt={`${member.name} photo`} className="w-full max-w-[398px] max-h-full rounded-2xl object-contain" />
+          <button type="button" className="absolute top-4 right-4 p-2 rounded-full bg-white/15 text-white" aria-label="Close">
+            <X className="w-5 h-5" />
+          </button>
         </div>
       )}
     </article>
@@ -210,7 +226,7 @@ export default function AdminPhotosPage() {
       ) : members.length === 0 ? (
         <EmptyState icon={CheckCircle2} title="All caught up" body="No photos are waiting for review." />
       ) : (
-        <div className="grid gap-3 md:grid-cols-2">
+        <div>
           {members.map((m) => (
             <PhotoCard
               key={m.id}

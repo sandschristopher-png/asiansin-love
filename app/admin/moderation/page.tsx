@@ -48,19 +48,23 @@ export default function AdminModerationPage() {
   const [reviewNotes, setReviewNotes] = useState('');
   const [actionFeedback, setActionFeedback] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
+  // A stalled request must never leave the spinner up: abort after 15 s and show Retry.
   const fetchQuarantinedMessages = useCallback(async () => {
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), 15000);
     try {
       setLoading(true);
       setError(null);
-      const res = await fetch('/api/admin/moderation');
+      const res = await fetch('/api/admin/moderation', { cache: 'no-store', signal: controller.signal });
+      const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        throw new Error(`Failed to load queue (Status: ${res.status})`);
+        throw new Error(data.error || `Failed to load queue (Status: ${res.status})`);
       }
-      const data = await res.json();
-      setMessages(data.messages || []);
+      setMessages(Array.isArray(data.messages) ? data.messages : []);
     } catch (err: any) {
-      setError(err.message || 'Unable to fetch moderation queue.');
+      setError(err?.name === 'AbortError' ? 'The queue took too long to load.' : err.message || 'Unable to fetch moderation queue.');
     } finally {
+      clearTimeout(timer);
       setLoading(false);
     }
   }, []);
@@ -126,19 +130,17 @@ export default function AdminModerationPage() {
   const getReputationBadge = (score?: number) => <ReputationBadge score={score ?? 100} />;
 
   return (
-    <div className="min-h-screen bg-[#F9F8FC] text-[#1C1924] font-sans pb-16">
-      {/* Mobile-Sized Single Column Container */}
-      <div className="max-w-2xl mx-auto px-4 pt-6 space-y-5">
-        
-        {/* Sticky-Friendly Header */}
-        <header className="space-y-3 border-b border-[#ECE8F4] pb-4">
+    <div className="text-[#1C1924]">
+      {/* Inside the Admin Console's mobile frame (app/admin/layout.tsx) */}
+      <div className="space-y-4">
+        <header className="space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
               <div className="p-2 bg-rose-50 border border-rose-200 rounded-xl text-rose-600">
-                <ShieldAlert className="w-5 h-5" />
+                <ShieldAlert className="w-4 h-4" />
               </div>
               <div>
-                <h1 className="text-xl font-bold tracking-tight" style={{ fontFamily: 'var(--font-brand)' }}>Moderation Queue</h1>
+                <h1 className="text-lg font-bold text-[#2D264B]">Messages</h1>
                 <p className="text-xs text-[#6C637B]">Review quarantined safety incidents</p>
               </div>
             </div>
@@ -162,7 +164,7 @@ export default function AdminModerationPage() {
               placeholder="Filter by keyword or username..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2.5 bg-white border border-[#ECE8F4] rounded-xl text-sm placeholder:text-[#9A93A8] focus:outline-none focus:border-[#6555B8] text-[#1C1924]"
+              className="w-full h-10 pl-9 pr-4 bg-white border border-[#ECE8F4] rounded-xl text-sm placeholder:text-[#9A93A8] focus:outline-none focus:border-[#6555B8] text-[#1C1924]"
             />
           </div>
         </header>
@@ -235,7 +237,7 @@ export default function AdminModerationPage() {
                   <div className="flex items-center justify-between text-xs">
                     <div className="flex items-center gap-2">
                       <User className="w-3.5 h-3.5 text-[#6C637B]" />
-                      <span className="font-medium text-[#1C1924] truncate max-w-[140px] sm:max-w-none">
+                      <span className="font-medium text-[#1C1924] truncate max-w-[140px]">
                         {senderLabel}
                       </span>
                       {getReputationBadge(msg.sender?.reputation_score)}
@@ -247,7 +249,7 @@ export default function AdminModerationPage() {
                   </div>
 
                   {/* Flagged Content Preview */}
-                  <p className="text-xs sm:text-sm text-[#3D3650] font-mono bg-[#F9F8FC] p-3 rounded-xl border border-[#ECE8F4] break-words line-clamp-3">
+                  <p className="text-sm text-[#3D3650] bg-[#F9F8FC] p-3 rounded-xl border border-[#ECE8F4] break-words line-clamp-3">
                     "{msg.content}"
                   </p>
 
@@ -268,7 +270,7 @@ export default function AdminModerationPage() {
 
       {/* Mobile-First Bottom Sheet / Centered Modal */}
       {activeMessage && (
-        <div className="fixed inset-0 z-[70] flex items-end sm:items-center justify-center">
+        <div className="fixed inset-0 z-[70] flex items-end justify-center" role="dialog" aria-modal="true" aria-label="Review message">
           {/* Backdrop */}
           <div
             className="fixed inset-0 bg-[#1C1924]/40 backdrop-blur-sm transition-opacity"
@@ -276,9 +278,9 @@ export default function AdminModerationPage() {
           />
 
           {/* Drawer Body */}
-          <div className="relative w-full sm:max-w-lg bg-white border-t sm:border border-[#ECE8F4] rounded-t-3xl sm:rounded-2xl max-h-[92vh] overflow-y-auto p-5 sm:p-6 space-y-5 shadow-2xl z-10 animate-in slide-in-from-bottom duration-200">
+          <div className="relative w-full max-w-[430px] mx-auto bg-white border-t border-[#ECE8F4] rounded-t-3xl max-h-[85dvh] overflow-y-auto p-5 space-y-5 shadow-2xl z-10 animate-in slide-in-from-bottom duration-200">
             {/* Sheet Grab Handle on Mobile */}
-            <div className="w-12 h-1.5 bg-[#E5E1EC] rounded-full mx-auto sm:hidden" />
+            <div className="w-10 h-1 bg-[#ECE8F4] rounded-full mx-auto" />
 
             <div className="flex items-center justify-between pb-2 border-b border-[#ECE8F4]">
               <div className="flex items-center gap-2">
@@ -287,6 +289,7 @@ export default function AdminModerationPage() {
               </div>
               <button
                 onClick={() => setActiveMessage(null)}
+                aria-label="Close"
                 className="p-1.5 rounded-full text-[#6C637B] hover:text-[#1C1924] hover:bg-[#F3EFFC] transition"
               >
                 <X className="w-5 h-5" />
@@ -316,7 +319,7 @@ export default function AdminModerationPage() {
               <label className="text-[11px] font-semibold text-[#6C637B] uppercase tracking-wider">
                 Quarantined Content
               </label>
-              <div className="p-3.5 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-xs sm:text-sm font-mono break-words select-all">
+              <div className="p-3.5 bg-rose-50 border border-rose-200 rounded-xl text-rose-700 text-sm break-words select-all">
                 {activeMessage.content}
               </div>
             </div>

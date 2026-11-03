@@ -31,6 +31,7 @@ import { LanguagePicker } from '@/components/profile/LifestyleFields';
 import { HEIGHT_MAX_CM, HEIGHT_MIN_CM } from '@/lib/lifestyle';
 import { readLanguages } from '@/lib/constants/languages';
 import { ReputationBadge } from '@/components/ReputationBadge';
+import { AilPlusBadge } from '@/components/ui/AilPlusBadge';
 
 /** "Near Me" radius only when the viewer has no country on their profile. */
 const NEAR_ME_FALLBACK_KM = 150;
@@ -1224,8 +1225,8 @@ function DiscoverContent() {
                       <label className="text-[11px] font-bold text-[#6C637B] uppercase tracking-wider mb-2 flex items-center justify-between">
                         <span>Country</span>
                         {countryLocked && (
-                          <Link href="/plus" className="normal-case tracking-normal text-[10px] font-bold bg-[#6555B8] text-white px-2 py-0.5 rounded-full">
-                            AIL+
+                          <Link href="/plus" aria-label="Unlock with ail+">
+                            <AilPlusBadge size="sm" />
                           </Link>
                         )}
                       </label>

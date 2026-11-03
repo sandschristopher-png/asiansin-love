@@ -23,7 +23,7 @@ import {
 import { supabase } from '@/lib/supabase/client';
 import { hardSignOut } from '@/lib/hardSignOut';
 import { INTENT_OPTIONS, normalizeIntent, intentLabel } from '@/lib/intents';
-import { AilBadge } from '@/components/AilBadge';
+import { AilPlusBadge } from '@/components/ui/AilPlusBadge';
 import RepScoreCard from '@/components/RepScoreCard';
 import { ProfileHighlightsEditorRow } from '@/components/ProfileHighlightsEditorRow';
 import { VoicePlayer } from '@/components/VoicePlayer';
@@ -588,7 +588,7 @@ export default function MyProfilePage() {
                 >
                   {username.replace(/^@/, '')}{age ? ', ' + age : ''}
                 </h2>
-                {isPlus && <AilBadge />}
+                {isPlus && <AilPlusBadge />}
                 {verificationStatus === 'verified' && (
                   <span title="Verified Member">
                     <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />

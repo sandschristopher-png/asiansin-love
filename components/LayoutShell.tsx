@@ -23,12 +23,12 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
     !['/profile/edit', '/profile/reputation'].includes(cleanPath);
 
   const isChat = pathname?.startsWith('/chat');
-  // Admin Console has its own header / tabs and needs room for tables.
+  // Admin Console renders its own header / tabs inside the same mobile frame.
   const isAdmin = pathname === '/admin' || pathname?.startsWith('/admin/');
 
   return (
     <ActionToastProvider>
-    <div className={`w-full ${isAdmin ? 'max-w-5xl' : 'max-w-[430px]'} h-[100dvh] min-h-[100dvh] mx-auto bg-white flex flex-col sm:shadow-[0_0_48px_rgba(101,85,184,0.10)] relative sm:border-x sm:border-[#ECE8F4] overflow-hidden`}>
+    <div className={`w-full max-w-[430px] h-[100dvh] min-h-[100dvh] mx-auto bg-white flex flex-col sm:shadow-[0_0_48px_rgba(101,85,184,0.10)] relative sm:border-x sm:border-[#ECE8F4] overflow-hidden`}>
       {!isMarketingOrAuth && !isPublicProfile && !isChat && !isAdmin && <Navbar />}
       <div
         className={`flex-1 flex flex-col min-h-0 relative ${
