@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { ShieldCheck, AlertTriangle, CheckCircle2, X } from 'lucide-react';
+import { ReputationBadge } from '@/components/ReputationBadge';
 
 interface ReputationModalProps {
   isOpen: boolean;
@@ -78,10 +79,7 @@ export default function ReputationModal({
               {score >= 90 ? 'Unblemished: Exemplary standing' : 'Good standing: Active member'}
             </p>
           </div>
-          <div className="flex items-baseline gap-1 bg-white px-2.5 py-1 rounded-lg border border-[#DDD7E5]">
-            <span className="text-xl font-bold text-[#6555B8]">{score}</span>
-            <span className="text-[10px] font-semibold text-stone-400">/100</span>
-          </div>
+          <ReputationBadge score={score} size="md" />
         </div>
 
         {/* Trust Standards */}

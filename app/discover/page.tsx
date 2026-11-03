@@ -30,6 +30,7 @@ import { HeightRangeSlider } from '@/components/filters/HeightRangeSlider';
 import { LanguagePicker } from '@/components/profile/LifestyleFields';
 import { HEIGHT_MAX_CM, HEIGHT_MIN_CM } from '@/lib/lifestyle';
 import { readLanguages } from '@/lib/constants/languages';
+import { ReputationBadge } from '@/components/ReputationBadge';
 
 /** Regional spotlight pill: filters the already-loaded feed (no extra query). */
 const SPOTLIGHT_COUNTRY = 'Myanmar';
@@ -208,6 +209,7 @@ function DiscoverCardPhotoCarousel({
         </span>
       )}
       <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 z-20 pointer-events-none">
+        <ReputationBadge score={repScore} variant="frosted" size="xs" />
         <NewMemberPill createdAt={createdAt} />
         {online ? (
           <span className="h-2 w-2 rounded-full bg-emerald-500 ring-2 ring-white/90 shadow-xs shrink-0 animate-[pulse_3s_ease-in-out_infinite]" />
@@ -482,8 +484,10 @@ function DiscoverContent() {
 
   /** Re-reads the server-filtered feed (pull-to-refresh, filter reset, dev spark reset). */
   const fetchProfiles = async () => {
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 12_000);
     try {
-      const res = await fetch('/api/discover', { cache: 'no-store' });
+      const res = await fetch('/api/discover', { cache: 'no-store', signal: controller.signal });
       if (res.ok) {
         const payload = await res.json();
         if (Array.isArray(payload.profiles)) {
@@ -499,14 +503,22 @@ function DiscoverContent() {
           setProfiles(payload.profiles);
         }
       }
-    } catch {}
+    } catch {
+      // Network error / timeout: keep the current feed.
+    } finally {
+      window.clearTimeout(timeout);
+    }
   };
 
   const refreshFeed = async () => {
     if (isRefreshing) return;
     setIsRefreshing(true);
-    await fetchProfiles();
-    setTimeout(() => { setIsRefreshing(false); }, 400);
+    try {
+      await fetchProfiles();
+    } finally {
+      // Always settles, results or not (fetchProfiles also times out after 12 s).
+      setTimeout(() => { setIsRefreshing(false); }, 400);
+    }
   };
 
   const handlePullStart = (e: React.TouchEvent) => {
@@ -779,13 +791,13 @@ function DiscoverContent() {
         // Follows the finger 1:1 while pulling (no transition); animates open/closed otherwise.
         style={{ height: isRefreshing ? 40 : pullDistance, ...(pullDistance > 0 && !isRefreshing ? { transition: 'none' } : {}) }}
       >
-        <div
+        {(isRefreshing || pullDistance > 0) && <div
           role={isRefreshing ? 'status' : undefined}
           aria-label={isRefreshing ? 'Refreshing' : undefined}
           className={'w-5 h-5 border-2 border-[#6555B8] border-t-transparent rounded-full ' + (isRefreshing ? 'animate-spin' : '')}
           // While pulling, rotation tracks the pull; while refreshing, animate-spin owns transform.
           style={isRefreshing ? undefined : { transform: `rotate(${pullDistance * 6}deg)`, opacity: Math.min(1, pullDistance / 56) }}
-        />
+        />}
       </div>
       <main className="w-full max-w-md mx-auto px-4 pt-4 pb-36 relative">
         {/* Static Pinned Search & Filter Controls on Left + Horizontally Scrolling Categories on Right */}
@@ -917,10 +929,12 @@ function DiscoverContent() {
                 cityPart && countryPart && cityPart.toLowerCase() !== countryPart.toLowerCase()
                   ? `${cityPart}, ${countryPart}`
                   : cityPart || countryPart || 'Unknown';
+              // One result: keep the normal card size, centered, instead of hugging the left column.
+              const single = visibleProfiles.length === 1;
               return (
                 <div
                   key={profile.id}
-                  className="group relative isolate rounded-2xl overflow-hidden aspect-[4/5] w-full bg-[#F2EEF7] border border-[#DDD7E5]/70 shadow-xs hover:shadow-md transition-all duration-300 select-none"
+                  className={`${single ? 'col-span-2 justify-self-center !w-[calc(50%-0.4375rem)] ' : ''}group relative isolate rounded-2xl overflow-hidden aspect-[4/5] w-full bg-[#F2EEF7] border border-[#DDD7E5]/70 shadow-xs hover:shadow-md transition-all duration-300 select-none`}
                 >
                   <DiscoverCardPhotoCarousel
                     profileId={profile.id}

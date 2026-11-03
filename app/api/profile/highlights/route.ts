@@ -75,8 +75,12 @@ export async function POST(req: Request) {
     payload.push({ tag_id: item.tag_id, highlight_story: s.result.sanitizedText });
   }
 
-  // Run as the member: the RPC writes rows for auth.uid().
-  const { error } = await session.rpc('update_user_highlights', { p_highlights: payload });
+  // Server-only writer (20261110_highlights_rpc_lockdown.sql): runs update_user_highlights as this
+  // member. Before that migration exists, fall back to calling it with the member's session.
+  let { error } = await service.rpc('server_update_user_highlights', { p_user_id: userId, p_highlights: payload });
+  if (error && /server_update_user_highlights|could not find the function|PGRST202/i.test(`${error.code} ${error.message}`)) {
+    ({ error } = await session.rpc('update_user_highlights', { p_highlights: payload }));
+  }
   if (error) {
     console.error('[api/profile/highlights] save failed:', error.message);
     return NextResponse.json({ error: 'Could not save your highlights.' }, { status: 500 });

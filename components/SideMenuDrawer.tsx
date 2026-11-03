@@ -23,6 +23,7 @@ import {
 import { supabase } from '@/lib/supabase/client';
 import { hardSignOut } from '@/lib/hardSignOut';
 import { BrandLogo } from '@/components/BrandLogo';
+import { ReputationBadge } from '@/components/ReputationBadge';
 
 interface SideMenuDrawerProps {
   isOpen: boolean;
@@ -180,9 +181,7 @@ export function SideMenuDrawer({ isOpen, onClose, onOpenFilters }: SideMenuDrawe
                     {profile.username}
                   </span>
                   <div className="flex items-center gap-1.5 mt-1">
-                    <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-[#F3EFFC] text-[#6555B8] border border-[#E2D9F3]">
-                      <ShieldCheck className="w-3 h-3 inline-block -mt-px mr-0.5" aria-hidden />{profile.reputationScore}% Rep
-                    </span>
+                    <ReputationBadge score={profile.reputationScore} size="xs" />
                     {profile.isVerified && (
                       <span className="inline-flex items-center gap-0.5 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                         <MapPin className="w-2.5 h-2.5" /> GPS
@@ -314,7 +313,7 @@ export function SideMenuDrawer({ isOpen, onClose, onOpenFilters }: SideMenuDrawe
                     className="flex items-center gap-3 py-2 text-[14px] font-medium text-[#1C1924] hover:text-[#6555B8] transition"
                   >
                     <HelpCircle className="w-4 h-4 text-[#6C637B]" />
-                    <span>Safety Guide &amp; Rep Scoring</span>
+                    <span>Safety Guide &amp; Reputation</span>
                   </Link>
                 </li>
               </ul>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { rhythmOption, RHYTHM_FIELDS, type RhythmField, type RhythmOption } from '@/lib/rhythm';
 import { reputationTier } from '@/lib/reputation';
+import { ReputationBadge } from '@/components/ReputationBadge';
 
 const REP_TIER_CLASS = {
   good: 'bg-[#F3EFFC] border-[#E2DBF0] text-[#6555B8]',
@@ -8,7 +9,7 @@ const REP_TIER_CLASS = {
   low: 'bg-rose-50 border-rose-200 text-rose-700',
 } as const;
 
-/** 90-100 "9X% Rep" (lilac), 70-89 "Fair Rep" (amber), under 70 "Low Rep / Under Review" (red). */
+/** Reputation pill ("[Shield] 98%", tier-colored); kept for existing callers. */
 export function RepBadge({
   score,
   onClick,
@@ -18,15 +19,7 @@ export function RepBadge({
   onClick?: () => void;
   className?: string;
 }) {
-  const { tier, label } = reputationTier(score);
-  const cls = `inline-flex items-center px-2.5 py-1 rounded-full border text-[10px] font-semibold whitespace-nowrap ${REP_TIER_CLASS[tier]} ${className}`;
-  return onClick ? (
-    <button type="button" onClick={onClick} className={`${cls} transition active:scale-95 cursor-pointer`}>
-      {label}
-    </button>
-  ) : (
-    <span className={cls}>{label}</span>
-  );
+  return <ReputationBadge score={score} onClick={onClick} className={className} />;
 }
 
 /** Small pill for a rhythm value (reply pace, relocation, timeline). Renders nothing when unset. */

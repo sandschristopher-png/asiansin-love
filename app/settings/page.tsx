@@ -304,7 +304,7 @@ export default function SettingsHubPage() {
               </div>
               <div>
                 <p className="text-xs font-bold text-[#1C1924]">Reputation &amp; Conduct Standing</p>
-                <p className="text-[11px] text-[#6C637B]">Community health score (100/100)</p>
+                <p className="text-[11px] text-[#6C637B]">Community trust and conduct</p>
               </div>
             </div>
             <ChevronRight className="w-4 h-4 text-[#8C849B]" />

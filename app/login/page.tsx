@@ -3,11 +3,10 @@
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
 import { createBrowserClient } from "@supabase/ssr";
-import { Eye, EyeOff, Loader2, LogIn } from "lucide-react";
+import { Eye, EyeOff, Loader2 } from "lucide-react";
 import { BrandLogo } from "@/components/BrandLogo";
 import { InAppToast } from "@/components/InAppToast";
 import { GoogleAuthButton } from "@/components/GoogleAuthButton";
-import { AuthTrustFooter } from '@/components/AuthTrustFooter';
 
 const RESET_EXPIRED_MESSAGE = "That password reset link has expired or was already used. Request a new one from Forgot?";
 
@@ -68,16 +67,16 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-[#FAF8FD] flex items-center justify-center p-4 sm:p-6 font-sans antialiased selection:bg-[#6555b8]/15 selection:text-[#6555b8]">
+    <div className="min-h-[100dvh] w-full bg-[#FAF8FD] flex items-center justify-center px-4 py-3 sm:p-6 font-sans antialiased selection:bg-[#6555b8]/15 selection:text-[#6555b8]">
       <InAppToast message={toast} onClose={closeToast} durationMs={7000} />
-      <main className="w-full max-w-[420px] bg-white rounded-3xl border border-[#DDD7E5] shadow-xl shadow-[#1C1536]/5 p-7 sm:p-9 space-y-6">
+      <main className="w-full max-w-[420px] bg-white rounded-3xl border border-[#ECE8F4] shadow-xl shadow-[#1C1536]/5 px-6 py-6 sm:p-9 space-y-5">
         
         {/* Brand Header */}
-        <div className="text-center space-y-2">
-          <div className="flex justify-center mb-3">
-            <BrandLogo size="md" />
+        <div className="text-center space-y-1.5">
+          <div className="flex justify-center mb-2">
+            <BrandLogo size="header" href="/" />
           </div>
-          <h1 className="text-2xl font-black text-[#1C1924] tracking-tight">Welcome back</h1>
+          <h1 className="font-brand text-2xl font-extrabold text-[#2D264B] tracking-tight">Welcome back</h1>
           <p className="text-xs text-[#6C637B]">
             Sign in to continue your journey.
           </p>
@@ -146,7 +145,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 px-6 rounded-2xl bg-[#6555B8] text-white text-xs font-bold flex items-center justify-center gap-2 shadow-md shadow-[#6555B8]/20 hover:bg-[#5444A0] active:scale-[0.99] transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+            className="w-full py-3.5 px-6 rounded-xl bg-[#6555B8] text-white text-sm font-bold flex items-center justify-center gap-2 shadow-md shadow-[#6555B8]/20 hover:bg-[#5444A0] active:scale-[0.99] transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {loading ? (
               <>
@@ -154,41 +153,29 @@ export default function LoginPage() {
                 <span>Signing in...</span>
               </>
             ) : (
-              <>
-                <LogIn className="w-4 h-4" />
-                <span>Sign In</span>
-              </>
+              <span>Sign In</span>
             )}
           </button>
+          <p className="text-center text-[11.5px] text-[#8C849B]">100% private. We never post to external accounts.</p>
         </form>
 
-        <AuthTrustFooter />
-
         {/* Bottom Signup Action */}
-        <div className="pt-2 text-center text-xs text-[#6C637B]">
-          New to Asians in Love?{" "}
+        <div className="text-center text-xs text-[#6C637B]">
+          New to asiansin.love?{" "}
           <Link
             href="/signup"
             className="font-bold text-[#6555B8] hover:underline transition"
           >
-            Create your free profile
+            Create an account
           </Link>
         </div>
 
         {/* Legal */}
-        <p className="text-[11px] leading-relaxed text-[#8C849B] text-center pt-1 border-t border-[#F0EDF5]">
+        <p className="text-[11px] leading-relaxed text-[#9A93A8] text-center">
           By continuing, you agree to our{" "}
-          <Link href="/terms" className="font-semibold text-[#6555B8] hover:underline">
-            Terms of Service
-          </Link>{" "}and{" "}
-          <Link href="/privacy" className="font-semibold text-[#6555B8] hover:underline">
-            Privacy Policy
-          </Link>
-          . Read our{" "}
-          <Link href="/safety" className="font-semibold text-[#6555B8] hover:underline">
-            Safety Guide
-          </Link>
-          .
+          <Link href="/terms" className="font-semibold text-[#6555B8] hover:underline">Terms</Link>
+          {" "}and{" "}
+          <Link href="/privacy" className="font-semibold text-[#6555B8] hover:underline">Privacy Policy</Link>.
         </p>
       </main>
     </div>

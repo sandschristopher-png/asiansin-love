@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { MessageCircle, Search, ChevronRight, ShieldCheck } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
+import { ReputationBadge } from '@/components/ReputationBadge';
 
 interface ConversationItem {
   id: string;
@@ -317,10 +318,7 @@ export default function MessagesPage() {
                     className="rounded-full object-cover w-12 h-12 border border-[#E5DFEE]"
                   />
                   {conv.repScore !== undefined && (
-                    <span className="absolute -bottom-0.5 -right-0.5 bg-[#F5F2FC] px-1.5 py-0.2 rounded-full text-[9px] font-bold text-[#6555B8] border border-[#E2DBF0] flex items-center gap-0.5">
-                      <ShieldCheck className="w-2.5 h-2.5 text-[#6555B8]" />
-                      {conv.repScore}%
-                    </span>
+                    <ReputationBadge score={conv.repScore} size="xs" className="absolute -bottom-1 -right-1.5 shadow-xs" />
                   )}
                 </div>
 

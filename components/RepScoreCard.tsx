@@ -2,7 +2,8 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { HelpCircle } from 'lucide-react';
+import { HelpCircle, ShieldCheck } from 'lucide-react';
+import { reputationTokens } from '@/lib/utils/reputation';
 
 export interface RepScoreCardProps {
   score?: number;
@@ -17,28 +18,28 @@ export interface RepScoreCardProps {
 export function RepScoreCard({
   score = 100,
 }: RepScoreCardProps) {
-  const clampedScore = Math.min(100, Math.max(0, score));
+  const t = reputationTokens(score);
 
   return (
     <div className="w-full rounded-2xl bg-white border border-[#E5E1EC] p-4 sm:p-5 shadow-xs flex flex-col gap-3 text-[#1C1924]">
       {/* Header & Score */}
       <div className="flex items-center justify-between">
         <div className="flex-1 min-w-0 pr-3">
-          <h3 className="text-sm font-semibold tracking-tight text-[#1C1924]">Reputation Score</h3>
+          <h3 className="text-sm font-semibold tracking-tight text-[#1C1924]">Reputation</h3>
           <p className="text-xs text-[#756D82]">Community trust & conduct health</p>
         </div>
 
-        <div className="shrink-0 flex items-center justify-center gap-0.5 px-3 py-1.5 rounded-xl bg-[#6555B8]/10 text-[#6555B8] font-bold text-sm whitespace-nowrap min-w-fit">
-          <span className="text-2xl leading-none">{clampedScore}</span>
-          <span className="text-xs font-semibold text-[#6555B8]/70">/100</span>
+        <div className={`shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-bold whitespace-nowrap ${t.light.container} ${t.light.text}`}>
+          <ShieldCheck className={`w-4 h-4 ${t.light.icon}`} aria-hidden />
+          <span className="text-xl leading-none tabular-nums">{t.percent}</span>
         </div>
       </div>
 
       {/* Progress Bar */}
-      <div className="w-full bg-[#F3EFFC] rounded-full h-1.5 overflow-hidden">
+      <div className={`w-full rounded-full h-1.5 overflow-hidden ${t.light.track}`}>
         <div
-          className="bg-[#6555B8] h-full rounded-full transition-all duration-500"
-          style={{ width: `${clampedScore}%` }}
+          className={`h-full rounded-full transition-all duration-500 ${t.light.bar}`}
+          style={{ width: t.percent }}
         />
       </div>
 

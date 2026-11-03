@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { AdminTabs } from '@/components/admin/AdminTabs';
 import { REPUTATION_RULES } from '@/lib/reputation';
+import { ReputationBadge } from '@/components/ReputationBadge';
 
 interface ModeratedMessage {
   id: string;
@@ -123,28 +124,7 @@ export default function AdminModerationPage() {
     );
   });
 
-  const getReputationBadge = (score?: number) => {
-    const s = score ?? 100;
-    if (s >= 80) {
-      return (
-        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-emerald-50 text-emerald-600 border border-emerald-200">
-          Rep {s}
-        </span>
-      );
-    }
-    if (s >= 50) {
-      return (
-        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-amber-50 text-amber-600 border border-amber-200">
-          Rep {s}
-        </span>
-      );
-    }
-    return (
-      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[11px] font-semibold bg-rose-50 text-rose-600 border border-rose-200">
-        Rep {s}
-      </span>
-    );
-  };
+  const getReputationBadge = (score?: number) => <ReputationBadge score={score ?? 100} />;
 
   return (
     <div className="min-h-screen bg-[#F9F8FC] text-[#1C1924] font-sans pb-16">

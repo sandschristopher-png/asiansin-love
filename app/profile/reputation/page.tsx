@@ -4,6 +4,8 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, ShieldCheck, ExternalLink } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
+import { ReputationBadge } from '@/components/ReputationBadge';
+import { reputationTokens } from '@/lib/utils/reputation';
 
 export default function ReputationScreen() {
   const [score, setScore] = useState<number>(100);
@@ -57,16 +59,13 @@ export default function ReputationScreen() {
                 {score >= 90 ? 'Unblemished Community Trust' : 'Active Member Standing'}
               </p>
             </div>
-            <div className="flex items-baseline gap-1 bg-[#FAF9FD] px-3 py-1.5 rounded-xl border border-[#ECE6F7]">
-              <span className="text-2xl font-bold text-[#6555B8]">{score}</span>
-              <span className="text-xs font-semibold text-[#8C849B]">/100</span>
-            </div>
+            <ReputationBadge score={score} size="md" />
           </div>
 
-          <div className="w-full bg-[#F3EFFC] rounded-full h-1.5 overflow-hidden">
+          <div className={`w-full rounded-full h-1.5 overflow-hidden ${reputationTokens(score).light.track}`}>
             <div
-              className="bg-[#6555B8] h-full rounded-full transition-all duration-500"
-              style={{ width: `${Math.min(100, Math.max(0, score))}%` }}
+              className={`h-full rounded-full transition-all duration-500 ${reputationTokens(score).light.bar}`}
+              style={{ width: reputationTokens(score).percent }}
             />
           </div>
         </div>

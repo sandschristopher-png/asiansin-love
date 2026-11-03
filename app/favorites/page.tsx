@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { Lock, Crown, Heart, User, Send, MessageCircle, Eye, type LucideIcon } from 'lucide-react';
 import { createBrowserClient } from '@supabase/ssr';
 import { CardPhoto } from '@/components/CardPhoto';
+import { ReputationBadge } from '@/components/ReputationBadge';
 
 type SparkTab = 'sparked' | 'sparked_you' | 'mutual' | 'visited';
 
@@ -432,7 +433,7 @@ export default function SparksPage() {
                 >
                   <SparkCardPhoto src={photo} name={publicName} className={`object-cover transition-transform duration-300 group-hover:scale-105 ${shouldBlur ? 'blur-md scale-110' : ''}`} />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent" />
-                  {!shouldBlur && <div className="absolute top-3 left-3 z-10 px-2.5 py-1 rounded-full bg-black/60 text-white text-[11px] font-semibold">{rep}% Rep</div>}
+                  {!shouldBlur && <ReputationBadge score={rep} variant="frosted" size="xs" className="absolute top-3 left-3 z-10" />}
                   <div className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-[#6555B8]/95 text-white flex items-center justify-center shadow-xs"><Heart strokeWidth={2} className="w-3.5 h-3.5 fill-white" /></div>
                   {shouldBlur && (
                     <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/30 p-3 text-center">
