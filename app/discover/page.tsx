@@ -262,23 +262,40 @@ function DiscoverContent() {
   const [matchedModalProfile, setMatchedModalProfile] = useState<{ id: string; name: string; avatarUrl?: string } | null>(null);
   const [isModalClosing, setIsModalClosing] = useState(false);
   const [filtersClosing, setFiltersClosing] = useState(false);
+  // Drag-down-to-dismiss for the filter sheet (grab handle + header row).
+  const SHEET_DISMISS_PX = 90;
   const [sheetDragY, setSheetDragY] = useState(0);
-  const dragStartYRef = useRef<number | null>(null);
+  const [isSheetDragging, setIsSheetDragging] = useState(false);
+  // Once dragged, the sheet is positioned by transform (with a snap-back transition) instead of
+  // the open animation, so releasing below the threshold doesn't replay the slide-up.
+  const [sheetWasDragged, setSheetWasDragged] = useState(false);
+  const sheetStartYRef = useRef(0);
+  const sheetCurrentYRef = useRef(0);
 
-  const handleTouchStart = (e: React.TouchEvent) => {
-    dragStartYRef.current = e.touches[0].clientY;
+  const handleSheetTouchStart = (e: React.TouchEvent) => {
+    e.stopPropagation();
+    sheetStartYRef.current = e.touches[0].clientY;
+    sheetCurrentYRef.current = e.touches[0].clientY;
+    setIsSheetDragging(true);
+    setSheetWasDragged(true);
   };
 
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (dragStartYRef.current === null) return;
-    const delta = e.touches[0].clientY - dragStartYRef.current;
-    if (delta > 0) setSheetDragY(delta);
+  const handleSheetTouchMove = (e: React.TouchEvent) => {
+    e.stopPropagation();
+    const deltaY = e.touches[0].clientY - sheetStartYRef.current;
+    sheetCurrentYRef.current = e.touches[0].clientY;
+    setSheetDragY(deltaY > 0 ? deltaY : 0);
   };
 
-  const handleTouchEnd = () => {
-    if (sheetDragY > 80) closeFiltersWithAnimation();
-    setSheetDragY(0);
-    dragStartYRef.current = null;
+  const handleSheetTouchEnd = (e: React.TouchEvent) => {
+    e.stopPropagation();
+    setIsSheetDragging(false);
+    const deltaY = sheetCurrentYRef.current - sheetStartYRef.current;
+    if (deltaY > SHEET_DISMISS_PX) {
+      closeFiltersWithAnimation();
+    } else {
+      setSheetDragY(0); // snaps back with the 250 ms deceleration curve
+    }
   };
   const [cardActions, setCardActions] = useState<Record<string, ActionType>>({});
   const [lastPassed, setLastPassed] = useState<{ id: string; name: string } | null>(null);
@@ -462,6 +479,8 @@ function DiscoverContent() {
       setFiltersOpen(false);
       setFiltersClosing(false);
       setSheetDragY(0);
+      setIsSheetDragging(false);
+      setSheetWasDragged(false);
     }, 240);
   };
 
@@ -910,18 +929,33 @@ function DiscoverContent() {
                   style={
                     filtersClosing
                       ? { transform: 'translateY(100%)', transition: 'transform 0.22s cubic-bezier(0.16, 1, 0.3, 1)' }
-                      : sheetDragY > 0
-                      ? { transform: `translateY(${sheetDragY}px)`, transition: 'none' }
+                      : sheetWasDragged
+                      ? {
+                          transform: sheetDragY > 0 ? `translateY(${sheetDragY}px)` : undefined,
+                          transition: isSheetDragging ? 'none' : 'transform 250ms cubic-bezier(0.16, 1, 0.3, 1)',
+                        }
                       : { animation: 'sheetSlideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1) both' }
                   }
                 >
-                  {/* Top Pull Handle */}
-                  <div className="pt-3 pb-2 flex justify-center shrink-0 bg-white cursor-grab active:cursor-grabbing touch-none select-none">
-                    <div className="w-10 h-1 rounded-full bg-[#DDD7E5]" />
+                  {/* Top Pull Handle: drag down (> 90px) to dismiss */}
+                  <div
+                    className="pt-3 pb-2 shrink-0 bg-white cursor-grab active:cursor-grabbing touch-none select-none"
+                    onTouchStart={handleSheetTouchStart}
+                    onTouchMove={handleSheetTouchMove}
+                    onTouchEnd={handleSheetTouchEnd}
+                    onTouchCancel={handleSheetTouchEnd}
+                  >
+                    <div className="w-10 h-1.5 rounded-full bg-slate-300 mx-auto mb-2" />
                   </div>
 
-                  {/* Header */}
-                  <div className="flex items-center justify-between px-5 py-2.5 border-b border-[#F0ECF4] shrink-0 bg-white select-none">
+                  {/* Header (also a drag region) */}
+                  <div
+                    className="flex items-center justify-between px-5 py-2.5 border-b border-[#F0ECF4] shrink-0 bg-white select-none touch-none"
+                    onTouchStart={handleSheetTouchStart}
+                    onTouchMove={handleSheetTouchMove}
+                    onTouchEnd={handleSheetTouchEnd}
+                    onTouchCancel={handleSheetTouchEnd}
+                  >
                     <div className="flex items-center gap-2">
                       <SlidersHorizontal className="w-4 h-4 text-[#6555B8]" />
                       <h2 className="text-sm font-bold text-[#1C1924]">Refine Discover Feed</h2>
