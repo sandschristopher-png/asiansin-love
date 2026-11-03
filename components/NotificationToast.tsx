@@ -1,30 +1,42 @@
 'use client';
 
 import React, { useEffect } from 'react';
-import { X } from 'lucide-react';
+import { Eye, Heart, MessageCircle } from 'lucide-react';
 
-export interface MessageToastData {
-  /** Changes for every toast so a new message restarts the timer and animation. */
+export type NotificationKind = 'message' | 'spark' | 'mutual' | 'visit';
+
+export interface NotificationToastData {
+  /** Changes for every toast so a new event restarts the timer and animation. */
   key: string;
-  senderId: string;
+  kind: NotificationKind;
+  actorId: string;
   name: string;
   avatarUrl: string | null;
   preview: string;
+  href: string;
 }
 
 const AUTO_DISMISS_MS = 4500;
 
+const KIND_ICON = {
+  message: MessageCircle,
+  spark: Heart,
+  mutual: Heart,
+  visit: Eye,
+} as const;
+
 /**
- * Floating in-app message toast: slides down from the top (z-[100]), avatar + name + one-line
- * preview. Tapping it opens the chat; it closes itself after 4.5 s.
+ * Floating in-app notification (messages, Sparks, mutual Sparks, profile visits): slides down at
+ * the top (z-[100]), avatar + name with a context icon + one-line preview + unread dot. Tapping it
+ * opens the destination; it closes itself after 4.5 s.
  */
 export function NotificationToast({
   toast,
   onOpen,
   onClose,
 }: {
-  toast: MessageToastData | null;
-  onOpen: (toast: MessageToastData) => void;
+  toast: NotificationToastData | null;
+  onOpen: (toast: NotificationToastData) => void;
   onClose: () => void;
 }) {
   useEffect(() => {
@@ -34,36 +46,37 @@ export function NotificationToast({
   }, [toast, onClose]);
 
   if (!toast) return null;
+  const Icon = KIND_ICON[toast.kind];
+  const mutual = toast.kind === 'mutual';
 
   return (
-    <div className="fixed inset-x-0 top-0 z-[100] flex justify-center pointer-events-none">
+    // Centering lives on this wrapper so the slide-in transform on the card can't fight it.
+    <div className="fixed top-3 inset-x-0 z-[100] flex justify-center pointer-events-none">
       <div
         key={toast.key}
         role="status"
         aria-live="polite"
         onClick={() => onOpen(toast)}
-        className="ail-toast-in pointer-events-auto mx-auto max-w-sm w-[92%] bg-white/95 backdrop-blur-md shadow-xl rounded-2xl p-3 border border-slate-100 flex items-center gap-3 cursor-pointer active:scale-[0.98] transition-all"
+        className={`ail-toast-in pointer-events-auto w-[94%] max-w-sm backdrop-blur-md shadow-xl rounded-2xl p-3 border flex items-center gap-3 cursor-pointer active:scale-[0.98] transition-all ${
+          mutual ? 'bg-[#6555B8] border-[#6555B8]' : 'bg-white/95 border-slate-100'
+        }`}
       >
         <img
           src={toast.avatarUrl || '/placeholder-avatar.svg'}
           alt=""
-          className="w-10 h-10 rounded-full object-cover ring-2 ring-[#6555B8]/20 shrink-0"
+          className="w-11 h-11 rounded-full object-cover ring-2 ring-[#6555B8]/20 shrink-0"
         />
         <div className="min-w-0 flex-1">
-          <p className="font-semibold text-sm text-[#2D264B] truncate">{toast.name}</p>
-          <p className="text-xs text-[#8A839E] truncate max-w-[200px]">{toast.preview}</p>
+          <p className={`flex items-center gap-1.5 font-semibold text-sm truncate ${mutual ? 'text-white' : 'text-[#2D264B]'}`}>
+            <Icon
+              className={`w-3.5 h-3.5 shrink-0 ${mutual ? 'text-white fill-white' : 'text-[#6555B8]'} ${toast.kind === 'spark' ? 'fill-[#6555B8]' : ''}`}
+              strokeWidth={2}
+            />
+            <span className="truncate">{toast.name}</span>
+          </p>
+          <p className={`text-xs truncate max-w-[210px] mt-0.5 ${mutual ? 'text-white/85' : 'text-[#8A839E]'}`}>{toast.preview}</p>
         </div>
-        <button
-          type="button"
-          aria-label="Dismiss"
-          onClick={(e) => {
-            e.stopPropagation();
-            onClose();
-          }}
-          className="w-7 h-7 rounded-full flex items-center justify-center text-slate-400 hover:bg-slate-100 shrink-0"
-        >
-          <X className="w-3.5 h-3.5" />
-        </button>
+        <span aria-hidden className={`w-2 h-2 rounded-full shrink-0 ${mutual ? 'bg-white' : 'bg-[#6555B8]'}`} />
       </div>
     </div>
   );

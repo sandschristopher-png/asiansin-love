@@ -16,6 +16,7 @@
 -- 4. onboarding_completed is server-only (POST /api/onboarding, behind the VPN / proxy gate);
 --    hide_profile (Private Mode) needs AIL+ for men, free for women.
 -- 5. Performance indexes for messages, favorites, sparks, profiles and user_highlights.
+-- 6. Realtime publication includes messages, sparks and profile_views (in-app notifications).
 --
 -- Function signatures are unchanged, so grants stay service_role only (re-asserted below).
 -- Safe to re-run.
@@ -221,6 +222,27 @@ begin
   if to_regclass('public.user_highlights') is not null then
     execute 'create index if not exists idx_user_highlights_user on public.user_highlights (user_id)';
   end if;
+end;
+$$;
+
+-- 6. Realtime: the in-app notifier (components/RealtimeNotifier.tsx) listens to new sparks and
+--    profile views as well as messages. Add any of these tables missing from the publication.
+do $$
+declare
+  t text;
+begin
+  if not exists (select 1 from pg_publication where pubname = 'supabase_realtime') then
+    raise notice 'supabase_realtime publication not found - realtime tables skipped';
+    return;
+  end if;
+  foreach t in array array['messages', 'sparks', 'profile_views'] loop
+    if to_regclass('public.' || t) is not null and not exists (
+      select 1 from pg_publication_tables
+       where pubname = 'supabase_realtime' and schemaname = 'public' and tablename = t
+    ) then
+      execute format('alter publication supabase_realtime add table public.%I', t);
+    end if;
+  end loop;
 end;
 $$;
 

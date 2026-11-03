@@ -5,8 +5,7 @@ import HeartbeatProvider from "./HeartbeatProvider";
 import { usePathname } from 'next/navigation';
 import { Navbar } from '@/components/Navbar';
 import { BottomNav } from '@/components/BottomNav';
-import { RealtimeMatchToast } from '@/components/RealtimeMatchToast';
-import { MessageNotifier } from '@/components/MessageNotifier';
+import { RealtimeNotifier } from '@/components/RealtimeNotifier';
 
 export function LayoutShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -39,9 +38,8 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
           {children}
         </main>
         <HeartbeatProvider />
-        <RealtimeMatchToast />
-        {/* Incoming-message toasts on every route except auth / onboarding screens */}
-        {!isMarketingOrAuth && <MessageNotifier />}
+        {/* Messages, Sparks, mutual Sparks and visits: toasts + badges on every in-app route */}
+        {!isMarketingOrAuth && <RealtimeNotifier />}
       </div>
       {!isMarketingOrAuth && !isChat && <BottomNav />}
     </div>

@@ -18,6 +18,7 @@ import {
 import { supabase } from '@/lib/supabase/client';
 import { hardSignOut } from '@/lib/hardSignOut';
 import { PushDeviceRow } from '@/components/PushDeviceRow';
+import { AlertPrefsRows } from '@/components/AlertPrefsRows';
 import { AILPlusModal } from '@/components/AILPlusModal';
 
 type SettingsKey = 'hide_profile' | 'show_active_status' | 'notify_sparks' | 'notify_messages';
@@ -367,6 +368,7 @@ export default function SettingsHubPage() {
           />
 
           <PushDeviceRow />
+          <AlertPrefsRows />
         </div>
 
         {/* CARD 4: SAFETY & SUPPORT */}

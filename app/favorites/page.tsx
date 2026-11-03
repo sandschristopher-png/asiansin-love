@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Lock, Crown, Heart } from 'lucide-react';
+import { Lock, Crown, Heart, User } from 'lucide-react';
 import { createBrowserClient } from '@supabase/ssr';
 import { CardPhoto } from '@/components/CardPhoto';
 
@@ -65,8 +65,21 @@ function getAge(p: ProfileCardData): number | null {
 function getPhoto(p: ProfileCardData): string {
   if (p.avatar_url && p.avatar_url.trim()) return p.avatar_url;
   if (Array.isArray(p.photos) && p.photos.length > 0 && p.photos[0]) return p.photos[0];
-  const ext = 'png';
-  return '/nomatch-f.' + ext;
+  return '';
+}
+
+/** Card photo with a branded fallback (no photo, or the URL fails to load): never a black box. */
+function SparkCardPhoto({ src, name, className }: { src: string; name: string; className: string }) {
+  const [failedSrc, setFailedSrc] = useState<string | null>(null);
+  if (!src || failedSrc === src) {
+    return (
+      <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-[#F6F5F9] to-[#EAE7F8] flex flex-col items-center justify-center text-[#6555B8]">
+        <User className="w-12 h-12 stroke-1 text-[#6555B8]/40" />
+        <span className="mt-1 text-lg font-bold text-[#6555B8]/70">{(name || '?').trim().charAt(0).toUpperCase()}</span>
+      </div>
+    );
+  }
+  return <CardPhoto src={src} alt={name} className={className} onError={() => setFailedSrc(src)} />;
 }
 
 function getLocationLabel(p: ProfileCardData): string {
@@ -320,7 +333,7 @@ export default function SparksPage() {
     const lowSignal: ProfileCardData[] = [];
     for (const p of currentList) {
       const photo = getPhoto(p);
-      const hasRealPhoto = photo !== '/nomatch-f.png' && photo !== '/placeholder-avatar.svg';
+      const hasRealPhoto = photo !== '' && photo !== '/placeholder-avatar.svg';
       if (p.is_verified || hasRealPhoto) priority.push(p);
       else lowSignal.push(p);
     }
@@ -331,39 +344,26 @@ export default function SparksPage() {
     <main className="min-h-[100dvh] bg-white pb-[calc(6rem+env(safe-area-inset-bottom,16px))] overscroll-y-contain">
       <div className="max-w-md mx-auto px-3.5 pt-2">
         {/* Horizontal Sub-Tab Navigation */}
-        {/* Borderless: only the purple underline marks the active tab. */}
-        <div className="sticky top-12 z-30 bg-white/95 backdrop-blur-md -mx-3.5 px-3.5 mb-3.5">
-          <div className="relative grid grid-cols-4 text-center">
-            {/* One underline that glides between tabs (GPU transform, 200 ms standard curve). */}
-            <span
-              aria-hidden
-              className="absolute bottom-0 left-0 h-[2.5px] w-1/4 px-2 pointer-events-none"
-              style={{
-                transform: `translateX(${Math.max(0, tabs.findIndex((t) => t.id === activeTab)) * 100}%)`,
-                transition: 'transform 200ms cubic-bezier(0.4, 0, 0.2, 1)',
-              }}
-            >
-              <span className="block h-full w-full rounded-full bg-[#6555B8]" />
-            </span>
+        {/* Discover-style category pills: no underline, no divider. Sticky at top-0 of the app's
+            scroll area (the Navbar sits outside it), so cards never show through above the bar. */}
+        <div className="sticky top-0 z-30 bg-white -mx-3.5 mb-2">
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar [scrollbar-width:none] [&::-webkit-scrollbar]:hidden py-2 px-4" role="tablist">
             {tabs.map((t) => {
               const active = activeTab === t.id;
               return (
                 <button
                   key={t.id}
                   type="button"
+                  role="tab"
+                  aria-selected={active}
                   onClick={() => setActiveTab(t.id)}
-                  className={`relative py-2.5 px-1.5 text-[12px] font-semibold whitespace-nowrap transition-colors duration-150 cursor-pointer flex items-center justify-center gap-1 min-w-0 ${
-                    active ? 'text-[#6555B8]' : 'text-[#8C849B] hover:text-[#1C1924]'
+                  className={`whitespace-nowrap shrink-0 cursor-pointer ${
+                    active
+                      ? 'text-[#6555B8] font-bold text-sm px-3 py-1.5 rounded-full bg-[#6555B8]/10 transition-colors'
+                      : 'text-[#8A839E] hover:text-[#2D264B] font-medium text-sm px-3 py-1.5 rounded-full transition-colors'
                   }`}
                 >
-                  <span className="truncate">{t.label}</span>
-                  {t.count > 0 && (
-                    <span className={`px-1.5 py-0.5 rounded-full text-[10px] font-bold ${
-                      active ? 'bg-[#6555B8]/12 text-[#6555B8]' : 'bg-slate-100 text-[#8C849B]'
-                    }`}>
-                      {t.count}
-                    </span>
-                  )}
+                  {t.count > 0 ? `${t.label} (${t.count})` : t.label}
                 </button>
               );
             })}
@@ -417,12 +417,12 @@ export default function SparksPage() {
                 <div
                   key={person.id}
                   onClick={() => { if (shouldBlur) { router.push('/settings?upgrade=plus'); } else { router.push(`/profile/${person.id}`); } }}
-                  className="group relative aspect-[3/4] rounded-2xl overflow-hidden bg-[#1C1924] shadow-xs border border-[#ECE8F4] cursor-pointer active:scale-[0.98] transition-all duration-200"
+                  className="group relative isolate aspect-[3/4] rounded-2xl overflow-hidden bg-slate-100 shadow-xs border border-[#ECE8F4] cursor-pointer active:scale-[0.98] transition-all duration-200"
                 >
-                  <CardPhoto src={photo} alt={publicName} className={`object-cover transition-transform duration-300 group-hover:scale-105 ${shouldBlur ? 'blur-md scale-110' : ''}`} />
+                  <SparkCardPhoto src={photo} name={publicName} className={`object-cover transition-transform duration-300 group-hover:scale-105 ${shouldBlur ? 'blur-md scale-110' : ''}`} />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent" />
-                  <div className="absolute top-2.5 left-2.5 px-2.5 py-1 rounded-full bg-black/55 backdrop-blur-md text-white text-[11px] font-semibold">{rep}% Rep</div>
-                  <div className="absolute top-2.5 right-2.5 w-8 h-8 rounded-full bg-[#6555B8]/90 backdrop-blur-md text-white flex items-center justify-center shadow-xs"><Heart strokeWidth={2} className="w-3.5 h-3.5 fill-white" /></div>
+                  <div className="absolute top-3 left-3 z-10 px-2.5 py-1 rounded-full bg-black/55 backdrop-blur-md text-white text-[11px] font-semibold">{rep}% Rep</div>
+                  <div className="absolute top-3 right-3 z-10 w-8 h-8 rounded-full bg-[#6555B8]/90 backdrop-blur-md text-white flex items-center justify-center shadow-xs"><Heart strokeWidth={2} className="w-3.5 h-3.5 fill-white" /></div>
                   {shouldBlur && (
                     <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/30 p-3 text-center">
                       <div className="w-9 h-9 rounded-full bg-[#6555B8] text-white flex items-center justify-center mb-1.5 shadow-md"><Lock className="w-4 h-4" /></div>

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, MapPin, Save, UserCheck, ShieldCheck, Camera, Trash2, Loader2, Plus } from 'lucide-react';
+import { ArrowLeft, MapPin, Save, UserCheck, ShieldCheck, Camera, Loader2, Plus, X } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import UpgradeModal from '@/components/UpgradeModal';
 import { resolveCountry } from '@/lib/countries';
@@ -256,35 +256,32 @@ export default function EditProfilePage() {
     }
   };
 
+  // Deletes through /api/profile/photo: keeps at least one photo, promotes the next photo when the
+  // main one goes, and removes the file from storage.
   const handleDeletePhoto = async (targetIdx: number) => {
+    if (photos.length <= 1) {
+      setStatusMsg({ type: 'error', text: 'Profiles require at least one photo.' });
+      return;
+    }
+    const url = photos[targetIdx];
+    if (!url) return;
     const previousPhotos = [...photos];
-    const newPhotos = photos.filter((_, idx) => idx !== targetIdx);
-
-    setPhotos(newPhotos);
+    setPhotos(photos.filter((_, idx) => idx !== targetIdx)); // optimistic; index 1 becomes primary
     setStatusMsg(null);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
-
-      const updates: Record<string, any> = {
-        photos: newPhotos,
-      };
-
-      if (targetIdx === 0) {
-        updates.avatar_url = newPhotos[0] || null;
-      }
-
-      const { error } = await supabase
-        .from('profiles')
-        .update(updates)
-        .eq('id', user.id);
-
-      if (error) throw error;
-      setStatusMsg({ type: 'success', text: 'Photo removed.' });
-    } catch (err: any) {
+      const res = await fetch('/api/profile/photo', {
+        method: 'DELETE',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Failed to remove photo.');
+      if (Array.isArray(data.photos)) setPhotos(data.photos);
+      setStatusMsg({ type: 'success', text: targetIdx === 0 ? 'Photo removed. Your next photo is now your main photo.' : 'Photo removed.' });
+    } catch (err: unknown) {
       setPhotos(previousPhotos);
-      setStatusMsg({ type: 'error', text: err.message || 'Failed to remove photo.' });
+      setStatusMsg({ type: 'error', text: err instanceof Error ? err.message : 'Failed to remove photo.' });
     }
   };
 
@@ -420,20 +417,23 @@ export default function EditProfilePage() {
                       <button
                         type="button"
                         onClick={() => handleSetPrimary(slotIdx)}
-                        className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full bg-black/60 text-[#1C1924] hover:text-[#1C1924] hover:bg-[#6555B8] text-[9px] font-semibold transition"
+                        className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full bg-black/60 text-white hover:bg-[#6555B8] text-[9px] font-semibold transition"
                       >
                         Make Primary
                       </button>
                     )}
 
-                    <button
-                      type="button"
-                      onClick={() => handleDeletePhoto(slotIdx)}
-                      className="absolute top-1.5 right-1.5 p-1 rounded-full bg-black/60 text-rose-300 hover:text-rose-100 hover:bg-rose-950/80 transition"
-                      aria-label="Delete photo"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
+                    {/* Hidden on the last photo: a profile always keeps at least one. */}
+                    {photos.filter(Boolean).length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => handleDeletePhoto(slotIdx)}
+                        className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/60 backdrop-blur-sm text-white flex items-center justify-center hover:bg-red-600 transition-colors z-10"
+                        aria-label="Delete photo"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    )}
                   </div>
                 );
               }

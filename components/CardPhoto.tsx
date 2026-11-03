@@ -25,6 +25,7 @@ export function CardPhoto({
   className = '',
   sizes = CARD_PHOTO_SIZES,
   priority = false,
+  onError,
 }: {
   src: string;
   alt: string;
@@ -32,6 +33,8 @@ export function CardPhoto({
   sizes?: string;
   /** First visible row: load eagerly with high fetch priority (LCP). */
   priority?: boolean;
+  /** Called when the image fails to load (lets the caller show a fallback). */
+  onError?: () => void;
 }) {
   if (isOptimizable(src)) {
     return (
@@ -43,6 +46,7 @@ export function CardPhoto({
         {...(priority ? { priority: true } : { loading: 'lazy' as const })}
         unoptimized={src.endsWith('.svg')}
         className={className}
+        onError={onError}
       />
     );
   }
@@ -54,6 +58,7 @@ export function CardPhoto({
       loading="lazy"
       decoding="async"
       sizes={sizes}
+      onError={onError}
       className={`absolute inset-0 w-full h-full ${className}`}
     />
   );

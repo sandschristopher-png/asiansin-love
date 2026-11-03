@@ -10,6 +10,7 @@ import {
   User 
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
+import { useNotificationCounts } from '@/lib/notificationStore';
 
 const PUBLIC_ROUTES = [
   '/',
@@ -26,7 +27,7 @@ const PUBLIC_ROUTES = [
 ];
 
 export function BottomNav() {
-  const [unreadCount, setUnreadCount] = useState(0);
+  const { unreadMessages: unreadCount, unseenSparks } = useNotificationCounts();
   const [user, setUser] = useState<any>(null);
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const pathname = usePathname();
@@ -42,76 +43,13 @@ export function BottomNav() {
     return pathname === path || pathname.startsWith(`${path}/`);
   };
 
+  // Signed-in state only; unread counts come from RealtimeNotifier via the shared store.
   useEffect(() => {
-    let channel: any = null;
-    let isCancelled = false;
-
-    const fetchAndSubscribeUnread = async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      if (!session || isCancelled) return;
-      const uid = session.user.id;
-      setUser(session.user);
-
-      const { count } = await supabase
-        .from('messages')
-        .select('*', { count: 'exact', head: true })
-        .eq('receiver_id', uid)
-        .eq('is_read', false)
-        .eq('is_quarantined', false); // held-for-review messages are never shown, so never counted
-
-      if (isCancelled) return;
-      setUnreadCount(count || 0);
-
-      const channelName = `nav-unread-${uid}-${Date.now()}`;
-      channel = supabase
-        .channel(channelName)
-        .on(
-          'postgres_changes',
-          {
-            event: '*',
-            schema: 'public',
-            table: 'messages',
-            filter: `receiver_id=eq.${uid}`,
-          },
-          async () => {
-            if (isCancelled) return;
-            const { count: freshCount } = await supabase
-              .from('messages')
-              .select('*', { count: 'exact', head: true })
-              .eq('receiver_id', uid)
-              .eq('is_read', false)
-              .eq('is_quarantined', false);
-            if (!isCancelled) {
-              setUnreadCount(freshCount || 0);
-            }
-          }
-        )
-        .subscribe();
-    };
-
-
-    fetchAndSubscribeUnread();
-
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event: any, session: any) => {
+    supabase.auth.getSession().then(({ data: { session } }) => setUser(session?.user ?? null));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       setUser(session?.user ?? null);
-      if (session?.user) {
-        fetchAndSubscribeUnread();
-      } else {
-        setUnreadCount(0);
-      }
     });
-
-    
-
-
-
-    return () => {
-      isCancelled = true;
-      if (channel) {
-        supabase.removeChannel(channel);
-      }
-      subscription.unsubscribe();
-    };
+    return () => subscription.unsubscribe();
   }, []);
 
   useEffect(() => {
@@ -137,7 +75,7 @@ export function BottomNav() {
 
   const navItems = [
     { href: '/discover', label: 'Discover', icon: Compass },
-    { href: '/favorites', label: 'Sparks', icon: Heart },
+    { href: '/favorites', label: 'Sparks', icon: Heart, badge: unseenSparks },
     { href: '/messages', label: 'Messages', icon: MessageCircle, badge: unreadCount },
     { href: '/profile', label: 'Profile', icon: User },
   ];
