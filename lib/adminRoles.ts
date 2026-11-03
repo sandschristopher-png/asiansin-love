@@ -19,6 +19,6 @@ export const isStaff = (role: AdminRole) => role === 'moderator' || role === 'su
 
 export const ADMIN_ROLE_LABEL: Record<AdminRole, string> = {
   member: 'Member',
-  moderator: 'Moderator',
+  moderator: 'Mod',
   super_admin: 'Super Admin',
 };

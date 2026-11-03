@@ -21,7 +21,7 @@ type Member = {
 
 const ROLE_PILL: Record<AdminRole, string> = {
   super_admin: 'bg-gradient-to-r from-[#8C71F5] to-[#EC4899] text-white',
-  moderator: 'bg-[#8C71F5]/10 text-[#6555B8] border border-[#8C71F5]/25',
+  moderator: 'bg-[#2D264B] text-white',
   member: 'bg-[#F9F8FC] text-[#6C637B] border border-[#ECE8F4]',
 };
 
@@ -237,7 +237,7 @@ export function MembersManager({ selfId }: { selfId: string }) {
           onChange={(e) => setGrantRole(e.target.value as 'moderator' | 'member')}
           className="w-full h-10 rounded-xl border border-[#ECE8F4] bg-white px-3 text-sm"
         >
-          <option value="moderator">Moderator</option>
+          <option value="moderator">Mod</option>
           <option value="member">Member (revoke access)</option>
         </select>
         <AdminButton type="submit" size="lg" tone="primary" busy={granting} disabled={!grantName.trim()} className="w-full">
@@ -277,9 +277,11 @@ export function MembersManager({ selfId }: { selfId: string }) {
               <>
                 <AdminAvatar url={m.avatarUrl} name={m.name} size={40} />
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-[#2D264B] truncate flex items-center gap-1">
-                    <span className="truncate">{m.name}</span>
-                    {m.age !== null && <span className="font-normal text-[#6C637B]">, {m.age}</span>}
+                  <p className="text-sm font-semibold text-[#2D264B] flex items-center gap-1 min-w-0">
+                    <span className="truncate">
+                      {m.name}
+                      {m.age !== null && <span className="font-normal text-[#6C637B]">, {m.age}</span>}
+                    </span>
                     {m.isVerified && <BadgeCheck className="w-3.5 h-3.5 shrink-0 text-[#8C71F5]" aria-label="Verified" />}
                   </p>
                   <div className="mt-0.5 flex items-center gap-1.5">

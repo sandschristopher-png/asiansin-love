@@ -56,19 +56,18 @@ function PhotoCard({ member, onDone }: { member: PendingMember; onDone: (id: str
       <div className="flex items-center gap-3">
         <AdminAvatar url={member.avatarUrl} name={member.name} size={44} />
         <div className="min-w-0 flex-1">
-          <p className="font-semibold text-[#2D264B] truncate flex items-center gap-1">
-            {member.name}
-            {member.age !== null && <span className="font-normal text-[#6C637B]">, {member.age}</span>}
-            {verified && <BadgeCheck className="w-4 h-4 text-[#8C71F5]" aria-label="Verified" />}
+          <p className="font-semibold text-[#2D264B] flex items-center gap-1 min-w-0">
+            <span className="truncate">
+              {member.name}
+              {member.age !== null && <span className="font-normal text-[#6C637B]">, {member.age}</span>}
+            </span>
+            {verified && <BadgeCheck className="w-4 h-4 shrink-0 text-[#8C71F5]" aria-label="Verified" />}
           </p>
-          <p className="text-xs text-[#6C637B] flex items-center gap-1 truncate">
-            {member.location && (
-              <>
-                <MapPin className="w-3 h-3 shrink-0" aria-hidden />
-                {member.location} ·
-              </>
-            )}
-            Uploaded {timeAgo(member.uploadedAt)}
+          <p className="text-xs text-[#6C637B] flex items-center gap-1 min-w-0">
+            {member.location && <MapPin className="w-3 h-3 shrink-0" aria-hidden />}
+            <span className="truncate">
+              {[member.location, `Uploaded ${timeAgo(member.uploadedAt)}`].filter(Boolean).join(' · ')}
+            </span>
           </p>
         </div>
         <ReputationBadge score={member.reputation} size="xs" />
