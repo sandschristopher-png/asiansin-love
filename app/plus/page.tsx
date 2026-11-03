@@ -251,13 +251,9 @@ function PlusHubContent() {
 
       {/* Hero Card */}
       <div className="rounded-3xl bg-white border border-[#ECE8F4] p-5 shadow-sm mb-4 text-center">
-        {/* Flush Docked Artwork */}
-        <div className="w-full max-w-[280px] mx-auto mb-3 flex items-end justify-center">
-            <img
-              src="/Meeting.png"
-              alt="Two people meeting on AIL Plus"
-              className="w-full h-auto max-h-[220px] object-contain select-none"
-            />
+        {/* Brand mark: Lucide icon in a gradient squircle (no illustrations) */}
+        <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#6555B8] to-[#433682] flex items-center justify-center text-white mx-auto mb-4 shadow-md shadow-[#6555B8]/25">
+          <Zap className="w-7 h-7 fill-current" strokeWidth={1.75} />
         </div>
 
         <h1 className="text-xl font-bold text-[#1C1924] tracking-tight">

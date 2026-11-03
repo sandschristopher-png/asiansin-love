@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { usePathname } from 'next/navigation';
-import { X, Infinity, Compass, TrendingUp, Lock, ArrowRight, Loader2 } from 'lucide-react';
+import { X, Infinity, Compass, TrendingUp, Lock, ArrowRight, Loader2, Zap } from 'lucide-react';
 
 interface UpgradeModalProps {
   isOpen: boolean;
@@ -94,13 +94,9 @@ export default function UpgradeModal({
           <X className="w-4 h-4" />
         </button>
 
-        {/* Brand Banner Artwork */}
-        <div className="w-full h-32 rounded-2xl bg-[#FAF9FD] border border-[#ECE6F7] flex items-center justify-center p-3 mb-3">
-          <img
-            src="/ail-plus.png"
-            alt="AIL Plus"
-            className="w-full h-full object-contain"
-          />
+        {/* Brand mark: Lucide icon in a soft squircle (no illustrations) */}
+        <div className="w-14 h-14 rounded-2xl bg-[#6555B8]/10 flex items-center justify-center text-[#6555B8] mx-auto mt-2 mb-3">
+          <Zap className="w-6 h-6 fill-current" strokeWidth={1.75} />
         </div>
 
         {/* Title & Context */}
