@@ -1,6 +1,5 @@
 'use client';
 import { useRef } from 'react';
-import { playMatchChime } from '@/lib/sound';
 import React, { useState, useEffect, useMemo, Suspense } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
@@ -289,7 +288,10 @@ function DiscoverContent() {
     const handleMutualMatch = (e: CustomEvent<{ targetId: string }>) => {
       const target = profiles.find((p) => p.id === e.detail.targetId);
       if (target) {
-        playMatchChime();
+        // Silent celebration: haptic pulse, no audio.
+        try {
+          navigator.vibrate?.([20, 60, 20]);
+        } catch {}
         setMatchedModalProfile({ id: target.id, name: target.name, avatarUrl: target.avatarUrl });
       }
     };
@@ -473,7 +475,10 @@ function DiscoverContent() {
           return;
         }
         if (data?.mutual || data?.is_mutual) {
-          playMatchChime();
+          // Silent celebration: haptic pulse, no audio.
+        try {
+          navigator.vibrate?.([20, 60, 20]);
+        } catch {}
           setMatchedModalProfile({ id, name: name || 'Member', avatarUrl: avatarUrl || '/placeholder-avatar.svg' });
         }
       } catch {}

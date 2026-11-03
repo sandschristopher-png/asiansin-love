@@ -518,8 +518,9 @@ export default function PublicProfilePage() {
               <MapPin className="h-3.5 w-3.5 text-neutral-300 shrink-0" />
               <span>{displayLocation}</span>
               {profile.location_source === 'gps_verified' && (
-                <span className="ml-1 rounded-full bg-white/20 px-2 py-0.2 text-[10px] font-semibold text-white backdrop-blur-xs">
-                  Location
+                <span className="ml-1 shrink-0 whitespace-nowrap inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/90 backdrop-blur-md text-[11px] font-semibold text-[#2D264B] shadow-sm border border-white/40">
+                  <ShieldCheck className="w-3 h-3 text-[#6555B8] stroke-[2.5]" />
+                  Verified Location
                 </span>
               )}
             </div>

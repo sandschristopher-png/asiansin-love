@@ -24,16 +24,16 @@ export function RepScoreCard({
     <div className="w-full rounded-2xl bg-white border border-[#E5E1EC] p-4 sm:p-5 shadow-xs flex flex-col gap-3 text-[#1C1924]">
       {/* Header & Score */}
       <div className="flex items-center justify-between">
-        <div>
+        <div className="flex-1 min-w-0 pr-3">
           <h3 className="text-sm font-semibold tracking-tight text-[#1C1924]">Reputation Score</h3>
           <p className="text-xs text-[#756D82]">Community trust & conduct health</p>
           {/* Trust standing: "9X% Rep" / "Fair Rep" / "Low Rep / Under Review" */}
           <RepBadge score={clampedScore} className="mt-1.5" />
         </div>
 
-        <div className="flex items-baseline gap-1 bg-[#FAF9FD] px-3 py-1.5 rounded-xl border border-[#ECE6F7]">
-          <span className="text-2xl font-bold text-[#6555B8]">{clampedScore}</span>
-          <span className="text-xs font-semibold text-[#8C849B]">/100</span>
+        <div className="shrink-0 flex items-center justify-center gap-0.5 px-3 py-1.5 rounded-xl bg-[#6555B8]/10 text-[#6555B8] font-bold text-sm whitespace-nowrap min-w-fit">
+          <span className="text-2xl leading-none">{clampedScore}</span>
+          <span className="text-xs font-semibold text-[#6555B8]/70">/100</span>
         </div>
       </div>
 

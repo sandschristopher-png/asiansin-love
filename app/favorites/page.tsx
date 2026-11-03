@@ -300,10 +300,10 @@ export default function SparksPage() {
   }, []);
 
   const tabs: { id: SparkTab; label: string; count: number }[] = useMemo(() => [
-    { id: 'sparked', label: 'You Sparked', count: sparkedList.length },
-    { id: 'sparked_you', label: 'Sparked You', count: sparkedYouList.length },
+    { id: 'sparked', label: 'Sent', count: sparkedList.length },
+    { id: 'sparked_you', label: 'Received', count: sparkedYouList.length },
     { id: 'mutual', label: 'Mutual', count: mutualList.length },
-    { id: 'visited', label: 'Visited', count: visitedList.length }
+    { id: 'visited', label: 'Views', count: visitedList.length }
   ], [sparkedList.length, sparkedYouList.length, mutualList.length, visitedList.length]);
 
   const currentList = useMemo(() => {
@@ -357,13 +357,22 @@ export default function SparksPage() {
                   role="tab"
                   aria-selected={active}
                   onClick={() => setActiveTab(t.id)}
-                  className={`whitespace-nowrap shrink-0 cursor-pointer ${
+                  className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors shrink-0 cursor-pointer ${
                     active
-                      ? 'text-[#6555B8] font-bold text-sm px-3 py-1.5 rounded-full bg-[#6555B8]/10 transition-colors'
-                      : 'text-[#8A839E] hover:text-[#2D264B] font-medium text-sm px-3 py-1.5 rounded-full transition-colors'
+                      ? 'bg-[#6555B8] text-white font-semibold shadow-sm'
+                      : 'text-[#8A839E] hover:text-[#2D264B] bg-slate-100/70'
                   }`}
                 >
-                  {t.count > 0 ? `${t.label} (${t.count})` : t.label}
+                  <span>{t.label}</span>
+                  {t.count > 0 && (
+                    <span
+                      className={`px-1.5 py-px rounded-full text-[10px] font-bold ${
+                        active ? 'bg-white/25 text-white' : 'bg-[#6555B8]/10 text-[#6555B8]'
+                      }`}
+                    >
+                      {t.count > 99 ? '99+' : t.count}
+                    </span>
+                  )}
                 </button>
               );
             })}
