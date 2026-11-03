@@ -66,7 +66,7 @@ export async function middleware(request: NextRequest) {
       .single();
 
     if (!profile?.is_admin) {
-      return NextResponse.redirect(new URL('/', request.url));
+      return NextResponse.redirect(new URL('/discover', request.url));
     }
     return response;
   }

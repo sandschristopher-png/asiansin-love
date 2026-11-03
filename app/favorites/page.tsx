@@ -3,7 +3,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Lock, Crown, Heart, User } from 'lucide-react';
+import { Lock, Crown, Heart, User, Send, MessageCircle, Eye, type LucideIcon } from 'lucide-react';
 import { createBrowserClient } from '@supabase/ssr';
 import { CardPhoto } from '@/components/CardPhoto';
 
@@ -107,42 +107,47 @@ function getInitialSparksState(): any {
 }
 
 const STATE_CTA_CLASS =
-  'inline-flex items-center justify-center gap-2 h-11 px-6 rounded-full bg-[#6555B8] hover:bg-[#5646A6] text-white text-xs font-semibold shadow-sm active:scale-95 transition-all';
+  'inline-flex items-center justify-center gap-2 rounded-full px-5 py-2 text-xs font-semibold text-white bg-[#6555B8] hover:bg-[#524496] active:scale-95 transition-all';
+
+/** 1..99, then "99+"; nothing for zero. */
+const formatBadgeCount = (count: number) => {
+  if (!count || count <= 0) return null;
+  return count > 99 ? '99+' : count.toString();
+};
 
 /**
- * Shared empty / paywall state for every Sparks tab. Fixed art box and reserved text heights
- * keep the headline and button in the same place when switching tabs.
+ * Shared empty / paywall state for every Sparks tab, matching Discover's: a Lucide line icon in a
+ * soft brand squircle (no illustrations), title, one-line subtitle and a single CTA.
  */
 function TabState({
-  art,
-  artAlt,
-  artClassName = '',
+  icon: Icon,
   title,
   subtitle,
   cta,
 }: {
-  art: string;
-  artAlt: string;
-  artClassName?: string;
+  icon: LucideIcon;
   title: string;
   subtitle: string;
   cta: React.ReactNode;
 }) {
   return (
-    <div className="animate-fade-in-up flex flex-col items-center text-center pt-4 pb-6 px-4">
-      <div className="w-44 h-44 max-w-[180px] mx-auto mb-3 flex items-center justify-center shrink-0">
-        <img
-          src={art}
-          alt={artAlt}
-          className={`w-full h-full object-contain select-none pointer-events-none ${artClassName}`}
-        />
+    <div className="animate-fade-in-up flex flex-col items-center text-center pt-10 pb-6 px-4">
+      <div className="w-14 h-14 rounded-2xl bg-[#6555B8]/10 flex items-center justify-center text-[#6555B8] mb-3 mx-auto">
+        <Icon className="w-6 h-6" strokeWidth={1.75} />
       </div>
-      <h2 className="text-base font-bold text-[#1C1924] mb-1.5 min-h-6">{title}</h2>
-      <p className="text-xs text-[#6C637B] max-w-[270px] leading-relaxed mb-5 min-h-[3.75rem]">{subtitle}</p>
+      <h2 className="font-bold text-base text-[#2D264B] text-center">{title}</h2>
+      <p className="text-xs text-[#8A839E] text-center max-w-xs mt-1 mb-5 leading-relaxed">{subtitle}</p>
       {cta}
     </div>
   );
 }
+
+const TAB_ICONS: Record<string, LucideIcon> = {
+  sparked: Send,
+  sparked_you: Heart,
+  mutual: MessageCircle,
+  visited: Eye,
+};
 
 export default function SparksPage() {
   const router = useRouter();
@@ -344,10 +349,10 @@ export default function SparksPage() {
     <main className="min-h-[100dvh] bg-white pb-[calc(6rem+env(safe-area-inset-bottom,16px))] overscroll-y-contain">
       <div className="max-w-md mx-auto px-3.5 pt-2">
         {/* Horizontal Sub-Tab Navigation */}
-        {/* Discover-style category pills: no underline, no divider. Sticky at top-0 of the app's
+        {/* Discover-style text tabs: no pill backgrounds, no underline, no divider. Sticky at top-0 of the app's
             scroll area (the Navbar sits outside it), so cards never show through above the bar. */}
         <div className="sticky top-0 z-30 bg-white -mx-3.5 mb-2">
-          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar [scrollbar-width:none] [&::-webkit-scrollbar]:hidden py-2 px-4" role="tablist">
+          <div className="flex items-center gap-5 overflow-x-auto no-scrollbar [scrollbar-width:none] [&::-webkit-scrollbar]:hidden py-2 px-4" role="tablist">
             {tabs.map((t) => {
               const active = activeTab === t.id;
               return (
@@ -357,20 +362,18 @@ export default function SparksPage() {
                   role="tab"
                   aria-selected={active}
                   onClick={() => setActiveTab(t.id)}
-                  className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-medium whitespace-nowrap transition-colors shrink-0 cursor-pointer ${
-                    active
-                      ? 'bg-[#6555B8] text-white font-semibold shadow-sm'
-                      : 'text-[#8A839E] hover:text-[#2D264B] bg-slate-100/70'
+                  className={`inline-flex items-center gap-1.5 py-1.5 whitespace-nowrap shrink-0 transition-colors cursor-pointer ${
+                    active ? 'text-[#2D264B] font-bold text-sm' : 'text-[#8A839E] hover:text-[#2D264B] font-medium text-sm'
                   }`}
                 >
                   <span>{t.label}</span>
-                  {t.count > 0 && (
+                  {formatBadgeCount(t.count) && (
                     <span
-                      className={`px-1.5 py-px rounded-full text-[10px] font-bold ${
-                        active ? 'bg-white/25 text-white' : 'bg-[#6555B8]/10 text-[#6555B8]'
+                      className={`inline-flex items-center justify-center min-w-[18px] h-4 px-1 rounded-full text-[10px] font-bold leading-none tabular-nums ${
+                        active ? 'bg-[#6555B8] text-white' : 'bg-slate-100 text-[#8A839E]'
                       }`}
                     >
-                      {t.count > 99 ? '99+' : t.count}
+                      {formatBadgeCount(t.count)}
                     </span>
                   )}
                 </button>
@@ -382,9 +385,7 @@ export default function SparksPage() {
         {/* Visited Tab Paywall for Free Users */}
         {activeTab === 'visited' && !isPlus ? (
           <TabState
-            art="/ail-plus.png"
-            artAlt="AIL+"
-            artClassName="rounded-[2rem]"
+            icon={Eye}
             title="See Who Visited Your Profile"
             subtitle="Unlock your real-time visitor history, unblur incoming Sparks, and travel across Southeast Asia with AIL+."
             cta={
@@ -402,8 +403,7 @@ export default function SparksPage() {
           </div>
         ) : currentList.length === 0 ? (
           <TabState
-            art={userGender === 'female' ? '/nomatch-f.png' : '/nomatch-m.png'}
-            artAlt={emptyCopy.title}
+            icon={TAB_ICONS[activeTab] ?? Heart}
             title={emptyCopy.title}
             subtitle={emptyCopy.subtitle}
             cta={

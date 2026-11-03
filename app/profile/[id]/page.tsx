@@ -25,6 +25,8 @@ import { rhythmOption, sharedTraits, toList } from '@/lib/rhythm';
 import { scoreOf } from '@/lib/reputation';
 import { InCommonCard, RhythmPill } from '@/components/profile/RhythmBadges';
 import RepScoreCard from '@/components/RepScoreCard';
+import { ReportModal } from '@/components/ReportModal';
+import { useActionToast } from '@/components/ActionToast';
 
 interface HighlightRow {
   tag_id: string;
@@ -88,6 +90,23 @@ export default function PublicProfilePage() {
   const [sparkLoading, setSparkLoading] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
+  const [reportOpen, setReportOpen] = useState(false);
+  const showActionToast = useActionToast();
+
+  const blockMember = async () => {
+    try {
+      const res = await fetch('/api/users/block', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ blockedId: targetUserId }),
+      });
+      if (!res.ok) throw new Error();
+      showActionToast('Member blocked', 'shield');
+      setTimeout(() => router.push('/discover'), 900);
+    } catch {
+      showActionToast('Could not block this member. Try again.', 'info');
+    }
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -458,8 +477,10 @@ export default function PublicProfilePage() {
                             url: window.location.href,
                           }).catch(() => {});
                         } else {
-                          navigator.clipboard?.writeText(window.location.href);
-                          triggerToast('Profile link copied');
+                          navigator.clipboard
+                            ?.writeText(window.location.href)
+                            .then(() => showActionToast('Profile link copied to clipboard', 'copy'))
+                            .catch(() => {});
                         }
                       }}
                       className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs font-semibold text-[#1C1924] transition hover:bg-[#F8F7FA]"
@@ -471,7 +492,7 @@ export default function PublicProfilePage() {
                       type="button"
                       onClick={() => {
                         setShowMenu(false);
-                        triggerToast(`Report submitted for ${displayName}`);
+                        setReportOpen(true);
                       }}
                       className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs font-semibold text-[#1C1924] transition hover:bg-[#F8F7FA]"
                     >
@@ -482,8 +503,7 @@ export default function PublicProfilePage() {
                       type="button"
                       onClick={() => {
                         setShowMenu(false);
-                        triggerToast(`${displayName} has been blocked`);
-                        setTimeout(() => router.push('/discover'), 1000);
+                        blockMember();
                       }}
                       className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs font-semibold text-rose-600 transition hover:bg-rose-50"
                     >
@@ -706,6 +726,18 @@ export default function PublicProfilePage() {
       </div>
 
       {floatingDock}
+
+      <ReportModal
+        open={reportOpen}
+        reportedId={targetUserId}
+        name={displayName}
+        onClose={() => setReportOpen(false)}
+        onDone={(blocked) => {
+          setReportOpen(false);
+          showActionToast('Report received. Our moderation team will review.', 'shield');
+          if (blocked) setTimeout(() => router.push('/discover'), 1200);
+        }}
+      />
     </div>
   );
 }

@@ -39,6 +39,8 @@ interface IdentityItem {
   avatar_url?: string | null;
   city?: string | null;
   country?: string | null;
+  age?: number | null;
+  birthdate?: string | null;
   submission: {
     submittedAt: string | null;
     photos: string[];
@@ -171,7 +173,7 @@ export default function AdminVerificationsPage() {
         <button
           onClick={() => decide(kind, userId, 'approve')}
           disabled={isBusy}
-          className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-[#6555B8] hover:bg-[#5344A6] text-white text-xs font-semibold disabled:opacity-50 min-h-[42px]"
+          className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#6555B8] hover:bg-[#5344A6] text-white text-xs font-semibold disabled:opacity-50 min-h-[42px]"
         >
           {isBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
           {labels[0]}
@@ -179,7 +181,7 @@ export default function AdminVerificationsPage() {
         <button
           onClick={() => decide(kind, userId, 'reject')}
           disabled={isBusy}
-          className="flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-white border border-rose-200 text-rose-600 hover:bg-rose-50 text-xs font-semibold disabled:opacity-50 min-h-[42px]"
+          className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-red-50 border border-red-200 text-red-600 hover:bg-red-100 text-xs font-semibold disabled:opacity-50 min-h-[42px]"
         >
           {isBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <XCircle className="w-4 h-4" />}
           {labels[1]}
@@ -213,9 +215,11 @@ export default function AdminVerificationsPage() {
               </div>
               <div>
                 <h1 className="text-xl font-bold tracking-tight" style={{ fontFamily: 'var(--font-brand)' }}>
-                  Review Queue
+                  Verification Queue
                 </h1>
-                <p className="text-xs text-[#6C637B]">Identity checks, main photos and reports</p>
+                <p className="text-xs text-[#6C637B]">
+                  {loading ? 'Loading...' : `${identity.length} pending identity check${identity.length === 1 ? '' : 's'}`} · main photos · reports
+                </p>
               </div>
             </div>
             <button
@@ -275,7 +279,17 @@ export default function AdminVerificationsPage() {
                         <div className="w-11 h-11 rounded-full bg-[#F3EFFC]" />
                       )}
                       <div className="min-w-0">
-                        <p className="text-sm font-semibold truncate">{nameOf(item)}</p>
+                        <p className="text-sm font-semibold truncate">
+                          {nameOf(item)}
+                          {(() => {
+                            const age =
+                              item.age ??
+                              (item.birthdate
+                                ? Math.floor((Date.now() - new Date(item.birthdate).getTime()) / (365.25 * 24 * 3600 * 1000))
+                                : null);
+                            return age ? <span className="font-normal text-[#6C637B]">, {age}</span> : null;
+                          })()}
+                        </p>
                         <p className="text-[11px] text-[#9A93A8] truncate">
                           {[item.city, item.country].filter(Boolean).join(', ') || 'No location'}
                           {item.submission.submittedAt && ` · ${new Date(item.submission.submittedAt).toLocaleString()}`}
@@ -374,7 +388,7 @@ export default function AdminVerificationsPage() {
                       className="w-full px-3 py-2 rounded-xl bg-white border border-[#ECE8F4] text-xs text-[#1C1924] placeholder:text-[#9A93A8] focus:outline-none focus:border-[#6555B8]"
                     />
 
-                    <ActionButtons kind="identity" userId={item.id} />
+                    <ActionButtons kind="identity" userId={item.id} labels={['Approve Identity', 'Reject']} />
                   </div>
                 ))
               )}

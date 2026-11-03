@@ -27,6 +27,7 @@ import { ProfileHighlightsEditorRow } from '@/components/ProfileHighlightsEditor
 import { VoiceIntroRecorder } from '@/components/VoiceIntroRecorder';
 import { RhythmPill, RhythmSelectors, rhythmFromRow, type RhythmValues } from '@/components/profile/RhythmBadges';
 import { saveProfileFields } from '@/lib/profileApi';
+import { useActionToast } from '@/components/ActionToast';
 import { SelectSheet } from '@/components/SelectSheet';
 
 const QUICK_LANGUAGES = ['English', 'Tagalog', 'Thai', 'Japanese', 'Vietnamese', 'Mandarin', 'Spanish', 'Korean'];
@@ -307,6 +308,7 @@ export default function MyProfilePage() {
 
   // Photo delete (edit mode): /api/profile/photo keeps at least one photo, promotes the next one
   // when the main photo goes, and removes the file from storage.
+  const showActionToast = useActionToast();
   const [photoNotice, setPhotoNotice] = useState<string | null>(null);
   const [deletingPhoto, setDeletingPhoto] = useState<string | null>(null);
   const handleDeletePhoto = async (url: string) => {
@@ -328,6 +330,7 @@ export default function MyProfilePage() {
       if (Array.isArray(data.photos)) setPhotos(data.photos);
       if (typeof data.avatar_url === 'string') setAvatarUrl(data.avatar_url);
       setCurrentPhotoIdx(0);
+      showActionToast('Photo deleted', 'check');
     } catch (err) {
       setPhotoNotice(err instanceof Error ? err.message : 'Could not remove the photo.');
     } finally {

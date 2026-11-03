@@ -17,6 +17,7 @@ import { sharedTraits } from '@/lib/rhythm';
 import { InCommonCard, RhythmPill } from '@/components/profile/RhythmBadges';
 import { SparkHeartButton } from '@/components/SparkHeartButton';
 import { MutualSparkModal } from '@/components/MutualSparkModal';
+import { useActionToast } from '@/components/ActionToast';
 
 const DISCOVERY_MODES = [
   { id: 'all', label: 'All' },
@@ -209,6 +210,7 @@ function DiscoverContent() {
 
 
   const [filtersOpen, setFiltersOpen] = useState(false);
+  const showActionToast = useActionToast();
   const [minAge, setMinAge] = useState<number>(18);
   const [maxAge, setMaxAge] = useState<number>(65);
   const [draftMinAge, setDraftMinAge] = useState<number>(18);
@@ -512,6 +514,7 @@ function DiscoverContent() {
 
   const resetAndApplyFilters = () => {
     resetFilters();
+    showActionToast('Filters reset to default', 'info');
     setSelectedCountry('All');
     setSelectedIntent('all');
     setMinAge(18);

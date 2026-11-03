@@ -96,7 +96,7 @@ export async function GET() {
     const [identityRes, avatarRes, reportsRes] = await Promise.all([
       admin
         .from('profiles')
-        .select('id, username, full_name, avatar_url, city, country')
+        .select('id, username, full_name, avatar_url, city, country, age, birthdate')
         .eq('verification_status', 'pending')
         .limit(50),
       admin
@@ -177,6 +177,20 @@ export async function POST(req: NextRequest) {
 
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
     if (!data || data.length === 0) return NextResponse.json({ error: 'User not found' }, { status: 404 });
+
+    // Rejected: purge the selfie (and any legacy pose photos); the small review-metadata JSON stays
+    // as an audit trail of the decision.
+    if (!approve) {
+      const { data: files } = await admin.storage.from('verifications').list(userId, { limit: 100 });
+      const photos = (files || [])
+        .map((f) => f.name)
+        .filter((n) => n === 'selfie.jpg' || /_pose_\d+\.jpg$/.test(n))
+        .map((n) => `${userId}/${n}`);
+      if (photos.length > 0) {
+        const { error: purgeErr } = await admin.storage.from('verifications').remove(photos);
+        if (purgeErr) console.warn('[admin/verifications] selfie purge failed:', purgeErr.message);
+      }
+    }
 
     const { error: notifErr } = await admin.from('notifications').insert({
       user_id: userId,

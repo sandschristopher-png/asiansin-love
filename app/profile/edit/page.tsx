@@ -9,6 +9,7 @@ import UpgradeModal from '@/components/UpgradeModal';
 import { resolveCountry } from '@/lib/countries';
 import { EMPTY_RHYTHM, RhythmSelectors, rhythmFromRow, type RhythmValues } from '@/components/profile/RhythmBadges';
 import { saveProfileFields } from '@/lib/profileApi';
+import { useActionToast } from '@/components/ActionToast';
 
 
 
@@ -57,6 +58,7 @@ export default function EditProfilePage() {
   const [usernameStatus, setUsernameStatus] = useState<'idle' | 'checking' | 'available' | 'taken'>('idle');
 
   const [rhythm, setRhythm] = useState<RhythmValues>(EMPTY_RHYTHM);
+  const showActionToast = useActionToast();
   const [formData, setFormData] = useState({
     full_name: '',
     age: '',
@@ -278,7 +280,8 @@ export default function EditProfilePage() {
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || 'Failed to remove photo.');
       if (Array.isArray(data.photos)) setPhotos(data.photos);
-      setStatusMsg({ type: 'success', text: targetIdx === 0 ? 'Photo removed. Your next photo is now your main photo.' : 'Photo removed.' });
+      setStatusMsg(targetIdx === 0 ? { type: 'success', text: 'Your next photo is now your main photo.' } : null);
+      showActionToast('Photo deleted', 'check');
     } catch (err: unknown) {
       setPhotos(previousPhotos);
       setStatusMsg({ type: 'error', text: err instanceof Error ? err.message : 'Failed to remove photo.' });
