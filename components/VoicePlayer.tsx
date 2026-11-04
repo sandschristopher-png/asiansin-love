@@ -2,8 +2,9 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { Loader2, Pause, Play } from 'lucide-react';
-import { formatSeconds } from '@/lib/audio';
+import { formatSeconds, probeDurationMs } from '@/lib/audio';
 import { AnimatedWaveform } from '@/components/audio/AnimatedWaveform';
+import { MotionConfig } from 'framer-motion';
 
 /**
  * Voice intro player card: tap-to-play only (never autoplays, no UI sounds), an animated waveform
@@ -57,9 +58,13 @@ function VoicePlayerCard({
     audio.onwaiting = () => setLoading(true);
     audio.onplaying = () => setLoading(false);
     audio.ontimeupdate = () => setPositionMs(audio.currentTime * 1000);
-    audio.onloadedmetadata = () => {
+    // MediaRecorder WebM reports duration = Infinity at loadedmetadata and only reveals the real
+    // length in a later durationchange: listen to both, or the progress fill never moves.
+    const readDuration = () => {
       if (Number.isFinite(audio.duration) && audio.duration > 0) setMediaMs(audio.duration * 1000);
     };
+    audio.onloadedmetadata = readDuration;
+    audio.ondurationchange = readDuration;
     audio.onended = () => {
       setPlaying(false);
       setPositionMs(0);
@@ -81,6 +86,11 @@ function VoicePlayerCard({
       return;
     }
     const audio = ensureAudio();
+    // Exact length up front (WebM intros only report it midway through playback). Not awaited:
+    // play() must stay in the tap's call stack for iOS.
+    if (mediaMs === null && !durationMs) {
+      probeDurationMs(src).then((ms) => ms && setMediaMs((prev) => prev ?? ms));
+    }
     try {
       setFailed(false);
       setLoading(true);
@@ -166,7 +176,10 @@ function VoicePlayerCard({
               totalMs > 0 ? 'cursor-pointer' : 'cursor-default'
             }`}
           >
-            <AnimatedWaveform isPlaying={playing} progress={progress / 100} />
+            {/* Bars always animate: never suppressed by the OS / browser reduce-motion setting. */}
+            <MotionConfig reducedMotion="never">
+              <AnimatedWaveform isPlaying={playing} progress={progress / 100} />
+            </MotionConfig>
           </div>
         </div>
 

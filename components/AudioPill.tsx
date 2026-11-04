@@ -2,8 +2,8 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { Pause, Play, Loader2 } from 'lucide-react';
-import { formatSeconds } from '@/lib/audio';
-import { motion } from 'framer-motion';
+import { formatSeconds, probeDurationMs } from '@/lib/audio';
+import { MotionConfig, motion } from 'framer-motion';
 
 /** Bar bounce while playing (Framer Motion, so it runs regardless of CSS keyframes). */
 const barMotion = (playing: boolean, i: number, stepS: number) =>
@@ -69,6 +69,8 @@ export function AudioPill({
         if (!url) throw new Error('unavailable');
         const audio = new Audio(url);
         audio.preload = 'auto';
+        // Exact length up front for WebM clips that report Infinity until read through (not awaited).
+        if (!durationMs) probeDurationMs(url).then((ms) => ms && setMediaDurationMs((prev) => prev ?? ms));
         audio.onplay = () => setPlaying(true);
         audio.onpause = () => setPlaying(false);
         audio.onended = () => {
@@ -76,10 +78,13 @@ export function AudioPill({
           setPositionMs(0);
         };
         audio.ontimeupdate = () => setPositionMs(audio.currentTime * 1000);
-        audio.onloadedmetadata = () => {
-          // WebM from MediaRecorder often reports Infinity until fully read; keep the stored length then.
+        // MediaRecorder WebM reports Infinity at loadedmetadata and the real length in a later
+        // durationchange; keep the stored length until one of them is finite.
+        const readDuration = () => {
           if (Number.isFinite(audio.duration) && audio.duration > 0) setMediaDurationMs(audio.duration * 1000);
         };
+        audio.onloadedmetadata = readDuration;
+        audio.ondurationchange = readDuration;
         audio.onerror = () => {
           setPlaying(false);
           setFailed(true);
@@ -100,6 +105,8 @@ export function AudioPill({
   const totalMs = durationMs || mediaDurationMs || 0;
   const progress = totalMs > 0 ? Math.min(1, positionMs / totalMs) : 0;
   return (
+    // Bars always animate: never suppressed by the OS / browser reduce-motion setting.
+    <MotionConfig reducedMotion="never">
     <button
       type="button"
       onClick={toggle}
@@ -179,6 +186,7 @@ export function AudioPill({
               : label}
       </span>
     </button>
+    </MotionConfig>
   );
 }
 

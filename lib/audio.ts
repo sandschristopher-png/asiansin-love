@@ -47,3 +47,28 @@ export function formatSeconds(ms: number): string {
   const s = Math.max(0, Math.round(ms / 1000));
   return `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
 }
+
+/**
+ * Exact clip length in ms by decoding the file once (WebAudio), or null if the browser cannot
+ * decode it. MediaRecorder WebM reports duration = Infinity until the browser has read through the
+ * file, so players call this when playback starts to fill progress from the first second. It never
+ * touches the playing <audio> element (no seeking), so it is safe to run alongside play().
+ */
+export async function probeDurationMs(url: string): Promise<number | null> {
+  if (typeof window === 'undefined') return null;
+  const Ctx = window.AudioContext || (window as unknown as { webkitAudioContext?: typeof AudioContext }).webkitAudioContext;
+  if (!Ctx) return null;
+  let ctx: AudioContext | null = null;
+  try {
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    const data = await res.arrayBuffer();
+    ctx = new Ctx();
+    const decoded = await ctx.decodeAudioData(data);
+    return Number.isFinite(decoded.duration) && decoded.duration > 0 ? decoded.duration * 1000 : null;
+  } catch {
+    return null;
+  } finally {
+    ctx?.close().catch(() => {});
+  }
+}
