@@ -3,6 +3,16 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Pause, Play, Loader2 } from 'lucide-react';
 import { formatSeconds } from '@/lib/audio';
+import { motion } from 'framer-motion';
+
+/** Bar bounce while playing (Framer Motion, so it runs regardless of CSS keyframes). */
+const barMotion = (playing: boolean, i: number, stepS: number) =>
+  playing
+    ? {
+        animate: { scaleY: [0.35, 1, 0.35] },
+        transition: { duration: 0.9, repeat: Infinity, ease: 'easeInOut' as const, delay: i * stepS },
+      }
+    : { animate: { scaleY: 1 }, transition: { duration: 0.25, ease: 'easeOut' as const } };
 
 const BARS = [0.45, 0.8, 0.55, 1, 0.65, 0.9, 0.5];
 
@@ -119,13 +129,14 @@ export function AudioPill({
         <span className="flex items-center gap-1.5">
         <span className={`flex items-center gap-[2px] h-3.5`} aria-hidden>
           {BARS.slice(0, 5).map((h, i) => (
-            <span
+            <motion.span
               key={i}
-              className={`w-[2.5px] rounded-full ${onBrand ? 'bg-white' : 'bg-[#6555B8]'} ${playing ? 'ail-wave-bar' : ''}`}
+              initial={false}
+              {...barMotion(playing, i, 0.11)}
+              className={`w-[2.5px] rounded-full origin-center ${onBrand ? 'bg-white' : 'bg-[#6555B8]'}`}
               style={{
                 height: playing ? `${h * 100}%` : '35%',
                 opacity: playing ? 1 : 0.6,
-                animationDelay: `${i * 110}ms`,
                 transition: 'height 150ms ease-out',
               }}
             />
@@ -148,10 +159,12 @@ export function AudioPill({
       ) : (
       <span className={`flex items-center gap-[2px] ${sm ? 'h-3' : 'h-4'}`} aria-hidden>
         {BARS.map((h, i) => (
-          <span
+          <motion.span
             key={i}
-            className={`w-[2.5px] rounded-full ${onBrand ? 'bg-white' : 'bg-[#6555B8]'} ${playing ? 'ail-wave-bar' : ''}`}
-            style={{ height: `${h * 100}%`, opacity: playing ? 1 : 0.55, animationDelay: `${i * 90}ms` }}
+            initial={false}
+            {...barMotion(playing, i, 0.09)}
+            className={`w-[2.5px] rounded-full origin-center ${onBrand ? 'bg-white' : 'bg-[#6555B8]'}`}
+            style={{ height: `${h * 100}%`, opacity: playing ? 1 : 0.55 }}
           />
         ))}
       </span>

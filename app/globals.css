@@ -172,15 +172,6 @@ nextjs-portal,
 }
 
 /* Voice pill wave bars (components/AudioPill.tsx) */
-@keyframes ailWave {
-  0%, 100% { transform: scaleY(0.35); }
-  50% { transform: scaleY(1); }
-}
-.ail-wave-bar {
-  animation: ailWave 0.9s ease-in-out infinite;
-  transform-origin: center;
-}
-
 /* Skeleton shimmer (loading placeholders instead of spinners) */
 @keyframes ailShimmer {
   0% { background-position: 200% 0; }
@@ -254,7 +245,7 @@ nextjs-portal,
 .ail-avatar-right { animation: ailAvatarRight 480ms cubic-bezier(0.16, 1, 0.3, 1) both; }
 @media (prefers-reduced-motion: reduce) {
   .ail-shimmer, .ail-sheet-up, .ail-modal-pop,
-  .ail-avatar-left, .ail-avatar-right, .ail-wave-bar {
+  .ail-avatar-left, .ail-avatar-right {
     animation: none !important;
   }
 }
