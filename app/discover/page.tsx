@@ -1231,7 +1231,7 @@ function DiscoverContent() {
                         <span>Country</span>
                         {countryLocked && (
                           <Link href="/plus" aria-label="Unlock with Plus">
-                            <PlusBadge size="sm" />
+                            <PlusBadge size="profile" />
                           </Link>
                         )}
                       </label>

@@ -115,13 +115,7 @@ export function Navbar() {
             {!pageTitle ? (
               <div className="flex items-center gap-1.5 shrink-0 min-w-max">
                 <BrandLogo href={user ? "/discover" : "/"} size="header" />
-                {user && isPlusProfile(profile) && (
-                  <span className="inline-flex items-center justify-center h-4.5 px-1.5 py-0.5 rounded-[5px] bg-gradient-to-r from-[#8C71F5]/10 to-[#EC4899]/10 border border-[#8C71F5]/20 shrink-0 self-center">
-                    <span className="text-[9px] font-extrabold tracking-widest uppercase bg-gradient-to-r from-[#8C71F5] to-[#EC4899] bg-clip-text text-transparent leading-none">
-                      Plus
-                    </span>
-                  </span>
-                )}
+                {user && isPlusProfile(profile) && <PlusBadge size="header" />}
               </div>
             ) : (
               <div className="flex items-center gap-2.5">
@@ -189,7 +183,7 @@ export function Navbar() {
                   <div role="menu" className="absolute right-0 mt-2 w-64 rounded-2xl bg-white border border-[#ECE8F4] shadow-xl overflow-hidden z-[200] animate-[notifDropdownIn_0.2s_cubic-bezier(0.16,1,0.3,1)_both]">
                     <div className="px-4 py-3 border-b border-[#ECE8F4] flex items-center gap-1.5 min-w-0">
                       <span className="text-sm font-bold text-[#2D264B] truncate">{displayName.replace(/^@/, '')}</span>
-                      {isPlusProfile(profile) && <PlusBadge />}
+                      {isPlusProfile(profile) && <PlusBadge size="profile" />}
                     </div>
                     <div className="py-1">
                       <Link href="/plus" role="menuitem" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 h-11 text-sm text-[#2D264B] hover:bg-[#FAF8FD] transition-colors justify-between">

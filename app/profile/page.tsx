@@ -601,7 +601,7 @@ export default function MyProfilePage() {
                 >
                   {username.replace(/^@/, '')}{age ? ', ' + age : ''}
                 </h2>
-                {isPlus && <PlusBadge />}
+                {isPlus && <PlusBadge size="profile" />}
                 {verificationStatus === 'verified' && (
                   <span title="Verified Member">
                     <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />

@@ -89,8 +89,8 @@ export function AILPlusModal({
         <div className="px-5 pb-[calc(1.25rem+env(safe-area-inset-bottom,16px))] space-y-4">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#F3EFFC] text-[10px] font-bold text-[#6555B8]">
-                <Zap className="w-3 h-3 fill-current" /> Plus
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#F3EFFC] text-[10px] font-extrabold tracking-widest uppercase text-[#6555B8]">
+                <Zap className="w-3 h-3 fill-current" /> PLUS
               </span>
               <h2 className="mt-1.5 text-lg font-bold text-[#1C1924] leading-snug">{title}</h2>
             </div>

@@ -524,7 +524,7 @@ export default function EditProfilePage() {
             {initialHasUsername ? (
               <div className="flex items-center justify-between">
                 <span className="font-mono text-sm text-[#1C1924] font-medium">{username}</span>
-                <button type="button" onClick={() => setShowUpgradeModal(true)} className="text-xs px-2.5 py-1 rounded-lg bg-[#F3EFFC] border border-[#DDD7E5] text-[#6555b8] hover:bg-[#EAE0F5] transition flex items-center gap-1.5 font-medium cursor-pointer" title="Change handle with Plus"><span>Handle Locked</span><PlusBadge size="sm" /></button>
+                <button type="button" onClick={() => setShowUpgradeModal(true)} className="text-xs px-2.5 py-1 rounded-lg bg-[#F3EFFC] border border-[#DDD7E5] text-[#6555b8] hover:bg-[#EAE0F5] transition flex items-center gap-1.5 font-medium cursor-pointer" title="Change handle with Plus"><span>Handle Locked</span><PlusBadge size="profile" /></button>
               </div>
             ) : (
               <div>
@@ -857,7 +857,7 @@ export default function EditProfilePage() {
                 </button>
               ) : (
                 <Link href="/plus" className="shrink-0" aria-label="Unlock with Plus">
-                  <PlusBadge size="sm" />
+                  <PlusBadge size="profile" />
                 </Link>
               )}
             </div>
