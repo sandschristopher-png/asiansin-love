@@ -154,9 +154,11 @@ export default function SparksPage() {
   const router = useRouter();
   const initialSparks = getInitialSparksState();
   const [activeTab, setActiveTab] = useState<SparkTab>('sparked');
-  // Deep links from the notice center: /favorites?tab=sparked_you | mutual | visited
+  // Deep links (notice center, emails): ?tab=sent | sparks | mutual | views, or the internal tab ids.
   useEffect(() => {
-    const tab = new URLSearchParams(window.location.search).get('tab');
+    const raw = new URLSearchParams(window.location.search).get('tab') || '';
+    const alias: Record<string, SparkTab> = { sent: 'sparked', sparks: 'sparked_you', matches: 'mutual', views: 'visited', visitors: 'visited' };
+    const tab = alias[raw] || raw;
     // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time read of the URL on mount
     if (tab === 'sparked' || tab === 'sparked_you' || tab === 'mutual' || tab === 'visited') setActiveTab(tab);
   }, []);
@@ -225,7 +227,7 @@ export default function SparksPage() {
 
         // Server-side gated fetch — no client-side bypass possible
         const resp = await fetch('/api/sparks/gated');
-        // Sparked You / Visited are gated (AIL+ for men, free for women). "You Sparked" and
+        // Sparked You / Visited are gated (Plus for men, free for women). "You Sparked" and
         // "Mutual" are the member's own sparks and always load, whatever the gate says.
         let sparkedYou: ProfileCardData[] = [];
         let visitedYou: ProfileCardData[] = [];
@@ -335,7 +337,7 @@ export default function SparksPage() {
     if (activeTab === 'mutual') {
       return { title: 'No Mutual Sparks Yet', subtitle: 'When you and another member both Spark each other, your match unlocks here.' };
     }
-    return { title: 'No Visitors Yet', subtitle: 'Members who view your profile will be listed here with AIL+.' };
+    return { title: 'No Visitors Yet', subtitle: 'Members who view your profile will be listed here with Plus.' };
   }, [activeTab]);
 
   // Popularity triage: credible senders first, no-photo senders collapsed
@@ -353,7 +355,7 @@ export default function SparksPage() {
   }, [activeTab, currentList, isPlus]);
 
   return (
-    <main className="min-h-[100dvh] bg-white pb-[calc(6rem+env(safe-area-inset-bottom,16px))] overscroll-y-contain">
+    <main className="min-h-[100dvh] bg-white pb-[calc(8rem+env(safe-area-inset-bottom,0px))] overscroll-y-contain">
       <div className="max-w-md mx-auto px-3.5 pt-2">
         {/* Horizontal Sub-Tab Navigation */}
         {/* Discover-style text tabs: no pill backgrounds, no underline, no divider. Sticky at top-0 of the app's
@@ -376,8 +378,8 @@ export default function SparksPage() {
                   <span>{t.label}</span>
                   {formatBadgeCount(t.count) && (
                     <span
-                      className={`self-start mt-1 text-[10px] font-bold leading-none tabular-nums ${
-                        active ? 'text-[#6555B8]' : 'text-black/35'
+                      className={`ml-1 text-[10px] font-bold leading-none tabular-nums px-1.5 py-0.5 rounded-full ${
+                        active ? 'bg-[#8C71F5]/10 text-[#8C71F5]' : 'bg-black/[0.04] text-black/40'
                       }`}
                     >
                       {formatBadgeCount(t.count)}
@@ -394,11 +396,11 @@ export default function SparksPage() {
           <TabState
             icon={Eye}
             title={visitedList.length > 0 ? `${formatBadgeCount(visitedList.length)} ${visitedList.length === 1 ? 'member' : 'members'} viewed your profile` : 'See Who Visited Your Profile'}
-            subtitle="See exactly who they are with AIL+, plus every member who sparked you."
+            subtitle="See exactly who they are with Plus, along with every member who sparked you."
             cta={
               <Link href="/plus" className={STATE_CTA_CLASS}>
                 <Crown className="w-4 h-4 text-amber-300" />
-                <span>See them with AIL+</span>
+                <span>See them with Plus</span>
               </Link>
             }
           />
@@ -423,7 +425,7 @@ export default function SparksPage() {
           <>
           <div className="grid grid-cols-2 gap-3 sm:gap-4 animate-fade-in-up">
             {priorityList.map((person, idx) => {
-              // Free: the newest Spark is a clear preview, the rest stay blurred until AIL+.
+              // Free: the newest Spark is a clear preview, the rest stay blurred until Plus.
               const shouldBlur =
                 !isPlus && ((activeTab === 'sparked_you' && idx > 0) || activeTab === 'visited');
               const publicName = getPublicName(person);
@@ -446,7 +448,7 @@ export default function SparksPage() {
                   {shouldBlur && (
                     <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/30 p-3 text-center">
                       <div className="w-9 h-9 rounded-full bg-[#6555B8] text-white flex items-center justify-center mb-1.5 shadow-md"><Lock className="w-4 h-4" /></div>
-                      <span className="text-[11px] font-bold text-white drop-shadow">Tap to Unblur with AIL+</span>
+                      <span className="text-[11px] font-bold text-white drop-shadow">Tap to Unblur with Plus</span>
                     </div>
                   )}
                   <div className="absolute bottom-0 inset-x-0 pt-10 pb-3 px-3 z-10 pointer-events-none bg-gradient-to-t from-black/65 via-black/25 to-transparent text-white">

@@ -26,13 +26,13 @@ const PERKS = [
 ];
 
 /**
- * Contextual AIL+ upgrade drawer (z-[70], above the BottomNav). `title` names the feature the
- * member just tapped, e.g. "Unlock Private Mode with AIL+".
+ * Contextual Plus upgrade drawer (z-[70], above the BottomNav). `title` names the feature the
+ * member just tapped, e.g. "Unlock Private Mode with Plus".
  */
 export function AILPlusModal({
   open,
   onClose,
-  title = 'Unlock more with AIL+',
+  title = 'Unlock more with Plus',
   returnPath = '/settings',
 }: {
   open: boolean;
@@ -90,7 +90,7 @@ export function AILPlusModal({
           <div className="flex items-start justify-between gap-3">
             <div>
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#F3EFFC] text-[10px] font-bold text-[#6555B8]">
-                <Zap className="w-3 h-3 fill-current" /> AIL+
+                <Zap className="w-3 h-3 fill-current" /> Plus
               </span>
               <h2 className="mt-1.5 text-lg font-bold text-[#1C1924] leading-snug">{title}</h2>
             </div>
@@ -155,7 +155,7 @@ export function AILPlusModal({
             className="w-full py-3.5 rounded-2xl bg-[#6555B8] hover:bg-[#52449E] text-white text-sm font-semibold shadow-md shadow-[#6555B8]/25 flex items-center justify-center gap-2 disabled:opacity-60"
           >
             {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4 fill-current" />}
-            Upgrade to AIL+
+            Upgrade to Plus
           </button>
           <Link href="/plus" onClick={onClose} className="block text-center text-xs font-semibold text-[#6555B8] hover:underline">
             View all member perks

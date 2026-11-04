@@ -123,7 +123,7 @@ export default function HandleChangeCard() {
         setMessage('Next change in ' + Math.max(1, Math.ceil((new Date(data.locked_until).getTime() - Date.now()) / DAY_MS)) + ' days.');
       } else if (data.error === 'plus_required') {
         if (profile) setProfile({ ...profile, username_free_change_used: true });
-        setMessage('AIL+ required to change again.');
+        setMessage('Plus required to change again.');
       } else if (data.error === 'taken') { setMessage('That username is taken.'); }
       else if (data.error === 'reserved') { setMessage('That username is reserved.'); }
       else if (data.error === 'account_too_new') { setMessage('Usernames unlock 14 days after signup.'); }
@@ -174,7 +174,7 @@ export default function HandleChangeCard() {
             <Lock className="w-3.5 h-3.5 text-[#9A8CC3]" />
           </div>
           <p className="text-xs text-[#6C637B]">You have used your free username change.</p>
-          <Link href="/plus" className="block w-full py-2.5 rounded-2xl bg-[#6555b8] hover:bg-[#52449e] text-white text-xs font-semibold text-center transition">Unlock Username Changes with AIL+</Link>
+          <Link href="/plus" className="block w-full py-2.5 rounded-2xl bg-[#6555b8] hover:bg-[#52449e] text-white text-xs font-semibold text-center transition">Unlock Username Changes with Plus</Link>
         </div>
       )}
 
@@ -208,7 +208,7 @@ export default function HandleChangeCard() {
             <p className={'text-xs font-semibold ' + (available === true ? 'text-emerald-600' : checking ? 'text-[#9A8CC3]' : 'text-rose-600')}>{statusText}</p>
           )}
           {!isPlus && freebieLeft && (
-            <p className="text-[11px] text-[#9A8CC3]">One free username change remaining — after that, AIL+ required.</p>
+            <p className="text-[11px] text-[#9A8CC3]">One free username change remaining — after that, Plus required.</p>
           )}
         </div>
       )}

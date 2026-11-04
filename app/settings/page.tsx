@@ -69,7 +69,7 @@ export default function SettingsHubPage() {
         .eq('id', user.id)
         .maybeSingle();
 
-      // AIL+ members get a "Manage Subscription" row (Stripe billing portal).
+      // Plus members get a "Manage Subscription" row (Stripe billing portal).
       supabase
         .from('profiles')
         .select('is_plus, gender')
@@ -100,7 +100,7 @@ export default function SettingsHubPage() {
 
   const handleToggle = async (key: SettingsKey) => {
     const nextVal = !settings[key];
-    // Private Mode is free for women; men need AIL+ (also enforced in the database).
+    // Private Mode is free for women; men need Plus (also enforced in the database).
     if (key === 'hide_profile' && nextVal && gender === 'male' && !isPlus) {
       setPlusModalOpen(true);
       return;
@@ -324,7 +324,7 @@ export default function SettingsHubPage() {
             title="Private Mode (Pause Profile)"
             subtitle={
               gender === 'male' && !isPlus
-                ? 'AIL+ · Hide from Discover while keeping your chats'
+                ? 'Plus · Hide from Discover while keeping your chats'
                 : 'Hide from Discover while keeping your chats'
             }
             on={settings.hide_profile}
@@ -399,7 +399,7 @@ export default function SettingsHubPage() {
 
           {[
             { href: '/safety', title: 'Safety & Anti-Scam Guide', subtitle: 'Spotting scams, contact gate, reporting' },
-            { href: '/terms', title: 'Terms of Service', subtitle: 'Rules, AIL+ billing and cancellation' },
+            { href: '/terms', title: 'Terms of Service', subtitle: 'Rules, Plus billing and cancellation' },
             { href: '/privacy', title: 'Privacy Policy', subtitle: 'Your data, selfies and account deletion' },
           ].map((row) => (
             <Link
@@ -421,7 +421,7 @@ export default function SettingsHubPage() {
           ))}
         </div>
 
-        {/* AIL+ BILLING (subscribers only) */}
+        {/* Plus BILLING (subscribers only) */}
         {isPlus && (
           <div className="rounded-3xl bg-white border border-[#DDD7E5] p-2 shadow-2xs">
             <button
@@ -436,7 +436,7 @@ export default function SettingsHubPage() {
                 </div>
                 <div>
                   <p className="text-xs font-bold text-[#1C1924]">Manage Subscription</p>
-                  <p className="text-[11px] text-[#6C637B]">Cancel AIL+ or update your payment method</p>
+                  <p className="text-[11px] text-[#6C637B]">Cancel Plus or update your payment method</p>
                 </div>
               </div>
               {openingPortal ? (
@@ -564,7 +564,7 @@ export default function SettingsHubPage() {
       <AILPlusModal
         open={plusModalOpen}
         onClose={() => setPlusModalOpen(false)}
-        title="Unlock Private Mode with AIL+"
+        title="Unlock Private Mode with Plus"
         returnPath="/settings"
       />
       </main>

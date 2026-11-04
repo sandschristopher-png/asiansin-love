@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { VoicePlayer } from '@/components/VoicePlayer';
+import { ageOf } from '@/lib/age';
 import { VisitingBadge } from '@/components/VisitingBadge';
 import { CardPhoto, DETAIL_PHOTO_SIZES } from '@/components/CardPhoto';
 import { DayOneBadge, NewMemberPill, VerifiedLocationBadge } from '@/components/profile/TrustBadges';
@@ -262,7 +263,8 @@ export default function PublicProfilePage() {
       .split(/\s+/)[0];
 
   const displayName = rawHandle.replace(/^@/, '');
-  const displayAge = profile.age ? `, ${profile.age}` : '';
+  const memberAge = ageOf(profile);
+  const displayAge = memberAge ? `, ${memberAge}` : '';
   const resolvedCountry = resolveCountry(profile.city, profile.country);
   const displayLocation =
     profile.city && resolvedCountry
@@ -380,8 +382,8 @@ export default function PublicProfilePage() {
         </div>
       )}
 
-      {/* SCROLLABLE PROFILE CONTENT — pb-32 guarantees bottom cards clear the fixed dock */}
-      <div className="w-full px-3.5 pt-3.5 pb-32 space-y-3.5">
+      {/* SCROLLABLE PROFILE CONTENT: 8rem + safe area keeps the last card ~24px+ clear of the fixed action dock */}
+      <div className="w-full px-3.5 pt-3.5 pb-[calc(8rem+env(safe-area-inset-bottom,0px))] space-y-3.5">
         
         {/* 1. HERO PHOTO CARD (4:5 Aspect Ratio + Overlaid Controls + Bottom Scrim) */}
         <div data-profile-hero className="relative aspect-[4/5] w-full rounded-3xl overflow-hidden bg-[#F2EEF7] shadow-xs select-none">

@@ -28,18 +28,18 @@ function describe(n: Notice): { Icon: React.ComponentType<{ className?: string }
   switch (n.type) {
     case 'match':
     case 'mutual_match':
-      return { Icon: Heart, line: `You and ${who} matched`, href: n.actor?.id ? `/chat/${n.actor.id}` : '/favorites?tab=mutual' };
+      return { Icon: Heart, line: `You and ${who} matched`, href: n.actor?.id ? `/chat/${n.actor.id}` : '/favorites?tab=matches' };
     case 'spark':
     case 'spark_received':
     case 'favorite':
-      return { Icon: Sparkles, line: `${who} sparked your profile`, href: '/favorites?tab=sparked_you' };
+      return { Icon: Sparkles, line: `${who} sparked your profile`, href: '/favorites?tab=sparks' };
     case 'visit':
     case 'profile_visit': {
       const count = Number(n.payload?.count ?? 1);
       return {
         Icon: Eye,
         line: count > 1 ? `${who} and ${count - 1} other${count > 2 ? 's' : ''} viewed your profile` : `${who} viewed your profile`,
-        href: '/favorites?tab=visited',
+        href: '/favorites?tab=views',
       };
     }
     case 'verification':
@@ -47,7 +47,7 @@ function describe(n: Notice): { Icon: React.ComponentType<{ className?: string }
     case 'location_verified':
       return { Icon: BadgeCheck, line: n.title || 'Verification update', href: n.link_url || '/profile' };
     case 'plus_activated':
-      return { Icon: ShieldCheck, line: n.title || 'AIL+ activated', href: n.link_url || '/plus' };
+      return { Icon: ShieldCheck, line: n.title || 'Plus activated', href: n.link_url || '/plus' };
     case 'moderation_warning':
       return { Icon: ShieldAlert, line: n.title || String(n.payload?.reason ?? 'Community guidelines notice'), href: n.link_url || '/standards' };
     default:

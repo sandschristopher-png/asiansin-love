@@ -93,7 +93,7 @@ export async function POST() {
     return NextResponse.json(
       {
         error:
-          'We could not cancel your AIL+ subscription automatically, so your account was not deleted. ' +
+          'We could not cancel your Plus subscription automatically, so your account was not deleted. ' +
           'Please try again in a minute, or cancel in Manage Billing first.',
       },
       { status: 502 }

@@ -10,7 +10,7 @@ import { User, Settings, LogOut, ArrowLeft, Menu, ShieldAlert } from 'lucide-rea
 import { adminRoleOf, isStaff } from '@/lib/adminRoles';
 import { supabase } from '@/lib/supabase/client';
 import { hardSignOut } from '@/lib/hardSignOut';
-import { AilPlusBadge } from '@/components/ui/AilPlusBadge';
+import { PlusBadge } from '@/components/ui/PlusBadge';
 /** Signed-in areas: the header never offers "Sign In" here (middleware already requires a session). */
 const IN_APP_PREFIXES = ['/discover', '/messages', '/favorites', '/profile', '/notifications', '/chat', '/settings', '/plus', '/verify'];
 
@@ -106,18 +106,20 @@ export function Navbar() {
     // On Discover the frosted filter bar sits directly below: drop the divider so both read as one surface.
     <header className={`sticky top-0 z-40 w-full bg-white/80 backdrop-blur-md border-b ${pathname === '/discover' ? 'border-transparent' : 'border-[#ECE8F4]/80'}`}>
       <div className="max-w-[430px] mx-auto px-4 h-14 flex items-center justify-between relative">
-        <div className="flex items-center gap-2 min-w-0">
+        <div className={`flex items-center gap-2 ${pageTitle ? 'min-w-0' : 'shrink-0'}`}>
           <div
             key={pageTitle || 'brand-home'}
             className="transition-all duration-200 ease-out flex items-center"
             style={{ animation: 'fadeInTitle 220ms ease-out forwards' }}
           >
             {!pageTitle ? (
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1.5 shrink-0 min-w-max">
                 <BrandLogo href={user ? "/discover" : "/"} size="header" />
                 {user && isPlusProfile(profile) && (
-                  <span className="inline-flex items-center text-[10px] font-bold px-1.5 py-0.5 rounded-md tracking-wider uppercase bg-gradient-to-r from-[#8C71F5]/10 to-[#EC4899]/10 border border-[#8C71F5]/20 text-[#8C71F5]">
-                    PLUS
+                  <span className="inline-flex items-center justify-center h-4.5 px-1.5 py-0.5 rounded-[5px] bg-gradient-to-r from-[#8C71F5]/10 to-[#EC4899]/10 border border-[#8C71F5]/20 shrink-0 self-center">
+                    <span className="text-[9px] font-extrabold tracking-widest uppercase bg-gradient-to-r from-[#8C71F5] to-[#EC4899] bg-clip-text text-transparent leading-none">
+                      Plus
+                    </span>
                   </span>
                 )}
               </div>
@@ -187,14 +189,14 @@ export function Navbar() {
                   <div role="menu" className="absolute right-0 mt-2 w-64 rounded-2xl bg-white border border-[#ECE8F4] shadow-xl overflow-hidden z-[200] animate-[notifDropdownIn_0.2s_cubic-bezier(0.16,1,0.3,1)_both]">
                     <div className="px-4 py-3 border-b border-[#ECE8F4] flex items-center gap-1.5 min-w-0">
                       <span className="text-sm font-bold text-[#2D264B] truncate">{displayName.replace(/^@/, '')}</span>
-                      {isPlusProfile(profile) && <AilPlusBadge />}
+                      {isPlusProfile(profile) && <PlusBadge />}
                     </div>
                     <div className="py-1">
                       <Link href="/plus" role="menuitem" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 h-11 text-sm text-[#2D264B] hover:bg-[#FAF8FD] transition-colors justify-between">
                         <span className="flex items-center gap-3">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img src="/logo-mark-transparent.png" alt="" aria-hidden className="w-4 h-4 object-contain" />
-                          AIL Plus
+                          Plus
                         </span>
                         {isPlusProfile(profile) ? (
                           <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-gradient-to-r from-[#8C71F5]/10 to-[#EC4899]/10 border border-[#8C71F5]/20 text-[#8C71F5]">Active</span>

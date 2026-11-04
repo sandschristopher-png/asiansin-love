@@ -45,7 +45,7 @@ const sections: LegalSection[] = [
           To keep members safe: automated screening of messages and bios for scams, solicitation and contact details, the
           reputation system, and review of reports.
         </li>
-        <li>To provide AIL+ features and process subscriptions.</li>
+        <li>To provide Plus features and process subscriptions.</li>
         <li>To send the notifications you turn on.</li>
       </ul>
     ),
@@ -101,7 +101,7 @@ const sections: LegalSection[] = [
     body: (
       <>
         <p>
-          Go to <strong>Settings → Delete Account</strong> and confirm. This cancels any active AIL+ subscription, deletes your
+          Go to <strong>Settings → Delete Account</strong> and confirm. This cancels any active Plus subscription, deletes your
           profile and messages, and removes your photos, voice recordings and verification selfies from storage.
         </p>
         <p>

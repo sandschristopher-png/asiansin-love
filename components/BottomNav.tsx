@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { useNotificationCounts } from '@/lib/notificationStore';
+import { useBottomNavHidden } from '@/lib/bottomNavStore';
 
 const PUBLIC_ROUTES = [
   '/',
@@ -28,6 +29,8 @@ const PUBLIC_ROUTES = [
 
 export function BottomNav() {
   const { unreadMessages: unreadCount, unseenSparks } = useNotificationCounts();
+  // A screen (e.g. My Profile while editing) can ask the dock to step aside.
+  const hiddenByScreen = useBottomNavHidden();
   const [user, setUser] = useState<any>(null);
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   const pathname = usePathname();
@@ -71,7 +74,7 @@ export function BottomNav() {
     };
   }, []);
 
-  if (!user || isPublicProfile || isChat || isPlusRoute || PUBLIC_ROUTES.includes(pathname) || pathname?.startsWith('/onboarding')) {
+  if (!user || hiddenByScreen || isPublicProfile || isChat || isPlusRoute || PUBLIC_ROUTES.includes(pathname) || pathname?.startsWith('/onboarding')) {
     return null;
   }
 

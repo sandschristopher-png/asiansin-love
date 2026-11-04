@@ -6,7 +6,8 @@
 // opentype.js reads the glyph outlines directly, so the mark is the font's own lowercase "a"
 // as vector paths - no text rendering, no system-font fallback.
 //
-// Mark   : gradient "a" (#8C71F5 -> #C084FC -> #EC4899) on a #2D264B squircle (rx 128 @ 512).
+// Mark   : gradient "a" (#8C71F5 -> #C084FC -> #EC4899) on a white squircle with a #ECE8F4
+//          hairline (rx 128 @ 512), like the with / Pairs app tiles.
 // Outputs: see OUTPUTS at the bottom. Re-run after changing colors or the font.
 import { readFileSync, writeFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
@@ -17,7 +18,10 @@ import opentype from 'opentype.js';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const out = (rel) => path.join(ROOT, rel);
 
-const BG = '#2D264B';
+const BG = '#FFFFFF';
+const HAIRLINE = '#ECE8F4';
+// Squircle tile: the hairline sits inside the 512 box (12px stroke = 0.75px at 32px).
+const squircleRect = (S) => `<rect x="6" y="6" width="${S - 12}" height="${S - 12}" rx="${S / 4 - 6}" fill="${BG}" stroke="${HAIRLINE}" stroke-width="12"/>`;
 const INK = '#2D264B';
 const STOPS = ['#8C71F5', '#C084FC', '#EC4899'];
 
@@ -50,7 +54,7 @@ function markSvg({ bg = 'squircle', fill = 'gradient', inkRatio = 0.6 }) {
   const S = 512;
   const d = glyphA({ canvas: S, inkSize: S * inkRatio });
   const bgEl =
-    bg === 'squircle' ? `<rect width="${S}" height="${S}" rx="128" fill="${BG}"/>`
+    bg === 'squircle' ? squircleRect(S)
     : bg === 'square' ? `<rect width="${S}" height="${S}" fill="${BG}"/>`
     : '';
   return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${S} ${S}" width="${S}" height="${S}">
@@ -140,7 +144,7 @@ function ogSvg() {
   <circle cx="1060" cy="120" r="320" fill="url(#glow)"/>
   <circle cx="1150" cy="600" r="240" fill="url(#glow)" opacity="0.6"/>
   <g transform="translate(${LEFT} 92)">
-    <rect width="${MARK}" height="${MARK}" rx="${MARK / 4}" fill="${BG}"/>
+    <rect x="2" y="2" width="${MARK - 4}" height="${MARK - 4}" rx="${MARK / 4 - 2}" fill="${BG}" stroke="${HAIRLINE}" stroke-width="4"/>
     <path d="${markGlyph}" fill="url(#g)"/>
   </g>
   <path d="${wmA}" fill="${INK}"/>

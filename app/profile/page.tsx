@@ -23,7 +23,11 @@ import {
 import { supabase } from '@/lib/supabase/client';
 import { hardSignOut } from '@/lib/hardSignOut';
 import { INTENT_OPTIONS, normalizeIntent, intentLabel } from '@/lib/intents';
-import { AilPlusBadge } from '@/components/ui/AilPlusBadge';
+import { PlusBadge } from '@/components/ui/PlusBadge';
+import { isPlusProfile } from '@/lib/plus';
+import { createPortal } from 'react-dom';
+import { useHideBottomNav } from '@/lib/bottomNavStore';
+import { adminRoleOf } from '@/lib/adminRoles';
 import RepScoreCard from '@/components/RepScoreCard';
 import { ProfileHighlightsEditorRow } from '@/components/ProfileHighlightsEditorRow';
 import { VoicePlayer } from '@/components/VoicePlayer';
@@ -106,6 +110,10 @@ export default function MyProfilePage() {
 
   const [loading, setLoading] = useState(!initialProfile);
   const [isEditing, setIsEditing] = useState(false);
+  // Editing: the floating BottomNav would cover the form, so it steps aside for a pinned Save bar.
+  useHideBottomNav(isEditing);
+  // Main photo awaiting admin review (photo_review_status from 20261112, avatar_status before it).
+  const [photoPending, setPhotoPending] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
@@ -199,7 +207,12 @@ export default function MyProfilePage() {
         if (data.wants_kids) setWantsKids(data.wants_kids);
         if (data.relocation) setRelocation(data.relocation);
         if (data.languages) setUserLanguages(readLanguages(data.languages).join(', '));
-        if (data.is_plus) setIsPlus(true);
+        setIsPlus(isPlusProfile(data));
+        setPhotoPending(
+          adminRoleOf(data) !== 'super_admin' &&
+            data.photo_review_status !== 'approved' &&
+            (data.photo_review_status === 'pending' || data.avatar_status === 'pending_review')
+        );
         if (typeof data.reputation_score === 'number') setRepScore(data.reputation_score);
 
         setHeightCm(readHeightCm(data.height_cm, data.height));
@@ -241,7 +254,7 @@ export default function MyProfilePage() {
             lookingFor: data.looking_for || '',
             interests: Array.isArray(data.interests) ? data.interests : [],
             verificationStatus: data.verification_status || (data.is_verified ? 'verified' : 'unverified'),
-            isPlus: Boolean(data.is_plus),
+            isPlus: isPlusProfile(data),
             repScore: typeof data.reputation_score === 'number' ? data.reputation_score : null,
             profession: data.occupation || '',
             intent: toIntentChipValue(data.relationship_intent || data.intentions),
@@ -392,7 +405,7 @@ export default function MyProfilePage() {
 
   return (
     <div className="flex-1 flex flex-col w-full bg-[#F8F7FA] text-[#1C1924] font-sans">
-      <main className="flex-1 w-full px-4 pt-4 pb-[calc(5rem+env(safe-area-inset-bottom,16px))] space-y-5">
+      <main className="flex-1 w-full px-4 pt-4 pb-[calc(8rem+env(safe-area-inset-bottom,0px))] space-y-5">
         {saveError && (
           <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold flex items-start justify-between gap-3">
             <span>{saveError}</span>
@@ -588,7 +601,7 @@ export default function MyProfilePage() {
                 >
                   {username.replace(/^@/, '')}{age ? ', ' + age : ''}
                 </h2>
-                {isPlus && <AilPlusBadge />}
+                {isPlus && <PlusBadge />}
                 {verificationStatus === 'verified' && (
                   <span title="Verified Member">
                     <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
@@ -603,11 +616,11 @@ export default function MyProfilePage() {
               </div>
             </div>
 
-            {verificationStatus === 'pending' && (
-              <div className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-700 text-xs font-semibold shrink-0">
-                <Clock className="w-3.5 h-3.5 animate-pulse" />
-                <span>Pending</span>
-              </div>
+            {photoPending && (
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#FAF8FD] border border-[#ECE8F4] text-[10px] font-semibold text-neutral-500 shrink-0">
+                <Clock className="w-3 h-3" aria-hidden />
+                Photo Pending
+              </span>
             )}
           </div>
 
@@ -623,7 +636,7 @@ export default function MyProfilePage() {
             </div>
           )}
 
-          {/* Upcoming travel notice (AIL+) */}
+          {/* Upcoming travel notice (Plus) */}
           <VisitingBadge travel={travel} />
           </div>
         )}
@@ -647,13 +660,13 @@ export default function MyProfilePage() {
 
         {/* VOICE INTRO */}
         {isTrustedVoiceIntroUrl(voiceIntroUrl) ? (
-          <VoicePlayer src={voiceIntroUrl} title="Your voice intro" subtitle="Members hear it only when they tap play">
-            <div className="flex flex-col gap-1.5 shrink-0">
+          <VoicePlayer src={voiceIntroUrl} title="Voice Intro" subtitle="Members hear it only when they tap play">
+            <div className="flex items-center gap-1 shrink-0">
               <button
                 type="button"
                 onClick={() => setVoiceModalOpen(true)}
                 aria-label="Re-record voice intro"
-                className="w-8 h-8 rounded-full border border-[#2D264B]/15 bg-white text-[#6555B8] flex items-center justify-center"
+                className="w-8 h-8 rounded-full text-neutral-400 hover:text-[#8C71F5] hover:bg-[#FAF8FD] flex items-center justify-center transition-colors"
               >
                 <Mic className="w-3.5 h-3.5" />
               </button>
@@ -661,7 +674,7 @@ export default function MyProfilePage() {
                 type="button"
                 onClick={removeVoiceIntro}
                 aria-label="Remove voice intro"
-                className="w-8 h-8 rounded-full border border-[#2D264B]/15 bg-white text-[#8C849B] hover:text-rose-600 flex items-center justify-center"
+                className="w-8 h-8 rounded-full text-neutral-400 hover:text-rose-600 hover:bg-rose-50 flex items-center justify-center transition-colors"
               >
                 <Trash2 className="w-3.5 h-3.5" />
               </button>
@@ -691,9 +704,11 @@ export default function MyProfilePage() {
         <RepScoreCard score={repScore ?? 100} />
 
         {/* Edit / Save Action Bar */}
-          <div className="h-12 w-full flex items-stretch gap-2.5">
+          <div className={`w-full flex items-stretch gap-2.5 ${isEditing ? '' : 'h-12'}`}>
             {isEditing ? (
-              <>
+              typeof document !== 'undefined' &&
+              createPortal(
+              <div className="fixed bottom-0 left-1/2 -translate-x-1/2 z-50 w-full max-w-[430px] bg-white/95 backdrop-blur-md border-t border-[#ECE8F4] px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] flex items-stretch gap-2.5 h-[calc(4.5rem+env(safe-area-inset-bottom))]">
                 <button
                   type="button"
                   onClick={() => setIsEditing(false)}
@@ -710,7 +725,9 @@ export default function MyProfilePage() {
                   {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
                   <span>{saving ? 'Saving...' : 'Save Profile'}</span>
                 </button>
-              </>
+              </div>,
+              document.body
+              )
             ) : (
               <button
                 type="button"

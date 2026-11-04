@@ -225,7 +225,7 @@ export default function MessagesPage() {
 
   return (
     <div className="w-full min-h-[100dvh] bg-[#F9F8FC] text-[#1C1924] flex flex-col font-sans overscroll-y-contain">
-        <main className="flex-1 w-full px-4 pt-3.5 pb-[calc(6rem+env(safe-area-inset-bottom,16px))] space-y-3.5">
+        <main className="flex-1 w-full px-4 pt-3.5 pb-[calc(8rem+env(safe-area-inset-bottom,0px))] space-y-3.5">
         <div className="flex items-center justify-between gap-2">
           <p className="text-xs text-[#6C637B] font-medium">Direct messages with your connections</p>
 
@@ -324,19 +324,19 @@ export default function MessagesPage() {
                     alt={conv.name}
                     className="rounded-full object-cover w-12 h-12 border border-[#E5DFEE]"
                   />
-                  {conv.repScore !== undefined && (
-                    <ReputationBadge score={conv.repScore} size="xs" className="absolute -bottom-1 -right-1.5 shadow-xs" />
-                  )}
                 </div>
 
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-2 mb-0.5">
-                    <h2
-                      className="text-[13.5px] font-bold text-[#1C1924] truncate"
-                      style={{ fontFamily: 'var(--font-brand)' }}
-                    >
-                      {conv.name}
-                    </h2>
+                    <div className="flex items-center gap-1.5 min-w-0">
+                      <h2
+                        className="text-[13.5px] font-bold text-[#1C1924] truncate"
+                        style={{ fontFamily: 'var(--font-brand)' }}
+                      >
+                        {conv.name}
+                      </h2>
+                      {conv.repScore !== undefined && <ReputationBadge score={conv.repScore} size="xs" />}
+                    </div>
                     {conv.lastMessageAt && (
                       <span
                         className={

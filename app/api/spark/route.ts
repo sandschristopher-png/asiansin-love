@@ -61,7 +61,7 @@ export async function POST(req: Request) {
       .eq('sender_id', user.id)
       .gte('created_at', twentyFourHoursAgo)
 
-    // Free: 20 Sparks / 24h. AIL+: unlimited (a fair-use ceiling only stops scripted abuse).
+    // Free: 20 Sparks / 24h. Plus: unlimited (a fair-use ceiling only stops scripted abuse).
     const { data: me } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle()
     const plus = isPlusProfile(me)
     const DAILY_SPARK_CAP = plus ? PLUS_DAILY_SPARK_FAIR_USE : FREE_DAILY_SPARKS
@@ -70,7 +70,7 @@ export async function POST(req: Request) {
         {
           error: plus
             ? 'You have sent a lot of Sparks today. Take a break and try again later.'
-            : `You've used your ${FREE_DAILY_SPARKS} Sparks for today. AIL+ members get unlimited Sparks.`,
+            : `You've used your ${FREE_DAILY_SPARKS} Sparks for today. Plus members get unlimited Sparks.`,
           code: plus ? 'SPARK_FAIR_USE' : 'SPARK_LIMIT_FREE',
         },
         { status: 429 }

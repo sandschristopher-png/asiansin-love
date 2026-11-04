@@ -1,7 +1,7 @@
 // app/api/stripe/portal/route.ts
 //   POST { return_path?: '/settings' | '/plus' } -> { url } of a Stripe Billing Portal session
 //
-// Members cancel AIL+ or update their payment method themselves in the portal. The customer is
+// Members cancel Plus or update their payment method themselves in the portal. The customer is
 // read from profiles.stripe_customer_id (written by the webhook), with lookups by checkout
 // metadata and email as fallbacks for older subscriptions.
 import { NextRequest, NextResponse } from 'next/server';

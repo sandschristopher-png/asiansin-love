@@ -4,7 +4,7 @@ import { LegalPage, type LegalSection } from '@/components/LegalPage';
 
 export const metadata: Metadata = {
   title: 'Terms of Service - Asians in Love',
-  description: 'The rules for using Asians in Love (asiansin.love): eligibility, conduct, content, AIL+ billing and cancellation.',
+  description: 'The rules for using Asians in Love (asiansin.love): eligibility, conduct, content, Plus billing and cancellation.',
 };
 
 const sections: LegalSection[] = [
@@ -70,10 +70,10 @@ const sections: LegalSection[] = [
     ),
   },
   {
-    title: 'AIL+ subscriptions and billing',
+    title: 'Plus subscriptions and billing',
     body: (
       <>
-        <p>AIL+ is an optional paid membership, billed in US dollars through Stripe:</p>
+        <p>Plus is an optional paid membership, billed in US dollars through Stripe:</p>
         <ul>
           <li>Monthly: $14.99 per month, billed every month.</li>
           <li>3 months: $29.99 every 3 months ($9.99 per month).</li>
@@ -85,7 +85,7 @@ const sections: LegalSection[] = [
         </p>
         <p>
           <strong>Cancel anytime</strong> in Settings → Manage Subscription, which opens the Stripe billing portal where you
-          can cancel or update your payment method yourself. Cancelling stops future renewals; you keep AIL+ until the end of
+          can cancel or update your payment method yourself. Cancelling stops future renewals; you keep Plus until the end of
           the period you already paid for. Payments are non-refundable except where the law requires otherwise. Deleting your
           account also cancels any active subscription.
         </p>

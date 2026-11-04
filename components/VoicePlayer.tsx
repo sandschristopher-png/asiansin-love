@@ -4,21 +4,9 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Loader2, Pause, Play } from 'lucide-react';
 import { formatSeconds } from '@/lib/audio';
 
-const BAR_COUNT = 20;
-
-/** Stable pseudo-waveform per clip (same bars every render), 0.3..1. */
-function barsFor(seed: string): number[] {
-  let h = 2166136261;
-  for (let i = 0; i < seed.length; i++) h = Math.imul(h ^ seed.charCodeAt(i), 16777619);
-  return Array.from({ length: BAR_COUNT }, (_, i) => {
-    h = Math.imul(h ^ (i + 1), 2246822507) >>> 0;
-    return 0.3 + ((h % 1000) / 1000) * 0.7;
-  });
-}
-
 /**
- * Voice intro player card: tap-to-play only (never autoplays, no UI sounds), a static 20-bar
- * waveform that fills with brand purple as it plays, and an elapsed / total readout.
+ * Voice intro player card: tap-to-play only (never autoplays, no UI sounds), a gradient progress
+ * track that follows playback, and an elapsed / total readout.
  * The <audio> element is created on first tap, so nothing downloads until the member asks.
  */
 /** Keyed by clip so a re-recorded intro starts from a fresh player (no stale position). */
@@ -28,7 +16,7 @@ export function VoicePlayer(props: React.ComponentProps<typeof VoicePlayerCard>)
 
 function VoicePlayerCard({
   src,
-  title = 'Voice intro',
+  title = 'Voice Intro',
   subtitle,
   durationMs,
   className = '',
@@ -101,54 +89,54 @@ function VoicePlayerCard({
 
   const totalMs = mediaMs ?? durationMs ?? 0;
   const progress = totalMs > 0 ? Math.min(1, positionMs / totalMs) : 0;
-  const bars = barsFor(src.split('?')[0]);
 
   return (
-    <section className={`bg-[#2D264B]/5 border border-[#2D264B]/10 rounded-2xl p-3 flex items-center gap-3 ${className}`}>
-      <button
-        type="button"
-        onClick={toggle}
-        aria-label={playing ? `Pause ${title}` : `Play ${title}`}
-        className="w-10 h-10 rounded-full bg-[#6555B8] text-white flex items-center justify-center shrink-0 shadow-sm active:scale-95 transition"
-      >
-        {loading ? (
-          <Loader2 className="w-4 h-4 animate-spin" />
-        ) : playing ? (
-          <Pause className="w-4 h-4 fill-current" />
-        ) : (
-          <Play className="w-4 h-4 fill-current translate-x-[1px]" />
-        )}
-      </button>
+    <div className={className}>
+      <section className="bg-white border border-[#ECE8F4] rounded-2xl p-3 flex items-center gap-3 shadow-2xs">
+        <button
+          type="button"
+          onClick={toggle}
+          aria-label={playing ? `Pause ${title}` : `Play ${title}`}
+          className="w-9 h-9 rounded-full bg-[#8C71F5] text-white flex items-center justify-center shrink-0 shadow-xs active:scale-95 transition"
+        >
+          {loading ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : playing ? (
+            <Pause className="w-4 h-4 fill-current" />
+          ) : (
+            <Play className="w-4 h-4 fill-current translate-x-[1px]" />
+          )}
+        </button>
 
-      <div className="flex-1 min-w-0">
-        <div className="flex items-baseline justify-between gap-2">
-          <p className="text-xs font-bold text-[#2D264B] truncate">{title}</p>
-          <span className="text-[11px] font-medium text-[#6C637B] tabular-nums shrink-0">
-            {/* WebM from MediaRecorder reports no length until played: show elapsed only then */}
-            {totalMs > 0 ? `${formatSeconds(positionMs)} / ${formatSeconds(totalMs)}` : formatSeconds(positionMs)}
-          </span>
+        <div className="flex-1 min-w-0">
+          <div className="flex items-baseline justify-between gap-2">
+            <span className="text-xs font-semibold text-[#2D264B] truncate">{title}</span>
+            <span className="text-xs font-mono text-neutral-400 tabular-nums shrink-0">
+              {/* WebM from MediaRecorder reports no length until played: show elapsed only then */}
+              {totalMs > 0 ? `${formatSeconds(positionMs)} / ${formatSeconds(totalMs)}` : formatSeconds(positionMs)}
+            </span>
+          </div>
+          <div
+            className="mt-2 h-1.5 w-full bg-[#ECE8F4] rounded-full overflow-hidden"
+            role="progressbar"
+            aria-label={`${title} progress`}
+            aria-valuemin={0}
+            aria-valuemax={100}
+            aria-valuenow={Math.round(progress * 100)}
+          >
+            <div
+              className="h-full rounded-full bg-gradient-to-r from-[#8C71F5] to-[#EC4899] transition-[width] duration-200 ease-linear"
+              style={{ width: `${progress * 100}%` }}
+            />
+          </div>
         </div>
-        <div className="mt-1.5 flex items-center gap-[3px] h-6" aria-hidden>
-          {bars.map((h, i) => {
-            const filled = (i + 1) / BAR_COUNT <= progress || (progress > 0 && i / BAR_COUNT < progress);
-            return (
-              <span
-                key={i}
-                className={`flex-1 rounded-full transition-colors duration-150 ${filled ? 'bg-[#6555B8]' : 'bg-[#2D264B]/15'}`}
-                style={{ height: `${Math.round(h * 100)}%` }}
-              />
-            );
-          })}
-        </div>
-        {(subtitle || failed) && (
-          <p className={`mt-1 text-[11px] truncate ${failed ? 'text-rose-600' : 'text-[#6C637B]'}`}>
-            {failed ? 'Could not play this clip.' : subtitle}
-          </p>
-        )}
-      </div>
 
-      {children}
-    </section>
+        {children}
+      </section>
+      {(subtitle || failed) && (
+        <p className={`text-[11px] mt-1.5 px-1 ${failed ? 'text-rose-600' : 'text-neutral-400'}`}>{failed ? 'Could not play this clip.' : subtitle}</p>
+      )}
+    </div>
   );
 }
 

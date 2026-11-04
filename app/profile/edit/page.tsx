@@ -16,7 +16,7 @@ import { isPlusProfile } from '@/lib/plus';
 import { HeightInput, LanguagePicker, LifestylePills } from '@/components/profile/LifestyleFields';
 import { readLanguages } from '@/lib/constants/languages';
 import { LIFESTYLE_KEYS, readHeightCm, readLifestyle, type LifestyleValues } from '@/lib/lifestyle';
-import { AilPlusBadge } from '@/components/ui/AilPlusBadge';
+import { PlusBadge } from '@/components/ui/PlusBadge';
 
 
 
@@ -67,7 +67,7 @@ export default function EditProfilePage() {
   const [rhythm, setRhythm] = useState<RhythmValues>(EMPTY_RHYTHM);
   const showActionToast = useActionToast();
   const [bioRejected, setBioRejected] = useState(false);
-  // "Visiting:" travel notice (AIL+)
+  // "Visiting:" travel notice (Plus)
   const [isPlus, setIsPlus] = useState(false);
   const [travel, setTravel] = useState({ active: false, city: '', country: '', dates: '' });
   const [formData, setFormData] = useState({
@@ -524,7 +524,7 @@ export default function EditProfilePage() {
             {initialHasUsername ? (
               <div className="flex items-center justify-between">
                 <span className="font-mono text-sm text-[#1C1924] font-medium">{username}</span>
-                <button type="button" onClick={() => setShowUpgradeModal(true)} className="text-xs px-2.5 py-1 rounded-lg bg-[#F3EFFC] border border-[#DDD7E5] text-[#6555b8] hover:bg-[#EAE0F5] transition flex items-center gap-1.5 font-medium cursor-pointer" title="Change handle with AIL+"><span>Handle Locked</span><AilPlusBadge size="sm" /></button>
+                <button type="button" onClick={() => setShowUpgradeModal(true)} className="text-xs px-2.5 py-1 rounded-lg bg-[#F3EFFC] border border-[#DDD7E5] text-[#6555b8] hover:bg-[#EAE0F5] transition flex items-center gap-1.5 font-medium cursor-pointer" title="Change handle with Plus"><span>Handle Locked</span><PlusBadge size="sm" /></button>
               </div>
             ) : (
               <div>
@@ -835,7 +835,7 @@ export default function EditProfilePage() {
             </p>
           </div>
 
-          {/* Upcoming travel notice (AIL+) */}
+          {/* Upcoming travel notice (Plus) */}
           <div className="p-4 rounded-2xl bg-white border border-[#9A8CC3]/35 space-y-3">
             <div className="flex items-start justify-between gap-3">
               <div>
@@ -856,8 +856,8 @@ export default function EditProfilePage() {
                   <span className={'absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-all ' + (travel.active ? 'left-5' : 'left-1')} />
                 </button>
               ) : (
-                <Link href="/plus" className="shrink-0" aria-label="Unlock with ail+">
-                  <AilPlusBadge size="sm" />
+                <Link href="/plus" className="shrink-0" aria-label="Unlock with Plus">
+                  <PlusBadge size="sm" />
                 </Link>
               )}
             </div>

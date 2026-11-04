@@ -233,7 +233,7 @@ export async function POST(req: Request) {
         if (!uniqueRecipients.has(receiverId) && uniqueRecipients.size >= 5) {
           return NextResponse.json(
             {
-              error: 'Daily limit reached (5/5). Upgrade to AIL Plus for unlimited introductions.',
+              error: 'Daily limit reached (5/5). Upgrade to Plus for unlimited introductions.',
               code: 'OUTREACH_LIMIT_REACHED',
             },
             { status: 403 }

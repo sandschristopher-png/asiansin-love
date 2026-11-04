@@ -1,5 +1,5 @@
 // app/api/cron/expire-plus/route.ts
-// Fallback for the hourly pg_cron job: turns off complimentary (Day 1) AIL+ once
+// Fallback for the hourly pg_cron job: turns off complimentary (Day 1) Plus once
 // plus_expires_at has passed, via expire_complimentary_plus() (20261108_release_features.sql).
 // Auth: "Authorization: Bearer <CRON_SECRET>" - Vercel Cron sends this automatically when the
 // CRON_SECRET env var is set. Without CRON_SECRET the route refuses every call.
@@ -38,7 +38,7 @@ async function run(req: Request) {
   }
 
   const expired = typeof data === 'number' ? data : 0;
-  console.log(`[cron/expire-plus] expired ${expired} complimentary AIL+ account(s) at ${startedAt}`);
+  console.log(`[cron/expire-plus] expired ${expired} complimentary Plus account(s) at ${startedAt}`);
   return NextResponse.json({ ok: true, expired, startedAt });
 }
 

@@ -40,7 +40,7 @@ function sparksSeenAt(): string {
  *   A. new messages to me        -> toast (unless that chat is open) + Messages badge
  *   B. new Sparks to me          -> toast + Sparks badge
  *   C. a Spark that makes it mutual -> celebration toast, tap opens the chat
- *   D. profile visits            -> toast for members with Visitor History (AIL+, or women)
+ *   D. profile visits            -> toast for members with Visitor History (Plus, or women)
  * Silent by design: each event shows the toast and gives a short haptic pulse (no sounds). While
  * the tab is hidden and web push isn't already covering this device, it raises a browser alert.
  */

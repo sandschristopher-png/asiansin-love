@@ -1,5 +1,5 @@
 /**
- * AIL+ plans: the single source for prices shown on /plus, the upgrade sheets and the Terms.
+ * Plus plans: the single source for prices shown on /plus, the upgrade sheets and the Terms.
  * Stripe holds the real charge: STRIPE_PLUS_PRICE_1M / _3M / _6M must match these amounts.
  */
 export type PlusPlanId = '1m' | '3m' | '6m';
@@ -51,7 +51,7 @@ export const isPlusPlanId = (v: unknown): v is PlusPlanId => v === '1m' || v ===
 
 export const plusPlan = (id: PlusPlanId): PlusPlan => PLUS_PLANS.find((p) => p.id === id) ?? PLUS_PLANS[0];
 
-/** Free vs AIL+ daily Spark allowance (enforced in /api/spark). */
+/** Free vs Plus daily Spark allowance (enforced in /api/spark). */
 export const FREE_DAILY_SPARKS = 20;
-/** Fair-use ceiling for AIL+ (anti-bot only; no real member sends this many in a day). */
+/** Fair-use ceiling for Plus (anti-bot only; no real member sends this many in a day). */
 export const PLUS_DAILY_SPARK_FAIR_USE = 500;

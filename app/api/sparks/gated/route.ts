@@ -18,7 +18,7 @@ export async function GET() {
     return NextResponse.json({ error: 'profile_lookup_failed' }, { status: 500 });
   }
 
-  // AIL+ unlocks Sparked You / Visited for men; women always have full access for free.
+  // Plus unlocks Sparked You / Visited for men; women always have full access for free.
   const fullAccess = Boolean(me?.is_plus) || me?.gender === 'female';
 
   const { data: sparkedYou, error: e1 } = await supabase.rpc('get_sparked_you_profiles');

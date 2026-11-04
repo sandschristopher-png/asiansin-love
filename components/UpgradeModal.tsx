@@ -102,7 +102,7 @@ export default function UpgradeModal({
         {/* Title & Context */}
         <div className="text-center space-y-1 mb-4">
           <span className="inline-block px-2.5 py-0.5 rounded-full bg-[#F3EFFC] text-[#6555B8] text-[10px] font-bold tracking-widest uppercase">
-            AIL PLUS
+            PLUS
           </span>
           <h2 className="text-base font-bold text-neutral-900 tracking-tight">
             {getContextHeadline()}
@@ -205,7 +205,7 @@ export default function UpgradeModal({
             ) : (
               <>
                 <span>
-                  Upgrade to AIL+ • {selectedTier === '6m' ? '$47.99 / 6 mo' : '$14.99/mo'}
+                  Upgrade to Plus • {selectedTier === '6m' ? '$47.99 / 6 mo' : '$14.99/mo'}
                 </span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </>

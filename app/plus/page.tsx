@@ -12,7 +12,7 @@ import { DEFAULT_PLUS_PLAN, FREE_DAILY_SPARKS, PLUS_PLANS, plusPlan, type PlusPl
 type Cell = { text: string; included: boolean | null };
 
 /**
- * Free vs AIL+ side by side. Every row is wired: keep in sync with /api/spark (daily Sparks),
+ * Free vs Plus side by side. Every row is wired: keep in sync with /api/spark (daily Sparks),
  * /api/messages (mutual matches), /api/sparks/gated (previews), /api/discover (country filters),
  * the chat read indicators and /api/profile (travel notice). `included: null` = same for both.
  */
@@ -26,7 +26,7 @@ const MATRIX: { feature: string; free: Cell; plus: Cell }[] = [
   { feature: 'See Who Viewed You', free: { text: 'Blurred Count', included: false }, plus: { text: 'Full Unblurred Grid', included: true } },
   { feature: 'See Who Sparked You', free: { text: '1 Preview', included: false }, plus: { text: 'Full Unblurred Grid', included: true } },
   { feature: 'Message Read Receipts', free: { text: 'Timestamps Only', included: false }, plus: { text: 'Delivered & Read Indicators', included: true } },
-  { feature: 'AIL Plus Member Badge', free: { text: 'Standard', included: false }, plus: { text: 'Discreet Plus Badge', included: true } },
+  { feature: 'Plus Member Badge', free: { text: 'Standard', included: false }, plus: { text: 'Discreet Plus Badge', included: true } },
 ];
 
 const FAQ: { q: string; a: string }[] = [
@@ -39,19 +39,19 @@ const FAQ: { q: string; a: string }[] = [
     a: 'Add the city and month of an upcoming trip in Edit Profile. A "Visiting:" badge then shows on your Discover card and profile so members there can say hello before you land.',
   },
   {
-    q: 'Do women need AIL+?',
-    a: 'No. Women see who sparked and viewed them for free. AIL+ adds unlimited Sparks, country filters, the travel notice, read receipts and the Plus badge for anyone who wants them.',
+    q: 'Do women need Plus?',
+    a: 'No. Women see who sparked and viewed them for free. Plus adds unlimited Sparks, country filters, the travel notice, read receipts and the Plus badge for anyone who wants them.',
   },
   {
     q: 'What happens to my matches if I stop paying?',
-    a: 'Nothing is deleted. Your matches and conversations stay; only the AIL+ extras switch off at the end of the period you paid for.',
+    a: 'Nothing is deleted. Your matches and conversations stay; only the Plus extras switch off at the end of the period you paid for.',
   },
 ];
 
 const BILLING_TERMS: string[] = [
   'Prices are in US dollars and are charged by Stripe. Taxes may apply.',
   '1 Month renews every month at $14.99. 3 Months renews at $29.99 every 3 months. 6 Months renews at $47.99 every 6 months.',
-  'Plans renew automatically until you cancel. Cancel any time in Settings → Manage Subscription; you keep AIL+ until the end of the paid period.',
+  'Plans renew automatically until you cancel. Cancel any time in Settings → Manage Subscription; you keep Plus until the end of the paid period.',
   'Unlimited Sparks are subject to fair use to stop automated spam.',
 ];
 
@@ -194,7 +194,7 @@ function PlusHubContent() {
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <span className="text-xs font-semibold uppercase tracking-[0.2em] text-purple-200/80">AIL Plus</span>
+          <span className="text-xs font-semibold uppercase tracking-[0.2em] text-purple-200/80">Plus</span>
         </div>
 
         {isPostCheckoutSuccess && (
@@ -202,7 +202,7 @@ function PlusHubContent() {
             <div className="w-10 h-10 rounded-full bg-emerald-400/15 text-emerald-300 flex items-center justify-center mb-2">
               {isVerifyingPlus && !isPlus ? <Loader2 className="w-5 h-5 animate-spin" /> : <CheckCircle2 className="w-6 h-6" />}
             </div>
-            <h2 className="text-base font-bold">{isPlus ? 'Welcome to AIL Plus' : 'Confirming your membership...'}</h2>
+            <h2 className="text-base font-bold">{isPlus ? 'Welcome to Plus' : 'Confirming your membership...'}</h2>
             <p className="text-xs text-white/60 mt-0.5 mb-3">{isPlus ? 'Everything below is now unlocked.' : 'Finishing up with Stripe.'}</p>
             <div className="flex items-center gap-2 w-full">
               <Link href="/messages" className="flex-1 py-2 rounded-full bg-[#6555B8] text-white text-xs font-semibold flex items-center justify-center gap-1.5">
@@ -272,12 +272,12 @@ function PlusHubContent() {
           </section>
         )}
 
-        {/* Free vs AIL+ */}
-        <section aria-label="Free and AIL Plus compared" className="rounded-3xl border border-white/10 overflow-hidden">
+        {/* Free vs Plus */}
+        <section aria-label="Free and Plus compared" className="rounded-3xl border border-white/10 overflow-hidden">
           <div className="grid grid-cols-[1.1fr_1fr_1fr] text-[10px] font-bold uppercase tracking-wider">
             <span className="px-3 py-3 text-white/40">Feature</span>
             <span className="px-2.5 py-3 text-center text-white/60 bg-white/[0.03]">Free</span>
-            <span className="px-2.5 py-3 text-center text-purple-100 bg-[#6555B8]/25">AIL+</span>
+            <span className="px-2.5 py-3 text-center text-purple-100 bg-[#6555B8]/25">Plus</span>
           </div>
           {MATRIX.map((row) => (
             <div key={row.feature} className="grid grid-cols-[1.1fr_1fr_1fr] border-t border-white/[0.07] text-[11px]">
@@ -379,7 +379,7 @@ function PlusHubContent() {
   );
 }
 
-export default function AilPlusPage() {
+export default function PlusPage() {
   return (
     <Suspense fallback={<div className="flex-1 w-full min-h-full bg-[#161128]" />}>
       <PlusHubContent />

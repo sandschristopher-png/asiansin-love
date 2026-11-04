@@ -1,7 +1,7 @@
 import type { PlusPlanId } from '@/lib/plusPlans';
 
 /**
- * Stripe Price ids for AIL+ (one flat recurring price per plan; quantity is always 1).
+ * Stripe Price ids for Plus (one flat recurring price per plan; quantity is always 1).
  * Env vars win; the fallbacks are the verified test-mode prices:
  *   1m  $14.99 every 1 month   3m  $29.99 every 3 months   6m  $47.99 every 6 months
  * Production must set STRIPE_PLUS_PRICE_1M / _3M / _6M to the live-mode ids.

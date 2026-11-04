@@ -7,7 +7,7 @@ export interface TravelNotice {
   dates?: string | null;
 }
 
-/** "✈️ Visiting: Cebu in December 2026" (AIL+ travel notice) on Discover cards and profiles. */
+/** "✈️ Visiting: Cebu in December 2026" (Plus travel notice) on Discover cards and profiles. */
 export function VisitingBadge({
   travel,
   variant = 'light',

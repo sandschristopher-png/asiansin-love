@@ -8,7 +8,7 @@ export type PlusLike = {
 
 export function isPlusProfile(p: PlusLike): boolean {
   if (!p) return false;
-  // Complimentary AIL+ (Day 1 cohort) until plus_expires_at.
+  // Complimentary Plus (Day 1 cohort) until plus_expires_at.
   if (p.plus_expires_at) {
     const end = new Date(p.plus_expires_at).getTime();
     if (Number.isFinite(end) && end > Date.now()) return true;

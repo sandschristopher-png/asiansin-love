@@ -176,7 +176,7 @@ export async function GET(req: Request) {
     }
 
     // ?country= accepts a display name ("Myanmar") or an ISO-3166 alpha-2 code ("MM"), exact match.
-    // Cross-border country filters are an AIL+ feature; free members browse the full feed.
+    // Cross-border country filters are an Plus feature; free members browse the full feed.
     const countryParam = viewerProfile?.is_plus
       ? (new URL(req.url).searchParams.get('country') || '').trim().slice(0, 60)
       : '';

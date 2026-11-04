@@ -31,7 +31,7 @@ import { LanguagePicker } from '@/components/profile/LifestyleFields';
 import { HEIGHT_MAX_CM, HEIGHT_MIN_CM } from '@/lib/lifestyle';
 import { readLanguages } from '@/lib/constants/languages';
 import { ReputationBadge } from '@/components/ReputationBadge';
-import { AilPlusBadge } from '@/components/ui/AilPlusBadge';
+import { PlusBadge } from '@/components/ui/PlusBadge';
 
 /** "Near Me" radius only when the viewer has no country on their profile. */
 const NEAR_ME_FALLBACK_KM = 150;
@@ -305,7 +305,7 @@ function DiscoverContent() {
   // Gender being browsed (opposite of the viewer): picks the regional country list.
   const [seekingGender, setSeekingGender] = useState<'female' | 'male' | null>(null);
   const countryOptions = countriesForSeeking(seekingGender);
-  // Cross-border country filters (incl. the regional spotlight) are AIL+.
+  // Cross-border country filters (incl. the regional spotlight) are Plus.
   const [viewerIsPlus, setViewerIsPlus] = useState(false);
   const countryLocked = !viewerIsPlus;
   const [categorySwitching, setCategorySwitching] = useState(false);
@@ -807,24 +807,29 @@ function DiscoverContent() {
   const hasMore = visibleLimit < filteredProfiles.length;
 
   return (
-    <div onTouchStart={handlePullStart} onTouchMove={handlePullMove} onTouchEnd={handlePullEnd} className="w-full min-h-full bg-[#F8F7FA] text-[#1C1924] flex flex-col font-sans animate-[fadeIn_200ms_cubic-bezier(0.16,1,0.3,1)] overscroll-contain">
-      {/* Pull-to-Refresh Indicator */}
+    <div onTouchStart={handlePullStart} onTouchMove={handlePullMove} onTouchEnd={handlePullEnd} className="relative w-full min-h-full bg-[#F8F7FA] text-[#1C1924] flex flex-col font-sans animate-[fadeIn_200ms_cubic-bezier(0.16,1,0.3,1)] overscroll-contain">
+      {/* Pull-to-Refresh Indicator: floats over the feed so the search / category bar never shifts.
+          z-40 keeps it above the sticky z-30 filter bar it overlaps. */}
       <div
         aria-hidden={!isRefreshing && pullDistance === 0}
         className={
-          'flex items-center justify-center overflow-hidden transition-all duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ' +
-          (isRefreshing || pullDistance > 0 ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 max-h-0 pointer-events-none')
+          'absolute top-2 left-1/2 -translate-x-1/2 z-40 pointer-events-none transition-[opacity,margin] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ' +
+          (isRefreshing || pullDistance > 0 ? 'opacity-100' : 'opacity-0')
         }
-        // Follows the finger 1:1 while pulling (no transition); animates open/closed otherwise.
-        style={{ height: isRefreshing ? 40 : pullDistance, ...(pullDistance > 0 && !isRefreshing ? { transition: 'none' } : {}) }}
+        // Follows the finger while pulling (no transition); settles at a fixed offset while refreshing.
+        style={{ marginTop: isRefreshing ? 28 : Math.min(pullDistance, 80) * 0.5, ...(pullDistance > 0 && !isRefreshing ? { transition: 'none' } : {}) }}
       >
-        {(isRefreshing || pullDistance > 0) && <div
-          role={isRefreshing ? 'status' : undefined}
-          aria-label={isRefreshing ? 'Refreshing' : undefined}
-          className={'w-5 h-5 border-2 border-[#6555B8] border-t-transparent rounded-full ' + (isRefreshing ? 'animate-spin' : '')}
-          // While pulling, rotation tracks the pull; while refreshing, animate-spin owns transform.
-          style={isRefreshing ? undefined : { transform: `rotate(${pullDistance * 6}deg)`, opacity: Math.min(1, pullDistance / 56) }}
-        />}
+        {(isRefreshing || pullDistance > 0) && (
+          <span className="w-9 h-9 rounded-full bg-white border border-[#ECE8F4] shadow-sm flex items-center justify-center">
+            <span
+              role={isRefreshing ? 'status' : undefined}
+              aria-label={isRefreshing ? 'Refreshing' : undefined}
+              className={'block w-4 h-4 border-2 border-[#8C71F5] border-t-transparent rounded-full ' + (isRefreshing ? 'animate-spin' : '')}
+              // While pulling, rotation tracks the pull; while refreshing, animate-spin owns transform.
+              style={isRefreshing ? undefined : { transform: `rotate(${pullDistance * 6}deg)`, opacity: Math.min(1, pullDistance / 56) }}
+            />
+          </span>
+        )}
       </div>
       <main className="w-full max-w-md mx-auto px-4 pt-4 pb-36 relative">
         {/* Static Pinned Search & Filter Controls on Left + Horizontally Scrolling Categories on Right */}
@@ -1225,8 +1230,8 @@ function DiscoverContent() {
                       <label className="text-[11px] font-bold text-[#6C637B] uppercase tracking-wider mb-2 flex items-center justify-between">
                         <span>Country</span>
                         {countryLocked && (
-                          <Link href="/plus" aria-label="Unlock with ail+">
-                            <AilPlusBadge size="sm" />
+                          <Link href="/plus" aria-label="Unlock with Plus">
+                            <PlusBadge size="sm" />
                           </Link>
                         )}
                       </label>

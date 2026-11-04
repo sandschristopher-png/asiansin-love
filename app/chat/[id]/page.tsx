@@ -1109,7 +1109,7 @@ export default function ChatConversationPage() {
                               </button>
                             </>
                           )}
-                          {/* Delivered / Read indicators: AIL+ (free members see timestamps only) */}
+                          {/* Delivered / Read indicators: Plus (free members see timestamps only) */}
                           {isMe && !msg.pending && isPlus && (
                             msg.read ? (
                               <CheckCheck className="w-3 h-3 text-[#6555B8]" />

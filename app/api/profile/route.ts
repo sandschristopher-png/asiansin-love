@@ -215,7 +215,7 @@ export async function PATCH(req: Request) {
     updates[key] = v as string | null;
   }
 
-  // "Visiting:" travel notice (AIL+). Columns from 20261108_release_features.sql.
+  // "Visiting:" travel notice (Plus). Columns from 20261108_release_features.sql.
   const travelKeys = ['visiting_city', 'visiting_country', 'visiting_dates', 'is_travel_mode_active'];
   if (travelKeys.some((k) => k in body)) {
     for (const [key, max, label] of [
@@ -239,7 +239,7 @@ export async function PATCH(req: Request) {
       const on = body.is_travel_mode_active === true;
       if (on) {
         const { data: me } = await service.from('profiles').select('*').eq('id', userId).maybeSingle();
-        if (!isPlusProfile(me)) return bad('Travel notice is an AIL+ feature.', 'is_travel_mode_active', 403);
+        if (!isPlusProfile(me)) return bad('Travel notice is an Plus feature.', 'is_travel_mode_active', 403);
         const city = 'visiting_city' in updates ? updates.visiting_city : me?.visiting_city;
         if (!city) return bad('Add the city you are visiting first.', 'visiting_city');
       }

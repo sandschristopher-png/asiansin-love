@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
     .maybeSingle();
 
   if (!prof?.is_plus) {
-    return NextResponse.json({ error: 'AIL+ required.' }, { status: 402 });
+    return NextResponse.json({ error: 'Plus required.' }, { status: 402 });
   }
 
   // travel_city / travel_country are protected columns: members cannot write them
