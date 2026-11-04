@@ -17,7 +17,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
 
   return (
     <div className="flex-1 flex flex-col bg-white text-[#1C1924]">
-      <AdminHeader name={admin.name} role={admin.role} />
+      <AdminHeader name={admin.name} />
       <div className="flex-1 bg-[#FAF8FD] px-4 py-4 pb-16">{children}</div>
     </div>
   );

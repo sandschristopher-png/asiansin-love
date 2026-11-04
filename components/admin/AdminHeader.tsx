@@ -5,7 +5,6 @@ import { usePathname } from 'next/navigation';
 import { useEffect, useRef } from 'react';
 import { LogOut } from 'lucide-react';
 import { BrandLogo } from '@/components/BrandLogo';
-import { ADMIN_ROLE_LABEL, type AdminRole } from '@/lib/adminRoles';
 
 const TABS = [
   { href: '/admin', label: 'Reports', match: (p: string) => p === '/admin' || p.startsWith('/admin/reports') },
@@ -15,14 +14,8 @@ const TABS = [
   { href: '/admin/moderation', label: 'Chat', match: (p: string) => p.startsWith('/admin/moderation') },
 ];
 
-const ROLE_BADGE: Record<AdminRole, string> = {
-  super_admin: 'bg-gradient-to-r from-[#8C71F5] to-[#EC4899] text-white',
-  moderator: 'bg-[#2D264B] text-white',
-  member: 'bg-[#F9F8FC] text-[#6C637B] border border-[#ECE8F4]',
-};
-
-/** Admin Console mobile header (wordmark, ADMIN pill, staff badge, Exit) + pill tab bar. */
-export function AdminHeader({ name, role }: { name: string; role: AdminRole }) {
+/** Admin Console mobile header (wordmark, ADMIN pill, staff name, Exit) + pill tab bar. */
+export function AdminHeader({ name }: { name: string }) {
   const pathname = usePathname() || '/admin';
   const navRef = useRef<HTMLElement>(null);
 
@@ -49,12 +42,9 @@ export function AdminHeader({ name, role }: { name: string; role: AdminRole }) {
           <BrandLogo size="header" href="/admin" />
           <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[#8C71F5]/10 text-[#8C71F5]">ADMIN</span>
         </div>
-        <div className="flex items-center gap-2.5 min-w-0">
-          <span className="flex items-center gap-1 min-w-0">
-            <span className="text-xs font-semibold text-[#2D264B] truncate max-w-[72px]">{name}</span>
-            <span className={`shrink-0 whitespace-nowrap rounded-full px-2 py-0.5 text-[11px] font-semibold ${ROLE_BADGE[role]}`}>{ADMIN_ROLE_LABEL[role]}</span>
-          </span>
-          <Link href="/discover" className="shrink-0 text-xs text-neutral-500 hover:text-neutral-800 flex items-center gap-1">
+        <div className="flex items-center gap-3 min-w-0">
+          <span className="text-xs font-semibold text-[#2D264B] truncate max-w-[120px]">{name}</span>
+          <Link href="/discover" className="shrink-0 text-xs text-neutral-400 hover:text-neutral-700 transition-colors flex items-center gap-1">
             <LogOut className="w-3.5 h-3.5" aria-hidden />
             Exit
           </Link>
