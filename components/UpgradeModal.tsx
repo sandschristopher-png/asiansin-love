@@ -86,7 +86,7 @@ export default function UpgradeModal({
         className="relative isolate overflow-hidden w-full max-w-[360px] bg-white rounded-3xl border border-neutral-100 shadow-2xl p-5 text-[#1C1924] animate-in zoom-in-95 duration-150 flex flex-col no-scrollbar"
         onClick={(e) => e.stopPropagation()}
       >
-        <AmbientAurora />
+        <AmbientAurora layer="card" />
         {/* Dismiss Button */}
         <button
           onClick={onClose}

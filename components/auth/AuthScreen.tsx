@@ -9,6 +9,12 @@ import { AmbientAurora } from '@/components/ui/AmbientAurora';
 import { CityRotator } from '@/components/auth/CityRotator';
 import { supabase } from '@/lib/supabase/client';
 
+const FACEBOOK_COMING_SOON = 'Facebook login is coming soon. Please continue with Google or Email.';
+/**
+ * Facebook OAuth is not configured in Supabase yet (its authorize URL answers HTTP 400). Until
+ * NEXT_PUBLIC_FACEBOOK_AUTH_ENABLED=true, the button shows a coming-soon toast instead.
+ */
+const FACEBOOK_AUTH_ENABLED = process.env.NEXT_PUBLIC_FACEBOOK_AUTH_ENABLED === 'true';
 const RESET_EXPIRED_MESSAGE = 'That password reset link has expired or was already used. Request a new one from Forgot password.';
 const PILL =
   'w-full h-12 flex items-center justify-center gap-3 rounded-full bg-white text-[#2D264B] font-semibold text-sm border border-[#ECE8F4] hover:bg-neutral-50 shadow-2xs transition-all disabled:opacity-60 disabled:cursor-not-allowed';
@@ -81,6 +87,11 @@ export function AuthScreen({ mode }: { mode: 'login' | 'signup' }) {
   }, []);
 
   const oauth = async (provider: 'google' | 'facebook') => {
+    if (provider === 'facebook' && !FACEBOOK_AUTH_ENABLED) {
+      setError(null);
+      setToast(FACEBOOK_COMING_SOON);
+      return;
+    }
     setBusy(provider);
     setError(null);
     const { error } = await supabase.auth.signInWithOAuth({
@@ -166,10 +177,10 @@ export function AuthScreen({ mode }: { mode: 'login' | 'signup' }) {
 
   return (
     // LayoutShell supplies the centered 430px frame on the #FAF8FD canvas.
-    <div className="relative isolate min-h-[100dvh] w-full flex flex-col bg-white font-sans antialiased">
+    <div className="relative isolate min-h-[100dvh] w-full flex flex-col bg-[#FAF8FD]/60 font-sans antialiased pb-[max(2.5rem,env(safe-area-inset-bottom))]">
       <AmbientAurora />
       <InAppToast message={toast} onClose={closeToast} durationMs={7000} />
-      <main className="flex-1 w-full flex flex-col px-6 pt-14 pb-6">
+      <main className="relative z-10 flex-1 w-full flex flex-col px-6 pt-14">
         <div className="text-center">
           <div className="flex justify-center">
             <BrandLogo size="lg" href="/" />

@@ -40,7 +40,7 @@ export function MutualSparkModal({
           closing ? 'scale-90 opacity-0' : ''
         }`}
       >
-        <AmbientAurora />
+        <AmbientAurora layer="card" />
         <div className="relative my-3 h-24 w-40 flex items-center justify-center">
           {/* Two 80px avatars overlapping by 12px */}
           <img
