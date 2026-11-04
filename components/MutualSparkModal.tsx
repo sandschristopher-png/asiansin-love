@@ -2,6 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
+import { AmbientAurora } from '@/components/ui/AmbientAurora';
 
 /**
  * "It's a Mutual Spark!" celebration: dimmed backdrop, modal pops in (0.92 -> 1), the two
@@ -35,10 +36,11 @@ export function MutualSparkModal({
         aria-modal="true"
         aria-label="It's a Mutual Spark"
         onClick={(e) => e.stopPropagation()}
-        className={`w-full max-w-sm rounded-3xl bg-white border border-[#DDD7E5]/70 p-6 shadow-2xl flex flex-col items-center text-center ail-modal-pop transition-all duration-200 ${
+        className={`relative isolate overflow-hidden w-full max-w-sm rounded-3xl bg-white border border-[#DDD7E5]/70 p-6 shadow-2xl flex flex-col items-center text-center ail-modal-pop transition-all duration-200 ${
           closing ? 'scale-90 opacity-0' : ''
         }`}
       >
+        <AmbientAurora />
         <div className="relative my-3 h-24 w-40 flex items-center justify-center">
           {/* Two 80px avatars overlapping by 12px */}
           <img

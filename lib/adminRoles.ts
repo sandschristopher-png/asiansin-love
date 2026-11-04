@@ -17,6 +17,16 @@ export function adminRoleOf(profile: Record<string, unknown> | null | undefined)
 
 export const isStaff = (role: AdminRole) => role === 'moderator' || role === 'super_admin';
 
+/**
+ * The account owner (COS, the id 20261112_admin_console.sql promotes). Matched by id, never by
+ * display name. The owner can manage every other account, other super admins included; nobody
+ * can modify the owner. ADMIN_OWNER_ID overrides it on the server if ownership ever moves.
+ */
+export const ACCOUNT_OWNER_ID =
+  (typeof process !== 'undefined' && process.env.ADMIN_OWNER_ID) || '2608a783-4745-4087-a1bc-c9387c3c0ccd';
+
+export const isAccountOwner = (userId: string | null | undefined) => Boolean(userId) && userId === ACCOUNT_OWNER_ID;
+
 export const ADMIN_ROLE_LABEL: Record<AdminRole, string> = {
   member: 'Member',
   moderator: 'Mod',

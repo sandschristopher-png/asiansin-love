@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Eye, EyeOff, Heart, Loader2, Plane, X, Zap } from 'lucide-react';
+import { AmbientAurora } from '@/components/ui/AmbientAurora';
 import { PLUS_PLANS, type PlusPlanId } from '@/lib/plusPlans';
 
 type PlanId = PlusPlanId;
@@ -80,9 +81,10 @@ export function AILPlusModal({
       aria-label={title}
     >
       <div
-        className="w-full max-w-[430px] max-h-[90dvh] overflow-y-auto rounded-t-3xl bg-white shadow-xl ail-sheet-up"
+        className="relative isolate w-full max-w-[430px] max-h-[90dvh] overflow-y-auto rounded-t-3xl bg-white shadow-xl ail-sheet-up"
         onClick={(e) => e.stopPropagation()}
       >
+        <AmbientAurora />
         <div className="pt-2.5" aria-hidden>
           <div className="w-10 h-1 rounded-full bg-slate-300 mx-auto mb-3" />
         </div>

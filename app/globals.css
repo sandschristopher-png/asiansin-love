@@ -301,3 +301,39 @@ nextjs-portal,
 
 /* Blurred placeholder -> photo cross-fade for slow connections. */
 .ail-photo-fade { transition: opacity 360ms ease-out; }
+
+/* Ambient aurora (components/ui/AmbientAurora.tsx): slow breathing drift, transform only. */
+@keyframes ailAurora1 {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+  50% { transform: translate3d(8%, 6%, 0) scale(1.12); }
+}
+@keyframes ailAurora2 {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(1.05); }
+  50% { transform: translate3d(-10%, 5%, 0) scale(0.94); }
+}
+@keyframes ailAurora3 {
+  0%, 100% { transform: translate3d(0, 0, 0) scale(0.96); }
+  50% { transform: translate3d(6%, -8%, 0) scale(1.1); }
+}
+.ail-aurora-blob { will-change: transform; }
+.ail-aurora-1 { animation: ailAurora1 18s ease-in-out infinite; }
+.ail-aurora-2 { animation: ailAurora2 20s ease-in-out infinite; }
+.ail-aurora-3 { animation: ailAurora3 16s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .ail-aurora-blob { animation: none; }
+}
+
+/* Auth hero city swap (components/auth/CityRotator.tsx): 300 ms slide-and-fade. */
+@keyframes ailCityIn {
+  from { opacity: 0; transform: translateY(0.75rem); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes ailCityOut {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-0.75rem); }
+}
+.ail-city-in { animation: ailCityIn 300ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+.ail-city-out { animation: ailCityOut 300ms ease-in both; }
+@media (prefers-reduced-motion: reduce) {
+  .ail-city-in, .ail-city-out { animation-duration: 1ms; }
+}

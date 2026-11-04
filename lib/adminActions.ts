@@ -1,12 +1,15 @@
 // Server-only moderation actions shared by the Admin Console routes (service-role client).
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { adminRoleOf, type AdminRole } from '@/lib/adminRoles';
+import { adminRoleOf, isAccountOwner, type AdminRole } from '@/lib/adminRoles';
 
 /** Columns from 20261112_admin_console.sql: callers get a clear 503 until it has run. */
 export const MISSING_ADMIN_COLUMNS_RE = /admin_role|is_banned|banned_at|photo_review_status|resolution|resolved_by|resolved_at|resolution_note/;
 export const RUN_MIGRATION_MESSAGE = 'Run supabase/migrations/20261112_admin_console.sql to enable this action.';
 
-/** Who may act on whom: nobody touches a super admin; only a super admin acts on a moderator. */
+/**
+ * Who may act on whom: nobody touches the account owner; only the owner acts on another super
+ * admin; only a super admin acts on a moderator.
+ */
 export async function canActOn(
   admin: SupabaseClient,
   actorRole: AdminRole,
@@ -17,7 +20,10 @@ export async function canActOn(
   if (!target) return { ok: false, status: 404, error: 'Member not found.' };
   if (targetId === actorId) return { ok: false, status: 400, error: 'You cannot apply this to your own account.' };
   const targetRole = adminRoleOf(target);
-  if (targetRole === 'super_admin') return { ok: false, status: 403, error: 'The master account cannot be modified.' };
+  if (isAccountOwner(targetId)) return { ok: false, status: 403, error: 'The account owner cannot be modified.' };
+  if (targetRole === 'super_admin' && !isAccountOwner(actorId)) {
+    return { ok: false, status: 403, error: 'Only the account owner can act on a super admin.' };
+  }
   if (targetRole === 'moderator' && actorRole !== 'super_admin') {
     return { ok: false, status: 403, error: 'Only a super admin can act on a moderator.' };
   }

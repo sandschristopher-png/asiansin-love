@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import { usePathname } from 'next/navigation';
+import { AmbientAurora } from '@/components/ui/AmbientAurora';
 import { X, Infinity, Compass, TrendingUp, Lock, ArrowRight, Loader2, Zap } from 'lucide-react';
 
 interface UpgradeModalProps {
@@ -82,9 +83,10 @@ export default function UpgradeModal({
       onClick={onClose}
     >
       <div
-        className="relative w-full max-w-[360px] bg-white/95 backdrop-blur-sm rounded-3xl border border-neutral-100 shadow-2xl p-5 text-[#1C1924] animate-in zoom-in-95 duration-150 flex flex-col no-scrollbar"
+        className="relative isolate overflow-hidden w-full max-w-[360px] bg-white rounded-3xl border border-neutral-100 shadow-2xl p-5 text-[#1C1924] animate-in zoom-in-95 duration-150 flex flex-col no-scrollbar"
         onClick={(e) => e.stopPropagation()}
       >
+        <AmbientAurora />
         {/* Dismiss Button */}
         <button
           onClick={onClose}

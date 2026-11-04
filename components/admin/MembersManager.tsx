@@ -19,16 +19,6 @@ type Member = {
   role: AdminRole;
 };
 
-const ROLE_PILL: Record<AdminRole, string> = {
-  super_admin: 'bg-gradient-to-r from-[#8C71F5] to-[#EC4899] text-white',
-  moderator: 'bg-[#2D264B] text-white',
-  member: 'bg-[#F9F8FC] text-[#6C637B] border border-[#ECE8F4]',
-};
-
-const RolePill = ({ role }: { role: AdminRole }) => (
-  <span className={`shrink-0 rounded-full px-2 py-0.5 text-[10px] font-bold ${ROLE_PILL[role]}`}>{ADMIN_ROLE_LABEL[role]}</span>
-);
-
 /** Edit sheet: role delegation, manual reputation override, verification and ban. */
 function MemberSheet({ member, onClose, onChange }: { member: Member; onClose: () => void; onChange: (m: Member, msg: string) => void }) {
   const [rep, setRep] = useState(String(member.reputation));
@@ -159,7 +149,11 @@ function MemberSheet({ member, onClose, onChange }: { member: Member; onClose: (
   );
 }
 
-export function MembersManager({ selfId }: { selfId: string }) {
+/**
+ * `isOwner`: the signed-in super admin is the account owner (COS), who can manage every other
+ * account, other super admins included. The API (lib/adminActions.ts canActOn) enforces the same.
+ */
+export function MembersManager({ selfId, ownerId, isOwner }: { selfId: string; ownerId: string; isOwner: boolean }) {
   const [query, setQuery] = useState('');
   const [members, setMembers] = useState<Member[] | null>(null);
   const [error, setError] = useState('');
@@ -272,7 +266,9 @@ export function MembersManager({ selfId }: { selfId: string }) {
       ) : (
         <ul className="rounded-2xl border border-[#ECE8F4] bg-white divide-y divide-[#ECE8F4] overflow-hidden">
           {members.map((m) => {
-            const locked = m.role === 'super_admin' || m.id === selfId;
+            // Your own row and the owner's row are never editable; other super admins only by the owner.
+            const isSelf = m.id === selfId;
+            const locked = isSelf || m.id === ownerId || (m.role === 'super_admin' && !isOwner);
             const body = (
               <>
                 <AdminAvatar url={m.avatarUrl} name={m.name} size={40} />
@@ -285,7 +281,6 @@ export function MembersManager({ selfId }: { selfId: string }) {
                     {m.isVerified && <BadgeCheck className="w-3.5 h-3.5 shrink-0 text-[#8C71F5]" aria-label="Verified" />}
                   </p>
                   <div className="mt-0.5 flex items-center gap-1.5">
-                    <RolePill role={m.role} />
                     <ReputationBadge score={m.reputation} size="xs" />
                     {m.isBanned && <span className="text-[10px] font-semibold text-rose-600">Banned</span>}
                   </div>
@@ -297,7 +292,7 @@ export function MembersManager({ selfId }: { selfId: string }) {
                 {locked ? (
                   <div className="flex items-center gap-3 px-3 py-3">
                     {body}
-                    <span className="text-[10px] text-[#9A92AB] shrink-0">{m.id === selfId ? 'You' : 'Locked'}</span>
+                    {isSelf && <span className="text-[10px] text-[#9A92AB] shrink-0">You</span>}
                   </div>
                 ) : (
                   <button type="button" onClick={() => setEditing(m)} className="w-full flex items-center gap-3 px-3 py-3 text-left active:bg-[#FAF8FD]">

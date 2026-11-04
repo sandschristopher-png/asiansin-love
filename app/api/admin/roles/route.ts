@@ -1,7 +1,7 @@
 // app/api/admin/roles/route.ts  (super_admin only)
 //   POST { userId, role: 'member' | 'moderator' }
-// Guardrails: moderators get 403; super admins (the master account) can't be changed;
-// nobody changes their own role. Super admin itself is never granted here.
+// Guardrails: moderators get 403; the account owner can't be changed and is the only one who can
+// demote another super admin; nobody changes their own role. Super admin is never granted here.
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAdminCaller } from '@/lib/adminAuth';
 import { canActOn, logModeration, MISSING_ADMIN_COLUMNS_RE, RUN_MIGRATION_MESSAGE } from '@/lib/adminActions';

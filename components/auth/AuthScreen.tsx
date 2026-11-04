@@ -5,6 +5,8 @@ import Link from 'next/link';
 import { ArrowLeft, Eye, EyeOff, Loader2, Mail, MailCheck } from 'lucide-react';
 import { BrandLogo } from '@/components/BrandLogo';
 import { InAppToast } from '@/components/InAppToast';
+import { AmbientAurora } from '@/components/ui/AmbientAurora';
+import { CityRotator } from '@/components/auth/CityRotator';
 import { supabase } from '@/lib/supabase/client';
 
 const RESET_EXPIRED_MESSAGE = 'That password reset link has expired or was already used. Request a new one from Forgot password.';
@@ -164,17 +166,18 @@ export function AuthScreen({ mode }: { mode: 'login' | 'signup' }) {
 
   return (
     // LayoutShell supplies the centered 430px frame on the #FAF8FD canvas.
-    <div className="min-h-[100dvh] w-full flex flex-col bg-white font-sans antialiased">
+    <div className="relative isolate min-h-[100dvh] w-full flex flex-col bg-white font-sans antialiased">
+      <AmbientAurora />
       <InAppToast message={toast} onClose={closeToast} durationMs={7000} />
-      <main className="flex-1 w-full flex flex-col px-6 pt-16 pb-6">
+      <main className="flex-1 w-full flex flex-col px-6 pt-14 pb-6">
         <div className="text-center">
           <div className="flex justify-center">
             <BrandLogo size="lg" href="/" />
           </div>
-          <p className="mt-2 text-sm text-neutral-500">Find sincere, meaningful connections</p>
+          <CityRotator />
         </div>
 
-        <div className="mt-12 space-y-3">
+        <div className="mt-4 space-y-3">
           {step === 'closed' ? (
             <>
               <button type="button" className={PILL} onClick={() => oauth('google')} disabled={!!busy}>

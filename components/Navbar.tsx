@@ -6,7 +6,7 @@ import { notifyUser } from '@/components/InAppToast';
 import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { User, Settings, LogOut, ArrowLeft, Menu, ShieldAlert, Megaphone } from 'lucide-react';
+import { User, Settings, LogOut, ArrowLeft, Menu, ShieldAlert, Megaphone, CreditCard } from 'lucide-react';
 import { adminRoleOf, isStaff } from '@/lib/adminRoles';
 import { supabase } from '@/lib/supabase/client';
 import { hardSignOut } from '@/lib/hardSignOut';
@@ -212,10 +212,10 @@ export function Navbar() {
                     </div>
                     <div className="py-1">
                       <Link href="/plus" role="menuitem" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 h-11 text-sm text-[#2D264B] hover:bg-[#FAF8FD] transition-colors justify-between">
+                        {/* The header row above already shows the PLUS badge: this row says "Membership". */}
                         <span className="flex items-center gap-3">
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src="/logo-mark-transparent.png" alt="" aria-hidden className="w-4 h-4 object-contain" />
-                          Plus
+                          <CreditCard className="w-4 h-4 text-neutral-500" aria-hidden />
+                          {isPlusProfile(profile) ? 'Membership' : 'Upgrade to Plus'}
                         </span>
                         {isPlusProfile(profile) ? (
                           <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-gradient-to-r from-[#8C71F5]/10 to-[#EC4899]/10 border border-[#8C71F5]/20 text-[#8C71F5]">Active</span>
