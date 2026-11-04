@@ -72,10 +72,10 @@ const STEPS = [
 
 export function HeroLanding() {
   return (
-    <div className="bg-gradient-to-b from-white via-[#FAF8FD] to-white min-h-screen text-[#1C1924] selection:bg-[#6555B8]/15 selection:text-[#6555B8]">
+    <div className="w-full bg-gradient-to-b from-white via-[#FAF8FD] to-white min-h-screen overflow-x-hidden text-[#1C1924] selection:bg-[#6555B8]/15 selection:text-[#6555B8]">
       {/* ===== Frosted header ===== */}
       <header className="sticky top-0 z-40 w-full bg-white/80 backdrop-blur-md border-b border-[#ECE8F4]/80">
-        <div className="max-w-[430px] mx-auto px-4 h-14 flex items-center justify-between">
+        <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 h-14 flex items-center justify-between">
           <BrandLogo href="/" size="header" />
           <Link
             href="/login"
@@ -86,61 +86,76 @@ export function HeroLanding() {
         </div>
       </header>
 
-      {/* ===== Hero: copy + CTA, illustration grounded flush on the fold's bottom edge ===== */}
-      <section className="relative overflow-hidden border-b border-[#ECE8F4]">
+      {/* ===== Hero fold =====
+          Mobile: centered copy, /hero-woman.png grounded flush on the fold's bottom border.
+          Desktop (md+): copy left, /hero-couple.png anchored flush bottom-right. */}
+      <section className="relative w-full overflow-hidden bg-[#FAF9FD] min-h-[92vh] flex flex-col justify-between border-b border-[#ECE8F4]">
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
           <AmbientAurora />
         </div>
-        <div className="relative z-10 max-w-md mx-auto px-5 pt-10 text-center">
-          <p className="text-xs font-bold tracking-[0.18em] uppercase text-[#8C71F5] mb-3">Modern Matchmaking</p>
-          <h1 className="font-brand font-extrabold text-3xl sm:text-4xl text-[#2D264B] tracking-tight leading-[1.15]">
-            Real connection, without the guesswork.
-          </h1>
-          <p className="mt-3 text-[14px] text-[#6C637B] leading-relaxed max-w-[330px] mx-auto">
-            Photo-verified members, clear intentions up front, and an authentic community built for real relationships.
-          </p>
+        <div className="relative z-10 max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 pt-8 sm:pt-14 pb-0 w-full flex-1 flex flex-col justify-between">
+          <div className="flex-1 flex flex-col md:flex-row md:items-end md:gap-10">
+            <div className="text-center md:text-left md:flex-1 md:self-center md:pb-14">
+              <p className="text-xs font-bold tracking-[0.18em] uppercase text-[#8C71F5] mb-3">Modern Matchmaking</p>
+              <h1 className="font-brand font-extrabold text-3xl sm:text-4xl md:text-5xl lg:text-[56px] text-[#2D264B] tracking-tight leading-[1.15] md:leading-[1.08]">
+                Real connection, without the guesswork.
+              </h1>
+              <p className="mt-3 md:mt-5 text-[14px] md:text-base text-[#6C637B] leading-relaxed max-w-[330px] md:max-w-[460px] mx-auto md:mx-0">
+                Photo-verified members, clear intentions up front, and an authentic community built for real relationships.
+              </p>
 
-          <div className="mt-7">
-            <Link href="/signup" className={`${CTA_PILL} w-full max-w-[300px]`}>
-              <span>Join for Free</span>
-              <ChevronRight className="ml-1 w-4 h-4" />
-            </Link>
-            <p className="mt-2.5 text-[11px] text-[#8C849B]">
-              Free to join. By joining you agree to our Terms &amp; Privacy Policy.
-            </p>
-          </div>
+              <div className="mt-7 md:mt-8 flex flex-col items-center md:items-start">
+                <Link href="/signup" className={`${CTA_PILL} w-full max-w-[300px] md:w-auto`}>
+                  <span>Join for Free</span>
+                  <ChevronRight className="ml-1 w-4 h-4" />
+                </Link>
+                <p className="mt-2.5 text-[11px] text-[#8C849B]">
+                  Free to join. By joining you agree to our Terms &amp; Privacy Policy.
+                </p>
+              </div>
 
-          <ul className="mt-8 grid grid-cols-2 gap-2.5 max-w-[340px] mx-auto">
-            {TRUST_BADGES.map(({ Icon, label }) => (
-              <li
-                key={label}
-                className="flex items-center gap-2 rounded-2xl bg-white/90 backdrop-blur-sm border border-[#ECE8F4] shadow-[0_4px_14px_rgba(101,85,184,0.08)] px-3 py-2.5 text-left"
-              >
-                <span className="w-7 h-7 shrink-0 rounded-lg bg-[#F3EFFC] text-[#6555B8] flex items-center justify-center">
-                  <Icon className="w-4 h-4" aria-hidden />
-                </span>
-                <span className="text-[12px] font-semibold text-[#2D264B] leading-tight">{label}</span>
-              </li>
-            ))}
-          </ul>
+              <ul className="mt-8 grid grid-cols-2 gap-2.5 max-w-[340px] md:max-w-[440px] mx-auto md:mx-0">
+                {TRUST_BADGES.map(({ Icon, label }) => (
+                  <li
+                    key={label}
+                    className="flex items-center gap-2 rounded-2xl bg-white/90 backdrop-blur-sm border border-[#ECE8F4] shadow-[0_4px_14px_rgba(101,85,184,0.08)] px-3 py-2.5 text-left"
+                  >
+                    <span className="w-7 h-7 shrink-0 rounded-lg bg-[#F3EFFC] text-[#6555B8] flex items-center justify-center">
+                      <Icon className="w-4 h-4" aria-hidden />
+                    </span>
+                    <span className="text-[12px] font-semibold text-[#2D264B] leading-tight">{label}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
 
-          <div className="mt-8 flex items-end justify-center overflow-hidden leading-none">
-            <Image
-              src="/hero-woman.png"
-              alt="Illustrated member smiling"
-              width={2048}
-              height={2048}
-              priority
-              sizes="(max-width: 430px) 75vw, 300px"
-              className="block align-bottom object-bottom w-[75%] max-w-[300px] h-auto select-none pointer-events-none -mb-px"
-            />
+            <div className="pt-8 md:pt-0 mt-auto md:flex-1 flex items-end justify-center md:justify-end overflow-hidden leading-none">
+              <Image
+                src="/hero-woman.png"
+                alt="Illustrated member smiling"
+                width={2048}
+                height={2048}
+                priority
+                sizes="(max-width: 767px) 75vw, 1px"
+                className="md:hidden block align-bottom object-bottom w-[75%] max-w-[300px] h-auto select-none pointer-events-none -mb-px"
+              />
+              <Image
+                src="/hero-couple.png"
+                alt="Illustrated couple smiling together"
+                width={2400}
+                height={1695}
+                priority
+                sizes="(max-width: 767px) 1px, 740px"
+                className="hidden md:block align-bottom object-bottom max-h-[520px] w-auto select-none pointer-events-none -mb-px"
+              />
+            </div>
           </div>
         </div>
       </section>
 
       {/* ===== How connections happen ===== */}
-      <section className="py-12 border-b border-[#EFEAF7] bg-[#FAF8FD]/60">
-        <div className="max-w-md mx-auto px-5">
+      <section className="py-12 sm:py-16 border-b border-[#EFEAF7] bg-[#FAF8FD]/60">
+        <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
           <div className="text-center">
             <h2 className="font-brand text-xl font-extrabold tracking-tight text-[#2D264B]">How connections happen</h2>
             <p className="mt-1.5 text-[13px] text-[#6C637B]">
@@ -148,7 +163,7 @@ export function HeroLanding() {
             </p>
           </div>
 
-          <div className="mt-6 space-y-3">
+          <div className="mt-6 sm:mt-8 grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-6">
             {STEPS.map(({ Icon, title, desc }) => (
               <div key={title} className="bg-white rounded-2xl p-5 border border-[#ECE8F4] shadow-xs flex items-start gap-4">
                 <span className="w-10 h-10 shrink-0 rounded-xl bg-[#F3EFFC] text-[#6555B8] flex items-center justify-center">
@@ -165,8 +180,8 @@ export function HeroLanding() {
       </section>
 
       {/* ===== Three lifestyle pillars ===== */}
-      <section className="py-12">
-        <div className="max-w-md mx-auto px-5 grid grid-cols-1 gap-4">
+      <section>
+        <div className="relative z-10 max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 py-16 sm:py-24 w-full grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
           {FEATURE_CARDS.map(({ pill, pillClass, title, body, src, width, height, alt }) => (
             <article
               key={pill}
@@ -183,8 +198,8 @@ export function HeroLanding() {
                   alt={alt}
                   width={width}
                   height={height}
-                  sizes="240px"
-                  className="block align-bottom object-bottom max-h-[170px] w-auto select-none pointer-events-none -mb-px"
+                  sizes="260px"
+                  className="block align-bottom object-bottom max-h-[180px] w-auto select-none pointer-events-none -mb-px"
                 />
               </div>
             </article>
@@ -193,8 +208,8 @@ export function HeroLanding() {
       </section>
 
       {/* ===== Closing CTA card ===== */}
-      <section className="px-4 pb-12 pt-2">
-        <div className="max-w-md mx-auto bg-white/95 backdrop-blur-md border border-[#ECE8F4] rounded-3xl p-8 sm:p-10 text-center shadow-[0_4px_24px_rgba(45,38,75,0.04)]">
+      <section className="relative z-10 max-w-4xl mx-auto px-6 pb-20 w-full">
+        <div className="bg-white/95 backdrop-blur-md border border-[#ECE8F4] rounded-3xl p-8 sm:p-12 text-center shadow-[0_4px_24px_rgba(45,38,75,0.04)]">
           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full border border-[#ECE8F4] text-[10px] font-bold tracking-[0.18em] text-[#2D264B]/60">
             JOIN THE COMMUNITY
           </span>
@@ -211,7 +226,7 @@ export function HeroLanding() {
 
       {/* ===== Footer ===== */}
       <footer className="bg-white py-8 border-t border-[#F3EFFC]">
-        <div className="max-w-md mx-auto px-5 text-center space-y-2">
+        <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 text-center space-y-2">
           <BrandLogo href="/" size="md" className="justify-center" />
           <p className="text-xs text-[#8C849B]">
             Real connection for genuine singles across Southeast Asia.
