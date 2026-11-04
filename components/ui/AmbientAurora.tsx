@@ -1,14 +1,16 @@
+'use client';
+
 import React from 'react';
+import { motion } from 'framer-motion';
 
 /**
  * Soft pastel aurora pooled behind the middle and lower canvas: violet center-left (24%), pink
- * center-right (22%), lilac lower-center (20%), each drifting on its own 15-19 s loop.
- * Keyframes are embedded so the drift never depends on the global stylesheet. Transform-only
- * (compositor); held still under prefers-reduced-motion.
+ * center-right (22%), lilac lower-center (20%). Framer Motion drives the drift, so it runs
+ * without any global or embedded CSS keyframes.
  *
- * Blob 3 is centered by its keyframes (translate(-50%, ...)), not by a Tailwind translate class:
- * Tailwind v4's translate utilities set the separate `translate` property, which would stack with
- * the animated transform and push the blob a full width off-center.
+ * Blob 3 is centered by Framer's x: '-50%' only. Tailwind v4's -translate-x-1/2 sets the separate
+ * CSS `translate` property, which would stack with Framer's transform and push the blob a full
+ * half-width further left.
  *
  * Layering:
  *   layer="page" (default): z-0. Put the content above it in a `relative z-10` wrapper and keep
@@ -18,44 +20,30 @@ import React from 'react';
  *
  * Never behind the Discover feed or chat threads, where photos and text need full contrast.
  */
-const KEYFRAMES = `
-  @keyframes aurora-drift-1 {
-    0%, 100% { transform: translate(0px, 0px) scale(1); }
-    50% { transform: translate(28px, -24px) scale(1.08); }
-  }
-  @keyframes aurora-drift-2 {
-    0%, 100% { transform: translate(0px, 0px) scale(1); }
-    50% { transform: translate(-24px, 28px) scale(0.95); }
-  }
-  @keyframes aurora-drift-3 {
-    0%, 100% { transform: translate(-50%, 0px) scale(1); }
-    50% { transform: translate(-50%, -22px) scale(1.06); }
-  }
-  .animate-aurora-1 {
-    animation: aurora-drift-1 15s ease-in-out infinite;
-    will-change: transform;
-  }
-  .animate-aurora-2 {
-    animation: aurora-drift-2 19s ease-in-out infinite;
-    will-change: transform;
-  }
-  .animate-aurora-3 {
-    transform: translate(-50%, 0px);
-    animation: aurora-drift-3 17s ease-in-out infinite;
-    will-change: transform;
-  }
-  @media (prefers-reduced-motion: reduce) {
-    .animate-aurora-1, .animate-aurora-2, .animate-aurora-3 { animation: none; }
-  }
-`;
-
 export function AmbientAurora({ layer = 'page' }: { layer?: 'page' | 'card' }) {
   return (
     <div aria-hidden className={`absolute inset-0 overflow-hidden pointer-events-none ${layer === 'card' ? '-z-10' : 'z-0'}`}>
-      <style dangerouslySetInnerHTML={{ __html: KEYFRAMES }} />
-      <span className="animate-aurora-1 absolute top-1/3 -left-12 sm:left-2 w-[320px] h-[320px] sm:w-[380px] sm:h-[380px] rounded-full bg-[#8C71F5]/[0.24] blur-[80px] pointer-events-none" />
-      <span className="animate-aurora-2 absolute top-1/2 -right-12 sm:right-2 w-[300px] h-[300px] sm:w-[360px] sm:h-[360px] rounded-full bg-[#EC4899]/[0.22] blur-[80px] pointer-events-none" />
-      <span className="animate-aurora-3 absolute bottom-16 left-1/2 w-[360px] h-[280px] sm:w-[420px] sm:h-[320px] rounded-full bg-[#C084FC]/[0.20] blur-[90px] pointer-events-none" />
+      {/* Blob 1: Iris/Violet - Center Left */}
+      <motion.div
+        animate={{ x: [0, 24, 0], y: [0, -20, 0], scale: [1, 1.08, 1] }}
+        transition={{ duration: 14, repeat: Infinity, ease: 'easeInOut' }}
+        className="absolute top-1/3 -left-12 sm:left-4 w-[340px] h-[340px] sm:w-[400px] sm:h-[400px] rounded-full bg-[#8C71F5]/24 blur-[80px] will-change-transform"
+      />
+
+      {/* Blob 2: Radiant Pink - Center Right */}
+      <motion.div
+        animate={{ x: [0, -22, 0], y: [0, 24, 0], scale: [1, 0.94, 1] }}
+        transition={{ duration: 18, repeat: Infinity, ease: 'easeInOut' }}
+        className="absolute top-1/2 -right-12 sm:right-4 w-[320px] h-[320px] sm:w-[380px] sm:h-[380px] rounded-full bg-[#EC4899]/22 blur-[80px] will-change-transform"
+      />
+
+      {/* Blob 3: Warm Lilac / Rose - Lower Center */}
+      <motion.div
+        initial={{ x: '-50%' }}
+        animate={{ x: ['-50%', '-50%', '-50%'], y: [0, -18, 0], scale: [1, 1.06, 1] }}
+        transition={{ duration: 16, repeat: Infinity, ease: 'easeInOut' }}
+        className="absolute bottom-12 left-1/2 w-[360px] h-[300px] sm:w-[420px] sm:h-[340px] rounded-full bg-[#C084FC]/20 blur-[90px] will-change-transform"
+      />
     </div>
   );
 }

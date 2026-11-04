@@ -337,7 +337,7 @@ export function AuthScreen({ mode }: { mode: 'login' | 'signup' }) {
           )}
         </p>
 
-        <p className="mt-auto pt-10 text-[10px] leading-relaxed text-[#2D264B]/50 max-w-[340px] mx-auto text-center">
+        <p className="mt-auto pt-10 text-[10px] leading-relaxed text-[#2D264B]/55 max-w-[340px] mx-auto text-center">
           Registration is strictly permitted for individuals 18 years of age and older. By continuing, you agree to our{' '}
           <Link href="/terms" className="text-[#2D264B]/70 underline hover:text-[#8C71F5] transition-colors">
             Terms of Service
