@@ -523,14 +523,14 @@ export default function OnboardingPage() {
 
   if (!userId) {
     return (
-      <div className="min-h-screen bg-[#F8F7FA] flex items-center justify-center">
+      <div className="min-h-screen flex items-center justify-center">
         <div className="animate-spin rounded-full h-10 w-10 border-4 border-[#6555b8] border-t-transparent"></div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-[calc(100dvh-64px)] w-full flex items-center justify-center p-4 sm:p-6 bg-[#F8F7FA]">
+    <div className="min-h-[calc(100dvh-64px)] w-full flex items-center justify-center p-4 sm:p-6">
       <div className="w-full max-w-xl rounded-3xl bg-white border border-[#DDD7E5] p-6 sm:p-10 shadow-xl space-y-6">
         
         {/* Step Indicator Header */}
