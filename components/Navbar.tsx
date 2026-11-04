@@ -2,6 +2,7 @@
 import { BrandLogo } from '@/components/BrandLogo';
 import { isPlusProfile } from '@/lib/plus';
 import { ANNOUNCEMENTS_READ_EVENT, NON_ANNOUNCEMENT_FILTER } from '@/lib/announcements';
+import { hasUnreadBroadcast } from '@/lib/broadcasts';
 import { notifyUser } from '@/components/InAppToast';
 import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
@@ -38,13 +39,20 @@ export function Navbar() {
     }
     let cancelled = false;
     const check = async () => {
-      const { count } = await supabase
-        .from('notifications')
-        .select('id', { count: 'exact', head: true })
-        .eq('user_id', user.id)
-        .eq('is_read', false)
-        .not('type', 'in', NON_ANNOUNCEMENT_FILTER);
-      if (!cancelled) setHasUnreadAnnouncements((count ?? 0) > 0);
+      // Unread = a personal notice not yet read, or an admin broadcast newer than the member's
+      // read marker (lib/broadcasts.ts). Before the broadcasts migration, only notices count.
+      const [{ count }, { data: latest }, { data: me }] = await Promise.all([
+        supabase
+          .from('notifications')
+          .select('id', { count: 'exact', head: true })
+          .eq('user_id', user.id)
+          .eq('is_read', false)
+          .not('type', 'in', NON_ANNOUNCEMENT_FILTER),
+        supabase.from('announcements').select('published_at').order('published_at', { ascending: false }).limit(1).maybeSingle(),
+        supabase.from('profiles').select('*').eq('id', user.id).maybeSingle(),
+      ]);
+      const broadcastUnread = hasUnreadBroadcast(latest?.published_at, me?.last_read_announcements_at);
+      if (!cancelled) setHasUnreadAnnouncements((count ?? 0) > 0 || broadcastUnread);
     };
     check();
     const cleared = () => setHasUnreadAnnouncements(false);
@@ -234,7 +242,7 @@ export function Navbar() {
                       <Link href="/announcements" role="menuitem" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 h-11 text-sm text-[#2D264B] hover:bg-[#FAF8FD] transition-colors">
                         <Megaphone className="w-4 h-4 text-neutral-500" />
                         <span>Announcements</span>
-                        {hasUnreadAnnouncements && <span aria-label="New announcements" className="w-1.5 h-1.5 rounded-full bg-[#EC4899]" />}
+                        {hasUnreadAnnouncements && <span aria-label="New announcements" className="w-2 h-2 rounded-full bg-[#EC4899]" />}
                       </Link>
                       {isStaff(adminRoleOf(profile)) && (
                         // Staff only: never rendered for members.
