@@ -91,14 +91,18 @@ export function RealtimeNotifier() {
       if (!cancelled) setNotificationCounts({ unreadMessages: count || 0 });
     };
 
+    // Sparks tab badge: new incoming Sparks (mutual matches start as one) plus, for members who can
+    // open the Views tab (visitorAccess), new profile views since Sparks was last opened.
     const refreshUnseenSparks = async (uid: string) => {
       if (pathRef.current?.startsWith('/favorites')) return setNotificationCounts({ unseenSparks: 0 });
-      const { count } = await supabase
-        .from('sparks')
-        .select('id', { count: 'exact', head: true })
-        .eq('receiver_id', uid)
-        .gt('created_at', sparksSeenAt());
-      if (!cancelled) setNotificationCounts({ unseenSparks: count || 0 });
+      const since = sparksSeenAt();
+      const [sparks, views] = await Promise.all([
+        supabase.from('sparks').select('id', { count: 'exact', head: true }).eq('receiver_id', uid).gt('created_at', since),
+        visitorAccess
+          ? supabase.from('profile_views').select('id', { count: 'exact', head: true }).eq('viewed_id', uid).neq('viewer_id', uid).gt('created_at', since)
+          : Promise.resolve({ count: 0 }),
+      ]);
+      if (!cancelled) setNotificationCounts({ unseenSparks: (sparks.count || 0) + (views.count || 0) });
     };
 
     const fetchActor = async (id: string): Promise<Actor | null> => {
@@ -228,6 +232,9 @@ export function RealtimeNotifier() {
             if (!visitorAccess) return;
             const row = payload.new as { id: string; viewer_id: string };
             if (!row?.viewer_id || row.viewer_id === uid) return;
+            if (!pathRef.current?.startsWith('/favorites')) {
+              setNotificationCounts({ unseenSparks: getNotificationCounts().unseenSparks + 1 });
+            }
             const actor = await fetchActor(row.viewer_id);
             const name = actorName(actor, 'Someone');
             showNotificationToast({

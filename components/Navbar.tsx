@@ -1,18 +1,18 @@
 'use client';
 import { BrandLogo } from '@/components/BrandLogo';
 import { isPlusProfile } from '@/lib/plus';
-import { NoticeBell } from '@/components/NoticeCenter';
+import { ANNOUNCEMENTS_READ_EVENT, NON_ANNOUNCEMENT_FILTER } from '@/lib/announcements';
 import { notifyUser } from '@/components/InAppToast';
 import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { User, Settings, LogOut, ArrowLeft, Menu, ShieldAlert } from 'lucide-react';
+import { User, Settings, LogOut, ArrowLeft, Menu, ShieldAlert, Megaphone } from 'lucide-react';
 import { adminRoleOf, isStaff } from '@/lib/adminRoles';
 import { supabase } from '@/lib/supabase/client';
 import { hardSignOut } from '@/lib/hardSignOut';
 import { PlusBadge } from '@/components/ui/PlusBadge';
 /** Signed-in areas: the header never offers "Sign In" here (middleware already requires a session). */
-const IN_APP_PREFIXES = ['/discover', '/messages', '/favorites', '/profile', '/notifications', '/chat', '/settings', '/plus', '/verify'];
+const IN_APP_PREFIXES = ['/discover', '/messages', '/favorites', '/profile', '/notifications', '/announcements', '/chat', '/settings', '/plus', '/verify'];
 
 export function Navbar() {
   const [user, setUser] = useState<any>(null);
@@ -21,6 +21,7 @@ export function Navbar() {
   const [profile, setProfile] = useState<any>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const [hasUnreadAnnouncements, setHasUnreadAnnouncements] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const pathname = usePathname();
@@ -28,7 +29,32 @@ export function Navbar() {
   useEffect(() => {
     setMenuOpen(false);
   }, [pathname]);
-  // Notices (bell + unread dot) live in NoticeCenter; this effect only tracks the signed-in member.
+  // Unread system announcements -> pink dot beside "Announcements" in the menu. (Chats and Sparks
+  // activity have their own BottomNav badges; see lib/announcements.ts.)
+  useEffect(() => {
+    if (!user) {
+      setHasUnreadAnnouncements(false);
+      return;
+    }
+    let cancelled = false;
+    const check = async () => {
+      const { count } = await supabase
+        .from('notifications')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .eq('is_read', false)
+        .not('type', 'in', NON_ANNOUNCEMENT_FILTER);
+      if (!cancelled) setHasUnreadAnnouncements((count ?? 0) > 0);
+    };
+    check();
+    const cleared = () => setHasUnreadAnnouncements(false);
+    window.addEventListener(ANNOUNCEMENTS_READ_EVENT, cleared);
+    return () => {
+      cancelled = true;
+      window.removeEventListener(ANNOUNCEMENTS_READ_EVENT, cleared);
+    };
+  }, [user, pathname, menuOpen]);
+  // Tracks the signed-in member and their profile.
   useEffect(() => {
     async function loadUser() {
       const { data: { user } } = await supabase.auth.getUser();
@@ -91,7 +117,7 @@ export function Navbar() {
     if (!pathname || pathname === '/' || pathname === '/discover') return null;
     if (pathname.startsWith('/favorites') || pathname.startsWith('/saved')) return 'Sparks';
     if (pathname.startsWith('/chat') || pathname.startsWith('/messages')) return 'Messages';
-    if (pathname === '/notifications') return 'Notifications';
+    if (pathname === '/announcements') return 'Announcements';
     if (pathname === '/settings') return 'Settings';
     if (pathname === '/profile') return 'My Profile';
     if (pathname.startsWith('/profile/')) return 'Profile';
@@ -156,7 +182,6 @@ export function Navbar() {
         <div className="flex items-center gap-1">
           {user ? (
             <>
-            <NoticeBell />
             {pathname === '/profile' && (
               <Link
                 href="/settings"
@@ -179,7 +204,7 @@ export function Navbar() {
                   <Menu className="w-5 h-5" />
                 </button>
                 {menuOpen && (
-                  // Account utilities only: notices live behind the bell, chats on the Messages tab.
+                  // Account utilities + announcements; dating activity lives on the BottomNav tabs.
                   <div role="menu" className="absolute right-0 mt-2 w-64 rounded-2xl bg-white border border-[#ECE8F4] shadow-xl overflow-hidden z-[200] animate-[notifDropdownIn_0.2s_cubic-bezier(0.16,1,0.3,1)_both]">
                     <div className="px-4 py-3 border-b border-[#ECE8F4] flex items-center gap-1.5 min-w-0">
                       <span className="text-sm font-bold text-[#2D264B] truncate">{displayName.replace(/^@/, '')}</span>
@@ -205,6 +230,11 @@ export function Navbar() {
                       <Link href="/settings" role="menuitem" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 h-11 text-sm text-[#2D264B] hover:bg-[#FAF8FD] transition-colors">
                         <Settings className="w-4 h-4 text-neutral-500" />
                         Settings
+                      </Link>
+                      <Link href="/announcements" role="menuitem" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 h-11 text-sm text-[#2D264B] hover:bg-[#FAF8FD] transition-colors">
+                        <Megaphone className="w-4 h-4 text-neutral-500" />
+                        <span>Announcements</span>
+                        {hasUnreadAnnouncements && <span aria-label="New announcements" className="w-1.5 h-1.5 rounded-full bg-[#EC4899]" />}
                       </Link>
                       {isStaff(adminRoleOf(profile)) && (
                         // Staff only: never rendered for members.

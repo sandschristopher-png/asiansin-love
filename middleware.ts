@@ -4,7 +4,7 @@ import { NextResponse, type NextRequest } from 'next/server';
 
 const PROTECTED_PREFIXES = [
   '/discover', '/sparks', '/messages', '/profile', '/chat', '/settings',
-  '/favorites', '/notifications', '/verify',
+  '/favorites', '/notifications', '/announcements', '/verify',
 ];
 
 /** Value = the member's id once profiles.onboarding_completed is confirmed true. */
@@ -169,6 +169,7 @@ export const config = {
     '/settings/:path*',
     '/favorites/:path*',
     '/notifications/:path*',
+    '/announcements/:path*',
     '/verify/:path*',
     '/admin/:path*',
   ],

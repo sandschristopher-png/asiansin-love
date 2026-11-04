@@ -113,11 +113,20 @@ export function BottomNav() {
                   className={`w-5 h-5 transition-transform duration-200 ${active ? 'scale-110' : ''}`} 
                   strokeWidth={active ? 2.3 : 1.75} 
                 />
-                {Boolean(item.badge && item.badge > 0) && (
-                  <span className="absolute -top-1 -right-2.5 min-w-[16px] h-4 px-1 rounded-full bg-[#E05375] text-[10px] font-bold text-white flex items-center justify-center shadow-xs pointer-events-none">
-                    {item.badge! > 99 ? '99+' : item.badge}
-                  </span>
-                )}
+                {Boolean(item.badge && item.badge > 0) && (() => {
+                  // Never clipped: one digit is a circle, "10".."99" and "99+" widen the pill instead.
+                  const label = item.badge! > 99 ? '99+' : String(item.badge);
+                  return (
+                    <span
+                      aria-label={`${label} new`}
+                      className={`absolute -top-1 -right-2.5 inline-flex items-center justify-center h-4.5 rounded-full bg-[#EC4899] text-white text-[9px] font-extrabold leading-none tabular-nums ring-2 ring-white shadow-xs whitespace-nowrap pointer-events-none select-none ${
+                        label.length === 1 ? 'w-4.5 p-0' : 'min-w-[18px] px-1.5'
+                      }`}
+                    >
+                      {label}
+                    </span>
+                  );
+                })()}
               </div>
               <span className={`text-[10px] tracking-tight mt-0.5 leading-tight transition-colors duration-200 ${
                 active ? 'font-bold text-[#6555B8]' : 'font-medium text-[#8C849B]'
