@@ -9,16 +9,12 @@ import { AmbientAurora } from '@/components/ui/AmbientAurora';
 import { CityRotator } from '@/components/auth/CityRotator';
 import { supabase } from '@/lib/supabase/client';
 
-const APPLE_COMING_SOON = 'Apple sign-in is coming soon. Please continue with Google or Email.';
-/**
- * Apple OAuth is not enabled in Supabase yet (its authorize URL answers HTTP 400). Until
- * NEXT_PUBLIC_APPLE_AUTH_ENABLED=true, the button shows a coming-soon toast instead.
- */
-const APPLE_AUTH_ENABLED = process.env.NEXT_PUBLIC_APPLE_AUTH_ENABLED === 'true';
 const RESET_EXPIRED_MESSAGE = 'That password reset link has expired or was already used. Request a new one from Forgot password.';
-/** Google / Apple / Email: one shared pill so the three read as a single stack. */
+/** Google / LINE / Email: one shared pill so the three read as a single stack. */
 const PILL =
   'w-full h-12 px-4 rounded-full bg-white/95 backdrop-blur-xs border border-[#ECE8F4] shadow-[0_2px_8px_rgba(45,38,75,0.04)] hover:shadow-[0_4px_12px_rgba(45,38,75,0.08)] hover:border-[#8C71F5]/30 transition-all flex items-center justify-center gap-3 select-none disabled:opacity-60 disabled:cursor-not-allowed';
+/** LINE keeps the shared pill but hovers in LINE green instead of brand violet. */
+const PILL_LINE = PILL.replace('hover:border-[#8C71F5]/30', 'hover:border-[#06C755]/40');
 const PILL_LABEL = 'text-sm font-bold text-[#2D264B] tracking-tight';
 const INPUT =
   'w-full h-12 px-4 rounded-full bg-white border border-[#ECE8F4] text-base text-[#1C1924] placeholder:text-[#A8A1B5] focus:outline-none focus:border-[#8C71F5] focus:ring-4 focus:ring-[#8C71F5]/15 transition';
@@ -34,9 +30,9 @@ const GoogleIcon = () => (
   </svg>
 );
 
-const AppleIcon = () => (
-  <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="#2D264B" aria-hidden="true">
-    <path d="M16.37 12.73c-.03-2.7 2.2-4 2.3-4.06-1.25-1.83-3.2-2.08-3.9-2.11-1.66-.17-3.24.98-4.08.98-.85 0-2.14-.96-3.52-.93-1.81.03-3.48 1.05-4.41 2.67-1.88 3.26-.48 8.09 1.35 10.74.9 1.3 1.96 2.75 3.36 2.7 1.35-.05 1.86-.87 3.49-.87 1.63 0 2.09.87 3.51.84 1.45-.03 2.37-1.32 3.26-2.62 1.03-1.5 1.45-2.96 1.47-3.04-.03-.01-2.82-1.08-2.85-4.3zM13.7 4.8c.74-.9 1.24-2.15 1.11-3.4-1.07.04-2.37.71-3.14 1.61-.69.8-1.29 2.07-1.13 3.3 1.19.09 2.42-.61 3.16-1.51z" />
+const LineIcon = () => (
+  <svg className="w-5 h-5 shrink-0" viewBox="0 0 24 24" fill="#06C755" aria-hidden="true">
+    <path d="M19.365 9.863c.349 0 .63.285.63.631 0 .345-.281.63-.63.63H17.61v1.125h1.755c.349 0 .63.283.63.63 0 .344-.281.629-.63.629h-2.386c-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63h2.386c.346 0 .627.285.627.63 0 .349-.281.63-.63.63H17.61v1.125h1.755zm-3.855 3.016c0 .27-.174.51-.432.596-.064.021-.133.031-.199.031-.211 0-.391-.09-.51-.25l-2.443-3.317v2.94c0 .344-.279.629-.631.629-.346 0-.626-.285-.626-.629V8.108c0-.27.173-.51.43-.595.06-.023.136-.033.194-.033.195 0 .375.104.495.254l2.462 3.33V8.108c0-.345.282-.63.63-.63.345 0 .63.285.63.63v4.771zm-5.741 0c0 .344-.282.629-.631.629-.345 0-.627-.285-.627-.629V8.108c0-.345.282-.63.63-.63.346 0 .628.285.628.63v4.771zm-2.466.629H4.917c-.345 0-.63-.285-.63-.629V8.108c0-.345.285-.63.63-.63.348 0 .63.285.63.63v4.141h1.756c.348 0 .629.283.629.63 0 .344-.282.629-.629.629M24 10.314C24 4.943 18.615.572 12 .572S0 4.943 0 10.314c0 4.811 4.27 8.842 10.035 9.608.391.082.923.258 1.058.59.12.301.079.766.038 1.08l-.164 1.02c-.045.301-.24 1.186 1.049.645 1.291-.539 6.916-4.078 9.436-6.975C23.176 14.393 24 12.458 24 10.314" />
   </svg>
 );
 
@@ -53,12 +49,12 @@ async function routeAfterSignIn(userId: string) {
 type EmailStep = 'closed' | 'email' | 'sent' | 'password';
 
 /**
- * Sign-in / sign-up stack: Google, Apple, Email (magic link or 6-digit code). New accounts from
+ * Sign-in / sign-up stack: Google, LINE, Email (magic link or 6-digit code). New accounts from
  * any provider land on /onboarding, where Step 1 asks for a handle (provider names are never shown).
- * No Facebook, no SMS. Password sign-in stays reachable from the email panel for existing accounts.
+ * No Apple, no Facebook, no SMS. Password sign-in stays reachable from the email panel for existing accounts.
  */
 export function AuthScreen({ mode }: { mode: 'login' | 'signup' }) {
-  const [busy, setBusy] = useState<null | 'google' | 'apple' | 'email' | 'code' | 'password'>(null);
+  const [busy, setBusy] = useState<null | 'google' | 'line' | 'email' | 'code' | 'password'>(null);
   const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const closeToast = useCallback(() => setToast(null), []);
@@ -84,22 +80,19 @@ export function AuthScreen({ mode }: { mode: 'login' | 'signup' }) {
     window.history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : ''));
   }, []);
 
-  const oauth = async (provider: 'google' | 'apple') => {
-    if (provider === 'apple' && !APPLE_AUTH_ENABLED) {
-      setError(null);
-      setToast(APPLE_COMING_SOON);
-      return;
-    }
+  const oauth = async (provider: 'google' | 'line') => {
     setBusy(provider);
     setError(null);
     const { error } = await supabase.auth.signInWithOAuth({
-      provider,
+      // LINE is a custom OIDC provider in Supabase ("custom:line"); the SDK types list built-ins only.
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      provider: (provider === 'line' ? 'custom:line' : 'google') as any,
       options: { redirectTo: `${window.location.origin}/auth/callback` },
     });
     if (error) {
       setError(
         /provider is not enabled/i.test(error.message)
-          ? `${provider === 'google' ? 'Google' : 'Apple'} sign-in is not available right now. Please use another option.`
+          ? `${provider === 'google' ? 'Google' : 'LINE'} sign-in is not available right now. Please use another option.`
           : error.message
       );
       setBusy(null);
@@ -193,9 +186,9 @@ export function AuthScreen({ mode }: { mode: 'login' | 'signup' }) {
                 {busy === 'google' ? <Loader2 className="w-[18px] h-[18px] animate-spin text-[#8C71F5]" /> : <GoogleIcon />}
                 <span className={PILL_LABEL}>Continue with Google</span>
               </button>
-              <button type="button" className={PILL} onClick={() => oauth('apple')} disabled={!!busy}>
-                {busy === 'apple' ? <Loader2 className="w-4 h-4 animate-spin text-[#8C71F5]" /> : <AppleIcon />}
-                <span className={PILL_LABEL}>Continue with Apple</span>
+              <button type="button" className={PILL_LINE} onClick={() => oauth('line')} disabled={!!busy}>
+                {busy === 'line' ? <Loader2 className="w-5 h-5 animate-spin text-[#06C755]" /> : <LineIcon />}
+                <span className={PILL_LABEL}>Continue with LINE</span>
               </button>
               <button
                 type="button"
