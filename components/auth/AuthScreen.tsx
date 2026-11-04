@@ -12,7 +12,9 @@ import { supabase } from '@/lib/supabase/client';
 const RESET_EXPIRED_MESSAGE = 'That password reset link has expired or was already used. Request a new one from Forgot password.';
 /** Google / LINE / Email: one shared pill so the three read as a single stack. */
 const PILL =
-  'w-full h-12 px-4 rounded-full bg-white/95 backdrop-blur-xs border border-[#ECE8F4] shadow-[0_2px_8px_rgba(45,38,75,0.04)] hover:shadow-[0_4px_12px_rgba(45,38,75,0.08)] hover:border-[#8C71F5]/30 transition-all flex items-center justify-center gap-3 select-none disabled:opacity-60 disabled:cursor-not-allowed';
+  'relative flex items-center justify-center w-full h-12 px-4 rounded-full bg-white/95 backdrop-blur-xs border border-[#ECE8F4] shadow-[0_2px_8px_rgba(45,38,75,0.04)] hover:shadow-[0_4px_12px_rgba(45,38,75,0.08)] hover:border-[#8C71F5]/30 transition-all select-none disabled:opacity-60 disabled:cursor-not-allowed';
+/** Icon slot pinned to one left guide line, so logos line up while labels stay centered. */
+const PILL_ICON = 'absolute left-4 sm:left-5 w-5 h-5 flex items-center justify-center shrink-0 pointer-events-none';
 /** LINE keeps the shared pill but hovers in LINE green instead of brand violet. */
 const PILL_LINE = PILL.replace('hover:border-[#8C71F5]/30', 'hover:border-[#06C755]/40');
 const PILL_LABEL = 'text-sm font-bold text-[#2D264B] tracking-tight';
@@ -22,7 +24,7 @@ const PRIMARY =
   'w-full h-12 rounded-full bg-gradient-to-r from-[#8C71F5] to-[#EC4899] text-white text-sm font-semibold flex items-center justify-center gap-2 shadow-sm hover:opacity-95 active:scale-[0.99] transition disabled:opacity-60 disabled:cursor-not-allowed';
 
 const GoogleIcon = () => (
-  <svg className="w-[18px] h-[18px]" viewBox="0 0 24 24" aria-hidden="true">
+  <svg className="w-4 h-4" viewBox="0 0 24 24" aria-hidden="true">
     <path fill="#4285F4" d="M23.49 12.27c0-.79-.07-1.54-.19-2.27H12v4.51h6.47c-.29 1.48-1.14 2.73-2.4 3.58v3h3.86c2.26-2.09 3.56-5.17 3.56-8.82z" />
     <path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.86-3c-1.08.72-2.45 1.16-4.07 1.16-3.13 0-5.78-2.11-6.73-4.96H1.29v3.09C3.26 21.3 7.31 24 12 24z" />
     <path fill="#FBBC05" d="M5.27 14.29c-.25-.72-.38-1.49-.38-2.29s.14-1.57.38-2.29V6.62H1.29C.47 8.24 0 10.06 0 12s.47 3.76 1.29 5.38l3.98-3.09z" />
@@ -53,7 +55,7 @@ type EmailStep = 'closed' | 'email' | 'sent' | 'password';
  * any provider land on /onboarding, where Step 1 asks for a handle (provider names are never shown).
  * No Apple, no Facebook, no SMS. Password sign-in stays reachable from the email panel for existing accounts.
  */
-export function AuthScreen({ mode }: { mode: 'login' | 'signup' }) {
+export function AuthScreen({ mode, cities }: { mode: 'login' | 'signup'; cities?: string[] }) {
   const [busy, setBusy] = useState<null | 'google' | 'line' | 'email' | 'code' | 'password'>(null);
   const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
@@ -176,18 +178,22 @@ export function AuthScreen({ mode }: { mode: 'login' | 'signup' }) {
           <div className="flex justify-center">
             <BrandLogo size="lg" href="/" />
           </div>
-          <CityRotator />
+          <CityRotator cities={cities} />
         </div>
 
         <div className="w-full max-w-[340px] mx-auto space-y-3">
           {step === 'closed' ? (
             <div className="flex flex-col gap-3 w-full max-w-[340px] mx-auto">
               <button type="button" className={PILL} onClick={() => oauth('google')} disabled={!!busy}>
-                {busy === 'google' ? <Loader2 className="w-[18px] h-[18px] animate-spin text-[#8C71F5]" /> : <GoogleIcon />}
+                <span className={PILL_ICON}>
+                  {busy === 'google' ? <Loader2 className="w-4 h-4 animate-spin text-[#8C71F5]" /> : <GoogleIcon />}
+                </span>
                 <span className={PILL_LABEL}>Continue with Google</span>
               </button>
               <button type="button" className={PILL_LINE} onClick={() => oauth('line')} disabled={!!busy}>
-                {busy === 'line' ? <Loader2 className="w-5 h-5 animate-spin text-[#06C755]" /> : <LineIcon />}
+                <span className={PILL_ICON}>
+                  {busy === 'line' ? <Loader2 className="w-5 h-5 animate-spin text-[#06C755]" /> : <LineIcon />}
+                </span>
                 <span className={PILL_LABEL}>Continue with LINE</span>
               </button>
               <button
@@ -199,7 +205,9 @@ export function AuthScreen({ mode }: { mode: 'login' | 'signup' }) {
                 }}
                 disabled={!!busy}
               >
-                <Mail className="w-[18px] h-[18px] text-[#2D264B]/70" aria-hidden />
+                <span className={`${PILL_ICON} text-[#2D264B]`}>
+                  <Mail className="w-4 h-4" aria-hidden />
+                </span>
                 <span className={PILL_LABEL}>Continue with Email</span>
               </button>
             </div>
