@@ -44,7 +44,7 @@ export function CityRotator() {
 
   return (
     <div className="flex flex-col items-center justify-center text-center mt-6 mb-8 select-none">
-      <p className="text-sm font-semibold tracking-wider uppercase text-neutral-400 mb-1">Meet someone in</p>
+      <p className="text-[11px] font-bold tracking-[0.2em] uppercase select-none mb-1.5 text-[#2D264B]/65">Meet someone in</p>
       <div className="w-full h-12 overflow-hidden flex items-center justify-center" aria-live="polite" aria-atomic="true">
         <span
           key={idx}

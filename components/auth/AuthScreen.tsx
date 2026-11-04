@@ -9,15 +9,17 @@ import { AmbientAurora } from '@/components/ui/AmbientAurora';
 import { CityRotator } from '@/components/auth/CityRotator';
 import { supabase } from '@/lib/supabase/client';
 
-const FACEBOOK_COMING_SOON = 'Facebook login is coming soon. Please continue with Google or Email.';
+const APPLE_COMING_SOON = 'Apple sign-in is coming soon. Please continue with Google or Email.';
 /**
- * Facebook OAuth is not configured in Supabase yet (its authorize URL answers HTTP 400). Until
- * NEXT_PUBLIC_FACEBOOK_AUTH_ENABLED=true, the button shows a coming-soon toast instead.
+ * Apple OAuth is not enabled in Supabase yet (its authorize URL answers HTTP 400). Until
+ * NEXT_PUBLIC_APPLE_AUTH_ENABLED=true, the button shows a coming-soon toast instead.
  */
-const FACEBOOK_AUTH_ENABLED = process.env.NEXT_PUBLIC_FACEBOOK_AUTH_ENABLED === 'true';
+const APPLE_AUTH_ENABLED = process.env.NEXT_PUBLIC_APPLE_AUTH_ENABLED === 'true';
 const RESET_EXPIRED_MESSAGE = 'That password reset link has expired or was already used. Request a new one from Forgot password.';
+/** Google / Apple / Email: one shared pill so the three read as a single stack. */
 const PILL =
-  'w-full h-12 flex items-center justify-center gap-3 rounded-full bg-white text-[#2D264B] font-semibold text-sm border border-[#ECE8F4] hover:bg-neutral-50 shadow-2xs transition-all disabled:opacity-60 disabled:cursor-not-allowed';
+  'w-full h-12 px-4 rounded-full bg-white/95 backdrop-blur-xs border border-[#ECE8F4] shadow-[0_2px_8px_rgba(45,38,75,0.04)] hover:shadow-[0_4px_12px_rgba(45,38,75,0.08)] hover:border-[#8C71F5]/30 transition-all flex items-center justify-center gap-3 select-none disabled:opacity-60 disabled:cursor-not-allowed';
+const PILL_LABEL = 'text-sm font-bold text-[#2D264B] tracking-tight';
 const INPUT =
   'w-full h-12 px-4 rounded-full bg-white border border-[#ECE8F4] text-base text-[#1C1924] placeholder:text-[#A8A1B5] focus:outline-none focus:border-[#8C71F5] focus:ring-4 focus:ring-[#8C71F5]/15 transition';
 const PRIMARY =
@@ -32,13 +34,9 @@ const GoogleIcon = () => (
   </svg>
 );
 
-const FacebookIcon = () => (
-  <svg className="w-[18px] h-[18px]" viewBox="0 0 24 24" aria-hidden="true">
-    <path
-      fill="#1877F2"
-      d="M24 12.07C24 5.41 18.63 0 12 0S0 5.41 0 12.07C0 18.1 4.39 23.1 10.13 24v-8.44H7.08v-3.49h3.05V9.41c0-3.02 1.79-4.69 4.53-4.69 1.31 0 2.68.24 2.68.24v2.97h-1.51c-1.49 0-1.96.93-1.96 1.89v2.26h3.33l-.53 3.49h-2.8V24C19.61 23.1 24 18.1 24 12.07z"
-    />
-    <path fill="#fff" d="M16.67 15.56l.53-3.49h-3.33V9.81c0-.96.47-1.89 1.96-1.89h1.51V4.95s-1.37-.24-2.68-.24c-2.74 0-4.53 1.67-4.53 4.69v2.66H7.08v3.49h3.05V24a12.2 12.2 0 003.74 0v-8.44h2.8z" />
+const AppleIcon = () => (
+  <svg className="w-4 h-4 shrink-0" viewBox="0 0 24 24" fill="#2D264B" aria-hidden="true">
+    <path d="M16.37 12.73c-.03-2.7 2.2-4 2.3-4.06-1.25-1.83-3.2-2.08-3.9-2.11-1.66-.17-3.24.98-4.08.98-.85 0-2.14-.96-3.52-.93-1.81.03-3.48 1.05-4.41 2.67-1.88 3.26-.48 8.09 1.35 10.74.9 1.3 1.96 2.75 3.36 2.7 1.35-.05 1.86-.87 3.49-.87 1.63 0 2.09.87 3.51.84 1.45-.03 2.37-1.32 3.26-2.62 1.03-1.5 1.45-2.96 1.47-3.04-.03-.01-2.82-1.08-2.85-4.3zM13.7 4.8c.74-.9 1.24-2.15 1.11-3.4-1.07.04-2.37.71-3.14 1.61-.69.8-1.29 2.07-1.13 3.3 1.19.09 2.42-.61 3.16-1.51z" />
   </svg>
 );
 
@@ -55,12 +53,12 @@ async function routeAfterSignIn(userId: string) {
 type EmailStep = 'closed' | 'email' | 'sent' | 'password';
 
 /**
- * Sign-in / sign-up stack: Google, Facebook, Email (magic link or 6-digit code). New accounts from
+ * Sign-in / sign-up stack: Google, Apple, Email (magic link or 6-digit code). New accounts from
  * any provider land on /onboarding, where Step 1 asks for a handle (provider names are never shown).
- * No Apple, no SMS. Password sign-in stays reachable from the email panel for existing accounts.
+ * No Facebook, no SMS. Password sign-in stays reachable from the email panel for existing accounts.
  */
 export function AuthScreen({ mode }: { mode: 'login' | 'signup' }) {
-  const [busy, setBusy] = useState<null | 'google' | 'facebook' | 'email' | 'code' | 'password'>(null);
+  const [busy, setBusy] = useState<null | 'google' | 'apple' | 'email' | 'code' | 'password'>(null);
   const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const closeToast = useCallback(() => setToast(null), []);
@@ -86,10 +84,10 @@ export function AuthScreen({ mode }: { mode: 'login' | 'signup' }) {
     window.history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : ''));
   }, []);
 
-  const oauth = async (provider: 'google' | 'facebook') => {
-    if (provider === 'facebook' && !FACEBOOK_AUTH_ENABLED) {
+  const oauth = async (provider: 'google' | 'apple') => {
+    if (provider === 'apple' && !APPLE_AUTH_ENABLED) {
       setError(null);
-      setToast(FACEBOOK_COMING_SOON);
+      setToast(APPLE_COMING_SOON);
       return;
     }
     setBusy(provider);
@@ -101,7 +99,7 @@ export function AuthScreen({ mode }: { mode: 'login' | 'signup' }) {
     if (error) {
       setError(
         /provider is not enabled/i.test(error.message)
-          ? `${provider === 'google' ? 'Google' : 'Facebook'} sign-in is not available right now. Please use another option.`
+          ? `${provider === 'google' ? 'Google' : 'Apple'} sign-in is not available right now. Please use another option.`
           : error.message
       );
       setBusy(null);
@@ -188,16 +186,16 @@ export function AuthScreen({ mode }: { mode: 'login' | 'signup' }) {
           <CityRotator />
         </div>
 
-        <div className="space-y-3">
+        <div className="w-full max-w-[340px] mx-auto space-y-3">
           {step === 'closed' ? (
-            <>
+            <div className="flex flex-col gap-3 w-full max-w-[340px] mx-auto">
               <button type="button" className={PILL} onClick={() => oauth('google')} disabled={!!busy}>
                 {busy === 'google' ? <Loader2 className="w-[18px] h-[18px] animate-spin text-[#8C71F5]" /> : <GoogleIcon />}
-                Continue with Google
+                <span className={PILL_LABEL}>Continue with Google</span>
               </button>
-              <button type="button" className={PILL} onClick={() => oauth('facebook')} disabled={!!busy}>
-                {busy === 'facebook' ? <Loader2 className="w-[18px] h-[18px] animate-spin text-[#8C71F5]" /> : <FacebookIcon />}
-                Continue with Facebook
+              <button type="button" className={PILL} onClick={() => oauth('apple')} disabled={!!busy}>
+                {busy === 'apple' ? <Loader2 className="w-4 h-4 animate-spin text-[#8C71F5]" /> : <AppleIcon />}
+                <span className={PILL_LABEL}>Continue with Apple</span>
               </button>
               <button
                 type="button"
@@ -208,10 +206,10 @@ export function AuthScreen({ mode }: { mode: 'login' | 'signup' }) {
                 }}
                 disabled={!!busy}
               >
-                <Mail className="w-[18px] h-[18px] text-neutral-500" aria-hidden />
-                Continue with Email
+                <Mail className="w-[18px] h-[18px] text-[#2D264B]/70" aria-hidden />
+                <span className={PILL_LABEL}>Continue with Email</span>
               </button>
-            </>
+            </div>
           ) : (
             <div className="space-y-3">
               <button
@@ -321,31 +319,31 @@ export function AuthScreen({ mode }: { mode: 'login' | 'signup' }) {
           )}
         </div>
 
-        <p className="mt-6 text-center text-xs text-neutral-500">
+        <p className="mt-6 text-center">
           {mode === 'login' ? (
             <>
-              New to asiansin.love?{' '}
-              <Link href="/signup" className="font-semibold text-[#6555B8] hover:underline">
+              <span className="text-xs font-medium text-[#2D264B]/70">New to asiansin.love?</span>{' '}
+              <Link href="/signup" className="text-xs font-bold text-[#8C71F5] hover:text-[#EC4899] transition-colors">
                 Create an account
               </Link>
             </>
           ) : (
             <>
-              Already a member?{' '}
-              <Link href="/login" className="font-semibold text-[#6555B8] hover:underline">
+              <span className="text-xs font-medium text-[#2D264B]/70">Already a member?</span>{' '}
+              <Link href="/login" className="text-xs font-bold text-[#8C71F5] hover:text-[#EC4899] transition-colors">
                 Sign in
               </Link>
             </>
           )}
         </p>
 
-        <p className="mt-auto pt-10 text-xs text-neutral-400 text-center leading-relaxed px-6">
+        <p className="mt-auto pt-10 text-[10px] leading-relaxed text-[#2D264B]/50 max-w-[340px] mx-auto text-center">
           Registration is strictly permitted for individuals 18 years of age and older. By continuing, you agree to our{' '}
-          <Link href="/terms" className="underline underline-offset-2 hover:text-neutral-600">
+          <Link href="/terms" className="text-[#2D264B]/70 underline hover:text-[#8C71F5] transition-colors">
             Terms of Service
           </Link>{' '}
           and{' '}
-          <Link href="/privacy" className="underline underline-offset-2 hover:text-neutral-600">
+          <Link href="/privacy" className="text-[#2D264B]/70 underline hover:text-[#8C71F5] transition-colors">
             Privacy Policy
           </Link>
           .
