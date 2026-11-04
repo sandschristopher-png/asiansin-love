@@ -177,7 +177,7 @@ export function AuthScreen({ mode }: { mode: 'login' | 'signup' }) {
           <CityRotator />
         </div>
 
-        <div className="mt-4 space-y-3">
+        <div className="space-y-3">
           {step === 'closed' ? (
             <>
               <button type="button" className={PILL} onClick={() => oauth('google')} disabled={!!busy}>
