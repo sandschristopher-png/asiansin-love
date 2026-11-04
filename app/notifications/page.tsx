@@ -48,6 +48,7 @@ export default function NotificationsPage() {
         .from('notifications')
         .select('*')
         .eq('user_id', user.id)
+        .neq('type', 'message')
         .order('created_at', { ascending: false })
         .limit(50);
 
@@ -68,7 +69,8 @@ export default function NotificationsPage() {
           'postgres_changes',
           { event: 'INSERT', schema: 'public', table: 'notifications', filter: `user_id=eq.${user.id}` },
           (payload) => {
-            setNotifications((prev) => [payload.new as NotificationItem, ...prev]);
+            const row = payload.new as NotificationItem;
+            if (row.type !== 'message') setNotifications((prev) => [row, ...prev]);
           }
         )
         .subscribe();
@@ -86,6 +88,7 @@ export default function NotificationsPage() {
       .from('notifications')
       .update({ is_read: true })
       .eq('user_id', userId)
+      .neq('type', 'message')
       .eq('is_read', false);
   };
 

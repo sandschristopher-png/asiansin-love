@@ -1,12 +1,12 @@
 'use client';
 import { BrandLogo } from '@/components/BrandLogo';
 import { isPlusProfile } from '@/lib/plus';
-import NotificationsSection from '@/components/NotificationsSection';
+import { NoticeBell } from '@/components/NoticeCenter';
 import { notifyUser } from '@/components/InAppToast';
 import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { User, Settings, LogOut, ArrowLeft, Share2, Check, Menu, ShieldAlert } from 'lucide-react';
+import { User, Settings, LogOut, ArrowLeft, Menu, ShieldAlert } from 'lucide-react';
 import { adminRoleOf, isStaff } from '@/lib/adminRoles';
 import { supabase } from '@/lib/supabase/client';
 import { hardSignOut } from '@/lib/hardSignOut';
@@ -21,9 +21,6 @@ export function Navbar() {
   const [profile, setProfile] = useState<any>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
-  const [inviteCopied, setInviteCopied] = useState(false);
-  const [hasUnread, setHasUnread] = useState(false);
-  const [prefetchedNotifs, setPrefetchedNotifs] = useState<any>(null);
   const menuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const pathname = usePathname();
@@ -31,80 +28,19 @@ export function Navbar() {
   useEffect(() => {
     setMenuOpen(false);
   }, [pathname]);
-  const handleInviteShare = async () => {
-    const shareData = {
-      title: 'asiansin.love',
-      text: 'Find meaningful connections on Asians in Love:',
-      url: typeof window !== 'undefined' ? window.location.origin : 'https://asiansin.love',
-    };
-    if (typeof navigator !== 'undefined' && navigator.share) {
-      try {
-        await navigator.share(shareData);
-        setMenuOpen(false);
-        return;
-      } catch (e: any) {
-        if (e.name === 'AbortError') return;
-      }
-    }
-    try {
-      await navigator.clipboard.writeText(shareData.url);
-      setInviteCopied(true);
-      setTimeout(() => {
-        setInviteCopied(false);
-        setMenuOpen(false);
-      }, 1500);
-    } catch {}
-  };
-  async function checkUnread(userId: string) {
-    const { count } = await supabase
-      .from('notifications')
-      .select('*', { count: 'exact', head: true })
-      .eq('user_id', userId)
-      .eq('is_read', false);
-    setHasUnread((count ?? 0) > 0);
-  }
+  // Notices (bell + unread dot) live in NoticeCenter; this effect only tracks the signed-in member.
   useEffect(() => {
-    let channel: any;
     async function loadUser() {
-      // Prefetch notifications immediately (parallel with auth) so the dropdown renders instantly on open
-      fetch('/api/notifications').then(r => r.ok ? r.json() : null).then(d => { if (d) setPrefetchedNotifs({ notifications: d.notifications, unread_count: d.unread_count }); }).catch(() => {});
       const { data: { user } } = await supabase.auth.getUser();
       setUser(user);
       setAuthLoading(false);
       if (user) {
-        checkUnread(user.id);
         const { data } = await supabase
           .from('profiles')
           .select('*')
           .eq('id', user.id)
           .single();
         if (data) setProfile(data);
-        const channelTopic = `user-notifications-${user.id}`;
-        const existingChannel = supabase.getChannels().find((c: any) => c.topic === `realtime:${channelTopic}`);
-        if (existingChannel) {
-          await supabase.removeChannel(existingChannel);
-        }
-        channel = supabase.channel(channelTopic)
-          .on(
-            'postgres_changes',
-            {
-              event: '*',
-              schema: 'public',
-              table: 'notifications',
-              filter: `user_id=eq.${user.id}`,
-            },
-            (payload: any) => {
-              checkUnread(user.id);
-
-              if ((payload.eventType === 'INSERT' || payload.event === 'INSERT') && payload.new) {
-          // Toasts/chimes are handled by GlobalNotificationListener (single source)
-          // Here we only keep the dropdown list and unread state fresh:
-          checkUnread(user.id);
-          fetch('/api/notifications').then(r => r.ok ? r.json() : null).then(d => { if (d) setPrefetchedNotifs({ notifications: d.notifications, unread_count: d.unread_count }); }).catch(() => {});
-        }
-        }
-          )
-          .subscribe();
       }
     }
     loadUser();
@@ -113,7 +49,6 @@ export function Navbar() {
       setUser(currentUser);
       setAuthLoading(false);
       if (currentUser) {
-        checkUnread(currentUser.id);
         const { data } = await supabase
           .from('profiles')
           .select('*')
@@ -122,13 +57,9 @@ export function Navbar() {
         if (data) setProfile(data);
       } else {
         setProfile(null);
-        setHasUnread(false);
       }
     });
-    return () => {
-      subscription.unsubscribe();
-      if (channel) supabase.removeChannel(channel);
-    };
+    return () => subscription.unsubscribe();
   }, []);
   useEffect(() => {
     function handleClickOutside(event: MouseEvent | TouchEvent) {
@@ -153,7 +84,6 @@ export function Navbar() {
     await hardSignOut();
     setUser(null);
     setProfile(null);
-    setHasUnread(false);
     window.location.href = '/';
   };
   const displayName = profile?.username || 'Member';
@@ -227,10 +157,11 @@ export function Navbar() {
             )}
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           {user ? (
             <>
-{pathname === '/profile' && (
+            <NoticeBell />
+            {pathname === '/profile' && (
               <Link
                 href="/settings"
                 className="w-8 h-8 rounded-full flex items-center justify-center text-[#6555B8] hover:bg-[#F3EFFC] transition-colors"
@@ -244,91 +175,53 @@ export function Navbar() {
                 <button
                   type="button"
                   onClick={() => setMenuOpen(!menuOpen)}
-                  aria-label={hasUnread ? 'Open menu (unread notifications)' : 'Open menu'}
+                  aria-label="Open menu"
                   aria-haspopup="menu"
                   aria-expanded={menuOpen}
                   className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-[#F3EFFC] text-[#2D264B] transition-colors relative"
                 >
                   <Menu className="w-5 h-5" />
-                  {hasUnread && (
-                    <span aria-hidden className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-[#EC4899] ring-2 ring-white" />
-                  )}
                 </button>
                 {menuOpen && (
-                  <div className="absolute right-0 mt-2.5 w-80 rounded-2xl bg-white border border-[#DDD7E5]/40 shadow-xl py-2 z-[200] animate-[notifDropdownIn_0.2s_cubic-bezier(0.16,1,0.3,1)_both]">
-                    <div className="px-4 py-2 border-b border-[#DDD7E5]/40 bg-white/95 backdrop-blur-md backdrop-saturate-150 rounded-t-2xl">
-                      <p className="text-[11px] uppercase font-medium tracking-wider text-gray-400">Signed In As</p>
-                      <p className="text-sm font-semibold text-gray-900 truncate inline-flex items-center gap-1.5">{(profile?.username || displayName).replace(/^@/, '')}{profile?.is_plus && <AilPlusBadge />}</p>
+                  // Account utilities only: notices live behind the bell, chats on the Messages tab.
+                  <div role="menu" className="absolute right-0 mt-2 w-64 rounded-2xl bg-white border border-[#ECE8F4] shadow-xl overflow-hidden z-[200] animate-[notifDropdownIn_0.2s_cubic-bezier(0.16,1,0.3,1)_both]">
+                    <div className="px-4 py-3 border-b border-[#ECE8F4] flex items-center gap-1.5 min-w-0">
+                      <span className="text-sm font-bold text-[#2D264B] truncate">{displayName.replace(/^@/, '')}</span>
+                      {isPlusProfile(profile) && <AilPlusBadge />}
                     </div>
-                  <NotificationsSection initial={prefetchedNotifs} onNavigate={() => setMenuOpen(false)} />
                     <div className="py-1">
-                      <Link
-                        href="/plus"
-                        onClick={() => setMenuOpen(false)}
-                        className="flex items-center justify-between px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                      >
-                        <div className="flex items-center gap-3">
-                          {/* Unified brand mark (the gradient "a") instead of a generic icon */}
+                      <Link href="/plus" role="menuitem" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 h-11 text-sm text-[#2D264B] hover:bg-[#FAF8FD] transition-colors justify-between">
+                        <span className="flex items-center gap-3">
                           {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img src="/logo-mark-transparent.png" alt="" aria-hidden className="w-4 h-4 object-contain" />
-                          <span className="font-medium text-[#1C1924]">AIL Plus</span>
-                        </div>
-                        {profile?.is_plus ? (
-                          <span className="text-[10px] font-bold text-[#6555B8] bg-[#F3EFFC] border border-[#DDD7E5]/70 px-2 py-0.5 rounded-full">Active</span>
+                          AIL Plus
+                        </span>
+                        {isPlusProfile(profile) ? (
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-gradient-to-r from-[#8C71F5]/10 to-[#EC4899]/10 border border-[#8C71F5]/20 text-[#8C71F5]">Active</span>
                         ) : (
-                          <span className="text-[10px] font-semibold text-[#6555B8] bg-[#F3EFFC] px-2 py-0.5 rounded-full">Upgrade</span>
+                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#FAF8FD] border border-[#ECE8F4] text-neutral-500">Upgrade</span>
                         )}
                       </Link>
-                    <Link
-                        href="/profile"
-                        onClick={() => setMenuOpen(false)}
-                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                      >
-                        <User className="w-4 h-4 text-[#6555B8]" />
-                        <span>My Profile</span>
+                      <Link href="/profile" role="menuitem" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 h-11 text-sm text-[#2D264B] hover:bg-[#FAF8FD] transition-colors">
+                        <User className="w-4 h-4 text-neutral-500" />
+                        My Profile
                       </Link>
-                      <Link
-                        href="/settings"
-                        onClick={() => setMenuOpen(false)}
-                        className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                      >
-                        <Settings className="w-4 h-4 text-[#6555B8]" />
-                        <span>Settings</span>
+                      <Link href="/settings" role="menuitem" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 h-11 text-sm text-[#2D264B] hover:bg-[#FAF8FD] transition-colors">
+                        <Settings className="w-4 h-4 text-neutral-500" />
+                        Settings
                       </Link>
                       {isStaff(adminRoleOf(profile)) && (
                         // Staff only: never rendered for members.
-                        <Link
-                          href="/admin"
-                          onClick={() => setMenuOpen(false)}
-                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
-                        >
-                          <ShieldAlert className="w-4 h-4 text-[#6555B8]" />
-                          <span>Admin Console</span>
+                        <Link href="/admin" role="menuitem" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 h-11 text-sm text-[#2D264B] hover:bg-[#FAF8FD] transition-colors">
+                          <ShieldAlert className="w-4 h-4 text-neutral-500" />
+                          Admin Console
                         </Link>
                       )}
-                      <button
-                        type="button"
-                        onClick={handleInviteShare}
-                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50 transition-colors text-left"
-                      >
-                        {inviteCopied ? (
-                          <Check className="w-4 h-4 text-emerald-600" />
-                        ) : (
-                          <Share2 className="w-4 h-4 text-[#6555B8]" />
-                        )}
-                        <span className={inviteCopied ? "text-emerald-600 font-medium" : ""}>
-                          {inviteCopied ? "Link Copied!" : "Invite Friends"}
-                        </span>
-                      </button>
                     </div>
-                    <div className="border-t border-gray-100 pt-1">
-                      <button
-                        type="button"
-                        onClick={handleSignOut}
-                        className="w-full flex items-center gap-3 px-4 py-2.5 text-sm text-rose-600 hover:bg-rose-50 transition-colors text-left"
-                      >
+                    <div className="border-t border-[#ECE8F4] py-1">
+                      <button type="button" role="menuitem" onClick={handleSignOut} className="w-full flex items-center gap-3 px-4 h-11 text-sm text-rose-600 hover:bg-rose-50 transition-colors text-left">
                         <LogOut className="w-4 h-4" />
-                        <span>Sign Out</span>
+                        Sign Out
                       </button>
                     </div>
                   </div>

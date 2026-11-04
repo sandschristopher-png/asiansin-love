@@ -210,11 +210,18 @@ export default function MessagesPage() {
     };
   }, [router, loadConversations]);
 
-  const filteredConversations = conversations.filter((c) => {
-    if (activeTab === 'unread' && c.unreadCount === 0) return false;
-    if (searchQuery.trim() && !c.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
-    return true;
-  });
+  // Unread conversations first (chat alerts live here and on the Messages tab badge), newest first within each group.
+  const filteredConversations = conversations
+    .filter((c) => {
+      if (activeTab === 'unread' && c.unreadCount === 0) return false;
+      if (searchQuery.trim() && !c.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
+      return true;
+    })
+    .sort(
+      (a, b) =>
+        Number(b.unreadCount > 0) - Number(a.unreadCount > 0) ||
+        new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime()
+    );
 
   return (
     <div className="w-full min-h-[100dvh] bg-[#F9F8FC] text-[#1C1924] flex flex-col font-sans overscroll-y-contain">

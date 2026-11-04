@@ -13,10 +13,12 @@ export async function GET(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
+  // Chat messages are not notices: they live on the Messages tab badge and the /messages list.
   const { data: rows, error } = await supabase
     .from('notifications')
-    .select('id, user_id, actor_id, type, payload, is_read, created_at')
+    .select('id, user_id, actor_id, type, title, description, link_url, payload, is_read, created_at')
     .eq('user_id', user.id)
+    .neq('type', 'message')
     .order('created_at', { ascending: false })
     .limit(30);
 
@@ -59,6 +61,7 @@ export async function POST(req: NextRequest) {
     .from('notifications')
     .update({ is_read: true })
     .eq('user_id', user.id)
+    .neq('type', 'message')
     .eq('is_read', false);
 
   if (error) return NextResponse.json({ error: 'Update failed' }, { status: 500 });

@@ -154,6 +154,12 @@ export default function SparksPage() {
   const router = useRouter();
   const initialSparks = getInitialSparksState();
   const [activeTab, setActiveTab] = useState<SparkTab>('sparked');
+  // Deep links from the notice center: /favorites?tab=sparked_you | mutual | visited
+  useEffect(() => {
+    const tab = new URLSearchParams(window.location.search).get('tab');
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- one-time read of the URL on mount
+    if (tab === 'sparked' || tab === 'sparked_you' || tab === 'mutual' || tab === 'visited') setActiveTab(tab);
+  }, []);
   const [loading, setLoading] = useState<boolean>(() => !initialSparks);
   const [userGender, setUserGender] = useState<'male' | 'female'>(() => initialSparks?.userGender || 'male');
   const [isPlus, setIsPlus] = useState<boolean>(() => Boolean(initialSparks?.isPlus));
