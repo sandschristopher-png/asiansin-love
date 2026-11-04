@@ -4,9 +4,9 @@ import React from 'react';
 import { motion } from 'framer-motion';
 
 /**
- * Soft pastel aurora: violet upper/center-left (30%), pink center-right (28%), lilac lower-center
- * (26%). Framer Motion loops of 8-9.5 s with 20-45 px drift and 0.92-1.15 scale, so the motion
- * reads clearly through the 75-80 px blur. No CSS keyframes involved.
+ * Soft pastel aurora anchored in the lower half: violet lower-mid left (32%), pink lower-mid right
+ * (30%), lilac bottom center (28%). Framer Motion loops of 4.5-5.2 s with 25-50 px drift and
+ * 0.90-1.15 scale, so the breathing reads immediately through the 70-75 px blur.
  *
  * Blob 3 is centered by Tailwind's -translate-x-1/2 (the CSS `translate` property) while Framer
  * animates `transform`; the two compose, so its pixel drift stays around the center.
@@ -22,25 +22,25 @@ import { motion } from 'framer-motion';
 export function AmbientAurora({ layer = 'page' }: { layer?: 'page' | 'card' }) {
   return (
     <div aria-hidden className={`absolute inset-0 overflow-hidden pointer-events-none ${layer === 'card' ? '-z-10' : 'z-0'}`}>
-      {/* Blob 1: Iris / Brand Violet (#8C71F5) - Upper / Center Left */}
+      {/* Blob 1: Iris / Brand Violet (#8C71F5) - Lower-Mid Left */}
       <motion.div
-        animate={{ x: [0, 45, -20, 0], y: [0, -35, 25, 0], scale: [1, 1.15, 0.95, 1] }}
-        transition={{ duration: 8, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute top-1/4 -left-10 sm:left-4 w-[360px] h-[360px] sm:w-[420px] sm:h-[420px] rounded-full bg-[#8C71F5]/30 blur-[75px] will-change-transform"
+        animate={{ x: [0, 50, -25, 0], y: [0, -35, 25, 0], scale: [1, 1.15, 0.92, 1] }}
+        transition={{ duration: 4.8, repeat: Infinity, ease: 'easeInOut' }}
+        className="absolute top-[42%] -left-12 sm:left-4 w-[280px] h-[260px] sm:w-[340px] sm:h-[300px] rounded-full bg-[#8C71F5]/32 blur-[70px] will-change-transform"
       />
 
-      {/* Blob 2: Radiant Pink (#EC4899) - Mid / Center Right */}
+      {/* Blob 2: Radiant Pink (#EC4899) - Lower-Mid Right */}
       <motion.div
-        animate={{ x: [0, -40, 20, 0], y: [0, 30, -30, 0], scale: [1, 0.92, 1.12, 1] }}
-        transition={{ duration: 9.5, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute top-1/2 -right-10 sm:right-4 w-[340px] h-[340px] sm:w-[400px] sm:h-[400px] rounded-full bg-[#EC4899]/28 blur-[75px] will-change-transform"
+        animate={{ x: [0, -45, 25, 0], y: [0, 35, -30, 0], scale: [1, 0.9, 1.14, 1] }}
+        transition={{ duration: 5.2, repeat: Infinity, ease: 'easeInOut' }}
+        className="absolute top-[52%] -right-12 sm:right-4 w-[270px] h-[260px] sm:w-[320px] sm:h-[290px] rounded-full bg-[#EC4899]/30 blur-[70px] will-change-transform"
       />
 
-      {/* Blob 3: Warm Lilac / Rose (#C084FC) - Lower Center Base */}
+      {/* Blob 3: Warm Lilac / Rose (#C084FC) - Bottom Center Base */}
       <motion.div
-        animate={{ x: [0, 30, -30, 0], y: [0, -28, 20, 0], scale: [1, 1.14, 0.96, 1] }}
-        transition={{ duration: 8.5, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2 w-[380px] h-[320px] sm:w-[440px] sm:h-[360px] rounded-full bg-[#C084FC]/26 blur-[80px] will-change-transform"
+        animate={{ x: [0, 35, -35, 0], y: [0, -25, 20, 0], scale: [1, 1.15, 0.92, 1] }}
+        transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
+        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[320px] h-[240px] sm:w-[380px] sm:h-[280px] rounded-full bg-[#C084FC]/28 blur-[75px] will-change-transform"
       />
     </div>
   );

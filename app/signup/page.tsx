@@ -1,8 +1,9 @@
 import { headers } from 'next/headers';
 import { AuthScreen } from '@/components/auth/AuthScreen';
-import { citiesForVisitor, visitorCountry } from '@/lib/geoCities';
+import { firstParam, resolveGeoRoster, visitorCountry } from '@/lib/geoCities';
 
 export default async function SignUpPage({ searchParams }: { searchParams: Promise<{ [key: string]: string | string[] | undefined }> }) {
-  const cities = citiesForVisitor(visitorCountry(await headers()), (await searchParams).geo);
+  const params = await searchParams;
+  const cities = resolveGeoRoster(visitorCountry(await headers()), { geo: firstParam(params.geo), target: firstParam(params.target) });
   return <AuthScreen mode="signup" cities={cities} />;
 }

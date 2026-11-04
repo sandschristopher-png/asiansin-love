@@ -55,7 +55,7 @@ type EmailStep = 'closed' | 'email' | 'sent' | 'password';
  * any provider land on /onboarding, where Step 1 asks for a handle (provider names are never shown).
  * No Apple, no Facebook, no SMS. Password sign-in stays reachable from the email panel for existing accounts.
  */
-export function AuthScreen({ mode, cities }: { mode: 'login' | 'signup'; cities?: string[] }) {
+export function AuthScreen({ mode, cities }: { mode: 'login' | 'signup'; cities?: readonly string[] }) {
   const [busy, setBusy] = useState<null | 'google' | 'line' | 'email' | 'code' | 'password'>(null);
   const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);

@@ -10,7 +10,7 @@ import { SEA_CITIES } from '@/lib/geoCities';
  * lets the old city finish exiting left before the next one enters from the right, and keying
  * the span by city name makes React remount it (no in-place patch).
  */
-export function CityRotator({ cities = SEA_CITIES }: { cities?: string[] }) {
+export function CityRotator({ cities = SEA_CITIES }: { cities?: readonly string[] }) {
   const [cityIndex, setCityIndex] = useState(0);
 
   useEffect(() => {
