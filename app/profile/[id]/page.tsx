@@ -3,7 +3,7 @@
 import dynamic from 'next/dynamic';
 import VerifiedBadge from '@/components/VerifiedBadge';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams, useRouter } from 'next/navigation';
 import {
@@ -24,6 +24,8 @@ import { VoicePlayer } from '@/components/VoicePlayer';
 import { ageOf } from '@/lib/age';
 import { VisitingBadge } from '@/components/VisitingBadge';
 import { CardPhoto, DETAIL_PHOTO_SIZES } from '@/components/CardPhoto';
+import { PhotoCarousel } from '@/components/cards/PhotoCarousel';
+import { DETAIL_IMAGE, supabaseImage } from '@/lib/images/supabaseImage';
 import { DayOneBadge, NewMemberPill, VerifiedLocationBadge } from '@/components/profile/TrustBadges';
 import { getPresenceStatus } from '@/lib/presence';
 import { isTrustedVoiceIntroUrl } from '@/lib/audio';
@@ -75,8 +77,6 @@ export default function PublicProfilePage() {
   const [viewerLanguages, setViewerLanguages] = useState<string[]>([]);
   const [highlights, setHighlights] = useState<HighlightRow[]>([]);
   const [currentPhotoIdx, setCurrentPhotoIdx] = useState(0);
-  const touchStartX = useRef<number | null>(null);
-            const touchStartY = useRef<number | null>(null);
 
   const [isSparked, setIsSparked] = useState(false);
   const [sparkLoading, setSparkLoading] = useState(false);
@@ -293,7 +293,6 @@ export default function PublicProfilePage() {
       ? [profile.avatar_url]
       : ['/placeholder-avatar.svg'];
 
-  const currentImg = photoList[currentPhotoIdx] || photoList[0];
   const placeholders: Record<string, string> =
     profile.photo_placeholders && typeof profile.photo_placeholders === 'object' ? profile.photo_placeholders : {};
   const dayOneNumber: number | null = profile.is_day_one && Number.isInteger(profile.day_one_number) ? profile.day_one_number : null;
@@ -400,62 +399,20 @@ export default function PublicProfilePage() {
         
         {/* 1. HERO PHOTO CARD (4:5 Aspect Ratio + Overlaid Controls + Bottom Scrim) */}
         <div data-profile-hero className="relative aspect-[4/5] w-full rounded-3xl overflow-hidden bg-white shadow-xs select-none">
-          <div
-            className="relative w-full h-full cursor-pointer"
-            onClick={(e) => {
-              if (!hasMultiplePhotos) return;
-              const rect = e.currentTarget.getBoundingClientRect();
-              const isLeft = e.clientX - rect.left < rect.width / 2;
-              setCurrentPhotoIdx((prev) =>
-                isLeft
-                  ? (prev - 1 + photoList.length) % photoList.length
-                  : (prev + 1) % photoList.length
-              );
-            }}
-            onTouchStart={(e) => {
-              const t = e.touches[0];
-              touchStartX.current = t.clientX;
-              touchStartY.current = t.clientY;
-            }}
-            onTouchEnd={(e) => {
-              const startX = touchStartX.current;
-              const startY = touchStartY.current;
-              if (startX == null || startY == null || !hasMultiplePhotos) return;
-              const dx = e.changedTouches[0].clientX - startX;
-              const dy = e.changedTouches[0].clientY - startY;
-              if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 40) {
-                setCurrentPhotoIdx((prev) =>
-                  dx > 0
-                    ? (prev - 1 + photoList.length) % photoList.length
-                    : (prev + 1) % photoList.length
-                );
-              }
-              touchStartX.current = null;
-              touchStartY.current = null;
-            }}
-          >
-            <CardPhoto
-              src={currentImg}
-              alt={displayName}
-              sizes={DETAIL_PHOTO_SIZES}
-              priority
-              placeholder={placeholders[currentImg] ?? null}
-              className="object-cover pointer-events-none"
-            />
-          </div>
-
-          {hasMultiplePhotos && (
-            <div className="absolute top-3 inset-x-16 z-20 flex gap-1.5 pointer-events-none">
-              {photoList.map((_, idx) => (
-                <div
-                  key={idx}
-                  className={`h-1 flex-1 rounded-full transition-all ${
-                    idx === currentPhotoIdx ? 'bg-white shadow-xs' : 'bg-white/40'
-                  }`}
-                />
-              ))}
-            </div>
-          )}
+          {/* Scroll-snap swiping on touch; tap left 30% / right 70% for previous / next. Story bars
+              and the thumbnail grid below stay in sync through currentPhotoIdx. */}
+          <PhotoCarousel
+            photos={photoList}
+            alt={displayName}
+            sizes={DETAIL_PHOTO_SIZES}
+            edge={DETAIL_IMAGE}
+            priority
+            placeholders={placeholders}
+            tapNavigation="always"
+            index={currentPhotoIdx}
+            onIndexChange={setCurrentPhotoIdx}
+            imgClassName="object-cover pointer-events-none"
+          />
 
           {/* Frosted Top Navigation (Back & More Menu) */}
           <div className="absolute top-0 inset-x-0 z-20 flex items-center justify-between p-3.5 pointer-events-none">
@@ -585,6 +542,9 @@ export default function PublicProfilePage() {
             {profile.bio || 'Looking for something genuine and sincere.'}
           </p>
         </section>
+
+        {/* 4b. PRIVATE NOTES: only the viewer can read them (hidden on your own profile) */}
+        <PrivateNotesCard targetId={targetUserId} />
 
         {/* 5. HIGHLIGHTS & MINI-STORIES */}
         {highlights.length > 0 && (
@@ -751,14 +711,12 @@ export default function PublicProfilePage() {
                 aria-label={`Show photo ${idx + 1}`}
                 className={`relative aspect-[4/5] rounded-2xl overflow-hidden bg-white border ${idx === currentPhotoIdx ? 'border-[#72519A]' : 'border-[#D5C6EC]'}`}
               >
-                <CardPhoto src={url} alt="" placeholder={placeholders[url] ?? null} className="object-cover" />
+                <CardPhoto src={supabaseImage(url, { width: 320, height: 400, quality: 70, resize: 'cover' })} alt="" placeholder={placeholders[url] ?? null} className="object-cover" />
               </button>
             ))}
           </section>
         )}
 
-        {/* 10. PRIVATE NOTES (only the viewer can read them) */}
-        <PrivateNotesCard targetId={targetUserId} />
       </div>
 
       {floatingDock}

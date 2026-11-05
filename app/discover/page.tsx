@@ -5,18 +5,18 @@ import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import VerifiedBadge from '@/components/VerifiedBadge';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Camera, ChevronDown, ChevronLeft, ChevronRight, Compass, Search, X as XIcon, SlidersHorizontal, RotateCcw, MapPin } from 'lucide-react';
+import { Camera, ChevronDown, Compass, Search, X as XIcon, SlidersHorizontal, RotateCcw, MapPin } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { INTENT_OPTIONS, normalizeIntent } from '@/lib/intents';
 import { CHILDREN_FILTERS, ENGLISH_LEVEL_OPTIONS, RELATIONSHIP_INTENT_FILTERS, discoverQuery } from '@/lib/discoverFilters';
 import { ActionType, getLocalCardActions, persistCardAction } from '@/lib/interactions';
-import { CardPhoto } from '@/components/CardPhoto';
 import { AudioPill } from '@/components/AudioPill';
 import { isTrustedVoiceIntroUrl } from '@/lib/audio';
 import { usePresentUserIds } from '@/lib/realtimePresence';
 import { sharedTraits } from '@/lib/rhythm';
 import { InCommonCard, RhythmPill } from '@/components/profile/RhythmBadges';
 import { SparkHeartButton } from '@/components/SparkHeartButton';
+import { PhotoCarousel } from '@/components/cards/PhotoCarousel';
 import { MutualSparkModal } from '@/components/MutualSparkModal';
 import { useActionToast } from '@/components/ActionToast';
 import { VisitingBadge, type TravelNotice } from '@/components/VisitingBadge';
@@ -193,7 +193,6 @@ function DiscoverCardPhotoCarousel({
   placeholders?: Record<string, string>;
   priority?: boolean;
 }) {
-  const [currentIdx, setCurrentIdx] = useState(0);
   const rawList = (photos && photos.length > 0 ? photos : [avatarUrl]).filter(
     (p): p is string => typeof p === 'string' && p.trim().length > 0 && p !== '/placeholder-avatar.svg'
   );
@@ -201,35 +200,25 @@ function DiscoverCardPhotoCarousel({
   const displayPhotos = uniqueList.length > 0 ? uniqueList : [avatarUrl || '/placeholder-avatar.svg'];
   const hasMultiple = displayPhotos.length > 1;
 
-  const handlePrev = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setCurrentIdx((prev) => (prev === 0 ? displayPhotos.length - 1 : prev - 1));
-  };
-  const handleNext = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setCurrentIdx((prev) => (prev === displayPhotos.length - 1 ? 0 : prev + 1));
-  };
-
   return (
     <div className="relative block h-full w-full overflow-hidden bg-white select-none">
-      <Link href={'/profile/' + profileId} className="absolute inset-0 z-0">
-        <CardPhoto
-          src={displayPhotos[currentIdx]}
-          alt={name}
-          priority={priority && currentIdx === 0}
-          placeholder={placeholders?.[displayPhotos[currentIdx]] ?? null}
-          className="object-cover group-hover:scale-[1.03] transition-transform duration-500 ease-out"
-        />
-      </Link>
-      {displayPhotos.length > 1 && (
+      {/* Native scroll-snap swiping; tap opens the profile (desktop: left / right side changes photo). */}
+      <PhotoCarousel
+        photos={displayPhotos}
+        alt={name}
+        href={'/profile/' + profileId}
+        priority={priority}
+        placeholders={placeholders}
+        className="absolute inset-0 z-0"
+      />
+      {hasMultiple && (
         <span className="absolute bottom-2.5 right-2.5 z-20 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-black/60 text-white text-[10px] font-semibold pointer-events-none">
           <Camera className="w-3 h-3" />
           {displayPhotos.length}
         </span>
       )}
-      <div className="absolute top-2.5 left-2.5 flex items-center gap-1.5 z-20 pointer-events-none">
+      {/* Below the story bars when there are several photos. */}
+      <div className={`absolute ${hasMultiple ? 'top-5' : 'top-2.5'} left-2.5 flex items-center gap-1.5 z-20 pointer-events-none`}>
         <ReputationBadge score={repScore} variant="frosted" size="xs" />
         <NewMemberPill createdAt={createdAt} />
         {online ? (
@@ -238,26 +227,6 @@ function DiscoverCardPhotoCarousel({
           <span className="h-2 w-2 rounded-full bg-amber-400 ring-1.5 ring-white/80 shadow-xs shrink-0 animate-[pulse_3s_ease-in-out_infinite]" />
         ) : null}
       </div>
-      {hasMultiple && (
-        <div className="flex items-center justify-between absolute inset-x-1.5 top-1/2 -translate-y-1/2 z-20 pointer-events-none opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
-          <button
-            type="button"
-            onClick={handlePrev}
-            className="pointer-events-auto p-1.5 rounded-full bg-black/45 hover:bg-black/70 text-white transition active:scale-90 cursor-pointer"
-            aria-label="Previous photo"
-          >
-            <ChevronLeft className="w-4 h-4" />
-          </button>
-          <button
-            type="button"
-            onClick={handleNext}
-            className="pointer-events-auto p-1.5 rounded-full bg-black/45 hover:bg-black/70 text-white transition active:scale-90 cursor-pointer"
-            aria-label="Next photo"
-          >
-            <ChevronRight className="w-4 h-4" />
-          </button>
-        </div>
-      )}
     </div>
   );
 }
@@ -1021,17 +990,17 @@ function DiscoverContent() {
                     recentlyActive={profile.recentlyActive}
                     createdAt={profile.created_at}
                     placeholders={profile.photoPlaceholders}
-                    priority={cardIdx === 0}
+                    priority={cardIdx < 2}
                   />
                   <SparkHeartButton
                     sparked={isLiked}
                     name={displayName}
                     onSpark={() => triggerAction(profile.id, 'like', displayName, profile.avatarUrl)}
-                    className="absolute top-3 right-3 z-20"
+                    className="absolute top-3 right-3 z-30"
                   />
                   {/* Soft scrim at the base of the photo so the white name / city text stays legible. */}
-                  <div aria-hidden className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/80 via-black/35 to-transparent pointer-events-none z-[5]" />
-                  <div className="absolute bottom-0 inset-x-0 pt-10 pb-3 px-3 z-10 pointer-events-none">
+                  <div aria-hidden className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/80 via-black/35 to-transparent pointer-events-none z-20" />
+                  <div className="absolute bottom-0 inset-x-0 pt-10 pb-3 px-3 z-[25] pointer-events-none">
                     {(profile.travel || isTrustedVoiceIntroUrl(profile.voiceIntroUrl)) && (
                       <div className="mb-1.5 flex flex-col items-start gap-1 pr-7 pointer-events-auto">
                         {/* Tap-to-play only; never autoplays */}

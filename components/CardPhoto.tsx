@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
+import { isEdgeTransformUrl } from '@/lib/images/supabaseImage';
 
 /** Grid cards render at roughly half the 430px app shell: ~640px WebP on a 3x phone. */
 export const CARD_PHOTO_SIZES = '(max-width: 480px) 50vw, 240px';
@@ -65,7 +66,9 @@ export function CardPhoto({
         fill
         sizes={sizes}
         {...(priority ? { priority: true } : { loading: 'lazy' as const })}
-        unoptimized={src.endsWith('.svg')}
+        // SVGs, and Supabase edge renders (lib/images/supabaseImage.ts), which are already resized
+        // WebP: re-encoding them through /_next/image would only add latency.
+        unoptimized={src.endsWith('.svg') || isEdgeTransformUrl(src)}
         className={className + fade}
         onLoad={() => setLoadedSrc(src)}
         onError={onError}

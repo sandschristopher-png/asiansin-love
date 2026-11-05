@@ -1,11 +1,11 @@
 import type { MetadataRoute } from 'next';
 import { CITY_SEO_DATA, SITE_URL } from '@/lib/seo/cityData';
 
-/** Legacy keyword pages (app/dating/[slug]) that still render. cebu / manila / bangkok-dating
- *  301 to the city hubs (next.config.ts), so they are not listed. */
+/** Legacy keyword pages (app/dating/[slug]) that still render. cebu / manila / bangkok /
+ *  cambodia / khmer-dating 301 to the city hubs (next.config.ts), so they are not listed. */
 const DATING_SLUGS = [
   'filipina-dating', 'filipino-dating', 'thai-dating',
-  'indonesia-dating', 'jakarta-dating', 'myanmar-dating', 'burmese-dating', 'cambodia-dating', 'khmer-dating',
+  'indonesia-dating', 'jakarta-dating', 'myanmar-dating', 'burmese-dating',
   'vietnam-dating', 'saigon-dating', 'verified-asian-dating',
 ];
 

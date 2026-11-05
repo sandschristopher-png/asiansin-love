@@ -12,6 +12,8 @@ const nextConfig: NextConfig = {
       { source: '/dating/bangkok-dating', destination: '/bangkok', statusCode: 301 },
       { source: '/dating/phnom-penh-dating', destination: '/phnom-penh', statusCode: 301 },
       { source: '/dating/kuala-lumpur-dating', destination: '/kuala-lumpur', statusCode: 301 },
+      { source: '/dating/cambodia-dating', destination: '/phnom-penh', statusCode: 301 },
+      { source: '/dating/khmer-dating', destination: '/phnom-penh', statusCode: 301 },
     ];
   },
   // Lets the Payment Request API (Google Pay / Apple Pay) run for this site and Stripe's frames,
@@ -21,6 +23,13 @@ const nextConfig: NextConfig = {
       {
         source: '/:path*',
         headers: [{ key: 'Permissions-Policy', value: 'payment=(self "https://js.stripe.com" "https://checkout.stripe.com")' }],
+      },
+      // Static fonts, SVGs and brand images in /public: cached for a year. These URLs carry no
+      // content hash, so a changed asset must ship under a new file name to reach returning
+      // visitors. (next/font and /_next/static files are already hashed and immutable.)
+      {
+        source: '/:all*(svg|woff|woff2|ttf|otf|png|jpg|jpeg|webp|avif|ico)',
+        headers: [{ key: 'Cache-Control', value: 'public, max-age=31536000, immutable' }],
       },
     ];
   },

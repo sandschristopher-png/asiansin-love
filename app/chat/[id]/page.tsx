@@ -2,6 +2,7 @@
 
 import dynamic from 'next/dynamic';
 import VerifiedBadge from '@/components/VerifiedBadge';
+import { ChatSafetyBanner } from '@/components/chat/ChatSafetyBanner';
 
 import React, { useState, useEffect, useRef, useLayoutEffect, useCallback } from 'react';
 import Link from 'next/link';
@@ -417,7 +418,7 @@ export default function ChatConversationPage() {
         return;
       }
 
-      const [blockRes, remoteMsgsRes] = await Promise.all([
+      const [blockRes, remoteMsgsRes, convStateRes] = await Promise.all([
         supabase
           .from('user_blocks')
           .select('id')
@@ -426,7 +427,25 @@ export default function ChatConversationPage() {
           )
           .maybeSingle(),
         fetch(`/api/messages?target_user_id=${targetUuid}`).then(r => r.ok ? r.json() : Promise.reject(new Error('Chat load failed'))),
+        // Messages list swipe state (20261115_conversation_states.sql); errors (table not migrated
+        // yet) just mean no state.
+        supabase
+          .from('conversation_states')
+          .select('hidden_before, marked_unread')
+          .eq('user_id', user.id)
+          .eq('partner_id', targetUuid)
+          .maybeSingle(),
       ]);
+      const hiddenBefore: string | null = convStateRes.data?.hidden_before ?? null;
+      // Opening the chat clears a manual "Mark unread".
+      if (convStateRes.data?.marked_unread) {
+        supabase
+          .from('conversation_states')
+          .update({ marked_unread: false, updated_at: new Date().toISOString() })
+          .eq('user_id', user.id)
+          .eq('partner_id', targetUuid)
+          .then(() => {});
+      }
 
       if (blockRes.data) {
         router.replace('/messages');
@@ -511,7 +530,10 @@ export default function ChatConversationPage() {
 
       if (remoteMsgsRes.messages) {
         setMessages(
-          remoteMsgsRes.messages.map((m: any) => ({
+          remoteMsgsRes.messages
+            // Deleted from the Messages list: only what came after stays visible (for this member).
+            .filter((m: { createdAt?: string }) => !hiddenBefore || String(m.createdAt) > hiddenBefore)
+            .map((m: any) => ({
             id: m.id,
             sender: m.sender,
             text: m.text,
@@ -964,6 +986,7 @@ export default function ChatConversationPage() {
         onScroll={handleContainerScroll}
         className="flex-1 min-h-0 overflow-y-auto px-3.5 py-4 overscroll-contain no-scrollbar [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
       >
+        {resolvedTargetUuid && <ChatSafetyBanner conversationKey={resolvedTargetUuid} />}
         {isInitialLoading ? (
           <div className="space-y-4 py-4 animate-pulse">
             <div className="flex items-end gap-2">

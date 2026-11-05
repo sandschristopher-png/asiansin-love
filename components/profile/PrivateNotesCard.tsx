@@ -1,100 +1,149 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { ChevronDown } from 'lucide-react';
+import { Lock } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 
 const MAX_NOTE_CHARS = 2000;
+const SAVE_DEBOUNCE_MS = 900;
+const CACHE_PREFIX = 'ail_note:';
+
+type Cached = { note: string; synced: boolean };
+
+const cacheKey = (uid: string, targetId: string) => `${CACHE_PREFIX}${uid}:${targetId}`;
+function readCache(key: string): Cached | null {
+  try {
+    const raw = localStorage.getItem(key);
+    return raw ? (JSON.parse(raw) as Cached) : null;
+  } catch {
+    return null;
+  }
+}
+function writeCache(key: string, value: Cached) {
+  try {
+    localStorage.setItem(key, JSON.stringify(value));
+  } catch {
+    // storage full / private mode: the server copy still saves
+  }
+}
 
 /**
- * Private note about another member (public.user_notes, RLS: owner only). Collapsed by default;
- * the note saves when the textarea loses focus, and clearing it deletes the row.
+ * Private scratchpad about another member (public.user_notes, RLS: owner only), e.g. travel plans
+ * or shared interests. Typing is cached locally at once (shown instantly next visit, and kept if
+ * the network drops) and saved to Supabase 900 ms after the last keystroke and on blur. Clearing
+ * the note deletes the row.
  */
 export function PrivateNotesCard({ targetId }: { targetId: string }) {
-  const [open, setOpen] = useState(false);
   const [note, setNote] = useState('');
   const [status, setStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [ready, setReady] = useState(false);
   const savedRef = useRef('');
-  const userIdRef = useRef<string | null>(null);
+  const keyRef = useRef<string | null>(null);
+  const uidRef = useRef<string | null>(null);
+  const debounceRef = useRef<number | undefined>(undefined);
   const savedTimer = useRef<number | undefined>(undefined);
 
-  useEffect(() => {
-    let cancelled = false;
-    (async () => {
-      const { data: { session } } = await supabase.auth.getSession();
-      const uid = session?.user?.id ?? null;
-      userIdRef.current = uid;
-      if (!uid || uid === targetId) return;
-      const { data } = await supabase
-        .from('user_notes')
-        .select('note')
-        .eq('user_id', uid)
-        .eq('target_id', targetId)
-        .maybeSingle();
-      if (cancelled || !data?.note) return;
-      savedRef.current = data.note;
-      setNote(data.note);
-    })();
-    return () => {
-      cancelled = true;
-      window.clearTimeout(savedTimer.current);
-    };
-  }, [targetId]);
-
-  const save = async () => {
-    const uid = userIdRef.current;
-    const text = note.trim();
-    if (!uid || text === savedRef.current) return;
+  async function persist(value: string) {
+    const uid = uidRef.current;
+    const key = keyRef.current;
+    const text = value.trim();
+    if (!uid || !key || text === savedRef.current) return;
     setStatus('saving');
     const { error } = text
       ? await supabase
           .from('user_notes')
-          .upsert({ user_id: uid, target_id: targetId, note: text, updated_at: new Date().toISOString() }, { onConflict: 'user_id,target_id' })
+          .upsert(
+            { user_id: uid, target_id: targetId, note: text, updated_at: new Date().toISOString() },
+            { onConflict: 'user_id,target_id' }
+          )
       : await supabase.from('user_notes').delete().eq('user_id', uid).eq('target_id', targetId);
     if (error) {
       setStatus('error');
       return;
     }
     savedRef.current = text;
+    writeCache(key, { note: value, synced: true });
     setStatus('saved');
     window.clearTimeout(savedTimer.current);
     savedTimer.current = window.setTimeout(() => setStatus('idle'), 2000);
-  };
+  }
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      const uid = session?.user?.id ?? null;
+      if (cancelled || !uid || uid === targetId) return;
+      uidRef.current = uid;
+      const key = cacheKey(uid, targetId);
+      keyRef.current = key;
+
+      // 1. Instant: the local copy.
+      const cached = readCache(key);
+      if (cached) setNote(cached.note);
+      setReady(true);
+
+      // 2. The server copy wins unless the local one has edits that never reached it.
+      const { data, error } = await supabase
+        .from('user_notes')
+        .select('note')
+        .eq('user_id', uid)
+        .eq('target_id', targetId)
+        .maybeSingle();
+      if (cancelled || error) return;
+      const server = data?.note ?? '';
+      savedRef.current = server;
+      if (cached && !cached.synced && cached.note.trim() !== server) {
+        void persist(cached.note); // push the offline edit
+      } else {
+        setNote(server);
+        writeCache(key, { note: server, synced: true });
+      }
+    })();
+    return () => {
+      cancelled = true;
+      window.clearTimeout(debounceRef.current);
+      window.clearTimeout(savedTimer.current);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- persist only reads refs and targetId
+  }, [targetId]);
+
+  if (!ready) return null; // signed out, or your own profile
 
   return (
-    <div className="rounded-2xl border border-[#D5C6EC] bg-white">
-      <button
-        type="button"
-        onClick={() => setOpen((v) => !v)}
-        aria-expanded={open}
-        className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left cursor-pointer"
-      >
-        <span>
-          <span className="block text-[13px] font-bold text-[#51376D]">Private Notes</span>
-          <span className="block text-[11px] text-[#51376D]/50">Only visible to you</span>
+    <section className="rounded-2xl border border-[#D5C6EC]/60 bg-white p-4 shadow-brand-sm" aria-labelledby="private-notes-title">
+      <div className="flex items-center justify-between gap-3">
+        <h3 id="private-notes-title" className="text-sm font-bold text-[#51376D]">
+          Private Notes
+        </h3>
+        <span className="inline-flex items-center gap-1 rounded-full border border-[#D5C6EC] bg-[#E8DFF5]/50 px-2 py-0.5 text-[10.5px] font-medium text-[#72519A]">
+          <Lock className="w-3 h-3" aria-hidden />
+          Only you can see this
         </span>
-        <ChevronDown className={`w-4 h-4 text-[#51376D]/40 transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden />
-      </button>
-      {open && (
-        <div className="px-4 pb-3">
-          <textarea
-            value={note}
-            onChange={(e) => {
-              setNote(e.target.value.slice(0, MAX_NOTE_CHARS));
-              if (status !== 'idle') setStatus('idle');
-            }}
-            onBlur={save}
-            rows={3}
-            placeholder="Things to remember about this member"
-            aria-label="Private note"
-            className="w-full resize-none rounded-xl border border-[#D5C6EC] bg-white px-3 py-2 text-[13px] leading-relaxed text-[#51376D] placeholder:text-[#51376D]/35 focus:outline-none focus:border-[#72519A]/50"
-          />
-          <p className="mt-1 h-4 text-right text-[10.5px] font-medium text-[#51376D]/45" aria-live="polite">
-            {status === 'saving' ? 'Saving...' : status === 'saved' ? 'Saved' : status === 'error' ? 'Could not save. Try again.' : ''}
-          </p>
-        </div>
-      )}
-    </div>
+      </div>
+      <textarea
+        value={note}
+        onChange={(e) => {
+          const value = e.target.value.slice(0, MAX_NOTE_CHARS);
+          setNote(value);
+          setStatus('idle');
+          if (keyRef.current) writeCache(keyRef.current, { note: value, synced: false });
+          window.clearTimeout(debounceRef.current);
+          debounceRef.current = window.setTimeout(() => void persist(value), SAVE_DEBOUNCE_MS);
+        }}
+        onBlur={() => {
+          window.clearTimeout(debounceRef.current);
+          void persist(note);
+        }}
+        rows={3}
+        placeholder="Travel plans, shared interests, things to ask next time"
+        aria-label="Private note about this member"
+        className="mt-3 w-full min-h-[84px] resize-y rounded-xl border border-[#D5C6EC] bg-white px-3 py-2 text-base sm:text-[13px] leading-relaxed text-[#51376D] placeholder:text-[#51376D]/40 focus:outline-none focus:border-[#72519A] focus:ring-2 focus:ring-[#B5A0DA]/30"
+      />
+      <p className="mt-1 h-4 text-right text-[10.5px] font-medium text-[#51376D]/50" aria-live="polite">
+        {status === 'saving' ? 'Saving...' : status === 'saved' ? 'Saved' : status === 'error' ? 'Kept on this device. Will retry.' : ''}
+      </p>
+    </section>
   );
 }
 

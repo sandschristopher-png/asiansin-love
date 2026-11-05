@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { MessageCircle, Search, ChevronRight, ShieldCheck } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { ReputationBadge } from '@/components/ReputationBadge';
+import { SwipeableConversationItem } from '@/components/chat/SwipeableConversationItem';
 
 interface ConversationItem {
   id: string;
@@ -16,7 +17,13 @@ interface ConversationItem {
   lastMessage: string;
   lastMessageAt: string;
   unreadCount: number;
+  /** Swiped "Mark unread" (conversation_states): shows as unread until opened. */
+  markedUnread?: boolean;
 }
+
+const isUnread = (c: ConversationItem) => c.unreadCount > 0 || Boolean(c.markedUnread);
+
+type ConvState = { partner_id: string; marked_unread: boolean; hidden_before: string | null };
 
 function formatConversationTimestamp(iso?: string): string {
   if (!iso) return '';
@@ -71,13 +78,18 @@ export default function MessagesPage() {
   const loadConversations = useCallback(
     async (userId: string, isMountedRef: { current: boolean }) => {
       try {
-        const { data: msgs, error } = await supabase
-          .from('messages')
-          .select('id, sender_id, receiver_id, content, created_at, is_read, is_quarantined')
-          .or('sender_id.eq.' + userId + ',receiver_id.eq.' + userId)
-          .order('created_at', { ascending: false })
-          // Newest 500 are plenty to build the conversation list; never scan the full history.
-          .limit(500);
+        const [{ data: msgs, error }, statesRes] = await Promise.all([
+          supabase
+            .from('messages')
+            .select('id, sender_id, receiver_id, content, created_at, is_read, is_quarantined')
+            .or('sender_id.eq.' + userId + ',receiver_id.eq.' + userId)
+            .order('created_at', { ascending: false })
+            // Newest 500 are plenty to build the conversation list; never scan the full history.
+            .limit(500),
+          // Per-member swipe state (20261115_conversation_states.sql); an error just means none.
+          supabase.from('conversation_states').select('partner_id, marked_unread, hidden_before').eq('user_id', userId),
+        ]);
+        const states = new Map<string, ConvState>(((statesRes.data || []) as ConvState[]).map((s) => [s.partner_id, s]));
 
         if (error || !msgs || msgs.length === 0) {
           if (isMountedRef.current) {
@@ -96,6 +108,9 @@ export default function MessagesPage() {
           if (m.is_quarantined && m.sender_id !== userId) continue;
           const partnerId = m.sender_id === userId ? m.receiver_id : m.sender_id;
           if (!partnerId || String(partnerId).startsWith('00000000')) continue;
+          // Deleted (swiped away): only messages after that point bring the conversation back.
+          const hiddenBefore = states.get(partnerId)?.hidden_before;
+          if (hiddenBefore && m.created_at <= hiddenBefore) continue;
 
           const isUnreadIncoming = m.receiver_id === userId && !m.is_read;
 
@@ -150,6 +165,7 @@ export default function MessagesPage() {
               lastMessage: info.lastMessage,
               lastMessageAt: info.lastMessageAt,
               unreadCount: info.unreadCount,
+              markedUnread: Boolean(states.get(partnerId)?.marked_unread),
             };
           });
 
@@ -210,16 +226,84 @@ export default function MessagesPage() {
     };
   }, [router, loadConversations]);
 
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [pendingDelete, setPendingDelete] = useState<ConversationItem | null>(null);
+
+  const patchConversation = (recipientId: string, patch: Partial<ConversationItem>) =>
+    setConversations((prev) => prev.map((c) => (c.recipientId === recipientId ? { ...c, ...patch } : c)));
+
+  /** Swipe right / hover button: Read <-> Unread, applied at once and rolled back on failure. */
+  const toggleRead = async (conv: ConversationItem) => {
+    setActionError(null);
+    const { data: { session } } = await supabase.auth.getSession();
+    const uid = session?.user?.id;
+    if (!uid) return;
+    const now = new Date().toISOString();
+    if (isUnread(conv)) {
+      patchConversation(conv.recipientId, { unreadCount: 0, markedUnread: false });
+      const [msgRes, stateRes] = await Promise.all([
+        conv.unreadCount > 0
+          ? supabase
+              .from('messages')
+              .update({ is_read: true })
+              .eq('receiver_id', uid)
+              .eq('sender_id', conv.recipientId)
+              .eq('is_read', false)
+          : Promise.resolve({ error: null }),
+        supabase
+          .from('conversation_states')
+          .upsert({ user_id: uid, partner_id: conv.recipientId, marked_unread: false, updated_at: now }, { onConflict: 'user_id,partner_id' }),
+      ]);
+      if (msgRes.error || (stateRes.error && conv.markedUnread)) {
+        patchConversation(conv.recipientId, { unreadCount: conv.unreadCount, markedUnread: conv.markedUnread });
+        setActionError('Could not mark as read. Please try again.');
+      }
+    } else {
+      patchConversation(conv.recipientId, { markedUnread: true });
+      const { error } = await supabase
+        .from('conversation_states')
+        .upsert({ user_id: uid, partner_id: conv.recipientId, marked_unread: true, updated_at: now }, { onConflict: 'user_id,partner_id' });
+      if (error) {
+        patchConversation(conv.recipientId, { markedUnread: false });
+        setActionError('Could not mark as unread. Please try again.');
+      }
+    }
+  };
+
+  /** Confirmed delete: hidden for this member only (the other member keeps the thread). */
+  const confirmDelete = async () => {
+    const conv = pendingDelete;
+    setPendingDelete(null);
+    if (!conv) return;
+    setActionError(null);
+    const { data: { session } } = await supabase.auth.getSession();
+    const uid = session?.user?.id;
+    if (!uid) return;
+    const previous = conversations;
+    setConversations((prev) => prev.filter((c) => c.recipientId !== conv.recipientId));
+    const now = new Date().toISOString();
+    const { error } = await supabase
+      .from('conversation_states')
+      .upsert(
+        { user_id: uid, partner_id: conv.recipientId, hidden_before: now, marked_unread: false, updated_at: now },
+        { onConflict: 'user_id,partner_id' }
+      );
+    if (error) {
+      setConversations(previous);
+      setActionError('Could not delete the conversation. Please try again.');
+    }
+  };
+
   // Unread conversations first (chat alerts live here and on the Messages tab badge), newest first within each group.
   const filteredConversations = conversations
     .filter((c) => {
-      if (activeTab === 'unread' && c.unreadCount === 0) return false;
+      if (activeTab === 'unread' && !isUnread(c)) return false;
       if (searchQuery.trim() && !c.name.toLowerCase().includes(searchQuery.toLowerCase())) return false;
       return true;
     })
     .sort(
       (a, b) =>
-        Number(b.unreadCount > 0) - Number(a.unreadCount > 0) ||
+        Number(isUnread(b)) - Number(isUnread(a)) ||
         new Date(b.lastMessageAt).getTime() - new Date(a.lastMessageAt).getTime()
     );
 
@@ -273,6 +357,12 @@ export default function MessagesPage() {
           )}
         </div>
 
+        {actionError && (
+          <p role="alert" className="rounded-2xl border border-red-200 bg-red-50 px-3.5 py-2 text-xs font-medium text-[#DC2626]">
+            {actionError}
+          </p>
+        )}
+
         <div className="space-y-2">
           {loading ? (
             <div className="space-y-2" aria-busy="true" aria-label="Loading conversations">
@@ -308,12 +398,19 @@ export default function MessagesPage() {
             </div>
           ) : (
             filteredConversations.map((conv) => (
+              <SwipeableConversationItem
+                key={conv.recipientId}
+                label={conv.name}
+                unread={isUnread(conv)}
+                onToggleRead={() => void toggleRead(conv)}
+                onDelete={() => setPendingDelete(conv)}
+              >
               <Link
-                key={conv.id}
                 href={'/chat/' + conv.recipientId}
+                draggable={false}
                 className={
-                  'flex items-center gap-3.5 px-3.5 py-3 bg-white border rounded-2xl transition ' +
-                  (conv.unreadCount > 0
+                  'flex items-center gap-3.5 px-3.5 py-3 bg-white border rounded-2xl transition-colors ' +
+                  (isUnread(conv)
                     ? 'border-[#72519A]/40 bg-white'
                     : 'border-[#D5C6EC] hover:border-[#72519A]/30 hover:bg-[#E8DFF5]/40')
                 }
@@ -341,7 +438,7 @@ export default function MessagesPage() {
                       <span
                         className={
                           'text-[10.5px] shrink-0 ' +
-                          (conv.unreadCount > 0 ? 'text-[#72519A] font-semibold' : 'text-[#51376D]/55')
+                          (isUnread(conv) ? 'text-[#72519A] font-semibold' : 'text-[#51376D]/55')
                         }
                       >
                         {formatConversationTimestamp(conv.lastMessageAt)}
@@ -352,25 +449,63 @@ export default function MessagesPage() {
                     <p
                       className={
                         'text-xs truncate ' +
-                        (conv.unreadCount > 0 ? 'font-semibold text-[#51376D]' : 'text-[#51376D]/75')
+                        (isUnread(conv) ? 'font-semibold text-[#51376D]' : 'text-[#51376D]/75')
                       }
                     >
                       {conv.lastMessage}
                     </p>
-                    {conv.unreadCount > 0 && (
+                    {conv.unreadCount > 0 ? (
                       <span className="min-w-[18px] h-[18px] px-1.5 rounded-full bg-[#72519A] text-white text-[10px] font-bold flex items-center justify-center shrink-0">
                         {conv.unreadCount}
                       </span>
-                    )}
+                    ) : conv.markedUnread ? (
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#72519A] shrink-0" aria-label="Marked unread" />
+                    ) : null}
                   </div>
                 </div>
 
                 <ChevronRight className="w-4 h-4 text-[#51376D]/55 shrink-0" />
               </Link>
+              </SwipeableConversationItem>
             ))
           )}
         </div>
       </main>
+
+      {pendingDelete && (
+        <div className="fixed inset-0 z-[80] flex items-end sm:items-center justify-center bg-black/40 px-4 pb-[max(1rem,env(safe-area-inset-bottom))]" onClick={() => setPendingDelete(null)}>
+          <div
+            role="alertdialog"
+            aria-modal="true"
+            aria-labelledby="delete-conv-title"
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-[380px] rounded-3xl bg-white border border-[#D5C6EC] p-5 shadow-brand-md"
+          >
+            <h2 id="delete-conv-title" className="text-sm font-bold text-[#51376D]">
+              Delete conversation with {pendingDelete.name}?
+            </h2>
+            <p className="mt-1.5 text-xs leading-relaxed text-[#51376D]/75">
+              It disappears from your Messages. {pendingDelete.name} keeps their copy, and a new message from them starts a fresh conversation.
+            </p>
+            <div className="mt-4 flex gap-2.5">
+              <button
+                type="button"
+                onClick={() => setPendingDelete(null)}
+                className="flex-1 h-11 rounded-full border border-[#D5C6EC] bg-white text-sm font-medium text-[#51376D] hover:bg-[#E8DFF5]/30 transition-colors"
+              >
+                Cancel
+              </button>
+              <button
+                type="button"
+                onClick={() => void confirmDelete()}
+                className="flex-1 h-11 rounded-full bg-[#DC2626] text-sm font-semibold text-white hover:bg-red-700 transition-colors"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

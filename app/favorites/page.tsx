@@ -8,6 +8,8 @@ import { createBrowserClient } from '@supabase/ssr';
 import { CardPhoto } from '@/components/CardPhoto';
 import { ReputationBadge } from '@/components/ReputationBadge';
 import { PlusBadge } from '@/components/ui/PlusBadge';
+import { PhotoCarousel } from '@/components/cards/PhotoCarousel';
+import { supabaseImage } from '@/lib/images/supabaseImage';
 
 type SparkTab = 'sparked' | 'sparked_you' | 'mutual' | 'visited';
 
@@ -74,6 +76,14 @@ function getPhoto(p: ProfileCardData): string {
   return '';
 }
 
+/** Gallery for the card carousel: the photos array (avatar first if it is not in it), de-duplicated. */
+function getPhotos(p: ProfileCardData): string[] {
+  const isReal = (u: unknown): u is string => typeof u === 'string' && u.trim() !== '' && !u.endsWith('.svg');
+  const list = [...(Array.isArray(p.photos) ? p.photos : [])].filter(isReal);
+  if (isReal(p.avatar_url) && !list.includes(p.avatar_url)) list.unshift(p.avatar_url);
+  return Array.from(new Set(list));
+}
+
 /** Card photo with a branded fallback (no photo, or the URL fails to load): never a black box. */
 function SparkCardPhoto({ src, name, className }: { src: string; name: string; className: string }) {
   const [failedSrc, setFailedSrc] = useState<string | null>(null);
@@ -124,7 +134,7 @@ function VisitorsList({ visitors, onOpen }: { visitors: ProfileCardData[]; onOpe
                 {v.locked ? (
                   <span aria-hidden className="absolute inset-0 bg-gradient-to-br from-[#72519A]/25 to-[#9474C3]/20 blur-[6px] scale-110" />
                 ) : (
-                  <SparkCardPhoto src={photo} name={name} className="object-cover" />
+                  <SparkCardPhoto src={photo ? supabaseImage(photo, { width: 96, height: 96, quality: 75, resize: 'cover' }) : ''} name={name} className="object-cover" />
                 )}
               </span>
               <span className="min-w-0 flex-1">
@@ -495,6 +505,8 @@ export default function SparksPage() {
               const publicName = getPublicName(person);
               const age = getAge(person);
               const photo = shouldBlur ? '/placeholder-avatar.svg' : getPhoto(person);
+              // Locked (blurred) cards never load the member's real photos.
+              const gallery = shouldBlur ? [] : getPhotos(person);
               const location = getLocationLabel(person);
               const rep = person.reputation_score ?? 100;
               return (
@@ -503,12 +515,17 @@ export default function SparksPage() {
                   onClick={() => { if (shouldBlur) { router.push('/plus'); } else { router.push(`/profile/${person.id}`); } }}
                   className="group relative isolate aspect-[3/4] rounded-2xl overflow-hidden bg-white border border-[#D5C6EC]/60 shadow-xs hover:shadow-md cursor-pointer active:scale-[0.98] transition-all duration-300"
                 >
-                  <SparkCardPhoto src={photo} name={publicName} className={`object-cover transition-transform duration-300 group-hover:scale-105 ${shouldBlur ? 'blur-md scale-110' : ''}`} />
+                  {gallery.length > 0 ? (
+                    // Scroll-snap carousel (edge-resized WebP); a touch tap falls through to the card's onClick.
+                    <PhotoCarousel photos={gallery} alt={publicName} priority={idx < 2} className="absolute inset-0" />
+                  ) : (
+                    <SparkCardPhoto src={photo} name={publicName} className={`object-cover ${shouldBlur ? 'blur-md scale-110' : ''}`} />
+                  )}
                   {/* Same overlay layout as Discover cards (top-left Reputation, top-right heart). */}
-                  {!shouldBlur && <ReputationBadge score={rep} variant="frosted" size="xs" className="absolute top-2.5 left-2.5 z-20" />}
+                  {!shouldBlur && <ReputationBadge score={rep} variant="frosted" size="xs" className={`absolute ${gallery.length > 1 ? 'top-5' : 'top-2.5'} left-2.5 z-20`} />}
                   {/* Same bare heart as Discover: white stroke keys it against dark hair and backgrounds.
                       Filled once the viewer has sparked this member (Sent, Mutual), outline otherwise. */}
-                  <span aria-hidden className="absolute top-3 right-3 z-20 p-1.5 pointer-events-none">
+                  <span aria-hidden className="absolute top-3 right-3 z-30 p-1.5 pointer-events-none">
                     {sparkedIds.has(person.id) ? (
                       <Heart className="w-7 h-7 fill-[#72519A] stroke-white drop-shadow-[0_2px_5px_rgba(0,0,0,0.5)]" strokeWidth={1.5} />
                     ) : (
@@ -516,13 +533,13 @@ export default function SparksPage() {
                     )}
                   </span>
                   {shouldBlur && (
-                    <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/30 p-3 text-center">
+                    <div className="absolute inset-0 z-[26] flex flex-col items-center justify-center bg-black/30 p-3 text-center">
                       <div className="w-9 h-9 rounded-full bg-[#72519A] text-white flex items-center justify-center mb-1.5 shadow-md"><Lock className="w-4 h-4" /></div>
                       <span className="text-[11px] font-bold text-white drop-shadow">Tap to Unblur with Plus</span>
                     </div>
                   )}
-                  <div aria-hidden className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/70 via-black/25 to-transparent pointer-events-none rounded-b-2xl z-[5]" />
-                  <div className="absolute bottom-0 inset-x-0 pt-10 pb-3 px-3 z-10 pointer-events-none text-white">
+                  <div aria-hidden className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/70 via-black/25 to-transparent pointer-events-none rounded-b-2xl z-20" />
+                  <div className="absolute bottom-0 inset-x-0 pt-10 pb-3 px-3 z-[25] pointer-events-none text-white">
                     <h3 className="font-brand text-sm font-bold leading-tight truncate">{shouldBlur ? 'Someone Sparked You' : `${publicName}${age ? `, ${age}` : ''}`}</h3>
                     <p className="text-[11px] text-white/90 font-medium mt-0.5 truncate pr-7">{location}</p>
                   </div>
