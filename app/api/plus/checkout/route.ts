@@ -69,6 +69,9 @@ export async function POST(req: NextRequest) {
   const origin = requestOrigin && ALLOWED_ORIGINS.has(requestOrigin) ? requestOrigin : SITE_ORIGIN;
   const delimiter = returnPath.includes('?') ? '&' : '?';
 
+  // No payment_method_types on purpose: Stripe's dynamic payment methods then offer card plus
+  // Google Pay / Apple Pay (and any other method enabled in Dashboard > Settings > Payment methods)
+  // based on the buyer's device and browser. Hard-coding ['card'] would hide the wallets.
   const session = await stripe.checkout.sessions.create({
     mode: 'subscription',
     line_items: [{ price: priceId, quantity: 1 }],

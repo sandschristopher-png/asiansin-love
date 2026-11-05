@@ -2,6 +2,16 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   devIndicators: false,
+  // Lets the Payment Request API (Google Pay / Apple Pay) run for this site and Stripe's frames,
+  // so wallet buttons work in mobile Chrome and Android WebViews.
+  async headers() {
+    return [
+      {
+        source: '/:path*',
+        headers: [{ key: 'Permissions-Policy', value: 'payment=(self "https://js.stripe.com" "https://checkout.stripe.com")' }],
+      },
+    ];
+  },
   images: {
     // Two-tier WebP delivery: ~640px for Discover cards, up to 1440px for the profile detail view
     // (matches the 1440px max edge from lib/utils/imageCompressor.ts). WebP only: fast to encode
