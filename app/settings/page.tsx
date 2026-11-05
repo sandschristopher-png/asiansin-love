@@ -315,7 +315,7 @@ export default function SettingsHubPage() {
       <main className="max-w-md mx-auto px-4 pt-5 space-y-4 pb-[calc(6rem+env(safe-area-inset-bottom,24px))]">
 
         {errorMsg && (
-          <div className="rounded-2xl bg-[#E8DFF5]/50 border border-[#D5C6EC] px-4 py-3 text-xs font-semibold text-[#51376D]">
+          <div className="rounded-2xl bg-red-50 border border-red-200 px-4 py-3 text-xs font-semibold text-red-700">
             {errorMsg}
           </div>
         )}
@@ -515,7 +515,7 @@ export default function SettingsHubPage() {
               )}
             </button>
             {portalError && (
-              <p role="alert" className="mx-3 mb-2 rounded-xl bg-[#E8DFF5]/50 border border-[#D5C6EC] px-3 py-2 text-[11px] font-semibold text-[#51376D]">
+              <p role="alert" className="mx-3 mb-2 rounded-xl bg-red-50 border border-red-200 px-3 py-2 text-[11px] font-semibold text-red-700">
                 {portalError}
               </p>
             )}
@@ -531,7 +531,7 @@ export default function SettingsHubPage() {
             className="w-full flex items-center justify-between p-3 rounded-2xl hover:bg-[#E8DFF5]/40 transition cursor-pointer text-left"
           >
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-[#E8DFF5]/50 text-[#72519A] flex items-center justify-center">
+              <div className="w-8 h-8 rounded-xl bg-red-50 text-red-600 flex items-center justify-center">
                 <LogOut className="w-4 h-4" />
               </div>
               <div>
@@ -551,14 +551,14 @@ export default function SettingsHubPage() {
               setDeleteConfirmText('');
               setShowDeleteModal(true);
             }}
-            className="w-full flex items-center justify-between p-3 rounded-2xl hover:bg-[#E8DFF5]/40 transition cursor-pointer text-left group"
+            className="w-full flex items-center justify-between p-3 rounded-2xl hover:bg-red-50/60 transition cursor-pointer text-left group"
           >
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-[#E8DFF5]/50 text-[#72519A] flex items-center justify-center group-hover:bg-[#E8DFF5]/70 transition">
+              <div className="w-8 h-8 rounded-xl bg-red-50 text-red-600 flex items-center justify-center group-hover:bg-red-100 transition">
                 <Trash2 className="w-4 h-4" />
               </div>
               <div>
-                <p className="text-xs font-bold text-[#72519A]">Delete Account</p>
+                <p className="text-xs font-bold text-red-600">Delete Account</p>
                 <p className="text-[11px] text-[#51376D]/75">Permanently remove profile and data</p>
               </div>
             </div>
@@ -575,7 +575,7 @@ export default function SettingsHubPage() {
               className="relative w-full max-w-[340px] bg-white rounded-3xl border border-[#D5C6EC]/60 shadow-2xl p-5 text-[#51376D] flex flex-col"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="w-10 h-10 rounded-2xl bg-[#E8DFF5]/50 text-[#72519A] flex items-center justify-center mb-3">
+              <div className="w-10 h-10 rounded-2xl bg-red-50 text-red-600 flex items-center justify-center mb-3">
                 <AlertTriangle className="w-5 h-5" />
               </div>
 
@@ -585,7 +585,7 @@ export default function SettingsHubPage() {
               </p>
 
               {deleteError && (
-                <div className="mt-3 p-2.5 rounded-xl bg-[#E8DFF5]/50 border border-[#D5C6EC] text-[#72519A] text-[11px] font-medium leading-tight">
+                <div className="mt-3 p-2.5 rounded-xl bg-red-50 border border-red-200 text-red-600 text-[11px] font-medium leading-tight">
                   {deleteError}
                 </div>
               )}
@@ -606,7 +606,7 @@ export default function SettingsHubPage() {
                   type="button"
                   disabled={deletingAccount || deleteConfirmText !== 'DELETE'}
                   onClick={handleDeleteAccount}
-                  className="w-full py-2.5 rounded-xl bg-[#72519A] hover:bg-[#51376D] active:bg-[#51376D] disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold text-xs tracking-wide shadow-sm transition active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full py-2.5 rounded-xl bg-red-600 hover:bg-red-700 active:bg-red-800 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold text-xs tracking-wide shadow-sm transition active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer"
                 >
                   {deletingAccount ? (
                     <>

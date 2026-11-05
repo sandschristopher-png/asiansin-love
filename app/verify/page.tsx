@@ -76,8 +76,8 @@ function PoseImage({ pose, className = '' }: { pose: VerificationPose; className
 function ErrorNote({ message }: { message: string | null }) {
   if (!message) return null;
   return (
-    <div className="flex items-start gap-2 text-xs text-[#51376D] bg-[#E8DFF5]/50 border border-[#D5C6EC] rounded-xl p-3">
-      <AlertCircle className="w-4 h-4 text-[#72519A] shrink-0 mt-0.5" />
+    <div className="flex items-start gap-2 text-xs text-red-700 bg-red-50 border border-red-200 rounded-xl p-3">
+      <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
       <span>{message}</span>
     </div>
   );
@@ -339,7 +339,7 @@ export default function VerifyPage() {
         </div>
       ) : startError || !pose ? (
         <div className="rounded-3xl bg-white border border-[#D5C6EC] p-8 text-center space-y-4 shadow-sm mx-4 mt-4">
-          <div className="h-16 w-16 mx-auto rounded-full bg-[#E8DFF5]/50 border border-[#D5C6EC] text-[#72519A] flex items-center justify-center">
+          <div className="h-16 w-16 mx-auto rounded-full bg-red-50 border border-red-200 text-red-600 flex items-center justify-center">
             <AlertCircle className="w-8 h-8" />
           </div>
           <p className="text-sm text-[#51376D]/75 leading-relaxed">{startError || 'Could not start verification.'}</p>
@@ -378,7 +378,7 @@ export default function VerifyPage() {
                 <span
                   aria-hidden
                   className={`w-2 h-2 rounded-full ${
-                    gateState === 'ready' && faceStatus === 'ok' ? 'bg-emerald-500' : gateState === 'error' ? 'bg-[#9474C3]' : 'bg-amber-400'
+                    gateState === 'ready' && faceStatus === 'ok' ? 'bg-emerald-500' : gateState === 'error' ? 'bg-red-500' : 'bg-amber-400'
                   }`}
                 />
                 {gateState === 'loading' || gateState === 'idle'
@@ -418,7 +418,7 @@ export default function VerifyPage() {
           </div>
 
           {errorMsg && (
-            <div className="absolute bottom-32 left-4 right-4 z-50 px-3 py-2 rounded-xl bg-[#72519A]/90 text-white text-xs text-center">
+            <div className="absolute bottom-32 left-4 right-4 z-50 px-3 py-2 rounded-xl bg-red-600/90 text-white text-xs text-center">
               {errorMsg}
             </div>
           )}

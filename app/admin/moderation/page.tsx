@@ -136,7 +136,7 @@ export default function AdminModerationPage() {
         <header className="space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="p-2 bg-[#E8DFF5]/50 border border-[#D5C6EC] rounded-xl text-[#72519A]">
+              <div className="p-2 bg-red-50 border border-red-200 rounded-xl text-red-600">
                 <ShieldAlert className="w-4 h-4" />
               </div>
               <div>
@@ -175,7 +175,7 @@ export default function AdminModerationPage() {
             className={`p-3.5 rounded-xl border flex items-center justify-between text-xs transition-all ${
               actionFeedback.type === 'success'
                 ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
-                : 'bg-[#E8DFF5]/50 border-[#D5C6EC] text-[#51376D]'
+                : 'bg-red-50 border-red-200 text-red-700'
             }`}
           >
             <div className="flex items-center gap-2.5">
@@ -202,12 +202,12 @@ export default function AdminModerationPage() {
             <p className="text-xs">Loading pending items...</p>
           </div>
         ) : error ? (
-          <div className="p-6 bg-[#E8DFF5]/50 border border-[#D5C6EC] rounded-2xl text-center text-[#51376D] space-y-2">
+          <div className="p-6 bg-red-50 border border-red-200 rounded-2xl text-center text-red-700 space-y-2">
             <AlertTriangle className="w-5 h-5 mx-auto" />
             <p className="text-xs font-medium">{error}</p>
             <button
               onClick={() => fetchQuarantinedMessages()}
-              className="text-xs text-[#72519A] underline"
+              className="text-xs text-red-600 underline"
             >
               Retry
             </button>
@@ -254,7 +254,7 @@ export default function AdminModerationPage() {
                   </p>
 
                   <div className="flex items-center justify-between pt-1 text-xs">
-                    <span className="text-[#72519A] text-[11px] font-medium flex items-center gap-1">
+                    <span className="text-red-600 text-[11px] font-medium flex items-center gap-1">
                       <AlertTriangle className="w-3 h-3" /> Quarantined
                     </span>
                     <span className="text-[#51376D]/75 font-medium flex items-center gap-1 text-[11px]">
@@ -284,7 +284,7 @@ export default function AdminModerationPage() {
 
             <div className="flex items-center justify-between pb-2 border-b border-[#D5C6EC]">
               <div className="flex items-center gap-2">
-                <ShieldAlert className="w-5 h-5 text-[#72519A]" />
+                <ShieldAlert className="w-5 h-5 text-red-600" />
                 <h3 className="text-base font-semibold text-[#51376D]">Review Message</h3>
               </div>
               <button
@@ -319,7 +319,7 @@ export default function AdminModerationPage() {
               <label className="text-[11px] font-semibold text-[#51376D]/75 uppercase tracking-wider">
                 Quarantined Content
               </label>
-              <div className="p-3.5 bg-[#E8DFF5]/50 border border-[#D5C6EC] rounded-xl text-[#51376D] text-sm break-words select-all">
+              <div className="p-3.5 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm break-words select-all">
                 {activeMessage.content}
               </div>
             </div>
@@ -371,7 +371,7 @@ export default function AdminModerationPage() {
               <button
                 onClick={() => handleAction('confirm')}
                 disabled={actionLoading}
-                className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-[#72519A] hover:bg-[#9474C3] text-white text-xs font-semibold transition disabled:opacity-50 min-h-[46px]"
+                className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-semibold transition disabled:opacity-50 min-h-[46px]"
               >
                 {actionLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <XCircle className="w-4 h-4" />}
                 Confirm

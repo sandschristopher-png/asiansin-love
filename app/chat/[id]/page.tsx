@@ -950,7 +950,7 @@ export default function ChatConversationPage() {
           <button
             type="button"
             onClick={() => setShowReportModal(true)}
-            className="w-8 h-8 flex items-center justify-center text-[#51376D]/55 hover:text-[#72519A] hover:bg-[#E8DFF5]/50 rounded-full transition cursor-pointer"
+            className="w-8 h-8 flex items-center justify-center text-[#51376D]/55 hover:text-red-600 hover:bg-red-50 rounded-full transition cursor-pointer"
             title="Safety & Moderation"
           >
             <ShieldAlert className="w-4 h-4" />
@@ -1022,7 +1022,7 @@ export default function ChatConversationPage() {
             )}
 
             {errorBanner && (
-              <div className="mb-3 p-3 rounded-2xl bg-[#E8DFF5]/50 border border-[#D5C6EC] text-xs text-[#51376D] font-medium text-center">
+              <div className="mb-3 p-3 rounded-2xl bg-red-50 border border-red-200 text-xs text-red-700 font-medium text-center">
                 {errorBanner}
               </div>
             )}
@@ -1220,7 +1220,7 @@ export default function ChatConversationPage() {
                         >
                           {msg.failed ? (
                             <>
-                              <span className="text-[#72519A] font-semibold">Not delivered</span>
+                              <span className="text-red-600 font-semibold">Not delivered</span>
                               <span aria-hidden>·</span>
                               <button type="button" onClick={() => retryMessage(msg)} className="font-semibold text-[#72519A] hover:underline">
                                 Retry
@@ -1238,7 +1238,7 @@ export default function ChatConversationPage() {
                                   setReportMessageId(msg.id);
                                   setActiveMsgId(null);
                                 }}
-                                className="font-semibold text-[#51376D]/60 hover:text-[#72519A]"
+                                className="font-semibold text-[#51376D]/60 hover:text-red-600"
                               >
                                 Report message
                               </button>
@@ -1353,14 +1353,14 @@ export default function ChatConversationPage() {
               onClick={() => (voice.state === 'recording' ? voice.cancel() : voice.reset())}
               disabled={voiceSending}
               aria-label="Discard voice note"
-              className="w-9 h-9 rounded-full border border-[#D5C6EC] text-[#51376D]/55 hover:text-[#72519A] flex items-center justify-center shrink-0 disabled:opacity-40"
+              className="w-9 h-9 rounded-full border border-[#D5C6EC] text-[#51376D]/55 hover:text-red-600 flex items-center justify-center shrink-0 disabled:opacity-40"
             >
               <Trash2 className="w-4 h-4" />
             </button>
             <div className="flex-1 h-10 rounded-3xl bg-white border border-[#D5C6EC] px-3 flex items-center gap-2 min-w-0">
               {voice.state === 'recording' ? (
                 <>
-                  <span className="w-2 h-2 rounded-full bg-[#9474C3] animate-pulse shrink-0" />
+                  <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse shrink-0" />
                   <span className="text-xs font-semibold text-[#51376D] tabular-nums shrink-0">
                     {formatSeconds(voice.elapsedMs)} / {formatSeconds(VOICE_NOTE_MAX_MS)}
                   </span>

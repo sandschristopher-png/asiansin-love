@@ -38,7 +38,7 @@ export function AnimatedWaveform({ isPlaying, progress, barCount = 24 }: Wavefor
             key={i}
             aria-hidden
             className={`w-[3px] rounded-full transition-colors duration-200 ${
-              isPlayed ? 'bg-[#72519A]' : 'bg-[#E8DFF5]'
+              isPlayed ? 'bg-[#72519A]' : 'bg-[#D5C6EC]'
             }`}
             initial={false}
             animate={

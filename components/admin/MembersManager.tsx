@@ -126,8 +126,8 @@ function MemberSheet({ member, onClose, onChange }: { member: Member; onClose: (
               Unban account
             </AdminButton>
           ) : confirmBan ? (
-            <div className="rounded-xl bg-[#E8DFF5]/50 border border-[#D5C6EC]/60 p-2.5">
-              <p className="text-xs text-[#51376D] mb-2">Ban {member.name}? They are signed out and cannot sign in again.</p>
+            <div className="rounded-xl bg-red-50 border border-red-100 p-2.5">
+              <p className="text-xs text-red-800 mb-2">Ban {member.name}? They are signed out and cannot sign in again.</p>
               <div className="grid grid-cols-2 gap-2">
                 <AdminButton size="lg" onClick={() => setConfirmBan(false)} disabled={!!busy}>
                   Cancel
@@ -282,7 +282,7 @@ export function MembersManager({ selfId, ownerId, isOwner }: { selfId: string; o
                   </p>
                   <div className="mt-0.5 flex items-center gap-1.5">
                     <ReputationBadge score={m.reputation} size="xs" />
-                    {m.isBanned && <span className="text-[10px] font-semibold text-[#72519A]">Banned</span>}
+                    {m.isBanned && <span className="text-[10px] font-semibold text-red-600">Banned</span>}
                   </div>
                 </div>
               </>

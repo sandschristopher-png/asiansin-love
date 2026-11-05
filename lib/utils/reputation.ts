@@ -29,10 +29,10 @@ const TIERS: Record<ReputationTier, Omit<ReputationTokens, 'score' | 'percent'>>
     tier: 'pristine',
     tierLabel: 'Pristine',
     light: {
-      container: 'bg-[#E8DFF5]/60 border border-[#D5C6EC]',
+      container: 'bg-[#E8DFF5]/50 border border-[#D5C6EC]',
       text: 'text-[#72519A]',
       icon: 'text-[#72519A]',
-      bar: 'bg-[#72519A]',
+      bar: 'bg-gradient-to-r from-[#72519A] to-[#9474C3]',
       track: 'bg-[#E8DFF5]',
     },
     frosted: { container: FROSTED_CONTAINER, text: 'text-white', icon: 'text-[#D5C6EC]' },
@@ -65,13 +65,13 @@ const TIERS: Record<ReputationTier, Omit<ReputationTokens, 'score' | 'percent'>>
     tier: 'flagged',
     tierLabel: 'Flagged',
     light: {
-      container: 'bg-[#E8DFF5]/50 border border-[#D5C6EC]',
-      text: 'text-[#51376D]',
-      icon: 'text-[#9474C3]',
-      bar: 'bg-[#9474C3]',
-      track: 'bg-[#E8DFF5]/70',
+      container: 'bg-red-50 border border-red-200',
+      text: 'text-[#DC2626]',
+      icon: 'text-red-500',
+      bar: 'bg-red-500',
+      track: 'bg-red-100',
     },
-    frosted: { container: FROSTED_CONTAINER, text: 'text-[#E8DFF5]', icon: 'text-[#D5C6EC]' },
+    frosted: { container: FROSTED_CONTAINER, text: 'text-red-200', icon: 'text-red-300' },
   },
 };
 

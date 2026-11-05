@@ -49,7 +49,7 @@ export function LanguagePicker({
           {value.map((v) => (
             <span key={v} className="inline-flex items-center gap-1 pl-3 pr-2 py-1 rounded-full bg-[#E8DFF5]/60 border border-[#D5C6EC] text-xs font-semibold text-[#72519A]">
               {languageLabel(v)}
-              <button type="button" onClick={() => onChange(value.filter((x) => x !== v))} aria-label={`Remove ${v}`} className="hover:text-[#72519A]">
+              <button type="button" onClick={() => onChange(value.filter((x) => x !== v))} aria-label={`Remove ${v}`} className="hover:text-red-600">
                 <X className="w-3 h-3" />
               </button>
             </span>

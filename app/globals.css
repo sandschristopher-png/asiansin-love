@@ -10,6 +10,11 @@
   --color-brand-300: #9474C3; /* medium iris: accent hover, gradient transitions */
   --color-brand-500: #72519A; /* refined deep purple: primary CTA, active pills, sparked heart */
   --color-brand-900: #51376D; /* deep muted purple: typography and headers */
+
+  /* Soft aubergine-tinted elevation (never gray): shadow-brand-sm / -md / -glow, with hover: etc. */
+  --shadow-brand-sm: 0 1px 3px rgba(81, 55, 109, 0.05), 0 1px 2px rgba(81, 55, 109, 0.04);
+  --shadow-brand-md: 0 4px 14px rgba(81, 55, 109, 0.08), 0 2px 6px rgba(81, 55, 109, 0.04);
+  --shadow-brand-glow: 0 4px 20px rgba(114, 81, 154, 0.18);
 }
 
 @keyframes ailHeadsUpIn {
@@ -125,11 +130,11 @@ a:active,
 /* Lavender brand text selection, native control accents and hairline scrollbars.
    (.no-scrollbar above is more specific, so hidden scrollbars stay hidden.) */
 ::selection {
-  background-color: rgba(213, 198, 236, 0.45);
+  background-color: rgba(232, 223, 245, 0.6);
   color: #51376D;
 }
 ::-moz-selection {
-  background-color: rgba(213, 198, 236, 0.45);
+  background-color: rgba(232, 223, 245, 0.6);
   color: #51376D;
 }
 :root {

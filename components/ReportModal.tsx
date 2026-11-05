@@ -145,7 +145,7 @@ export function ReportModal({
           />
 
           {error && (
-            <p role="alert" className="rounded-xl bg-[#E8DFF5]/50 border border-[#D5C6EC] px-3 py-2 text-[11px] font-semibold text-[#51376D]">
+            <p role="alert" className="rounded-xl bg-red-50 border border-red-200 px-3 py-2 text-[11px] font-semibold text-red-700">
               {error}
             </p>
           )}

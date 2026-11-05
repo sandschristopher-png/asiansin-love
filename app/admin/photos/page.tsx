@@ -88,7 +88,7 @@ function PhotoCard({ member, onDone }: { member: PendingMember; onDone: (id: str
                 aria-label={rejecting ? `Flag photo` : `Expand photo`}
                 aria-pressed={rejecting ? flagged : undefined}
                 className={`relative aspect-[3/4] overflow-hidden rounded-xl border ${
-                  flagged ? 'border-[#9474C3] ring-2 ring-[#D5C6EC]' : 'border-[#D5C6EC]'
+                  flagged ? 'border-red-500 ring-2 ring-red-300' : 'border-[#D5C6EC]'
                 } cursor-pointer`}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -96,7 +96,7 @@ function PhotoCard({ member, onDone }: { member: PendingMember; onDone: (id: str
                 {isMain && (
                   <span className="absolute top-1 left-1 rounded-full bg-[#51376D]/80 px-1.5 py-0.5 text-[9px] font-semibold text-white">Main</span>
                 )}
-                {flagged && <XCircle className="absolute inset-0 m-auto w-7 h-7 text-[#72519A]" aria-hidden />}
+                {flagged && <XCircle className="absolute inset-0 m-auto w-7 h-7 text-red-600" aria-hidden />}
               </button>
             );
           })}
@@ -110,8 +110,8 @@ function PhotoCard({ member, onDone }: { member: PendingMember; onDone: (id: str
       )}
 
       {rejecting ? (
-        <div className="mt-3 space-y-2 rounded-xl border border-[#D5C6EC]/60 bg-[#E8DFF5]/40 p-3">
-          <p className="text-xs text-[#51376D]">Tap the photos to remove ({selected.size} selected). The member is notified.</p>
+        <div className="mt-3 space-y-2 rounded-xl border border-red-100 bg-red-50/50 p-3">
+          <p className="text-xs text-red-800">Tap the photos to remove ({selected.size} selected). The member is notified.</p>
           <input
             value={reason}
             onChange={(e) => setReason(e.target.value)}

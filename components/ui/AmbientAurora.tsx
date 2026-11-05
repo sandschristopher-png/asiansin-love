@@ -28,21 +28,21 @@ export function AmbientAurora({ layer = 'page' }: { layer?: 'page' | 'card' }) {
       <motion.div
         animate={{ x: [0, 50, -25, 0], y: [0, -35, 25, 0], scale: [1, 1.15, 0.92, 1] }}
         transition={{ duration: 4.8, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute top-[42%] -left-12 sm:left-4 w-[280px] h-[260px] sm:w-[340px] sm:h-[300px] rounded-full bg-[#72519A]/32 blur-[70px] will-change-transform"
+        className="absolute top-[42%] -left-12 sm:left-4 w-[280px] h-[260px] sm:w-[340px] sm:h-[300px] rounded-full bg-[#E8DFF5]/80 blur-[70px] will-change-transform"
       />
 
       {/* Blob 2: Radiant Pink (#9474C3) - Lower-Mid Right */}
       <motion.div
         animate={{ x: [0, -45, 25, 0], y: [0, 35, -30, 0], scale: [1, 0.9, 1.14, 1] }}
         transition={{ duration: 5.2, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute top-[52%] -right-12 sm:right-4 w-[270px] h-[260px] sm:w-[320px] sm:h-[290px] rounded-full bg-[#9474C3]/30 blur-[70px] will-change-transform"
+        className="absolute top-[52%] -right-12 sm:right-4 w-[270px] h-[260px] sm:w-[320px] sm:h-[290px] rounded-full bg-[#D5C6EC]/60 blur-[70px] will-change-transform"
       />
 
       {/* Blob 3: Warm Lilac / Rose (#D5C6EC) - Bottom Center Base */}
       <motion.div
         animate={{ x: [0, 35, -35, 0], y: [0, -25, 20, 0], scale: [1, 1.15, 0.92, 1] }}
         transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[320px] h-[240px] sm:w-[380px] sm:h-[280px] rounded-full bg-[#D5C6EC]/28 blur-[75px] will-change-transform"
+        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[320px] h-[240px] sm:w-[380px] sm:h-[280px] rounded-full bg-[#E8DFF5]/70 blur-[75px] will-change-transform"
       />
     </div>
     </MotionConfig>

@@ -572,7 +572,7 @@ export default function OnboardingPage() {
         </div>
 
         {errorMessage && (
-          <div className="p-3.5 rounded-2xl bg-[#E8DFF5]/50 border border-[#D5C6EC] text-[#51376D] text-xs font-semibold">
+          <div className="p-3.5 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold">
             {errorMessage}
           </div>
         )}
@@ -629,18 +629,18 @@ export default function OnboardingPage() {
                     </span>
                   )}
                   {!isCheckingUsername && usernameStatus?.available === false && (
-                    <span className="text-[#9474C3] text-xs font-semibold">Taken</span>
+                    <span className="text-red-500 text-xs font-semibold">Taken</span>
                   )}
                 </div>
               </div>
 
               {!isCheckingUsername && usernameStatus?.error && (
-                <p className="mt-2 text-xs text-[#72519A] font-medium">{usernameStatus.error}</p>
+                <p className="mt-2 text-xs text-red-600 font-medium">{usernameStatus.error}</p>
               )}
 
               {!isCheckingUsername && usernameStatus?.available === false && !usernameStatus?.error && (
                 <div className="mt-2.5 text-xs space-y-1.5">
-                  <span className="text-[#72519A] font-semibold">{username} is already taken.</span>
+                  <span className="text-red-600 font-semibold">{username} is already taken.</span>
                   {usernameStatus.suggestions && usernameStatus.suggestions.length > 0 && (
                     <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
                       <span className="text-[#51376D]/75">Suggestions:</span>
@@ -864,7 +864,7 @@ export default function OnboardingPage() {
             <div>
               <div className="flex items-center justify-between mb-1">
                 <label className="text-xs font-semibold text-[#51376D]">About Me (Bio)</label>
-                <span className={"text-[11px] " + (bio.trim().length < 20 ? "text-[#72519A] font-semibold" : "text-[#51376D]/55")}>{bio.trim().length}/500</span>
+                <span className={"text-[11px] " + (bio.trim().length < 20 ? "text-red-600 font-semibold" : "text-[#51376D]/55")}>{bio.trim().length}/500</span>
               </div>
               <textarea
                 rows={3}
@@ -909,7 +909,7 @@ export default function OnboardingPage() {
             </div>
 
             {errorMessage && (
-              <div className="bg-[#E8DFF5]/50 border border-[#D5C6EC] text-[#51376D] text-xs font-medium rounded-2xl px-4 py-3">
+              <div className="bg-red-50 border border-red-200 text-red-700 text-xs font-medium rounded-2xl px-4 py-3">
                 {errorMessage}
               </div>
             )}
@@ -977,7 +977,7 @@ export default function OnboardingPage() {
                             e.stopPropagation();
                             handleRemovePhoto(idx);
                           }}
-                          className="absolute top-1.5 right-1.5 p-1 rounded-full bg-black/60 text-white hover:bg-[#72519A] transition"
+                          className="absolute top-1.5 right-1.5 p-1 rounded-full bg-black/60 text-white hover:bg-red-600 transition"
                           aria-label="Remove photo"
                         >
                           <Trash2 className="w-3.5 h-3.5" />

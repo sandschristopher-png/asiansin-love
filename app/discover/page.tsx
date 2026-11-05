@@ -952,8 +952,8 @@ function DiscoverContent() {
                     aria-pressed={active}
                     className={`shrink-0 whitespace-nowrap flex items-center transition-colors ${
                       active
-                        ? 'bg-[#72519A] text-white text-xs font-medium px-4 py-1.5 rounded-full shadow-none'
-                        : 'text-[#51376D]/70 text-xs font-normal px-3.5 py-1.5 rounded-full hover:text-[#51376D] hover:bg-[#E8DFF5]/40 transition-colors'
+                        ? 'bg-gradient-to-r from-[#72519A] to-[#9474C3] text-white text-xs font-semibold px-4 py-1.5 rounded-full shadow-brand-sm border border-transparent'
+                        : 'border border-[#D5C6EC]/60 bg-white text-[#51376D]/70 text-xs font-medium px-3.5 py-1.5 rounded-full hover:border-[#B5A0DA] hover:text-[#51376D] hover:bg-[#E8DFF5]/25 transition-all'
                     }`}
                     
                   >
@@ -1009,7 +1009,7 @@ function DiscoverContent() {
               return (
                 <div
                   key={profile.id}
-                  className={`group relative isolate rounded-2xl overflow-hidden aspect-[3/4] w-full bg-white border border-[#D5C6EC]/60 shadow-xs hover:shadow-md transition-all duration-300 select-none`}
+                  className={`group relative isolate rounded-2xl overflow-hidden aspect-[3/4] w-full bg-white border border-[#D5C6EC]/40 shadow-brand-sm hover:shadow-brand-md transition-shadow select-none`}
                 >
                   <DiscoverCardPhotoCarousel
                     profileId={profile.id}
@@ -1030,7 +1030,7 @@ function DiscoverContent() {
                     className="absolute top-3 right-3 z-20"
                   />
                   {/* Soft scrim at the base of the photo so the white name / city text stays legible. */}
-                  <div aria-hidden className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/70 via-black/25 to-transparent pointer-events-none rounded-b-2xl z-[5]" />
+                  <div aria-hidden className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/80 via-black/35 to-transparent pointer-events-none z-[5]" />
                   <div className="absolute bottom-0 inset-x-0 pt-10 pb-3 px-3 z-10 pointer-events-none">
                     {(profile.travel || isTrustedVoiceIntroUrl(profile.voiceIntroUrl)) && (
                       <div className="mb-1.5 flex flex-col items-start gap-1 pr-7 pointer-events-auto">

@@ -413,7 +413,7 @@ export default function MyProfilePage() {
     <div className="flex-1 flex flex-col w-full bg-white text-[#51376D] font-sans">
       <main className="flex-1 w-full px-4 pt-4 pb-[calc(8rem+env(safe-area-inset-bottom,0px))] space-y-5">
         {saveError && (
-          <div className="p-3.5 rounded-2xl bg-[#E8DFF5]/50 border border-[#D5C6EC] text-[#51376D] text-xs font-semibold flex items-start justify-between gap-3">
+          <div className="p-3.5 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold flex items-start justify-between gap-3">
             <span>{saveError}</span>
             <button type="button" onClick={() => setSaveError(null)} className="underline shrink-0">
               Dismiss
@@ -530,7 +530,7 @@ export default function MyProfilePage() {
             {photoList.length <= 1 && (
               <p className="text-[11px] text-[#51376D]/55">Profiles require at least one photo. Add another to replace this one.</p>
             )}
-            {photoNotice && <p role="alert" className="text-[11px] font-semibold text-[#72519A]">{photoNotice}</p>}
+            {photoNotice && <p role="alert" className="text-[11px] font-semibold text-red-600">{photoNotice}</p>}
           </div>
         )}
 
@@ -594,7 +594,7 @@ export default function MyProfilePage() {
               {isLocating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Navigation className="w-3.5 h-3.5" />}
               <span>{isLocating ? 'Detecting GPS...' : 'Auto-Detect City with GPS'}</span>
             </button>
-            {locError && <p className="text-[11px] text-[#72519A] text-center">{locError}</p>}
+            {locError && <p className="text-[11px] text-red-600 text-center">{locError}</p>}
           </div>
         ) : (
           <div className="space-y-2 px-1">
@@ -668,7 +668,7 @@ export default function MyProfilePage() {
                 type="button"
                 onClick={() => setVoiceModalOpen(true)}
                 aria-label="Re-record voice intro"
-                className="w-8 h-8 rounded-full text-[#51376D]/55 hover:text-[#51376D] hover:bg-[#E8DFF5]/40 flex items-center justify-center transition-colors"
+                className="w-8 h-8 rounded-full text-[#B5A0DA] hover:text-[#51376D] hover:bg-[#E8DFF5]/40 flex items-center justify-center transition-colors"
               >
                 <Mic className="w-3.5 h-3.5" />
               </button>
@@ -676,7 +676,7 @@ export default function MyProfilePage() {
                 type="button"
                 onClick={removeVoiceIntro}
                 aria-label="Remove voice intro"
-                className="w-8 h-8 rounded-full text-[#51376D]/55 hover:text-[#51376D] hover:bg-[#E8DFF5]/40 flex items-center justify-center transition-colors"
+                className="w-8 h-8 rounded-full text-[#B5A0DA] hover:text-[#51376D] hover:bg-[#E8DFF5]/40 flex items-center justify-center transition-colors"
               >
                 <Trash2 className="w-3.5 h-3.5" />
               </button>

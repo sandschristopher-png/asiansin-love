@@ -6,7 +6,7 @@ import { ReputationBadge } from '@/components/ReputationBadge';
 const REP_TIER_CLASS = {
   good: 'bg-[#E8DFF5]/60 border-[#D5C6EC] text-[#72519A]',
   fair: 'bg-amber-50 border-amber-200 text-amber-800',
-  low: 'bg-[#E8DFF5]/50 border-[#D5C6EC] text-[#51376D]',
+  low: 'bg-red-50 border-red-200 text-red-700',
 } as const;
 
 /** Reputation pill ("[Shield] 98%", tier-colored); kept for existing callers. */
@@ -59,7 +59,7 @@ export function InCommonCard({ items, compact = false }: { items: string[]; comp
   if (items.length === 0) return null;
   if (compact) {
     return (
-      <span className="inline-flex items-center whitespace-nowrap bg-black/35 border border-white/20 text-white font-medium text-xs px-2.5 py-1 rounded-full">
+      <span className="inline-flex items-center whitespace-nowrap bg-black/40 backdrop-blur-md border border-white/20 text-white text-[11px] font-medium px-2.5 py-0.5 rounded-full">
         {items.length === 1 ? '1 thing in common' : `${items.length} things in common`}
       </span>
     );

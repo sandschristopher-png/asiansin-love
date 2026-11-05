@@ -33,7 +33,7 @@ export function CityRotator({ cities = SEA_CITIES }: { cities?: readonly string[
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -28 }}
             transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
-            className="inline-block font-black text-3xl sm:text-4xl tracking-tight bg-gradient-to-r from-[#72519A] via-[#9474C3] to-[#9474C3] bg-clip-text text-transparent leading-tight text-center"
+            className="inline-block text-2xl sm:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-[#72519A] via-[#9474C3] to-[#72519A] bg-clip-text text-transparent leading-tight text-center"
           >
             {city}
           </motion.span>

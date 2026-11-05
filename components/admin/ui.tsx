@@ -53,7 +53,7 @@ export function Notice({ kind, children }: { kind: 'error' | 'success'; children
     <div
       role={kind === 'error' ? 'alert' : 'status'}
       className={`mb-4 rounded-xl border px-3 py-2 text-sm ${
-        kind === 'error' ? 'border-[#D5C6EC] bg-[#E8DFF5]/50 text-[#51376D]' : 'border-emerald-200 bg-emerald-50 text-emerald-700'
+        kind === 'error' ? 'border-red-200 bg-red-50 text-red-700' : 'border-emerald-200 bg-emerald-50 text-emerald-700'
       }`}
     >
       {children}
@@ -123,7 +123,7 @@ type BtnTone = 'primary' | 'neutral' | 'danger' | 'warn';
 const TONES: Record<BtnTone, string> = {
   primary: 'bg-gradient-to-r from-[#72519A] to-[#9474C3] text-white border-transparent hover:opacity-95',
   neutral: 'bg-white text-[#51376D] border-[#D5C6EC] hover:bg-[#E8DFF5]/40',
-  danger: 'bg-[#72519A] text-white border-transparent hover:bg-[#51376D]',
+  danger: 'bg-red-600 text-white border-transparent hover:bg-red-700',
   warn: 'bg-amber-50 text-amber-800 border-amber-200 hover:bg-amber-100',
 };
 

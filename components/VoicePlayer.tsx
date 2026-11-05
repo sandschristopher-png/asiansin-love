@@ -143,7 +143,7 @@ function VoicePlayerCard({
           type="button"
           onClick={toggle}
           aria-label={playing ? `Pause ${title}` : `Play ${title}`}
-          className="w-9 h-9 shrink-0 rounded-full bg-[#72519A] hover:bg-[#51376D] text-white flex items-center justify-center transition-colors active:scale-95"
+          className="w-10 h-10 shrink-0 rounded-full bg-gradient-to-br from-[#72519A] to-[#9474C3] text-white flex items-center justify-center shadow-brand-sm hover:shadow-brand-glow transition-shadow active:scale-95"
         >
           {loading ? (
             <Loader2 className="w-4 h-4 animate-spin" />
@@ -186,7 +186,7 @@ function VoicePlayerCard({
         {children}
       </section>
       {(subtitle || failed) && (
-        <p className={`text-[11px] mt-1.5 px-1 ${failed ? 'text-[#72519A]' : 'text-[#51376D]/55'}`}>{failed ? 'Could not play this clip.' : subtitle}</p>
+        <p className={`text-[11px] mt-1.5 px-1 ${failed ? 'text-red-600' : 'text-[#51376D]/55'}`}>{failed ? 'Could not play this clip.' : subtitle}</p>
       )}
     </div>
   );

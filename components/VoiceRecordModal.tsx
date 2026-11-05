@@ -123,8 +123,8 @@ export function VoiceRecordModal({
               <div className="h-full rounded-full bg-[#72519A] transition-[width] duration-100" style={{ width: `${progress}%` }} />
             </div>
             <div className="flex items-center justify-between text-[11px] text-[#51376D]/75">
-              <span className="inline-flex items-center gap-1.5 font-semibold text-[#9474C3]">
-                <span className="w-2 h-2 rounded-full bg-[#9474C3] animate-pulse" /> {formatSeconds(rec.elapsedMs)}
+              <span className="inline-flex items-center gap-1.5 font-semibold text-red-500">
+                <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse" /> {formatSeconds(rec.elapsedMs)}
               </span>
               <span>Stops at {VOICE_INTRO_MAX_MS / 1000}s</span>
             </div>
@@ -144,7 +144,7 @@ export function VoiceRecordModal({
         {rec.state === 'recorded' && previewUrl && (
           <div className="space-y-2.5">
             <VoicePlayer key={previewUrl} src={previewUrl} title="Preview" durationMs={rec.durationMs} />
-            {tooShort && <p className="text-[11px] text-[#72519A]">Too short - record at least {VOICE_INTRO_MIN_MS / 1000} seconds.</p>}
+            {tooShort && <p className="text-[11px] text-red-600">Too short - record at least {VOICE_INTRO_MIN_MS / 1000} seconds.</p>}
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
@@ -183,7 +183,7 @@ export function VoiceRecordModal({
           </button>
         )}
 
-        {rec.error && <p className="text-[11px] text-[#72519A]">{rec.error}</p>}
+        {rec.error && <p className="text-[11px] text-red-600">{rec.error}</p>}
         <p className="text-[10px] text-[#51376D]/55 text-center">
           Up to {VOICE_INTRO_MAX_MS / 1000} seconds. Members only hear it when they tap play.
         </p>

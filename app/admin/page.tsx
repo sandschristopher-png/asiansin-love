@@ -31,7 +31,7 @@ function PersonRow({ person, label }: { person: Person; label: string }) {
       </div>
       {person && (
         <div className="flex items-center gap-1 shrink-0">
-          {person.isBanned && <span className="text-[10px] font-semibold text-[#72519A]">Banned</span>}
+          {person.isBanned && <span className="text-[10px] font-semibold text-red-600">Banned</span>}
           <ReputationBadge score={person.reputation} size="xs" />
         </div>
       )}
@@ -65,7 +65,7 @@ function ContextSheet({ report, onClose }: { report: Report; onClose: () => void
             <div
               className={`max-w-[80%] rounded-2xl px-3 py-2 text-sm ${
                 m.fromReported ? 'bg-white border border-[#D5C6EC] text-[#51376D]' : 'bg-[#51376D] text-white'
-              } ${m.quarantined ? 'ring-2 ring-[#D5C6EC]' : ''}`}
+              } ${m.quarantined ? 'ring-2 ring-red-300' : ''}`}
             >
               <p className="whitespace-pre-wrap break-words">{m.content}</p>
               <p className={`mt-1 text-[10px] ${m.fromReported ? 'text-[#51376D]/55' : 'text-white/60'}`}>
@@ -102,7 +102,7 @@ function ReportCard({
   return (
     <article className="p-4 rounded-2xl border border-[#D5C6EC] bg-white mb-3 shadow-2xs">
       <div className="flex flex-wrap items-center gap-1.5 mb-3">
-        <span className="inline-flex items-center gap-1 rounded-full bg-[#E8DFF5]/50 border border-[#D5C6EC] px-2 py-0.5 text-[11px] font-semibold text-[#51376D]">
+        <span className="inline-flex items-center gap-1 rounded-full bg-red-50 border border-red-200 px-2 py-0.5 text-[11px] font-semibold text-red-700">
           <Flag className="w-3 h-3" aria-hidden />
           {report.reasonLabel}
         </span>
@@ -180,8 +180,8 @@ function ReportCard({
       )}
 
       {confirmBan && (
-        <div className="mt-2 rounded-xl bg-[#E8DFF5]/50 border border-[#D5C6EC]/60 p-2.5">
-          <p className="text-xs text-[#51376D] mb-2">Ban {report.reported?.name || 'this member'}? They are signed out and cannot sign in again.</p>
+        <div className="mt-2 rounded-xl bg-red-50 border border-red-100 p-2.5">
+          <p className="text-xs text-red-800 mb-2">Ban {report.reported?.name || 'this member'}? They are signed out and cannot sign in again.</p>
           <div className="grid grid-cols-2 gap-2">
             <AdminButton size="lg" onClick={() => setConfirmBan(false)} disabled={!!busy}>
               Cancel

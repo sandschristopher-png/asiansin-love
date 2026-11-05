@@ -5,7 +5,6 @@ import Link from 'next/link';
 import { AlertCircle, ArrowLeft, Eye, EyeOff, Loader2, Mail, MailCheck, X } from 'lucide-react';
 import { BrandLogo } from '@/components/BrandLogo';
 import { InAppToast } from '@/components/InAppToast';
-import { AmbientAurora } from '@/components/ui/AmbientAurora';
 import { CityRotator } from '@/components/auth/CityRotator';
 import { supabase } from '@/lib/supabase/client';
 import { authHref, describeAuthError, safeReturnTo } from '@/lib/authRedirect';
@@ -13,16 +12,16 @@ import { authHref, describeAuthError, safeReturnTo } from '@/lib/authRedirect';
 const RESET_EXPIRED_MESSAGE = 'That password reset link has expired or was already used. Request a new one from Forgot password.';
 /** Google / LINE / Email: one shared pill so the three read as a single stack. */
 const PILL =
-  'relative flex items-center justify-center w-full h-12 px-4 rounded-full bg-white/95 backdrop-blur-xs border border-[#D5C6EC] shadow-[0_2px_8px_rgba(81,55,109,0.04)] hover:shadow-[0_4px_12px_rgba(81,55,109,0.08)] hover:border-[#72519A]/30 transition-all select-none disabled:opacity-60 disabled:cursor-not-allowed';
+  'relative h-12 w-full px-4 rounded-full border border-[#D5C6EC] bg-white/90 backdrop-blur-sm text-sm font-medium text-[#51376D] shadow-brand-sm hover:border-[#B5A0DA] hover:bg-[#E8DFF5]/30 hover:shadow-brand-md transition-all flex items-center justify-center gap-3 select-none disabled:opacity-60 disabled:cursor-not-allowed';
 /** Icon slot pinned to one left guide line, so logos line up while labels stay centered. */
 const PILL_ICON = 'absolute left-4 sm:left-5 w-5 h-5 flex items-center justify-center shrink-0 pointer-events-none';
 /** LINE keeps the shared pill but hovers in LINE green instead of brand violet. */
-const PILL_LINE = PILL.replace('hover:border-[#72519A]/30', 'hover:border-[#06C755]/40');
-const PILL_LABEL = 'text-sm font-bold text-[#51376D] tracking-tight';
+const PILL_LINE = PILL.replace('hover:border-[#B5A0DA]', 'hover:border-[#06C755]/40');
+const PILL_LABEL = 'text-sm font-medium text-[#51376D] tracking-tight';
 const INPUT =
-  'w-full h-12 px-4 rounded-full bg-white border border-[#D5C6EC] text-base text-[#51376D] placeholder:text-[#51376D]/55 focus:outline-none focus:border-[#72519A] focus:ring-4 focus:ring-[#72519A]/15 transition';
+  'h-12 w-full rounded-full border border-[#D5C6EC] bg-white px-4 text-base sm:text-sm text-[#51376D] focus:border-[#72519A] focus:ring-2 focus:ring-[#B5A0DA]/30 focus:outline-none placeholder:text-[#51376D]/40 transition';
 const PRIMARY =
-  'w-full h-12 rounded-full bg-gradient-to-r from-[#72519A] to-[#9474C3] text-white text-sm font-semibold flex items-center justify-center gap-2 shadow-sm hover:opacity-95 active:scale-[0.99] transition disabled:opacity-60 disabled:cursor-not-allowed';
+  'h-12 w-full rounded-full bg-gradient-to-r from-[#72519A] to-[#9474C3] text-white font-semibold text-sm shadow-brand-glow hover:opacity-95 transition-opacity flex items-center justify-center gap-2 active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed';
 
 const GoogleIcon = () => (
   <svg className="w-4 h-4" viewBox="0 0 24 24" aria-hidden="true">
@@ -192,8 +191,13 @@ export function AuthScreen({ mode, cities }: { mode: 'login' | 'signup'; cities?
 
   return (
     // LayoutShell supplies the centered 430px frame on the #FFFFFF canvas.
-    <div className="relative isolate min-h-[100dvh] w-full flex flex-col bg-[#FFFFFF]/60 font-sans antialiased pb-[max(2.5rem,env(safe-area-inset-bottom))]">
-      <AmbientAurora />
+    <div className="relative isolate min-h-[100dvh] w-full flex flex-col bg-white font-sans antialiased overflow-hidden pb-[max(2.5rem,env(safe-area-inset-bottom))]">
+      {/* Layered breathing aura on the white canvas. */}
+      <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden z-0">
+        <div className="w-[30rem] h-[30rem] rounded-full bg-[#E8DFF5]/70 blur-3xl animate-pulse pointer-events-none absolute -top-24 -left-24" />
+        <div className="w-[26rem] h-[26rem] rounded-full bg-[#D5C6EC]/45 blur-3xl animate-pulse pointer-events-none absolute top-1/3 -right-20 [animation-delay:1.5s]" />
+        <div className="w-96 h-96 rounded-full bg-[#E8DFF5]/50 blur-3xl animate-pulse pointer-events-none absolute -bottom-20 left-1/4 [animation-delay:3s]" />
+      </div>
       <InAppToast message={toast} onClose={closeToast} durationMs={7000} />
       {/* Sign-in errors float above the card (fixed), so they never push the buttons down. */}
       {error && (

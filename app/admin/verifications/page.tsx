@@ -77,7 +77,7 @@ const Chip = ({ tone, children }: { tone: 'good' | 'bad' | 'neutral'; children: 
       tone === 'good'
         ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
         : tone === 'bad'
-          ? 'bg-[#E8DFF5]/50 border-[#D5C6EC] text-[#51376D]'
+          ? 'bg-red-50 border-red-200 text-red-700'
           : 'bg-[#E8DFF5]/60 border-[#D5C6EC] text-[#72519A]'
     }`}
   >
@@ -236,7 +236,7 @@ export default function AdminVerificationsPage() {
             className={`p-3.5 rounded-xl border flex items-center justify-between text-xs ${
               feedback.type === 'success'
                 ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
-                : 'bg-[#E8DFF5]/50 border-[#D5C6EC] text-[#51376D]'
+                : 'bg-red-50 border-red-200 text-red-700'
             }`}
           >
             <span>{feedback.text}</span>
@@ -252,7 +252,7 @@ export default function AdminVerificationsPage() {
             <p className="text-xs">Loading review queue...</p>
           </div>
         ) : error ? (
-          <div className="p-6 bg-[#E8DFF5]/50 border border-[#D5C6EC] rounded-2xl text-center text-[#51376D] space-y-2">
+          <div className="p-6 bg-red-50 border border-red-200 rounded-2xl text-center text-red-700 space-y-2">
             <AlertTriangle className="w-5 h-5 mx-auto" />
             <p className="text-xs font-medium">{error}</p>
             <button onClick={() => load()} className="text-xs underline">
@@ -421,14 +421,14 @@ export default function AdminVerificationsPage() {
 
             {/* Reports (read-only) */}
             <section className="space-y-3">
-              <SectionTitle icon={<Flag className="w-4 h-4 text-[#9474C3]" />} title="Open member reports" count={reports.length} />
+              <SectionTitle icon={<Flag className="w-4 h-4 text-red-500" />} title="Open member reports" count={reports.length} />
               {reports.length === 0 ? (
                 <Empty text="No open reports." />
               ) : (
                 reports.map((r) => (
                   <div key={r.id} className="p-3.5 rounded-2xl bg-white border border-[#D5C6EC] text-xs space-y-1.5">
                     <div className="flex items-center justify-between">
-                      <span className="px-2 py-0.5 rounded-full bg-[#E8DFF5]/50 text-[#72519A] font-semibold text-[11px]">
+                      <span className="px-2 py-0.5 rounded-full bg-red-50 text-red-600 font-semibold text-[11px]">
                         {r.reason.replace(/_/g, ' ')}
                       </span>
                       {r.created_at && (

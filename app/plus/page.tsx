@@ -201,10 +201,11 @@ function PlusHubContent() {
 
   return (
     <div className="relative isolate flex-1 w-full min-h-screen bg-white text-[#51376D] overflow-hidden">
-      {/* Subtle ambient aura: two soft lavender orbs breathing behind the content. */}
+      {/* Layered breathing aura on the white canvas (same as the auth screens). */}
       <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="bg-[#E8DFF5]/70 blur-3xl w-96 h-96 rounded-full absolute -top-20 -left-20 animate-pulse" />
-        <div className="bg-[#D5C6EC]/50 blur-3xl w-[26rem] h-[26rem] rounded-full absolute top-1/3 -right-20 animate-pulse [animation-delay:1.5s]" />
+        <div className="w-[30rem] h-[30rem] rounded-full bg-[#E8DFF5]/70 blur-3xl animate-pulse pointer-events-none absolute -top-24 -left-24" />
+        <div className="w-[26rem] h-[26rem] rounded-full bg-[#D5C6EC]/45 blur-3xl animate-pulse pointer-events-none absolute top-1/3 -right-20 [animation-delay:1.5s]" />
+        <div className="w-96 h-96 rounded-full bg-[#E8DFF5]/50 blur-3xl animate-pulse pointer-events-none absolute -bottom-20 left-1/4 [animation-delay:3s]" />
       </div>
 
       <div className="relative z-10 px-4 pt-3 pb-[calc(8.5rem+env(safe-area-inset-bottom))] space-y-6">
@@ -265,12 +266,12 @@ function PlusHubContent() {
                   onClick={() => setSelectedPlan(p.id)}
                   className={`text-left flex flex-col gap-1 ${
                     active
-                      ? 'bg-white border-2 border-[#72519A] rounded-2xl p-4 shadow-sm relative'
-                      : 'relative bg-white border border-[#D5C6EC] rounded-2xl p-4 shadow-sm text-[#51376D]'
+                      ? 'bg-white border-2 border-[#72519A] rounded-2xl p-4 shadow-brand-md relative'
+                      : 'relative bg-white/90 backdrop-blur-md border border-[#D5C6EC] rounded-2xl p-4 shadow-brand-sm hover:border-[#B5A0DA] transition-all text-[#51376D]'
                   }`}
                 >
                   {p.badge && (
-                    <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap bg-[#72519A] text-white text-[10px] font-medium px-2 py-0.5 rounded-full uppercase">
+                    <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap uppercase text-[10px] font-bold tracking-wider text-white bg-gradient-to-r from-[#72519A] to-[#9474C3] px-2.5 py-0.5 rounded-full shadow-brand-sm">
                       {p.badge}
                     </span>
                   )}
@@ -280,7 +281,7 @@ function PlusHubContent() {
                     <span className="ml-1 text-[10px] font-medium text-[#51376D]/50">{p.totalSuffix}</span>
                   </span>
                   <span className="text-[10px] text-[#51376D]/55">{p.months > 1 ? `${p.perMonth} / mo` : p.billingNote}</span>
-                  {p.savings && <span className="text-[11px] font-semibold text-[#9474C3]">{p.savings}</span>}
+                  {p.savings && <span className="text-[11px] font-semibold text-[#72519A]">{p.savings}</span>}
                 </button>
               );
             })}
@@ -297,7 +298,7 @@ function PlusHubContent() {
           {MATRIX.map((row, i) => (
             <div
               key={row.feature}
-              className={`grid grid-cols-[1.1fr_1fr_1fr] gap-x-2 py-3 text-sm text-[#51376D] ${i < MATRIX.length - 1 ? 'border-b border-[#D5C6EC]/60' : ''}`}
+              className={`grid grid-cols-[1.1fr_1fr_1fr] gap-x-2 py-3 text-sm text-[#51376D] ${i < MATRIX.length - 1 ? 'border-b border-[#D5C6EC]/40' : ''}`}
             >
               <span className="text-[12px] font-semibold leading-snug">{row.feature}</span>
               <span className="text-[11.5px] text-[#51376D]/60 flex items-start gap-1.5 leading-snug">
@@ -362,7 +363,7 @@ function PlusHubContent() {
           <div className="flex items-center gap-2.5">
             <Link
               href="/discover"
-              className="border border-[#D5C6EC] bg-white text-[#51376D] hover:bg-[#E8DFF5]/30 rounded-full h-12 px-6 text-sm font-medium transition-colors flex items-center justify-center shrink-0"
+              className="h-12 px-6 rounded-full border border-[#D5C6EC] bg-white text-[#51376D] hover:bg-[#E8DFF5]/30 text-sm font-medium transition-colors flex items-center justify-center shrink-0"
             >
               Keep Free
             </Link>
@@ -370,7 +371,7 @@ function PlusHubContent() {
               type="button"
               disabled={starting || loading}
               onClick={handleSubscribe}
-              className="flex-1 min-w-0 bg-[#72519A] hover:bg-[#51376D] text-white font-medium rounded-full h-12 px-8 text-sm transition-colors flex items-center justify-center gap-2 whitespace-nowrap disabled:opacity-70"
+              className="flex-1 min-w-0 h-12 px-8 rounded-full bg-gradient-to-r from-[#72519A] to-[#9474C3] hover:opacity-95 text-white font-semibold text-sm shadow-brand-glow transition-opacity flex items-center justify-center gap-2 whitespace-nowrap disabled:opacity-70"
             >
               {starting ? (
                 <>

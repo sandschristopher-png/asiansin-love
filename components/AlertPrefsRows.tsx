@@ -68,7 +68,7 @@ export function AlertPrefsRows() {
         </span>
         <Toggle on={browser} />
       </button>
-      {note && <p className="mx-3 -mt-1 mb-1 text-[11px] font-medium text-[#72519A]">{note}</p>}
+      {note && <p className="mx-3 -mt-1 mb-1 text-[11px] font-medium text-red-600">{note}</p>}
 
     </>
   );

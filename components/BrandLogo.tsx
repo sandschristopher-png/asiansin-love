@@ -22,7 +22,7 @@ const SIZE_CLASS: Record<BrandLogoSize, string> = {
   lg: 'text-3xl font-extrabold tracking-tight',
 };
 
-/** Typographic wordmark: clean "asiansin.love" in deep muted purple, Plus Jakarta Sans (font-brand). */
+/** Typographic wordmark: bold aubergine "asiansin." + 3-stop liquid purple "love" (Plus Jakarta Sans). */
 export function BrandLogo({ className = '', href = '/discover', size = 'md', textSize = '', onDark = false }: BrandLogoProps) {
   const wordmark = (
     <span
@@ -33,7 +33,8 @@ export function BrandLogo({ className = '', href = '/discover', size = 'md', tex
       ].filter(Boolean).join(' ')}
       aria-label="asiansin.love"
     >
-      <span className={onDark ? 'text-white' : 'text-[#51376D]'}>asiansin.love</span>
+      <span className={`font-bold ${onDark ? 'text-white' : 'text-[#51376D]'}`}>asiansin.</span>
+      <span className="bg-gradient-to-r from-[#72519A] via-[#9474C3] to-[#B5A0DA] bg-clip-text text-transparent font-extrabold">love</span>
     </span>
   );
 

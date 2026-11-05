@@ -62,14 +62,14 @@ export function SparkHeartButton({
         }
         onSpark();
       }}
-      className={`p-1 cursor-pointer transition-transform active:scale-90 hover:scale-110 disabled:cursor-default disabled:hover:scale-100 ${className}`}
+      className={`p-1 cursor-pointer transition-transform active:scale-90 hover:scale-110 disabled:cursor-default ${className}`}
     >
       <span className={`inline-flex ${isPopping ? 'animate-heart-pop' : ''}`}>
         <Heart
-          className={`w-6 h-6 transition-colors duration-200 ${
+          className={`transition-colors duration-200 ${
             isSparked
-              ? 'fill-[#72519A] stroke-none drop-shadow-[0_1px_3px_rgba(0,0,0,0.3)]'
-              : 'stroke-white fill-none stroke-[2] drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)]'
+              ? 'w-7 h-7 fill-[#72519A] stroke-white stroke-[1.5] drop-shadow-[0_2px_6px_rgba(0,0,0,0.5)]'
+              : 'w-7 h-7 stroke-white fill-none stroke-[2.2] drop-shadow-[0_2px_6px_rgba(0,0,0,0.65)]'
           }`}
         />
       </span>

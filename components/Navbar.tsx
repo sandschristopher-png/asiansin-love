@@ -146,7 +146,7 @@ export function Navbar() {
   if (isChatThread || pathname === '/plus' || (pathname || '').startsWith('/plus/') || pathname === '/profile/edit' || (pathname || '').startsWith('/profile/edit/') || pathname === '/settings' || (pathname || '').startsWith('/settings/')) return null;
   return (
     // On Discover the frosted filter bar sits directly below: drop the divider so both read as one surface.
-    <header className={`sticky top-0 z-40 w-full bg-white/80 backdrop-blur-md border-b ${pathname === '/discover' ? 'border-transparent' : 'border-[#D5C6EC]'}`}>
+    <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md border-b border-[#D5C6EC]/50 shadow-brand-sm">
       <div className="max-w-[430px] mx-auto px-4 h-14 flex items-center justify-between relative">
         <div className={`flex items-center gap-2 ${pageTitle ? 'min-w-0' : 'shrink-0'}`}>
           <div
@@ -264,7 +264,7 @@ export function Navbar() {
                       )}
                     </div>
                     <div className="border-t border-[#D5C6EC] py-1">
-                      <button type="button" role="menuitem" onClick={handleSignOut} className="w-full flex items-center gap-3 px-4 h-11 text-sm text-[#72519A] hover:bg-[#E8DFF5]/50 transition-colors text-left">
+                      <button type="button" role="menuitem" onClick={handleSignOut} className="w-full flex items-center gap-3 px-4 h-11 text-sm text-red-600 hover:bg-red-50 transition-colors text-left">
                         <LogOut className="w-4 h-4" />
                         Sign Out
                       </button>

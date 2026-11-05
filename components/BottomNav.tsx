@@ -103,8 +103,8 @@ export function BottomNav() {
               href={item.href}
               className={`relative flex-1 flex flex-col items-center justify-center py-1 px-2 rounded-2xl transition-all duration-200 ease-out active:scale-95 select-none cursor-pointer ${
                 active 
-                  ? 'text-[#72519A]' 
-                  : 'text-[#51376D]/55 hover:text-[#51376D]/85'
+                  ? 'text-[#51376D]'
+                  : 'text-[#B5A0DA] hover:text-[#72519A] transition-colors'
               }`}
               aria-label={item.label}
             >
@@ -129,7 +129,7 @@ export function BottomNav() {
                 })()}
               </div>
               <span className={`text-[10px] tracking-tight mt-0.5 leading-tight transition-colors duration-200 ${
-                active ? 'font-bold text-[#72519A]' : 'font-medium text-[#51376D]/55'
+                active ? 'font-bold text-[#51376D]' : 'font-medium text-[#51376D]/55'
               }`}>
                 {item.label}
               </span>

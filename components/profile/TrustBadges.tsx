@@ -27,9 +27,9 @@ export function VerifiedLocationBadge({ title, className = '' }: { title?: strin
   return (
     <span
       title={title}
-      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white text-[11px] font-medium text-[#51376D] border border-[#D5C6EC] whitespace-nowrap ${className}`}
+      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-black/40 backdrop-blur-md border border-white/20 text-white text-[11px] font-medium whitespace-nowrap ${className}`}
     >
-      <ShieldCheck className="w-3 h-3 text-[#72519A] stroke-[2.5]" />
+      <ShieldCheck className="w-3 h-3 text-white stroke-[2.5]" />
       Verified Location
     </span>
   );

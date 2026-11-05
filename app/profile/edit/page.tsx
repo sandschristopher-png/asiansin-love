@@ -428,7 +428,7 @@ export default function EditProfilePage() {
             className={`p-3.5 rounded-2xl text-xs font-semibold border ${
               statusMsg.type === 'success'
                 ? 'bg-emerald-50 border-emerald-200 text-emerald-800'
-                : 'bg-[#E8DFF5]/50 border-[#D5C6EC] text-[#51376D]'
+                : 'bg-red-50 border-red-200 text-red-700'
             }`}
           >
             {statusMsg.text}
@@ -552,7 +552,7 @@ export default function EditProfilePage() {
                 <p className="text-[11px] text-[#51376D]/55 mt-1.5">
                   {usernameStatus === 'checking' && 'Checking availability...'}
                   {usernameStatus === 'available' && <span className="text-emerald-400">Handle is available.</span>}
-                  {usernameStatus === 'taken' && <span className="text-[#9474C3]">Handle is already taken.</span>}
+                  {usernameStatus === 'taken' && <span className="text-red-400">Handle is already taken.</span>}
                   {usernameStatus === 'idle' && 'Claim your unique username.'}
                 </p>
               </div>

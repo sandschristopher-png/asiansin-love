@@ -118,7 +118,7 @@ export function EditHighlightsModal({
           {error && (
             <div
               role="alert"
-              className="flex items-center gap-2 rounded-xl bg-[#E8DFF5]/50 border border-[#D5C6EC]/60 p-3 text-xs text-[#72519A]"
+              className="flex items-center gap-2 rounded-xl bg-red-50 border border-red-100 p-3 text-xs text-red-600"
             >
               <AlertCircle className="h-4 w-4 shrink-0" />
               <span>{error}</span>
