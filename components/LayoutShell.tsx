@@ -5,6 +5,7 @@ import HeartbeatProvider from "./HeartbeatProvider";
 import { usePathname } from 'next/navigation';
 import { Navbar } from '@/components/Navbar';
 import { BottomNav } from '@/components/BottomNav';
+import { isCityPagePath } from '@/lib/seo/citySlugs';
 import { RealtimeNotifier } from '@/components/RealtimeNotifier';
 import { ActionToastProvider } from '@/components/ActionToast';
 
@@ -15,7 +16,8 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
     pathname?.startsWith('/login') ||
     pathname?.startsWith('/signup') ||
     pathname?.startsWith('/onboarding') ||
-    pathname?.startsWith('/verify');
+    pathname?.startsWith('/verify') ||
+    isCityPagePath(pathname); // SEO city landing pages (/cebu, /manila, ...)
 
   const cleanPath = pathname?.replace(/\/+$/, '') || '';
   const isPublicProfile =

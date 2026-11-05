@@ -1,22 +1,43 @@
-import { MetadataRoute } from 'next';
+import type { MetadataRoute } from 'next';
+import { CITY_SEO_DATA, SITE_URL } from '@/lib/seo/cityData';
 
+/** Legacy keyword pages (app/dating/[slug]). */
+const DATING_SLUGS = [
+  'filipina-dating', 'filipino-dating', 'manila-dating', 'cebu-dating', 'thai-dating', 'bangkok-dating',
+  'indonesia-dating', 'jakarta-dating', 'myanmar-dating', 'burmese-dating', 'cambodia-dating', 'khmer-dating',
+  'vietnam-dating', 'saigon-dating', 'verified-asian-dating',
+];
+
+/**
+ * Public, crawlable pages only. Signed-in screens (/discover, /messages, /favorites, /profile...)
+ * redirect crawlers to /login, so they are not listed.
+ */
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = 'https://asiansin.love';
-  const slugs = ["filipina-dating","filipino-dating","manila-dating","cebu-dating","thai-dating","bangkok-dating","indonesia-dating","jakarta-dating","myanmar-dating","burmese-dating","cambodia-dating","khmer-dating","vietnam-dating","saigon-dating","verified-asian-dating"];
+  const now = new Date();
 
-  const routes = ['', '/discover', '/favorites', '/messages', '/profile', '/plus'].map((route) => ({
-    url: baseUrl + route,
-    lastModified: new Date(),
-    changeFrequency: 'daily' as const,
-    priority: route === '' ? 1.0 : 0.8,
-  }));
+  const core: MetadataRoute.Sitemap = [
+    { url: SITE_URL, lastModified: now, changeFrequency: 'daily', priority: 1.0 },
+    { url: `${SITE_URL}/plus`, lastModified: now, changeFrequency: 'weekly', priority: 0.7 },
+    { url: `${SITE_URL}/features`, lastModified: now, changeFrequency: 'monthly', priority: 0.6 },
+    { url: `${SITE_URL}/safety`, lastModified: now, changeFrequency: 'monthly', priority: 0.5 },
+    { url: `${SITE_URL}/standards`, lastModified: now, changeFrequency: 'monthly', priority: 0.4 },
+    { url: `${SITE_URL}/terms`, lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
+    { url: `${SITE_URL}/privacy`, lastModified: now, changeFrequency: 'yearly', priority: 0.3 },
+  ];
 
-  const seoRoutes = slugs.map((slug) => ({
-    url: baseUrl + '/dating/' + slug,
-    lastModified: new Date(),
-    changeFrequency: 'weekly' as const,
+  const cities: MetadataRoute.Sitemap = Object.values(CITY_SEO_DATA).map((city) => ({
+    url: city.canonicalUrl,
+    lastModified: now,
+    changeFrequency: 'weekly',
     priority: 0.9,
   }));
 
-  return [...routes, ...seoRoutes];
+  const legacy: MetadataRoute.Sitemap = DATING_SLUGS.map((slug) => ({
+    url: `${SITE_URL}/dating/${slug}`,
+    lastModified: now,
+    changeFrequency: 'weekly',
+    priority: 0.6,
+  }));
+
+  return [...core, ...cities, ...legacy];
 }
