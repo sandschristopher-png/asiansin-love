@@ -26,6 +26,7 @@ import { isRhythmValue, RHYTHM_FIELDS, type RhythmField } from '@/lib/rhythm';
 import { resolveCountry } from '@/lib/countries';
 import { canonicalCountry } from '@/lib/constants/countries';
 import { isPlusProfile } from '@/lib/plus';
+import { isEnglishLevel } from '@/lib/discoverFilters';
 import { normalizeLanguages } from '@/lib/constants/languages';
 import {
   HEIGHT_MAX_CM,
@@ -208,6 +209,13 @@ export async function PATCH(req: Request) {
     updates[key] = value as string;
   }
 
+  // English proficiency (Discover filter), column from 20261114_privacy_features.sql.
+  if ('english_level' in body) {
+    const v = body.english_level;
+    if (v !== null && v !== '' && !isEnglishLevel(v)) return bad('Invalid English level.', 'english_level');
+    updates.english_level = v === '' ? null : (v as string | null);
+  }
+
   for (const key of RHYTHM_KEYS) {
     if (!(key in body)) continue;
     const v = body[key];
@@ -264,6 +272,7 @@ export async function PATCH(req: Request) {
   const OPTIONAL_GROUPS: { re: RegExp; keys: string[]; onDrop: () => void }[] = [
     { re: RHYTHM_COLUMN_RE, keys: RHYTHM_KEYS, onDrop: () => (rhythmSaved = false) },
     { re: LIFESTYLE_COLUMN_RE, keys: NEW_LIFESTYLE_COLUMNS, onDrop: () => (lifestyleSaved = false) },
+    { re: /english_level/, keys: ['english_level'], onDrop: () => {} },
   ];
   for (let attempt = 0; attempt < OPTIONAL_GROUPS.length && error; attempt++) {
     const group = OPTIONAL_GROUPS.find((g) => g.re.test(error!.message) && g.keys.some((k) => k in pending));

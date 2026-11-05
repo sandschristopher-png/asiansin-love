@@ -8,6 +8,7 @@ import { useSearchParams, useRouter } from 'next/navigation';
 import { Camera, ChevronDown, ChevronLeft, ChevronRight, Compass, Search, X as XIcon, SlidersHorizontal, RotateCcw, MapPin } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { INTENT_OPTIONS, normalizeIntent } from '@/lib/intents';
+import { CHILDREN_FILTERS, ENGLISH_LEVEL_OPTIONS, RELATIONSHIP_INTENT_FILTERS, discoverQuery } from '@/lib/discoverFilters';
 import { ActionType, getLocalCardActions, persistCardAction } from '@/lib/interactions';
 import { CardPhoto } from '@/components/CardPhoto';
 import { AudioPill } from '@/components/AudioPill';
@@ -32,6 +33,10 @@ import { HEIGHT_MAX_CM, HEIGHT_MIN_CM } from '@/lib/lifestyle';
 import { readLanguages } from '@/lib/constants/languages';
 import { ReputationBadge } from '@/components/ReputationBadge';
 import { PlusBadge } from '@/components/ui/PlusBadge';
+import dynamic from 'next/dynamic';
+
+/** Loaded on first open (keeps the Plus checkout sheet out of the Discover bundle). */
+const AILPlusModal = dynamic(() => import('@/components/AILPlusModal').then((m) => m.AILPlusModal), { ssr: false });
 
 /** "Near Me" radius only when the viewer has no country on their profile. */
 const NEAR_ME_FALLBACK_KM = 150;
@@ -308,6 +313,8 @@ function DiscoverContent() {
   // Cross-border country filters (incl. the regional spotlight) are Plus.
   const [viewerIsPlus, setViewerIsPlus] = useState(false);
   const countryLocked = !viewerIsPlus;
+  // "Only show profiles who Sparked me": Plus, or women (same rule as the Received tab).
+  const sparkedMeAccess = viewerIsPlus || seekingGender === 'male';
   const [categorySwitching, setCategorySwitching] = useState(false);
   const switchTimer = useRef<number | null>(null);
   /** Short skeleton cross-fade so a category switch never flashes a half-filtered grid. */
@@ -349,6 +356,11 @@ function DiscoverContent() {
   const [draftHabits, setDraftHabits] = useState<string[]>([]);
   const [draftVerifiedOnly, setDraftVerifiedOnly] = useState<boolean>(false);
   const [draftActiveNowOnly, setDraftActiveNowOnly] = useState<boolean>(false);
+  const [draftHideContacted, setDraftHideContacted] = useState<boolean>(true);
+  const [draftSparkedMeOnly, setDraftSparkedMeOnly] = useState<boolean>(false);
+  const [draftTimeline, setDraftTimeline] = useState<string[]>([]);
+  const [draftChildren, setDraftChildren] = useState<string[]>([]);
+  const [draftEnglish, setDraftEnglish] = useState<string[]>([]);
   const [draftMode, setDraftMode] = useState<DiscoveryModeId>('all');
   const [selectedIntents, setSelectedIntents] = useState<string[]>([]);
   const [heightRange, setHeightRange] = useState<[number, number]>([HEIGHT_MIN_CM, HEIGHT_MAX_CM]);
@@ -356,9 +368,24 @@ function DiscoverContent() {
   const [selectedHabits, setSelectedHabits] = useState<string[]>([]);
   const heightNarrowed = heightRange[0] > HEIGHT_MIN_CM || heightRange[1] < HEIGHT_MAX_CM;
   const [verifiedOnly, setVerifiedOnly] = useState<boolean>(false);
-  // Read by fetchProfiles; turning "Verified profiles only" on or off re-queries the server.
-  const verifiedOnlyRef = useRef(false);
   const [activeNowOnly, setActiveNowOnly] = useState<boolean>(false);
+  // Server-side filters (lib/discoverFilters.ts): changing any of them re-queries /api/discover.
+  const [hideContacted, setHideContacted] = useState<boolean>(true);
+  const [sparkedMeOnly, setSparkedMeOnly] = useState<boolean>(false);
+  const [selectedTimeline, setSelectedTimeline] = useState<string[]>([]);
+  const [selectedChildren, setSelectedChildren] = useState<string[]>([]);
+  const [selectedEnglish, setSelectedEnglish] = useState<string[]>([]);
+  const feedUrl = discoverQuery({
+    verifiedOnly,
+    hideContacted,
+    sparkedMeOnly,
+    intents: selectedTimeline,
+    children: selectedChildren,
+    english: selectedEnglish,
+  });
+  // Read by fetchProfiles (the first load uses the defaults, i.e. plain /api/discover).
+  const feedUrlRef = useRef('/api/discover');
+  const [plusModalOpen, setPlusModalOpen] = useState(false);
 
   const [matchedModalProfile, setMatchedModalProfile] = useState<{ id: string; name: string; avatarUrl?: string } | null>(null);
   const [isModalClosing, setIsModalClosing] = useState(false);
@@ -415,6 +442,11 @@ function DiscoverContent() {
       setDraftHabits(selectedHabits);
       setDraftVerifiedOnly(verifiedOnly);
       setDraftActiveNowOnly(activeNowOnly);
+      setDraftHideContacted(hideContacted);
+      setDraftSparkedMeOnly(sparkedMeOnly);
+      setDraftTimeline(selectedTimeline);
+      setDraftChildren(selectedChildren);
+      setDraftEnglish(selectedEnglish);
       setDraftMode(discoveryMode);
       document.body.style.overflow = 'hidden';
     } else {
@@ -423,7 +455,7 @@ function DiscoverContent() {
     return () => {
       document.body.style.overflow = '';
     };
-  }, [filtersOpen, minAge, maxAge, selectedCountry, selectedIntents, heightRange, selectedLanguages, selectedHabits, verifiedOnly, activeNowOnly, discoveryMode]);
+  }, [filtersOpen, minAge, maxAge, selectedCountry, selectedIntents, heightRange, selectedLanguages, selectedHabits, verifiedOnly, activeNowOnly, hideContacted, sparkedMeOnly, selectedTimeline, selectedChildren, selectedEnglish, discoveryMode]);
 
   useEffect(() => {
     const handleMutualMatch = (e: CustomEvent<{ targetId: string }>) => {
@@ -499,8 +531,7 @@ function DiscoverContent() {
     const controller = new AbortController();
     const timeout = window.setTimeout(() => controller.abort(), 12_000);
     try {
-      const url = verifiedOnlyRef.current ? '/api/discover?verified=1' : '/api/discover';
-      const res = await fetch(url, { cache: 'no-store', signal: controller.signal });
+      const res = await fetch(feedUrlRef.current, { cache: 'no-store', signal: controller.signal });
       if (res.ok) {
         const payload = await res.json();
         if (Array.isArray(payload.profiles)) {
@@ -516,11 +547,11 @@ function DiscoverContent() {
   };
 
   useEffect(() => {
-    if (verifiedOnlyRef.current === verifiedOnly) return;
-    verifiedOnlyRef.current = verifiedOnly;
+    if (feedUrlRef.current === feedUrl) return;
+    feedUrlRef.current = feedUrl;
     void fetchProfiles();
     // eslint-disable-next-line react-hooks/exhaustive-deps -- fetchProfiles reads the ref
-  }, [verifiedOnly]);
+  }, [feedUrl]);
 
   const refreshFeed = async () => {
     if (isRefreshing) return;
@@ -657,9 +688,14 @@ function DiscoverContent() {
     if (selectedHabits.length) count++;
     if (verifiedOnly) count++;
     if (activeNowOnly) count++;
+    if (!hideContacted) count++;
+    if (sparkedMeOnly) count++;
+    if (selectedTimeline.length) count++;
+    if (selectedChildren.length) count++;
+    if (selectedEnglish.length) count++;
     if (discoveryMode !== 'all') count++;
     return count;
-  }, [selectedCountry, minAge, maxAge, selectedIntents, heightNarrowed, selectedLanguages, selectedHabits, verifiedOnly, activeNowOnly, discoveryMode]);
+  }, [selectedCountry, minAge, maxAge, selectedIntents, heightNarrowed, selectedLanguages, selectedHabits, verifiedOnly, activeNowOnly, hideContacted, sparkedMeOnly, selectedTimeline, selectedChildren, selectedEnglish, discoveryMode]);
 
   const hasActiveFilters = activeFiltersCount > 0;
 
@@ -675,6 +711,11 @@ function DiscoverContent() {
     setMaxAge(DEFAULT_MAX_AGE);
     setVerifiedOnly(false);
     setActiveNowOnly(false);
+    setHideContacted(true);
+    setSparkedMeOnly(false);
+    setSelectedTimeline([]);
+    setSelectedChildren([]);
+    setSelectedEnglish([]);
     setDiscoveryMode('all');
     setSearchQuery('');
     setVisibleLimit(BATCH_SIZE);
@@ -719,6 +760,11 @@ function DiscoverContent() {
     setSelectedHabits(draftHabits);
     setVerifiedOnly(draftVerifiedOnly);
     setActiveNowOnly(draftActiveNowOnly);
+    setHideContacted(draftHideContacted);
+    setSparkedMeOnly(draftSparkedMeOnly && sparkedMeAccess);
+    setSelectedTimeline(draftTimeline);
+    setSelectedChildren(draftChildren);
+    setSelectedEnglish(draftEnglish);
     setDiscoveryMode(draftMode);
     flashSkeleton();
     closeFiltersWithAnimation();
@@ -734,6 +780,11 @@ function DiscoverContent() {
     setDraftMaxAge(DEFAULT_MAX_AGE);
     setDraftVerifiedOnly(false);
     setDraftActiveNowOnly(false);
+    setDraftHideContacted(true);
+    setDraftSparkedMeOnly(false);
+    setDraftTimeline([]);
+    setDraftChildren([]);
+    setDraftEnglish([]);
     setDraftMode('all');
   };
 
@@ -1322,6 +1373,38 @@ function DiscoverContent() {
                       </div>
                     </div>
 
+                    {[
+                      { label: 'Relationship Intent', options: RELATIONSHIP_INTENT_FILTERS, value: draftTimeline, set: setDraftTimeline },
+                      { label: 'Children', options: CHILDREN_FILTERS, value: draftChildren, set: setDraftChildren },
+                      { label: 'English Proficiency', options: ENGLISH_LEVEL_OPTIONS, value: draftEnglish, set: setDraftEnglish },
+                    ].map((group) => (
+                      <div key={group.label}>
+                        <label className="text-[11px] font-bold text-[#6C637B] uppercase tracking-wider block mb-2">
+                          {group.label}
+                        </label>
+                        <div className="flex flex-wrap gap-2">
+                          <button
+                            type="button"
+                            onClick={() => group.set([])}
+                            className={FILTER_CHIP + (group.value.length === 0 ? FILTER_CHIP_ON : FILTER_CHIP_OFF)}
+                          >
+                            Any
+                          </button>
+                          {group.options.map((option) => (
+                            <button
+                              key={option.value}
+                              type="button"
+                              aria-pressed={group.value.includes(option.value)}
+                              onClick={() => group.set((prev) => toggleIn(prev, option.value))}
+                              className={FILTER_CHIP + (group.value.includes(option.value) ? FILTER_CHIP_ON : FILTER_CHIP_OFF)}
+                            >
+                              {option.label}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+
                     <div>
                       <label className="text-[11px] font-bold text-[#6C637B] uppercase tracking-wider block mb-2">
                         Browse Mode
@@ -1349,14 +1432,31 @@ function DiscoverContent() {
                       {[
                         { label: 'Verified profiles only', value: draftVerifiedOnly, set: setDraftVerifiedOnly },
                         { label: 'Active now only', value: draftActiveNowOnly, set: setDraftActiveNowOnly },
+                        { label: 'Hide profiles I already Sparked or messaged', value: draftHideContacted, set: setDraftHideContacted },
+                        {
+                          label: 'Only show profiles who Sparked me',
+                          value: draftSparkedMeOnly && sparkedMeAccess,
+                          set: setDraftSparkedMeOnly,
+                          plus: true,
+                        },
                       ].map((row) => (
                         <button
                           key={row.label}
                           type="button"
-                          onClick={() => row.set(!row.value)}
-                          className="w-full flex items-center justify-between py-2 text-xs font-medium text-[#1C1924] cursor-pointer"
+                          onClick={() => {
+                            // Free members: the upgrade sheet opens and the switch stays off.
+                            if (row.plus && !sparkedMeAccess) {
+                              setPlusModalOpen(true);
+                              return;
+                            }
+                            row.set(!row.value);
+                          }}
+                          className="w-full flex items-center justify-between gap-3 py-2 text-xs font-medium text-[#1C1924] cursor-pointer text-left"
                         >
-                          <span>{row.label}</span>
+                          <span className="inline-flex items-center gap-1.5">
+                            {row.label}
+                            {row.plus && <PlusBadge size="profile" />}
+                          </span>
                           <span className={'w-10 h-6 rounded-full transition-colors relative shrink-0 ' + (row.value ? 'bg-[#6555B8]' : 'bg-[#DDD7E5]')}>
                             <span className={'absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-all ' + (row.value ? 'left-5' : 'left-1')} />
                           </span>
@@ -1390,6 +1490,10 @@ function DiscoverContent() {
             </div>,
             document.body
           )}
+
+      {plusModalOpen && (
+        <AILPlusModal open onClose={() => setPlusModalOpen(false)} title="See who Sparked you with Plus" returnPath="/discover" />
+      )}
 
       {matchedModalProfile && (
         <MutualSparkModal

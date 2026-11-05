@@ -3,10 +3,11 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Lock, Crown, Heart, User, Send, MessageCircle, Eye, type LucideIcon } from 'lucide-react';
+import { Lock, Heart, User, Send, MessageCircle, Eye, type LucideIcon } from 'lucide-react';
 import { createBrowserClient } from '@supabase/ssr';
 import { CardPhoto } from '@/components/CardPhoto';
 import { ReputationBadge } from '@/components/ReputationBadge';
+import { PlusBadge } from '@/components/ui/PlusBadge';
 
 type SparkTab = 'sparked' | 'sparked_you' | 'mutual' | 'visited';
 
@@ -26,6 +27,10 @@ interface ProfileCardData {
   is_verified?: boolean | null;
   is_plus?: boolean | null;
   is_online?: boolean | null;
+  /** Visitors tab: newest visit by this member. */
+  visited_at?: string | null;
+  /** Free preview: a visitor whose details unlock with Plus. */
+  locked?: boolean;
 }
 
 interface CachedSparksState {
@@ -81,6 +86,70 @@ function SparkCardPhoto({ src, name, className }: { src: string; name: string; c
     );
   }
   return <CardPhoto src={src} alt={name} className={className} onError={() => setFailedSrc(src)} />;
+}
+
+/** "Visited 2h ago" from a visit timestamp. */
+function visitedLabel(iso?: string | null): string {
+  const t = iso ? Date.parse(iso) : NaN;
+  if (!Number.isFinite(t)) return 'Visited recently';
+  const mins = Math.max(0, Math.floor((Date.now() - t) / 60000));
+  if (mins < 1) return 'Visited just now';
+  if (mins < 60) return `Visited ${mins}m ago`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `Visited ${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  if (days === 1) return 'Visited yesterday';
+  if (days < 30) return `Visited ${days}d ago`;
+  return `Visited ${new Date(t).toLocaleDateString(undefined, { month: 'short', day: 'numeric' })}`;
+}
+
+/**
+ * Visitors (footprints): avatar, handle, city and visit time. Locked rows (free members, past
+ * the newest 3) are frosted placeholders with the PLUS badge; tapping one opens Plus.
+ */
+function VisitorsList({ visitors, onOpen }: { visitors: ProfileCardData[]; onOpen: (p: ProfileCardData) => void }) {
+  return (
+    <ul className="rounded-2xl border border-[#ECE8F4] bg-white divide-y divide-[#ECE8F4] overflow-hidden animate-fade-in-up">
+      {visitors.map((v) => {
+        const name = getPublicName(v);
+        const photo = getPhoto(v);
+        return (
+          <li key={v.id}>
+            <button
+              type="button"
+              onClick={() => onOpen(v)}
+              className="w-full flex items-center gap-3 px-3.5 py-3 text-left cursor-pointer hover:bg-[#F8F7FA] transition-colors"
+            >
+              <span className="relative w-11 h-11 shrink-0 rounded-full overflow-hidden bg-[#F2EEF7] border border-[#ECE8F4]">
+                {v.locked ? (
+                  <span aria-hidden className="absolute inset-0 bg-gradient-to-br from-[#8C71F5]/25 to-[#EC4899]/20 blur-[6px] scale-110" />
+                ) : (
+                  <SparkCardPhoto src={photo} name={name} className="object-cover" />
+                )}
+              </span>
+              <span className="min-w-0 flex-1">
+                {v.locked ? (
+                  <>
+                    <span aria-hidden className="block h-3 w-24 rounded-full bg-[#2D264B]/10 blur-[3px]" />
+                    <span aria-hidden className="mt-1.5 block h-2.5 w-16 rounded-full bg-[#2D264B]/[0.07] blur-[3px]" />
+                  </>
+                ) : (
+                  <>
+                    <span className="block text-[13px] font-bold text-[#2D264B] truncate">@{name}</span>
+                    <span className="block text-[11px] text-[#2D264B]/55 truncate">{getLocationLabel(v)}</span>
+                  </>
+                )}
+              </span>
+              <span className="shrink-0 flex flex-col items-end gap-1">
+                <span className="text-[10.5px] font-medium text-[#2D264B]/50 whitespace-nowrap">{visitedLabel(v.visited_at)}</span>
+                {v.locked && <PlusBadge />}
+              </span>
+            </button>
+          </li>
+        );
+      })}
+    </ul>
+  );
 }
 
 function getLocationLabel(p: ProfileCardData): string {
@@ -317,7 +386,7 @@ export default function SparksPage() {
     { id: 'sparked', label: 'Sent', count: sparkedList.length },
     { id: 'sparked_you', label: 'Received', count: sparkedYouList.length },
     { id: 'mutual', label: 'Mutual', count: mutualList.length },
-    { id: 'visited', label: 'Views', count: visitedList.length }
+    { id: 'visited', label: 'Visitors', count: visitedList.length }
   ], [sparkedList.length, sparkedYouList.length, mutualList.length, visitedList.length]);
 
   const currentList = useMemo(() => {
@@ -337,7 +406,7 @@ export default function SparksPage() {
     if (activeTab === 'mutual') {
       return { title: 'No Mutual Sparks Yet', subtitle: 'When you and another member both Spark each other, your match unlocks here.' };
     }
-    return { title: 'No Visitors Yet', subtitle: 'Members who view your profile will be listed here with Plus.' };
+    return { title: 'No Visitors Yet', subtitle: 'Members who view your profile will appear here.' };
   }, [activeTab]);
 
   // Popularity triage: credible senders first, no-photo senders collapsed
@@ -391,20 +460,7 @@ export default function SparksPage() {
           </div>
         </div>
 
-        {/* Visited Tab Paywall for Free Users */}
-        {activeTab === 'visited' && !isPlus ? (
-          <TabState
-            icon={Eye}
-            title={visitedList.length > 0 ? `${formatBadgeCount(visitedList.length)} ${visitedList.length === 1 ? 'member' : 'members'} viewed your profile` : 'See Who Visited Your Profile'}
-            subtitle="See exactly who they are with Plus, along with every member who sparked you."
-            cta={
-              <Link href="/plus" className={STATE_CTA_CLASS}>
-                <Crown className="w-4 h-4 text-amber-300" />
-                <span>See them with Plus</span>
-              </Link>
-            }
-          />
-        ) : loading ? (
+        {loading ? (
           <div className="grid grid-cols-2 gap-3 sm:gap-4">
             {[0, 1, 2, 3].map((i) => (
               <div key={i} className="aspect-[3/4] rounded-2xl ail-shimmer" />
@@ -421,13 +477,18 @@ export default function SparksPage() {
               </Link>
             }
           />
+        ) : activeTab === 'visited' ? (
+          <VisitorsList
+            visitors={currentList}
+            onOpen={(v) => router.push(v.locked ? '/plus' : `/profile/${v.id}`)}
+          />
         ) : (
           <>
           <div className="grid grid-cols-2 gap-3 sm:gap-4 animate-fade-in-up">
             {priorityList.map((person, idx) => {
               // Free: the newest Spark is a clear preview, the rest stay blurred until Plus.
               const shouldBlur =
-                !isPlus && ((activeTab === 'sparked_you' && idx > 0) || activeTab === 'visited');
+                !isPlus && activeTab === 'sparked_you' && idx > 0;
               const publicName = getPublicName(person);
               const age = getAge(person);
               const photo = shouldBlur ? '/placeholder-avatar.svg' : getPhoto(person);
@@ -452,7 +513,7 @@ export default function SparksPage() {
                     </div>
                   )}
                   <div className="absolute bottom-0 inset-x-0 pt-10 pb-3 px-3 z-10 pointer-events-none bg-gradient-to-t from-black/65 via-black/25 to-transparent text-white">
-                    <h3 className="font-brand text-sm font-bold leading-tight truncate">{shouldBlur ? (activeTab === 'visited' ? 'Someone Visited You' : 'Someone Sparked You') : `${publicName}${age ? `, ${age}` : ''}`}</h3>
+                    <h3 className="font-brand text-sm font-bold leading-tight truncate">{shouldBlur ? 'Someone Sparked You' : `${publicName}${age ? `, ${age}` : ''}`}</h3>
                     <p className="text-[11px] text-white/90 font-medium mt-0.5 truncate pr-7">{location}</p>
                   </div>
                 </div>

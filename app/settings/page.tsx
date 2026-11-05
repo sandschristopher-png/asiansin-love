@@ -15,6 +15,7 @@ import {
   HelpCircle,
   Smartphone,
   EyeOff,
+  Ghost,
   Loader2,
   MessageCircle, Trash2, AlertTriangle, CreditCard, FileText } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
@@ -22,6 +23,8 @@ import { hardSignOut } from '@/lib/hardSignOut';
 import { PushDeviceRow } from '@/components/PushDeviceRow';
 import { HapticsRow } from '@/components/HapticsRow';
 import { AlertPrefsRows } from '@/components/AlertPrefsRows';
+import { PlusBadge } from '@/components/ui/PlusBadge';
+import { isPlusProfile } from '@/lib/plus';
 
 /** Loaded on first open (keeps the Plus checkout sheet out of the settings bundle). */
 const AILPlusModal = dynamic(() => import('@/components/AILPlusModal').then((m) => m.AILPlusModal), { ssr: false });
@@ -48,8 +51,15 @@ export default function SettingsHubPage() {
   const [savingKey, setSavingKey] = useState<SettingsKey | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [isPlus, setIsPlus] = useState(false);
+  // Stripe subscriber (the billing row); complimentary Plus has features but nothing to manage.
+  const [hasPlusBilling, setHasPlusBilling] = useState(false);
   const [gender, setGender] = useState<string | null>(null);
   const [plusModalOpen, setPlusModalOpen] = useState(false);
+  const [plusModalTitle, setPlusModalTitle] = useState('Unlock Private Mode with Plus');
+  // Ghost Mode (Plus): browse without leaving a footprint. Read on its own so a database without
+  // the ghost_mode column (20261114_privacy_features.sql) still loads the other settings.
+  const [ghostMode, setGhostMode] = useState(false);
+  const [ghostSaving, setGhostSaving] = useState(false);
   const [openingPortal, setOpeningPortal] = useState(false);
   const [portalError, setPortalError] = useState<string | null>(null);
   const [settings, setSettings] = useState(() => cachedSettingsData || {
@@ -76,12 +86,14 @@ export default function SettingsHubPage() {
       // Plus members get a "Manage Subscription" row (Stripe billing portal).
       supabase
         .from('profiles')
-        .select('is_plus, gender')
+        .select('*')
         .eq('id', user.id)
         .maybeSingle()
         .then(({ data: plus }) => {
-          setIsPlus(Boolean(plus?.is_plus));
+          setIsPlus(isPlusProfile(plus));
+          setHasPlusBilling(Boolean(plus?.is_plus));
           setGender(plus?.gender ?? null);
+          setGhostMode(plus?.ghost_mode === true);
         });
 
       if (error) {
@@ -106,6 +118,7 @@ export default function SettingsHubPage() {
     const nextVal = !settings[key];
     // Private Mode is free for women; men need Plus (also enforced in the database).
     if (key === 'hide_profile' && nextVal && gender === 'male' && !isPlus) {
+      setPlusModalTitle('Unlock Private Mode with Plus');
       setPlusModalOpen(true);
       return;
     }
@@ -131,6 +144,31 @@ export default function SettingsHubPage() {
       setErrorMsg('Could not save setting. Check your connection and try again.');
     }
     setSavingKey(null);
+  };
+
+  /** Ghost Mode is Plus-only: free members get the upgrade sheet and the switch stays off. */
+  const toggleGhostMode = async () => {
+    if (!isPlus) {
+      setPlusModalTitle('Unlock Ghost Mode with Plus');
+      setPlusModalOpen(true);
+      return;
+    }
+    const nextVal = !ghostMode;
+    setGhostMode(nextVal);
+    setErrorMsg(null);
+    setGhostSaving(true);
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) {
+      setGhostSaving(false);
+      router.push('/login');
+      return;
+    }
+    const { error } = await supabase.from('profiles').update({ ghost_mode: nextVal }).eq('id', user.id);
+    if (error) {
+      setGhostMode(!nextVal);
+      setErrorMsg('Could not save Ghost Mode. Check your connection and try again.');
+    }
+    setGhostSaving(false);
   };
 
   const openBillingPortal = async () => {
@@ -225,7 +263,7 @@ export default function SettingsHubPage() {
     onClick,
   }: {
     icon: React.ReactNode;
-    title: string;
+    title: React.ReactNode;
     subtitle: string;
     on: boolean;
     busy: boolean;
@@ -237,7 +275,7 @@ export default function SettingsHubPage() {
           {icon}
         </div>
         <div>
-          <p className="text-xs font-bold text-[#1C1924]">{title}</p>
+          <div className="text-xs font-bold text-[#1C1924]">{title}</div>
           <p className="text-[11px] text-[#6C637B]">{subtitle}</p>
         </div>
       </div>
@@ -337,6 +375,20 @@ export default function SettingsHubPage() {
           />
 
           <SettingRow
+            icon={<Ghost className="w-4 h-4" />}
+            title={
+              <span className="inline-flex items-center gap-1.5">
+                Ghost Mode (Silent Browsing)
+                <PlusBadge />
+              </span>
+            }
+            subtitle="Browse profiles without leaving a footprint in their visitor history."
+            on={isPlus && ghostMode}
+            busy={ghostSaving}
+            onClick={toggleGhostMode}
+          />
+
+          <SettingRow
             icon={<Smartphone className="w-4 h-4" />}
             title="Show Active Status"
             subtitle="Display green presence indicator on your profile"
@@ -426,7 +478,7 @@ export default function SettingsHubPage() {
         </div>
 
         {/* Plus BILLING (subscribers only) */}
-        {isPlus && (
+        {hasPlusBilling && (
           <div className="rounded-3xl bg-white border border-[#DDD7E5] p-2 shadow-2xs">
             <button
               type="button"
@@ -569,7 +621,7 @@ export default function SettingsHubPage() {
       <AILPlusModal
         open
         onClose={() => setPlusModalOpen(false)}
-        title="Unlock Private Mode with Plus"
+        title={plusModalTitle}
         returnPath="/settings"
       />
       )}

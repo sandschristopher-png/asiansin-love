@@ -6,6 +6,13 @@ import { getPresenceStatus } from '@/lib/presence';
 import { canonicalCountry, countryMatches } from '@/lib/constants/countries';
 import { readLanguages } from '@/lib/constants/languages';
 import { LIFESTYLE_KEYS, readHeightCm, readLifestyle } from '@/lib/lifestyle';
+import {
+  CHILDREN_CLAUSES,
+  CHILDREN_FILTERS,
+  ENGLISH_LEVEL_OPTIONS,
+  RELATIONSHIP_INTENT_FILTERS,
+  readFilterList,
+} from '@/lib/discoverFilters';
 
 /**
  * Only the columns the Discover grid / profile sheet mapping below reads. Never select('*') here:
@@ -158,13 +165,50 @@ export async function GET(req: Request) {
     // repeats them as a safety net. Sparked members are NOT excluded.
     const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     const excludedIds = Array.from(new Set([user.id, ...blockedUserIds])).filter((id) => UUID_RE.test(id));
-    // ?verified=1 (Discover "Verified profiles only"): filtered in the database, so verified members
-    // outside the 200 newest rows still appear.
-    const verifiedOnly = new URL(req.url).searchParams.get('verified') === '1';
+    // Filter drawer parameters, all applied in the database so matches outside the 200 newest
+    // rows still appear (lib/discoverFilters.ts builds the query string):
+    //   verified=1        "Verified profiles only"
+    //   hide_contacted=0  show members already sparked or messaged (hidden by default)
+    //   sparked_me=1      only members who sparked the viewer (Plus, or women: same rule as the
+    //                     Received tab in /api/sparks/gated)
+    //   intent / children / english  comma lists of lifestyle filter values
+    const params = new URL(req.url).searchParams;
+    const verifiedOnly = params.get('verified') === '1';
+    const hideContacted = params.get('hide_contacted') !== '0';
+    const sparkedMeAccess = Boolean(viewerProfile?.is_plus) || viewerGender === 'female';
+    const sparkedMeOnly = params.get('sparked_me') === '1' && sparkedMeAccess;
+    const intentFilter = readFilterList(params.get('intent'), RELATIONSHIP_INTENT_FILTERS);
+    const childrenFilter = readFilterList(params.get('children'), CHILDREN_FILTERS);
+    const englishFilter = readFilterList(params.get('english'), ENGLISH_LEVEL_OPTIONS);
+
+    const [messagedRes, sparkedMeRes] = await Promise.all([
+      hideContacted
+        ? serviceClient.from('messages').select('receiver_id').eq('sender_id', user.id).order('created_at', { ascending: false }).limit(1000)
+        : Promise.resolve({ data: [] as { receiver_id: string | null }[] }),
+      sparkedMeOnly
+        ? serviceClient.from('sparks').select('sender_id').eq('receiver_id', user.id).order('created_at', { ascending: false }).limit(500)
+        : Promise.resolve({ data: [] as { sender_id: string | null }[] }),
+    ]);
+    const contactedIds = new Set<string>();
+    if (hideContacted) {
+      alreadyLikedIds.forEach((id) => contactedIds.add(id));
+      (messagedRes.data as { receiver_id: string | null }[] | null)?.forEach((m) => m.receiver_id && contactedIds.add(m.receiver_id));
+    }
+    const sparkedMeIds = Array.from(
+      new Set(((sparkedMeRes.data as { sender_id: string | null }[] | null) || []).map((r) => r.sender_id).filter((id): id is string => typeof id === 'string' && UUID_RE.test(id)))
+    );
+    // The newest contacts go into the SQL exclusion (bounded URL length); the JS filter below
+    // drops every contacted member.
+    const sqlExcluded = [...excludedIds, ...Array.from(contactedIds).filter((id) => UUID_RE.test(id)).slice(0, 300)];
+
     const fetchFeed = (cols: string) => {
-      let q = serviceClient.from('profiles').select(cols).not('id', 'in', `(${excludedIds.join(',')})`);
+      let q = serviceClient.from('profiles').select(cols).not('id', 'in', `(${sqlExcluded.join(',')})`);
       if (targetGender) q = q.or(GENDER_SPELLINGS[targetGender]);
       if (verifiedOnly) q = q.or('is_verified.eq.true,verification_status.eq.verified');
+      if (sparkedMeOnly) q = q.in('id', sparkedMeIds.length ? sparkedMeIds : ['00000000-0000-0000-0000-000000000000']);
+      if (intentFilter.length) q = q.in('timeline_intent', intentFilter);
+      if (childrenFilter.length) q = q.or(childrenFilter.map((c) => CHILDREN_CLAUSES[c]).join(','));
+      if (englishFilter.length) q = q.in('english_level', englishFilter);
       return q.order('created_at', { ascending: false }).limit(200);
     };
     // Newest optional columns first, then progressively older schemas.
@@ -177,6 +221,11 @@ export async function GET(req: Request) {
     let { data: allRows, error } = await fetchFeed(tiers[0]);
     for (let i = 1; i < tiers.length && error && OPTIONAL_COLUMN_RE.test(error.message); i++) {
       ({ data: allRows, error } = await fetchFeed(tiers[i]));
+    }
+    // A lifestyle filter on a column a pending migration adds: nobody can match it yet.
+    if (error && /timeline_intent|english_level|wants_kids|has_kids/.test(error.message)) {
+      allRows = [];
+      error = null;
     }
 
     // ?country= accepts a display name ("Myanmar") or an ISO-3166 alpha-2 code ("MM"), exact match.
@@ -193,6 +242,7 @@ export async function GET(req: Request) {
       .filter((row: any) => {
         if (user && row.id === user.id) return false;
         if (blockedUserIds.has(row.id)) return false;
+        if (contactedIds.has(row.id)) return false; // "Hide profiles I already Sparked or messaged"
         if (targetGender && normalizeGenderValue(row.gender) !== targetGender) return false;
         if (row.hide_profile) return false; // Settings > Hide my profile
         if (countryParam && !countryMatches(resolveCountry(row.city, row.country), countryParam)) return false;

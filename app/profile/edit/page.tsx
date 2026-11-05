@@ -15,6 +15,7 @@ import { compressPhoto } from '@/lib/utils/imageCompressor';
 import { BIO_REJECTION_MESSAGE } from '@/lib/moderation/textFilter';
 import { isPlusProfile } from '@/lib/plus';
 import { HeightInput, LanguagePicker, LifestylePills } from '@/components/profile/LifestyleFields';
+import { ENGLISH_LEVEL_OPTIONS, isEnglishLevel } from '@/lib/discoverFilters';
 import { readLanguages } from '@/lib/constants/languages';
 import { LIFESTYLE_KEYS, readHeightCm, readLifestyle, type LifestyleValues } from '@/lib/lifestyle';
 import { PlusBadge } from '@/components/ui/PlusBadge';
@@ -93,6 +94,8 @@ export default function EditProfilePage() {
   // Languages (text[]), height in cm and lifestyle enums are saved through PATCH /api/profile.
   const [languages, setLanguages] = useState<string[]>(['English']);
   const [heightCm, setHeightCm] = useState<number | null>(null);
+  // English proficiency (Discover filter); '' = not set.
+  const [englishLevel, setEnglishLevel] = useState<string>('');
   const [lifestyle, setLifestyle] = useState<LifestyleValues>({});
 
   useEffect(() => {
@@ -136,6 +139,7 @@ export default function EditProfilePage() {
         });
         setLanguages(readLanguages(data.languages));
         setHeightCm(readHeightCm(data.height_cm, data.height));
+        setEnglishLevel(isEnglishLevel(data.english_level) ? data.english_level : '');
         setLifestyle(Object.fromEntries(LIFESTYLE_KEYS.map((k) => [k, readLifestyle(k, data[k])])) as LifestyleValues);
 
         if (data.username) {
@@ -337,6 +341,9 @@ export default function EditProfilePage() {
         ...rhythm,
         languages,
         height_cm: heightCm,
+        english_level: englishLevel || null,
+        wants_kids: formData.wants_kids,
+        has_kids: formData.has_kids,
         ...lifestyle,
         ...(isPlus
           ? {
@@ -803,6 +810,20 @@ export default function EditProfilePage() {
             <div className="space-y-1.5">
               <label className="block text-xs font-medium uppercase tracking-wider text-[#9A8CC3]">Languages</label>
               <LanguagePicker value={languages} onChange={setLanguages} />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="block text-xs font-medium uppercase tracking-wider text-[#9A8CC3]">English</label>
+              <select
+                value={englishLevel}
+                onChange={(e) => setEnglishLevel(e.target.value)}
+                className="w-full px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#9A8CC3]/35 text-[#1C1924] text-sm focus:outline-none focus:border-[#9A8CC3]"
+              >
+                <option value="">Prefer not to say</option>
+                {ENGLISH_LEVEL_OPTIONS.map((o) => (
+                  <option key={o.value} value={o.value}>{o.label}</option>
+                ))}
+              </select>
             </div>
 
             <div className="flex items-center justify-between gap-3">

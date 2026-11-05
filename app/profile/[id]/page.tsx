@@ -32,6 +32,7 @@ import { rhythmOption, sharedTraits } from '@/lib/rhythm';
 import { scoreOf } from '@/lib/reputation';
 import { InCommonCard, RhythmPill } from '@/components/profile/RhythmBadges';
 import RepScoreCard from '@/components/RepScoreCard';
+import { PrivateNotesCard } from '@/components/profile/PrivateNotesCard';
 import { useActionToast } from '@/components/ActionToast';
 import { interestIcon, interestIconOrDefault } from '@/lib/interestIcons';
 import { languageLabel, readLanguages } from '@/lib/constants/languages';
@@ -141,6 +142,14 @@ export default function PublicProfilePage() {
 
         if (profileData) {
           setProfile(profileData);
+          // Visitor footprint (skipped server-side for Plus members in Ghost Mode).
+          if (currentUser && currentUser.id !== profileData.id) {
+            fetch('/api/profile/view', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ viewed_id: profileData.id }),
+            }).catch(() => {});
+          }
         }
 
         try {
@@ -747,6 +756,9 @@ export default function PublicProfilePage() {
             ))}
           </section>
         )}
+
+        {/* 10. PRIVATE NOTES (only the viewer can read them) */}
+        <PrivateNotesCard targetId={targetUserId} />
       </div>
 
       {floatingDock}
