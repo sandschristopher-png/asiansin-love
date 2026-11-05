@@ -173,8 +173,11 @@ export function AuthScreen({ mode, cities }: { mode: 'login' | 'signup'; cities?
     <div className="relative isolate min-h-[100dvh] w-full flex flex-col bg-[#FAF8FD]/60 font-sans antialiased pb-[max(2.5rem,env(safe-area-inset-bottom))]">
       <AmbientAurora />
       <InAppToast message={toast} onClose={closeToast} durationMs={7000} />
-      <main className="relative z-10 flex-1 w-full flex flex-col px-6 pt-14">
+      <main className="relative z-10 flex-1 w-full flex flex-col px-6 pt-10">
         <div className="text-center">
+          <span className="block text-[11px] font-semibold tracking-[0.25em] uppercase text-[#8C71F5] mb-2 text-center">
+            {mode === 'login' ? 'Welcome Back' : 'Welcome'}
+          </span>
           <div className="flex justify-center">
             <BrandLogo size="lg" href="/" />
           </div>
