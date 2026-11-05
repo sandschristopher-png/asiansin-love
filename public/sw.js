@@ -1,5 +1,6 @@
 // v2: stop caching /api responses (private data) - activating v2 deletes the old cache.
-const CACHE_NAME = 'ail-cache-v2';
+// v3: notification Reply / View actions.
+const CACHE_NAME = 'ail-cache-v3';
 
 self.addEventListener('install', (event) => {
   self.skipWaiting();
@@ -40,11 +41,19 @@ self.addEventListener('push', (event) => {
   try {
     payload = event.data.json();
   } catch (err) {
-    payload = { title: 'Asians in Love', body: event.data.text() };
+    payload = { title: 'asiansin.love', body: event.data.text() };
   }
 
-  const title = payload.title || 'Asians in Love';
+  const title = payload.title || 'asiansin.love';
+  // Lock-screen buttons (Android / desktop Chrome, Edge; iOS shows the notification without them).
+  const actions =
+    payload.type === 'message'
+      ? [{ action: 'reply', title: 'Reply' }, { action: 'view', title: 'View' }]
+      : payload.type === 'match'
+        ? [{ action: 'view', title: 'View' }]
+        : [];
   const options = {
+    actions,
     body: payload.body || 'You have a new update waiting.',
     icon: payload.icon || '/icon-192.png',
     badge: '/icon-192.png',
@@ -63,7 +72,9 @@ self.addEventListener('push', (event) => {
 // --- Notification Click Handler ---
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  const targetUrl = event.notification.data?.linkUrl || '/';
+  const baseUrl = event.notification.data?.linkUrl || '/';
+  // Reply opens the chat with the composer focused (app/chat/[id] reads ?reply=1).
+  const targetUrl = event.action === 'reply' ? baseUrl + (baseUrl.includes('?') ? '&' : '?') + 'reply=1' : baseUrl;
 
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then((windowClients) => {

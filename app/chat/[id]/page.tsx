@@ -242,6 +242,12 @@ export default function ChatConversationPage() {
 
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  // Opened from a push notification's Reply button (?reply=1): focus the composer once loaded.
+  useEffect(() => {
+    if (typeof window === 'undefined' || !new URLSearchParams(window.location.search).has('reply')) return;
+    const t = window.setTimeout(() => textareaRef.current?.focus(), 600);
+    return () => window.clearTimeout(t);
+  }, []);
   const hasScrolledInitialRef = useRef(false);
   const isNearBottomRef = useRef(true);
   const forceScrollNextRef = useRef(false);

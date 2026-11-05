@@ -17,6 +17,7 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
     pathname?.startsWith('/signup') ||
     pathname?.startsWith('/onboarding') ||
     pathname?.startsWith('/verify') ||
+    pathname?.startsWith('/auth/') ||
     isCityPagePath(pathname); // SEO city landing pages (/cebu, /manila, ...)
 
   const cleanPath = pathname?.replace(/\/+$/, '') || '';

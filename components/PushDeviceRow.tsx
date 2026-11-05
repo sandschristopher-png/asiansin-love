@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from 'react';
 import { BellRing, Loader2 } from 'lucide-react';
 import { enablePushNotifications, getPushSupport, type PushSupport } from '@/lib/push';
+import { PushPermissionCard } from '@/components/PushPermissionCard';
 
 const COPY: Record<PushSupport | 'error', string> = {
   granted: 'On for this device',
@@ -17,6 +18,7 @@ const COPY: Record<PushSupport | 'error', string> = {
 export function PushDeviceRow() {
   const [state, setState] = useState<PushSupport | 'error'>('default');
   const [busy, setBusy] = useState(false);
+  const [explaining, setExplaining] = useState(false);
 
   useEffect(() => setState(getPushSupport()), []);
 
@@ -36,11 +38,7 @@ export function PushDeviceRow() {
         <button
           type="button"
           disabled={busy}
-          onClick={async () => {
-            setBusy(true);
-            setState(await enablePushNotifications());
-            setBusy(false);
-          }}
+          onClick={() => setExplaining(true)}
           className="h-8 px-3.5 rounded-full bg-[#72519A] hover:bg-[#72519A] text-white text-[11px] font-semibold shrink-0 inline-flex items-center gap-1.5 disabled:opacity-60"
         >
           {busy && <Loader2 className="w-3 h-3 animate-spin" />}
@@ -49,6 +47,17 @@ export function PushDeviceRow() {
       ) : state === 'granted' ? (
         <span className="text-[11px] font-semibold text-emerald-600 shrink-0">Enabled</span>
       ) : null}
+      {explaining && (
+        <PushPermissionCard
+          onClose={() => setExplaining(false)}
+          onAllow={async () => {
+            setExplaining(false);
+            setBusy(true);
+            setState(await enablePushNotifications()); // the browser's own prompt appears here
+            setBusy(false);
+          }}
+        />
+      )}
     </div>
   );
 }

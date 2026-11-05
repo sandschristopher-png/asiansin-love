@@ -9,6 +9,7 @@ import { InAppToast } from '@/components/InAppToast';
 import { CityRotator } from '@/components/auth/CityRotator';
 import { supabase } from '@/lib/supabase/client';
 import { authHref, describeAuthError, safeReturnTo } from '@/lib/authRedirect';
+import { routeAfterSignIn } from '@/lib/routeAfterSignIn';
 
 const RESET_EXPIRED_MESSAGE = 'That password reset link has expired or was already used. Request a new one from Forgot password.';
 /** Google / LINE / Email: one shared pill so the three read as a single stack. */
@@ -44,15 +45,6 @@ const LineIcon = () => (
  * /onboarding, everyone else to the page they were heading to (returnTo) or /discover.
  * OAuth and magic links go through /auth/callback, which applies the same rule.
  */
-async function routeAfterSignIn(userId: string, returnTo: string | null) {
-  const { data: profile } = await supabase.from('profiles').select('onboarding_completed').eq('id', userId).maybeSingle();
-  try {
-    localStorage.setItem('ail_returning', '1');
-    if (!profile?.onboarding_completed) sessionStorage.setItem('ail_active_onboarding', '1');
-  } catch {}
-  window.location.href = profile?.onboarding_completed ? safeReturnTo(returnTo) || '/discover' : '/onboarding';
-}
-
 type EmailStep = 'closed' | 'email' | 'sent' | 'password';
 
 /**
