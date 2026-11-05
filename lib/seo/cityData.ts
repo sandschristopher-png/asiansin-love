@@ -6,6 +6,10 @@
  * public, voice intros are optional, messages are screened for scams and off-platform pressure,
  * and reports are reviewed by the team. No invented member counts or response times: add
  * `localStats` only from real data.
+ *
+ * Compliance rule (Philippines RA 10906, Anti-Mail Order Spouse Act; US IMBRA): never market
+ * members for marriage or to foreign nationals. No "wife" / "husband" / "marriage" /
+ * "matchmaking" keywords or copy; describe open, mutual, cross-cultural dating instead.
  */
 
 export interface CitySEOData {
@@ -51,58 +55,57 @@ export const CITY_SEO_DATA: Record<string, CitySEOData> = {
     cityName: 'Cebu City',
     countryName: 'Philippines',
     countryCode: 'PH',
-    metaTitle: 'Cebu Dating & Filipina Singles | Meet Genuine Filipina Women | asiansin.love',
+    metaTitle: 'Cebu Dating & Filipina Singles | Serious International Dating | asiansin.love',
     metaDescription:
-      'Meet Filipina singles in Cebu City. Find a genuine Filipina girlfriend or future Filipina wife on asiansin.love, with free selfie verification, public reputation scores and safe cross-cultural dating.',
+      'Connect with Filipina singles in Cebu City looking for meaningful, long-term international relationships. Public reputation scores, free selfie verification, and messages screened for scams.',
     canonicalUrl: `${SITE_URL}/cebu`,
     primaryKeywords: [
       'Filipina singles',
-      'Filipina girlfriend',
-      'Filipina wife',
-      'my Filipina',
       'Cebu dating',
-      'Cebu Filipina dating',
-      'meet Filipinas in Cebu',
+      'serious dating Philippines',
+      'long-term relationships in Cebu',
+      'meet Filipina singles',
+      'authentic cross-cultural dating',
     ],
-    secondaryKeywords: ['Philippines international dating', 'serious dating Philippines', 'marriage minded Filipina', 'Cebu singles'],
+    secondaryKeywords: ['Philippines international dating', 'Cebu singles', 'Visayas dating', 'verified singles Philippines'],
     heroBadge: 'Verified Philippines Dating',
     heroHeadline: 'Connect with Genuine',
     heroHighlight: 'Filipina Singles in Cebu',
     heroSubhead:
-      'Meet educated, family-oriented Filipina women looking for meaningful international relationships, lifelong companionship, and authentic marriage-minded partners.',
+      'Meet educated, family-oriented singles in Cebu who are looking for meaningful relationships, lasting companionship, and genuine partnerships built on mutual respect.',
     searchThemes: {
-      heading: 'Find Your Future Filipina Wife in Cebu',
+      heading: 'Meaningful Relationships & Dating in Cebu',
       description:
-        'Cebu is known worldwide for warm, English-speaking, family-centered Filipina singles seeking genuine foreign partners for long-term commitment.',
-      searchTags: ['Filipina Singles', 'Filipina Girlfriend', 'Cebu Women', 'Filipina Wife', 'Visayas Dating'],
+        'Connect with educated, family-oriented Filipina singles looking for genuine companionship and cross-cultural dating based on mutual respect.',
+      searchTags: ['Filipina Singles', 'Cebu Dating', 'Serious Relationships', 'Philippines Dating', 'Meet Singles'],
     },
     culturalInsights: [
       {
         title: 'Family Values and Genuine Intent',
         description:
-          'Filipinas in Cebu place deep importance on family cohesion, respect, and mutual loyalty, making them exceptional life partners for foreign gentlemen.',
+          'Family, respect, and loyalty sit at the heart of dating in Cebu, so relationships here tend to be built slowly, sincerely, and for the long term.',
       },
       {
         title: 'Fluent English Communication',
         description:
-          'Cebu is a major educational and business hub in the Visayas where English is universally spoken, eliminating language barriers in courtship.',
+          'Cebu is a major educational and business hub in the Visayas where English is widely spoken, which makes cross-cultural conversation easy from the first message.',
       },
       {
         title: 'Modern and Traditional Harmony',
         description:
-          'From Cebu IT Park professionals to provincial island warmth, find singles who combine traditional loyalty with modern career goals.',
+          'From Cebu IT Park professionals to provincial island warmth, meet singles who combine traditional values with modern career goals.',
       },
     ],
     faq: [
       {
         question: 'How do I meet serious Filipina singles in Cebu?',
         answer:
-          'asiansin.love offers free selfie verification, optional voice intros, and public community reputation scores, so you can focus on genuine Filipina women seeking committed cross-cultural relationships.',
+          'asiansin.love offers free selfie verification, optional voice intros, and public community reputation scores, so you can focus on genuine singles looking for long-term relationships.',
       },
       {
-        question: 'Are Filipinas looking for marriage and foreign partners?',
+        question: 'Is asiansin.love a matchmaking or introduction service?',
         answer:
-          'Yes. Many Filipinas in Cebu are actively looking for mature foreign gentlemen who value respect, honesty, long-term commitment, and shared family values.',
+          'No. asiansin.love is an open dating community: members create their own profiles, browse, and decide for themselves who to talk to. We never arrange introductions or matches on anyone’s behalf.',
       },
       {
         question: 'Can I date safely without encountering romance scams?',
@@ -116,60 +119,58 @@ export const CITY_SEO_DATA: Record<string, CitySEOData> = {
     cityName: 'Manila',
     countryName: 'Philippines',
     countryCode: 'PH',
-    metaTitle: 'Manila Filipina Singles | Meet Your Filipina Girlfriend or Wife | asiansin.love',
+    metaTitle: 'Manila Dating & Filipina Singles | Serious International Dating | asiansin.love',
     metaDescription:
-      'Find genuine Filipina singles in Metro Manila. Connect with professionals, university graduates, and marriage-minded Filipina women ready for real love on asiansin.love.',
+      'Connect with Filipina singles in Metro Manila looking for meaningful, long-term international relationships. Public reputation scores, free selfie verification, and messages screened for scams.',
     canonicalUrl: `${SITE_URL}/manila`,
     primaryKeywords: [
       'Filipina singles',
-      'Filipina girlfriend',
-      'Filipina wife',
-      'my Filipina',
       'Manila dating',
-      'Metro Manila Filipina dating',
-      'Filipina dating site',
+      'serious dating Philippines',
+      'long-term relationships in Manila',
+      'meet Filipina singles',
+      'authentic cross-cultural dating',
     ],
-    secondaryKeywords: ['BGC dating', 'Makati singles', 'Filipina marriage agency alternative', 'foreign dating Philippines'],
+    secondaryKeywords: ['Metro Manila singles', 'BGC dating', 'Makati singles', 'Philippines international dating'],
     heroBadge: 'Metro Manila Singles Hub',
     heroHeadline: 'Discover Intentional',
     heroHighlight: 'Filipina Singles in Manila',
     heroSubhead:
-      'The premier destination for foreign men seeking authentic relationships with educated, ambitious, and caring Filipina women in Metro Manila.',
+      'Meet educated, ambitious, and caring singles across Metro Manila who are looking for authentic, long-term relationships.',
     searchThemes: {
-      heading: 'Meet Your Filipina Girlfriend in Metro Manila',
+      heading: 'Meaningful Relationships & Dating in Manila',
       description:
-        'Explore profiles across Bonifacio Global City (BGC), Makati, and Quezon City. Connect with Filipinas who desire committed cross-border partnerships.',
-      searchTags: ['Filipina Girlfriend', 'Manila Singles', 'Filipina Wife Dating', 'Philippine Matchmaking', 'My Filipina'],
+        'Meet singles across Bonifacio Global City (BGC), Makati, and Quezon City who want genuine companionship and cross-cultural dating based on mutual respect.',
+      searchTags: ['Filipina Singles', 'Manila Dating', 'Serious Relationships', 'Philippines Dating', 'Meet Singles'],
     },
     culturalInsights: [
       {
         title: 'Career-Driven and Cultured',
         description:
-          'Manila brings together university-educated career women, creatives, and corporate professionals who are enthusiastic about international romance.',
+          'Manila brings together university-educated professionals, creatives, and entrepreneurs who are open to dating across cultures.',
       },
       {
         title: 'Global Mindset with Warm Hospitality',
-        description:
-          'Experience genuine Filipino warmth (Bayanihan) paired with a worldly outlook that makes international courtship effortless.',
+        description: 'Experience genuine Filipino warmth (Bayanihan) paired with a worldly outlook that makes cross-cultural dating feel natural.',
       },
       {
         title: 'Active Community Moderation',
-        description:
-          'Messages are screened automatically for scams and off-platform pressure, so you spend your time courting sincere individuals.',
+        description: 'Messages are screened automatically for scams and off-platform pressure, so you spend your time on sincere conversations.',
       },
     ],
     faq: [
       {
-        question: 'What makes asiansin.love better for finding a Filipina girlfriend in Manila?',
+        question: 'What makes asiansin.love different for dating in Manila?',
         answer:
           'Unlike swipe apps filled with inactive profiles, asiansin.love offers free selfie verification, voice intros, and public reputation scores, and puts relationship intent front and center.',
       },
       {
-        question: 'Do Filipinas in Manila speak fluent English?',
-        answer: 'Yes, English is an official language of the Philippines and widely used in business and daily conversation across Metro Manila.',
+        question: 'Is asiansin.love a matchmaking or introduction service?',
+        answer:
+          'No. asiansin.love is an open dating community: members create their own profiles, browse, and decide for themselves who to talk to. We never arrange introductions or matches on anyone’s behalf.',
       },
       {
-        question: 'How does asiansin.love protect international singles?',
+        question: 'How does asiansin.love protect its members?',
         answer:
           'Every member has a public reputation score. Asking for money or other breaches of trust can be reported in one tap, and our team reviews reports and removes offending accounts.',
       },
@@ -180,33 +181,29 @@ export const CITY_SEO_DATA: Record<string, CitySEOData> = {
     cityName: 'Bangkok',
     countryName: 'Thailand',
     countryCode: 'TH',
-    metaTitle: 'Thai Dating & Thai Wife Dating | Meet Thai Singles in Bangkok | asiansin.love',
+    metaTitle: 'Bangkok Dating & Thai Singles | Serious International Dating | asiansin.love',
     metaDescription:
-      'Find genuine Thai singles in Bangkok. Connect with marriage-minded Thai women, find a loving Thai girlfriend, or meet your future Thai wife on asiansin.love.',
+      'Meet Thai singles in Bangkok looking for serious, long-term relationships. Verified singles, public reputation scores, and genuine partnerships on asiansin.love.',
     canonicalUrl: `${SITE_URL}/bangkok`,
-    primaryKeywords: ['Thai dating', 'Thai singles', 'Thai wife', 'Thai girlfriend', 'Thai wife dating', 'Bangkok dating', 'meet Thai women'],
-    secondaryKeywords: ['Thailand international dating', 'serious dating Thailand', 'Bangkok singles club', 'Thai marriage partners'],
+    primaryKeywords: ['Thai dating', 'Thai singles', 'Bangkok dating', 'serious dating Thailand', 'meet Thai singles', 'verified singles Bangkok'],
+    secondaryKeywords: ['Thailand international dating', 'Bangkok singles', 'long-term relationships Thailand', 'cross-cultural dating Thailand'],
     heroBadge: 'Authentic Thailand Dating',
-    heroHeadline: 'Find Real Love with',
+    heroHeadline: 'Find Real Connection with',
     heroHighlight: 'Thai Singles in Bangkok',
-    heroSubhead:
-      'Start a genuine romance with charming, sweet, and family-oriented Thai women looking for committed foreign partners and marriage in Bangkok.',
+    heroSubhead: 'Start a genuine connection with family-oriented singles in Bangkok who are looking for serious dating and lasting partnerships.',
     searchThemes: {
-      heading: 'Find Your Future Thai Wife and Life Companion',
-      description:
-        'Bangkok is a vibrant hub of gracious Thai women seeking foreign gentlemen who value respect, kindness, and lifelong marriage.',
-      searchTags: ['Thai Dating', 'Thai Wife', 'Thai Girlfriend', 'Bangkok Singles', 'Thai Wife Dating'],
+      heading: 'Serious Dating and Genuine Partnerships in Bangkok',
+      description: 'Bangkok is a vibrant hub of singles who value respect, kindness, and long-term commitment across cultures.',
+      searchTags: ['Thai Dating', 'Thai Singles', 'Bangkok Dating', 'Serious Relationships', 'Verified Singles'],
     },
     culturalInsights: [
       {
-        title: 'Gentle Grace and Cultural Loyalty',
-        description:
-          'Thai culture emphasizes respect, mutual peace (Jai Yen), and devoted care for partners, creating harmonious and loving marriages.',
+        title: 'Respect and Calm Hearts',
+        description: 'Thai culture emphasizes respect, mutual peace (Jai Yen), and care for one another, values that carry into lasting relationships.',
       },
       {
         title: 'Modern Bangkok Urbanites',
-        description:
-          'Meet stylish, educated women in Sukhumvit, Silom, and Thonglor who welcome foreign partners and cross-cultural marriage.',
+        description: 'Meet stylish, educated singles in Sukhumvit, Silom, and Thonglor who are open to dating across cultures.',
       },
       {
         title: 'No Commercial Solicitation',
@@ -216,17 +213,16 @@ export const CITY_SEO_DATA: Record<string, CitySEOData> = {
     ],
     faq: [
       {
-        question: 'How do I find a serious Thai girlfriend or Thai wife in Bangkok?',
+        question: 'How do I find a serious relationship in Bangkok?',
         answer:
           'Filter members by English proficiency, relationship goals, and verified badges on asiansin.love. Listen to voice intros to gauge real chemistry before you travel.',
       },
       {
-        question: 'Are Thai women looking for long-term relationships with foreign men?',
-        answer:
-          'Many Thai women appreciate foreign men for their emotional maturity, respectful treatment, and dedication to building a secure family future.',
+        question: 'Are Bangkok singles open to cross-cultural relationships?',
+        answer: 'Many singles in Bangkok are open to dating across cultures and value emotional maturity, respect, and shared long-term goals.',
       },
       {
-        question: 'How does asiansin.love keep fake Thai dating profiles out?',
+        question: 'How does asiansin.love keep fake profiles out?',
         answer:
           'Members can complete a free selfie verification that adds a Verified badge, you can limit Discover to verified profiles only, and our team reviews every report.',
       },
@@ -237,41 +233,37 @@ export const CITY_SEO_DATA: Record<string, CitySEOData> = {
     cityName: 'Phnom Penh',
     countryName: 'Cambodia',
     countryCode: 'KH',
-    metaTitle: 'Cambodian Singles & Khmer Dating | Meet Cambodian Girlfriend | asiansin.love',
+    metaTitle: 'Phnom Penh Dating & Cambodian Singles | Serious Khmer Dating | asiansin.love',
     metaDescription:
-      'Meet Cambodian singles in Phnom Penh. Connect with genuine Khmer women looking for a dedicated foreign boyfriend or husband on asiansin.love.',
+      'Meet Cambodian singles in Phnom Penh looking for serious, long-term relationships. Verified singles and genuine partnerships on asiansin.love.',
     canonicalUrl: `${SITE_URL}/phnom-penh`,
     primaryKeywords: [
       'Cambodian singles',
-      'Cambodian girlfriend',
-      'Cambodian wife',
       'Khmer dating',
       'Phnom Penh dating',
-      'meet Cambodian women',
+      'serious dating Cambodia',
+      'meet Cambodian singles',
       'Cambodia international dating',
     ],
-    secondaryKeywords: ['Phnom Penh singles', 'Khmer girlfriend', 'Cambodia marriage dating', 'Asian dating Cambodia'],
+    secondaryKeywords: ['Phnom Penh singles', 'verified singles Cambodia', 'long-term relationships Cambodia', 'Asian dating Cambodia'],
     heroBadge: 'Genuine Cambodia Dating',
-    heroHeadline: 'Connect with Devoted',
+    heroHeadline: 'Connect with Sincere',
     heroHighlight: 'Cambodian Singles in Phnom Penh',
     heroSubhead:
-      'Discover the gentle warmth, deep traditional family devotion, and sincere relationship intent of Khmer women in Cambodia’s bustling capital.',
+      'Discover the warmth, family devotion, and sincere relationship intent of singles in Cambodia’s bustling capital.',
     searchThemes: {
-      heading: 'Meet a Loving Cambodian Girlfriend in Phnom Penh',
-      description:
-        'Khmer women are celebrated for their sincerity, traditional family loyalty, and respectful character. Find meaningful love in the Kingdom of Wonder.',
-      searchTags: ['Cambodian Singles', 'Cambodian Girlfriend', 'Khmer Dating', 'Phnom Penh Singles', 'Cambodian Wife'],
+      heading: 'Serious Dating and Genuine Partnerships in Phnom Penh',
+      description: 'Meet sincere, family-minded singles who value honesty and respect. Find meaningful connection in the Kingdom of Wonder.',
+      searchTags: ['Cambodian Singles', 'Khmer Dating', 'Phnom Penh Singles', 'Serious Relationships', 'Verified Singles'],
     },
     culturalInsights: [
       {
-        title: 'Traditional Respect and Sincerity',
-        description:
-          'Khmer women value modesty, honesty, and family commitments, providing an authentic relationship free from superficial games.',
+        title: 'Respect and Sincerity',
+        description: 'Khmer culture values modesty, honesty, and family commitment, which makes for authentic relationships free from superficial games.',
       },
       {
         title: 'Emerging Modern Capital',
-        description:
-          'Phnom Penh boasts young professionals and university students who are multilingual and eager to explore international dating.',
+        description: 'Phnom Penh is home to young professionals and university students who are multilingual and open to dating across cultures.',
       },
       {
         title: 'Zero Tolerance for Commercial Dating',
@@ -281,12 +273,12 @@ export const CITY_SEO_DATA: Record<string, CitySEOData> = {
     ],
     faq: [
       {
-        question: 'Are Cambodian singles receptive to foreign men?',
-        answer: 'Foreign gentlemen are highly respected in Cambodia for their character, stability, and family-first dedication.',
+        question: 'Are Cambodian singles open to cross-cultural relationships?',
+        answer: 'Many singles in Phnom Penh are open to dating across cultures and value character, stability, and family-first commitment.',
       },
       {
-        question: 'Can I find an English-speaking Cambodian girlfriend in Phnom Penh?',
-        answer: 'Yes, English is extensively studied and spoken by university students and working professionals throughout Phnom Penh.',
+        question: 'Can I meet English-speaking singles in Phnom Penh?',
+        answer: 'Yes, English is widely studied and spoken by university students and working professionals throughout Phnom Penh.',
       },
       {
         question: 'How do I start dating in Phnom Penh before visiting?',
@@ -301,28 +293,28 @@ export const CITY_SEO_DATA: Record<string, CitySEOData> = {
     countryCode: 'MY',
     metaTitle: 'Kuala Lumpur Dating | Meet Asian Singles in KL | asiansin.love',
     metaDescription:
-      'Find sophisticated singles in Kuala Lumpur, Malaysia. Connect with educated Asian women seeking serious international relationships on asiansin.love.',
+      'Meet singles in Kuala Lumpur, Malaysia looking for serious, long-term international relationships. Verified singles and genuine partnerships on asiansin.love.',
     canonicalUrl: `${SITE_URL}/kuala-lumpur`,
     primaryKeywords: [
       'Kuala Lumpur dating',
       'KL singles',
-      'Malaysian Asian singles',
-      'meet Asian women in KL',
+      'Malaysian singles',
+      'serious dating Malaysia',
       'international dating Malaysia',
-      'Asian girlfriend KL',
+      'verified singles KL',
       'Asian singles',
     ],
-    secondaryKeywords: ['expat dating Malaysia', 'Kuala Lumpur marriage dating', 'Malaysian Chinese singles', 'serious dating KL'],
+    secondaryKeywords: ['expat dating Malaysia', 'long-term relationships KL', 'Malaysian Chinese singles', 'serious dating KL'],
     heroBadge: 'Cosmopolitan Malaysia Dating',
     heroHeadline: 'Meet Cultured and Modern',
     heroHighlight: 'Singles in Kuala Lumpur',
     heroSubhead:
-      'Connect with worldly, multilingual professionals and educated Asian singles seeking meaningful international relationships in Malaysia’s vibrant capital.',
+      'Connect with worldly, multilingual professionals seeking meaningful international relationships in Malaysia’s vibrant capital.',
     searchThemes: {
       heading: 'Modern Cross-Cultural Dating in Kuala Lumpur',
       description:
         'Discover educated professionals, world travelers, and multilingual singles across KLCC, Bangsar, and Mont Kiara who value serious companionship.',
-      searchTags: ['KL Singles', 'Kuala Lumpur Dating', 'Asian Singles', 'Malaysian Girlfriend', 'International Dating'],
+      searchTags: ['KL Singles', 'Kuala Lumpur Dating', 'Asian Singles', 'Serious Relationships', 'Verified Singles'],
     },
     culturalInsights: [
       {
@@ -332,8 +324,7 @@ export const CITY_SEO_DATA: Record<string, CitySEOData> = {
       },
       {
         title: 'Cosmopolitan Lifestyle',
-        description:
-          'Enjoy dating women who are well-traveled, financially self-reliant, and looking for an intellectual and romantic equal.',
+        description: 'Meet singles who are well-traveled, self-reliant, and looking for an intellectual and romantic equal.',
       },
       {
         title: 'Verified Conduct Profiles',
@@ -345,7 +336,7 @@ export const CITY_SEO_DATA: Record<string, CitySEOData> = {
       {
         question: 'Why choose asiansin.love for dating in Kuala Lumpur?',
         answer:
-          'Selfie verification, public reputation scores, and voice intros make it easy to spot real, marriage-minded professionals across Malaysia.',
+          'Selfie verification, public reputation scores, and voice intros make it easy to spot real professionals across Malaysia who want something serious.',
       },
       {
         question: 'Is English widely spoken by singles in Kuala Lumpur?',
@@ -353,7 +344,7 @@ export const CITY_SEO_DATA: Record<string, CitySEOData> = {
       },
       {
         question: 'Are members looking for international partners?',
-        answer: 'Yes, our community caters specifically to foreign travelers, expats, and cross-border couples seeking genuine commitments.',
+        answer: 'Yes, our community welcomes travelers, expats, and cross-border couples seeking genuine, long-term partnerships.',
       },
     ],
   },

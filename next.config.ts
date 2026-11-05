@@ -2,6 +2,18 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   devIndicators: false,
+  // Old long-tail keyword pages -> the city hubs (lib/seo/cityData.ts), so search authority
+  // consolidates on one URL per city instead of two pages competing for the same queries.
+  // statusCode 301 (permanent: true would send 308).
+  async redirects() {
+    return [
+      { source: '/dating/cebu-dating', destination: '/cebu', statusCode: 301 },
+      { source: '/dating/manila-dating', destination: '/manila', statusCode: 301 },
+      { source: '/dating/bangkok-dating', destination: '/bangkok', statusCode: 301 },
+      { source: '/dating/phnom-penh-dating', destination: '/phnom-penh', statusCode: 301 },
+      { source: '/dating/kuala-lumpur-dating', destination: '/kuala-lumpur', statusCode: 301 },
+    ];
+  },
   // Lets the Payment Request API (Google Pay / Apple Pay) run for this site and Stripe's frames,
   // so wallet buttons work in mobile Chrome and Android WebViews.
   async headers() {
