@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
+import { MotionConfig, motion } from 'framer-motion';
 
 /**
  * Soft pastel aurora anchored in the lower half: violet lower-mid left (32%), pink lower-mid right
@@ -21,6 +21,8 @@ import { motion } from 'framer-motion';
  */
 export function AmbientAurora({ layer = 'page' }: { layer?: 'page' | 'card' }) {
   return (
+    // reducedMotion="never": the OS / browser reduce-motion setting never freezes the drift.
+    <MotionConfig reducedMotion="never">
     <div aria-hidden className={`absolute inset-0 overflow-hidden pointer-events-none ${layer === 'card' ? '-z-10' : 'z-0'}`}>
       {/* Blob 1: Iris / Brand Violet (#8C71F5) - Lower-Mid Left */}
       <motion.div
@@ -43,6 +45,7 @@ export function AmbientAurora({ layer = 'page' }: { layer?: 'page' | 'card' }) {
         className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[320px] h-[240px] sm:w-[380px] sm:h-[280px] rounded-full bg-[#C084FC]/28 blur-[75px] will-change-transform"
       />
     </div>
+    </MotionConfig>
   );
 }
 
