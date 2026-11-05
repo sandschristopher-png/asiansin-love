@@ -193,24 +193,26 @@ export function AuthScreen({ mode, cities }: { mode: 'login' | 'signup'; cities?
   return (
     // LayoutShell supplies the centered 430px frame on the #FFFFFF canvas.
     <div className="relative isolate min-h-[100dvh] w-full flex flex-col bg-white font-sans antialiased overflow-hidden pb-[max(2.5rem,env(safe-area-inset-bottom))]">
-      {/* Layered lavender aura drifting on the white canvas (same loops as AmbientAurora: 4.5-5.2 s,
-          25-50 px drift, 0.92-1.15 scale). reducedMotion="never": the OS setting never freezes it. */}
+      {/* Lavender aura drifting in the mid and lower canvas only: the top 30% (wordmark, city
+          ticker) stays pure white. The mid-right orb starts at 38% and only ever drifts down (to about
+          45%) and never scales up, so its 64 px blur never reaches above the 30% line.
+          reducedMotion="never": the OS setting never freezes the drift. */}
       <MotionConfig reducedMotion="never">
         <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden z-0">
           <motion.div
-            animate={{ x: [0, 50, -25, 0], y: [0, -35, 25, 0], scale: [1, 1.15, 0.92, 1] }}
-            transition={{ duration: 4.8, repeat: Infinity, ease: 'easeInOut' }}
-            className="w-[30rem] h-[30rem] rounded-full bg-[#E8DFF5]/70 blur-3xl pointer-events-none absolute -top-24 -left-24 will-change-transform"
-          />
-          <motion.div
-            animate={{ x: [0, -45, 25, 0], y: [0, 35, -30, 0], scale: [1, 0.9, 1.14, 1] }}
+            animate={{ x: [0, -30, 15, 0], y: [0, 40, 18, 0], scale: [1, 0.96, 0.98, 1] }}
             transition={{ duration: 5.2, repeat: Infinity, ease: 'easeInOut' }}
-            className="w-[26rem] h-[26rem] rounded-full bg-[#D5C6EC]/45 blur-3xl pointer-events-none absolute top-1/3 -right-20 will-change-transform"
+            className="w-[28rem] h-[28rem] rounded-full bg-[#D5C6EC]/40 blur-3xl pointer-events-none absolute top-[38%] -right-24 will-change-transform"
           />
           <motion.div
-            animate={{ x: [0, 35, -35, 0], y: [0, -25, 20, 0], scale: [1, 1.15, 0.92, 1] }}
-            transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
-            className="w-96 h-96 rounded-full bg-[#E8DFF5]/50 blur-3xl pointer-events-none absolute -bottom-20 left-1/4 will-change-transform"
+            animate={{ x: [0, 40, -15, 0], y: [0, 25, 10, 0], scale: [1, 1.06, 0.95, 1] }}
+            transition={{ duration: 4.8, repeat: Infinity, ease: 'easeInOut' }}
+            className="w-[30rem] h-[30rem] rounded-full bg-[#E8DFF5]/60 blur-3xl pointer-events-none absolute top-[55%] -left-28 will-change-transform"
+          />
+          <motion.div
+            animate={{ x: [0, 30, -30, 0], y: [0, -18, 12, 0], scale: [1, 1.08, 0.94, 1] }}
+            transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
+            className="w-96 h-96 rounded-full bg-[#E8DFF5]/45 blur-3xl pointer-events-none absolute -bottom-16 left-1/3 will-change-transform"
           />
         </div>
       </MotionConfig>
