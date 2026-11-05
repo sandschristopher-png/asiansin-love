@@ -46,11 +46,11 @@ export function ChatSafetyBanner({ conversationKey }: { conversationKey: string 
   return (
     <aside
       aria-label="Safety tips"
-      className="relative mb-4 rounded-2xl border border-[#D5C6EC] bg-[#E8DFF5]/40 px-3.5 py-3 pr-9"
+      className="relative my-3 p-3.5 pr-9 rounded-2xl border border-[#D5C6EC] bg-[#E8DFF5]/40 shadow-brand-sm"
     >
       <div className="flex items-center gap-2">
         <ShieldCheck className="w-4 h-4 shrink-0 text-[#72519A]" aria-hidden />
-        <p className="text-[12.5px] font-bold text-[#51376D]">Date safely</p>
+        <p className="text-[12.5px] font-bold text-[#51376D]">Safety &amp; Trust Guidelines</p>
       </div>
       <ul className="mt-1.5 space-y-1 pl-6 list-disc marker:text-[#B5A0DA]">
         {TIPS.map((tip) => (

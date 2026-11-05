@@ -24,6 +24,7 @@ import { PushDeviceRow } from '@/components/PushDeviceRow';
 import { HapticsRow } from '@/components/HapticsRow';
 import { AlertPrefsRows } from '@/components/AlertPrefsRows';
 import { PlusBadge } from '@/components/ui/PlusBadge';
+import { Switch } from '@/components/ui/Switch';
 import { isPlusProfile } from '@/lib/plus';
 import { getCachedSubscription, setCachedSubscription } from '@/lib/subscriptionStatus';
 
@@ -41,38 +42,17 @@ let cachedSettingsData: {
   notify_messages: boolean;
 } | null = null;
 
-const ToggleSwitch = ({ on, onClick, busy }: { on: boolean; onClick: () => void; busy: boolean }) => (
-  <button
-    type="button"
-    onClick={onClick}
-    disabled={busy}
-    aria-checked={on}
-    role="switch"
-    className={`w-11 h-6 rounded-full transition-colors relative shrink-0 cursor-pointer ${
-      on ? 'bg-[#72519A]' : 'bg-[#E8DFF5]'
-    }`}
-  >
-    <div
-      className={`w-5 h-5 rounded-full bg-white shadow-md absolute top-0.5 left-0 transition-transform duration-200 ${
-        on ? 'translate-x-6' : 'translate-x-0.5'
-      }`}
-    />
-  </button>
-);
-
 const SettingRow = ({
   icon,
   title,
   subtitle,
   on,
-  busy,
   onClick,
 }: {
   icon: React.ReactNode;
   title: React.ReactNode;
   subtitle: string;
   on: boolean;
-  busy: boolean;
   onClick: () => void;
 }) => (
   <div className="flex items-center justify-between p-3 rounded-2xl hover:bg-[#E8DFF5]/40 transition">
@@ -85,11 +65,8 @@ const SettingRow = ({
         <p className="text-[11px] text-[#51376D]/75">{subtitle}</p>
       </div>
     </div>
-    {busy ? (
-      <Loader2 className="w-4 h-4 animate-spin text-[#72519A] shrink-0" />
-    ) : (
-      <ToggleSwitch on={on} onClick={onClick} busy={busy} />
-    )}
+    {/* Optimistic: flips at once, saves in the background, rolls back only on failure. */}
+    <Switch on={on} onClick={onClick} label={typeof title === 'string' ? title : undefined} />
   </div>
 );
 
@@ -101,7 +78,6 @@ export default function SettingsHubPage() {
   const [deletingAccount, setDeletingAccount] = useState(false);
   const [deleteError, setDeleteError] = useState<string | null>(null);
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
-  const [savingKey, setSavingKey] = useState<SettingsKey | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   // Plus status: null until known (cached from an earlier page in this tab when available), so
   // Plus members never see a "Plus ·" upsell or a missing billing row while it loads.
@@ -116,7 +92,6 @@ export default function SettingsHubPage() {
   // Ghost Mode (Plus): browse without leaving a footprint. Read on its own so a database without
   // the ghost_mode column (20261114_privacy_features.sql) still loads the other settings.
   const [ghostMode, setGhostMode] = useState(false);
-  const [ghostSaving, setGhostSaving] = useState(false);
   const [openingPortal, setOpeningPortal] = useState(false);
   const [portalError, setPortalError] = useState<string | null>(null);
   const [settings, setSettings] = useState(() => cachedSettingsData || {
@@ -183,11 +158,9 @@ export default function SettingsHubPage() {
     }
     setSettings((prev) => ({ ...prev, [key]: nextVal }));
     setErrorMsg(null);
-    setSavingKey(key);
 
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      setSavingKey(null);
       router.push('/login');
       return;
     }
@@ -202,7 +175,6 @@ export default function SettingsHubPage() {
       setSettings((prev) => ({ ...prev, [key]: !nextVal }));
       setErrorMsg('Could not save setting. Check your connection and try again.');
     }
-    setSavingKey(null);
   };
 
   /** Ghost Mode is Plus-only: free members get the upgrade sheet and the switch stays off. */
@@ -216,10 +188,8 @@ export default function SettingsHubPage() {
     const nextVal = !ghostMode;
     setGhostMode(nextVal);
     setErrorMsg(null);
-    setGhostSaving(true);
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) {
-      setGhostSaving(false);
       router.push('/login');
       return;
     }
@@ -228,7 +198,6 @@ export default function SettingsHubPage() {
       setGhostMode(!nextVal);
       setErrorMsg('Could not save Ghost Mode. Check your connection and try again.');
     }
-    setGhostSaving(false);
   };
 
   const openBillingPortal = async () => {
@@ -312,7 +281,7 @@ export default function SettingsHubPage() {
         </h1>
       </header>
 
-      <main className="max-w-md mx-auto px-4 pt-5 space-y-4 pb-[calc(6rem+env(safe-area-inset-bottom,24px))]">
+      <main className="max-w-md mx-auto px-4 pt-5 space-y-4 pb-[calc(8rem+env(safe-area-inset-bottom,0px))]">
 
         {errorMsg && (
           <div className="rounded-2xl bg-red-50 border border-red-200 px-4 py-3 text-xs font-semibold text-red-700">
@@ -378,7 +347,6 @@ export default function SettingsHubPage() {
                 : 'Hide from Discover while keeping your chats'
             }
             on={settings.hide_profile}
-            busy={savingKey === 'hide_profile'}
             onClick={() => handleToggle('hide_profile')}
           />
 
@@ -392,7 +360,6 @@ export default function SettingsHubPage() {
             }
             subtitle="Browse profiles without leaving a footprint in their visitor history."
             on={isPlus && ghostMode}
-            busy={ghostSaving}
             onClick={toggleGhostMode}
           />
 
@@ -401,7 +368,6 @@ export default function SettingsHubPage() {
             title="Show Active Status"
             subtitle="Display green presence indicator on your profile"
             on={settings.show_active_status}
-            busy={savingKey === 'show_active_status'}
             onClick={() => handleToggle('show_active_status')}
           />
         </div>
@@ -419,7 +385,6 @@ export default function SettingsHubPage() {
             title="New Sparks &amp; Matches"
             subtitle="Alerts when someone sparks your profile"
             on={settings.notify_sparks}
-            busy={savingKey === 'notify_sparks'}
             onClick={() => handleToggle('notify_sparks')}
           />
 
@@ -428,7 +393,6 @@ export default function SettingsHubPage() {
             title="Chat Messages"
             subtitle="Alerts for new direct messages"
             on={settings.notify_messages}
-            busy={savingKey === 'notify_messages'}
             onClick={() => handleToggle('notify_messages')}
           />
 

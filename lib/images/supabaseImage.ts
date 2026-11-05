@@ -33,6 +33,11 @@ export function isEdgeTransformUrl(src: string | null | undefined): boolean {
   return typeof src === 'string' && src.includes(RENDER_PATH);
 }
 
+/** Alias used by the release spec; same behavior as supabaseImage (no `format`, so WebP). */
+export function getOptimizedImageUrl(src: string | null | undefined, opts: EdgeImageOptions = CARD_IMAGE): string {
+  return supabaseImage(src, opts);
+}
+
 export function supabaseImage(src: string | null | undefined, opts: EdgeImageOptions = CARD_IMAGE): string {
   if (!src || !src.trim()) return PLACEHOLDER_AVATAR;
   let url: URL;

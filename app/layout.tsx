@@ -16,9 +16,11 @@ const plusJakarta = Plus_Jakarta_Sans({
   variable: '--font-sans',
 });
 
-const SITE_TITLE = 'Asians in Love - Real Connections';
+const SITE_TITLE = 'asiansin.love | Serious International Dating & Verified Singles';
+// Product claims must hold in the live app: verification is a free selfie check, reputation is
+// public, messages are screened for scams.
 const SITE_DESCRIPTION =
-  'Meet genuine singles across Southeast Asia. Safe, real connections with sparks, chats, and meaningful relationships.';
+  'Connect with verified singles across Asia for meaningful, long-term relationships. Built-in safety features, public reputation scores, and free selfie verification.';
 
 // Social share cards (Open Graph / Twitter). public/og-image.png is built by scripts/export-brand-assets.mjs.
 const SHARE_TITLE = 'Asians in Love — Intentional Dating for Singles in Asia & Beyond';
@@ -28,7 +30,8 @@ const SHARE_IMAGE = { url: '/og-image.png', width: 1200, height: 630, alt: 'Asia
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://asiansin.love'),
-  title: SITE_TITLE,
+  // Child pages set a short title ("Privacy Policy"); the template adds the brand once.
+  title: { default: SITE_TITLE, template: '%s | asiansin.love' },
   description: SITE_DESCRIPTION,
   applicationName: 'Asians in Love',
   // Icons come from the file conventions: app/favicon.ico, app/icon.svg, app/apple-icon.png

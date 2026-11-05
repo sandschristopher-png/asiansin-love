@@ -29,7 +29,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const { slug } = await params;
   const t = TITLES[slug] || 'Asian Dating';
   return {
-    title: t + ' · Asians in Love',
+    title: t.replace(/\b\w/g, (c) => c.toUpperCase()),
     description: 'Meet verified singles across Southeast Asia. Real reputation scores, free messaging, and genuine profiles on Asians in Love.'
   };
 }

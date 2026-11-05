@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { LegalPage, type LegalSection } from '@/components/LegalPage';
 
 export const metadata: Metadata = {
-  title: 'Privacy Policy - Asians in Love',
+  title: 'Privacy Policy',
   description: 'What Asians in Love collects, how verification selfies and voice notes are protected, and how to delete your data.',
 };
 

@@ -138,7 +138,7 @@ export function PrivateNotesCard({ targetId }: { targetId: string }) {
         rows={3}
         placeholder="Travel plans, shared interests, things to ask next time"
         aria-label="Private note about this member"
-        className="mt-3 w-full min-h-[84px] resize-y rounded-xl border border-[#D5C6EC] bg-white px-3 py-2 text-base sm:text-[13px] leading-relaxed text-[#51376D] placeholder:text-[#51376D]/40 focus:outline-none focus:border-[#72519A] focus:ring-2 focus:ring-[#B5A0DA]/30"
+        className="mt-3 w-full min-h-[84px] resize-y rounded-xl border border-[#D5C6EC] bg-[#E8DFF5]/20 px-3 py-2 text-base sm:text-[13px] leading-relaxed text-[#51376D] placeholder:text-[#51376D]/40 focus:outline-none focus:border-[#72519A] focus:ring-2 focus:ring-[#72519A]/30"
       />
       <p className="mt-1 h-4 text-right text-[10.5px] font-medium text-[#51376D]/50" aria-live="polite">
         {status === 'saving' ? 'Saving...' : status === 'saved' ? 'Saved' : status === 'error' ? 'Kept on this device. Will retry.' : ''}

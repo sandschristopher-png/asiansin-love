@@ -165,7 +165,7 @@ export function PhotoCarousel({
       </div>
 
       {multiple && (
-        <div aria-hidden className="absolute top-2.5 inset-x-3 z-20 flex gap-1 pointer-events-none">
+        <div aria-hidden className="absolute top-2.5 inset-x-3 z-20 flex gap-1.5 pointer-events-none">
           {photos.map((_, i) => (
             <span
               key={i}

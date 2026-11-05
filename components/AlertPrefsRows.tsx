@@ -4,13 +4,13 @@ import React, { useState } from 'react';
 import { BellRing } from 'lucide-react';
 import { alertPrefs } from '@/lib/notificationStore';
 
+/** Visual twin of components/ui/Switch (the whole row is the switch here): opacity + transform only. */
 function Toggle({ on }: { on: boolean }) {
   return (
-    <span
-      aria-hidden
-      className={`relative inline-flex h-6 w-11 shrink-0 rounded-full transition-colors ${on ? 'bg-[#72519A]' : 'bg-[#E8DFF5]'}`}
-    >
-      <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${on ? 'translate-x-[22px]' : 'translate-x-0.5'}`} />
+    <span aria-hidden className="relative inline-flex h-6 w-11 shrink-0 rounded-full overflow-hidden">
+      <span className="absolute inset-0 bg-[#D5C6EC]" />
+      <span className={`absolute inset-0 bg-[#72519A] transition-opacity duration-200 motion-reduce:transition-none ${on ? 'opacity-100' : 'opacity-0'}`} />
+      <span className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow-brand-sm transition-transform duration-200 motion-reduce:transition-none ${on ? 'translate-x-5' : 'translate-x-0'}`} />
     </span>
   );
 }

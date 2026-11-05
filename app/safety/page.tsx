@@ -5,7 +5,7 @@ import { CONTACT_UNLOCK_TURNS } from '@/lib/safety';
 import { REPUTATION_RULES } from '@/lib/reputation';
 
 export const metadata: Metadata = {
-  title: 'Safety & Anti-Scam Guide - Asians in Love',
+  title: 'Safety & Anti-Scam Guide',
   description: 'How to spot romance scams and investment fraud, why contact details unlock after a few messages, and how reporting works.',
 };
 

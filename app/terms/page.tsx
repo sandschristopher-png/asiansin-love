@@ -3,7 +3,7 @@ import Link from 'next/link';
 import { LegalPage, type LegalSection } from '@/components/LegalPage';
 
 export const metadata: Metadata = {
-  title: 'Terms of Service - Asians in Love',
+  title: 'Terms of Service',
   description: 'The rules for using Asians in Love (asiansin.love): eligibility, conduct, content, Plus billing and cancellation.',
 };
 

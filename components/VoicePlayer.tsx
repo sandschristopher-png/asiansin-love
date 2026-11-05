@@ -138,7 +138,8 @@ function VoicePlayerCard({
 
   return (
     <div className={className}>
-      <section className="bg-white/95 border border-[#D5C6EC] rounded-2xl p-4 shadow-[0_2px_8px_rgba(81,55,109,0.03)] flex items-center gap-3.5">
+      {/* One rigid row that never wraps: play | waveform (flexes, clips) | timer | actions. */}
+      <section aria-label={title} className="flex flex-nowrap items-center justify-between gap-3 w-full rounded-2xl border border-[#D5C6EC] bg-white p-3.5 shadow-brand-sm">
         <button
           type="button"
           onClick={toggle}
@@ -154,14 +155,7 @@ function VoicePlayerCard({
           )}
         </button>
 
-        <div className="flex-1 min-w-0">
-          <div className="flex items-baseline justify-between gap-2">
-            <span className="text-xs font-semibold text-[#51376D] truncate">{title}</span>
-            <span className="text-xs font-semibold text-[#51376D]/50 tabular-nums shrink-0">
-              {/* WebM from MediaRecorder reports no length until played: show elapsed only then */}
-              {totalMs > 0 ? `${formatSeconds(positionMs)} / ${formatSeconds(totalMs)}` : formatSeconds(positionMs)}
-            </span>
-          </div>
+        <div className="flex-1 min-w-0 overflow-hidden">
           <div
             role="slider"
             tabIndex={totalMs > 0 ? 0 : -1}
@@ -172,7 +166,7 @@ function VoicePlayerCard({
             aria-valuetext={totalMs > 0 ? `${formatSeconds(positionMs)} of ${formatSeconds(totalMs)}` : undefined}
             onClick={onWaveClick}
             onKeyDown={onWaveKey}
-            className={`mt-1 w-fit rounded-md outline-none focus-visible:ring-2 focus-visible:ring-[#72519A]/40 ${
+            className={`w-fit max-w-full rounded-md outline-none focus-visible:ring-2 focus-visible:ring-[#72519A]/40 ${
               totalMs > 0 ? 'cursor-pointer' : 'cursor-default'
             }`}
           >
@@ -183,11 +177,21 @@ function VoicePlayerCard({
           </div>
         </div>
 
-        {children}
+        <span className="shrink-0 whitespace-nowrap font-mono text-[11px] tabular-nums text-[#51376D]/60">
+          {/* WebM from MediaRecorder reports no length until played: show elapsed only then */}
+          {totalMs > 0 ? `${formatSeconds(positionMs)} / ${formatSeconds(totalMs)}` : formatSeconds(positionMs)}
+        </span>
+
+        {children ? <div className="shrink-0 flex items-center">{children}</div> : null}
       </section>
-      {(subtitle || failed) && (
-        <p className={`text-[11px] mt-1.5 px-1 ${failed ? 'text-red-600' : 'text-[#51376D]/55'}`}>{failed ? 'Could not play this clip.' : subtitle}</p>
-      )}
+      <p className={`text-[11px] mt-1.5 px-1 ${failed ? 'text-red-600' : 'text-[#51376D]/55'}`}>
+        {failed ? 'Could not play this clip.' : (
+          <>
+            <span className="font-semibold text-[#51376D]/75">{title}</span>
+            {subtitle ? ` · ${subtitle}` : ''}
+          </>
+        )}
+      </p>
     </div>
   );
 }
