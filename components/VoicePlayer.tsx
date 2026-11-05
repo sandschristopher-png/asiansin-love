@@ -138,12 +138,12 @@ function VoicePlayerCard({
 
   return (
     <div className={className}>
-      <section className="bg-white/95 border border-[#ECE8F4] rounded-2xl p-4 shadow-[0_2px_8px_rgba(45,38,75,0.03)] flex items-center gap-3.5">
+      <section className="bg-white/95 border border-[#D5C6EC] rounded-2xl p-4 shadow-[0_2px_8px_rgba(81,55,109,0.03)] flex items-center gap-3.5">
         <button
           type="button"
           onClick={toggle}
           aria-label={playing ? `Pause ${title}` : `Play ${title}`}
-          className="w-9 h-9 shrink-0 rounded-full bg-gradient-to-tr from-[#8C71F5] to-[#EC4899] text-white flex items-center justify-center shadow-[0_2px_8px_rgba(140,113,245,0.25)] hover:opacity-95 transition-all active:scale-95"
+          className="w-9 h-9 shrink-0 rounded-full bg-[#72519A] hover:bg-[#51376D] text-white flex items-center justify-center transition-colors active:scale-95"
         >
           {loading ? (
             <Loader2 className="w-4 h-4 animate-spin" />
@@ -156,8 +156,8 @@ function VoicePlayerCard({
 
         <div className="flex-1 min-w-0">
           <div className="flex items-baseline justify-between gap-2">
-            <span className="text-xs font-semibold text-[#2D264B] truncate">{title}</span>
-            <span className="text-xs font-semibold text-[#2D264B]/50 tabular-nums shrink-0">
+            <span className="text-xs font-semibold text-[#51376D] truncate">{title}</span>
+            <span className="text-xs font-semibold text-[#51376D]/50 tabular-nums shrink-0">
               {/* WebM from MediaRecorder reports no length until played: show elapsed only then */}
               {totalMs > 0 ? `${formatSeconds(positionMs)} / ${formatSeconds(totalMs)}` : formatSeconds(positionMs)}
             </span>
@@ -172,7 +172,7 @@ function VoicePlayerCard({
             aria-valuetext={totalMs > 0 ? `${formatSeconds(positionMs)} of ${formatSeconds(totalMs)}` : undefined}
             onClick={onWaveClick}
             onKeyDown={onWaveKey}
-            className={`mt-1 w-fit rounded-md outline-none focus-visible:ring-2 focus-visible:ring-[#8C71F5]/40 ${
+            className={`mt-1 w-fit rounded-md outline-none focus-visible:ring-2 focus-visible:ring-[#72519A]/40 ${
               totalMs > 0 ? 'cursor-pointer' : 'cursor-default'
             }`}
           >
@@ -186,7 +186,7 @@ function VoicePlayerCard({
         {children}
       </section>
       {(subtitle || failed) && (
-        <p className={`text-[11px] mt-1.5 px-1 ${failed ? 'text-rose-600' : 'text-neutral-400'}`}>{failed ? 'Could not play this clip.' : subtitle}</p>
+        <p className={`text-[11px] mt-1.5 px-1 ${failed ? 'text-[#72519A]' : 'text-[#51376D]/55'}`}>{failed ? 'Could not play this clip.' : subtitle}</p>
       )}
     </div>
   );

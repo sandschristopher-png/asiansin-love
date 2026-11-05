@@ -68,30 +68,30 @@ export default function ResetPasswordPage() {
 
   if (checking) {
     return (
-      <div className="min-h-screen w-full bg-[#FAF8FD] flex items-center justify-center">
-        <Loader2 className="w-7 h-7 animate-spin text-[#6555B8]" />
+      <div className="min-h-screen w-full bg-white flex items-center justify-center">
+        <Loader2 className="w-7 h-7 animate-spin text-[#72519A]" />
       </div>
     );
   }
 
   const inputClass =
-    'w-full py-3 px-4 pr-11 rounded-2xl bg-white border border-[#DDD7E5] text-xs text-[#1C1924] placeholder:text-[#A8A1B5] focus:outline-none focus:border-[#6555B8] focus:ring-4 focus:ring-[#6555B8]/10 transition';
+    'w-full py-3 px-4 pr-11 rounded-2xl bg-white border border-[#D5C6EC] text-xs text-[#51376D] placeholder:text-[#51376D]/55 focus:outline-none focus:border-[#72519A] focus:ring-4 focus:ring-[#72519A]/10 transition';
 
   return (
-    <div className="min-h-screen w-full bg-[#FAF8FD] flex items-center justify-center p-4 sm:p-6 font-sans antialiased">
+    <div className="min-h-screen w-full bg-white flex items-center justify-center p-4 sm:p-6 font-sans antialiased">
       <InAppToast message={toast} onClose={closeToast} icon={<CheckCircle2 className="w-3.5 h-3.5" />} />
-      <main className="w-full max-w-[420px] bg-white rounded-3xl border border-[#DDD7E5] shadow-xl shadow-[#1C1536]/5 p-7 sm:p-9 space-y-6">
+      <main className="w-full max-w-[420px] bg-white rounded-3xl border border-[#D5C6EC] shadow-xl shadow-[#51376D]/5 p-7 sm:p-9 space-y-6">
         <div className="text-center space-y-2">
           <div className="flex justify-center mb-3">
             <BrandLogo size="md" />
           </div>
-          <h1 className="text-2xl font-black text-[#1C1924] tracking-tight">Choose a new password</h1>
-          <p className="text-xs text-[#6C637B]">At least {MIN_PASSWORD_LENGTH} characters.</p>
+          <h1 className="text-2xl font-black text-[#51376D] tracking-tight">Choose a new password</h1>
+          <p className="text-xs text-[#51376D]/75">At least {MIN_PASSWORD_LENGTH} characters.</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-1.5 text-left">
-            <label htmlFor="new-password" className="text-xs font-bold text-[#1C1924] block">
+            <label htmlFor="new-password" className="text-xs font-bold text-[#51376D] block">
               New Password
             </label>
             <div className="relative">
@@ -109,7 +109,7 @@ export default function ResetPasswordPage() {
                 type="button"
                 onClick={() => setShowPassword((v) => !v)}
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#A8A1B5] hover:text-[#524B5E] transition cursor-pointer"
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#51376D]/55 hover:text-[#51376D]/85 transition cursor-pointer"
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
@@ -117,7 +117,7 @@ export default function ResetPasswordPage() {
           </div>
 
           <div className="space-y-1.5 text-left">
-            <label htmlFor="confirm-password" className="text-xs font-bold text-[#1C1924] block">
+            <label htmlFor="confirm-password" className="text-xs font-bold text-[#51376D] block">
               Confirm New Password
             </label>
             <input
@@ -133,7 +133,7 @@ export default function ResetPasswordPage() {
           </div>
 
           {error && (
-            <p className="text-xs font-semibold text-rose-600 bg-rose-50 border border-rose-200 rounded-xl px-3.5 py-2.5">
+            <p className="text-xs font-semibold text-[#72519A] bg-[#E8DFF5]/50 border border-[#D5C6EC] rounded-xl px-3.5 py-2.5">
               {error}
             </p>
           )}
@@ -141,7 +141,7 @@ export default function ResetPasswordPage() {
           <button
             type="submit"
             disabled={saving || Boolean(toast)}
-            className="w-full py-3.5 px-6 rounded-2xl bg-[#6555B8] text-white text-xs font-bold flex items-center justify-center gap-2 shadow-md shadow-[#6555B8]/20 hover:bg-[#5444A0] active:scale-[0.99] transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+            className="w-full py-3.5 px-6 rounded-2xl bg-[#72519A] text-white text-xs font-bold flex items-center justify-center gap-2 shadow-md shadow-[#72519A]/20 hover:bg-[#51376D] active:scale-[0.99] transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <KeyRound className="w-4 h-4" />}
             <span>{saving ? 'Updating...' : 'Update Password'}</span>

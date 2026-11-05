@@ -146,7 +146,7 @@ export function Navbar() {
   if (isChatThread || pathname === '/plus' || (pathname || '').startsWith('/plus/') || pathname === '/profile/edit' || (pathname || '').startsWith('/profile/edit/') || pathname === '/settings' || (pathname || '').startsWith('/settings/')) return null;
   return (
     // On Discover the frosted filter bar sits directly below: drop the divider so both read as one surface.
-    <header className={`sticky top-0 z-40 w-full bg-white/80 backdrop-blur-md border-b ${pathname === '/discover' ? 'border-transparent' : 'border-[#ECE8F4]/80'}`}>
+    <header className={`sticky top-0 z-40 w-full bg-white/80 backdrop-blur-md border-b ${pathname === '/discover' ? 'border-transparent' : 'border-[#D5C6EC]'}`}>
       <div className="max-w-[430px] mx-auto px-4 h-14 flex items-center justify-between relative">
         <div className={`flex items-center gap-2 ${pageTitle ? 'min-w-0' : 'shrink-0'}`}>
           <div
@@ -165,14 +165,14 @@ export function Navbar() {
                 <button
                   type="button"
                   onClick={() => { if (typeof window !== "undefined" && window.history.length > 1) router.back(); else router.push("/discover"); }}
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-[#4C3B75] hover:bg-black/5 transition-colors -ml-1 sm:hidden"
+                  className="w-8 h-8 rounded-full flex items-center justify-center text-[#51376D] hover:bg-black/5 transition-colors -ml-1 sm:hidden"
                   aria-label="Back"
                 >
                   <ArrowLeft className="w-5 h-5" />
                 </button>
                 )}
                 <h1
-                  className="text-[19px] sm:text-[21px] font-semibold text-[#4C3B75] tracking-[-0.025em] leading-snug pb-0.5 select-none truncate"
+                  className="text-[19px] sm:text-[21px] font-semibold text-[#51376D] tracking-[-0.025em] leading-snug pb-0.5 select-none truncate"
                   style={{ fontFamily: 'var(--font-brand)' }}
                 >
                   {pageTitle}
@@ -181,7 +181,7 @@ export function Navbar() {
                   <button
                     type="button"
                     onClick={() => setProfileMenuOpen(true)}
-                    className="w-8 h-8 rounded-full flex items-center justify-center text-[#4C3B75] hover:bg-black/5 transition-colors sm:hidden"
+                    className="w-8 h-8 rounded-full flex items-center justify-center text-[#51376D] hover:bg-black/5 transition-colors sm:hidden"
                     aria-label="More options"
                   >
                     <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
@@ -201,7 +201,7 @@ export function Navbar() {
             {pathname === '/profile' && (
               <Link
                 href="/settings"
-                className="w-8 h-8 rounded-full flex items-center justify-center text-[#6555B8] hover:bg-[#F3EFFC] transition-colors"
+                className="w-8 h-8 rounded-full flex items-center justify-center text-[#72519A] hover:bg-[#E8DFF5]/70 transition-colors"
                 aria-label="Settings"
                 title="Settings"
               >
@@ -215,56 +215,56 @@ export function Navbar() {
                   aria-label="Open menu"
                   aria-haspopup="menu"
                   aria-expanded={menuOpen}
-                  className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-[#F3EFFC] text-[#2D264B] transition-colors relative"
+                  className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-[#E8DFF5]/70 text-[#51376D] transition-colors relative"
                 >
                   <Menu className="w-5 h-5" />
                 </button>
                 {menuOpen && (
                   // Account utilities + announcements; dating activity lives on the BottomNav tabs.
-                  <div role="menu" className="absolute right-0 mt-2 w-64 rounded-2xl bg-white border border-[#ECE8F4] shadow-xl overflow-hidden z-[200] animate-[notifDropdownIn_0.2s_cubic-bezier(0.16,1,0.3,1)_both]">
-                    <div className="px-4 py-3 border-b border-[#ECE8F4] flex items-center gap-1.5 min-w-0">
-                      <span className="text-sm font-bold text-[#2D264B] truncate">{displayName.replace(/^@/, '')}</span>
+                  <div role="menu" className="absolute right-0 mt-2 w-64 rounded-2xl bg-white border border-[#D5C6EC] shadow-xl overflow-hidden z-[200] animate-[notifDropdownIn_0.2s_cubic-bezier(0.16,1,0.3,1)_both]">
+                    <div className="px-4 py-3 border-b border-[#D5C6EC] flex items-center gap-1.5 min-w-0">
+                      <span className="text-sm font-bold text-[#51376D] truncate">{displayName.replace(/^@/, '')}</span>
                       {isPlusProfile(profile) && <PlusBadge size="profile" />}
                     </div>
                     <div className="py-1">
-                      <Link href="/plus" role="menuitem" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 h-11 text-sm text-[#2D264B] hover:bg-[#FAF8FD] transition-colors justify-between">
+                      <Link href="/plus" role="menuitem" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 h-11 text-sm text-[#51376D] hover:bg-[#E8DFF5]/40 transition-colors justify-between">
                         {/* The header row above already shows the PLUS badge: this row says "Membership". */}
                         <span className="flex items-center gap-3">
-                          <CreditCard className="w-4 h-4 text-neutral-500" aria-hidden />
+                          <CreditCard className="w-4 h-4 text-[#51376D]/55" aria-hidden />
                           {/* Profile not loaded yet: neutral placeholder, never "Upgrade" to a Plus member. */}
                           {!profile ? (
-                            <span aria-hidden className="h-3 w-24 rounded-full bg-[#ECE8F4]/50 animate-pulse" />
+                            <span aria-hidden className="h-3 w-24 rounded-full bg-[#E8DFF5]/70 animate-pulse" />
                           ) : isPlusProfile(profile) ? 'Membership' : 'Upgrade to Plus'}
                         </span>
                         {!profile ? null : isPlusProfile(profile) ? (
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-gradient-to-r from-[#8C71F5]/10 to-[#EC4899]/10 border border-[#8C71F5]/20 text-[#8C71F5]">Active</span>
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-gradient-to-r from-[#72519A]/10 to-[#9474C3]/10 border border-[#72519A]/20 text-[#72519A]">Active</span>
                         ) : (
-                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#FAF8FD] border border-[#ECE8F4] text-neutral-500">Upgrade</span>
+                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-white border border-[#D5C6EC] text-[#51376D]/55">Upgrade</span>
                         )}
                       </Link>
-                      <Link href="/profile" role="menuitem" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 h-11 text-sm text-[#2D264B] hover:bg-[#FAF8FD] transition-colors">
-                        <User className="w-4 h-4 text-neutral-500" />
+                      <Link href="/profile" role="menuitem" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 h-11 text-sm text-[#51376D] hover:bg-[#E8DFF5]/40 transition-colors">
+                        <User className="w-4 h-4 text-[#51376D]/55" />
                         My Profile
                       </Link>
-                      <Link href="/settings" role="menuitem" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 h-11 text-sm text-[#2D264B] hover:bg-[#FAF8FD] transition-colors">
-                        <Settings className="w-4 h-4 text-neutral-500" />
+                      <Link href="/settings" role="menuitem" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 h-11 text-sm text-[#51376D] hover:bg-[#E8DFF5]/40 transition-colors">
+                        <Settings className="w-4 h-4 text-[#51376D]/55" />
                         Settings
                       </Link>
-                      <Link href="/announcements" role="menuitem" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 h-11 text-sm text-[#2D264B] hover:bg-[#FAF8FD] transition-colors">
-                        <Megaphone className="w-4 h-4 text-neutral-500" />
+                      <Link href="/announcements" role="menuitem" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 h-11 text-sm text-[#51376D] hover:bg-[#E8DFF5]/40 transition-colors">
+                        <Megaphone className="w-4 h-4 text-[#51376D]/55" />
                         <span>Announcements</span>
-                        {hasUnreadAnnouncements && <span aria-label="New announcements" className="w-2 h-2 rounded-full bg-[#EC4899]" />}
+                        {hasUnreadAnnouncements && <span aria-label="New announcements" className="w-2 h-2 rounded-full bg-[#9474C3]" />}
                       </Link>
                       {isStaff(adminRoleOf(profile)) && (
                         // Staff only: never rendered for members.
-                        <Link href="/admin" role="menuitem" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 h-11 text-sm text-[#2D264B] hover:bg-[#FAF8FD] transition-colors">
-                          <ShieldAlert className="w-4 h-4 text-neutral-500" />
+                        <Link href="/admin" role="menuitem" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 h-11 text-sm text-[#51376D] hover:bg-[#E8DFF5]/40 transition-colors">
+                          <ShieldAlert className="w-4 h-4 text-[#51376D]/55" />
                           Admin Console
                         </Link>
                       )}
                     </div>
-                    <div className="border-t border-[#ECE8F4] py-1">
-                      <button type="button" role="menuitem" onClick={handleSignOut} className="w-full flex items-center gap-3 px-4 h-11 text-sm text-rose-600 hover:bg-rose-50 transition-colors text-left">
+                    <div className="border-t border-[#D5C6EC] py-1">
+                      <button type="button" role="menuitem" onClick={handleSignOut} className="w-full flex items-center gap-3 px-4 h-11 text-sm text-[#72519A] hover:bg-[#E8DFF5]/50 transition-colors text-left">
                         <LogOut className="w-4 h-4" />
                         Sign Out
                       </button>
@@ -276,7 +276,7 @@ export function Navbar() {
           ) : !authLoading && !IN_APP_PREFIXES.some((p) => pathname === p || pathname?.startsWith(p + '/')) ? (
             <Link
               href="/login"
-              className="px-4 py-1.5 rounded-full bg-[#6555B8] hover:bg-[#5343A3] text-white text-xs font-semibold tracking-wide transition shadow-sm"
+              className="px-4 py-1.5 rounded-full bg-[#72519A] hover:bg-[#72519A] text-white text-xs font-semibold tracking-wide transition shadow-sm"
             >
               Sign In
             </Link>
@@ -309,17 +309,17 @@ export function Navbar() {
             className="w-full max-w-md p-4 pb-6 rounded-t-3xl bg-white shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-gray-200" />
+            <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-[#E8DFF5]" />
             <div className="space-y-1">
               <button
                 onClick={() => setProfileMenuOpen(false)}
-                className="w-full text-left px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors text-[#1C1924]"
+                className="w-full text-left px-4 py-3 rounded-xl hover:bg-[#E8DFF5]/40 transition-colors text-[#51376D]"
               >
                 Report Profile
               </button>
               <button
                 onClick={() => setProfileMenuOpen(false)}
-                className="w-full text-left px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors text-[#1C1924]"
+                className="w-full text-left px-4 py-3 rounded-xl hover:bg-[#E8DFF5]/40 transition-colors text-[#51376D]"
               >
                 Block User
               </button>
@@ -333,14 +333,14 @@ export function Navbar() {
                     }).catch(() => {});
                   }
                 }}
-                className="w-full text-left px-4 py-3 rounded-xl hover:bg-gray-50 transition-colors text-[#1C1924]"
+                className="w-full text-left px-4 py-3 rounded-xl hover:bg-[#E8DFF5]/40 transition-colors text-[#51376D]"
               >
                 Share Profile
               </button>
             </div>
             <button
               onClick={() => setProfileMenuOpen(false)}
-              className="mt-3 w-full py-3 rounded-xl bg-gray-100 text-gray-600 font-medium hover:bg-gray-200 transition-colors"
+              className="mt-3 w-full py-3 rounded-xl bg-[#E8DFF5]/60 text-[#51376D]/80 font-medium hover:bg-[#E8DFF5] transition-colors"
             >
               Cancel
             </button>

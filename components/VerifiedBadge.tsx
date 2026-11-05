@@ -10,7 +10,7 @@ interface VerifiedBadgeProps {
 
 const sizeConfig = {
   sm: { pill: "h-4 px-1 gap-0.5", icon: "w-2.5 h-2.5", text: "text-[9.5px]" },
-  md: { pill: "h-5 px-1.5 gap-0.5", icon: "w-3 h-3", text: "text-[10.5px]" },
+  md: { pill: "py-0.5 px-2.5 gap-1", icon: "w-3 h-3", text: "text-xs" },
   lg: { pill: "h-6 px-2 gap-1", icon: "w-3.5 h-3.5", text: "text-xs" },
 };
 
@@ -22,7 +22,7 @@ export default function VerifiedBadge({ size = "md", className = "", showText = 
   const s = sizeConfig[size] || sizeConfig.md;
   return (
     <span
-      className={`inline-flex items-center shrink-0 rounded-full border border-[#8C71F5]/40 bg-white/95 text-[#6555B8] font-semibold leading-none select-none ${s.pill} ${className}`}
+      className={`inline-flex items-center shrink-0 rounded-full border border-[#D5C6EC] bg-white shadow-[inset_0_0_0_999px_rgba(232,223,245,0.4)] text-[#72519A] font-medium leading-none select-none ${s.pill} ${className}`}
       title="Selfie verified member"
       aria-label="Verified member"
     >

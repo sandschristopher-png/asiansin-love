@@ -2,10 +2,10 @@
  * Display tiers for the Reputation score (visual only: messaging / voice-note restrictions are
  * enforced separately in lib/reputation.ts). Every screen shows the score as "[Shield] 98%".
  *
- *   Pristine 90-100  brand violet
+ *   Pristine 90-100  brand plum
  *   Good     75-89   warm amber
  *   Caution  50-74   coral orange
- *   Flagged  < 50    crimson rose
+ *   Flagged  < 50    vibrant purple
  */
 export type ReputationTier = 'pristine' | 'good' | 'caution' | 'flagged';
 
@@ -29,13 +29,13 @@ const TIERS: Record<ReputationTier, Omit<ReputationTokens, 'score' | 'percent'>>
     tier: 'pristine',
     tierLabel: 'Pristine',
     light: {
-      container: 'bg-[#F3EFFC] border border-[#DDD3F7]',
-      text: 'text-[#4F3FA3]',
-      icon: 'text-[#6555B8]',
-      bar: 'bg-[#6555B8]',
-      track: 'bg-[#F3EFFC]',
+      container: 'bg-[#E8DFF5]/60 border border-[#D5C6EC]',
+      text: 'text-[#72519A]',
+      icon: 'text-[#72519A]',
+      bar: 'bg-[#72519A]',
+      track: 'bg-[#E8DFF5]',
     },
-    frosted: { container: FROSTED_CONTAINER, text: 'text-white', icon: 'text-[#B7A6FF]' },
+    frosted: { container: FROSTED_CONTAINER, text: 'text-white', icon: 'text-[#D5C6EC]' },
   },
   good: {
     tier: 'good',
@@ -65,13 +65,13 @@ const TIERS: Record<ReputationTier, Omit<ReputationTokens, 'score' | 'percent'>>
     tier: 'flagged',
     tierLabel: 'Flagged',
     light: {
-      container: 'bg-rose-50 border border-rose-200',
-      text: 'text-rose-700',
-      icon: 'text-rose-500',
-      bar: 'bg-rose-500',
-      track: 'bg-rose-100',
+      container: 'bg-[#E8DFF5]/50 border border-[#D5C6EC]',
+      text: 'text-[#51376D]',
+      icon: 'text-[#9474C3]',
+      bar: 'bg-[#9474C3]',
+      track: 'bg-[#E8DFF5]/70',
     },
-    frosted: { container: FROSTED_CONTAINER, text: 'text-rose-200', icon: 'text-rose-300' },
+    frosted: { container: FROSTED_CONTAINER, text: 'text-[#E8DFF5]', icon: 'text-[#D5C6EC]' },
   },
 };
 

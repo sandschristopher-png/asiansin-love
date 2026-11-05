@@ -55,7 +55,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#6555B8',
+  themeColor: '#72519A',
   interactiveWidget: 'resizes-content',
 };
 
@@ -67,7 +67,7 @@ export default function RootLayout({
 
   return (
     <html lang="en" className={`h-full ${plusJakarta.variable}`}>
-      <body className="font-sans bg-[#ECE9F1] text-[#1C1924] h-full selection:bg-[#6555B8] selection:text-white antialiased overflow-hidden">
+      <body className="font-sans bg-[#E8DFF5]/60 text-[#51376D] h-full selection:bg-[#72519A] selection:text-white antialiased overflow-hidden">
         <LayoutShell>{children}</LayoutShell>
         <PwaRegister />
       </body>

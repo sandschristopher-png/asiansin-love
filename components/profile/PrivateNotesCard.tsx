@@ -62,7 +62,7 @@ export function PrivateNotesCard({ targetId }: { targetId: string }) {
   };
 
   return (
-    <div className="rounded-2xl border border-[#ECE8F4] bg-white">
+    <div className="rounded-2xl border border-[#D5C6EC] bg-white">
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
@@ -70,10 +70,10 @@ export function PrivateNotesCard({ targetId }: { targetId: string }) {
         className="w-full flex items-center justify-between gap-3 px-4 py-3 text-left cursor-pointer"
       >
         <span>
-          <span className="block text-[13px] font-bold text-[#2D264B]">Private Notes</span>
-          <span className="block text-[11px] text-[#2D264B]/50">Only visible to you</span>
+          <span className="block text-[13px] font-bold text-[#51376D]">Private Notes</span>
+          <span className="block text-[11px] text-[#51376D]/50">Only visible to you</span>
         </span>
-        <ChevronDown className={`w-4 h-4 text-[#2D264B]/40 transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden />
+        <ChevronDown className={`w-4 h-4 text-[#51376D]/40 transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden />
       </button>
       {open && (
         <div className="px-4 pb-3">
@@ -87,9 +87,9 @@ export function PrivateNotesCard({ targetId }: { targetId: string }) {
             rows={3}
             placeholder="Things to remember about this member"
             aria-label="Private note"
-            className="w-full resize-none rounded-xl border border-[#ECE8F4] bg-white px-3 py-2 text-[13px] leading-relaxed text-[#2D264B] placeholder:text-[#2D264B]/35 focus:outline-none focus:border-[#8C71F5]/50"
+            className="w-full resize-none rounded-xl border border-[#D5C6EC] bg-white px-3 py-2 text-[13px] leading-relaxed text-[#51376D] placeholder:text-[#51376D]/35 focus:outline-none focus:border-[#72519A]/50"
           />
-          <p className="mt-1 h-4 text-right text-[10.5px] font-medium text-[#2D264B]/45" aria-live="polite">
+          <p className="mt-1 h-4 text-right text-[10.5px] font-medium text-[#51376D]/45" aria-live="polite">
             {status === 'saving' ? 'Saving...' : status === 'saved' ? 'Saved' : status === 'error' ? 'Could not save. Try again.' : ''}
           </p>
         </div>

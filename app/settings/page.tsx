@@ -49,7 +49,7 @@ const ToggleSwitch = ({ on, onClick, busy }: { on: boolean; onClick: () => void;
     aria-checked={on}
     role="switch"
     className={`w-11 h-6 rounded-full transition-colors relative shrink-0 cursor-pointer ${
-      on ? 'bg-[#6555B8]' : 'bg-[#DDD7E5]'
+      on ? 'bg-[#72519A]' : 'bg-[#E8DFF5]'
     }`}
   >
     <div
@@ -75,18 +75,18 @@ const SettingRow = ({
   busy: boolean;
   onClick: () => void;
 }) => (
-  <div className="flex items-center justify-between p-3 rounded-2xl hover:bg-[#F8F7FA] transition">
+  <div className="flex items-center justify-between p-3 rounded-2xl hover:bg-[#E8DFF5]/40 transition">
     <div className="flex items-center gap-3 pr-4">
-      <div className="w-8 h-8 rounded-xl bg-[#F8F7FA] text-[#524B5E] flex items-center justify-center shrink-0">
+      <div className="w-8 h-8 rounded-xl bg-white text-[#51376D]/85 flex items-center justify-center shrink-0">
         {icon}
       </div>
       <div>
-        <div className="text-xs font-bold text-[#1C1924]">{title}</div>
-        <p className="text-[11px] text-[#6C637B]">{subtitle}</p>
+        <div className="text-xs font-bold text-[#51376D]">{title}</div>
+        <p className="text-[11px] text-[#51376D]/75">{subtitle}</p>
       </div>
     </div>
     {busy ? (
-      <Loader2 className="w-4 h-4 animate-spin text-[#6555B8] shrink-0" />
+      <Loader2 className="w-4 h-4 animate-spin text-[#72519A] shrink-0" />
     ) : (
       <ToggleSwitch on={on} onClick={onClick} busy={busy} />
     )}
@@ -289,25 +289,25 @@ export default function SettingsHubPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#F8F7FA] flex items-center justify-center">
-        <Loader2 className="w-7 h-7 animate-spin text-[#6555B8]" />
+      <div className="min-h-screen bg-white flex items-center justify-center">
+        <Loader2 className="w-7 h-7 animate-spin text-[#72519A]" />
       </div>
     );
   }
 
   return (
-    <div className="relative flex-1 w-full bg-[#F8F7FA] text-[#1C1924] font-sans min-h-screen">
+    <div className="relative flex-1 w-full bg-white text-[#51376D] font-sans min-h-screen">
       {/* Sticky Header */}
-      <header className="flex items-center gap-3 px-4 py-3.5 bg-white/95 backdrop-blur-md border-b border-[#E5E1EC] sticky top-0 z-20">
+      <header className="flex items-center gap-3 px-4 py-3.5 bg-white/95 backdrop-blur-md border-b border-[#D5C6EC] sticky top-0 z-20">
         <button
           type="button"
           onClick={() => router.push('/profile')}
-          className="w-8 h-8 rounded-full flex items-center justify-center text-[#524B5E] hover:text-[#1C1924] hover:bg-[#F3EFFC] transition cursor-pointer"
+          className="w-8 h-8 rounded-full flex items-center justify-center text-[#51376D]/85 hover:text-[#51376D] hover:bg-[#E8DFF5]/70 transition cursor-pointer"
           aria-label="Back to profile"
         >
           <ArrowLeft className="w-4 h-4" />
         </button>
-        <h1 className="text-sm font-semibold text-[#1C1924] tracking-tight">
+        <h1 className="text-sm font-semibold text-[#51376D] tracking-tight">
           Settings &amp; Privacy
         </h1>
       </header>
@@ -315,56 +315,56 @@ export default function SettingsHubPage() {
       <main className="max-w-md mx-auto px-4 pt-5 space-y-4 pb-[calc(6rem+env(safe-area-inset-bottom,24px))]">
 
         {errorMsg && (
-          <div className="rounded-2xl bg-rose-50 border border-rose-200 px-4 py-3 text-xs font-semibold text-rose-700">
+          <div className="rounded-2xl bg-[#E8DFF5]/50 border border-[#D5C6EC] px-4 py-3 text-xs font-semibold text-[#51376D]">
             {errorMsg}
           </div>
         )}
 
         {/* CARD 1: ACCOUNT & TRUST */}
-        <div className="rounded-3xl bg-white border border-[#DDD7E5] p-2 shadow-2xs space-y-1">
+        <div className="rounded-3xl bg-white border border-[#D5C6EC] p-2 shadow-2xs space-y-1">
           <div className="px-3 pt-2 pb-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-[#6555B8]">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[#72519A]">
               Account &amp; Trust
             </span>
           </div>
 
           <Link
             href="/verify"
-            className="flex items-center justify-between p-3 rounded-2xl hover:bg-[#F8F7FA] transition cursor-pointer"
+            className="flex items-center justify-between p-3 rounded-2xl hover:bg-[#E8DFF5]/40 transition cursor-pointer"
           >
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
                 <ShieldCheck className="w-4 h-4" />
               </div>
               <div>
-                <p className="text-xs font-bold text-[#1C1924]">Identity Verification</p>
-                <p className="text-[11px] text-[#6C637B]">GPS &amp; selfie trust badge status</p>
+                <p className="text-xs font-bold text-[#51376D]">Identity Verification</p>
+                <p className="text-[11px] text-[#51376D]/75">GPS &amp; selfie trust badge status</p>
               </div>
             </div>
-            <ChevronRight className="w-4 h-4 text-[#8C849B]" />
+            <ChevronRight className="w-4 h-4 text-[#51376D]/55" />
           </Link>
 
           <Link
             href="/profile/reputation"
-            className="flex items-center justify-between p-3 rounded-2xl hover:bg-[#F8F7FA] transition cursor-pointer"
+            className="flex items-center justify-between p-3 rounded-2xl hover:bg-[#E8DFF5]/40 transition cursor-pointer"
           >
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-[#F3EFFC] text-[#6555B8] flex items-center justify-center">
+              <div className="w-8 h-8 rounded-xl bg-[#E8DFF5]/60 text-[#72519A] flex items-center justify-center">
                 <Lock className="w-4 h-4" />
               </div>
               <div>
-                <p className="text-xs font-bold text-[#1C1924]">Reputation &amp; Conduct Standing</p>
-                <p className="text-[11px] text-[#6C637B]">Community trust and conduct</p>
+                <p className="text-xs font-bold text-[#51376D]">Reputation &amp; Conduct Standing</p>
+                <p className="text-[11px] text-[#51376D]/75">Community trust and conduct</p>
               </div>
             </div>
-            <ChevronRight className="w-4 h-4 text-[#8C849B]" />
+            <ChevronRight className="w-4 h-4 text-[#51376D]/55" />
           </Link>
         </div>
 
         {/* CARD 2: PRIVACY & DISCRETION */}
-        <div className="rounded-3xl bg-white border border-[#DDD7E5] p-2 shadow-2xs space-y-1">
+        <div className="rounded-3xl bg-white border border-[#D5C6EC] p-2 shadow-2xs space-y-1">
           <div className="px-3 pt-2 pb-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-[#6555B8]">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[#72519A]">
               Privacy &amp; Discretion
             </span>
           </div>
@@ -407,9 +407,9 @@ export default function SettingsHubPage() {
         </div>
 
         {/* CARD 3: NOTIFICATIONS */}
-        <div className="rounded-3xl bg-white border border-[#DDD7E5] p-2 shadow-2xs space-y-1">
+        <div className="rounded-3xl bg-white border border-[#D5C6EC] p-2 shadow-2xs space-y-1">
           <div className="px-3 pt-2 pb-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-[#6555B8]">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[#72519A]">
               Notifications
             </span>
           </div>
@@ -438,27 +438,27 @@ export default function SettingsHubPage() {
         </div>
 
         {/* CARD 4: SAFETY & SUPPORT */}
-        <div className="rounded-3xl bg-white border border-[#DDD7E5] p-2 shadow-2xs space-y-1">
+        <div className="rounded-3xl bg-white border border-[#D5C6EC] p-2 shadow-2xs space-y-1">
           <div className="px-3 pt-2 pb-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-[#6555B8]">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[#72519A]">
               Safety &amp; Support
             </span>
           </div>
 
           <Link
             href="/standards"
-            className="flex items-center justify-between p-3 rounded-2xl hover:bg-[#F8F7FA] transition cursor-pointer"
+            className="flex items-center justify-between p-3 rounded-2xl hover:bg-[#E8DFF5]/40 transition cursor-pointer"
           >
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-[#F8F7FA] text-[#524B5E] flex items-center justify-center">
+              <div className="w-8 h-8 rounded-xl bg-white text-[#51376D]/85 flex items-center justify-center">
                 <HelpCircle className="w-4 h-4" />
               </div>
               <div>
-                <p className="text-xs font-bold text-[#1C1924]">Community Guidelines &amp; Anti-Scam</p>
-                <p className="text-[11px] text-[#6C637B]">How we keep asiansin.love secure</p>
+                <p className="text-xs font-bold text-[#51376D]">Community Guidelines &amp; Anti-Scam</p>
+                <p className="text-[11px] text-[#51376D]/75">How we keep asiansin.love secure</p>
               </div>
             </div>
-            <ChevronRight className="w-4 h-4 text-[#8C849B]" />
+            <ChevronRight className="w-4 h-4 text-[#51376D]/55" />
           </Link>
 
           {[
@@ -469,53 +469,53 @@ export default function SettingsHubPage() {
             <Link
               key={row.href}
               href={row.href}
-              className="flex items-center justify-between p-3 rounded-2xl hover:bg-[#F8F7FA] transition cursor-pointer"
+              className="flex items-center justify-between p-3 rounded-2xl hover:bg-[#E8DFF5]/40 transition cursor-pointer"
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-xl bg-[#F8F7FA] text-[#524B5E] flex items-center justify-center">
+                <div className="w-8 h-8 rounded-xl bg-white text-[#51376D]/85 flex items-center justify-center">
                   <FileText className="w-4 h-4" />
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-[#1C1924]">{row.title}</p>
-                  <p className="text-[11px] text-[#6C637B]">{row.subtitle}</p>
+                  <p className="text-xs font-bold text-[#51376D]">{row.title}</p>
+                  <p className="text-[11px] text-[#51376D]/75">{row.subtitle}</p>
                 </div>
               </div>
-              <ChevronRight className="w-4 h-4 text-[#8C849B]" />
+              <ChevronRight className="w-4 h-4 text-[#51376D]/55" />
             </Link>
           ))}
         </div>
 
         {/* Plus BILLING (subscribers only); neutral placeholder until the status is known */}
         {hasPlusBilling === null && (
-          <div aria-hidden className="rounded-3xl bg-white border border-[#ECE8F4] p-2 shadow-2xs">
-            <div className="h-11 w-full rounded-full bg-[#ECE8F4]/50 animate-pulse" />
+          <div aria-hidden className="rounded-3xl bg-white border border-[#D5C6EC] p-2 shadow-2xs">
+            <div className="h-11 w-full rounded-full bg-[#E8DFF5]/70 animate-pulse" />
           </div>
         )}
         {hasPlusBilling === true && (
-          <div className="rounded-3xl bg-white border border-[#DDD7E5] p-2 shadow-2xs">
+          <div className="rounded-3xl bg-white border border-[#D5C6EC] p-2 shadow-2xs">
             <button
               type="button"
               onClick={openBillingPortal}
               disabled={openingPortal}
-              className="w-full flex items-center justify-between p-3 rounded-2xl hover:bg-[#F8F7FA] transition cursor-pointer text-left disabled:opacity-60"
+              className="w-full flex items-center justify-between p-3 rounded-2xl hover:bg-[#E8DFF5]/40 transition cursor-pointer text-left disabled:opacity-60"
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-xl bg-[#F3EFFC] text-[#6555B8] flex items-center justify-center">
+                <div className="w-8 h-8 rounded-xl bg-[#E8DFF5]/60 text-[#72519A] flex items-center justify-center">
                   <CreditCard className="w-4 h-4" />
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-[#1C1924]">Manage Subscription</p>
-                  <p className="text-[11px] text-[#6C637B]">Cancel Plus or update your payment method</p>
+                  <p className="text-xs font-bold text-[#51376D]">Manage Subscription</p>
+                  <p className="text-[11px] text-[#51376D]/75">Cancel Plus or update your payment method</p>
                 </div>
               </div>
               {openingPortal ? (
-                <Loader2 className="w-4 h-4 animate-spin text-[#6555B8]" />
+                <Loader2 className="w-4 h-4 animate-spin text-[#72519A]" />
               ) : (
-                <ChevronRight className="w-4 h-4 text-[#8C849B]" />
+                <ChevronRight className="w-4 h-4 text-[#51376D]/55" />
               )}
             </button>
             {portalError && (
-              <p role="alert" className="mx-3 mb-2 rounded-xl bg-rose-50 border border-rose-200 px-3 py-2 text-[11px] font-semibold text-rose-700">
+              <p role="alert" className="mx-3 mb-2 rounded-xl bg-[#E8DFF5]/50 border border-[#D5C6EC] px-3 py-2 text-[11px] font-semibold text-[#51376D]">
                 {portalError}
               </p>
             )}
@@ -523,26 +523,26 @@ export default function SettingsHubPage() {
         )}
 
         {/* CARD 5: ACCOUNT LIFECYCLE */}
-        <div className="rounded-3xl bg-white border border-[#DDD7E5] p-2 shadow-2xs space-y-1">
+        <div className="rounded-3xl bg-white border border-[#D5C6EC] p-2 shadow-2xs space-y-1">
           <button
             type="button"
             onClick={handleLogout}
             disabled={loggingOut}
-            className="w-full flex items-center justify-between p-3 rounded-2xl hover:bg-[#F8F7FA] transition cursor-pointer text-left"
+            className="w-full flex items-center justify-between p-3 rounded-2xl hover:bg-[#E8DFF5]/40 transition cursor-pointer text-left"
           >
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center">
+              <div className="w-8 h-8 rounded-xl bg-[#E8DFF5]/50 text-[#72519A] flex items-center justify-center">
                 <LogOut className="w-4 h-4" />
               </div>
               <div>
-                <p className="text-xs font-bold text-[#1C1924]">Log Out</p>
-                <p className="text-[11px] text-[#6C637B]">Sign out of this browser session</p>
+                <p className="text-xs font-bold text-[#51376D]">Log Out</p>
+                <p className="text-[11px] text-[#51376D]/75">Sign out of this browser session</p>
               </div>
             </div>
-            {loggingOut && <Loader2 className="w-4 h-4 animate-spin text-[#6555B8]" />}
+            {loggingOut && <Loader2 className="w-4 h-4 animate-spin text-[#72519A]" />}
           </button>
 
-          <div className="my-1 border-t border-[#ECE8F4]" />
+          <div className="my-1 border-t border-[#D5C6EC]" />
 
           <button
             type="button"
@@ -551,15 +551,15 @@ export default function SettingsHubPage() {
               setDeleteConfirmText('');
               setShowDeleteModal(true);
             }}
-            className="w-full flex items-center justify-between p-3 rounded-2xl hover:bg-rose-50/60 transition cursor-pointer text-left group"
+            className="w-full flex items-center justify-between p-3 rounded-2xl hover:bg-[#E8DFF5]/40 transition cursor-pointer text-left group"
           >
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-rose-50 text-rose-600 flex items-center justify-center group-hover:bg-rose-100 transition">
+              <div className="w-8 h-8 rounded-xl bg-[#E8DFF5]/50 text-[#72519A] flex items-center justify-center group-hover:bg-[#E8DFF5]/70 transition">
                 <Trash2 className="w-4 h-4" />
               </div>
               <div>
-                <p className="text-xs font-bold text-rose-600">Delete Account</p>
-                <p className="text-[11px] text-[#6C637B]">Permanently remove profile and data</p>
+                <p className="text-xs font-bold text-[#72519A]">Delete Account</p>
+                <p className="text-[11px] text-[#51376D]/75">Permanently remove profile and data</p>
               </div>
             </div>
           </button>
@@ -572,20 +572,20 @@ export default function SettingsHubPage() {
             onClick={() => !deletingAccount && setShowDeleteModal(false)}
           >
             <div
-              className="relative w-full max-w-[340px] bg-white rounded-3xl border border-neutral-100 shadow-2xl p-5 text-[#1C1924] flex flex-col"
+              className="relative w-full max-w-[340px] bg-white rounded-3xl border border-[#D5C6EC]/60 shadow-2xl p-5 text-[#51376D] flex flex-col"
               onClick={(e) => e.stopPropagation()}
             >
-              <div className="w-10 h-10 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center mb-3">
+              <div className="w-10 h-10 rounded-2xl bg-[#E8DFF5]/50 text-[#72519A] flex items-center justify-center mb-3">
                 <AlertTriangle className="w-5 h-5" />
               </div>
 
-              <h2 className="text-base font-bold text-[#1C1924]">Delete Account?</h2>
-              <p className="text-xs text-[#6C637B] mt-1.5 leading-relaxed">
+              <h2 className="text-base font-bold text-[#51376D]">Delete Account?</h2>
+              <p className="text-xs text-[#51376D]/75 mt-1.5 leading-relaxed">
                 This will permanently delete your profile, photos, chat history, and active matches. This action is immediate and cannot be undone.
               </p>
 
               {deleteError && (
-                <div className="mt-3 p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-600 text-[11px] font-medium leading-tight">
+                <div className="mt-3 p-2.5 rounded-xl bg-[#E8DFF5]/50 border border-[#D5C6EC] text-[#72519A] text-[11px] font-medium leading-tight">
                   {deleteError}
                 </div>
               )}
@@ -598,7 +598,7 @@ export default function SettingsHubPage() {
                 disabled={deletingAccount}
                 autoComplete="off"
                 spellCheck={false}
-                className="w-full mt-4 px-3 py-2.5 rounded-xl border border-[#ECE8F4] bg-[#FAF9FD] text-xs text-[#1C1924] placeholder:text-[#8C849B] focus:outline-none focus:border-[#6555B8] transition"
+                className="w-full mt-4 px-3 py-2.5 rounded-xl border border-[#D5C6EC] bg-white text-xs text-[#51376D] placeholder:text-[#51376D]/55 focus:outline-none focus:border-[#72519A] transition"
               />
 
               <div className="mt-4 space-y-2">
@@ -606,7 +606,7 @@ export default function SettingsHubPage() {
                   type="button"
                   disabled={deletingAccount || deleteConfirmText !== 'DELETE'}
                   onClick={handleDeleteAccount}
-                  className="w-full py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 active:bg-rose-800 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold text-xs tracking-wide shadow-sm transition active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full py-2.5 rounded-xl bg-[#72519A] hover:bg-[#51376D] active:bg-[#51376D] disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold text-xs tracking-wide shadow-sm transition active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer"
                 >
                   {deletingAccount ? (
                     <>
@@ -622,7 +622,7 @@ export default function SettingsHubPage() {
                   type="button"
                   disabled={deletingAccount}
                   onClick={() => setShowDeleteModal(false)}
-                  className="w-full py-2.5 rounded-xl bg-[#F8F7FA] hover:bg-[#ECE8F4] text-[#6C637B] hover:text-[#1C1924] font-medium text-xs transition cursor-pointer"
+                  className="w-full py-2.5 rounded-xl bg-white hover:bg-[#E8DFF5]/60 text-[#51376D]/75 hover:text-[#51376D] font-medium text-xs transition cursor-pointer"
                 >
                   Cancel
                 </button>

@@ -18,8 +18,8 @@ import {
 } from '@/lib/lifestyle';
 
 const PILL = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition cursor-pointer';
-const PILL_ON = 'bg-[#6555B8] text-white border-[#6555B8]';
-const PILL_OFF = 'bg-white text-[#524B5E] border-[#DDD7E5] hover:border-[#6555B8]/50';
+const PILL_ON = 'bg-[#72519A] text-white border-[#72519A]';
+const PILL_OFF = 'bg-white text-[#51376D]/85 border-[#D5C6EC] hover:border-[#72519A]/50';
 
 /** Searchable multi-select over the preset language list. */
 export function LanguagePicker({
@@ -47,9 +47,9 @@ export function LanguagePicker({
       {value.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
           {value.map((v) => (
-            <span key={v} className="inline-flex items-center gap-1 pl-3 pr-2 py-1 rounded-full bg-[#F3EFFC] border border-[#DDD7E5] text-xs font-semibold text-[#6555B8]">
+            <span key={v} className="inline-flex items-center gap-1 pl-3 pr-2 py-1 rounded-full bg-[#E8DFF5]/60 border border-[#D5C6EC] text-xs font-semibold text-[#72519A]">
               {languageLabel(v)}
-              <button type="button" onClick={() => onChange(value.filter((x) => x !== v))} aria-label={`Remove ${v}`} className="hover:text-rose-600">
+              <button type="button" onClick={() => onChange(value.filter((x) => x !== v))} aria-label={`Remove ${v}`} className="hover:text-[#72519A]">
                 <X className="w-3 h-3" />
               </button>
             </span>
@@ -57,20 +57,20 @@ export function LanguagePicker({
         </div>
       )}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#9A93A8]" aria-hidden />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#51376D]/55" aria-hidden />
         <input
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder={full ? `Up to ${max} languages` : placeholder}
           disabled={full}
-          className="w-full pl-8 pr-3 py-2 rounded-2xl bg-[#F8F7FA] border border-[#DDD7E5] text-base sm:text-xs font-medium text-[#1C1924] focus:outline-none focus:border-[#6555B8] disabled:opacity-60"
+          className="w-full pl-8 pr-3 py-2 rounded-2xl bg-white border border-[#D5C6EC] text-base sm:text-xs font-medium text-[#51376D] focus:outline-none focus:border-[#72519A] disabled:opacity-60"
         />
       </div>
       {!full && (
-        <div className="max-h-40 overflow-y-auto rounded-2xl border border-[#ECE8F4] divide-y divide-[#F0EDF5] bg-white">
+        <div className="max-h-40 overflow-y-auto rounded-2xl border border-[#D5C6EC] divide-y divide-[#D5C6EC] bg-white">
           {matches.length === 0 ? (
-            <p className="px-3 py-2 text-xs text-[#9A93A8]">No matching languages</p>
+            <p className="px-3 py-2 text-xs text-[#51376D]/55">No matching languages</p>
           ) : (
             matches.map((l) => (
               <button
@@ -80,7 +80,7 @@ export function LanguagePicker({
                   onChange([...value, l.value]);
                   setQuery('');
                 }}
-                className="w-full text-left px-3 py-2 text-xs font-medium text-[#1C1924] hover:bg-[#F3EFFC]"
+                className="w-full text-left px-3 py-2 text-xs font-medium text-[#51376D] hover:bg-[#E8DFF5]/70"
               >
                 {l.label}
               </button>
@@ -141,16 +141,16 @@ export function HeightInput({ valueCm, onChange }: { valueCm: number | null; onC
         onClick={() => setOpen((v) => !v)}
         aria-haspopup="listbox"
         aria-expanded={open}
-        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-[#ECE8F4] text-base sm:text-xs font-semibold text-[#2D264B] hover:bg-[#FBFBFE] transition-colors cursor-pointer"
+        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-[#D5C6EC] text-base sm:text-xs font-semibold text-[#51376D] hover:bg-[#E8DFF5]/40 transition-colors cursor-pointer"
       >
-        <Ruler className="w-3.5 h-3.5 text-[#2D264B]/40" aria-hidden />
+        <Ruler className="w-3.5 h-3.5 text-[#51376D]/40" aria-hidden />
         {current ?? 'Select height'}
-        <ChevronDown className={`w-3.5 h-3.5 text-[#2D264B]/40 transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden />
+        <ChevronDown className={`w-3.5 h-3.5 text-[#51376D]/40 transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden />
       </button>
       <button
         type="button"
         onClick={() => setUnit(unit === 'ft' ? 'cm' : 'ft')}
-        className="px-2 py-1.5 rounded-xl text-[11px] font-semibold text-[#6555B8] hover:bg-[#F3EFFC]"
+        className="px-2 py-1.5 rounded-xl text-[11px] font-semibold text-[#72519A] hover:bg-[#E8DFF5]/70"
         aria-label={`Switch to ${unit === 'ft' ? 'centimeters' : 'feet and inches'}`}
       >
         {unit === 'ft' ? 'cm' : 'ft/in'}
@@ -160,7 +160,7 @@ export function HeightInput({ valueCm, onChange }: { valueCm: number | null; onC
           ref={listRef}
           role="listbox"
           aria-label="Height"
-          className="w-full max-h-48 overflow-y-auto rounded-xl border border-[#ECE8F4] bg-white divide-y divide-[#ECE8F4]/50"
+          className="w-full max-h-48 overflow-y-auto rounded-xl border border-[#D5C6EC] bg-white divide-y divide-[#D5C6EC]/60"
         >
           <div
             role="option"
@@ -169,8 +169,8 @@ export function HeightInput({ valueCm, onChange }: { valueCm: number | null; onC
               onChange(null);
               setOpen(false);
             }}
-            className={`px-3.5 py-2 text-sm cursor-pointer transition-colors flex items-center justify-between hover:bg-[#FBFBFE] border-l-2 ${
-              !valueCm ? 'bg-pink-50/80 text-[#2D264B] font-semibold border-[#EC4899]' : 'text-[#2D264B]/50 border-transparent'
+            className={`px-3.5 py-2 text-sm cursor-pointer transition-colors flex items-center justify-between hover:bg-[#E8DFF5]/40 border-l-2 ${
+              !valueCm ? 'bg-[#E8DFF5]/70 text-[#51376D] font-semibold border-[#72519A]' : 'text-[#51376D]/50 border-transparent'
             }`}
           >
             Prefer not to say
@@ -186,18 +186,18 @@ export function HeightInput({ valueCm, onChange }: { valueCm: number | null; onC
                   onChange(o.cm);
                   setOpen(false);
                 }}
-                className={`px-3.5 py-2 text-sm text-[#2D264B] cursor-pointer transition-colors flex items-center justify-between hover:bg-[#FBFBFE] border-l-2 ${
-                  selected ? 'bg-pink-50/80 text-[#2D264B] font-semibold border-[#EC4899]' : 'border-transparent'
+                className={`px-3.5 py-2 text-sm text-[#51376D] cursor-pointer transition-colors flex items-center justify-between hover:bg-[#E8DFF5]/40 border-l-2 ${
+                  selected ? 'bg-[#E8DFF5]/70 text-[#51376D] font-semibold border-[#72519A]' : 'border-transparent'
                 }`}
               >
                 <span>{o.label}</span>
-                {unit === 'ft' && <span className="text-[11px] text-[#2D264B]/40">{o.cm} cm</span>}
+                {unit === 'ft' && <span className="text-[11px] text-[#51376D]/40">{o.cm} cm</span>}
               </div>
             );
           })}
         </div>
       )}
-      {valueCm && <span className="w-full text-right text-[11px] text-[#8C849B]">{formatHeight(valueCm)}</span>}
+      {valueCm && <span className="w-full text-right text-[11px] text-[#51376D]/55">{formatHeight(valueCm)}</span>}
     </div>
   );
 }
@@ -218,7 +218,7 @@ export function LifestylePills({
     <div className="space-y-4">
       {fields.map((field) => (
         <div key={field} className="space-y-2">
-          <p className="text-[11px] font-bold uppercase tracking-wider text-[#8C849B]">{LIFESTYLE_FIELDS[field].label}</p>
+          <p className="text-[11px] font-bold uppercase tracking-wider text-[#51376D]/55">{LIFESTYLE_FIELDS[field].label}</p>
           <div className="flex flex-wrap gap-1.5">
             {(LIFESTYLE_FIELDS[field].options as readonly LifestyleOption[]).map((o) => {
               const on = values[field] === o.value;
@@ -249,12 +249,12 @@ export function LifestyleBadges({ values, heightCm, className = '' }: { values: 
   return (
     <div className={`flex flex-wrap gap-1.5 ${className}`}>
       {heightCm ? (
-        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#F3EFFC] border border-[#ECE8F4] text-xs font-semibold text-[#6555B8]">
+        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#E8DFF5]/60 border border-[#D5C6EC] text-xs font-semibold text-[#72519A]">
           <Ruler className="w-3 h-3" aria-hidden /> {formatHeight(heightCm)}
         </span>
       ) : null}
       {chips.map((o) => (
-        <span key={o.label} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#F3EFFC] border border-[#ECE8F4] text-xs font-semibold text-[#6555B8]">
+        <span key={o.label} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#E8DFF5]/60 border border-[#D5C6EC] text-xs font-semibold text-[#72519A]">
           <o.icon className="w-3 h-3" aria-hidden /> {o.label}
         </span>
       ))}

@@ -83,66 +83,66 @@ export default function UpgradeModal({
       onClick={onClose}
     >
       <div
-        className="relative isolate overflow-hidden w-full max-w-[360px] bg-white rounded-3xl border border-neutral-100 shadow-2xl p-5 text-[#1C1924] animate-in zoom-in-95 duration-150 flex flex-col no-scrollbar"
+        className="relative isolate overflow-hidden w-full max-w-[360px] bg-white rounded-3xl border border-[#D5C6EC]/60 shadow-2xl p-5 text-[#51376D] animate-in zoom-in-95 duration-150 flex flex-col no-scrollbar"
         onClick={(e) => e.stopPropagation()}
       >
         <AmbientAurora layer="card" />
         {/* Dismiss Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-20 w-8 h-8 rounded-full bg-neutral-100/90 hover:bg-neutral-200 text-neutral-400 hover:text-neutral-700 flex items-center justify-center transition active:scale-95 cursor-pointer"
+          className="absolute top-4 right-4 z-20 w-8 h-8 rounded-full bg-[#E8DFF5]/60 hover:bg-[#E8DFF5] text-[#51376D]/55 hover:text-[#51376D]/85 flex items-center justify-center transition active:scale-95 cursor-pointer"
           aria-label="Close"
         >
           <X className="w-4 h-4" />
         </button>
 
         {/* Brand mark: Lucide icon in a soft squircle (no illustrations) */}
-        <div className="w-14 h-14 rounded-2xl bg-[#6555B8]/10 flex items-center justify-center text-[#6555B8] mx-auto mt-2 mb-3">
+        <div className="w-14 h-14 rounded-2xl bg-[#72519A]/10 flex items-center justify-center text-[#72519A] mx-auto mt-2 mb-3">
           <Zap className="w-6 h-6 fill-current" strokeWidth={1.75} />
         </div>
 
         {/* Title & Context */}
         <div className="text-center space-y-1 mb-4">
-          <span className="inline-block px-2.5 py-0.5 rounded-full bg-[#F3EFFC] text-[#6555B8] text-[10px] font-bold tracking-widest uppercase">
+          <span className="inline-block px-2.5 py-0.5 rounded-full bg-[#E8DFF5]/60 text-[#72519A] text-[10px] font-bold tracking-widest uppercase">
             PLUS
           </span>
-          <h2 className="text-base font-bold text-neutral-900 tracking-tight">
+          <h2 className="text-base font-bold text-[#51376D] tracking-tight">
             {getContextHeadline()}
           </h2>
-          <p className="text-[11px] text-neutral-500 leading-relaxed max-w-[280px] mx-auto">
+          <p className="text-[11px] text-[#51376D]/55 leading-relaxed max-w-[280px] mx-auto">
             {getContextSubtitle()}
           </p>
         </div>
 
         {/* Feature List */}
         <div className="space-y-2 mb-4">
-          <div className="flex items-center gap-3 p-2.5 rounded-xl bg-[#FAF9FD] border border-[#ECE6F7]/80 text-left">
-            <div className="w-7 h-7 rounded-lg bg-white border border-[#DDD7E5] text-[#6555B8] flex items-center justify-center shrink-0 shadow-2xs">
+          <div className="flex items-center gap-3 p-2.5 rounded-xl bg-white border border-[#D5C6EC] text-left">
+            <div className="w-7 h-7 rounded-lg bg-white border border-[#D5C6EC] text-[#72519A] flex items-center justify-center shrink-0 shadow-2xs">
               <Infinity className="w-4 h-4" />
             </div>
             <div>
-              <p className="text-xs font-semibold text-neutral-900">Unlimited Introductions</p>
-              <p className="text-[10px] text-neutral-500 leading-none mt-0.5">Zero 5-intro caps or chat cooldowns</p>
+              <p className="text-xs font-semibold text-[#51376D]">Unlimited Introductions</p>
+              <p className="text-[10px] text-[#51376D]/55 leading-none mt-0.5">Zero 5-intro caps or chat cooldowns</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 p-2.5 rounded-xl bg-[#FAF9FD] border border-[#ECE6F7]/80 text-left">
-            <div className="w-7 h-7 rounded-lg bg-white border border-[#DDD7E5] text-[#6555B8] flex items-center justify-center shrink-0 shadow-2xs">
+          <div className="flex items-center gap-3 p-2.5 rounded-xl bg-white border border-[#D5C6EC] text-left">
+            <div className="w-7 h-7 rounded-lg bg-white border border-[#D5C6EC] text-[#72519A] flex items-center justify-center shrink-0 shadow-2xs">
               <Compass className="w-4 h-4" />
             </div>
             <div>
-              <p className="text-xs font-semibold text-neutral-900">Passport Travel Mode</p>
-              <p className="text-[10px] text-neutral-500 leading-none mt-0.5">Teleport and match in any city worldwide</p>
+              <p className="text-xs font-semibold text-[#51376D]">Passport Travel Mode</p>
+              <p className="text-[10px] text-[#51376D]/55 leading-none mt-0.5">Teleport and match in any city worldwide</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3 p-2.5 rounded-xl bg-[#FAF9FD] border border-[#ECE6F7]/80 text-left">
-            <div className="w-7 h-7 rounded-lg bg-white border border-[#DDD7E5] text-[#6555B8] flex items-center justify-center shrink-0 shadow-2xs">
+          <div className="flex items-center gap-3 p-2.5 rounded-xl bg-white border border-[#D5C6EC] text-left">
+            <div className="w-7 h-7 rounded-lg bg-white border border-[#D5C6EC] text-[#72519A] flex items-center justify-center shrink-0 shadow-2xs">
               <TrendingUp className="w-4 h-4" />
             </div>
             <div>
-              <p className="text-xs font-semibold text-neutral-900">Priority Feed Placement</p>
-              <p className="text-[10px] text-neutral-500 leading-none mt-0.5">Be seen first in daily member recommendations</p>
+              <p className="text-xs font-semibold text-[#51376D]">Priority Feed Placement</p>
+              <p className="text-[10px] text-[#51376D]/55 leading-none mt-0.5">Be seen first in daily member recommendations</p>
             </div>
           </div>
         </div>
@@ -155,19 +155,19 @@ export default function UpgradeModal({
               onClick={() => setSelectedTier('6m')}
               className={`relative rounded-xl p-2 text-left border transition cursor-pointer flex flex-col justify-between ${
                 selectedTier === '6m'
-                  ? 'border-[#6555B8] bg-[#F3EFFC]/80 ring-1 ring-[#6555B8] shadow-xs'
-                  : 'border-[#ECE6F7] bg-[#FAF9FD] hover:border-[#DDD7E5]'
+                  ? 'border-[#72519A] bg-[#E8DFF5]/50 ring-1 ring-[#72519A] shadow-xs'
+                  : 'border-[#D5C6EC] bg-white hover:border-[#D5C6EC]'
               }`}
             >
-              <span className="absolute -top-2 left-1/2 -translate-x-1/2 bg-[#6555B8] text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider whitespace-nowrap">
+              <span className="absolute -top-2 left-1/2 -translate-x-1/2 bg-[#72519A] text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full uppercase tracking-wider whitespace-nowrap">
                 Save 47%
               </span>
               <div className="pt-0.5">
-                <div className="text-[10px] font-bold text-[#1C1924]">6 Mo</div>
-                <div className="text-[9px] text-[#6555B8] font-semibold">Best Value</div>
+                <div className="text-[10px] font-bold text-[#51376D]">6 Mo</div>
+                <div className="text-[9px] text-[#72519A] font-semibold">Best Value</div>
               </div>
-              <div className="mt-1 pt-1 border-t border-[#ECE6F7]/80">
-                <div className="text-xs font-bold text-[#1C1924]">$7.99<span className="text-[9px] font-normal text-[#6C637B]">/mo</span></div>
+              <div className="mt-1 pt-1 border-t border-[#D5C6EC]">
+                <div className="text-xs font-bold text-[#51376D]">$7.99<span className="text-[9px] font-normal text-[#51376D]/75">/mo</span></div>
               </div>
             </button>
 
@@ -179,16 +179,16 @@ export default function UpgradeModal({
               onClick={() => setSelectedTier('1m')}
               className={`relative rounded-xl p-2 text-left border transition cursor-pointer flex flex-col justify-between ${
                 selectedTier === '1m'
-                  ? 'border-[#6555B8] bg-[#F3EFFC]/80 ring-1 ring-[#6555B8] shadow-xs'
-                  : 'border-[#ECE6F7] bg-[#FAF9FD] hover:border-[#DDD7E5]'
+                  ? 'border-[#72519A] bg-[#E8DFF5]/50 ring-1 ring-[#72519A] shadow-xs'
+                  : 'border-[#D5C6EC] bg-white hover:border-[#D5C6EC]'
               }`}
             >
               <div className="pt-0.5">
-                <div className="text-[10px] font-bold text-[#1C1924]">1 Mo</div>
-                <div className="text-[9px] text-[#8A8199]">Standard</div>
+                <div className="text-[10px] font-bold text-[#51376D]">1 Mo</div>
+                <div className="text-[9px] text-[#51376D]/55">Standard</div>
               </div>
-              <div className="mt-1 pt-1 border-t border-[#ECE6F7]/80">
-                <div className="text-xs font-bold text-[#1C1924]">$14.99<span className="text-[9px] font-normal text-[#6C637B]">/mo</span></div>
+              <div className="mt-1 pt-1 border-t border-[#D5C6EC]">
+                <div className="text-xs font-bold text-[#51376D]">$14.99<span className="text-[9px] font-normal text-[#51376D]/75">/mo</span></div>
               </div>
             </button>
           </div>
@@ -197,7 +197,7 @@ export default function UpgradeModal({
           <button
             onClick={() => handleCheckout(selectedTier)}
             disabled={isRedirecting}
-            className="w-full py-3 rounded-2xl bg-[#6555B8] hover:bg-[#5747A9] active:bg-[#4C3D97] disabled:opacity-75 disabled:cursor-not-allowed text-white font-semibold text-xs tracking-wider uppercase shadow-md shadow-[#6555B8]/20 transition active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer mb-2"
+            className="w-full py-3 rounded-2xl bg-[#72519A] hover:bg-[#72519A] active:bg-[#72519A] disabled:opacity-75 disabled:cursor-not-allowed text-white font-semibold text-xs tracking-wider uppercase shadow-md shadow-[#72519A]/20 transition active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer mb-2"
           >
             {isRedirecting ? (
               <>
@@ -218,14 +218,14 @@ export default function UpgradeModal({
         <button
           type="button"
           onClick={onClose}
-          className="text-[11px] font-medium text-neutral-400 hover:text-neutral-600 transition py-1 text-center cursor-pointer"
+          className="text-[11px] font-medium text-[#51376D]/55 hover:text-[#51376D]/80 transition py-1 text-center cursor-pointer"
         >
           Maybe later
         </button>
 
         {/* Trust Footnote */}
-        <div className="flex items-center justify-center gap-1 text-[10px] text-neutral-400 pt-1">
-          <Lock className="w-3 h-3 text-neutral-400" />
+        <div className="flex items-center justify-center gap-1 text-[10px] text-[#51376D]/55 pt-1">
+          <Lock className="w-3 h-3 text-[#51376D]/55" />
           <span>Encrypted checkout via Stripe</span>
         </div>
       </div>

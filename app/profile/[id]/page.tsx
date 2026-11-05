@@ -242,7 +242,7 @@ export default function PublicProfilePage() {
 
   if (loading) {
     return (
-      <div className="w-full px-3.5 pt-3.5 space-y-3.5 bg-[#F8F7FA]" aria-busy="true" aria-label="Loading profile">
+      <div className="w-full px-3.5 pt-3.5 space-y-3.5 bg-white" aria-busy="true" aria-label="Loading profile">
         <div className="aspect-[4/5] w-full rounded-3xl ail-shimmer" />
         <div className="h-24 rounded-3xl ail-shimmer" />
         <div className="h-16 rounded-3xl ail-shimmer" />
@@ -253,12 +253,12 @@ export default function PublicProfilePage() {
 
   if (!profile) {
     return (
-      <div className="min-h-screen bg-[#F8F7FA] flex flex-col items-center justify-center p-6 text-center space-y-3">
-        <p className="text-sm font-semibold text-[#1C1924]">Profile not found</p>
+      <div className="min-h-screen bg-white flex flex-col items-center justify-center p-6 text-center space-y-3">
+        <p className="text-sm font-semibold text-[#51376D]">Profile not found</p>
         <button
           type="button"
           onClick={() => router.back()}
-          className="px-4 py-2 rounded-xl bg-[#6555B8] text-white text-xs font-semibold"
+          className="px-4 py-2 rounded-xl bg-[#72519A] text-white text-xs font-semibold"
         >
           Go Back
         </button>
@@ -348,7 +348,7 @@ export default function PublicProfilePage() {
   // Portal dock directly to document.body so LayoutShell's scroll container never moves it
   const floatingDock = mounted
     ? createPortal(
-        <aside className="fixed bottom-3.5 left-1/2 -translate-x-1/2 w-[calc(100%-1.75rem)] max-w-[390px] z-[90] bg-white/95 border border-[#E5E1EC]/80 shadow-[0_12px_36px_rgba(101,85,184,0.18),0_2px_8px_rgba(0,0,0,0.04)] rounded-full p-1.5">
+        <aside className="fixed bottom-3.5 left-1/2 -translate-x-1/2 w-[calc(100%-1.75rem)] max-w-[390px] z-[90] bg-white/95 border border-[#D5C6EC] shadow-[0_12px_36px_rgba(114,81,154,0.18),0_2px_8px_rgba(0,0,0,0.04)] rounded-full p-1.5">
           <div className="grid grid-cols-2 gap-2">
             <button
               type="button"
@@ -356,17 +356,17 @@ export default function PublicProfilePage() {
               disabled={sparkLoading}
               className={`flex h-11 w-full items-center justify-center gap-1.5 rounded-full border text-xs font-bold transition active:scale-95 cursor-pointer ${
                 isSparked
-                  ? 'border-[#6555B8]/30 bg-[#F3EFFC] text-[#6555B8]'
-                  : 'border-[#DDD7E5] bg-[#F8F7FA] text-[#1C1924] hover:bg-[#F3EFFC]'
+                  ? 'border-[#72519A]/30 bg-[#E8DFF5]/60 text-[#72519A]'
+                  : 'border-[#D5C6EC] bg-white text-[#51376D] hover:bg-[#E8DFF5]/70'
               }`}
             >
               {sparkLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin text-[#6555B8]" />
+                <Loader2 className="h-4 w-4 animate-spin text-[#72519A]" />
               ) : (
                 <>
                   <Heart
                     strokeWidth={2}
-                    className={`h-4 w-4 ${isSparked ? 'text-[#6555B8] fill-[#6555B8]' : 'text-[#8A839E]'}`}
+                    className={`h-4 w-4 ${isSparked ? 'text-[#72519A] fill-[#72519A]' : 'text-[#51376D]/55'}`}
                   />
                   <span>{isSparked ? 'Sparked' : 'Spark'}</span>
                 </>
@@ -376,7 +376,7 @@ export default function PublicProfilePage() {
             <button
               type="button"
               onClick={() => router.push(`/chat/${targetUserId}`)}
-              className="flex h-11 w-full items-center justify-center gap-1.5 rounded-full bg-[#6555B8] px-4 text-xs font-semibold text-white shadow-md shadow-[#6555B8]/25 transition hover:bg-[#52449E] active:scale-98 cursor-pointer"
+              className="flex h-11 w-full items-center justify-center gap-1.5 rounded-full bg-[#72519A] px-4 text-xs font-semibold text-white shadow-md shadow-[#72519A]/25 transition hover:bg-[#51376D] active:scale-98 cursor-pointer"
             >
               <MessageCircle className="h-4 w-4" />
               <span>Message</span>
@@ -388,9 +388,9 @@ export default function PublicProfilePage() {
     : null;
 
   return (
-    <div className="relative flex-1 w-full bg-[#F8F7FA] text-[#1C1924] font-sans">
+    <div className="relative flex-1 w-full bg-white text-[#51376D] font-sans">
       {toastMsg && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[400px] z-[100] px-4 py-2.5 rounded-2xl bg-white/95 border border-[#ECE8F4] text-[#1C1924] text-xs font-semibold text-center shadow-[0_12px_32px_rgba(101,85,184,0.18)]">
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[400px] z-[100] px-4 py-2.5 rounded-2xl bg-white/95 border border-[#D5C6EC] text-[#51376D] text-xs font-semibold text-center shadow-[0_12px_32px_rgba(114,81,154,0.18)]">
           {toastMsg}
         </div>
       )}
@@ -399,7 +399,7 @@ export default function PublicProfilePage() {
       <div className="w-full px-3.5 pt-3.5 pb-[calc(8rem+env(safe-area-inset-bottom,0px))] space-y-3.5">
         
         {/* 1. HERO PHOTO CARD (4:5 Aspect Ratio + Overlaid Controls + Bottom Scrim) */}
-        <div data-profile-hero className="relative aspect-[4/5] w-full rounded-3xl overflow-hidden bg-[#F2EEF7] shadow-xs select-none">
+        <div data-profile-hero className="relative aspect-[4/5] w-full rounded-3xl overflow-hidden bg-white shadow-xs select-none">
           <div
             className="relative w-full h-full cursor-pointer"
             onClick={(e) => {
@@ -481,7 +481,7 @@ export default function PublicProfilePage() {
               {showMenu && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setShowMenu(false)} />
-                  <div className="absolute right-0 top-12 z-50 w-48 rounded-2xl border border-[#E5E1EC] bg-white p-1.5 shadow-xl">
+                  <div className="absolute right-0 top-12 z-50 w-48 rounded-2xl border border-[#D5C6EC] bg-white p-1.5 shadow-xl">
                     <button
                       type="button"
                       onClick={() => {
@@ -498,9 +498,9 @@ export default function PublicProfilePage() {
                             .catch(() => {});
                         }
                       }}
-                      className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs font-semibold text-[#1C1924] transition hover:bg-[#F8F7FA]"
+                      className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs font-semibold text-[#51376D] transition hover:bg-[#E8DFF5]/40"
                     >
-                      <Share2 className="h-4 w-4 text-[#6555B8]" />
+                      <Share2 className="h-4 w-4 text-[#72519A]" />
                       Share Profile
                     </button>
                     <button
@@ -509,7 +509,7 @@ export default function PublicProfilePage() {
                         setShowMenu(false);
                         setReportOpen(true);
                       }}
-                      className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs font-semibold text-[#1C1924] transition hover:bg-[#F8F7FA]"
+                      className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs font-semibold text-[#51376D] transition hover:bg-[#E8DFF5]/40"
                     >
                       <ShieldAlert className="h-4 w-4 text-amber-500" />
                       Report Profile
@@ -520,9 +520,9 @@ export default function PublicProfilePage() {
                         setShowMenu(false);
                         blockMember();
                       }}
-                      className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs font-semibold text-rose-600 transition hover:bg-rose-50"
+                      className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs font-semibold text-[#72519A] transition hover:bg-[#E8DFF5]/50"
                     >
-                      <Ban className="h-4 w-4 text-rose-500" />
+                      <Ban className="h-4 w-4 text-[#9474C3]" />
                       Block Profile
                     </button>
                   </div>
@@ -546,13 +546,13 @@ export default function PublicProfilePage() {
         {/* 1b. NAME, TRUST ROW, TRAVEL */}
         <section className="px-1 space-y-2">
           <div className="flex items-center gap-2 flex-wrap">
-            <h1 className="text-2xl font-black tracking-tight text-[#2D264B]" style={{ fontFamily: 'var(--font-brand)' }}>
+            <h1 className="text-2xl font-black tracking-tight text-[#51376D]" style={{ fontFamily: 'var(--font-brand)' }}>
               {displayName}{displayAge}
             </h1>
             {isVerified && <VerifiedBadge size="md" showText />}
           </div>
-          <div className="flex items-center gap-1.5 text-xs font-medium text-[#6C637B]">
-            <MapPin className="h-3.5 w-3.5 text-[#6555B8] shrink-0" />
+          <div className="flex items-center gap-1.5 text-xs font-medium text-[#51376D]/75">
+            <MapPin className="h-3.5 w-3.5 text-[#72519A] shrink-0" />
             <span className="truncate">{displayLocation}</span>
           </div>
           {(profile.location_source === 'gps_verified' || dayOneNumber) && (
@@ -573,30 +573,30 @@ export default function PublicProfilePage() {
         <RepScoreCard score={scoreOf(profile.reputation_score)} />
 
         {/* 4. ABOUT ME (with things in common) */}
-        <section className="p-4 rounded-3xl bg-white border border-[#DDD7E5] shadow-2xs space-y-2">
+        <section className="p-4 rounded-3xl bg-white border border-[#D5C6EC] shadow-2xs space-y-2">
           <h2
-            className="text-xs font-bold uppercase tracking-wider text-[#6555B8]"
+            className="text-xs font-bold uppercase tracking-wider text-[#72519A]"
             style={{ fontFamily: 'var(--font-brand)' }}
           >
             About Me
           </h2>
           <InCommonCard items={inCommon} />
-          <p className="text-xs sm:text-sm text-[#1C1924] leading-relaxed whitespace-pre-line">
+          <p className="text-xs sm:text-sm text-[#51376D] leading-relaxed whitespace-pre-line">
             {profile.bio || 'Looking for something genuine and sincere.'}
           </p>
         </section>
 
         {/* 5. HIGHLIGHTS & MINI-STORIES */}
         {highlights.length > 0 && (
-          <section className="p-4 rounded-3xl bg-white border border-[#DDD7E5] shadow-2xs space-y-3">
+          <section className="p-4 rounded-3xl bg-white border border-[#D5C6EC] shadow-2xs space-y-3">
             <div className="flex items-center justify-between">
               <h2
-                className="text-xs font-bold uppercase tracking-wider text-[#6555B8]"
+                className="text-xs font-bold uppercase tracking-wider text-[#72519A]"
                 style={{ fontFamily: 'var(--font-brand)' }}
               >
                 Highlights &amp; Stories
               </h2>
-              <span className="text-[10px] font-medium text-[#8C849B]">Tap to reply</span>
+              <span className="text-[10px] font-medium text-[#51376D]/55">Tap to reply</span>
             </div>
 
             <div className="grid gap-2.5">
@@ -604,22 +604,22 @@ export default function PublicProfilePage() {
                 <div
                   key={item.tag_id}
                   onClick={() => router.push(`/chat/${targetUserId}`)}
-                  className="group cursor-pointer rounded-2xl border border-[#DDD7E5]/80 bg-[#FAF8FD] p-3.5 transition hover:border-[#6555B8]/50"
+                  className="group cursor-pointer rounded-2xl border border-[#D5C6EC] bg-white p-3.5 transition hover:border-[#72519A]/50"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       {(() => {
                         const Icon = interestIconOrDefault(item.label);
-                        return <Icon className="w-4 h-4 text-[#6555B8] shrink-0" aria-hidden />;
+                        return <Icon className="w-4 h-4 text-[#72519A] shrink-0" aria-hidden />;
                       })()}
-                      <span className="text-xs font-bold text-[#1C1924]">{item.label}</span>
+                      <span className="text-xs font-bold text-[#51376D]">{item.label}</span>
                     </div>
-                    <span className="text-[11px] font-semibold text-[#6555B8]">
+                    <span className="text-[11px] font-semibold text-[#72519A]">
                       <span className="inline-flex items-center gap-1">Reply <MessageCircle className="w-3 h-3" aria-hidden /></span>
                     </span>
                   </div>
                   {item.story && (
-                    <p className="mt-1.5 text-xs leading-relaxed text-[#524B5E] italic">
+                    <p className="mt-1.5 text-xs leading-relaxed text-[#51376D]/85 italic">
                       “{item.story}”
                     </p>
                   )}
@@ -631,17 +631,17 @@ export default function PublicProfilePage() {
 
         {/* 6. INTERESTS & HOBBIES */}
         {targetInterests.length > 0 && (
-          <section className="p-4 rounded-3xl bg-white border border-[#DDD7E5] shadow-2xs space-y-3">
+          <section className="p-4 rounded-3xl bg-white border border-[#D5C6EC] shadow-2xs space-y-3">
             <div className="flex items-center justify-between gap-2">
               <h2
-                className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#6555B8]"
+                className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#72519A]"
                 style={{ fontFamily: 'var(--font-brand)' }}
               >
                 <Tag className="w-3.5 h-3.5" />
                 Interests &amp; Hobbies
               </h2>
               {sharedInterests.length > 0 && (
-                <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#6555B8]/10 text-[#6555B8] font-medium shrink-0">
+                <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#72519A]/10 text-[#72519A] font-medium shrink-0">
                   {sharedInterests.length} in common
                 </span>
               )}
@@ -658,8 +658,8 @@ export default function PublicProfilePage() {
                     key={tag}
                     className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium transition ${
                       isShared
-                        ? 'border-[#6555B8] text-[#6555B8] bg-[#6555B8]/5'
-                        : 'border-transparent bg-[#F6F5F9] text-[#2D264B]'
+                        ? 'border-[#72519A] text-[#72519A] bg-[#72519A]/5'
+                        : 'border-transparent bg-white text-[#51376D]'
                     }`}
                   >
                     {Icon && <Icon className="w-3.5 h-3.5 shrink-0" aria-hidden />}
@@ -673,15 +673,15 @@ export default function PublicProfilePage() {
 
         {/* 7. WHAT I'M LOOKING FOR & MY RHYTHM */}
         {(lookingForText || profile.reply_pace || relocationReadiness || timelineIntent) && (
-          <section className="p-4 rounded-3xl bg-white border border-[#DDD7E5] shadow-2xs space-y-2">
+          <section className="p-4 rounded-3xl bg-white border border-[#D5C6EC] shadow-2xs space-y-2">
             <h2
-              className="text-xs font-bold uppercase tracking-wider text-[#6555B8]"
+              className="text-xs font-bold uppercase tracking-wider text-[#72519A]"
               style={{ fontFamily: 'var(--font-brand)' }}
             >
               What I&apos;m Looking For
             </h2>
             {lookingForText && (
-              <p className="text-xs sm:text-sm font-semibold text-[#1C1924]">{lookingForText}</p>
+              <p className="text-xs sm:text-sm font-semibold text-[#51376D]">{lookingForText}</p>
             )}
             {(profile.reply_pace || relocationReadiness || timelineIntent) && (
               <div className="flex flex-wrap gap-1.5 pt-0.5">
@@ -695,19 +695,19 @@ export default function PublicProfilePage() {
 
         {/* 8. VITALS, LIFESTYLE & LANGUAGES */}
         {vitals.length > 0 && (
-          <section className="p-4 rounded-3xl bg-white border border-[#DDD7E5] shadow-2xs space-y-3">
+          <section className="p-4 rounded-3xl bg-white border border-[#D5C6EC] shadow-2xs space-y-3">
             <h2
-              className="text-xs font-bold uppercase tracking-wider text-[#6555B8]"
+              className="text-xs font-bold uppercase tracking-wider text-[#72519A]"
               style={{ fontFamily: 'var(--font-brand)' }}
             >
               Vitals &amp; Lifestyle
             </h2>
             <LifestyleBadges values={lifestyleBadges} />
-            <div className="divide-y divide-[#F0EDF5] text-xs">
+            <div className="divide-y divide-[#D5C6EC] text-xs">
               {vitals.map((item) => (
                 <div key={item.label} className="flex items-center justify-between py-2.5 first:pt-1 last:pb-0">
-                  <span className="font-medium text-[#6C637B]">{item.label}</span>
-                  <span className="font-semibold text-[#1C1924]">{item.value}</span>
+                  <span className="font-medium text-[#51376D]/75">{item.label}</span>
+                  <span className="font-semibold text-[#51376D]">{item.value}</span>
                 </div>
               ))}
             </div>
@@ -716,19 +716,19 @@ export default function PublicProfilePage() {
 
         {/* 8b. LANGUAGES SPOKEN */}
         {languagesList.length > 0 && (
-          <section className="p-4 rounded-3xl bg-white border border-[#DDD7E5] shadow-2xs space-y-2.5">
+          <section className="p-4 rounded-3xl bg-white border border-[#D5C6EC] shadow-2xs space-y-2.5">
             <h2
-              className="text-xs font-bold uppercase tracking-wider text-[#6555B8] flex items-center gap-1.5"
+              className="text-xs font-bold uppercase tracking-wider text-[#72519A] flex items-center gap-1.5"
               style={{ fontFamily: 'var(--font-brand)' }}
             >
-              <Languages className="w-4 h-4 text-[#6555B8]" />
+              <Languages className="w-4 h-4 text-[#72519A]" />
               <span>Languages Spoken</span>
             </h2>
             <div className="flex flex-wrap gap-1.5">
               {languagesList.map((lang) => (
                 <span
                   key={languageLabel(lang)}
-                  className="px-3 py-1 rounded-full bg-[#F8F7FA] border border-[#DDD7E5] text-xs font-semibold text-[#1C1924]"
+                  className="px-3 py-1 rounded-full bg-white border border-[#D5C6EC] text-xs font-semibold text-[#51376D]"
                 >
                   {lang}
                 </span>
@@ -749,7 +749,7 @@ export default function PublicProfilePage() {
                   document.querySelector('[data-profile-hero]')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }}
                 aria-label={`Show photo ${idx + 1}`}
-                className={`relative aspect-[4/5] rounded-2xl overflow-hidden bg-[#F2EEF7] border ${idx === currentPhotoIdx ? 'border-[#6555B8]' : 'border-[#DDD7E5]'}`}
+                className={`relative aspect-[4/5] rounded-2xl overflow-hidden bg-white border ${idx === currentPhotoIdx ? 'border-[#72519A]' : 'border-[#D5C6EC]'}`}
               >
                 <CardPhoto src={url} alt="" placeholder={placeholders[url] ?? null} className="object-cover" />
               </button>

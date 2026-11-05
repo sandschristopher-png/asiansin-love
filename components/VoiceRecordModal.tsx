@@ -82,20 +82,20 @@ export function VoiceRecordModal({
       <div className="fixed inset-0 bg-black/50" onClick={saving ? undefined : onClose} />
       <div className="relative w-full max-w-[430px] bg-white rounded-t-[28px] px-5 pt-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] space-y-4 animate-[ailSheetUp_260ms_cubic-bezier(0.16,1,0.3,1)]">
         <div className="flex items-center justify-between">
-          <h2 className="text-sm font-bold text-[#2D264B]">Record your voice intro</h2>
+          <h2 className="text-sm font-bold text-[#51376D]">Record your voice intro</h2>
           <button
             type="button"
             onClick={onClose}
             disabled={saving}
             aria-label="Close"
-            className="p-1.5 rounded-full text-[#6C637B] hover:bg-[#F3EFFC] transition"
+            className="p-1.5 rounded-full text-[#51376D]/75 hover:bg-[#E8DFF5]/70 transition"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         <div className="space-y-2">
-          <p className="text-[11px] font-bold uppercase tracking-wider text-[#6C637B]">Need an idea?</p>
+          <p className="text-[11px] font-bold uppercase tracking-wider text-[#51376D]/75">Need an idea?</p>
           <div className="flex flex-col gap-1.5">
             {PROMPTS.map((p) => (
               <button
@@ -103,7 +103,7 @@ export function VoiceRecordModal({
                 type="button"
                 onClick={() => setPrompt(p)}
                 className={`text-left px-3.5 py-2 rounded-xl border text-xs font-medium transition ${
-                  prompt === p ? 'border-[#6555B8] bg-[#F3EFFC] text-[#2D264B]' : 'border-[#ECE8F4] text-[#524B5E]'
+                  prompt === p ? 'border-[#72519A] bg-[#E8DFF5]/60 text-[#51376D]' : 'border-[#D5C6EC] text-[#51376D]/85'
                 }`}
               >
                 {p}
@@ -116,15 +116,15 @@ export function VoiceRecordModal({
           <div className="space-y-2">
             <div className="flex items-center gap-[3px] h-10 px-1" aria-hidden>
               {rec.levels.map((l, i) => (
-                <span key={i} className="flex-1 rounded-full bg-[#6555B8] transition-[height] duration-75" style={{ height: `${Math.round(l * 100)}%` }} />
+                <span key={i} className="flex-1 rounded-full bg-[#72519A] transition-[height] duration-75" style={{ height: `${Math.round(l * 100)}%` }} />
               ))}
             </div>
-            <div className="h-1.5 rounded-full bg-[#F3EFFC] overflow-hidden">
-              <div className="h-full rounded-full bg-[#6555B8] transition-[width] duration-100" style={{ width: `${progress}%` }} />
+            <div className="h-1.5 rounded-full bg-[#E8DFF5]/60 overflow-hidden">
+              <div className="h-full rounded-full bg-[#72519A] transition-[width] duration-100" style={{ width: `${progress}%` }} />
             </div>
-            <div className="flex items-center justify-between text-[11px] text-[#6C637B]">
-              <span className="inline-flex items-center gap-1.5 font-semibold text-rose-500">
-                <span className="w-2 h-2 rounded-full bg-rose-500 animate-pulse" /> {formatSeconds(rec.elapsedMs)}
+            <div className="flex items-center justify-between text-[11px] text-[#51376D]/75">
+              <span className="inline-flex items-center gap-1.5 font-semibold text-[#9474C3]">
+                <span className="w-2 h-2 rounded-full bg-[#9474C3] animate-pulse" /> {formatSeconds(rec.elapsedMs)}
               </span>
               <span>Stops at {VOICE_INTRO_MAX_MS / 1000}s</span>
             </div>
@@ -134,7 +134,7 @@ export function VoiceRecordModal({
                 buzz();
                 rec.stop();
               }}
-              className="w-full h-11 rounded-full bg-[#2D264B] text-white text-xs font-semibold inline-flex items-center justify-center gap-2"
+              className="w-full h-11 rounded-full bg-[#51376D] text-white text-xs font-semibold inline-flex items-center justify-center gap-2"
             >
               <Square className="w-3.5 h-3.5 fill-current" /> Stop
             </button>
@@ -144,7 +144,7 @@ export function VoiceRecordModal({
         {rec.state === 'recorded' && previewUrl && (
           <div className="space-y-2.5">
             <VoicePlayer key={previewUrl} src={previewUrl} title="Preview" durationMs={rec.durationMs} />
-            {tooShort && <p className="text-[11px] text-rose-600">Too short - record at least {VOICE_INTRO_MIN_MS / 1000} seconds.</p>}
+            {tooShort && <p className="text-[11px] text-[#72519A]">Too short - record at least {VOICE_INTRO_MIN_MS / 1000} seconds.</p>}
             <div className="grid grid-cols-2 gap-2">
               <button
                 type="button"
@@ -154,7 +154,7 @@ export function VoiceRecordModal({
                   rec.start();
                 }}
                 disabled={saving}
-                className="h-11 rounded-full border border-[#E2DBF0] text-[#6555B8] text-xs font-semibold inline-flex items-center justify-center gap-1.5 disabled:opacity-50"
+                className="h-11 rounded-full border border-[#D5C6EC] text-[#72519A] text-xs font-semibold inline-flex items-center justify-center gap-1.5 disabled:opacity-50"
               >
                 <RotateCcw className="w-3.5 h-3.5" /> Re-record
               </button>
@@ -162,7 +162,7 @@ export function VoiceRecordModal({
                 type="button"
                 onClick={save}
                 disabled={saving || tooShort}
-                className="h-11 rounded-full bg-[#6555B8] text-white text-xs font-semibold inline-flex items-center justify-center gap-1.5 disabled:opacity-50"
+                className="h-11 rounded-full bg-[#72519A] text-white text-xs font-semibold inline-flex items-center justify-center gap-1.5 disabled:opacity-50"
               >
                 {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />} Save intro
               </button>
@@ -177,14 +177,14 @@ export function VoiceRecordModal({
               buzz();
               rec.start();
             }}
-            className="w-full h-11 rounded-full bg-[#6555B8] text-white text-xs font-semibold inline-flex items-center justify-center gap-1.5"
+            className="w-full h-11 rounded-full bg-[#72519A] text-white text-xs font-semibold inline-flex items-center justify-center gap-1.5"
           >
             <Mic className="w-3.5 h-3.5" /> Start recording
           </button>
         )}
 
-        {rec.error && <p className="text-[11px] text-rose-600">{rec.error}</p>}
-        <p className="text-[10px] text-[#8C849B] text-center">
+        {rec.error && <p className="text-[11px] text-[#72519A]">{rec.error}</p>}
+        <p className="text-[10px] text-[#51376D]/55 text-center">
           Up to {VOICE_INTRO_MAX_MS / 1000} seconds. Members only hear it when they tap play.
         </p>
       </div>

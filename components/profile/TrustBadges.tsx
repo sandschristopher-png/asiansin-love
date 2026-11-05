@@ -27,9 +27,9 @@ export function VerifiedLocationBadge({ title, className = '' }: { title?: strin
   return (
     <span
       title={title}
-      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white/90 text-[11px] font-semibold text-[#2D264B] shadow-sm border border-white/40 whitespace-nowrap ${className}`}
+      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-white text-[11px] font-medium text-[#51376D] border border-[#D5C6EC] whitespace-nowrap ${className}`}
     >
-      <ShieldCheck className="w-3 h-3 text-[#6555B8] stroke-[2.5]" />
+      <ShieldCheck className="w-3 h-3 text-[#72519A] stroke-[2.5]" />
       Verified Location
     </span>
   );
@@ -41,9 +41,9 @@ export function DayOneBadge({ number, className = '' }: { number: number | null 
   return (
     <span
       title="One of the first 200 verified members"
-      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-purple-50/80 border border-[#6555B8]/25 text-[#2D264B] text-xs font-semibold shadow-sm ${className}`}
+      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-[#D5C6EC] text-[#51376D] text-xs font-semibold shadow-sm ${className}`}
     >
-      <Award className="w-3.5 h-3.5 text-[#6555B8] stroke-[2.5]" />
+      <Award className="w-3.5 h-3.5 text-[#72519A] stroke-[2.5]" />
       Day 1 · #{String(number).padStart(3, '0')}
     </span>
   );

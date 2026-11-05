@@ -22,14 +22,14 @@ export function HapticsRow() {
   };
 
   return (
-    <div className="flex items-center justify-between p-3 rounded-2xl hover:bg-[#F8F7FA] transition">
+    <div className="flex items-center justify-between p-3 rounded-2xl hover:bg-[#E8DFF5]/40 transition">
       <div className="flex items-center gap-3 pr-4">
-        <div className="w-8 h-8 rounded-xl bg-[#F8F7FA] text-[#524B5E] flex items-center justify-center shrink-0">
+        <div className="w-8 h-8 rounded-xl bg-white text-[#51376D]/85 flex items-center justify-center shrink-0">
           <Vibrate className="w-4 h-4" />
         </div>
         <div>
-          <p className="text-xs font-bold text-[#1C1924]">Haptic feedback</p>
-          <p className="text-[11px] text-[#6C637B]">
+          <p className="text-xs font-bold text-[#51376D]">Haptic feedback</p>
+          <p className="text-[11px] text-[#51376D]/75">
             {supported ? 'Gentle vibrations on taps, sends and photos' : 'Not supported on this device'}
           </p>
         </div>
@@ -41,7 +41,7 @@ export function HapticsRow() {
         aria-label="Haptic feedback"
         disabled={!supported}
         onClick={toggle}
-        className={`relative h-6 w-11 shrink-0 rounded-full transition-colors disabled:opacity-40 ${on ? 'bg-[#6555B8]' : 'bg-[#DDD7E5]'}`}
+        className={`relative h-6 w-11 shrink-0 rounded-full transition-colors disabled:opacity-40 ${on ? 'bg-[#72519A]' : 'bg-[#E8DFF5]'}`}
       >
         <span className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform ${on ? 'translate-x-[22px]' : 'translate-x-0.5'}`} />
       </button>

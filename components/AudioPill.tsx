@@ -116,12 +116,12 @@ export function AudioPill({
       } ${
         onBrand
           ? 'bg-white/15 border-white/25 text-white'
-          : 'bg-[#F3EFFC]/95 border-[#E2DBF0] text-[#6555B8] hover:bg-[#EBE5FA]'
+          : 'bg-[#E8DFF5]/60 border-[#D5C6EC] text-[#72519A] hover:bg-[#E8DFF5]/60'
       } ${className}`}
     >
       <span
         className={`rounded-full flex items-center justify-center shrink-0 ${sm ? 'w-5 h-5' : 'w-6 h-6'} ${
-          onBrand ? 'bg-white text-[#6555B8]' : 'bg-[#6555B8] text-white'
+          onBrand ? 'bg-white text-[#72519A]' : 'bg-[#72519A] text-white'
         }`}
       >
         {loading ? (
@@ -140,7 +140,7 @@ export function AudioPill({
               key={i}
               initial={false}
               {...barMotion(playing, i, 0.11)}
-              className={`w-[2.5px] rounded-full origin-center ${onBrand ? 'bg-white' : 'bg-[#6555B8]'}`}
+              className={`w-[2.5px] rounded-full origin-center ${onBrand ? 'bg-white' : 'bg-[#72519A]'}`}
               style={{
                 height: playing ? `${h * 100}%` : '35%',
                 opacity: playing ? 1 : 0.6,
@@ -150,7 +150,7 @@ export function AudioPill({
           ))}
         </span>
         <span
-          className={`relative h-1 w-16 rounded-full overflow-hidden ${onBrand ? 'bg-white/30' : 'bg-[#6555B8]/20'}`}
+          className={`relative h-1 w-16 rounded-full overflow-hidden ${onBrand ? 'bg-white/30' : 'bg-[#72519A]/20'}`}
           role="progressbar"
           aria-label={`${label} progress`}
           aria-valuemin={0}
@@ -158,7 +158,7 @@ export function AudioPill({
           aria-valuenow={Math.round(progress * 100)}
         >
           <span
-            className={`absolute inset-y-0 left-0 rounded-full transition-[width] duration-200 ease-linear ${onBrand ? 'bg-white' : 'bg-[#6555B8]'}`}
+            className={`absolute inset-y-0 left-0 rounded-full transition-[width] duration-200 ease-linear ${onBrand ? 'bg-white' : 'bg-[#72519A]'}`}
             style={{ width: `${progress * 100}%` }}
           />
         </span>
@@ -170,7 +170,7 @@ export function AudioPill({
             key={i}
             initial={false}
             {...barMotion(playing, i, 0.09)}
-            className={`w-[2.5px] rounded-full origin-center ${onBrand ? 'bg-white' : 'bg-[#6555B8]'}`}
+            className={`w-[2.5px] rounded-full origin-center ${onBrand ? 'bg-white' : 'bg-[#72519A]'}`}
             style={{ height: `${h * 100}%`, opacity: playing ? 1 : 0.55 }}
           />
         ))}

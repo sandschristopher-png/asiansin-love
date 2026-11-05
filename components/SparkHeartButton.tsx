@@ -8,9 +8,9 @@ const POP_MS = 380; // a little longer than the 360 ms .animate-heart-pop so it 
 /**
  * Discover-card Spark button (Pairs / with.is model): a symmetric heart that only ever sends a
  * Spark. It never turns into a message button; chat opens only after a mutual Spark.
- *   unsparked: borderless white heart floating on the photo (drop shadow for contrast, no circle)
- *   tap:       360 ms spring pop + 12 ms haptic, heart fills rose (no particles / sparkles)
- *   sparked:   filled rose heart, disabled (no un-spark from the card)
+ *   unsparked: bare white outline heart floating on the photo (soft drop shadow, no circle, no label)
+ *   tap:       360 ms spring pop + 12 ms haptic, heart fills purple (no particles / sparkles)
+ *   sparked:   solid purple heart, disabled (no un-spark from the card)
  *
  * Position it with `className` (e.g. "absolute top-3 right-3 z-20"). The component sets no
  * `position` of its own: a built-in `relative` would override a caller's `absolute` (Tailwind
@@ -62,14 +62,14 @@ export function SparkHeartButton({
         }
         onSpark();
       }}
-      className={`p-1 transition-transform duration-150 active:scale-125 drop-shadow-[0_2px_5px_rgba(0,0,0,0.45)] cursor-pointer disabled:cursor-default ${
-        isSparked ? 'text-[#EC4899]' : 'text-white hover:text-[#EC4899]'
-      } ${className}`}
+      className={`p-1 cursor-pointer transition-transform active:scale-90 hover:scale-110 disabled:cursor-default disabled:hover:scale-100 ${className}`}
     >
       <span className={`inline-flex ${isPopping ? 'animate-heart-pop' : ''}`}>
         <Heart
-          className={`w-7 h-7 stroke-[2.2] transition-colors duration-200 ${
-            isSparked ? 'fill-[#EC4899] text-[#EC4899]' : 'stroke-white fill-white/10 hover:fill-[#EC4899]'
+          className={`w-6 h-6 transition-colors duration-200 ${
+            isSparked
+              ? 'fill-[#72519A] stroke-none drop-shadow-[0_1px_3px_rgba(0,0,0,0.3)]'
+              : 'stroke-white fill-none stroke-[2] drop-shadow-[0_1px_3px_rgba(0,0,0,0.5)]'
           }`}
         />
       </span>

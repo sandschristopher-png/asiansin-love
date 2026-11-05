@@ -4,9 +4,9 @@ import { reputationTier } from '@/lib/reputation';
 import { ReputationBadge } from '@/components/ReputationBadge';
 
 const REP_TIER_CLASS = {
-  good: 'bg-[#F3EFFC] border-[#E2DBF0] text-[#6555B8]',
+  good: 'bg-[#E8DFF5]/60 border-[#D5C6EC] text-[#72519A]',
   fair: 'bg-amber-50 border-amber-200 text-amber-800',
-  low: 'bg-rose-50 border-rose-200 text-rose-700',
+  low: 'bg-[#E8DFF5]/50 border-[#D5C6EC] text-[#51376D]',
 } as const;
 
 /** Reputation pill ("[Shield] 98%", tier-colored); kept for existing callers. */
@@ -39,7 +39,7 @@ export function RhythmPill({
   const tone =
     variant === 'glass'
       ? 'bg-black/35 border-white/25 text-white'
-      : 'bg-[#F3EFFC] border-[#E2DBF0] text-[#6555B8]';
+      : 'bg-[#E8DFF5]/60 border-[#D5C6EC] text-[#72519A]';
   return (
     <span
       className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] font-semibold whitespace-nowrap ${tone} ${className}`}
@@ -59,21 +59,21 @@ export function InCommonCard({ items, compact = false }: { items: string[]; comp
   if (items.length === 0) return null;
   if (compact) {
     return (
-      <span className="inline-flex items-center whitespace-nowrap bg-black/45 border border-white/20 text-white font-medium text-xs px-2.5 py-1 rounded-full">
+      <span className="inline-flex items-center whitespace-nowrap bg-black/35 border border-white/20 text-white font-medium text-xs px-2.5 py-1 rounded-full">
         {items.length === 1 ? '1 thing in common' : `${items.length} things in common`}
       </span>
     );
   }
   return (
-    <div className="p-3 rounded-2xl bg-[#F3EFFC] border border-[#6555B8]/30 space-y-2">
-      <p className="text-xs font-bold text-[#6555B8]">
+    <div className="p-3 rounded-2xl bg-[#E8DFF5]/60 border border-[#72519A]/30 space-y-2">
+      <p className="text-xs font-bold text-[#72519A]">
         {items.length} in common
       </p>
       <div className="flex flex-wrap gap-1.5">
         {items.map((item) => (
           <span
             key={item}
-            className="px-2.5 py-1 rounded-full bg-white border border-[#6555B8]/30 text-[11px] font-semibold text-[#6555B8]"
+            className="px-2.5 py-1 rounded-full bg-white border border-[#72519A]/30 text-[11px] font-semibold text-[#72519A]"
           >
             {item}
           </span>
@@ -98,7 +98,7 @@ export function RhythmSelector({
   const options = RHYTHM_FIELDS[field] as readonly RhythmOption[];
   return (
     <div className="w-full min-w-0 space-y-1.5">
-      <p className="block w-full text-xs font-semibold leading-snug text-[#1C1924]">{label}</p>
+      <p className="block w-full text-xs font-semibold leading-snug text-[#51376D]">{label}</p>
       <div className="flex w-full flex-wrap gap-1.5">
         {options.map((o) => {
           const active = value === o.value;
@@ -110,8 +110,8 @@ export function RhythmSelector({
               aria-pressed={active}
               className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition active:scale-95 ${
                 active
-                  ? 'bg-[#6555B8] border-[#6555B8] text-white'
-                  : 'bg-white border-[#DDD7E5] text-[#1C1924] hover:bg-[#F3EFFC]'
+                  ? 'bg-[#72519A] border-[#72519A] text-white'
+                  : 'bg-white border-[#D5C6EC] text-[#51376D] hover:bg-[#E8DFF5]/70'
               }`}
             >
               <o.icon className="w-3.5 h-3.5 shrink-0" aria-hidden />

@@ -31,8 +31,8 @@ export function InAppToast({
   if (!message) return null;
   return (
     <div role="status" aria-live="polite" className={`${TOAST_POSITION_CLASS} animate-slide-down`}>
-      <div className="flex items-start gap-2.5 px-3.5 py-3 rounded-2xl bg-white/95 backdrop-blur-md border border-[#ECE8F4] shadow-[0_12px_32px_rgba(101,85,184,0.18)] text-xs text-[#1C1924]">
-        {icon && <span className="shrink-0 mt-0.5 text-[#6555B8]">{icon}</span>}
+      <div className="flex items-start gap-2.5 px-3.5 py-3 rounded-2xl bg-white/95 backdrop-blur-md border border-[#D5C6EC] shadow-[0_12px_32px_rgba(114,81,154,0.18)] text-xs text-[#51376D]">
+        {icon && <span className="shrink-0 mt-0.5 text-[#72519A]">{icon}</span>}
         <p className="flex-1 leading-relaxed">{message}</p>
         {action && (
           <button
@@ -41,12 +41,12 @@ export function InAppToast({
               action.onClick();
               onClose();
             }}
-            className="shrink-0 self-center px-3 py-1 rounded-full bg-[#2D264B] text-white text-[11px] font-semibold hover:bg-[#3D3464]"
+            className="shrink-0 self-center px-3 py-1 rounded-full bg-[#51376D] text-white text-[11px] font-semibold hover:bg-[#51376D]"
           >
             {action.label}
           </button>
         )}
-        <button type="button" onClick={onClose} aria-label="Dismiss" className="shrink-0 text-[#9A93A8] hover:text-[#1C1924]">
+        <button type="button" onClick={onClose} aria-label="Dismiss" className="shrink-0 text-[#51376D]/55 hover:text-[#51376D]">
           <X className="w-3.5 h-3.5" />
         </button>
       </div>

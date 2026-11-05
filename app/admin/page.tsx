@@ -26,12 +26,12 @@ function PersonRow({ person, label }: { person: Person; label: string }) {
     <div className="flex items-center gap-2.5 min-w-0">
       <AdminAvatar url={person?.avatarUrl ?? null} name={person?.name || 'Member'} size={32} />
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-semibold text-[#2D264B] truncate">{person?.name || 'Deleted member'}</p>
-        <p className="text-[10px] uppercase tracking-wider font-semibold text-[#9A92AB]">{label}</p>
+        <p className="text-sm font-semibold text-[#51376D] truncate">{person?.name || 'Deleted member'}</p>
+        <p className="text-[10px] uppercase tracking-wider font-semibold text-[#51376D]/55">{label}</p>
       </div>
       {person && (
         <div className="flex items-center gap-1 shrink-0">
-          {person.isBanned && <span className="text-[10px] font-semibold text-rose-600">Banned</span>}
+          {person.isBanned && <span className="text-[10px] font-semibold text-[#72519A]">Banned</span>}
           <ReputationBadge score={person.reputation} size="xs" />
         </div>
       )}
@@ -54,21 +54,21 @@ function ContextSheet({ report, onClose }: { report: Report; onClose: () => void
       subtitle={`${report.reporter?.name || 'Reporter'} and ${report.reported?.name || 'reported member'}, latest 40 messages`}
       onClose={onClose}
     >
-      <div className="p-4 space-y-2 bg-[#FAF8FD] min-h-[200px]">
+      <div className="p-4 space-y-2 bg-white min-h-[200px]">
         {error && <Notice kind="error">{error}</Notice>}
         {!messages && !error && <Loading />}
         {messages && messages.length === 0 && (
-          <p className="text-sm text-center text-[#6C637B] py-10">These members have not exchanged messages.</p>
+          <p className="text-sm text-center text-[#51376D]/75 py-10">These members have not exchanged messages.</p>
         )}
         {messages?.map((m) => (
           <div key={m.id} className={`flex ${m.fromReported ? 'justify-start' : 'justify-end'}`}>
             <div
               className={`max-w-[80%] rounded-2xl px-3 py-2 text-sm ${
-                m.fromReported ? 'bg-white border border-[#ECE8F4] text-[#1C1924]' : 'bg-[#2D264B] text-white'
-              } ${m.quarantined ? 'ring-2 ring-rose-300' : ''}`}
+                m.fromReported ? 'bg-white border border-[#D5C6EC] text-[#51376D]' : 'bg-[#51376D] text-white'
+              } ${m.quarantined ? 'ring-2 ring-[#D5C6EC]' : ''}`}
             >
               <p className="whitespace-pre-wrap break-words">{m.content}</p>
-              <p className={`mt-1 text-[10px] ${m.fromReported ? 'text-[#9A92AB]' : 'text-white/60'}`}>
+              <p className={`mt-1 text-[10px] ${m.fromReported ? 'text-[#51376D]/55' : 'text-white/60'}`}>
                 {m.fromReported ? report.reported?.name : report.reporter?.name} · {timeAgo(m.createdAt)}
                 {m.quarantined && ' · quarantined'}
               </p>
@@ -100,29 +100,29 @@ function ReportCard({
   };
 
   return (
-    <article className="p-4 rounded-2xl border border-[#ECE8F4] bg-white mb-3 shadow-2xs">
+    <article className="p-4 rounded-2xl border border-[#D5C6EC] bg-white mb-3 shadow-2xs">
       <div className="flex flex-wrap items-center gap-1.5 mb-3">
-        <span className="inline-flex items-center gap-1 rounded-full bg-rose-50 border border-rose-200 px-2 py-0.5 text-[11px] font-semibold text-rose-700">
+        <span className="inline-flex items-center gap-1 rounded-full bg-[#E8DFF5]/50 border border-[#D5C6EC] px-2 py-0.5 text-[11px] font-semibold text-[#51376D]">
           <Flag className="w-3 h-3" aria-hidden />
           {report.reasonLabel}
         </span>
         {report.source && (
-          <span className="inline-flex items-center gap-1 rounded-full bg-[#8C71F5]/10 px-2 py-0.5 text-[11px] font-semibold text-[#6555B8]">
+          <span className="inline-flex items-center gap-1 rounded-full bg-[#72519A]/10 px-2 py-0.5 text-[11px] font-semibold text-[#72519A]">
             {report.source === 'chat' ? <MessageCircle className="w-3 h-3" aria-hidden /> : <UserRound className="w-3 h-3" aria-hidden />}
             {report.source === 'chat' ? 'Chat' : 'Profile'}
           </span>
         )}
-        <span className="ml-auto text-[11px] text-[#9A92AB]">{timeAgo(report.createdAt)}</span>
+        <span className="ml-auto text-[11px] text-[#51376D]/55">{timeAgo(report.createdAt)}</span>
       </div>
 
-      <div className="space-y-2.5 rounded-xl border border-[#ECE8F4] p-3">
+      <div className="space-y-2.5 rounded-xl border border-[#D5C6EC] p-3">
         <PersonRow person={report.reported} label="Reported" />
-        <div className="h-px bg-[#ECE8F4]" />
+        <div className="h-px bg-[#E8DFF5]/60" />
         <PersonRow person={report.reporter} label="Reported by" />
       </div>
 
       {report.details && (
-        <p className="mt-3 rounded-xl bg-[#FAF8FD] px-3 py-2 text-sm text-[#3A3350] whitespace-pre-wrap break-words">{report.details}</p>
+        <p className="mt-3 rounded-xl bg-white px-3 py-2 text-sm text-[#51376D] whitespace-pre-wrap break-words">{report.details}</p>
       )}
 
       <input
@@ -131,7 +131,7 @@ function ReportCard({
         maxLength={300}
         enterKeyHint="done"
         placeholder="Internal note (optional)"
-        className="mt-3 w-full h-10 rounded-xl border border-[#ECE8F4] bg-white px-3 text-sm outline-none focus:border-[#8C71F5]"
+        className="mt-3 w-full h-10 rounded-xl border border-[#D5C6EC] bg-white px-3 text-sm outline-none focus:border-[#72519A]"
       />
 
       <AdminButton size="lg" className="mt-2 w-full" onClick={() => setInspect(true)}>
@@ -180,8 +180,8 @@ function ReportCard({
       )}
 
       {confirmBan && (
-        <div className="mt-2 rounded-xl bg-rose-50 border border-rose-100 p-2.5">
-          <p className="text-xs text-rose-800 mb-2">Ban {report.reported?.name || 'this member'}? They are signed out and cannot sign in again.</p>
+        <div className="mt-2 rounded-xl bg-[#E8DFF5]/50 border border-[#D5C6EC]/60 p-2.5">
+          <p className="text-xs text-[#51376D] mb-2">Ban {report.reported?.name || 'this member'}? They are signed out and cannot sign in again.</p>
           <div className="grid grid-cols-2 gap-2">
             <AdminButton size="lg" onClick={() => setConfirmBan(false)} disabled={!!busy}>
               Cancel

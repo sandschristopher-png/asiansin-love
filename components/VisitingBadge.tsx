@@ -22,8 +22,8 @@ export function VisitingBadge({
   const label = `Visiting: ${travel.city}${travel.dates ? ` in ${travel.dates}` : ''}`;
   const tone =
     variant === 'glass'
-      ? 'bg-white/90 text-[#2D264B] border-white/40 text-[10px] px-2 py-0.5'
-      : 'bg-[#F3EFFC] text-[#2D264B] border-[#6555B8]/20 text-xs px-3 py-1';
+      ? 'bg-white/90 text-[#51376D] border-white/40 text-[10px] px-2 py-0.5'
+      : 'bg-[#E8DFF5]/60 text-[#51376D] border-[#72519A]/20 text-xs px-3 py-1';
   return (
     <span
       title={travel.country ? `${label}, ${travel.country}` : label}

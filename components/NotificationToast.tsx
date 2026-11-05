@@ -58,25 +58,25 @@ export function NotificationToast({
         aria-live="polite"
         onClick={() => onOpen(toast)}
         className={`ail-toast-in pointer-events-auto w-[94%] max-w-sm backdrop-blur-md shadow-xl rounded-2xl p-3 border flex items-center gap-3 cursor-pointer active:scale-[0.98] transition-all ${
-          mutual ? 'bg-[#6555B8] border-[#6555B8]' : 'bg-white/95 border-slate-100'
+          mutual ? 'bg-[#72519A] border-[#72519A]' : 'bg-white/95 border-[#D5C6EC]/60'
         }`}
       >
         <img
           src={toast.avatarUrl || '/placeholder-avatar.svg'}
           alt=""
-          className="w-11 h-11 rounded-full object-cover ring-2 ring-[#6555B8]/20 shrink-0"
+          className="w-11 h-11 rounded-full object-cover ring-2 ring-[#72519A]/20 shrink-0"
         />
         <div className="min-w-0 flex-1">
-          <p className={`flex items-center gap-1.5 font-semibold text-sm truncate ${mutual ? 'text-white' : 'text-[#2D264B]'}`}>
+          <p className={`flex items-center gap-1.5 font-semibold text-sm truncate ${mutual ? 'text-white' : 'text-[#51376D]'}`}>
             <Icon
-              className={`w-3.5 h-3.5 shrink-0 ${mutual ? 'text-white fill-white' : 'text-[#6555B8]'} ${toast.kind === 'spark' ? 'fill-[#6555B8]' : ''}`}
+              className={`w-3.5 h-3.5 shrink-0 ${mutual ? 'text-white fill-white' : 'text-[#72519A]'} ${toast.kind === 'spark' ? 'fill-[#72519A]' : ''}`}
               strokeWidth={2}
             />
             <span className="truncate">{toast.name}</span>
           </p>
-          <p className={`text-xs truncate max-w-[210px] mt-0.5 ${mutual ? 'text-white/85' : 'text-[#8A839E]'}`}>{toast.preview}</p>
+          <p className={`text-xs truncate max-w-[210px] mt-0.5 ${mutual ? 'text-white/85' : 'text-[#51376D]/55'}`}>{toast.preview}</p>
         </div>
-        <span aria-hidden className={`w-2 h-2 rounded-full shrink-0 ${mutual ? 'bg-white' : 'bg-[#6555B8]'}`} />
+        <span aria-hidden className={`w-2 h-2 rounded-full shrink-0 ${mutual ? 'bg-white' : 'bg-[#72519A]'}`} />
       </div>
     </div>
   );

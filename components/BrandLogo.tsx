@@ -22,7 +22,7 @@ const SIZE_CLASS: Record<BrandLogoSize, string> = {
   lg: 'text-3xl font-extrabold tracking-tight',
 };
 
-/** Typographic wordmark: "asiansin" + gradient ".love" in Plus Jakarta Sans (font-brand). */
+/** Typographic wordmark: clean "asiansin.love" in deep muted purple, Plus Jakarta Sans (font-brand). */
 export function BrandLogo({ className = '', href = '/discover', size = 'md', textSize = '', onDark = false }: BrandLogoProps) {
   const wordmark = (
     <span
@@ -33,8 +33,7 @@ export function BrandLogo({ className = '', href = '/discover', size = 'md', tex
       ].filter(Boolean).join(' ')}
       aria-label="asiansin.love"
     >
-      <span className={onDark ? 'text-white' : 'text-[#2D264B]'}>asiansin</span>
-      <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#8C71F5] via-[#C084FC] to-[#EC4899]">.love</span>
+      <span className={onDark ? 'text-white' : 'text-[#51376D]'}>asiansin.love</span>
     </span>
   );
 

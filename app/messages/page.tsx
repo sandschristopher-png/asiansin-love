@@ -224,18 +224,18 @@ export default function MessagesPage() {
     );
 
   return (
-    <div className="w-full min-h-[100dvh] bg-[#F9F8FC] text-[#1C1924] flex flex-col font-sans overscroll-y-contain">
+    <div className="w-full min-h-[100dvh] bg-white text-[#51376D] flex flex-col font-sans overscroll-y-contain">
         <main className="flex-1 w-full px-4 pt-3.5 pb-[calc(8rem+env(safe-area-inset-bottom,0px))] space-y-3.5">
         <div className="flex items-center justify-between gap-2">
-          <p className="text-xs text-[#6C637B] font-medium">Direct messages with your connections</p>
+          <p className="text-xs text-[#51376D]/75 font-medium">Direct messages with your connections</p>
 
-          <div className="flex items-center gap-1 bg-white border border-[#E5DFEE] p-1 rounded-full shrink-0">
+          <div className="flex items-center gap-1 bg-white border border-[#D5C6EC] p-1 rounded-full shrink-0">
             <button
               type="button"
               onClick={() => setActiveTab('all')}
               className={
                 'px-3 py-1 rounded-full text-xs font-semibold transition cursor-pointer ' +
-                (activeTab === 'all' ? 'bg-[#6555B8] text-white shadow-2xs' : 'text-[#524B5E] hover:text-[#1C1924]')
+                (activeTab === 'all' ? 'bg-[#72519A] text-white shadow-2xs' : 'text-[#51376D]/85 hover:text-[#51376D]')
               }
             >
               All
@@ -245,7 +245,7 @@ export default function MessagesPage() {
               onClick={() => setActiveTab('unread')}
               className={
                 'px-3 py-1 rounded-full text-xs font-semibold transition cursor-pointer ' +
-                (activeTab === 'unread' ? 'bg-[#6555B8] text-white shadow-2xs' : 'text-[#524B5E] hover:text-[#1C1924]')
+                (activeTab === 'unread' ? 'bg-[#72519A] text-white shadow-2xs' : 'text-[#51376D]/85 hover:text-[#51376D]')
               }
             >
               Unread
@@ -253,20 +253,20 @@ export default function MessagesPage() {
           </div>
         </div>
 
-        <div className="w-full px-3.5 py-2 bg-white border border-[#E5DFEE] focus-within:border-[#6555B8] focus-within:ring-2 focus-within:ring-[#6555B8]/15 rounded-full transition-all flex items-center gap-2.5">
-          <Search className="w-4 h-4 text-[#8C849B] shrink-0 pointer-events-none" />
+        <div className="w-full px-3.5 py-2 bg-white border border-[#D5C6EC] focus-within:border-[#72519A] focus-within:ring-2 focus-within:ring-[#72519A]/15 rounded-full transition-all flex items-center gap-2.5">
+          <Search className="w-4 h-4 text-[#51376D]/55 shrink-0 pointer-events-none" />
           <input
             type="text"
             placeholder="Search conversations..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-transparent text-xs sm:text-sm text-[#1C1924] placeholder-[#8C849B] focus:outline-none min-w-0"
+            className="w-full bg-transparent text-xs sm:text-sm text-[#51376D] placeholder-[#51376D]/55 focus:outline-none min-w-0"
           />
           {searchQuery && (
             <button
               type="button"
               onClick={() => setSearchQuery('')}
-              className="text-xs text-[#8C849B] hover:text-[#1C1924] shrink-0 cursor-pointer"
+              className="text-xs text-[#51376D]/55 hover:text-[#51376D] shrink-0 cursor-pointer"
             >
               Clear
             </button>
@@ -277,7 +277,7 @@ export default function MessagesPage() {
           {loading ? (
             <div className="space-y-2" aria-busy="true" aria-label="Loading conversations">
               {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="flex items-center gap-3 p-3 rounded-3xl bg-white border border-[#F0EDF5]">
+                <div key={i} className="flex items-center gap-3 p-3 rounded-3xl bg-white border border-[#D5C6EC]">
                   <div className="w-12 h-12 rounded-full ail-shimmer shrink-0" />
                   <div className="flex-1 space-y-2">
                     <div className="h-3 w-1/3 rounded-full ail-shimmer" />
@@ -287,21 +287,21 @@ export default function MessagesPage() {
               ))}
             </div>
           ) : filteredConversations.length === 0 ? (
-            <div className="bg-white border border-[#E5DFEE] rounded-3xl px-4 py-8 text-center space-y-3">
-              <div className="w-11 h-11 bg-[#F3EFFC] text-[#6555B8] rounded-2xl flex items-center justify-center mx-auto">
+            <div className="bg-white border border-[#D5C6EC] rounded-3xl px-4 py-8 text-center space-y-3">
+              <div className="w-11 h-11 bg-[#E8DFF5]/60 text-[#72519A] rounded-2xl flex items-center justify-center mx-auto">
                 <MessageCircle className="w-5 h-5" />
               </div>
               <div className="space-y-1">
-                <h2 className="text-sm font-bold text-[#1C1924]" style={{ fontFamily: 'var(--font-brand)' }}>
+                <h2 className="text-sm font-bold text-[#51376D]" style={{ fontFamily: 'var(--font-brand)' }}>
                   No conversations yet
                 </h2>
-                <p className="text-xs text-[#6C637B] max-w-xs mx-auto leading-relaxed">
+                <p className="text-xs text-[#51376D]/75 max-w-xs mx-auto leading-relaxed">
                   Explore the Discover feed and send a friendly hello to start a conversation.
                 </p>
               </div>
               <Link
                 href="/discover"
-                className="inline-block px-5 py-2.5 rounded-full bg-[#6555B8] text-white text-xs font-semibold hover:bg-[#52449e] transition"
+                className="inline-block px-5 py-2.5 rounded-full bg-[#72519A] text-white text-xs font-semibold hover:bg-[#51376D] transition"
               >
                 Explore Discover Feed
               </Link>
@@ -314,15 +314,15 @@ export default function MessagesPage() {
                 className={
                   'flex items-center gap-3.5 px-3.5 py-3 bg-white border rounded-2xl transition ' +
                   (conv.unreadCount > 0
-                    ? 'border-[#6555B8]/40 bg-[#FAF8FF]'
-                    : 'border-[#EAE5F3] hover:border-[#6555B8]/30 hover:bg-[#FAF9FC]')
+                    ? 'border-[#72519A]/40 bg-white'
+                    : 'border-[#D5C6EC] hover:border-[#72519A]/30 hover:bg-[#E8DFF5]/40')
                 }
               >
                 <div className="relative w-12 h-12 shrink-0">
                   <img
                     src={conv.avatarUrl}
                     alt={conv.name}
-                    className="rounded-full object-cover w-12 h-12 border border-[#E5DFEE]"
+                    className="rounded-full object-cover w-12 h-12 border border-[#D5C6EC]"
                   />
                 </div>
 
@@ -330,7 +330,7 @@ export default function MessagesPage() {
                   <div className="flex items-center justify-between gap-2 mb-0.5">
                     <div className="flex items-center gap-1.5 min-w-0">
                       <h2
-                        className="text-[13.5px] font-bold text-[#1C1924] truncate"
+                        className="text-[13.5px] font-bold text-[#51376D] truncate"
                         style={{ fontFamily: 'var(--font-brand)' }}
                       >
                         {conv.name}
@@ -341,7 +341,7 @@ export default function MessagesPage() {
                       <span
                         className={
                           'text-[10.5px] shrink-0 ' +
-                          (conv.unreadCount > 0 ? 'text-[#6555B8] font-semibold' : 'text-[#8C849B]')
+                          (conv.unreadCount > 0 ? 'text-[#72519A] font-semibold' : 'text-[#51376D]/55')
                         }
                       >
                         {formatConversationTimestamp(conv.lastMessageAt)}
@@ -352,20 +352,20 @@ export default function MessagesPage() {
                     <p
                       className={
                         'text-xs truncate ' +
-                        (conv.unreadCount > 0 ? 'font-semibold text-[#1C1924]' : 'text-[#6C637B]')
+                        (conv.unreadCount > 0 ? 'font-semibold text-[#51376D]' : 'text-[#51376D]/75')
                       }
                     >
                       {conv.lastMessage}
                     </p>
                     {conv.unreadCount > 0 && (
-                      <span className="min-w-[18px] h-[18px] px-1.5 rounded-full bg-[#6555B8] text-white text-[10px] font-bold flex items-center justify-center shrink-0">
+                      <span className="min-w-[18px] h-[18px] px-1.5 rounded-full bg-[#72519A] text-white text-[10px] font-bold flex items-center justify-center shrink-0">
                         {conv.unreadCount}
                       </span>
                     )}
                   </div>
                 </div>
 
-                <ChevronRight className="w-4 h-4 text-[#A098B0] shrink-0" />
+                <ChevronRight className="w-4 h-4 text-[#51376D]/55 shrink-0" />
               </Link>
             ))
           )}

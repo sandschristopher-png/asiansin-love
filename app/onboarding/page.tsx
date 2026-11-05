@@ -524,20 +524,20 @@ export default function OnboardingPage() {
   if (!userId) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-10 w-10 border-4 border-[#6555b8] border-t-transparent"></div>
+        <div className="animate-spin rounded-full h-10 w-10 border-4 border-[#72519A] border-t-transparent"></div>
       </div>
     );
   }
 
   return (
     <div className="min-h-[calc(100dvh-64px)] w-full flex items-center justify-center p-4 sm:p-6">
-      <div className="w-full max-w-xl rounded-3xl bg-white border border-[#DDD7E5] p-6 sm:p-10 shadow-xl space-y-6">
+      <div className="w-full max-w-xl rounded-3xl bg-white border border-[#D5C6EC] p-6 sm:p-10 shadow-xl space-y-6">
         
         {/* Step Indicator Header */}
-        <div className="space-y-3 border-b border-[#F0EDF5] pb-5">
+        <div className="space-y-3 border-b border-[#D5C6EC] pb-5">
           <div className="flex items-center justify-between">
-            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#F3EFFC] text-[#6555b8] text-xs font-medium tracking-wide">
-              <Heart className="w-3.5 h-3.5 text-[#6555b8]" />
+            <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E8DFF5]/60 text-[#72519A] text-xs font-medium tracking-wide">
+              <Heart className="w-3.5 h-3.5 text-[#72519A]" />
               <span>Step {step} of 5</span>
             </span>
             <div className="flex items-center gap-1.5">
@@ -546,7 +546,7 @@ export default function OnboardingPage() {
                   key={s}
                   className={
                     'h-2 rounded-full transition-all duration-300 ' +
-                    (s === step ? 'w-7 bg-[#6555b8]' : s < step ? 'w-2 bg-[#6555b8]/50' : 'w-2 bg-[#DDD7E5]')
+                    (s === step ? 'w-7 bg-[#72519A]' : s < step ? 'w-2 bg-[#72519A]/50' : 'w-2 bg-[#E8DFF5]/60')
                   }
                 />
               ))}
@@ -554,14 +554,14 @@ export default function OnboardingPage() {
           </div>
 
           <div>
-            <h1 className="text-2xl font-medium text-[#1C1924]">
+            <h1 className="text-2xl font-medium text-[#51376D]">
               {step === 1 && 'Choose your username'}
               {step === 2 && 'Identity & Preferences'}
               {step === 3 && 'Where are you located?'}
               {step === 4 && 'Profile Details & Interests'}
               {step === 5 && 'Add your profile photos'}
             </h1>
-            <p className="text-xs sm:text-sm text-[#6C637B] mt-1 leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#51376D]/75 mt-1 leading-relaxed">
               {step === 1 && 'Claim your unique username on Asians in Love (3 to 20 characters, letters, numbers, and underscores).'}
               {step === 2 && 'Select how you identify and who you are interested in meeting.'}
               {step === 3 && 'Use GPS or enter your city and country manually.'}
@@ -572,7 +572,7 @@ export default function OnboardingPage() {
         </div>
 
         {errorMessage && (
-          <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold">
+          <div className="p-3.5 rounded-2xl bg-[#E8DFF5]/50 border border-[#D5C6EC] text-[#51376D] text-xs font-semibold">
             {errorMessage}
           </div>
         )}
@@ -602,14 +602,14 @@ export default function OnboardingPage() {
         {step === 1 && (
           <form onSubmit={handleStep1Next} className="space-y-5">
             <div>
-              <label className="text-xs font-medium text-[#1C1924] block mb-1">
+              <label className="text-xs font-medium text-[#51376D] block mb-1">
                 Username
               </label>
-              <p className="text-[11px] text-[#6C637B] mb-2">
+              <p className="text-[11px] text-[#51376D]/75 mb-2">
                 3 to 20 characters, alphanumeric and underscores only.
               </p>
               <div className="relative flex items-center">
-                <span className="absolute left-3.5 text-sm font-medium text-[#8C849B]"></span>
+                <span className="absolute left-3.5 text-sm font-medium text-[#51376D]/55"></span>
                 <input
                   type="text"
                   value={username}
@@ -617,11 +617,11 @@ export default function OnboardingPage() {
                   placeholder="your_username"
                   maxLength={20}
                   autoFocus
-                  className="w-full pl-8 pr-24 py-3 rounded-2xl bg-white border border-[#DDD7E5] text-[#1C1924] placeholder-[#8C849B] focus:outline-none focus:border-[#6555b8] focus:ring-2 focus:ring-[#6555b8]/15 text-sm font-medium transition"
+                  className="w-full pl-8 pr-24 py-3 rounded-2xl bg-white border border-[#D5C6EC] text-[#51376D] placeholder-[#51376D]/55 focus:outline-none focus:border-[#72519A] focus:ring-2 focus:ring-[#72519A]/15 text-sm font-medium transition"
                 />
                 <div className="absolute right-3.5 flex items-center">
                   {isCheckingUsername && (
-                    <Loader2 className="w-4 h-4 text-[#6555b8] animate-spin" />
+                    <Loader2 className="w-4 h-4 text-[#72519A] animate-spin" />
                   )}
                   {!isCheckingUsername && usernameStatus?.available && (
                     <span className="inline-flex items-center gap-1 text-emerald-600 text-xs font-semibold">
@@ -629,27 +629,27 @@ export default function OnboardingPage() {
                     </span>
                   )}
                   {!isCheckingUsername && usernameStatus?.available === false && (
-                    <span className="text-rose-500 text-xs font-semibold">Taken</span>
+                    <span className="text-[#9474C3] text-xs font-semibold">Taken</span>
                   )}
                 </div>
               </div>
 
               {!isCheckingUsername && usernameStatus?.error && (
-                <p className="mt-2 text-xs text-rose-600 font-medium">{usernameStatus.error}</p>
+                <p className="mt-2 text-xs text-[#72519A] font-medium">{usernameStatus.error}</p>
               )}
 
               {!isCheckingUsername && usernameStatus?.available === false && !usernameStatus?.error && (
                 <div className="mt-2.5 text-xs space-y-1.5">
-                  <span className="text-rose-600 font-semibold">{username} is already taken.</span>
+                  <span className="text-[#72519A] font-semibold">{username} is already taken.</span>
                   {usernameStatus.suggestions && usernameStatus.suggestions.length > 0 && (
                     <div className="flex flex-wrap items-center gap-1.5 pt-0.5">
-                      <span className="text-[#6C637B]">Suggestions:</span>
+                      <span className="text-[#51376D]/75">Suggestions:</span>
                       {usernameStatus.suggestions.map((sug) => (
                         <button
                           key={sug}
                           type="button"
                           onClick={() => setUsername(sug)}
-                          className="px-2.5 py-1 rounded-xl bg-[#F3EFFC] border border-[#6555b8]/30 text-[#6555b8] font-medium text-xs hover:bg-[#6555b8] hover:text-white transition"
+                          className="px-2.5 py-1 rounded-xl bg-[#E8DFF5]/60 border border-[#72519A]/30 text-[#72519A] font-medium text-xs hover:bg-[#72519A] hover:text-white transition"
                         >
                           {sug}
                         </button>
@@ -663,7 +663,7 @@ export default function OnboardingPage() {
             <button
               type="submit"
               disabled={isCheckingUsername || !usernameStatus?.available}
-              className="w-full py-3.5 rounded-2xl bg-[#6555b8] hover:bg-[#52449e] text-white text-sm font-semibold shadow-md transition active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="w-full py-3.5 rounded-2xl bg-[#72519A] hover:bg-[#51376D] text-white text-sm font-semibold shadow-md transition active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
             >
               Continue
             </button>
@@ -674,7 +674,7 @@ export default function OnboardingPage() {
         {step === 2 && (
           <form onSubmit={handleStep2Next} className="space-y-6">
             <div>
-              <label className="text-xs font-semibold text-[#1C1924] block mb-2">
+              <label className="text-xs font-semibold text-[#51376D] block mb-2">
                 I am a:
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -686,8 +686,8 @@ export default function OnboardingPage() {
                     className={
                       'py-2.5 px-3 rounded-2xl text-xs font-semibold border transition active:scale-95 flex items-center justify-center gap-1.5 ' +
                       (gender === g.val
-                        ? 'bg-[#6555b8] border-[#6555b8] text-white shadow-xs'
-                        : 'bg-white border-[#DDD7E5] text-[#524B5E] hover:border-[#6555b8]/40 hover:bg-[#F3EFFC]')
+                        ? 'bg-[#72519A] border-[#72519A] text-white shadow-xs'
+                        : 'bg-white border-[#D5C6EC] text-[#51376D]/85 hover:border-[#72519A]/40 hover:bg-[#E8DFF5]/70')
                     }
                   >
                     <span>{g.label}</span>
@@ -697,14 +697,14 @@ export default function OnboardingPage() {
             </div>
 
             {gender && (
-              <p className="-mt-3 text-[11px] text-[#6C637B]">
+              <p className="-mt-3 text-[11px] text-[#51376D]/75">
                 You&apos;ll meet {gender === 'male' ? 'women' : 'men'} on Asians in Love.
               </p>
             )}
 
             <div>
-              <label className="text-xs font-semibold text-[#1C1924] block mb-1">
-                I am here for: <span className="text-[#6C637B] font-normal">(Select one)</span>
+              <label className="text-xs font-semibold text-[#51376D] block mb-1">
+                I am here for: <span className="text-[#51376D]/75 font-normal">(Select one)</span>
               </label>
               <div className="flex flex-wrap gap-2 pt-1">
                 {INTENT_OPTIONS.map((opt) => (
@@ -715,8 +715,8 @@ export default function OnboardingPage() {
                     className={
                       'py-2.5 px-4 rounded-full text-xs font-semibold border transition active:scale-95 ' +
                       (intent === opt.value
-                        ? 'bg-[#6555b8] border-[#6555b8] text-white shadow-xs'
-                        : 'bg-white border-[#DDD7E5] text-[#524B5E] hover:border-[#6555b8]/40')
+                        ? 'bg-[#72519A] border-[#72519A] text-white shadow-xs'
+                        : 'bg-white border-[#D5C6EC] text-[#51376D]/85 hover:border-[#72519A]/40')
                     }
                   >
                     {opt.label}
@@ -726,7 +726,7 @@ export default function OnboardingPage() {
             </div>
 
             <div>
-              <label className="text-xs font-semibold text-[#1C1924] block mb-1.5">
+              <label className="text-xs font-semibold text-[#51376D] block mb-1.5">
                 Date of Birth
               </label>
               <input
@@ -734,7 +734,7 @@ export default function OnboardingPage() {
                 value={birthdate}
                 max={new Date(Date.now() - 18 * 365.25 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]}
                 onChange={(e) => setBirthdate(e.target.value)}
-                className="w-full px-4 py-3 rounded-2xl bg-white border border-[#DDD7E5] text-[#1C1924] focus:outline-none focus:border-[#6555b8] focus:ring-2 focus:ring-[#6555b8]/15 text-sm transition"
+                className="w-full px-4 py-3 rounded-2xl bg-white border border-[#D5C6EC] text-[#51376D] focus:outline-none focus:border-[#72519A] focus:ring-2 focus:ring-[#72519A]/15 text-sm transition"
               />
             </div>
 
@@ -742,14 +742,14 @@ export default function OnboardingPage() {
               <button
                 type="button"
                 onClick={() => setStep(1)}
-                className="w-1/3 py-3 rounded-2xl bg-white border border-[#DDD7E5] text-xs font-semibold text-[#524B5E] hover:bg-[#F8F7FA] transition"
+                className="w-1/3 py-3 rounded-2xl bg-white border border-[#D5C6EC] text-xs font-semibold text-[#51376D]/85 hover:bg-[#E8DFF5]/40 transition"
               >
                 Back
               </button>
               <button
                 type="submit"
                 disabled={!gender || interestedIn.length === 0 || !intent || !birthdate}
-                className="w-2/3 py-3 rounded-2xl bg-[#6555b8] hover:bg-[#52449e] text-white text-xs font-semibold shadow-md transition disabled:opacity-40"
+                className="w-2/3 py-3 rounded-2xl bg-[#72519A] hover:bg-[#51376D] text-white text-xs font-semibold shadow-md transition disabled:opacity-40"
               >
                 Continue to Location
               </button>
@@ -760,22 +760,22 @@ export default function OnboardingPage() {
         {/* STEP 3: LOCATION */}
         {step === 3 && (
           <form onSubmit={handleStep3Next} className="space-y-5">
-            <div className="p-4 sm:p-5 rounded-2xl bg-[#F8F7FA] border border-[#DDD7E5] space-y-4">
+            <div className="p-4 sm:p-5 rounded-2xl bg-white border border-[#D5C6EC] space-y-4">
               <div className="flex items-center justify-between">
-                <div className="flex items-center gap-1.5 text-xs font-semibold text-[#1C1924]">
-                  <MapPin className="w-4 h-4 text-[#6555b8]" />
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-[#51376D]">
+                  <MapPin className="w-4 h-4 text-[#72519A]" />
                   <span>Your Location</span>
                 </div>
                 {gpsCaptured && (
-                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#F3EFFC] border border-[#6555b8]/25 text-[11px] font-medium text-[#6555b8]">
-                    <CheckCircle2 className="w-3 h-3 text-[#6555b8]" />
+                  <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#E8DFF5]/60 border border-[#72519A]/25 text-[11px] font-medium text-[#72519A]">
+                    <CheckCircle2 className="w-3 h-3 text-[#72519A]" />
                     Coordinates Captured
                   </span>
                 )}
               </div>
 
-              <div className="flex items-start gap-2 p-2.5 rounded-xl bg-white border border-[#E5E1EC] text-[11px] text-[#6C637B] leading-relaxed">
-                <Shield className="w-3.5 h-3.5 text-[#6555b8] shrink-0 mt-0.5" />
+              <div className="flex items-start gap-2 p-2.5 rounded-xl bg-white border border-[#D5C6EC] text-[11px] text-[#51376D]/75 leading-relaxed">
+                <Shield className="w-3.5 h-3.5 text-[#72519A] shrink-0 mt-0.5" />
                 <span>We only display your city and country. Full location verification is optional and can be completed later from your profile.</span>
               </div>
 
@@ -783,23 +783,23 @@ export default function OnboardingPage() {
                 type="button"
                 disabled={isLocating}
                 onClick={triggerLocationDetection}
-                className="w-full py-2.5 px-3 rounded-xl bg-white hover:bg-[#F3EFFC] border border-[#DDD7E5] hover:border-[#6555b8]/50 text-xs font-semibold text-[#1C1924] inline-flex items-center justify-center gap-2 transition shadow-xs disabled:opacity-50"
+                className="w-full py-2.5 px-3 rounded-xl bg-white hover:bg-[#E8DFF5]/70 border border-[#D5C6EC] hover:border-[#72519A]/50 text-xs font-semibold text-[#51376D] inline-flex items-center justify-center gap-2 transition shadow-xs disabled:opacity-50"
               >
                 {isLocating ? (
-                  <Loader2 className="w-3.5 h-3.5 animate-spin text-[#6555b8]" />
+                  <Loader2 className="w-3.5 h-3.5 animate-spin text-[#72519A]" />
                 ) : (
-                  <Navigation className="w-3.5 h-3.5 text-[#6555b8]" />
+                  <Navigation className="w-3.5 h-3.5 text-[#72519A]" />
                 )}
                 <span>{isLocating ? 'Detecting GPS location...' : 'Auto-Detect with GPS'}</span>
               </button>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-[#E5E1EC]">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-[#D5C6EC]">
                 <div>
-                  <label className="text-[11px] font-semibold text-[#524B5E] block mb-1">Country</label>
+                  <label className="text-[11px] font-semibold text-[#51376D]/85 block mb-1">Country</label>
                   <select
                     value={country}
                     onChange={(e) => setCountry(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#DDD7E5] text-xs font-medium text-[#1C1924] focus:outline-none focus:border-[#6555b8]"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#D5C6EC] text-xs font-medium text-[#51376D] focus:outline-none focus:border-[#72519A]"
                   >
                     {COUNTRIES.map((c) => (
                       <option key={c} value={c}>{c}</option>
@@ -808,13 +808,13 @@ export default function OnboardingPage() {
                 </div>
 
                 <div>
-                  <label className="text-[11px] font-semibold text-[#524B5E] block mb-1">City</label>
+                  <label className="text-[11px] font-semibold text-[#51376D]/85 block mb-1">City</label>
                   <input
                     type="text"
                     value={city}
                     onChange={(e) => setCity(e.target.value)}
                     placeholder="e.g. Cebu City, Las Vegas, Bangkok"
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#DDD7E5] text-xs font-medium text-[#1C1924] focus:outline-none focus:border-[#6555b8] placeholder-[#8C849B]"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#D5C6EC] text-xs font-medium text-[#51376D] focus:outline-none focus:border-[#72519A] placeholder-[#51376D]/55"
                   />
                 </div>
               </div>
@@ -824,14 +824,14 @@ export default function OnboardingPage() {
               <button
                 type="button"
                 onClick={() => setStep(2)}
-                className="w-1/3 py-3 rounded-2xl bg-white border border-[#DDD7E5] text-xs font-semibold text-[#524B5E] hover:bg-[#F8F7FA] transition"
+                className="w-1/3 py-3 rounded-2xl bg-white border border-[#D5C6EC] text-xs font-semibold text-[#51376D]/85 hover:bg-[#E8DFF5]/40 transition"
               >
                 Back
               </button>
               <button
                 type="submit"
                 disabled={!city.trim() || !country.trim()}
-                className="w-2/3 py-3 rounded-2xl bg-[#6555b8] hover:bg-[#52449e] text-white text-xs font-semibold shadow-md transition disabled:opacity-40"
+                className="w-2/3 py-3 rounded-2xl bg-[#72519A] hover:bg-[#51376D] text-white text-xs font-semibold shadow-md transition disabled:opacity-40"
               >
                 Continue to Details
               </button>
@@ -844,13 +844,13 @@ export default function OnboardingPage() {
           <form onSubmit={handleStep4Next} className="space-y-5">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div>
-                <label className="text-xs font-semibold text-[#1C1924] block mb-1.5">
+                <label className="text-xs font-semibold text-[#51376D] block mb-1.5">
                   Height
                 </label>
                 <select
                   value={height}
                   onChange={(e) => setHeight(e.target.value)}
-                  className="w-full px-4 py-3 rounded-2xl bg-white border border-[#DDD7E5] text-xs sm:text-sm text-[#1C1924] focus:outline-none focus:border-[#6555b8]"
+                  className="w-full px-4 py-3 rounded-2xl bg-white border border-[#D5C6EC] text-xs sm:text-sm text-[#51376D] focus:outline-none focus:border-[#72519A]"
                 >
                   <option value="">Select height</option>
                   {HEIGHT_OPTIONS.map((h) => (
@@ -863,28 +863,28 @@ export default function OnboardingPage() {
 
             <div>
               <div className="flex items-center justify-between mb-1">
-                <label className="text-xs font-semibold text-[#1C1924]">About Me (Bio)</label>
-                <span className={"text-[11px] " + (bio.trim().length < 20 ? "text-rose-600 font-semibold" : "text-[#8C849B]")}>{bio.trim().length}/500</span>
+                <label className="text-xs font-semibold text-[#51376D]">About Me (Bio)</label>
+                <span className={"text-[11px] " + (bio.trim().length < 20 ? "text-[#72519A] font-semibold" : "text-[#51376D]/55")}>{bio.trim().length}/500</span>
               </div>
               <textarea
                 rows={3}
                 value={bio}
                 onChange={(e) => setBio(e.target.value.slice(0, 500))}
                 placeholder="Share a bit about your personality, daily life, and values..."
-                className="w-full p-3.5 rounded-2xl bg-white border border-[#DDD7E5] text-xs sm:text-sm text-[#1C1924] placeholder-[#8C849B] focus:outline-none focus:border-[#6555b8] resize-none"
+                className="w-full p-3.5 rounded-2xl bg-white border border-[#D5C6EC] text-xs sm:text-sm text-[#51376D] placeholder-[#51376D]/55 focus:outline-none focus:border-[#72519A] resize-none"
               />
             </div>
 
-            <div className="p-3.5 rounded-2xl bg-[#F9F8FC] border border-[#ECE8F4] space-y-1">
-              <p className="text-[11px] text-[#6C637B]">Optional: shown as badges on your profile.</p>
+            <div className="p-3.5 rounded-2xl bg-white border border-[#D5C6EC] space-y-1">
+              <p className="text-[11px] text-[#51376D]/75">Optional: shown as badges on your profile.</p>
               <RhythmSelectors value={rhythm} onChange={setRhythm} />
             </div>
 
 
 
             <div>
-              <label className="text-xs font-semibold text-[#1C1924] block mb-2">
-                Interests & Hobbies <span className="text-[#6C637B] font-normal">(Select all that apply)</span>
+              <label className="text-xs font-semibold text-[#51376D] block mb-2">
+                Interests & Hobbies <span className="text-[#51376D]/75 font-normal">(Select all that apply)</span>
               </label>
               <div className="flex flex-wrap gap-1.5">
                 {HOBBY_TAGS.map((tag) => {
@@ -897,8 +897,8 @@ export default function OnboardingPage() {
                       className={
                         'px-3 py-1.5 rounded-xl text-xs font-medium border transition ' +
                         (selected
-                          ? 'bg-[#6555b8] border-[#6555b8] text-white shadow-2xs'
-                          : 'bg-white border-[#DDD7E5] text-[#524B5E] hover:bg-[#F3EFFC]')
+                          ? 'bg-[#72519A] border-[#72519A] text-white shadow-2xs'
+                          : 'bg-white border-[#D5C6EC] text-[#51376D]/85 hover:bg-[#E8DFF5]/70')
                       }
                     >
                       {tag}
@@ -909,7 +909,7 @@ export default function OnboardingPage() {
             </div>
 
             {errorMessage && (
-              <div className="bg-rose-50 border border-rose-200 text-rose-700 text-xs font-medium rounded-2xl px-4 py-3">
+              <div className="bg-[#E8DFF5]/50 border border-[#D5C6EC] text-[#51376D] text-xs font-medium rounded-2xl px-4 py-3">
                 {errorMessage}
               </div>
             )}
@@ -917,13 +917,13 @@ export default function OnboardingPage() {
               <button
                 type="button"
                 onClick={() => setStep(3)}
-                className="w-1/3 py-3 rounded-2xl bg-white border border-[#DDD7E5] text-xs font-semibold text-[#524B5E] hover:bg-[#F8F7FA] transition"
+                className="w-1/3 py-3 rounded-2xl bg-white border border-[#D5C6EC] text-xs font-semibold text-[#51376D]/85 hover:bg-[#E8DFF5]/40 transition"
               >
                 Back
               </button>
               <button
                 type="submit"
-                className="w-2/3 py-3 rounded-2xl bg-[#6555b8] hover:bg-[#52449e] text-white text-xs font-semibold shadow-md transition disabled:opacity-40"
+                className="w-2/3 py-3 rounded-2xl bg-[#72519A] hover:bg-[#51376D] text-white text-xs font-semibold shadow-md transition disabled:opacity-40"
                 disabled={!height || bio.trim().length < 20 || interests.length === 0}
               >
                 Continue to Photos
@@ -937,11 +937,11 @@ export default function OnboardingPage() {
           <div className="space-y-6">
             <div>
               <div className="flex items-center justify-between mb-2">
-                <label className="text-xs font-semibold text-[#1C1924] flex items-center gap-1.5">
-                  <Camera className="w-4 h-4 text-[#6555b8]" />
+                <label className="text-xs font-semibold text-[#51376D] flex items-center gap-1.5">
+                  <Camera className="w-4 h-4 text-[#72519A]" />
                   <span>Upload Your Photos ({photos.length}/6)</span>
                 </label>
-                <span className="text-[11px] text-[#6C637B]">Tap a photo to set as Primary</span>
+                <span className="text-[11px] text-[#51376D]/75">Tap a photo to set as Primary</span>
               </div>
 
               <div className="grid grid-cols-3 gap-2.5 sm:gap-3">
@@ -957,7 +957,7 @@ export default function OnboardingPage() {
                         onClick={() => setPrimaryIdx(idx)}
                         className={
                           'relative aspect-[3/4] rounded-2xl overflow-hidden border-2 cursor-pointer transition group ' +
-                          (isPrimary ? 'border-[#6555b8] ring-2 ring-[#6555b8]/25' : 'border-[#DDD7E5]')
+                          (isPrimary ? 'border-[#72519A] ring-2 ring-[#72519A]/25' : 'border-[#D5C6EC]')
                         }
                       >
                         <img src={photoUrl} alt={'Upload ' + (idx + 1)} className="w-full h-full object-cover" />
@@ -965,7 +965,7 @@ export default function OnboardingPage() {
                           <span
                             className={
                               'px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ' +
-                              (isPrimary ? 'bg-[#6555b8] text-white' : 'bg-white/80 text-[#1C1924]')
+                              (isPrimary ? 'bg-[#72519A] text-white' : 'bg-white/80 text-[#51376D]')
                             }
                           >
                             {isPrimary ? 'Primary' : 'Set Primary'}
@@ -977,7 +977,7 @@ export default function OnboardingPage() {
                             e.stopPropagation();
                             handleRemovePhoto(idx);
                           }}
-                          className="absolute top-1.5 right-1.5 p-1 rounded-full bg-black/60 text-white hover:bg-rose-600 transition"
+                          className="absolute top-1.5 right-1.5 p-1 rounded-full bg-black/60 text-white hover:bg-[#72519A] transition"
                           aria-label="Remove photo"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -989,7 +989,7 @@ export default function OnboardingPage() {
                   return (
                     <label
                       key={idx}
-                      className="relative aspect-[3/4] rounded-2xl border-2 border-dashed border-[#DDD7E5] hover:border-[#6555b8] bg-[#F8F7FA] hover:bg-[#F3EFFC]/40 flex flex-col items-center justify-center cursor-pointer transition p-2 text-center"
+                      className="relative aspect-[3/4] rounded-2xl border-2 border-dashed border-[#D5C6EC] hover:border-[#72519A] bg-white hover:bg-[#E8DFF5]/40 flex flex-col items-center justify-center cursor-pointer transition p-2 text-center"
                     >
                       <input
                         type="file"
@@ -1004,13 +1004,13 @@ export default function OnboardingPage() {
                         }}
                       />
                       {isUploading ? (
-                        <Loader2 className="w-5 h-5 text-[#6555b8] animate-spin" />
+                        <Loader2 className="w-5 h-5 text-[#72519A] animate-spin" />
                       ) : (
                         <>
-                          <div className="w-8 h-8 rounded-full bg-white border border-[#DDD7E5] flex items-center justify-center text-[#6555b8] mb-1.5 shadow-2xs">
+                          <div className="w-8 h-8 rounded-full bg-white border border-[#D5C6EC] flex items-center justify-center text-[#72519A] mb-1.5 shadow-2xs">
                             <Plus className="w-4 h-4" />
                           </div>
-                          <span className="text-[10px] font-semibold text-[#524B5E]">
+                          <span className="text-[10px] font-semibold text-[#51376D]/85">
                             {idx === 0 ? 'Main Photo' : 'Add Photo'}
                           </span>
                         </>
@@ -1021,24 +1021,24 @@ export default function OnboardingPage() {
               </div>
             </div>
 
-            <div className="p-4 rounded-2xl bg-[#F3EFFC]/70 border border-[#6555b8]/20 flex items-start gap-2.5">
-              <ShieldCheck className="w-4 h-4 text-[#6555b8] shrink-0 mt-0.5" />
-              <p className="text-xs text-[#524B5E] leading-relaxed">
+            <div className="p-4 rounded-2xl bg-[#E8DFF5]/50 border border-[#72519A]/20 flex items-start gap-2.5">
+              <ShieldCheck className="w-4 h-4 text-[#72519A] shrink-0 mt-0.5" />
+              <p className="text-xs text-[#51376D]/85 leading-relaxed">
                 Clear, front-facing photos help build high trust across the community. You can manage or add more photos anytime from your profile.
               </p>
             </div>
 
-            <p className="text-[11px] leading-relaxed text-[#8C849B] text-center">
+            <p className="text-[11px] leading-relaxed text-[#51376D]/55 text-center">
               By finishing you agree to our{' '}
-              <Link href="/terms" className="font-semibold text-[#6555b8] hover:underline">Terms</Link>,{' '}
-              <Link href="/privacy" className="font-semibold text-[#6555b8] hover:underline">Privacy Policy</Link> and{' '}
-              <Link href="/safety" className="font-semibold text-[#6555b8] hover:underline">Safety Guide</Link>.
+              <Link href="/terms" className="font-semibold text-[#72519A] hover:underline">Terms</Link>,{' '}
+              <Link href="/privacy" className="font-semibold text-[#72519A] hover:underline">Privacy Policy</Link> and{' '}
+              <Link href="/safety" className="font-semibold text-[#72519A] hover:underline">Safety Guide</Link>.
             </p>
             <div className="flex items-center gap-3 pt-2">
               <button
                 type="button"
                 onClick={() => setStep(4)}
-                className="w-1/3 py-3.5 rounded-2xl bg-white border border-[#DDD7E5] text-xs font-semibold text-[#524B5E] hover:bg-[#F8F7FA] transition"
+                className="w-1/3 py-3.5 rounded-2xl bg-white border border-[#D5C6EC] text-xs font-semibold text-[#51376D]/85 hover:bg-[#E8DFF5]/40 transition"
               >
                 Back
               </button>
@@ -1046,7 +1046,7 @@ export default function OnboardingPage() {
                 type="button"
                 onClick={handleCompleteOnboarding}
                 disabled={loading || uploadingSlot !== null || photos.length === 0}
-                className="w-2/3 py-3.5 rounded-2xl bg-[#6555b8] hover:bg-[#52449e] text-white text-xs font-semibold shadow-md transition disabled:opacity-40 inline-flex items-center justify-center gap-2"
+                className="w-2/3 py-3.5 rounded-2xl bg-[#72519A] hover:bg-[#51376D] text-white text-xs font-semibold shadow-md transition disabled:opacity-40 inline-flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <>

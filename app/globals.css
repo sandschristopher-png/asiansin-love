@@ -1,5 +1,17 @@
 @import "tailwindcss";
 
+/* Brand palette (Tailwind v4 reads tokens from @theme): bg-brand-500, text-brand-900, ...
+   Pure white canvas, soft monochromatic lavender / purple. */
+@theme {
+  --color-brand-canvas: #FFFFFF;
+  --color-brand-50: #E8DFF5;  /* ultra-light lavender: washes, selection tint */
+  --color-brand-100: #D5C6EC; /* soft lilac: hairline borders, subtle badges */
+  --color-brand-200: #B5A0DA; /* muted lavender: secondary icons, inactive states */
+  --color-brand-300: #9474C3; /* medium iris: accent hover, gradient transitions */
+  --color-brand-500: #72519A; /* refined deep purple: primary CTA, active pills, sparked heart */
+  --color-brand-900: #51376D; /* deep muted purple: typography and headers */
+}
+
 @keyframes ailHeadsUpIn {
   from { opacity: 0; transform: translateY(-120%); }
   to   { opacity: 1; transform: translateY(0); }
@@ -60,8 +72,8 @@ html, body {
 }
 
 body {
-  background-color: #F2EEF7 !important;
-  color: #1C1924;
+  background-color: #FFFFFF !important;
+  color: #51376D;
 }
 
 .smooth-scroll {
@@ -110,18 +122,18 @@ a:active,
   scrollbar-width: none;
 }
 
-/* Soft pink brand text selection, native control accents and hairline scrollbars.
+/* Lavender brand text selection, native control accents and hairline scrollbars.
    (.no-scrollbar above is more specific, so hidden scrollbars stay hidden.) */
 ::selection {
-  background-color: rgba(236, 72, 153, 0.15);
-  color: #2D264B;
+  background-color: rgba(213, 198, 236, 0.45);
+  color: #51376D;
 }
 ::-moz-selection {
-  background-color: rgba(236, 72, 153, 0.15);
-  color: #2D264B;
+  background-color: rgba(213, 198, 236, 0.45);
+  color: #51376D;
 }
 :root {
-  accent-color: #EC4899;
+  accent-color: #72519A;
 }
 ::-webkit-scrollbar {
   width: 6px;
@@ -131,11 +143,11 @@ a:active,
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #ECE8F4;
+  background: #D5C6EC;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #D8D2E7;
+  background: #B5A0DA;
 }
 
 
@@ -148,9 +160,9 @@ a:active,
   color-scheme: light;
 }
 
-/* Liquid amethyst-to-rose brand gradient (wordmark ".love") */
+/* Liquid purple brand gradient (wordmark "love") */
 .text-brand-gradient {
-  background-image: linear-gradient(90deg, #8C71F5 0%, #C084FC 50%, #EC4899 100%);
+  background-image: linear-gradient(90deg, #72519A 0%, #9474C3 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -206,7 +218,7 @@ nextjs-portal,
   100% { background-position: -200% 0; }
 }
 .ail-shimmer {
-  background-image: linear-gradient(90deg, #f1f5f9 0%, #e2e8f0 50%, #f1f5f9 100%);
+  background-image: linear-gradient(90deg, rgba(213, 198, 236, 0.18) 0%, rgba(213, 198, 236, 0.38) 50%, rgba(213, 198, 236, 0.18) 100%);
   background-size: 200% 100%;
   animation: ailShimmer 1.4s linear infinite;
 }

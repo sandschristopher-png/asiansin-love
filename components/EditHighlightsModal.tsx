@@ -91,34 +91,34 @@ export function EditHighlightsModal({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-lg rounded-t-3xl sm:rounded-3xl border border-[#DDD7E5] bg-[#F8F7FA] shadow-xl max-h-[90dvh] flex flex-col ail-sheet-up"
+        className="w-full max-w-lg rounded-t-3xl sm:rounded-3xl border border-[#D5C6EC] bg-white shadow-xl max-h-[90dvh] flex flex-col ail-sheet-up"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="pt-2.5 shrink-0 sm:hidden" aria-hidden>
-          <div className="w-10 h-1 rounded-full bg-slate-300 mx-auto mb-1" />
+          <div className="w-10 h-1 rounded-full bg-[#E8DFF5] mx-auto mb-1" />
         </div>
-        <div className="flex items-center justify-between px-5 pt-4 pb-3 border-b border-[#EEE9F3] shrink-0">
-          <h3 className="text-sm font-bold text-[#1C1924]">
+        <div className="flex items-center justify-between px-5 pt-4 pb-3 border-b border-[#D5C6EC] shrink-0">
+          <h3 className="text-sm font-bold text-[#51376D]">
             Curate Your Top 3 Highlights
           </h3>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full p-1.5 text-[#6C637B] hover:bg-[#F3EFFC] transition-colors"
+            className="rounded-full p-1.5 text-[#51376D]/75 hover:bg-[#E8DFF5]/70 transition-colors"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto no-scrollbar px-5 py-4 space-y-4">
-          <p className="text-xs text-[#6C637B] leading-relaxed">
+          <p className="text-xs text-[#51376D]/75 leading-relaxed">
             Pick up to 3 interests to spotlight on your profile and write a quick story or comment to give matches an easy conversation starter.
           </p>
 
           {error && (
             <div
               role="alert"
-              className="flex items-center gap-2 rounded-xl bg-rose-50 border border-rose-100 p-3 text-xs text-rose-600"
+              className="flex items-center gap-2 rounded-xl bg-[#E8DFF5]/50 border border-[#D5C6EC]/60 p-3 text-xs text-[#72519A]"
             >
               <AlertCircle className="h-4 w-4 shrink-0" />
               <span>{error}</span>
@@ -126,7 +126,7 @@ export function EditHighlightsModal({
           )}
 
           <div className="space-y-2">
-            <div className="flex justify-between items-center text-xs font-semibold text-[#524B5E]">
+            <div className="flex justify-between items-center text-xs font-semibold text-[#51376D]/85">
               <span>Select Interests ({selectedIds.length}/3)</span>
             </div>
             <div className="flex flex-wrap gap-2 max-h-36 overflow-y-auto p-1">
@@ -138,8 +138,8 @@ export function EditHighlightsModal({
                     type="button"
                     onClick={() => toggleHighlight(item.tag_id)}
                     className={'inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-colors ' + (isSelected
-                      ? 'bg-[#6555B8] text-white shadow-xs'
-                      : 'border border-[#DDD7E5] bg-white text-[#524B5E] hover:border-[#6555B8]/50')}
+                      ? 'bg-[#72519A] text-white shadow-xs'
+                      : 'border border-[#D5C6EC] bg-white text-[#51376D]/85 hover:border-[#72519A]/50')}
                   >
                     {isSelected && <Check className="h-3 w-3" />}
                     {item.label}
@@ -151,7 +151,7 @@ export function EditHighlightsModal({
 
           {selectedObjects.length > 0 && (
             <div className="space-y-3 pt-2">
-              <span className="text-xs font-semibold text-[#524B5E]">
+              <span className="text-xs font-semibold text-[#51376D]/85">
                 Mini-Stories &amp; Context
               </span>
               <div className="space-y-3">
@@ -160,13 +160,13 @@ export function EditHighlightsModal({
                   return (
                     <div
                       key={item.tag_id}
-                      className="rounded-xl border border-[#DDD7E5] bg-white p-3"
+                      className="rounded-xl border border-[#D5C6EC] bg-white p-3"
                     >
                       <div className="flex justify-between items-center mb-1.5">
-                        <span className="text-xs font-bold text-[#1C1924]">
+                        <span className="text-xs font-bold text-[#51376D]">
                           {item.label}
                         </span>
-                        <span className="text-[10px] text-[#6C637B]">
+                        <span className="text-[10px] text-[#51376D]/75">
                           {val.length}/120
                         </span>
                       </div>
@@ -176,7 +176,7 @@ export function EditHighlightsModal({
                         maxLength={120}
                         onChange={(e) => handleStoryChange(item.tag_id, e.target.value)}
                         placeholder={`Why do you love ${item.label}? (e.g., favorite spots, habits)`}
-                        className="w-full rounded-lg border border-[#DDD7E5] bg-[#F8F7FA] px-3 py-2 text-xs text-[#1C1924] outline-none focus:border-[#6555B8] transition-colors"
+                        className="w-full rounded-lg border border-[#D5C6EC] bg-white px-3 py-2 text-xs text-[#51376D] outline-none focus:border-[#72519A] transition-colors"
                       />
                     </div>
                   );
@@ -189,7 +189,7 @@ export function EditHighlightsModal({
             <button
               type="submit"
               disabled={isSaving}
-              className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-[#6555B8] py-2.5 text-xs font-semibold text-white shadow-xs transition hover:bg-[#5849a6] disabled:opacity-50"
+              className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-[#72519A] py-2.5 text-xs font-semibold text-white shadow-xs transition hover:bg-[#72519A] disabled:opacity-50"
             >
               {isSaving ? (
                 <>

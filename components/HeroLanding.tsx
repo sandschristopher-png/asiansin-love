@@ -8,7 +8,7 @@ import { AmbientAurora } from '@/components/ui/AmbientAurora';
 
 /** Signature gradient pill for the landing page's primary actions. */
 const CTA_PILL =
-  'inline-flex items-center justify-center bg-gradient-to-r from-[#8C71F5] via-[#B855F6] to-[#EC4899] text-white font-bold h-12 px-8 rounded-full shadow-[0_4px_16px_rgba(140,113,245,0.30)] hover:opacity-95 transition-all text-sm tracking-tight';
+  'inline-flex items-center justify-center bg-gradient-to-r from-[#72519A] via-[#9474C3] to-[#9474C3] text-white font-bold h-12 px-8 rounded-full shadow-[0_4px_16px_rgba(114,81,154,0.30)] hover:opacity-95 transition-all text-sm tracking-tight';
 
 /** Trust anchors under the hero CTA. */
 const TRUST_BADGES = [
@@ -22,7 +22,7 @@ const TRUST_BADGES = [
 const FEATURE_CARDS = [
   {
     pill: 'INTENTIONAL',
-    pillClass: 'bg-[#8C71F5]/10 text-[#8C71F5]',
+    pillClass: 'bg-[#72519A]/10 text-[#72519A]',
     title: 'Clear Relationship Intent',
     body: 'Connect with singles who share your life milestones and cross-border future. No endless casual guessing.',
     src: '/intention.png',
@@ -32,7 +32,7 @@ const FEATURE_CARDS = [
   },
   {
     pill: 'VERIFIED',
-    pillClass: 'bg-[#8C71F5]/10 text-[#8C71F5]',
+    pillClass: 'bg-[#72519A]/10 text-[#72519A]',
     title: 'Zero Bots. Real People.',
     body: 'Every profile undergoes photo and identity screening before receiving a verified badge. Conduct reputation guards keep conversations genuine.',
     src: '/secured.png',
@@ -42,7 +42,7 @@ const FEATURE_CARDS = [
   },
   {
     pill: 'PRESENCE',
-    pillClass: 'bg-[#EC4899]/10 text-[#EC4899]',
+    pillClass: 'bg-[#9474C3]/10 text-[#9474C3]',
     title: 'Natural Voice & Real Sparks',
     body: 'Hear a member’s real voice and cadence before you connect. Send thoughtful Sparks that lead to meaningful conversation.',
     src: '/Meeting.png',
@@ -72,14 +72,14 @@ const STEPS = [
 
 export function HeroLanding() {
   return (
-    <div className="w-full bg-gradient-to-b from-white via-[#FAF8FD] to-white min-h-screen overflow-x-hidden text-[#1C1924] selection:bg-[#6555B8]/15 selection:text-[#6555B8]">
+    <div className="w-full bg-gradient-to-b from-white via-[#FFFFFF] to-white min-h-screen overflow-x-hidden text-[#51376D] selection:bg-[#72519A]/15 selection:text-[#72519A]">
       {/* ===== Frosted header ===== */}
-      <header className="sticky top-0 z-40 w-full bg-white/80 backdrop-blur-md border-b border-[#ECE8F4]/80">
+      <header className="sticky top-0 z-40 w-full bg-white/80 backdrop-blur-md border-b border-[#D5C6EC]">
         <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 h-14 flex items-center justify-between">
           <BrandLogo href="/" size="header" />
           <Link
             href="/login"
-            className="px-4 py-1.5 rounded-full text-[#2D264B] text-sm font-semibold hover:bg-[#F3EFFC] active:scale-95 transition-colors"
+            className="px-4 py-1.5 rounded-full text-[#51376D] text-sm font-semibold hover:bg-[#E8DFF5]/70 active:scale-95 transition-colors"
           >
             Sign In
           </Link>
@@ -89,18 +89,18 @@ export function HeroLanding() {
       {/* ===== Hero fold =====
           Mobile: centered copy, /hero-woman.png grounded flush on the fold's bottom border.
           Desktop (md+): copy left, /hero-couple.png anchored flush bottom-right. */}
-      <section className="relative w-full overflow-hidden bg-[#FAF9FD] min-h-[92vh] flex flex-col justify-between border-b border-[#ECE8F4]">
+      <section className="relative w-full overflow-hidden bg-white min-h-[92vh] flex flex-col justify-between border-b border-[#D5C6EC]">
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
           <AmbientAurora />
         </div>
         <div className="relative z-10 max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 pt-8 sm:pt-14 pb-0 w-full flex-1 flex flex-col justify-between">
           <div className="flex-1 flex flex-col md:flex-row md:items-end md:gap-10">
             <div className="text-center md:text-left md:flex-1 md:self-center md:pb-14">
-              <p className="text-xs font-bold tracking-[0.18em] uppercase text-[#8C71F5] mb-3">Modern Matchmaking</p>
-              <h1 className="font-brand font-extrabold text-3xl sm:text-4xl md:text-5xl lg:text-[56px] text-[#2D264B] tracking-tight leading-[1.15] md:leading-[1.08]">
+              <p className="text-xs font-bold tracking-[0.18em] uppercase text-[#72519A] mb-3">Modern Matchmaking</p>
+              <h1 className="font-brand font-extrabold text-3xl sm:text-4xl md:text-5xl lg:text-[56px] text-[#51376D] tracking-tight leading-[1.15] md:leading-[1.08]">
                 Real connection, without the guesswork.
               </h1>
-              <p className="mt-3 md:mt-5 text-[14px] md:text-base text-[#6C637B] leading-relaxed max-w-[330px] md:max-w-[460px] mx-auto md:mx-0">
+              <p className="mt-3 md:mt-5 text-[14px] md:text-base text-[#51376D]/75 leading-relaxed max-w-[330px] md:max-w-[460px] mx-auto md:mx-0">
                 Photo-verified members, clear intentions up front, and an authentic community built for real relationships.
               </p>
 
@@ -109,7 +109,7 @@ export function HeroLanding() {
                   <span>Join for Free</span>
                   <ChevronRight className="ml-1 w-4 h-4" />
                 </Link>
-                <p className="mt-2.5 text-[11px] text-[#8C849B]">
+                <p className="mt-2.5 text-[11px] text-[#51376D]/55">
                   Free to join. By joining you agree to our Terms &amp; Privacy Policy.
                 </p>
               </div>
@@ -118,12 +118,12 @@ export function HeroLanding() {
                 {TRUST_BADGES.map(({ Icon, label }) => (
                   <li
                     key={label}
-                    className="flex items-center gap-2 rounded-2xl bg-white/90 backdrop-blur-sm border border-[#ECE8F4] shadow-[0_4px_14px_rgba(101,85,184,0.08)] px-3 py-2.5 text-left"
+                    className="flex items-center gap-2 rounded-2xl bg-white/90 backdrop-blur-sm border border-[#D5C6EC] shadow-[0_4px_14px_rgba(114,81,154,0.08)] px-3 py-2.5 text-left"
                   >
-                    <span className="w-7 h-7 shrink-0 rounded-lg bg-[#F3EFFC] text-[#6555B8] flex items-center justify-center">
+                    <span className="w-7 h-7 shrink-0 rounded-lg bg-[#E8DFF5]/60 text-[#72519A] flex items-center justify-center">
                       <Icon className="w-4 h-4" aria-hidden />
                     </span>
-                    <span className="text-[12px] font-semibold text-[#2D264B] leading-tight">{label}</span>
+                    <span className="text-[12px] font-semibold text-[#51376D] leading-tight">{label}</span>
                   </li>
                 ))}
               </ul>
@@ -154,24 +154,24 @@ export function HeroLanding() {
       </section>
 
       {/* ===== How connections happen ===== */}
-      <section className="py-12 sm:py-16 border-b border-[#EFEAF7] bg-[#FAF8FD]/60">
+      <section className="py-12 sm:py-16 border-b border-[#D5C6EC] bg-[#FFFFFF]/60">
         <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12">
           <div className="text-center">
-            <h2 className="font-brand text-xl font-extrabold tracking-tight text-[#2D264B]">How connections happen</h2>
-            <p className="mt-1.5 text-[13px] text-[#6C637B]">
+            <h2 className="font-brand text-xl font-extrabold tracking-tight text-[#51376D]">How connections happen</h2>
+            <p className="mt-1.5 text-[13px] text-[#51376D]/75">
               Match on intention, not luck. Three steps to meeting someone real.
             </p>
           </div>
 
           <div className="mt-6 sm:mt-8 grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-6">
             {STEPS.map(({ Icon, title, desc }) => (
-              <div key={title} className="bg-white rounded-2xl p-5 border border-[#ECE8F4] shadow-xs flex items-start gap-4">
-                <span className="w-10 h-10 shrink-0 rounded-xl bg-[#F3EFFC] text-[#6555B8] flex items-center justify-center">
+              <div key={title} className="bg-white rounded-2xl p-5 border border-[#D5C6EC] shadow-xs flex items-start gap-4">
+                <span className="w-10 h-10 shrink-0 rounded-xl bg-[#E8DFF5]/60 text-[#72519A] flex items-center justify-center">
                   <Icon className="w-5 h-5" aria-hidden />
                 </span>
                 <div className="min-w-0">
-                  <p className="text-[14px] font-bold text-[#2D264B] leading-snug">{title}</p>
-                  <p className="text-[12.5px] text-[#6C637B] leading-relaxed mt-1">{desc}</p>
+                  <p className="text-[14px] font-bold text-[#51376D] leading-snug">{title}</p>
+                  <p className="text-[12.5px] text-[#51376D]/75 leading-relaxed mt-1">{desc}</p>
                 </div>
               </div>
             ))}
@@ -185,12 +185,12 @@ export function HeroLanding() {
           {FEATURE_CARDS.map(({ pill, pillClass, title, body, src, width, height, alt }) => (
             <article
               key={pill}
-              className="relative flex flex-col justify-between overflow-hidden bg-white/90 backdrop-blur-md border border-[#ECE8F4] rounded-2xl shadow-[0_4px_20px_rgba(45,38,75,0.03)] hover:border-[#8C71F5]/30 transition-all pt-6 px-6 pb-0"
+              className="relative flex flex-col justify-between overflow-hidden bg-white/90 backdrop-blur-md border border-[#D5C6EC] rounded-2xl shadow-[0_4px_20px_rgba(81,55,109,0.03)] hover:border-[#72519A]/30 transition-all pt-6 px-6 pb-0"
             >
               <div className="flex flex-col gap-2 pb-4">
                 <span className={`self-start text-[11px] font-bold px-2.5 py-0.5 rounded-full ${pillClass}`}>{pill}</span>
-                <h2 className="font-brand text-lg font-extrabold tracking-tight text-[#2D264B]">{title}</h2>
-                <p className="text-[13px] text-[#6C637B] leading-relaxed">{body}</p>
+                <h2 className="font-brand text-lg font-extrabold tracking-tight text-[#51376D]">{title}</h2>
+                <p className="text-[13px] text-[#51376D]/75 leading-relaxed">{body}</p>
               </div>
               <div className="mt-auto w-full flex items-end justify-center overflow-hidden leading-none">
                 <Image
@@ -209,12 +209,12 @@ export function HeroLanding() {
 
       {/* ===== Closing CTA card ===== */}
       <section className="relative z-10 max-w-4xl mx-auto px-6 pb-20 w-full">
-        <div className="bg-white/95 backdrop-blur-md border border-[#ECE8F4] rounded-3xl p-8 sm:p-12 text-center shadow-[0_4px_24px_rgba(45,38,75,0.04)]">
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full border border-[#ECE8F4] text-[10px] font-bold tracking-[0.18em] text-[#2D264B]/60">
+        <div className="bg-white/95 backdrop-blur-md border border-[#D5C6EC] rounded-3xl p-8 sm:p-12 text-center shadow-[0_4px_24px_rgba(81,55,109,0.04)]">
+          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full border border-[#D5C6EC] text-[10px] font-bold tracking-[0.18em] text-[#51376D]/60">
             JOIN THE COMMUNITY
           </span>
-          <h2 className="mt-4 text-2xl sm:text-3xl font-black text-[#2D264B] tracking-tight">Be one of our first members.</h2>
-          <p className="text-sm text-[#2D264B]/70 max-w-md mx-auto mt-2 mb-6">
+          <h2 className="mt-4 text-2xl sm:text-3xl font-black text-[#51376D] tracking-tight">Be one of our first members.</h2>
+          <p className="text-sm text-[#51376D]/70 max-w-md mx-auto mt-2 mb-6">
             Join free and start meeting genuine singles across Southeast Asia today.
           </p>
           <Link href="/signup" className={CTA_PILL}>
@@ -225,10 +225,10 @@ export function HeroLanding() {
       </section>
 
       {/* ===== Footer ===== */}
-      <footer className="bg-white py-8 border-t border-[#F3EFFC]">
+      <footer className="bg-white py-8 border-t border-[#D5C6EC]/60">
         <div className="max-w-6xl mx-auto px-6 sm:px-8 lg:px-12 text-center space-y-2">
           <BrandLogo href="/" size="md" className="justify-center" />
-          <p className="text-xs text-[#8C849B]">
+          <p className="text-xs text-[#51376D]/55">
             Real connection for genuine singles across Southeast Asia.
           </p>
         </div>

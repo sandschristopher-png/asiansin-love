@@ -38,14 +38,14 @@ export function AdminHeader({ name }: { name: string }) {
 
   return (
     <div className="sticky top-0 z-30 w-full min-w-0">
-      <header className="h-14 bg-white/95 backdrop-blur-md border-b border-[#ECE8F4] px-4 flex items-center justify-between gap-2">
+      <header className="h-14 bg-white/95 backdrop-blur-md border-b border-[#D5C6EC] px-4 flex items-center justify-between gap-2">
         <div className="flex items-center gap-1.5 min-w-0">
           <BrandLogo size="header" href="/admin" />
-          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[#8C71F5]/10 text-[#8C71F5]">ADMIN</span>
+          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[#72519A]/10 text-[#72519A]">ADMIN</span>
         </div>
         <div className="flex items-center gap-3 min-w-0">
-          <span className="text-xs font-semibold text-[#2D264B] truncate max-w-[120px]">{name}</span>
-          <Link href="/discover" className="shrink-0 text-xs text-neutral-400 hover:text-neutral-700 transition-colors flex items-center gap-1">
+          <span className="text-xs font-semibold text-[#51376D] truncate max-w-[120px]">{name}</span>
+          <Link href="/discover" className="shrink-0 text-xs text-[#51376D]/55 hover:text-[#51376D]/85 transition-colors flex items-center gap-1">
             <LogOut className="w-3.5 h-3.5" aria-hidden />
             Exit
           </Link>
@@ -53,7 +53,7 @@ export function AdminHeader({ name }: { name: string }) {
       </header>
       <nav
         ref={navRef}
-        className="w-full min-w-0 flex items-center justify-between gap-1.5 overflow-x-auto whitespace-nowrap no-scrollbar scroll-smooth touch-pan-x overscroll-x-contain px-4 py-2 border-b border-[#ECE8F4] bg-[#FAF8FD] [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+        className="w-full min-w-0 flex items-center justify-between gap-1.5 overflow-x-auto whitespace-nowrap no-scrollbar scroll-smooth touch-pan-x overscroll-x-contain px-4 py-2 border-b border-[#D5C6EC] bg-white [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
         aria-label="Admin sections"
       >
         {TABS.map(({ href, label, match }) => {
@@ -64,7 +64,7 @@ export function AdminHeader({ name }: { name: string }) {
               href={href}
               aria-current={active ? 'page' : undefined}
               className={`shrink-0 whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-semibold border transition-colors ${
-                active ? 'bg-[#2D264B] text-white border-[#2D264B] shadow-2xs' : 'bg-white text-neutral-600 border-[#ECE8F4] hover:bg-neutral-50'
+                active ? 'bg-[#51376D] text-white border-[#51376D] shadow-2xs' : 'bg-white text-[#51376D]/80 border-[#D5C6EC] hover:bg-[#E8DFF5]/40'
               }`}
             >
               {label}

@@ -79,9 +79,9 @@ function SparkCardPhoto({ src, name, className }: { src: string; name: string; c
   const [failedSrc, setFailedSrc] = useState<string | null>(null);
   if (!src || failedSrc === src) {
     return (
-      <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-[#F6F5F9] to-[#EAE7F8] flex flex-col items-center justify-center text-[#6555B8]">
-        <User className="w-12 h-12 stroke-1 text-[#6555B8]/40" />
-        <span className="mt-1 text-lg font-bold text-[#6555B8]/70">{(name || '?').trim().charAt(0).toUpperCase()}</span>
+      <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-[#FFFFFF] to-[#E8DFF5]/60 flex flex-col items-center justify-center text-[#72519A]">
+        <User className="w-12 h-12 stroke-1 text-[#72519A]/40" />
+        <span className="mt-1 text-lg font-bold text-[#72519A]/70">{(name || '?').trim().charAt(0).toUpperCase()}</span>
       </div>
     );
   }
@@ -109,7 +109,7 @@ function visitedLabel(iso?: string | null): string {
  */
 function VisitorsList({ visitors, onOpen }: { visitors: ProfileCardData[]; onOpen: (p: ProfileCardData) => void }) {
   return (
-    <ul className="rounded-2xl border border-[#ECE8F4] bg-white divide-y divide-[#ECE8F4] overflow-hidden animate-fade-in-up">
+    <ul className="rounded-2xl border border-[#D5C6EC] bg-white divide-y divide-[#D5C6EC] overflow-hidden animate-fade-in-up">
       {visitors.map((v) => {
         const name = getPublicName(v);
         const photo = getPhoto(v);
@@ -118,11 +118,11 @@ function VisitorsList({ visitors, onOpen }: { visitors: ProfileCardData[]; onOpe
             <button
               type="button"
               onClick={() => onOpen(v)}
-              className="w-full flex items-center gap-3 px-3.5 py-3 text-left cursor-pointer hover:bg-[#F8F7FA] transition-colors"
+              className="w-full flex items-center gap-3 px-3.5 py-3 text-left cursor-pointer hover:bg-[#E8DFF5]/40 transition-colors"
             >
-              <span className="relative w-11 h-11 shrink-0 rounded-full overflow-hidden bg-[#F2EEF7] border border-[#ECE8F4]">
+              <span className="relative w-11 h-11 shrink-0 rounded-full overflow-hidden bg-white border border-[#D5C6EC]">
                 {v.locked ? (
-                  <span aria-hidden className="absolute inset-0 bg-gradient-to-br from-[#8C71F5]/25 to-[#EC4899]/20 blur-[6px] scale-110" />
+                  <span aria-hidden className="absolute inset-0 bg-gradient-to-br from-[#72519A]/25 to-[#9474C3]/20 blur-[6px] scale-110" />
                 ) : (
                   <SparkCardPhoto src={photo} name={name} className="object-cover" />
                 )}
@@ -130,18 +130,18 @@ function VisitorsList({ visitors, onOpen }: { visitors: ProfileCardData[]; onOpe
               <span className="min-w-0 flex-1">
                 {v.locked ? (
                   <>
-                    <span aria-hidden className="block h-3 w-24 rounded-full bg-[#2D264B]/10 blur-[3px]" />
-                    <span aria-hidden className="mt-1.5 block h-2.5 w-16 rounded-full bg-[#2D264B]/[0.07] blur-[3px]" />
+                    <span aria-hidden className="block h-3 w-24 rounded-full bg-[#51376D]/10 blur-[3px]" />
+                    <span aria-hidden className="mt-1.5 block h-2.5 w-16 rounded-full bg-[#51376D]/[0.07] blur-[3px]" />
                   </>
                 ) : (
                   <>
-                    <span className="block text-[13px] font-bold text-[#2D264B] truncate">@{name}</span>
-                    <span className="block text-[11px] text-[#2D264B]/55 truncate">{getLocationLabel(v)}</span>
+                    <span className="block text-[13px] font-bold text-[#51376D] truncate">@{name}</span>
+                    <span className="block text-[11px] text-[#51376D]/55 truncate">{getLocationLabel(v)}</span>
                   </>
                 )}
               </span>
               <span className="shrink-0 flex flex-col items-end gap-1">
-                <span className="text-[10.5px] font-medium text-[#2D264B]/50 whitespace-nowrap">{visitedLabel(v.visited_at)}</span>
+                <span className="text-[10.5px] font-medium text-[#51376D]/50 whitespace-nowrap">{visitedLabel(v.visited_at)}</span>
                 {v.locked && <PlusBadge />}
               </span>
             </button>
@@ -177,7 +177,7 @@ function getInitialSparksState(): any {
 }
 
 const STATE_CTA_CLASS =
-  'inline-flex items-center justify-center gap-2 rounded-full px-5 py-2 text-xs font-semibold text-white bg-[#6555B8] hover:bg-[#524496] active:scale-95 transition-all';
+  'inline-flex items-center justify-center gap-2 rounded-full px-5 py-2 text-xs font-semibold text-white bg-[#72519A] hover:bg-[#51376D] active:scale-95 transition-all';
 
 /** 1..99, then "99+"; nothing for zero. */
 const formatBadgeCount = (count: number) => {
@@ -202,11 +202,11 @@ function TabState({
 }) {
   return (
     <div className="animate-fade-in-up flex flex-col items-center text-center pt-10 pb-6 px-4">
-      <div className="w-14 h-14 rounded-2xl bg-[#6555B8]/10 flex items-center justify-center text-[#6555B8] mb-3 mx-auto">
+      <div className="w-14 h-14 rounded-2xl bg-[#72519A]/10 flex items-center justify-center text-[#72519A] mb-3 mx-auto">
         <Icon className="w-6 h-6" strokeWidth={1.75} />
       </div>
-      <h2 className="font-bold text-base text-[#2D264B] text-center">{title}</h2>
-      <p className="text-xs text-[#8A839E] text-center max-w-xs mt-1 mb-5 leading-relaxed">{subtitle}</p>
+      <h2 className="font-bold text-base text-[#51376D] text-center">{title}</h2>
+      <p className="text-xs text-[#51376D]/55 text-center max-w-xs mt-1 mb-5 leading-relaxed">{subtitle}</p>
       {cta}
     </div>
   );
@@ -441,14 +441,14 @@ export default function SparksPage() {
                   aria-selected={active}
                   onClick={() => setActiveTab(t.id)}
                   className={`inline-flex items-center gap-1 h-8 whitespace-nowrap shrink-0 transition-colors cursor-pointer text-sm ${
-                    active ? 'text-[#6555B8] font-bold' : 'text-black/40 font-medium'
+                    active ? 'text-[#72519A] font-bold' : 'text-black/40 font-medium'
                   }`}
                 >
                   <span>{t.label}</span>
                   {formatBadgeCount(t.count) && (
                     <span
                       className={`ml-1 text-[10px] font-bold leading-none tabular-nums px-1.5 py-0.5 rounded-full ${
-                        active ? 'bg-[#8C71F5]/10 text-[#8C71F5]' : 'bg-black/[0.04] text-black/40'
+                        active ? 'bg-[#72519A]/10 text-[#72519A]' : 'bg-black/[0.04] text-black/40'
                       }`}
                     >
                       {formatBadgeCount(t.count)}
@@ -498,17 +498,17 @@ export default function SparksPage() {
                 <div
                   key={person.id}
                   onClick={() => { if (shouldBlur) { router.push('/plus'); } else { router.push(`/profile/${person.id}`); } }}
-                  className="group relative isolate aspect-[3/4] rounded-2xl overflow-hidden bg-[#F2EEF7] border border-[#DDD7E5]/70 shadow-xs hover:shadow-md cursor-pointer active:scale-[0.98] transition-all duration-300"
+                  className="group relative isolate aspect-[3/4] rounded-2xl overflow-hidden bg-white border border-[#D5C6EC]/60 shadow-xs hover:shadow-md cursor-pointer active:scale-[0.98] transition-all duration-300"
                 >
                   <SparkCardPhoto src={photo} name={publicName} className={`object-cover transition-transform duration-300 group-hover:scale-105 ${shouldBlur ? 'blur-md scale-110' : ''}`} />
                   {/* Same overlay layout as Discover cards (top-left Reputation, top-right heart). */}
                   {!shouldBlur && <ReputationBadge score={rep} variant="frosted" size="xs" className="absolute top-2.5 left-2.5 z-20" />}
-                  <span aria-hidden className="absolute top-3 right-3 z-20 p-1 text-[#EC4899] drop-shadow-[0_2px_5px_rgba(0,0,0,0.45)]">
-                    <Heart className="w-7 h-7 stroke-[2.2] fill-[#EC4899] text-[#EC4899]" />
+                  <span aria-hidden className="absolute top-3 right-3 z-20 p-1 text-[#9474C3] drop-shadow-[0_2px_5px_rgba(0,0,0,0.45)]">
+                    <Heart className="w-6 h-6 fill-[#72519A] stroke-none drop-shadow-[0_1px_3px_rgba(0,0,0,0.3)]" />
                   </span>
                   {shouldBlur && (
                     <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/30 p-3 text-center">
-                      <div className="w-9 h-9 rounded-full bg-[#6555B8] text-white flex items-center justify-center mb-1.5 shadow-md"><Lock className="w-4 h-4" /></div>
+                      <div className="w-9 h-9 rounded-full bg-[#72519A] text-white flex items-center justify-center mb-1.5 shadow-md"><Lock className="w-4 h-4" /></div>
                       <span className="text-[11px] font-bold text-white drop-shadow">Tap to Unblur with Plus</span>
                     </div>
                   )}
@@ -521,9 +521,9 @@ export default function SparksPage() {
             })}
           </div>
           {activeTab === 'sparked_you' && recentInboundCount >= 15 && (
-            <div className="mt-3.5 mb-1 mx-auto max-w-md px-3.5 py-2.5 rounded-xl bg-[#F3EFFC] border border-[#6555B8]/20 text-center">
-              <p className="text-[12px] font-semibold text-[#6555B8]">You're getting a lot of attention - {recentInboundCount} sparks in the last 48 hours</p>
-              <p className="text-[11px] text-[#6C637B] mt-0.5">Best matches first - profiles with photos and verification rise to the top</p>
+            <div className="mt-3.5 mb-1 mx-auto max-w-md px-3.5 py-2.5 rounded-xl bg-[#E8DFF5]/60 border border-[#72519A]/20 text-center">
+              <p className="text-[12px] font-semibold text-[#72519A]">You're getting a lot of attention - {recentInboundCount} sparks in the last 48 hours</p>
+              <p className="text-[11px] text-[#51376D]/75 mt-0.5">Best matches first - profiles with photos and verification rise to the top</p>
             </div>
           )}
           {activeTab === 'sparked_you' && isPlus && lowSignalList.length > 0 && (
@@ -531,7 +531,7 @@ export default function SparksPage() {
               <button
                 type="button"
                 onClick={() => setShowLowSignal(!showLowSignal)}
-                className="w-full py-2.5 rounded-xl border border-[#E2DCEB] bg-white text-[12px] font-semibold text-[#8C849B] hover:bg-[#F8F7FA] transition-colors cursor-pointer"
+                className="w-full py-2.5 rounded-xl border border-[#D5C6EC] bg-white text-[12px] font-semibold text-[#51376D]/55 hover:bg-[#E8DFF5]/40 transition-colors cursor-pointer"
               >
                 {showLowSignal ? 'Hide' : 'Show'} {lowSignalList.length} more {lowSignalList.length === 1 ? 'request' : 'requests'}
               </button>
@@ -541,11 +541,11 @@ export default function SparksPage() {
                     <div
                       key={person.id}
                       onClick={() => router.push('/profile/' + person.id)}
-                      className="group relative aspect-[3/4] rounded-2xl overflow-hidden bg-gradient-to-br from-[#ECE7F6] to-[#DDD5EE] border border-[#ECE8F4] shadow-xs cursor-pointer active:scale-[0.98] transition-all duration-200 flex flex-col items-center justify-center p-3"
+                      className="group relative aspect-[3/4] rounded-2xl overflow-hidden bg-gradient-to-br from-[#E8DFF5] to-[#E8DFF5] border border-[#D5C6EC] shadow-xs cursor-pointer active:scale-[0.98] transition-all duration-200 flex flex-col items-center justify-center p-3"
                     >
-                      <div className="w-12 h-12 rounded-full bg-[#6555B8]/15 flex items-center justify-center text-xl font-bold text-[#6555B8]/60">{getPublicName(person)[0]}</div>
-                      <div className="text-[13px] font-bold text-[#1C1924] mt-2.5 truncate max-w-full">{getPublicName(person)}</div>
-                      <div className="text-[11px] text-[#6C637B] mt-0.5 truncate max-w-full">{getLocationLabel(person)}</div>
+                      <div className="w-12 h-12 rounded-full bg-[#72519A]/15 flex items-center justify-center text-xl font-bold text-[#72519A]/60">{getPublicName(person)[0]}</div>
+                      <div className="text-[13px] font-bold text-[#51376D] mt-2.5 truncate max-w-full">{getPublicName(person)}</div>
+                      <div className="text-[11px] text-[#51376D]/75 mt-0.5 truncate max-w-full">{getLocationLabel(person)}</div>
                     </div>
                   ))}
                 </div>

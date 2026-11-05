@@ -394,7 +394,7 @@ export default function MyProfilePage() {
   if (loading) {
     // Same shapes as the loaded page (4:5 photo, action bar, rep card, sections) so nothing jumps.
     return (
-      <div className="flex-1 w-full bg-[#F8F7FA] px-4 pt-4 space-y-5" aria-busy="true" aria-label="Loading profile">
+      <div className="flex-1 w-full bg-white px-4 pt-4 space-y-5" aria-busy="true" aria-label="Loading profile">
         <div className="h-14 rounded-3xl ail-shimmer" />
         <div className="aspect-[4/5] w-full rounded-3xl ail-shimmer" />
         <div className="h-11 rounded-2xl ail-shimmer" />
@@ -410,10 +410,10 @@ export default function MyProfilePage() {
   const hasMultiple = photoList.length > 1;
 
   return (
-    <div className="flex-1 flex flex-col w-full bg-[#F8F7FA] text-[#1C1924] font-sans">
+    <div className="flex-1 flex flex-col w-full bg-white text-[#51376D] font-sans">
       <main className="flex-1 w-full px-4 pt-4 pb-[calc(8rem+env(safe-area-inset-bottom,0px))] space-y-5">
         {saveError && (
-          <div className="p-3.5 rounded-2xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold flex items-start justify-between gap-3">
+          <div className="p-3.5 rounded-2xl bg-[#E8DFF5]/50 border border-[#D5C6EC] text-[#51376D] text-xs font-semibold flex items-start justify-between gap-3">
             <span>{saveError}</span>
             <button type="button" onClick={() => setSaveError(null)} className="underline shrink-0">
               Dismiss
@@ -428,7 +428,7 @@ export default function MyProfilePage() {
         )}
 
         {/* Framed 4:5 Portrait Card */}
-        <div className="relative aspect-[4/5] w-full rounded-3xl overflow-hidden bg-white border border-[#DDD7E5] flex items-center justify-center select-none shadow-xs">
+        <div className="relative aspect-[4/5] w-full rounded-3xl overflow-hidden bg-white border border-[#D5C6EC] flex items-center justify-center select-none shadow-xs">
           {currentImg ? (
             <div
               className="w-full h-full cursor-pointer"
@@ -462,12 +462,12 @@ export default function MyProfilePage() {
               <img src={currentImg} alt={username} className="w-full h-full object-cover pointer-events-none" draggable={false} />
             </div>
           ) : (
-            <Link href="/profile/edit" className="flex flex-col items-center justify-center text-[#6555B8] p-6 text-center">
-              <div className="w-14 h-14 rounded-2xl bg-[#F3EFFC] flex items-center justify-center mb-2">
+            <Link href="/profile/edit" className="flex flex-col items-center justify-center text-[#72519A] p-6 text-center">
+              <div className="w-14 h-14 rounded-2xl bg-[#E8DFF5]/60 flex items-center justify-center mb-2">
                 <Camera className="w-7 h-7" />
               </div>
-              <span className="text-sm font-semibold text-[#1C1924]">Add Your Profile Photos</span>
-              <span className="text-xs text-[#6C637B] mt-0.5">Upload up to 6 photos</span>
+              <span className="text-sm font-semibold text-[#51376D]">Add Your Profile Photos</span>
+              <span className="text-xs text-[#51376D]/75 mt-0.5">Upload up to 6 photos</span>
             </Link>
           )}
 
@@ -506,10 +506,10 @@ export default function MyProfilePage() {
           <div className="space-y-1.5">
             <div className="flex gap-2 overflow-x-auto no-scrollbar [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pb-1">
               {photoList.map((url, idx) => (
-                <div key={url} className="relative w-20 aspect-[3/4] shrink-0 rounded-xl overflow-hidden bg-slate-100 border border-[#ECE8F4]">
+                <div key={url} className="relative w-20 aspect-[3/4] shrink-0 rounded-xl overflow-hidden bg-[#E8DFF5]/60 border border-[#D5C6EC]">
                   <img src={url} alt={idx === 0 ? 'Main photo' : `Photo ${idx + 1}`} className="w-full h-full object-cover" />
                   {idx === 0 && (
-                    <span className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded-full bg-[#6555B8]/90 text-white text-[9px] font-semibold">
+                    <span className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded-full bg-[#72519A]/90 text-white text-[9px] font-semibold">
                       Main
                     </span>
                   )}
@@ -528,36 +528,36 @@ export default function MyProfilePage() {
               ))}
             </div>
             {photoList.length <= 1 && (
-              <p className="text-[11px] text-[#8C849B]">Profiles require at least one photo. Add another to replace this one.</p>
+              <p className="text-[11px] text-[#51376D]/55">Profiles require at least one photo. Add another to replace this one.</p>
             )}
-            {photoNotice && <p role="alert" className="text-[11px] font-semibold text-rose-600">{photoNotice}</p>}
+            {photoNotice && <p role="alert" className="text-[11px] font-semibold text-[#72519A]">{photoNotice}</p>}
           </div>
         )}
 
         {/* Identity Bar */}
         {isEditing ? (
-          <div className="p-5 rounded-3xl bg-white border border-[#DDD7E5] space-y-3.5 shadow-xs">
+          <div className="p-5 rounded-3xl bg-white border border-[#D5C6EC] space-y-3.5 shadow-xs">
             <div>
-              <label className="text-xs font-semibold text-[#1C1924] block mb-1">Username</label>
+              <label className="text-xs font-semibold text-[#51376D] block mb-1">Username</label>
               <input
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-2xl bg-white border border-[#DDD7E5] text-sm font-medium text-[#1C1924] focus:outline-none focus:border-[#6555B8] focus:ring-2 focus:ring-[#6555B8]/15"
+                className="w-full px-4 py-2.5 rounded-2xl bg-white border border-[#D5C6EC] text-sm font-medium text-[#51376D] focus:outline-none focus:border-[#72519A] focus:ring-2 focus:ring-[#72519A]/15"
               />
             </div>
             <div className="grid grid-cols-[96px_1fr] gap-3">
               <div>
-                <label className="text-xs font-semibold text-[#1C1924] block mb-1">Age</label>
+                <label className="text-xs font-semibold text-[#51376D] block mb-1">Age</label>
                 <input
                   type="number"
                   value={age}
                   onChange={(e) => setAge(Number(e.target.value))}
-                  className="w-full px-4 py-2.5 rounded-2xl bg-white border border-[#DDD7E5] text-sm font-medium text-[#1C1924] focus:outline-none focus:border-[#6555B8] focus:ring-2 focus:ring-[#6555B8]/15"
+                  className="w-full px-4 py-2.5 rounded-2xl bg-white border border-[#D5C6EC] text-sm font-medium text-[#51376D] focus:outline-none focus:border-[#72519A] focus:ring-2 focus:ring-[#72519A]/15"
                 />
               </div>
               <div>
-                <label className="text-xs font-semibold text-[#1C1924] block mb-1">City &amp; Country</label>
+                <label className="text-xs font-semibold text-[#51376D] block mb-1">City &amp; Country</label>
                 <input
                   type="text"
                   title={location}
@@ -566,7 +566,7 @@ export default function MyProfilePage() {
                     setLocation(e.target.value);
                     setLocationSource('self_reported');
                   }}
-                  className="w-full min-w-0 text-ellipsis overflow-hidden px-3.5 py-2.5 rounded-2xl bg-white border border-[#DDD7E5] text-[13px] font-medium text-[#1C1924] focus:outline-none focus:border-[#6555B8] focus:ring-2 focus:ring-[#6555B8]/15"
+                  className="w-full min-w-0 text-ellipsis overflow-hidden px-3.5 py-2.5 rounded-2xl bg-white border border-[#D5C6EC] text-[13px] font-medium text-[#51376D] focus:outline-none focus:border-[#72519A] focus:ring-2 focus:ring-[#72519A]/15"
                 />
               </div>
             </div>
@@ -589,12 +589,12 @@ export default function MyProfilePage() {
                   setLocError(res.error);
                 }
               }}
-              className="w-full py-2.5 px-3 rounded-2xl bg-[#F3EFFC] border border-[#6555B8]/25 hover:bg-[#EAE4F7] text-xs font-semibold text-[#6555B8] flex items-center justify-center gap-1.5 transition"
+              className="w-full py-2.5 px-3 rounded-2xl bg-[#E8DFF5]/60 border border-[#72519A]/25 hover:bg-[#E8DFF5]/60 text-xs font-semibold text-[#72519A] flex items-center justify-center gap-1.5 transition"
             >
               {isLocating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Navigation className="w-3.5 h-3.5" />}
               <span>{isLocating ? 'Detecting GPS...' : 'Auto-Detect City with GPS'}</span>
             </button>
-            {locError && <p className="text-[11px] text-rose-600 text-center">{locError}</p>}
+            {locError && <p className="text-[11px] text-[#72519A] text-center">{locError}</p>}
           </div>
         ) : (
           <div className="space-y-2 px-1">
@@ -602,7 +602,7 @@ export default function MyProfilePage() {
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <h2
-                  className="text-2xl font-black text-[#2D264B] tracking-tight truncate"
+                  className="text-2xl font-black text-[#51376D] tracking-tight truncate"
                   style={{ fontFamily: 'var(--font-brand)' }}
                 >
                   {username.replace(/^@/, '')}{age ? ', ' + age : ''}
@@ -611,15 +611,15 @@ export default function MyProfilePage() {
                 {verificationStatus === 'verified' && <VerifiedBadge size="md" showText />}
               </div>
               <div className="flex items-center gap-1.5 mt-0.5">
-                <MapPin className="w-3.5 h-3.5 text-[#6555B8] shrink-0" />
-                <p className="text-xs font-medium text-[#6C637B] truncate">
+                <MapPin className="w-3.5 h-3.5 text-[#72519A] shrink-0" />
+                <p className="text-xs font-medium text-[#51376D]/75 truncate">
                   {location || 'Location not set'}
                 </p>
               </div>
             </div>
 
             {photoPending && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#FAF8FD] border border-[#ECE8F4] text-[10px] font-semibold text-neutral-500 shrink-0">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white border border-[#D5C6EC] text-[10px] font-semibold text-[#51376D]/55 shrink-0">
                 <Clock className="w-3 h-3" aria-hidden />
                 Photo Pending
               </span>
@@ -647,16 +647,16 @@ export default function MyProfilePage() {
         {verificationStatus !== 'verified' && verificationStatus !== 'pending' && (
           <Link
             href="/verify"
-            className="w-full p-3.5 rounded-2xl bg-[#F3EFFC]/70 border border-[#6555B8]/20 flex items-center justify-between hover:bg-[#F3EFFC] transition shadow-2xs"
+            className="w-full p-3.5 rounded-2xl bg-[#E8DFF5]/50 border border-[#72519A]/20 flex items-center justify-between hover:bg-[#E8DFF5]/70 transition shadow-2xs"
           >
             <div className="flex items-center gap-2.5">
-              <ShieldAlert className="w-4 h-4 text-[#6555B8] shrink-0" />
+              <ShieldAlert className="w-4 h-4 text-[#72519A] shrink-0" />
               <div>
-                <p className="text-xs font-semibold text-[#1C1924]">Verify your profile</p>
-                <p className="text-[11px] text-[#6C637B]">Free for every member. Verified profiles get more replies.</p>
+                <p className="text-xs font-semibold text-[#51376D]">Verify your profile</p>
+                <p className="text-[11px] text-[#51376D]/75">Free for every member. Verified profiles get more replies.</p>
               </div>
             </div>
-            <span className="text-xs font-semibold text-[#6555B8]">Verify &rarr;</span>
+            <span className="text-xs font-semibold text-[#72519A]">Verify &rarr;</span>
           </Link>
         )}
 
@@ -668,7 +668,7 @@ export default function MyProfilePage() {
                 type="button"
                 onClick={() => setVoiceModalOpen(true)}
                 aria-label="Re-record voice intro"
-                className="w-8 h-8 rounded-full text-neutral-400 hover:text-[#8C71F5] hover:bg-[#FAF8FD] flex items-center justify-center transition-colors"
+                className="w-8 h-8 rounded-full text-[#51376D]/55 hover:text-[#51376D] hover:bg-[#E8DFF5]/40 flex items-center justify-center transition-colors"
               >
                 <Mic className="w-3.5 h-3.5" />
               </button>
@@ -676,25 +676,25 @@ export default function MyProfilePage() {
                 type="button"
                 onClick={removeVoiceIntro}
                 aria-label="Remove voice intro"
-                className="w-8 h-8 rounded-full text-neutral-400 hover:text-rose-600 hover:bg-rose-50 flex items-center justify-center transition-colors"
+                className="w-8 h-8 rounded-full text-[#51376D]/55 hover:text-[#51376D] hover:bg-[#E8DFF5]/40 flex items-center justify-center transition-colors"
               >
                 <Trash2 className="w-3.5 h-3.5" />
               </button>
             </div>
           </VoicePlayer>
         ) : (
-          <div className="p-5 rounded-3xl border-2 border-dashed border-[#6555B8]/30 bg-[#F3EFFC]/50 text-center space-y-2">
-            <div className="w-11 h-11 mx-auto rounded-2xl bg-[#6555B8]/10 text-[#6555B8] flex items-center justify-center">
+          <div className="p-5 rounded-3xl border-2 border-dashed border-[#72519A]/30 bg-[#E8DFF5]/40 text-center space-y-2">
+            <div className="w-11 h-11 mx-auto rounded-2xl bg-[#72519A]/10 text-[#72519A] flex items-center justify-center">
               <Mic className="w-5 h-5" />
             </div>
-            <h3 className="text-sm font-bold text-[#2D264B]">Add a 20-Second Voice Intro</h3>
-            <p className="text-xs text-[#6C637B] leading-relaxed">
+            <h3 className="text-sm font-bold text-[#51376D]">Add a 20-Second Voice Intro</h3>
+            <p className="text-xs text-[#51376D]/75 leading-relaxed">
               Profiles with a voice intro receive 3x more sparks. Say hello and introduce yourself.
             </p>
             <button
               type="button"
               onClick={() => setVoiceModalOpen(true)}
-              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-[#6555B8] text-white text-xs font-semibold shadow-sm active:scale-95 transition"
+              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-[#72519A] text-white text-xs font-semibold shadow-sm active:scale-95 transition"
             >
               <Mic className="w-3.5 h-3.5" /> Record Voice Intro
             </button>
@@ -710,11 +710,11 @@ export default function MyProfilePage() {
             {isEditing ? (
               typeof document !== 'undefined' &&
               createPortal(
-              <div className="fixed bottom-0 left-1/2 -translate-x-1/2 z-50 w-full max-w-[430px] bg-white/95 backdrop-blur-md border-t border-[#ECE8F4] px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] flex items-stretch gap-2.5 h-[calc(4.5rem+env(safe-area-inset-bottom))]">
+              <div className="fixed bottom-0 left-1/2 -translate-x-1/2 z-50 w-full max-w-[430px] bg-white/95 backdrop-blur-md border-t border-[#D5C6EC] px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] flex items-stretch gap-2.5 h-[calc(4.5rem+env(safe-area-inset-bottom))]">
                 <button
                   type="button"
                   onClick={() => setIsEditing(false)}
-                  className="h-full flex-1 rounded-2xl bg-white border border-[#DDD7E5] text-xs font-semibold text-[#524B5E] hover:bg-[#F8F7FA] transition flex items-center justify-center shadow-xs cursor-pointer active:scale-[0.99]"
+                  className="h-full flex-1 rounded-2xl bg-white border border-[#D5C6EC] text-xs font-semibold text-[#51376D]/85 hover:bg-[#E8DFF5]/40 transition flex items-center justify-center shadow-xs cursor-pointer active:scale-[0.99]"
                 >
                   Cancel
                 </button>
@@ -722,7 +722,7 @@ export default function MyProfilePage() {
                   type="button"
                   onClick={handleSave}
                   disabled={saving}
-                  className="h-full flex-1 rounded-2xl bg-[#6555B8] border border-[#6555B8] text-white text-xs font-semibold hover:bg-[#52449e] transition flex items-center justify-center gap-1.5 shadow-xs disabled:opacity-50 cursor-pointer active:scale-[0.99]"
+                  className="h-full flex-1 rounded-2xl bg-gradient-to-r from-[#72519A] to-[#9474C3] text-white text-xs font-semibold shadow-sm hover:opacity-95 transition flex items-center justify-center gap-1.5 disabled:opacity-50 cursor-pointer active:scale-[0.99]"
                 >
                   {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
                   <span>{saving ? 'Saving...' : 'Save Profile'}</span>
@@ -734,9 +734,9 @@ export default function MyProfilePage() {
               <button
                 type="button"
                 onClick={() => setIsEditing(true)}
-                className="h-full w-full rounded-2xl bg-white border border-[#DDD7E5] text-xs font-semibold text-[#1C1924] hover:bg-[#F3EFFC] hover:border-[#6555B8]/40 transition flex items-center justify-center gap-2 shadow-xs cursor-pointer active:scale-[0.99]"
+                className="h-full w-full rounded-2xl bg-white border border-[#D5C6EC] text-xs font-semibold text-[#51376D] hover:bg-[#E8DFF5]/40 transition flex items-center justify-center gap-2 shadow-xs cursor-pointer active:scale-[0.99]"
               >
-                <Edit3 className="w-3.5 h-3.5 text-[#6555B8]" />
+                <Edit3 className="w-3.5 h-3.5 text-[#72519A]" />
                 <span>Edit Profile Details</span>
               </button>
             )}
@@ -744,16 +744,16 @@ export default function MyProfilePage() {
 
 
         {/* ABOUT ME */}
-        <div className="p-5 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-2.5">
+        <div className="p-5 rounded-3xl bg-white border border-[#D5C6EC] shadow-xs space-y-2.5">
           <div className="flex items-center justify-between">
             <span
-              className="text-xs font-bold text-[#6555B8] uppercase tracking-wider"
+              className="text-xs font-bold text-[#72519A] uppercase tracking-wider"
               style={{ fontFamily: 'var(--font-brand)' }}
             >
               About Me
             </span>
             {isEditing && (
-              <span className="text-[11px] font-medium text-[#8C849B]">{bio.length}/500</span>
+              <span className="text-[11px] font-medium text-[#51376D]/55">{bio.length}/500</span>
             )}
           </div>
           {isEditing ? (
@@ -767,8 +767,8 @@ export default function MyProfilePage() {
               rows={4}
               aria-invalid={bioRejected}
               placeholder="Share your passions, daily life, and what makes you smile..."
-              className={`w-full p-3.5 rounded-2xl bg-[#F8F7FA] border text-base sm:text-sm text-[#1C1924] leading-relaxed placeholder-[#8C849B] focus:outline-none focus:bg-white resize-none ${
-                bioRejected ? 'border-amber-500 ring-2 ring-amber-500/20' : 'border-[#DDD7E5] focus:border-[#6555B8]'
+              className={`w-full p-3.5 rounded-2xl bg-white border text-base sm:text-sm text-[#51376D] leading-relaxed placeholder-[#51376D]/55 focus:outline-none focus:bg-white resize-none ${
+                bioRejected ? 'border-amber-500 ring-2 ring-amber-500/20' : 'border-[#D5C6EC] focus:border-[#72519A]'
               }`}
             />
             {bioRejected && (
@@ -778,8 +778,8 @@ export default function MyProfilePage() {
             )}
             </>
           ) : (
-            <p className="text-xs sm:text-sm text-[#1C1924] leading-relaxed">
-              {bio || <span className="text-[#8C849B] italic">No bio written yet.</span>}
+            <p className="text-xs sm:text-sm text-[#51376D] leading-relaxed">
+              {bio || <span className="text-[#51376D]/55 italic">No bio written yet.</span>}
             </p>
           )}
         </div>
@@ -788,10 +788,10 @@ export default function MyProfilePage() {
         <ProfileHighlightsEditorRow />
 
         {/* INTERESTS & HOBBIES */}
-        <div className="p-5 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-3">
+        <div className="p-5 rounded-3xl bg-white border border-[#D5C6EC] shadow-xs space-y-3">
           <div className="flex items-center justify-between">
             <span
-              className="text-xs font-bold text-[#6555B8] uppercase tracking-wider"
+              className="text-xs font-bold text-[#72519A] uppercase tracking-wider"
               style={{ fontFamily: 'var(--font-brand)' }}
             >
               Interests &amp; Hobbies
@@ -810,8 +810,8 @@ export default function MyProfilePage() {
                     className={
                       'px-3 py-1.5 rounded-xl text-xs font-medium border transition ' +
                       (selected
-                        ? 'bg-[#6555B8] border-[#6555B8] text-white shadow-2xs'
-                        : 'bg-white border-[#DDD7E5] text-[#524B5E] hover:bg-[#F3EFFC]')
+                        ? 'bg-[#72519A] border-[#72519A] text-white shadow-2xs'
+                        : 'bg-white border-[#D5C6EC] text-[#51376D]/85 hover:bg-[#E8DFF5]/70')
                     }
                   >
                     {tag}
@@ -825,29 +825,29 @@ export default function MyProfilePage() {
                 interests.map((tag) => (
                   <span
                     key={tag}
-                    className="px-3 py-1 rounded-full bg-[#F3EFFC] border border-[#6555B8]/25 text-xs font-semibold text-[#6555B8]"
+                    className="px-3 py-1 rounded-full bg-[#E8DFF5]/60 border border-[#72519A]/25 text-xs font-semibold text-[#72519A]"
                   >
                     {tag}
                   </span>
                 ))
               ) : (
-                <span className="text-xs text-[#8C849B] italic">Tap Edit Profile Details to add your hobbies.</span>
+                <span className="text-xs text-[#51376D]/55 italic">Tap Edit Profile Details to add your hobbies.</span>
               )}
             </div>
           )}
         </div>
 
         {/* WHAT THEY'RE LOOKING FOR */}
-        <div className="p-5 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-2.5">
+        <div className="p-5 rounded-3xl bg-white border border-[#D5C6EC] shadow-xs space-y-2.5">
           <div className="flex items-center justify-between">
             <span
-              className="text-xs font-bold text-[#6555B8] uppercase tracking-wider"
+              className="text-xs font-bold text-[#72519A] uppercase tracking-wider"
               style={{ fontFamily: 'var(--font-brand)' }}
             >
               What They&apos;re Looking For
             </span>
             {!isEditing && (
-              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#F3EFFC] text-[#6555B8]">
+              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#E8DFF5]/60 text-[#72519A]">
                 Goals
               </span>
             )}
@@ -859,22 +859,22 @@ export default function MyProfilePage() {
                 onChange={(e) => setLookingFor(e.target.value.slice(0, 200))}
                 rows={3}
                 placeholder="Describe the partner and relationship you are looking for..."
-                className="w-full px-4 pt-3 pb-7 rounded-2xl bg-[#F8F7FA] border border-[#DDD7E5] text-xs sm:text-sm text-[#1C1924] leading-relaxed placeholder-[#8C849B] focus:outline-none focus:bg-white focus:border-[#6555B8] resize-none"
+                className="w-full px-4 pt-3 pb-7 rounded-2xl bg-white border border-[#D5C6EC] text-xs sm:text-sm text-[#51376D] leading-relaxed placeholder-[#51376D]/55 focus:outline-none focus:bg-white focus:border-[#72519A] resize-none"
               />
-              <span className="absolute right-3 bottom-2 text-xs text-[#8A839E] pointer-events-none">
+              <span className="absolute right-3 bottom-2 text-xs text-[#51376D]/55 pointer-events-none">
                 {lookingFor.length}/200
               </span>
             </div>
           ) : (
-            <p className="text-xs sm:text-sm text-[#1C1924] leading-relaxed">
-              {lookingFor ? toIntentLabel(lookingFor) : <span className="text-[#8C849B] italic">No preferences added yet.</span>}
+            <p className="text-xs sm:text-sm text-[#51376D] leading-relaxed">
+              {lookingFor ? toIntentLabel(lookingFor) : <span className="text-[#51376D]/55 italic">No preferences added yet.</span>}
             </p>
           )}
         </div>
 
         {/* MY RHYTHM (reply pace, relocation, timeline) */}
-        <div className="p-5 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-2.5">
-          <h3 className="block text-xs font-bold text-[#6555B8] uppercase tracking-wider leading-normal">
+        <div className="p-5 rounded-3xl bg-white border border-[#D5C6EC] shadow-xs space-y-2.5">
+          <h3 className="block text-xs font-bold text-[#72519A] uppercase tracking-wider leading-normal">
             My Rhythm
           </h3>
           {isEditing ? (
@@ -886,16 +886,16 @@ export default function MyProfilePage() {
               <RhythmPill field="timeline_intent" value={rhythm.timeline_intent} className="text-[11px] px-2.5 py-1" />
             </div>
           ) : (
-            <p className="text-xs text-[#8C849B] italic">
+            <p className="text-xs text-[#51376D]/55 italic">
               Tap Edit Profile Details to show how you message, relocation plans and your timeline.
             </p>
           )}
         </div>
 
         {/* VITALS & LIFESTYLE */}
-        <div className="p-5 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-4">
+        <div className="p-5 rounded-3xl bg-white border border-[#D5C6EC] shadow-xs space-y-4">
           <h3
-            className="text-xs font-bold text-[#6555B8] uppercase tracking-wider"
+            className="text-xs font-bold text-[#72519A] uppercase tracking-wider"
             style={{ fontFamily: 'var(--font-brand)' }}
           >
             Vitals &amp; Lifestyle
@@ -903,8 +903,8 @@ export default function MyProfilePage() {
 
           <div className="space-y-3.5 pt-1 text-xs">
             {/* Future Plans (3-Chip Picker in Edit Mode) */}
-            <div className="flex items-center justify-between gap-2 pb-3 border-b border-[#F0EDF5]">
-              <span className="font-semibold text-[#6C637B]">Future Plans</span>
+            <div className="flex items-center justify-between gap-2 pb-3 border-b border-[#D5C6EC]">
+              <span className="font-semibold text-[#51376D]/75">Future Plans</span>
               {isEditing ? (
                 <div className="flex flex-wrap items-center gap-1.5">
                   {INTENT_CHIP_OPTIONS.map((chip) => {
@@ -917,8 +917,8 @@ export default function MyProfilePage() {
                         className={
                           'px-3 py-1.5 rounded-xl border text-xs font-semibold transition cursor-pointer ' +
                           (selected
-                            ? 'bg-[#6555B8] text-white border-[#6555B8]'
-                            : 'bg-white text-[#524B5E] border-[#DDD7E5]')
+                            ? 'bg-[#72519A] text-white border-[#72519A]'
+                            : 'bg-white text-[#51376D]/85 border-[#D5C6EC]')
                         }
                       >
                         {chip.label}
@@ -927,39 +927,39 @@ export default function MyProfilePage() {
                   })}
                 </div>
               ) : (
-                <span className="font-semibold text-[#1C1924]">{toIntentLabel(intent) || 'Not specified'}</span>
+                <span className="font-semibold text-[#51376D]">{toIntentLabel(intent) || 'Not specified'}</span>
               )}
             </div>
 
             {/* Height */}
-            <div className="flex items-center justify-between gap-2 pb-3 border-b border-[#F0EDF5]">
-              <span className="font-semibold text-[#6C637B]">Height</span>
+            <div className="flex items-center justify-between gap-2 pb-3 border-b border-[#D5C6EC]">
+              <span className="font-semibold text-[#51376D]/75">Height</span>
               {isEditing ? (
                 <HeightInput valueCm={heightCm} onChange={setHeightCm} />
               ) : (
-                <span className="font-semibold text-[#1C1924]">{formatHeight(heightCm) || 'Not specified'}</span>
+                <span className="font-semibold text-[#51376D]">{formatHeight(heightCm) || 'Not specified'}</span>
               )}
             </div>
 
             {/* Occupation */}
-            <div className="flex items-center justify-between gap-2 pb-3 border-b border-[#F0EDF5]">
-              <span className="font-semibold text-[#6C637B]">Occupation</span>
+            <div className="flex items-center justify-between gap-2 pb-3 border-b border-[#D5C6EC]">
+              <span className="font-semibold text-[#51376D]/75">Occupation</span>
               {isEditing ? (
                 <input
                   type="text"
                   value={profession}
                   onChange={(e) => setProfession(e.target.value)}
                   placeholder="e.g. Nurse, Engineer"
-                  className="px-3 py-1.5 rounded-xl bg-[#F8F7FA] border border-[#DDD7E5] text-xs font-semibold text-[#1C1924] focus:outline-none focus:border-[#6555B8]"
+                  className="px-3 py-1.5 rounded-xl bg-white border border-[#D5C6EC] text-xs font-semibold text-[#51376D] focus:outline-none focus:border-[#72519A]"
                 />
               ) : (
-                <span className="font-semibold text-[#1C1924]">{profession || 'Not specified'}</span>
+                <span className="font-semibold text-[#51376D]">{profession || 'Not specified'}</span>
               )}
             </div>
 
             {/* Marital Status */}
-            <div className="flex items-center justify-between gap-2 pb-3 border-b border-[#F0EDF5]">
-              <span className="font-semibold text-[#6C637B]">Marital Status</span>
+            <div className="flex items-center justify-between gap-2 pb-3 border-b border-[#D5C6EC]">
+              <span className="font-semibold text-[#51376D]/75">Marital Status</span>
               {isEditing ? (
                 <SelectSheet
                   label="Marital Status"
@@ -968,13 +968,13 @@ export default function MyProfilePage() {
                   onChange={setMaritalStatus}
                 />
               ) : (
-                <span className="font-semibold text-[#1C1924]">{maritalStatus || 'Not specified'}</span>
+                <span className="font-semibold text-[#51376D]">{maritalStatus || 'Not specified'}</span>
               )}
             </div>
 
             {/* Religion */}
-            <div className="flex items-center justify-between gap-2 pb-3 border-b border-[#F0EDF5]">
-              <span className="font-semibold text-[#6C637B]">Beliefs</span>
+            <div className="flex items-center justify-between gap-2 pb-3 border-b border-[#D5C6EC]">
+              <span className="font-semibold text-[#51376D]/75">Beliefs</span>
               {isEditing ? (
                 <SelectSheet
                   label="Beliefs"
@@ -983,13 +983,13 @@ export default function MyProfilePage() {
                   onChange={setReligion}
                 />
               ) : (
-                <span className="font-semibold text-[#1C1924]">{religion || 'Not specified'}</span>
+                <span className="font-semibold text-[#51376D]">{religion || 'Not specified'}</span>
               )}
             </div>
 
             {/* Relocation */}
             <div className="flex items-center justify-between gap-2">
-              <span className="font-semibold text-[#6C637B]">Relocation</span>
+              <span className="font-semibold text-[#51376D]/75">Relocation</span>
               {isEditing ? (
                 <SelectSheet
                   label="Relocation"
@@ -998,19 +998,19 @@ export default function MyProfilePage() {
                   onChange={setRelocation}
                 />
               ) : (
-                <span className="font-semibold text-[#1C1924]">{relocation || 'Not specified'}</span>
+                <span className="font-semibold text-[#51376D]">{relocation || 'Not specified'}</span>
               )}
             </div>
           </div>
         </div>
 
         {/* LANGUAGES SPOKEN */}
-        <div className="p-5 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-3">
+        <div className="p-5 rounded-3xl bg-white border border-[#D5C6EC] shadow-xs space-y-3">
           <h3
-            className="text-xs font-bold text-[#6555B8] uppercase tracking-wider flex items-center gap-1.5"
+            className="text-xs font-bold text-[#72519A] uppercase tracking-wider flex items-center gap-1.5"
             style={{ fontFamily: 'var(--font-brand)' }}
           >
-            <Languages className="w-4 h-4 text-[#6555B8]" />
+            <Languages className="w-4 h-4 text-[#72519A]" />
             <span>Languages Spoken</span>
           </h3>
 
@@ -1025,21 +1025,21 @@ export default function MyProfilePage() {
                 currentLanguages.map((lang) => (
                   <span
                     key={lang}
-                    className="px-3 py-1 rounded-full bg-[#F8F7FA] border border-[#DDD7E5] text-xs font-semibold text-[#1C1924]"
+                    className="px-3 py-1 rounded-full bg-white border border-[#D5C6EC] text-xs font-semibold text-[#51376D]"
                   >
                     {languageLabel(lang)}
                   </span>
                 ))
               ) : (
-                <span className="text-xs text-[#8C849B]">English</span>
+                <span className="text-xs text-[#51376D]/55">English</span>
               )}
             </div>
           )}
         </div>
 
         {/* LIFESTYLE */}
-        <div className="p-5 rounded-3xl bg-white border border-[#DDD7E5] shadow-xs space-y-3">
-          <h3 className="text-xs font-bold text-[#6555B8] uppercase tracking-wider" style={{ fontFamily: 'var(--font-brand)' }}>
+        <div className="p-5 rounded-3xl bg-white border border-[#D5C6EC] shadow-xs space-y-3">
+          <h3 className="text-xs font-bold text-[#72519A] uppercase tracking-wider" style={{ fontFamily: 'var(--font-brand)' }}>
             Lifestyle
           </h3>
           {isEditing ? (
@@ -1048,7 +1048,7 @@ export default function MyProfilePage() {
             <LifestyleBadges values={lifestyle} />
           )}
           {!isEditing && !LIFESTYLE_KEYS.some((k) => lifestyle[k]) && (
-            <p className="text-xs text-[#8C849B]">Add your lifestyle in Edit to help matches get to know you.</p>
+            <p className="text-xs text-[#51376D]/55">Add your lifestyle in Edit to help matches get to know you.</p>
           )}
         </div>
 
