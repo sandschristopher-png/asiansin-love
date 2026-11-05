@@ -1,17 +1,13 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { createClient as createSessionClient } from '@/lib/supabase/server';
 import Stripe from 'stripe';
-import { createServerClient } from '@supabase/ssr';
-import { cookies } from 'next/headers';
 
 export const runtime = 'nodejs';
 
 export async function POST(req: NextRequest) {
-  const cookieStore = await cookies();
-  const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
-    { cookies: { getAll: () => cookieStore.getAll(), setAll: () => {} } }
-  );
+  // Shared server client: writes refreshed auth cookies back (a no-op setAll would consume the
+  // rotating refresh token without saving its replacement and sign the member out).
+  const supabase = await createSessionClient();
 
   const {
     data: { user },

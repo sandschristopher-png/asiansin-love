@@ -4,6 +4,9 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { Ban, CheckCircle2, ChevronDown, ChevronUp, Flag, MessageCircle, MinusCircle, RefreshCw, UserRound } from 'lucide-react';
 import { ReputationBadge } from '@/components/ReputationBadge';
 import { AdminAvatar, AdminButton, BottomSheet, EmptyState, Loading, Notice, PageTitle, adminFetch, timeAgo } from '@/components/admin/ui';
+import { useActionToast } from '@/components/ActionToast';
+
+type ReportAction = 'dismiss' | 'penalize' | 'ban';
 
 type Person = { id: string; name: string; avatarUrl: string | null; reputation: number; isBanned: boolean } | null;
 type Report = {
@@ -77,28 +80,23 @@ function ContextSheet({ report, onClose }: { report: Report; onClose: () => void
   );
 }
 
-function ReportCard({ report, onResolved }: { report: Report; onResolved: (id: string, message: string) => void }) {
+function ReportCard({
+  report,
+  onAction,
+}: {
+  report: Report;
+  /** Resolves the report; the page removes the card right away and restores it if the server refuses. */
+  onAction: (report: Report, action: ReportAction, points: number | undefined, note: string) => void;
+}) {
   const [busy, setBusy] = useState<string | null>(null);
-  const [error, setError] = useState('');
   const [note, setNote] = useState('');
   const [showPenalty, setShowPenalty] = useState(false);
   const [confirmBan, setConfirmBan] = useState(false);
   const [inspect, setInspect] = useState(false);
 
-  const act = async (action: 'dismiss' | 'penalize' | 'ban', points?: number) => {
+  const act = (action: ReportAction, points?: number) => {
     setBusy(action + (points ?? ''));
-    setError('');
-    try {
-      await adminFetch('/api/admin/reports', { reportId: report.id, action, points, note: note || undefined });
-      const who = report.reported?.name || 'member';
-      onResolved(
-        report.id,
-        action === 'dismiss' ? 'Report dismissed.' : action === 'ban' ? `${who} was banned.` : `${who} lost ${points} reputation points.`
-      );
-    } catch (e: any) {
-      setError(e.message);
-      setBusy(null);
-    }
+    onAction(report, action, points, note.trim());
   };
 
   return (
@@ -125,12 +123,6 @@ function ReportCard({ report, onResolved }: { report: Report; onResolved: (id: s
 
       {report.details && (
         <p className="mt-3 rounded-xl bg-[#FAF8FD] px-3 py-2 text-sm text-[#3A3350] whitespace-pre-wrap break-words">{report.details}</p>
-      )}
-
-      {error && (
-        <div className="mt-3">
-          <Notice kind="error">{error}</Notice>
-        </div>
       )}
 
       <input
@@ -209,7 +201,26 @@ function ReportCard({ report, onResolved }: { report: Report; onResolved: (id: s
 export default function AdminReportsPage() {
   const [reports, setReports] = useState<Report[] | null>(null);
   const [error, setError] = useState('');
-  const [flash, setFlash] = useState('');
+  const showToast = useActionToast();
+
+  /** Optimistic: the card leaves the queue immediately; on failure it comes back with the error. */
+  const resolve = async (report: Report, action: ReportAction, points: number | undefined, note: string) => {
+    setError('');
+    setReports((list) => (list || []).filter((x) => x.id !== report.id));
+    try {
+      await adminFetch('/api/admin/reports', { reportId: report.id, action, points, note: note || undefined });
+      const who = report.reported?.name || 'Member';
+      showToast(
+        action === 'dismiss' ? 'Report dismissed' : action === 'ban' ? `${who} banned` : `${who} penalized (-${points}%)`,
+        action === 'dismiss' ? 'check' : 'shield'
+      );
+    } catch (e: unknown) {
+      setReports((list) =>
+        [...(list || []), report].sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+      );
+      setError(`Could not apply that action: ${e instanceof Error ? e.message : 'please try again.'}`);
+    }
+  };
 
   const load = useCallback(async () => {
     setError('');
@@ -238,7 +249,6 @@ export default function AdminReportsPage() {
           </AdminButton>
         }
       />
-      {flash && <Notice kind="success">{flash}</Notice>}
       {error && <Notice kind="error">{error}</Notice>}
       {!reports ? (
         <Loading />
@@ -246,14 +256,7 @@ export default function AdminReportsPage() {
         <EmptyState icon={CheckCircle2} title="Queue is clear" body="No reports are waiting for review." />
       ) : (
         reports.map((r) => (
-          <ReportCard
-            key={r.id}
-            report={r}
-            onResolved={(id, msg) => {
-              setReports((list) => (list || []).filter((x) => x.id !== id));
-              setFlash(msg);
-            }}
-          />
+          <ReportCard key={r.id} report={r} onAction={resolve} />
         ))
       )}
     </div>
