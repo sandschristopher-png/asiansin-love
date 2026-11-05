@@ -25,6 +25,7 @@ import { HapticsRow } from '@/components/HapticsRow';
 import { AlertPrefsRows } from '@/components/AlertPrefsRows';
 import { PlusBadge } from '@/components/ui/PlusBadge';
 import { isPlusProfile } from '@/lib/plus';
+import { getCachedSubscription, setCachedSubscription } from '@/lib/subscriptionStatus';
 
 /** Loaded on first open (keeps the Plus checkout sheet out of the settings bundle). */
 const AILPlusModal = dynamic(() => import('@/components/AILPlusModal').then((m) => m.AILPlusModal), { ssr: false });
@@ -50,9 +51,13 @@ export default function SettingsHubPage() {
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
   const [savingKey, setSavingKey] = useState<SettingsKey | null>(null);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [isPlus, setIsPlus] = useState(false);
+  // Plus status: null until known (cached from an earlier page in this tab when available), so
+  // Plus members never see a "Plus ·" upsell or a missing billing row while it loads.
+  const [isSubscribed, setIsSubscribed] = useState<boolean | null>(() => getCachedSubscription());
+  const isPlus = isSubscribed === true;
   // Stripe subscriber (the billing row); complimentary Plus has features but nothing to manage.
-  const [hasPlusBilling, setHasPlusBilling] = useState(false);
+  // A known free member has no subscription; otherwise unknown until the profile read.
+  const [hasPlusBilling, setHasPlusBilling] = useState<boolean | null>(() => (getCachedSubscription() === false ? false : null));
   const [gender, setGender] = useState<string | null>(null);
   const [plusModalOpen, setPlusModalOpen] = useState(false);
   const [plusModalTitle, setPlusModalTitle] = useState('Unlock Private Mode with Plus');
@@ -90,7 +95,9 @@ export default function SettingsHubPage() {
         .eq('id', user.id)
         .maybeSingle()
         .then(({ data: plus }) => {
-          setIsPlus(isPlusProfile(plus));
+          const hasPlus = isPlusProfile(plus);
+          setIsSubscribed(hasPlus);
+          setCachedSubscription(hasPlus);
           setHasPlusBilling(Boolean(plus?.is_plus));
           setGender(plus?.gender ?? null);
           setGhostMode(plus?.ghost_mode === true);
@@ -148,6 +155,7 @@ export default function SettingsHubPage() {
 
   /** Ghost Mode is Plus-only: free members get the upgrade sheet and the switch stays off. */
   const toggleGhostMode = async () => {
+    if (isSubscribed === null) return; // status still loading: no upsell to a Plus member
     if (!isPlus) {
       setPlusModalTitle('Unlock Ghost Mode with Plus');
       setPlusModalOpen(true);
@@ -365,7 +373,7 @@ export default function SettingsHubPage() {
             icon={<EyeOff className="w-4 h-4" />}
             title="Private Mode (Pause Profile)"
             subtitle={
-              gender === 'male' && !isPlus
+              gender === 'male' && isSubscribed === false
                 ? 'Plus · Hide from Discover while keeping your chats'
                 : 'Hide from Discover while keeping your chats'
             }
@@ -477,8 +485,13 @@ export default function SettingsHubPage() {
           ))}
         </div>
 
-        {/* Plus BILLING (subscribers only) */}
-        {hasPlusBilling && (
+        {/* Plus BILLING (subscribers only); neutral placeholder until the status is known */}
+        {hasPlusBilling === null && (
+          <div aria-hidden className="rounded-3xl bg-white border border-[#ECE8F4] p-2 shadow-2xs">
+            <div className="h-11 w-full rounded-full bg-[#ECE8F4]/50 animate-pulse" />
+          </div>
+        )}
+        {hasPlusBilling === true && (
           <div className="rounded-3xl bg-white border border-[#DDD7E5] p-2 shadow-2xs">
             <button
               type="button"

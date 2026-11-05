@@ -1,6 +1,7 @@
 'use client';
 import { BrandLogo } from '@/components/BrandLogo';
 import { isPlusProfile } from '@/lib/plus';
+import { setCachedSubscription } from '@/lib/subscriptionStatus';
 import { ANNOUNCEMENTS_READ_EVENT, NON_ANNOUNCEMENT_FILTER } from '@/lib/announcements';
 import { hasUnreadBroadcast } from '@/lib/broadcasts';
 import { notifyUser } from '@/components/InAppToast';
@@ -74,7 +75,10 @@ export function Navbar() {
           .select('*')
           .eq('id', user.id)
           .single();
-        if (data) setProfile(data);
+        if (data) {
+          setProfile(data);
+          setCachedSubscription(isPlusProfile(data));
+        }
       }
     }
     loadUser();
@@ -88,9 +92,13 @@ export function Navbar() {
           .select('*')
           .eq('id', currentUser.id)
           .single();
-        if (data) setProfile(data);
+        if (data) {
+          setProfile(data);
+          setCachedSubscription(isPlusProfile(data));
+        }
       } else {
         setProfile(null);
+        setCachedSubscription(null);
       }
     });
     return () => subscription.unsubscribe();
@@ -223,9 +231,12 @@ export function Navbar() {
                         {/* The header row above already shows the PLUS badge: this row says "Membership". */}
                         <span className="flex items-center gap-3">
                           <CreditCard className="w-4 h-4 text-neutral-500" aria-hidden />
-                          {isPlusProfile(profile) ? 'Membership' : 'Upgrade to Plus'}
+                          {/* Profile not loaded yet: neutral placeholder, never "Upgrade" to a Plus member. */}
+                          {!profile ? (
+                            <span aria-hidden className="h-3 w-24 rounded-full bg-[#ECE8F4]/50 animate-pulse" />
+                          ) : isPlusProfile(profile) ? 'Membership' : 'Upgrade to Plus'}
                         </span>
-                        {isPlusProfile(profile) ? (
+                        {!profile ? null : isPlusProfile(profile) ? (
                           <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-gradient-to-r from-[#8C71F5]/10 to-[#EC4899]/10 border border-[#8C71F5]/20 text-[#8C71F5]">Active</span>
                         ) : (
                           <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#FAF8FD] border border-[#ECE8F4] text-neutral-500">Upgrade</span>

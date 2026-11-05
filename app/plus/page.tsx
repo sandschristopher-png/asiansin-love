@@ -7,6 +7,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { ArrowLeft, Check, CheckCircle2, ChevronDown, Compass, Loader2, Lock, MessageSquare, Settings, X } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { isPlusProfile } from '@/lib/plus';
+import { getCachedSubscription, setCachedSubscription } from '@/lib/subscriptionStatus';
 import { DEFAULT_PLUS_PLAN, FREE_DAILY_SPARKS, PLUS_PLANS, plusPlan, type PlusPlanId } from '@/lib/plusPlans';
 
 type Cell = { text: string; included: boolean | null };
@@ -81,7 +82,12 @@ function PlusHubContent() {
   const [loading, setLoading] = useState(true);
   const [starting, setStarting] = useState(false);
   const [openingPortal, setOpeningPortal] = useState(false);
-  const [isPlus, setIsPlus] = useState(false);
+  // null until the profile read resolves (or the cached status from an earlier page in this tab):
+  // the checkout bar shows a skeleton, never "Keep Free" to a Plus member.
+  const [isSubscribed, setIsSubscribed] = useState<boolean | null>(() => getCachedSubscription());
+  const [isLoadingSubscription, setIsLoadingSubscription] = useState(() => isPostCheckoutSuccess || getCachedSubscription() === null);
+  const isPlus = isSubscribed === true;
+  const showFreeOffer = !isLoadingSubscription && isSubscribed === false;
   const [selectedPlan, setSelectedPlan] = useState<PlusPlanId>(DEFAULT_PLUS_PLAN);
   const [statusMsg, setStatusMsg] = useState<string | null>(null);
   const [isVerifyingPlus, setIsVerifyingPlus] = useState(isPostCheckoutSuccess);
@@ -97,28 +103,40 @@ function PlusHubContent() {
     const maxPolls = 5;
 
     async function checkProfile() {
+      // Waiting on Stripe's webhook after checkout: the bar stays a skeleton between polls.
+      let polling = false;
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
-          if (mounted) setLoading(false);
+          if (mounted) {
+            setIsSubscribed(false);
+            setIsLoadingSubscription(false);
+            setLoading(false);
+          }
           return;
         }
         const { data: prof } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle();
         if (mounted && prof) {
           const hasPlus = isPlusProfile(prof);
-          setIsPlus(hasPlus);
           // Stripe's webhook can land a moment after the redirect back here.
           if (isPostCheckoutSuccess && !hasPlus && pollCount < maxPolls) {
             pollCount++;
+            polling = true;
             setTimeout(checkProfile, 1500);
             return;
           }
+          setIsSubscribed(hasPlus);
+          setIsLoadingSubscription(false);
+          setCachedSubscription(hasPlus);
           if (hasPlus) setIsVerifyingPlus(false);
         }
       } catch (e) {
         console.error(e);
       } finally {
-        if (mounted) {
+        if (mounted && !polling) {
+          // A failed read falls back to the free offer rather than a skeleton forever.
+          setIsSubscribed((v) => v ?? false);
+          setIsLoadingSubscription(false);
           setLoading(false);
           if (pollCount >= maxPolls) setIsVerifyingPlus(false);
         }
@@ -233,7 +251,7 @@ function PlusHubContent() {
         )}
 
         {/* Plans */}
-        {!isPlus && (
+        {showFreeOffer && (
           <section aria-label="Choose a plan" className="grid grid-cols-3 gap-2" role="radiogroup">
             {PLUS_PLANS.map((p) => {
               const active = p.id === selectedPlan;
@@ -328,7 +346,9 @@ function PlusHubContent() {
       {/* Pinned checkout bar: portaled to <body> so the route transition's transform can't trap it */}
       {mounted && createPortal(
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] z-50 bg-[#161128]/95 border-t border-white/10 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
-        {isPlus ? (
+        {isLoadingSubscription ? (
+          <div aria-hidden className="h-12 w-full rounded-full bg-white/10 animate-pulse" />
+        ) : isPlus ? (
           <button
             type="button"
             disabled={openingPortal}
@@ -362,7 +382,7 @@ function PlusHubContent() {
             </button>
           </div>
         )}
-        {!isPlus && (
+        {showFreeOffer && (
           <button
             type="button"
             disabled={openingPortal}

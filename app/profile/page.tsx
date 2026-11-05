@@ -27,6 +27,7 @@ import { hardSignOut } from '@/lib/hardSignOut';
 import { INTENT_OPTIONS, normalizeIntent, intentLabel } from '@/lib/intents';
 import { PlusBadge } from '@/components/ui/PlusBadge';
 import { isPlusProfile } from '@/lib/plus';
+import { setCachedSubscription } from '@/lib/subscriptionStatus';
 import { createPortal } from 'react-dom';
 import { useHideBottomNav } from '@/lib/bottomNavStore';
 import { adminRoleOf } from '@/lib/adminRoles';
@@ -212,6 +213,7 @@ export default function MyProfilePage() {
         if (data.relocation) setRelocation(data.relocation);
         if (data.languages) setUserLanguages(readLanguages(data.languages).join(', '));
         setIsPlus(isPlusProfile(data));
+        setCachedSubscription(isPlusProfile(data));
         setPhotoPending(
           adminRoleOf(data) !== 'super_admin' &&
             data.photo_review_status !== 'approved' &&
