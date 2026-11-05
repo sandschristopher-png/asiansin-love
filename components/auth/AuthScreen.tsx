@@ -2,12 +2,13 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, Eye, EyeOff, Loader2, Mail, MailCheck } from 'lucide-react';
+import { AlertCircle, ArrowLeft, Eye, EyeOff, Loader2, Mail, MailCheck, X } from 'lucide-react';
 import { BrandLogo } from '@/components/BrandLogo';
 import { InAppToast } from '@/components/InAppToast';
 import { AmbientAurora } from '@/components/ui/AmbientAurora';
 import { CityRotator } from '@/components/auth/CityRotator';
 import { supabase } from '@/lib/supabase/client';
+import { authHref, describeAuthError, safeReturnTo } from '@/lib/authRedirect';
 
 const RESET_EXPIRED_MESSAGE = 'That password reset link has expired or was already used. Request a new one from Forgot password.';
 /** Google / LINE / Email: one shared pill so the three read as a single stack. */
@@ -38,14 +39,18 @@ const LineIcon = () => (
   </svg>
 );
 
-/** Sends the member on after an in-page sign-in (code or password); OAuth and magic links go through /auth/callback. */
-async function routeAfterSignIn(userId: string) {
+/**
+ * Sends the member on after an in-page sign-in (code or password): unfinished members to
+ * /onboarding, everyone else to the page they were heading to (returnTo) or /discover.
+ * OAuth and magic links go through /auth/callback, which applies the same rule.
+ */
+async function routeAfterSignIn(userId: string, returnTo: string | null) {
   const { data: profile } = await supabase.from('profiles').select('onboarding_completed').eq('id', userId).maybeSingle();
   try {
     localStorage.setItem('ail_returning', '1');
     if (!profile?.onboarding_completed) sessionStorage.setItem('ail_active_onboarding', '1');
   } catch {}
-  window.location.href = profile?.onboarding_completed ? '/discover' : '/onboarding';
+  window.location.href = profile?.onboarding_completed ? safeReturnTo(returnTo) || '/discover' : '/onboarding';
 }
 
 type EmailStep = 'closed' | 'email' | 'sent' | 'password';
@@ -65,21 +70,38 @@ export function AuthScreen({ mode, cities }: { mode: 'login' | 'signup'; cities?
   const [code, setCode] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
+  // Page the member was heading to before being sent here (?returnTo=, set by middleware).
+  const [returnTo, setReturnTo] = useState<string | null>(null);
+  /** /auth/callback URL that lands back on returnTo after OAuth or a magic link. */
+  const callbackUrl = () => `${window.location.origin}/auth/callback${returnTo ? `?next=${encodeURIComponent(returnTo)}` : ''}`;
 
   // /auth/callback sends members back with ?error= or ?notice=reset_expired.
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const notice = params.get('notice');
-    const err = params.get('error');
-    if (!notice && !err) return;
+    const err = describeAuthError(params.get('error'), params.get('error_description'));
     /* eslint-disable react-hooks/set-state-in-effect -- one-time read of the URL on mount */
+    setReturnTo(safeReturnTo(params.get('returnTo')));
+    if (!notice && !err) return;
     if (notice === 'reset_expired') setToast(RESET_EXPIRED_MESSAGE);
-    if (err) setError(err === 'no_code_provided' ? 'Sign-in was cancelled. Please try again.' : err.replace(/\+/g, ' '));
+    if (err) setError(err);
     /* eslint-enable react-hooks/set-state-in-effect */
     params.delete('notice');
     params.delete('error');
+    params.delete('error_description');
+    params.delete('error_code');
     const qs = params.toString();
     window.history.replaceState(null, '', window.location.pathname + (qs ? '?' + qs : ''));
+  }, []);
+
+  // Back from Google / LINE restores this page from the back-forward cache with the stack still
+  // disabled; re-enable it then.
+  useEffect(() => {
+    const onShow = (e: PageTransitionEvent) => {
+      if (e.persisted) setBusy(null);
+    };
+    window.addEventListener('pageshow', onShow);
+    return () => window.removeEventListener('pageshow', onShow);
   }, []);
 
   const oauth = async (provider: 'google' | 'line') => {
@@ -89,7 +111,7 @@ export function AuthScreen({ mode, cities }: { mode: 'login' | 'signup'; cities?
       // LINE is a custom OIDC provider in Supabase ("custom:line"); the SDK types list built-ins only.
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       provider: (provider === 'line' ? 'custom:line' : 'google') as any,
-      options: { redirectTo: `${window.location.origin}/auth/callback` },
+      options: { redirectTo: callbackUrl() },
     });
     if (error) {
       setError(
@@ -111,7 +133,7 @@ export function AuthScreen({ mode, cities }: { mode: 'login' | 'signup'; cities?
     setError(null);
     const { error } = await supabase.auth.signInWithOtp({
       email: cleanEmail,
-      options: { emailRedirectTo: `${window.location.origin}/auth/callback` },
+      options: { emailRedirectTo: callbackUrl() },
     });
     setBusy(null);
     if (error) {
@@ -133,7 +155,7 @@ export function AuthScreen({ mode, cities }: { mode: 'login' | 'signup'; cities?
       setBusy(null);
       return;
     }
-    await routeAfterSignIn(data.user.id);
+    await routeAfterSignIn(data.user.id, returnTo);
   };
 
   const passwordSignIn = async (e: React.FormEvent) => {
@@ -147,7 +169,7 @@ export function AuthScreen({ mode, cities }: { mode: 'login' | 'signup'; cities?
       setBusy(null);
       return;
     }
-    await routeAfterSignIn(data.user.id);
+    await routeAfterSignIn(data.user.id, returnTo);
   };
 
   const emailField = (
@@ -173,6 +195,21 @@ export function AuthScreen({ mode, cities }: { mode: 'login' | 'signup'; cities?
     <div className="relative isolate min-h-[100dvh] w-full flex flex-col bg-[#FAF8FD]/60 font-sans antialiased pb-[max(2.5rem,env(safe-area-inset-bottom))]">
       <AmbientAurora />
       <InAppToast message={toast} onClose={closeToast} durationMs={7000} />
+      {/* Sign-in errors float above the card (fixed), so they never push the buttons down. */}
+      {error && (
+        <div className="fixed top-4 inset-x-0 z-50 flex justify-center px-4 pointer-events-none">
+          <div
+            role="alert"
+            className="pointer-events-auto w-full max-w-[380px] flex items-start gap-2.5 rounded-2xl bg-white/95 border border-[#8C71F5]/50 px-3.5 py-3 text-xs font-medium text-[#2D264B] shadow-[0_8px_24px_rgba(45,38,75,0.10)]"
+          >
+            <AlertCircle className="w-4 h-4 shrink-0 text-[#8C71F5] mt-px" aria-hidden />
+            <span className="flex-1 leading-relaxed">{error}</span>
+            <button type="button" onClick={() => setError(null)} aria-label="Dismiss" className="shrink-0 -m-1 p-1 text-[#2D264B]/50 hover:text-[#2D264B]">
+              <X className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        </div>
+      )}
       <main className="relative z-10 flex-1 w-full flex flex-col px-6 pt-10">
         <div className="text-center">
           <span className="block text-[11px] font-semibold tracking-[0.25em] uppercase text-[#8C71F5] mb-2 text-center">
@@ -186,7 +223,7 @@ export function AuthScreen({ mode, cities }: { mode: 'login' | 'signup'; cities?
 
         <div className="w-full max-w-[340px] mx-auto space-y-3">
           {step === 'closed' ? (
-            <div className="flex flex-col gap-3 w-full max-w-[340px] mx-auto">
+            <div className="flex flex-col gap-3 w-full max-w-[340px] mx-auto" aria-busy={!!busy}>
               <button type="button" className={PILL} onClick={() => oauth('google')} disabled={!!busy}>
                 <span className={PILL_ICON}>
                   {busy === 'google' ? <Loader2 className="w-4 h-4 animate-spin text-[#8C71F5]" /> : <GoogleIcon />}
@@ -316,25 +353,20 @@ export function AuthScreen({ mode, cities }: { mode: 'login' | 'signup'; cities?
             </div>
           )}
 
-          {error && (
-            <p role="alert" className="text-xs font-semibold text-rose-600 bg-rose-50 border border-rose-200 rounded-2xl px-3.5 py-2.5">
-              {error}
-            </p>
-          )}
         </div>
 
         <p className="mt-6 text-center">
           {mode === 'login' ? (
             <>
               <span className="text-xs font-medium text-[#2D264B]/70">New to asiansin.love?</span>{' '}
-              <Link href="/signup" className="text-xs font-bold text-[#8C71F5] hover:text-[#EC4899] transition-colors">
+              <Link href={authHref('/signup', returnTo)} className="text-xs font-bold text-[#8C71F5] hover:text-[#EC4899] transition-colors">
                 Create an account
               </Link>
             </>
           ) : (
             <>
               <span className="text-xs font-medium text-[#2D264B]/70">Already a member?</span>{' '}
-              <Link href="/login" className="text-xs font-bold text-[#8C71F5] hover:text-[#EC4899] transition-colors">
+              <Link href={authHref('/login', returnTo)} className="text-xs font-bold text-[#8C71F5] hover:text-[#EC4899] transition-colors">
                 Sign in
               </Link>
             </>

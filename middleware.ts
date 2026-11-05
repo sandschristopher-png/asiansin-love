@@ -1,11 +1,21 @@
 import { createServerClient } from '@supabase/ssr';
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse, type NextRequest } from 'next/server';
+import { adminRoleOf, isStaff } from '@/lib/adminRoles';
+import { safeReturnTo } from '@/lib/authRedirect';
 
 const PROTECTED_PREFIXES = [
   '/discover', '/sparks', '/messages', '/profile', '/chat', '/settings',
-  '/favorites', '/notifications', '/announcements', '/verify',
+  '/favorites', '/notifications', '/announcements', '/verify', '/admin',
 ];
+
+/** Signed-out request for a protected page -> /login?returnTo=<that page>. */
+function loginRedirect(request: NextRequest) {
+  const url = new URL('/login', request.url);
+  const back = safeReturnTo(request.nextUrl.pathname + request.nextUrl.search);
+  if (back) url.searchParams.set('returnTo', back);
+  return NextResponse.redirect(url);
+}
 
 /** Value = the member's id once profiles.onboarding_completed is confirmed true. */
 const ONBOARDED_COOKIE = 'ail_onb';
@@ -48,10 +58,17 @@ export async function middleware(request: NextRequest) {
   const hasVisitedBefore = request.cookies.get('ail_returning')?.value === '1';
 
   // --- ADMIN ROUTES ---
-  // No redirect here (a redirect to /login or away would reveal that /admin exists).
-  // app/admin/layout.tsx checks the staff role server-side and renders a plain 404 otherwise;
-  // every /api/admin/* route re-checks with verifyAdminCaller().
-  if (pathname.startsWith('/admin')) {
+  // Signed out -> /login?returnTo=/admin; signed in without a staff role (or banned) -> /discover.
+  // app/admin/layout.tsx re-checks the role server-side and every /api/admin/* route re-checks
+  // with verifyAdminCaller(), so this is the first of three gates, not the only one.
+  if (pathname === '/admin' || pathname.startsWith('/admin/')) {
+    if (!user) return loginRedirect(request);
+    if (!supabaseServiceKey) return NextResponse.redirect(new URL('/discover', request.url));
+    const adminClient = createClient(supabaseUrl, supabaseServiceKey, { auth: { persistSession: false } });
+    const { data: me } = await adminClient.from('profiles').select('*').eq('id', user.id).maybeSingle();
+    if (!isStaff(adminRoleOf(me)) || me?.is_banned === true) {
+      return NextResponse.redirect(new URL('/discover', request.url));
+    }
     return response;
   }
 
@@ -64,27 +81,30 @@ export async function middleware(request: NextRequest) {
   // Signed-in members who haven't finished onboarding are kept on /onboarding; finished members
   // never see it again. onboarding_completed never flips back, so once confirmed it is cached in
   // a per-user cookie and the profile lookup is skipped on later requests.
-  if (user && (isProtectedRoute || isOnboarding)) {
-    let onboarded = request.cookies.get(ONBOARDED_COOKIE)?.value === user.id;
-    if (!onboarded && supabaseServiceKey) {
-      const adminClient = createClient(supabaseUrl, supabaseServiceKey, { auth: { persistSession: false } });
-      const { data: profile, error } = await adminClient
-        .from('profiles')
-        .select('onboarding_completed')
-        .eq('id', user.id)
-        .maybeSingle();
-      // A failed lookup must not trap anyone: treat as onboarded and check again next request.
-      onboarded = error ? true : Boolean(profile?.onboarding_completed);
-      if (!error && onboarded) {
-        response.cookies.set(ONBOARDED_COOKIE, user.id, {
-          path: '/',
-          httpOnly: true,
-          sameSite: 'lax',
-          secure: process.env.NODE_ENV === 'production',
-          maxAge: 60 * 60 * 24 * 30,
-        });
-      }
+  const isOnboarded = async (uid: string): Promise<boolean> => {
+    if (request.cookies.get(ONBOARDED_COOKIE)?.value === uid || !supabaseServiceKey) return true;
+    const adminClient = createClient(supabaseUrl, supabaseServiceKey, { auth: { persistSession: false } });
+    const { data: profile, error } = await adminClient
+      .from('profiles')
+      .select('onboarding_completed')
+      .eq('id', uid)
+      .maybeSingle();
+    // A failed lookup must not trap anyone: treat as onboarded and check again next request.
+    const done = error ? true : Boolean(profile?.onboarding_completed);
+    if (!error && done) {
+      response.cookies.set(ONBOARDED_COOKIE, uid, {
+        path: '/',
+        httpOnly: true,
+        sameSite: 'lax',
+        secure: process.env.NODE_ENV === 'production',
+        maxAge: 60 * 60 * 24 * 30,
+      });
     }
+    return done;
+  };
+
+  if (user && (isProtectedRoute || isOnboarding)) {
+    const onboarded = await isOnboarded(user.id);
 
     if (isOnboarding && onboarded) {
       const redirect = NextResponse.redirect(new URL('/discover', request.url));
@@ -103,10 +123,9 @@ export async function middleware(request: NextRequest) {
 
   // --- LOGGED-OUT VISITORS ---
   if (!user) {
-    // Protected route while signed out: returning visitors to login, first-timers to onboarding
+    // Protected route while signed out: sign in first, then come straight back.
     if (isProtectedRoute) {
-      const dest = hasVisitedBefore ? '/login' : '/onboarding';
-      return NextResponse.redirect(new URL(dest, request.url));
+      return loginRedirect(request);
     }
 
     // Root '/' while signed out
@@ -147,9 +166,15 @@ export async function middleware(request: NextRequest) {
     });
   }
 
-  // Signed in and hitting '/', '/login', or '/signup': send to /discover
+  // Signed in and hitting '/', '/login', or '/signup': unfinished members to /onboarding,
+  // everyone else to their returnTo page or /discover.
   if (pathname === '/' || pathname === '/login' || pathname === '/signup') {
-    return NextResponse.redirect(new URL('/discover', request.url));
+    const dest = (await isOnboarded(user.id))
+      ? safeReturnTo(request.nextUrl.searchParams.get('returnTo')) || '/discover'
+      : '/onboarding';
+    const redirect = NextResponse.redirect(new URL(dest, request.url));
+    response.cookies.getAll().forEach((c) => redirect.cookies.set(c));
+    return redirect;
   }
 
   return response;

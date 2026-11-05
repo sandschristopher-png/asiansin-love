@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server';
 import { createClient as createServiceClient } from '@supabase/supabase-js';
 import { NextResponse } from 'next/server';
+import { safeReturnTo } from '@/lib/authRedirect';
 
 export async function GET(request: Request) {
   const requestUrl = new URL(request.url);
@@ -8,8 +9,13 @@ export async function GET(request: Request) {
   const origin = requestUrl.origin;
   // Same-site paths only (blocks open redirects such as ?next=//evil.example).
   const rawNext = requestUrl.searchParams.get('next') || '';
-  const next = /^\/(?![/\\])/.test(rawNext) ? rawNext : '/discover';
-  const isRecovery = next === '/reset-password';
+  const isRecovery = rawNext === '/reset-password';
+  const next = isRecovery ? rawNext : safeReturnTo(rawNext) || '/discover';
+  // Failed sign-ins go back to /login with the page they were heading to still attached.
+  const loginError = (reason: string) => {
+    const back = isRecovery ? null : safeReturnTo(rawNext);
+    return `${origin}/login?error=${encodeURIComponent(reason)}${back ? `&returnTo=${encodeURIComponent(back)}` : ''}`;
+  };
   const oauthError = requestUrl.searchParams.get('error');
   const oauthErrorDesc = requestUrl.searchParams.get('error_description');
 
@@ -19,8 +25,7 @@ export async function GET(request: Request) {
     if (isRecovery) {
       return NextResponse.redirect(`${origin}/login?notice=reset_expired`);
     }
-    const reason = encodeURIComponent(oauthErrorDesc || oauthError || 'oauth_error');
-    return NextResponse.redirect(`${origin}/login?error=${reason}`);
+    return NextResponse.redirect(loginError(oauthErrorDesc || oauthError || 'oauth_error'));
   }
 
   if (code) {
@@ -80,12 +85,12 @@ export async function GET(request: Request) {
       if (isRecovery) {
         return NextResponse.redirect(`${origin}/login?notice=reset_expired`);
       }
-      return NextResponse.redirect(`${origin}/login?error=${encodeURIComponent(error.message)}`);
+      return NextResponse.redirect(loginError(error.message));
     }
   }
 
   if (isRecovery) {
     return NextResponse.redirect(`${origin}/login?notice=reset_expired`);
   }
-  return NextResponse.redirect(`${origin}/login?error=no_code_provided`);
+  return NextResponse.redirect(loginError('no_code_provided'));
 }
