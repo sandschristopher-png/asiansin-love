@@ -356,7 +356,7 @@ function DiscoverContent() {
   const [draftHabits, setDraftHabits] = useState<string[]>([]);
   const [draftVerifiedOnly, setDraftVerifiedOnly] = useState<boolean>(false);
   const [draftActiveNowOnly, setDraftActiveNowOnly] = useState<boolean>(false);
-  const [draftHideContacted, setDraftHideContacted] = useState<boolean>(true);
+  const [draftHideContacted, setDraftHideContacted] = useState<boolean>(false);
   const [draftSparkedMeOnly, setDraftSparkedMeOnly] = useState<boolean>(false);
   const [draftTimeline, setDraftTimeline] = useState<string[]>([]);
   const [draftChildren, setDraftChildren] = useState<string[]>([]);
@@ -370,7 +370,7 @@ function DiscoverContent() {
   const [verifiedOnly, setVerifiedOnly] = useState<boolean>(false);
   const [activeNowOnly, setActiveNowOnly] = useState<boolean>(false);
   // Server-side filters (lib/discoverFilters.ts): changing any of them re-queries /api/discover.
-  const [hideContacted, setHideContacted] = useState<boolean>(true);
+  const [hideContacted, setHideContacted] = useState<boolean>(false);
   const [sparkedMeOnly, setSparkedMeOnly] = useState<boolean>(false);
   const [selectedTimeline, setSelectedTimeline] = useState<string[]>([]);
   const [selectedChildren, setSelectedChildren] = useState<string[]>([]);
@@ -688,7 +688,7 @@ function DiscoverContent() {
     if (selectedHabits.length) count++;
     if (verifiedOnly) count++;
     if (activeNowOnly) count++;
-    if (!hideContacted) count++;
+    if (hideContacted) count++;
     if (sparkedMeOnly) count++;
     if (selectedTimeline.length) count++;
     if (selectedChildren.length) count++;
@@ -711,7 +711,7 @@ function DiscoverContent() {
     setMaxAge(DEFAULT_MAX_AGE);
     setVerifiedOnly(false);
     setActiveNowOnly(false);
-    setHideContacted(true);
+    setHideContacted(false);
     setSparkedMeOnly(false);
     setSelectedTimeline([]);
     setSelectedChildren([]);
@@ -780,7 +780,7 @@ function DiscoverContent() {
     setDraftMaxAge(DEFAULT_MAX_AGE);
     setDraftVerifiedOnly(false);
     setDraftActiveNowOnly(false);
-    setDraftHideContacted(true);
+    setDraftHideContacted(false);
     setDraftSparkedMeOnly(false);
     setDraftTimeline([]);
     setDraftChildren([]);
@@ -1118,6 +1118,15 @@ function DiscoverContent() {
             >
               View Your Sparks
             </Link>
+            <div>
+              <button
+                type="button"
+                onClick={() => setFiltersOpen(true)}
+                className="h-11 px-6 rounded-full border border-[#ECE8F4] bg-white text-sm font-semibold text-[#2D264B] hover:bg-[#FBFBFE] transition-colors cursor-pointer"
+              >
+                Adjust Filters
+              </button>
+            </div>
             {process.env.NODE_ENV === 'development' && (
               <div>
                 <button

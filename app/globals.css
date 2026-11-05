@@ -110,6 +110,34 @@ a:active,
   scrollbar-width: none;
 }
 
+/* Soft pink brand text selection, native control accents and hairline scrollbars.
+   (.no-scrollbar above is more specific, so hidden scrollbars stay hidden.) */
+::selection {
+  background-color: rgba(236, 72, 153, 0.15);
+  color: #2D264B;
+}
+::-moz-selection {
+  background-color: rgba(236, 72, 153, 0.15);
+  color: #2D264B;
+}
+:root {
+  accent-color: #EC4899;
+}
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #ECE8F4;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #D8D2E7;
+}
+
 
 /* Typography: the asiansinlove wordmark and headlines use font-brand (Plus Jakarta Sans 600-800).
    Every heading, label and body text uses Plus Jakarta Sans (--font-sans).

@@ -168,13 +168,14 @@ export async function GET(req: Request) {
     // Filter drawer parameters, all applied in the database so matches outside the 200 newest
     // rows still appear (lib/discoverFilters.ts builds the query string):
     //   verified=1        "Verified profiles only"
-    //   hide_contacted=0  show members already sparked or messaged (hidden by default)
+    //   hide_contacted=1  hide members already sparked or messaged (off by default: sparked
+    //                     members stay in the feed with a filled heart)
     //   sparked_me=1      only members who sparked the viewer (Plus, or women: same rule as the
     //                     Received tab in /api/sparks/gated)
     //   intent / children / english  comma lists of lifestyle filter values
     const params = new URL(req.url).searchParams;
     const verifiedOnly = params.get('verified') === '1';
-    const hideContacted = params.get('hide_contacted') !== '0';
+    const hideContacted = params.get('hide_contacted') === '1';
     const sparkedMeAccess = Boolean(viewerProfile?.is_plus) || viewerGender === 'female';
     const sparkedMeOnly = params.get('sparked_me') === '1' && sparkedMeAccess;
     const intentFilter = readFilterList(params.get('intent'), RELATIONSHIP_INTENT_FILTERS);

@@ -54,11 +54,11 @@ export interface DiscoverServerFilters {
   english: string[];
 }
 
-/** Query string for /api/discover (hide_contacted defaults on server-side, so only "off" is sent). */
+/** Query string for /api/discover (hide_contacted is off by default, so only "on" is sent). */
 export function discoverQuery(f: DiscoverServerFilters): string {
   const p = new URLSearchParams();
   if (f.verifiedOnly) p.set('verified', '1');
-  if (!f.hideContacted) p.set('hide_contacted', '0');
+  if (f.hideContacted) p.set('hide_contacted', '1');
   if (f.sparkedMeOnly) p.set('sparked_me', '1');
   if (f.intents.length) p.set('intent', f.intents.join(','));
   if (f.children.length) p.set('children', f.children.join(','));

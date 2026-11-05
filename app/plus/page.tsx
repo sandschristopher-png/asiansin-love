@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { ArrowLeft, Check, CheckCircle2, ChevronDown, Compass, Loader2, Lock, MessageSquare, Settings, X } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
+import { AmbientAurora } from '@/components/ui/AmbientAurora';
 import { isPlusProfile } from '@/lib/plus';
 import { getCachedSubscription, setCachedSubscription } from '@/lib/subscriptionStatus';
 import { DEFAULT_PLUS_PLAN, FREE_DAILY_SPARKS, PLUS_PLANS, plusPlan, type PlusPlanId } from '@/lib/plusPlans';
@@ -57,17 +58,17 @@ const BILLING_TERMS: string[] = [
 ];
 
 function Mark({ cell, plus }: { cell: Cell; plus: boolean }) {
-  if (cell.included === true) return <Check className="w-3.5 h-3.5 shrink-0 text-emerald-300" strokeWidth={3} aria-label="Included" />;
-  if (cell.included === false) return <X className="w-3.5 h-3.5 shrink-0 text-white/30" strokeWidth={3} aria-label="Not included" />;
-  return <Check className={`w-3.5 h-3.5 shrink-0 ${plus ? 'text-purple-200' : 'text-white/50'}`} strokeWidth={3} aria-hidden />;
+  if (cell.included === true) return <Check className="w-3.5 h-3.5 mt-px shrink-0 text-[#8C71F5]" strokeWidth={2.5} aria-label="Included" />;
+  if (cell.included === false) return <X className="w-3.5 h-3.5 mt-px shrink-0 text-[#2D264B]/25" strokeWidth={2.5} aria-label="Not included" />;
+  return <Check className={`w-3.5 h-3.5 mt-px shrink-0 ${plus ? 'text-[#8C71F5]' : 'text-[#2D264B]/50'}`} strokeWidth={2.5} aria-hidden />;
 }
 
 function Drawer({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <details className="group rounded-2xl bg-white/[0.04] border border-white/10 px-4 py-3">
-      <summary className="cursor-pointer list-none flex items-center justify-between gap-2 text-sm font-semibold text-white">
+    <details className="group rounded-2xl bg-white/80 backdrop-blur-md border border-[#ECE8F4] shadow-sm px-4 py-3">
+      <summary className="cursor-pointer list-none flex items-center justify-between gap-2 text-sm font-semibold text-[#2D264B]">
         {title}
-        <ChevronDown className="w-4 h-4 text-purple-200 transition-transform group-open:rotate-180" />
+        <ChevronDown className="w-4 h-4 text-[#2D264B]/40 transition-transform group-open:rotate-180" />
       </summary>
       <div className="mt-3 space-y-3">{children}</div>
     </details>
@@ -200,33 +201,39 @@ function PlusHubContent() {
   const plan = plusPlan(selectedPlan);
 
   return (
-    <div className="flex-1 w-full min-h-full bg-[#161128] text-white">
-      <div className="px-4 pt-3 pb-[calc(7.5rem+env(safe-area-inset-bottom))] space-y-6">
+    <div className="relative isolate flex-1 w-full min-h-screen bg-[#FAFAFD] text-[#2D264B] overflow-x-clip">
+      {/* Moving aura, same as the login screen: held in a viewport-tall sticky layer so it keeps
+          drifting behind the content while the page scrolls. */}
+      <div aria-hidden className="pointer-events-none sticky top-0 h-[100dvh] -mb-[100dvh] overflow-hidden">
+        <AmbientAurora />
+      </div>
+
+      <div className="relative z-10 px-4 pt-3 pb-[calc(8.5rem+env(safe-area-inset-bottom))] space-y-6">
         {/* Subpage header */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
           <button
             type="button"
             onClick={() => (window.history.length > 1 ? router.back() : router.push('/discover'))}
             aria-label="Back"
-            className="w-9 h-9 -ml-1 rounded-full flex items-center justify-center text-white/80 hover:bg-white/10 transition"
+            className="w-9 h-9 -ml-1 rounded-full flex items-center justify-center text-xs font-semibold tracking-wider text-[#2D264B]/60 hover:text-[#2D264B] transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <span className="text-xs font-semibold uppercase tracking-[0.2em] text-purple-200/80">Plus</span>
+          <span className="text-xs font-semibold tracking-wider text-[#2D264B]/60">PLUS</span>
         </div>
 
         {isPostCheckoutSuccess && (
-          <div className="p-4 rounded-3xl bg-white/[0.06] border border-emerald-300/30 flex flex-col items-center text-center">
-            <div className="w-10 h-10 rounded-full bg-emerald-400/15 text-emerald-300 flex items-center justify-center mb-2">
+          <div className="p-4 rounded-2xl bg-white/90 border border-[#ECE8F4] shadow-sm flex flex-col items-center text-center">
+            <div className="w-10 h-10 rounded-full bg-[#8C71F5]/10 text-[#8C71F5] flex items-center justify-center mb-2">
               {isVerifyingPlus && !isPlus ? <Loader2 className="w-5 h-5 animate-spin" /> : <CheckCircle2 className="w-6 h-6" />}
             </div>
-            <h2 className="text-base font-bold">{isPlus ? 'Welcome to Plus' : 'Confirming your membership...'}</h2>
-            <p className="text-xs text-white/60 mt-0.5 mb-3">{isPlus ? 'Everything below is now unlocked.' : 'Finishing up with Stripe.'}</p>
+            <h2 className="text-base font-bold text-[#2D264B]">{isPlus ? 'Welcome to Plus' : 'Confirming your membership...'}</h2>
+            <p className="text-xs text-[#2D264B]/60 mt-0.5 mb-3">{isPlus ? 'Everything below is now unlocked.' : 'Finishing up with Stripe.'}</p>
             <div className="flex items-center gap-2 w-full">
-              <Link href="/messages" className="flex-1 py-2 rounded-full bg-[#6555B8] text-white text-xs font-semibold flex items-center justify-center gap-1.5">
+              <Link href="/messages" className="flex-1 h-10 rounded-full bg-gradient-to-r from-[#8C71F5] to-[#EC4899] text-white text-xs font-semibold flex items-center justify-center gap-1.5">
                 <MessageSquare className="w-3.5 h-3.5" /> Messages
               </Link>
-              <Link href="/discover" className="flex-1 py-2 rounded-full border border-white/20 text-white text-xs font-semibold flex items-center justify-center gap-1.5">
+              <Link href="/discover" className="flex-1 h-10 rounded-full border border-[#ECE8F4] bg-white text-[#2D264B] text-xs font-semibold flex items-center justify-center gap-1.5 hover:bg-[#FBFBFE] transition-colors">
                 <Compass className="w-3.5 h-3.5" /> Discover
               </Link>
             </div>
@@ -235,24 +242,19 @@ function PlusHubContent() {
 
         {/* Hero */}
         <header className="text-center space-y-2.5 pt-2">
-          <h1
-            className="text-[34px] leading-[1.05] font-black tracking-tight text-transparent bg-clip-text bg-[linear-gradient(90deg,#f3e8ff_0%,#d8b4fe_30%,#fbcfe8_60%,#f3e8ff_100%)] animate-gradient-flow"
-            style={{ fontFamily: 'var(--font-brand)' }}
-          >
-            Date across borders.
-          </h1>
-          <p className="text-sm text-white/70 leading-relaxed max-w-[320px] mx-auto">
+          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#2D264B]">Date across borders.</h1>
+          <p className="text-sm leading-relaxed text-[#2D264B]/70 max-w-md mx-auto">
             Plan the trip, filter by country and see everyone who sparked you. Verification and matched messaging stay free for everyone.
           </p>
         </header>
 
         {statusMsg && (
-          <div className="p-3 rounded-2xl bg-white/[0.06] border border-white/15 text-xs font-medium text-purple-100 text-center">{statusMsg}</div>
+          <div className="p-3 rounded-2xl bg-white/90 border border-[#ECE8F4] text-xs font-medium text-[#2D264B] text-center">{statusMsg}</div>
         )}
 
         {/* Plans */}
         {showFreeOffer && (
-          <section aria-label="Choose a plan" className="grid grid-cols-3 gap-2" role="radiogroup">
+          <section aria-label="Choose a plan" className="grid grid-cols-3 gap-2 pt-1" role="radiogroup">
             {PLUS_PLANS.map((p) => {
               const active = p.id === selectedPlan;
               return (
@@ -262,28 +264,24 @@ function PlusHubContent() {
                   role="radio"
                   aria-checked={active}
                   onClick={() => setSelectedPlan(p.id)}
-                  className={`relative rounded-2xl px-2.5 pt-4 pb-3 text-left border transition flex flex-col gap-1 ${
-                    active ? 'border-purple-300 bg-white/[0.09] ring-1 ring-purple-300' : 'border-white/10 bg-white/[0.03] hover:border-white/25'
+                  className={`text-left flex flex-col gap-1 ${
+                    active
+                      ? 'bg-white border-2 border-[#8C71F5] rounded-2xl p-4 shadow-md relative'
+                      : 'relative bg-white/80 backdrop-blur-md border border-[#ECE8F4] rounded-2xl p-4 shadow-sm hover:border-[#8C71F5]/30 transition-all text-[#2D264B]'
                   }`}
                 >
                   {p.badge && (
-                    <span
-                      className={`absolute -top-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${
-                        p.badge === 'Most Popular' ? 'bg-purple-200 text-[#2D264B]' : 'bg-[#6555B8] text-white'
-                      }`}
-                    >
+                    <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-bold tracking-wider text-white bg-gradient-to-r from-[#8C71F5] to-[#EC4899] px-2.5 py-0.5 rounded-full shadow-sm uppercase">
                       {p.badge}
                     </span>
                   )}
-                  <span className="text-[11px] font-bold text-white/90">{p.label}</span>
-                  <span className="text-lg font-black leading-none">
+                  <span className="text-[11px] font-bold text-[#2D264B]/80">{p.label}</span>
+                  <span className="text-lg font-extrabold leading-none text-[#2D264B]">
                     {p.total}
-                    <span className="ml-1 text-[10px] font-medium text-white/50">{p.totalSuffix}</span>
+                    <span className="ml-1 text-[10px] font-medium text-[#2D264B]/50">{p.totalSuffix}</span>
                   </span>
-                  <span className="text-[10px] text-white/55">
-                    {p.months > 1 ? `${p.perMonth} / mo` : p.billingNote}
-                  </span>
-                  {p.savings && <span className="text-[10px] font-semibold text-emerald-300">{p.savings}</span>}
+                  <span className="text-[10px] text-[#2D264B]/55">{p.months > 1 ? `${p.perMonth} / mo` : p.billingNote}</span>
+                  {p.savings && <span className="text-[11px] font-semibold text-[#8C71F5]">{p.savings}</span>}
                 </button>
               );
             })}
@@ -291,20 +289,23 @@ function PlusHubContent() {
         )}
 
         {/* Free vs Plus */}
-        <section aria-label="Free and Plus compared" className="rounded-3xl border border-white/10 overflow-hidden">
-          <div className="grid grid-cols-[1.1fr_1fr_1fr] text-[10px] font-bold uppercase tracking-wider">
-            <span className="px-3 py-3 text-white/40">Feature</span>
-            <span className="px-2.5 py-3 text-center text-white/60 bg-white/[0.03]">Free</span>
-            <span className="px-2.5 py-3 text-center text-purple-100 bg-[#6555B8]/25">Plus</span>
+        <section aria-label="Free and Plus compared" className="rounded-2xl bg-white/80 backdrop-blur-md border border-[#ECE8F4] shadow-sm px-3.5 pt-3.5">
+          <div className="grid grid-cols-[1.1fr_1fr_1fr] gap-x-2 text-[11px] font-semibold tracking-wider text-[#2D264B]/50 uppercase border-b border-[#ECE8F4] pb-2">
+            <span>Feature</span>
+            <span>Free</span>
+            <span>Plus</span>
           </div>
-          {MATRIX.map((row) => (
-            <div key={row.feature} className="grid grid-cols-[1.1fr_1fr_1fr] border-t border-white/[0.07] text-[11px]">
-              <span className="px-3 py-3 font-semibold text-white/90 leading-snug">{row.feature}</span>
-              <span className="px-2.5 py-3 bg-white/[0.03] text-white/60 flex items-start gap-1.5 leading-snug">
+          {MATRIX.map((row, i) => (
+            <div
+              key={row.feature}
+              className={`grid grid-cols-[1.1fr_1fr_1fr] gap-x-2 py-3.5 text-sm text-[#2D264B] ${i < MATRIX.length - 1 ? 'border-b border-[#ECE8F4]/70' : ''}`}
+            >
+              <span className="text-[12px] font-semibold leading-snug">{row.feature}</span>
+              <span className="text-[11.5px] text-[#2D264B]/60 flex items-start gap-1.5 leading-snug">
                 <Mark cell={row.free} plus={false} />
                 <span>{row.free.text}</span>
               </span>
-              <span className="px-2.5 py-3 bg-[#6555B8]/15 text-white flex items-start gap-1.5 leading-snug font-medium">
+              <span className="text-[11.5px] font-medium flex items-start gap-1.5 leading-snug">
                 <Mark cell={row.plus} plus />
                 <span>{row.plus.text}</span>
               </span>
@@ -317,20 +318,20 @@ function PlusHubContent() {
           <Drawer title="Questions">
             {FAQ.map((f) => (
               <div key={f.q}>
-                <p className="text-xs font-semibold text-white">{f.q}</p>
-                <p className="mt-1 text-xs text-white/60 leading-relaxed">{f.a}</p>
+                <p className="text-xs font-semibold text-[#2D264B]">{f.q}</p>
+                <p className="mt-1 text-xs text-[#2D264B]/65 leading-relaxed">{f.a}</p>
               </div>
             ))}
           </Drawer>
           <Drawer title="Billing Terms">
-            <ul className="space-y-2 list-disc pl-4 text-xs text-white/60 leading-relaxed">
+            <ul className="space-y-2 list-disc pl-4 text-xs text-[#2D264B]/65 leading-relaxed">
               {BILLING_TERMS.map((t) => (
                 <li key={t}>{t}</li>
               ))}
             </ul>
-            <p className="text-xs text-white/60">
+            <p className="text-xs text-[#2D264B]/65">
               Full details in our{' '}
-              <Link href="/terms" className="font-semibold text-purple-200 underline">
+              <Link href="/terms" className="font-semibold text-[#8C71F5] underline underline-offset-4">
                 Terms of Service
               </Link>
               .
@@ -338,31 +339,31 @@ function PlusHubContent() {
           </Drawer>
         </section>
 
-        <p className="flex items-center justify-center gap-1 text-[10px] text-white/40">
+        <p className="flex items-center justify-center gap-1 text-[10px] text-[#2D264B]/45">
           <Lock className="w-3 h-3" /> Encrypted checkout by Stripe
         </p>
       </div>
 
       {/* Pinned checkout bar: portaled to <body> so the route transition's transform can't trap it */}
       {mounted && createPortal(
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] z-50 bg-[#161128]/95 border-t border-white/10 px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] z-50 bg-white/90 backdrop-blur-xl border-t border-[#ECE8F4] p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
         {isLoadingSubscription ? (
-          <div aria-hidden className="h-12 w-full rounded-full bg-white/10 animate-pulse" />
+          <div aria-hidden className="h-12 w-full rounded-full bg-[#ECE8F4]/60 animate-pulse" />
         ) : isPlus ? (
           <button
             type="button"
             disabled={openingPortal}
             onClick={handlePortal}
-            className="w-full h-12 rounded-full bg-white/10 border border-white/20 text-white text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-60"
+            className="w-full h-12 rounded-full border border-[#ECE8F4] bg-white text-sm font-semibold text-[#2D264B] hover:bg-[#FBFBFE] transition-colors flex items-center justify-center gap-2 disabled:opacity-60"
           >
-            {openingPortal ? <Loader2 className="w-4 h-4 animate-spin" /> : <Settings className="w-4 h-4" />}
+            {openingPortal ? <Loader2 className="w-4 h-4 animate-spin" /> : <Settings className="w-4 h-4 text-[#8C71F5]" />}
             Manage Subscription
           </button>
         ) : (
           <div className="flex items-center gap-2.5">
             <Link
               href="/discover"
-              className="h-12 px-5 rounded-full border border-white/20 text-white/80 text-sm font-semibold flex items-center justify-center hover:bg-white/5 transition"
+              className="h-12 px-6 rounded-full border border-[#ECE8F4] bg-white text-sm font-semibold text-[#2D264B] hover:bg-[#FBFBFE] transition-colors flex items-center justify-center shrink-0"
             >
               Keep Free
             </Link>
@@ -370,7 +371,7 @@ function PlusHubContent() {
               type="button"
               disabled={starting || loading}
               onClick={handleSubscribe}
-              className="flex-1 h-12 rounded-full bg-gradient-to-r from-[#7B6AD0] to-[#6555B8] text-white text-sm font-bold flex items-center justify-center gap-2 shadow-[0_8px_24px_rgba(101,85,184,0.45)] active:scale-[0.99] transition disabled:opacity-70"
+              className="flex-1 min-w-0 h-12 px-8 rounded-full bg-gradient-to-r from-[#8C71F5] to-[#EC4899] text-sm font-semibold text-white shadow-sm hover:opacity-95 transition-opacity flex items-center justify-center gap-2 whitespace-nowrap disabled:opacity-70"
             >
               {starting ? (
                 <>
@@ -387,7 +388,7 @@ function PlusHubContent() {
             type="button"
             disabled={openingPortal}
             onClick={handlePortal}
-            className="mt-2 w-full text-[11px] text-white/45 hover:text-white/70 disabled:opacity-50"
+            className="mt-2.5 w-full text-xs text-[#2D264B]/50 hover:text-[#2D264B] underline-offset-4 hover:underline disabled:opacity-50"
           >
             Already subscribed? Manage billing
           </button>
@@ -401,7 +402,7 @@ function PlusHubContent() {
 
 export default function PlusPage() {
   return (
-    <Suspense fallback={<div className="flex-1 w-full min-h-full bg-[#161128]" />}>
+    <Suspense fallback={<div className="flex-1 w-full min-h-screen bg-[#FAFAFD]" />}>
       <PlusHubContent />
     </Suspense>
   );

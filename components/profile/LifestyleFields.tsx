@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useMemo, useState } from 'react';
-import { Check, Ruler, Search, X } from 'lucide-react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { Check, ChevronDown, Ruler, Search, X } from 'lucide-react';
 import { LANGUAGES, MAX_PROFILE_LANGUAGES, languageLabel } from '@/lib/constants/languages';
 import {
   HEIGHT_MAX_CM,
@@ -92,57 +92,61 @@ export function LanguagePicker({
   );
 }
 
-/** Height in cm with a feet / inches or centimeters entry mode. */
+/**
+ * Height in cm, picked from a styled scrollable list (feet / inches or centimeters). Replaces the
+ * native <select> popups, whose OS listbox highlights in Windows blue.
+ */
 export function HeightInput({ valueCm, onChange }: { valueCm: number | null; onChange: (cm: number | null) => void }) {
   const [unit, setUnit] = useState<'ft' | 'cm'>('ft');
-  const fi = valueCm ? cmToFeetInches(valueCm) : null;
-  const select = 'px-2.5 py-1.5 rounded-xl bg-[#F8F7FA] border border-[#DDD7E5] text-base sm:text-xs font-semibold text-[#1C1924] focus:outline-none focus:border-[#6555B8]';
-  const cmOptions = useMemo(() => Array.from({ length: HEIGHT_MAX_CM - HEIGHT_MIN_CM + 1 }, (_, i) => HEIGHT_MIN_CM + i), []);
+  const [open, setOpen] = useState(false);
+  const listRef = useRef<HTMLDivElement>(null);
+
+  const options = useMemo(() => {
+    if (unit === 'cm') {
+      return Array.from({ length: HEIGHT_MAX_CM - HEIGHT_MIN_CM + 1 }, (_, i) => {
+        const cm = HEIGHT_MIN_CM + i;
+        return { cm, label: `${cm} cm` };
+      });
+    }
+    // One row per inch in range: 4'7" ... 7'2"
+    const first = Math.ceil(HEIGHT_MIN_CM / 2.54);
+    const last = Math.floor(HEIGHT_MAX_CM / 2.54);
+    return Array.from({ length: last - first + 1 }, (_, i) => {
+      const total = first + i;
+      const feet = Math.floor(total / 12);
+      const inches = total % 12;
+      return { cm: clampCm(feetInchesToCm(feet, inches)), label: `${feet}' ${inches}"` };
+    });
+  }, [unit]);
+
+  const isSelected = (cm: number) => {
+    if (!valueCm) return false;
+    if (unit === 'cm') return Math.round(valueCm) === cm;
+    const a = cmToFeetInches(valueCm);
+    const b = cmToFeetInches(cm);
+    return a.feet === b.feet && a.inches === b.inches;
+  };
+  const current = valueCm ? options.find((o) => isSelected(o.cm))?.label ?? formatHeight(valueCm) : null;
+
+  // Opening the list scrolls the current height into view.
+  useEffect(() => {
+    if (!open) return;
+    listRef.current?.querySelector('[aria-selected="true"]')?.scrollIntoView({ block: 'center' });
+  }, [open, unit]);
 
   return (
     <div className="flex items-center gap-1.5 flex-wrap justify-end">
-      {unit === 'ft' ? (
-        <>
-          <select
-            aria-label="Feet"
-            className={select}
-            value={fi?.feet ?? ''}
-            onChange={(e) => {
-              const feet = Number(e.target.value);
-              onChange(e.target.value ? clampCm(feetInchesToCm(feet, fi?.inches ?? 0)) : null);
-            }}
-          >
-            <option value="">ft</option>
-            {[4, 5, 6, 7].map((f) => (
-              <option key={f} value={f}>{f} ft</option>
-            ))}
-          </select>
-          <select
-            aria-label="Inches"
-            className={select}
-            value={fi ? fi.inches : ''}
-            disabled={!fi}
-            onChange={(e) => fi && onChange(clampCm(feetInchesToCm(fi.feet, Number(e.target.value))))}
-          >
-            <option value="">in</option>
-            {Array.from({ length: 12 }, (_, i) => (
-              <option key={i} value={i}>{i} in</option>
-            ))}
-          </select>
-        </>
-      ) : (
-        <select
-          aria-label="Centimeters"
-          className={select}
-          value={valueCm ?? ''}
-          onChange={(e) => onChange(e.target.value ? Number(e.target.value) : null)}
-        >
-          <option value="">cm</option>
-          {cmOptions.map((c) => (
-            <option key={c} value={c}>{c} cm</option>
-          ))}
-        </select>
-      )}
+      <button
+        type="button"
+        onClick={() => setOpen((v) => !v)}
+        aria-haspopup="listbox"
+        aria-expanded={open}
+        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-[#ECE8F4] text-base sm:text-xs font-semibold text-[#2D264B] hover:bg-[#FBFBFE] transition-colors cursor-pointer"
+      >
+        <Ruler className="w-3.5 h-3.5 text-[#2D264B]/40" aria-hidden />
+        {current ?? 'Select height'}
+        <ChevronDown className={`w-3.5 h-3.5 text-[#2D264B]/40 transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden />
+      </button>
       <button
         type="button"
         onClick={() => setUnit(unit === 'ft' ? 'cm' : 'ft')}
@@ -151,6 +155,48 @@ export function HeightInput({ valueCm, onChange }: { valueCm: number | null; onC
       >
         {unit === 'ft' ? 'cm' : 'ft/in'}
       </button>
+      {open && (
+        <div
+          ref={listRef}
+          role="listbox"
+          aria-label="Height"
+          className="w-full max-h-48 overflow-y-auto rounded-xl border border-[#ECE8F4] bg-white divide-y divide-[#ECE8F4]/50"
+        >
+          <div
+            role="option"
+            aria-selected={!valueCm}
+            onClick={() => {
+              onChange(null);
+              setOpen(false);
+            }}
+            className={`px-3.5 py-2 text-sm cursor-pointer transition-colors flex items-center justify-between hover:bg-[#FBFBFE] border-l-2 ${
+              !valueCm ? 'bg-pink-50/80 text-[#2D264B] font-semibold border-[#EC4899]' : 'text-[#2D264B]/50 border-transparent'
+            }`}
+          >
+            Prefer not to say
+          </div>
+          {options.map((o) => {
+            const selected = isSelected(o.cm);
+            return (
+              <div
+                key={o.label}
+                role="option"
+                aria-selected={selected}
+                onClick={() => {
+                  onChange(o.cm);
+                  setOpen(false);
+                }}
+                className={`px-3.5 py-2 text-sm text-[#2D264B] cursor-pointer transition-colors flex items-center justify-between hover:bg-[#FBFBFE] border-l-2 ${
+                  selected ? 'bg-pink-50/80 text-[#2D264B] font-semibold border-[#EC4899]' : 'border-transparent'
+                }`}
+              >
+                <span>{o.label}</span>
+                {unit === 'ft' && <span className="text-[11px] text-[#2D264B]/40">{o.cm} cm</span>}
+              </div>
+            );
+          })}
+        </div>
+      )}
       {valueCm && <span className="w-full text-right text-[11px] text-[#8C849B]">{formatHeight(valueCm)}</span>}
     </div>
   );

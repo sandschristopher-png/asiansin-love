@@ -41,6 +41,58 @@ let cachedSettingsData: {
   notify_messages: boolean;
 } | null = null;
 
+const ToggleSwitch = ({ on, onClick, busy }: { on: boolean; onClick: () => void; busy: boolean }) => (
+  <button
+    type="button"
+    onClick={onClick}
+    disabled={busy}
+    aria-checked={on}
+    role="switch"
+    className={`w-11 h-6 rounded-full transition-colors relative shrink-0 cursor-pointer ${
+      on ? 'bg-[#6555B8]' : 'bg-[#DDD7E5]'
+    }`}
+  >
+    <div
+      className={`w-5 h-5 rounded-full bg-white shadow-md absolute top-0.5 left-0 transition-transform duration-200 ${
+        on ? 'translate-x-6' : 'translate-x-0.5'
+      }`}
+    />
+  </button>
+);
+
+const SettingRow = ({
+  icon,
+  title,
+  subtitle,
+  on,
+  busy,
+  onClick,
+}: {
+  icon: React.ReactNode;
+  title: React.ReactNode;
+  subtitle: string;
+  on: boolean;
+  busy: boolean;
+  onClick: () => void;
+}) => (
+  <div className="flex items-center justify-between p-3 rounded-2xl hover:bg-[#F8F7FA] transition">
+    <div className="flex items-center gap-3 pr-4">
+      <div className="w-8 h-8 rounded-xl bg-[#F8F7FA] text-[#524B5E] flex items-center justify-center shrink-0">
+        {icon}
+      </div>
+      <div>
+        <div className="text-xs font-bold text-[#1C1924]">{title}</div>
+        <p className="text-[11px] text-[#6C637B]">{subtitle}</p>
+      </div>
+    </div>
+    {busy ? (
+      <Loader2 className="w-4 h-4 animate-spin text-[#6555B8] shrink-0" />
+    ) : (
+      <ToggleSwitch on={on} onClick={onClick} busy={busy} />
+    )}
+  </div>
+);
+
 export default function SettingsHubPage() {
   const router = useRouter();
   const [loading, setLoading] = useState(() => !cachedSettingsData);
@@ -242,58 +294,6 @@ export default function SettingsHubPage() {
       </div>
     );
   }
-
-  const ToggleSwitch = ({ on, onClick, busy }: { on: boolean; onClick: () => void; busy: boolean }) => (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={busy}
-      aria-checked={on}
-      role="switch"
-      className={`w-11 h-6 rounded-full transition-colors relative shrink-0 cursor-pointer ${
-        on ? 'bg-[#6555B8]' : 'bg-[#DDD7E5]'
-      }`}
-    >
-      <div
-        className={`w-5 h-5 rounded-full bg-white shadow-md absolute top-0.5 left-0 transition-transform duration-200 ${
-          on ? 'translate-x-6' : 'translate-x-0.5'
-        }`}
-      />
-    </button>
-  );
-
-  const SettingRow = ({
-    icon,
-    title,
-    subtitle,
-    on,
-    busy,
-    onClick,
-  }: {
-    icon: React.ReactNode;
-    title: React.ReactNode;
-    subtitle: string;
-    on: boolean;
-    busy: boolean;
-    onClick: () => void;
-  }) => (
-    <div className="flex items-center justify-between p-3 rounded-2xl hover:bg-[#F8F7FA] transition">
-      <div className="flex items-center gap-3 pr-4">
-        <div className="w-8 h-8 rounded-xl bg-[#F8F7FA] text-[#524B5E] flex items-center justify-center shrink-0">
-          {icon}
-        </div>
-        <div>
-          <div className="text-xs font-bold text-[#1C1924]">{title}</div>
-          <p className="text-[11px] text-[#6C637B]">{subtitle}</p>
-        </div>
-      </div>
-      {busy ? (
-        <Loader2 className="w-4 h-4 animate-spin text-[#6555B8] shrink-0" />
-      ) : (
-        <ToggleSwitch on={on} onClick={onClick} busy={busy} />
-      )}
-    </div>
-  );
 
   return (
     <div className="relative flex-1 w-full bg-[#F8F7FA] text-[#1C1924] font-sans min-h-screen">
