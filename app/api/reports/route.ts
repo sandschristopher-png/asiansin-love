@@ -1,5 +1,5 @@
 // app/api/reports/route.ts
-//   POST { reported_id, reason_category, details?, block? } -> { success, blocked }
+//   POST { reported_id, reason_category, details?, block?, context?, message_id? } -> { success, blocked }
 //
 // Reason-based member reports (components/ReportModal.tsx). Rows go to public.user_reports
 // (status 'pending') and appear in the admin review queue at /admin/verifications, where a
@@ -40,7 +40,7 @@ export async function POST(req: Request) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  let body: { reported_id?: unknown; reason_category?: unknown; details?: unknown; block?: unknown; context?: unknown };
+  let body: { reported_id?: unknown; reason_category?: unknown; details?: unknown; block?: unknown; context?: unknown; message_id?: unknown };
   try {
     body = await req.json();
   } catch {
@@ -60,7 +60,36 @@ export async function POST(req: Request) {
   // Where the report was filed (chat / profile) is kept with the details for moderators.
   const context = body.context === 'chat' || body.context === 'profile' ? body.context : null;
   const rawDetails = typeof body.details === 'string' ? body.details.trim().slice(0, 300) : '';
-  const details = context ? `[from ${context}] ${rawDetails}`.trim() : rawDetails;
+
+  // Message-level report: the server (not the client) quotes the reported message and the 5
+  // messages before it, after checking it really was sent by the reported member to the reporter.
+  let transcript = '';
+  const messageId = typeof body.message_id === 'string' && UUID_RE.test(body.message_id) ? body.message_id : null;
+  if (messageId) {
+    const { data: target } = await supabase
+      .from('messages')
+      .select('id, sender_id, receiver_id, content, created_at, audio_path')
+      .eq('id', messageId)
+      .maybeSingle();
+    if (!target || target.sender_id !== reportedId || target.receiver_id !== user.id) {
+      return NextResponse.json({ error: 'That message cannot be reported.' }, { status: 400 });
+    }
+    const { data: before } = await supabase
+      .from('messages')
+      .select('sender_id, content, audio_path')
+      .in('sender_id', [user.id, reportedId])
+      .in('receiver_id', [user.id, reportedId])
+      .lt('created_at', target.created_at)
+      .order('created_at', { ascending: false })
+      .limit(5);
+    const line = (m: { sender_id: string; content: string | null; audio_path?: string | null }) =>
+      `${m.sender_id === reportedId ? 'Reported' : 'Reporter'}: ${
+        m.audio_path ? '[voice note]' : String(m.content || '').replace(/\s+/g, ' ').slice(0, 200)
+      }`;
+    transcript = [`[message ${messageId}]`, ...(before || []).reverse().map((m) => `  ${line(m)}`), `> ${line(target)}`].join('\n');
+  }
+
+  const details = [`${context ? `[from ${context}] ` : ''}${rawDetails}`.trim(), transcript].filter(Boolean).join('\n');
   const cat = category as ReportCategory;
 
   const insert = (reason: string, text: string | null) =>

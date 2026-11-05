@@ -158,9 +158,13 @@ export async function GET(req: Request) {
     // repeats them as a safety net. Sparked members are NOT excluded.
     const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
     const excludedIds = Array.from(new Set([user.id, ...blockedUserIds])).filter((id) => UUID_RE.test(id));
+    // ?verified=1 (Discover "Verified profiles only"): filtered in the database, so verified members
+    // outside the 200 newest rows still appear.
+    const verifiedOnly = new URL(req.url).searchParams.get('verified') === '1';
     const fetchFeed = (cols: string) => {
       let q = serviceClient.from('profiles').select(cols).not('id', 'in', `(${excludedIds.join(',')})`);
       if (targetGender) q = q.or(GENDER_SPELLINGS[targetGender]);
+      if (verifiedOnly) q = q.or('is_verified.eq.true,verification_status.eq.verified');
       return q.order('created_at', { ascending: false }).limit(200);
     };
     // Newest optional columns first, then progressively older schemas.

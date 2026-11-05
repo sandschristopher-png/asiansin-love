@@ -1,5 +1,8 @@
 'use client';
 
+import dynamic from 'next/dynamic';
+import VerifiedBadge from '@/components/VerifiedBadge';
+
 import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams, useRouter } from 'next/navigation';
@@ -7,7 +10,6 @@ import {
   ArrowLeft,
   MoreHorizontal,
   MapPin,
-  ShieldCheck,
   MessageCircle,
   Tag,
   Heart,
@@ -30,12 +32,14 @@ import { rhythmOption, sharedTraits } from '@/lib/rhythm';
 import { scoreOf } from '@/lib/reputation';
 import { InCommonCard, RhythmPill } from '@/components/profile/RhythmBadges';
 import RepScoreCard from '@/components/RepScoreCard';
-import { ReportModal } from '@/components/ReportModal';
 import { useActionToast } from '@/components/ActionToast';
 import { interestIcon, interestIconOrDefault } from '@/lib/interestIcons';
 import { languageLabel, readLanguages } from '@/lib/constants/languages';
 import { formatHeight, lifestyleOption, readHeightCm, readLifestyle } from '@/lib/lifestyle';
 import { LifestyleBadges } from '@/components/profile/LifestyleFields';
+
+/** Loaded on first open (keeps the report sheet out of the page bundle). */
+const ReportModal = dynamic(() => import('@/components/ReportModal').then((m) => m.ReportModal), { ssr: false });
 
 interface HighlightRow {
   tag_id: string;
@@ -536,11 +540,7 @@ export default function PublicProfilePage() {
             <h1 className="text-2xl font-black tracking-tight text-[#2D264B]" style={{ fontFamily: 'var(--font-brand)' }}>
               {displayName}{displayAge}
             </h1>
-            {isVerified && (
-              <span title="Identity verified">
-                <ShieldCheck className="h-5 w-5 text-[#6555B8]" />
-              </span>
-            )}
+            {isVerified && <VerifiedBadge size="md" showText />}
           </div>
           <div className="flex items-center gap-1.5 text-xs font-medium text-[#6C637B]">
             <MapPin className="h-3.5 w-3.5 text-[#6555B8] shrink-0" />
@@ -751,8 +751,9 @@ export default function PublicProfilePage() {
 
       {floatingDock}
 
+      {reportOpen && (
       <ReportModal
-        open={reportOpen}
+        open
         reportedId={targetUserId}
         name={displayName}
         context="profile"
@@ -763,6 +764,7 @@ export default function PublicProfilePage() {
           if (blocked) setTimeout(() => router.push('/discover'), 1200);
         }}
       />
+      )}
     </div>
   );
 }

@@ -38,7 +38,7 @@ export function RhythmPill({
   if (!opt) return null;
   const tone =
     variant === 'glass'
-      ? 'bg-white/20 border-white/30 text-white backdrop-blur-xs'
+      ? 'bg-black/35 border-white/25 text-white'
       : 'bg-[#F3EFFC] border-[#E2DBF0] text-[#6555B8]';
   return (
     <span
@@ -59,7 +59,7 @@ export function InCommonCard({ items, compact = false }: { items: string[]; comp
   if (items.length === 0) return null;
   if (compact) {
     return (
-      <span className="inline-flex items-center whitespace-nowrap bg-black/35 backdrop-blur-md border border-white/20 text-white font-medium text-xs px-2.5 py-1 rounded-full">
+      <span className="inline-flex items-center whitespace-nowrap bg-black/45 border border-white/20 text-white font-medium text-xs px-2.5 py-1 rounded-full">
         {items.length === 1 ? '1 thing in common' : `${items.length} things in common`}
       </span>
     );

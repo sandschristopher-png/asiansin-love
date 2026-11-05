@@ -1,11 +1,12 @@
 'use client';
 
+import dynamic from 'next/dynamic';
+
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, MapPin, Save, UserCheck, ShieldCheck, Camera, Loader2, Plus, X } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
-import UpgradeModal from '@/components/UpgradeModal';
 import { resolveCountry } from '@/lib/countries';
 import { EMPTY_RHYTHM, RhythmSelectors, rhythmFromRow, type RhythmValues } from '@/components/profile/RhythmBadges';
 import { saveProfileFields } from '@/lib/profileApi';
@@ -17,6 +18,9 @@ import { HeightInput, LanguagePicker, LifestylePills } from '@/components/profil
 import { readLanguages } from '@/lib/constants/languages';
 import { LIFESTYLE_KEYS, readHeightCm, readLifestyle, type LifestyleValues } from '@/lib/lifestyle';
 import { PlusBadge } from '@/components/ui/PlusBadge';
+
+/** Loaded on first open (keeps the upgrade sheet out of the page bundle). */
+const UpgradeModal = dynamic(() => import('@/components/UpgradeModal'), { ssr: false });
 
 
 
@@ -475,7 +479,7 @@ export default function EditProfilePage() {
                       <button
                         type="button"
                         onClick={() => handleDeletePhoto(slotIdx)}
-                        className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/60 backdrop-blur-sm text-white flex items-center justify-center hover:bg-red-600 transition-colors z-10"
+                        className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-red-600 transition-colors z-10"
                         aria-label="Delete photo"
                       >
                         <X className="w-3.5 h-3.5" />
@@ -902,7 +906,7 @@ export default function EditProfilePage() {
         </form>
       </div>
 
-      <UpgradeModal isOpen={showUpgradeModal} onClose={() => setShowUpgradeModal(false)} triggerContext='handle' />
+      {showUpgradeModal && <UpgradeModal isOpen onClose={() => setShowUpgradeModal(false)} triggerContext="handle" />}
     </div>
   );
 }

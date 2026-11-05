@@ -1,5 +1,8 @@
 'use client';
 
+import dynamic from 'next/dynamic';
+import VerifiedBadge from '@/components/VerifiedBadge';
+
 import React, { useState, useEffect, useRef, useLayoutEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
@@ -22,7 +25,6 @@ import {
   Trash2,
   Loader2,
 } from 'lucide-react';
-import UpgradeModal from '@/components/UpgradeModal';
 import ReputationModal from '@/components/ReputationModal';
 import { supabase } from '@/lib/supabase/client';
 import { applyContactRevealMask, CONTACT_UNLOCK_TURNS } from '@/lib/safety';
@@ -36,10 +38,15 @@ import { toList } from '@/lib/rhythm';
 import { needsTranslation } from '@/lib/language';
 import { localTimeIn, timeZoneFor } from '@/lib/timezone';
 import { evaluateSubstantiveConversation } from '@/lib/moderation';
+import { validateBio } from '@/lib/moderation/textFilter';
 import { isRestricted } from '@/lib/reputation';
 import { RepBadge, RhythmPill } from '@/components/profile/RhythmBadges';
 import { hapticError, hapticSuccess, hapticTap } from '@/lib/utils/haptics';
-import { ReportModal } from '@/components/ReportModal';
+
+/** Loaded on first open (keeps the upgrade sheet out of the page bundle). */
+const UpgradeModal = dynamic(() => import('@/components/UpgradeModal'), { ssr: false });
+/** Loaded on first open (keeps the report sheet out of the page bundle). */
+const ReportModal = dynamic(() => import('@/components/ReportModal').then((m) => m.ReportModal), { ssr: false });
 
 const VOICE_LOCKED_MESSAGE = `Voice notes unlock after both members exchange ${CONTACT_UNLOCK_TURNS} substantive messages (15+ characters each).`;
 const VOICE_REP_LOCKED_MESSAGE = 'Voice notes are paused while your account is under review. Text messages still work.';
@@ -53,10 +60,20 @@ interface ChatMessage {
   warning?: string;
   read?: boolean;
   pending?: boolean;
+  /** Network / server error while sending: kept in the thread with a one-tap retry. */
+  failed?: boolean;
   wasMasked?: boolean;
   hasAudio?: boolean;
   audioDurationMs?: number | null;
 }
+
+/** Inline notice under an early incoming message that tries to move the chat off the app. */
+const EARLY_CONTACT_NOTICE =
+  'Safety Notice: Off-platform contact shared early. Keep conversations on asiansin.love until mutual trust is established.';
+/** Messages at or past this position in a thread no longer get the early-contact notice. */
+const EARLY_THREAD_MESSAGES = 5;
+const TYPING_PING_MS = 3000;
+const TYPING_CLEAR_MS = 3500;
 
 interface StarterChip {
   label: string;
@@ -135,6 +152,7 @@ export default function ChatConversationPage() {
     lastActive: null as string | null,
     showActive: true,
     replyPace: null as string | null,
+    verified: false,
   });
   const [myRep, setMyRep] = useState(100);
   const [sharedInterests, setSharedInterests] = useState<string[]>([]);
@@ -174,6 +192,17 @@ export default function ChatConversationPage() {
   }, [voicePreviewUrl]);
 
   const [messages, setMessages] = useState<ChatMessage[]>([]);
+  // Incoming bubble whose actions (Report message) are showing, and the message being reported.
+  const [activeMsgId, setActiveMsgId] = useState<string | null>(null);
+  const [reportMessageId, setReportMessageId] = useState<string | null>(null);
+  // Tab visible: read receipts are only sent while the member can actually see the thread.
+  const [pageVisible, setPageVisible] = useState(true);
+  // Typing indicator (Realtime broadcast, no database writes).
+  const [theyAreTyping, setTheyAreTyping] = useState(false);
+  const typingChannelRef = useRef<ReturnType<typeof supabase.channel> | null>(null);
+  const lastTypingPingRef = useRef(0);
+  // Unique ids for optimistic bubbles (several sends in the same millisecond stay distinct).
+  const tempSeqRef = useRef(0);
   // Live Safety Gate: same rule as /api/messages (each member needs CONTACT_UNLOCK_TURNS distinct messages of
   // 15+ characters and 3+ words, within the latest 40), recomputed as messages are sent and received.
   // The server stays the authority for contact sharing and voice notes.
@@ -268,7 +297,20 @@ export default function ChatConversationPage() {
   }, [cooldownSeconds]);
 
   useEffect(() => {
-    if (!resolvedTargetUuid || !currentUserId || messages.length === 0) return;
+    const sync = () => setPageVisible(document.visibilityState === 'visible');
+    sync();
+    document.addEventListener('visibilitychange', sync);
+    window.addEventListener('focus', sync);
+    return () => {
+      document.removeEventListener('visibilitychange', sync);
+      window.removeEventListener('focus', sync);
+    };
+  }, []);
+
+  // One batched update marks every unread incoming message read (on open, on new messages and when
+  // the tab becomes visible again), never one request per bubble.
+  useEffect(() => {
+    if (!pageVisible || !resolvedTargetUuid || !currentUserId || messages.length === 0) return;
     const hasUnreadFromTarget = messages.some((m) => m.sender === 'them' && !m.read);
     if (!hasUnreadFromTarget) return;
 
@@ -280,7 +322,38 @@ export default function ChatConversationPage() {
       .eq('sender_id', resolvedTargetUuid)
       .eq('is_read', false)
       .then(() => {});
-  }, [resolvedTargetUuid, currentUserId, messages]);
+  }, [pageVisible, resolvedTargetUuid, currentUserId, messages]);
+
+  // Typing indicator over a Realtime broadcast channel for this pair: pings at most every 3 s,
+  // and their "typing..." clears 3.5 s after the last ping (or when their message lands).
+  useEffect(() => {
+    if (!resolvedTargetUuid || !currentUserId) return;
+    const pair = [currentUserId, resolvedTargetUuid].sort().join(':');
+    let clearTimer: number | undefined;
+    const channel = supabase
+      .channel(`typing:${pair}`, { config: { broadcast: { self: false } } })
+      .on('broadcast', { event: 'typing' }, ({ payload }) => {
+        if (payload?.from !== resolvedTargetUuid) return;
+        setTheyAreTyping(true);
+        window.clearTimeout(clearTimer);
+        clearTimer = window.setTimeout(() => setTheyAreTyping(false), TYPING_CLEAR_MS);
+      })
+      .subscribe();
+    typingChannelRef.current = channel;
+    return () => {
+      window.clearTimeout(clearTimer);
+      typingChannelRef.current = null;
+      setTheyAreTyping(false);
+      supabase.removeChannel(channel);
+    };
+  }, [resolvedTargetUuid, currentUserId]);
+
+  const pingTyping = () => {
+    const now = Date.now();
+    if (!currentUserId || now - lastTypingPingRef.current < TYPING_PING_MS) return;
+    lastTypingPingRef.current = now;
+    typingChannelRef.current?.send({ type: 'broadcast', event: 'typing', payload: { from: currentUserId } });
+  };
 
   useEffect(() => {
     let isMounted = true;
@@ -318,12 +391,12 @@ export default function ChatConversationPage() {
         isUuid
           ? supabase
               .from('profiles')
-              .select('id, username, display_name, full_name, avatar_url, reputation_score, city, country, interests, languages, last_active, show_active_status')
+              .select('id, username, display_name, full_name, avatar_url, reputation_score, city, country, interests, languages, last_active, show_active_status, is_verified, verification_status')
               .eq('id', rawParam)
               .maybeSingle()
           : supabase
               .from('profiles')
-              .select('id, username, display_name, full_name, avatar_url, reputation_score, city, country, interests, languages, last_active, show_active_status')
+              .select('id, username, display_name, full_name, avatar_url, reputation_score, city, country, interests, languages, last_active, show_active_status, is_verified, verification_status')
               .or(`username.ilike.%${handleParam}%,display_name.ilike.%${handleParam}%`)
               .limit(1)
               .maybeSingle(),
@@ -381,6 +454,7 @@ export default function ChatConversationPage() {
           lastActive: profData.last_active || null,
           showActive: profData.show_active_status !== false,
           replyPace: null,
+          verified: profData.is_verified === true || profData.verification_status === 'verified',
         });
 
         // Rhythm badge column arrives with 20261106_reputation_rhythm.sql; a missing column must not
@@ -493,6 +567,7 @@ export default function ChatConversationPage() {
         if (payload.eventType !== 'INSERT' || row.is_quarantined || row.is_flagged) return;
 
         const isMe = row.sender_id === currentUserId;
+        if (!isMe) setTheyAreTyping(false);
         const mask = isMe
           ? { text: row.content as string, hasBlockedContent: false }
           : applyContactRevealMask(row.content || '', contactUnlockedRef.current ? CONTACT_UNLOCK_TURNS : 0);
@@ -562,7 +637,8 @@ export default function ChatConversationPage() {
     setShowSafetyNotice(false);
 
     const nowIso = new Date().toISOString();
-    const tempId = 'temp-' + Date.now();
+    tempSeqRef.current += 1;
+    const tempId = `temp-${tempSeqRef.current}`;
     const myNewMsg: ChatMessage = {
       id: tempId,
       sender: 'me',
@@ -580,7 +656,26 @@ export default function ChatConversationPage() {
       textareaRef.current.style.height = 'auto';
     }
     setShowIcebreaker(false);
+    await deliver(tempId, clean);
+  };
 
+  /** Retry a bubble that failed to send (same text, same place in the thread). */
+  const retryMessage = (msg: ChatMessage) => {
+    setErrorBanner(null);
+    setMessages((prev) => prev.map((m) => (m.id === msg.id ? { ...m, failed: false, pending: true } : m)));
+    deliver(msg.id, msg.text);
+  };
+
+  /**
+   * POST a message for an optimistic bubble. Server refusals (safety gate, moderation, daily limit)
+   * remove the bubble and hand the draft back; network / server errors keep it as "Not delivered"
+   * with a retry. Success swaps in the real id without re-rendering the rest of the thread.
+   */
+  const deliver = async (tempId: string, clean: string) => {
+    const markFailed = (message: string) => {
+      setMessages((prev) => prev.map((m) => (m.id === tempId ? { ...m, pending: false, failed: true } : m)));
+      setErrorBanner(message);
+    };
     try {
       const res = await fetch('/api/messages', {
         method: 'POST',
@@ -593,6 +688,10 @@ export default function ChatConversationPage() {
 
       const resData = await res.json().catch(() => ({}));
 
+      if (res.status >= 500) {
+        markFailed('Message not delivered. Tap Retry to send it again.');
+        return;
+      }
       if (!res.ok) {
         setMessages((prev) => prev.filter((m) => m.id !== tempId));
         setInputText((current) => current || clean); // give the draft back so it can be edited
@@ -630,8 +729,7 @@ export default function ChatConversationPage() {
         setMessages((prev) => prev.map((m) => (m.id === tempId ? { ...m, pending: false } : m)));
       }
     } catch {
-      setMessages((prev) => prev.filter((m) => m.id !== tempId));
-      setErrorBanner('Network error while sending message.');
+      markFailed('No connection. Tap Retry when you are back online.');
     }
   };
 
@@ -740,6 +838,7 @@ export default function ChatConversationPage() {
 
   const handleTextareaChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setInputText(e.target.value);
+    if (e.target.value.trim()) pingTyping();
     e.target.style.height = 'auto';
     e.target.style.height = Math.min(e.target.scrollHeight, 108) + 'px';
   };
@@ -803,10 +902,14 @@ export default function ChatConversationPage() {
                 />
               </div>
               <div className="flex flex-col min-w-0">
-                <span
-                  className="text-[13.5px] font-bold text-[#1C1924] group-hover:text-[#6555B8] transition leading-tight truncate"
-                  style={{ fontFamily: 'var(--font-brand)' }}
-                > {targetInfo.name || 'Member'}
+                <span className="flex items-center gap-1 min-w-0">
+                  <span
+                    className="text-[13.5px] font-bold text-[#1C1924] group-hover:text-[#6555B8] transition leading-tight truncate"
+                    style={{ fontFamily: 'var(--font-brand)' }}
+                  >
+                    {targetInfo.name || 'Member'}
+                  </span>
+                  {targetInfo.verified && <VerifiedBadge size="sm" />}
                 </span>
                 {(() => {
                   // Green dot only when connected right now (Realtime Presence) or active in the last
@@ -820,7 +923,7 @@ export default function ChatConversationPage() {
                   void clockTick; // minute re-render for the local time
                   const localTime = localTimeIn(timeZoneFor(city, targetInfo.country));
                   const cityLabel = city ? (localTime ? `${city.split(',')[0]} ${localTime}` : city) : '';
-                  const label = online ? 'Online' : activity;
+                  const label = theyAreTyping ? 'typing...' : online ? 'Online' : activity;
                   if (!label && !cityLabel && !targetInfo.replyPace) return null;
                   return (
                     <div className="flex items-center gap-1.5 mt-0.5 min-w-0">
@@ -1011,6 +1114,16 @@ export default function ChatConversationPage() {
                   needsTranslation(msg.text || '') &&
                   /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(msg.id);
 
+                // Early off-platform push (phone, messenger handle, payment app...) in one of the
+                // first messages of the thread: hairline notice under that bubble.
+                const earlyContact =
+                  !isMe &&
+                  idx < EARLY_THREAD_MESSAGES &&
+                  !msg.hasAudio &&
+                  (Boolean(msg.wasMasked) || !validateBio(msg.text || '').ok);
+                const isRealId = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(msg.id);
+                const showActions = !isMe && isRealId && activeMsgId === msg.id;
+
                 return (
                   <React.Fragment key={msg.id}>
                     {showDateHeader && (
@@ -1046,9 +1159,18 @@ export default function ChatConversationPage() {
                         )}
 
                         <div
+                          onClick={
+                            !isMe && isRealId
+                              ? () => {
+                                  if (window.getSelection()?.toString()) return; // selecting text, not tapping
+                                  setActiveMsgId((cur) => (cur === msg.id ? null : msg.id));
+                                }
+                              : undefined
+                          }
                           className={
                             'px-3.5 py-2 text-[13.5px] leading-[1.45] break-words select-text transition-opacity ' +
-                            (msg.pending ? 'opacity-75 ' : 'opacity-100 ') +
+                            (!isMe && isRealId ? 'cursor-pointer ' : '') +
+                            (msg.pending ? 'opacity-75 ' : msg.failed ? 'opacity-60 ' : 'opacity-100 ') +
                             (isMe
                               ? 'bg-[#6555B8] text-white rounded-2xl ' +
                                 (isSameSenderAsNext ? 'rounded-br-md' : 'rounded-br-xs') +
@@ -1083,14 +1205,45 @@ export default function ChatConversationPage() {
                         </div>
                       </div>
 
-                      {(!isSameSenderAsNext || canTranslate) && (
+                      {earlyContact && (
+                        <p className="mt-1 ml-8 max-w-[84%] rounded-xl border border-[#ECE8F4] bg-white px-2.5 py-1.5 text-[10.5px] leading-snug text-[#2D264B]/70">
+                          {EARLY_CONTACT_NOTICE}
+                        </p>
+                      )}
+
+                      {(!isSameSenderAsNext || canTranslate || msg.failed || showActions) && (
                         <div
                           className={
                             'flex items-center gap-1 mt-1 text-[10px] text-[#8C849B] select-none ' +
                             (isMe ? 'pr-0.5' : 'pl-8')
                           }
                         >
-                          {!isSameSenderAsNext && <span>{msg.pending ? 'Sending...' : msg.time}</span>}
+                          {msg.failed ? (
+                            <>
+                              <span className="text-rose-600 font-semibold">Not delivered</span>
+                              <span aria-hidden>·</span>
+                              <button type="button" onClick={() => retryMessage(msg)} className="font-semibold text-[#6555B8] hover:underline">
+                                Retry
+                              </button>
+                            </>
+                          ) : (
+                            (!isSameSenderAsNext || showActions) && <span>{msg.pending ? 'Sending...' : msg.time}</span>
+                          )}
+                          {showActions && (
+                            <>
+                              <span aria-hidden>·</span>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setReportMessageId(msg.id);
+                                  setActiveMsgId(null);
+                                }}
+                                className="font-semibold text-[#2D264B]/60 hover:text-rose-600"
+                              >
+                                Report message
+                              </button>
+                            </>
+                          )}
                           {canTranslate && (
                             <>
                               {!isSameSenderAsNext && <span aria-hidden>·</span>}
@@ -1307,28 +1460,33 @@ export default function ChatConversationPage() {
         icon={toast === VOICE_LOCKED_MESSAGE || toast === VOICE_REP_LOCKED_MESSAGE ? <Lock className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
       />
 
-      <UpgradeModal
-        isOpen={showUpgradeModal}
-        onClose={() => setShowUpgradeModal(false)}
-        triggerContext="chat"
-      />
+      {showUpgradeModal && (
+        <UpgradeModal isOpen onClose={() => setShowUpgradeModal(false)} triggerContext="chat" />
+      )}
       <ReputationModal
         isOpen={showRepModal}
         onClose={() => setShowRepModal(false)}
         name={targetInfo.name}
         score={targetInfo.rep}
       />
+      {(showReportModal || reportMessageId) && (
       <ReportModal
-        open={showReportModal}
+        open
+        messageId={reportMessageId ?? undefined}
         reportedId={resolvedTargetUuid || rawParam}
         name={targetInfo.name || 'this member'}
         context="chat"
-        onClose={() => setShowReportModal(false)}
+        onClose={() => {
+          setShowReportModal(false);
+          setReportMessageId(null);
+        }}
         onDone={() => {
           setShowReportModal(false);
+          setReportMessageId(null);
           setReportThanks(true);
         }}
       />
+      )}
       <InAppToast
         message={reportThanks ? 'Thank you for keeping our community safe. Our team is reviewing this profile.' : null}
         onClose={closeReportThanks}

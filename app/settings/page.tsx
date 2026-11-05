@@ -1,5 +1,7 @@
 'use client';
 
+import dynamic from 'next/dynamic';
+
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -20,7 +22,9 @@ import { hardSignOut } from '@/lib/hardSignOut';
 import { PushDeviceRow } from '@/components/PushDeviceRow';
 import { HapticsRow } from '@/components/HapticsRow';
 import { AlertPrefsRows } from '@/components/AlertPrefsRows';
-import { AILPlusModal } from '@/components/AILPlusModal';
+
+/** Loaded on first open (keeps the Plus checkout sheet out of the settings bundle). */
+const AILPlusModal = dynamic(() => import('@/components/AILPlusModal').then((m) => m.AILPlusModal), { ssr: false });
 
 type SettingsKey = 'hide_profile' | 'show_active_status' | 'notify_sparks' | 'notify_messages';
 
@@ -561,12 +565,14 @@ export default function SettingsHubPage() {
             </div>
           </div>
         )}
+      {plusModalOpen && (
       <AILPlusModal
-        open={plusModalOpen}
+        open
         onClose={() => setPlusModalOpen(false)}
         title="Unlock Private Mode with Plus"
         returnPath="/settings"
       />
+      )}
       </main>
     </div>
   );

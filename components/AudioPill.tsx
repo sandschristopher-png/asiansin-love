@@ -116,7 +116,7 @@ export function AudioPill({
       } ${
         onBrand
           ? 'bg-white/15 border-white/25 text-white'
-          : 'bg-[#F3EFFC]/95 border-[#E2DBF0] text-[#6555B8] hover:bg-[#EBE5FA] backdrop-blur-sm'
+          : 'bg-[#F3EFFC]/95 border-[#E2DBF0] text-[#6555B8] hover:bg-[#EBE5FA]'
       } ${className}`}
     >
       <span

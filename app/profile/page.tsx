@@ -1,11 +1,13 @@
 'use client';
 
+import dynamic from 'next/dynamic';
+import VerifiedBadge from '@/components/VerifiedBadge';
+
 import { captureCurrentLocation, formatVerifiedDate } from '@/lib/location';
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
-  ShieldCheck,
   MapPin,
   Languages,
   Edit3,
@@ -31,7 +33,6 @@ import { adminRoleOf } from '@/lib/adminRoles';
 import RepScoreCard from '@/components/RepScoreCard';
 import { ProfileHighlightsEditorRow } from '@/components/ProfileHighlightsEditorRow';
 import { VoicePlayer } from '@/components/VoicePlayer';
-import { VoiceRecordModal } from '@/components/VoiceRecordModal';
 import { VisitingBadge, type TravelNotice } from '@/components/VisitingBadge';
 import { DayOneBadge, NewMemberPill, VerifiedLocationBadge } from '@/components/profile/TrustBadges';
 import { isTrustedVoiceIntroUrl } from '@/lib/audio';
@@ -43,6 +44,9 @@ import { SelectSheet } from '@/components/SelectSheet';
 import { HeightInput, LanguagePicker, LifestyleBadges, LifestylePills } from '@/components/profile/LifestyleFields';
 import { languageLabel, readLanguages } from '@/lib/constants/languages';
 import { LIFESTYLE_KEYS, formatHeight, readHeightCm, readLifestyle, type LifestyleValues } from '@/lib/lifestyle';
+
+/** Loaded on first open (recorder + waveform stay out of the profile bundle). */
+const VoiceRecordModal = dynamic(() => import('@/components/VoiceRecordModal').then((m) => m.VoiceRecordModal), { ssr: false });
 
 const INTENT_CHIP_OPTIONS = INTENT_OPTIONS;
 
@@ -513,7 +517,7 @@ export default function MyProfilePage() {
                       onClick={() => handleDeletePhoto(url)}
                       disabled={deletingPhoto !== null}
                       aria-label={`Delete photo ${idx + 1}`}
-                      className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/60 backdrop-blur-sm text-white flex items-center justify-center hover:bg-red-600 transition-colors z-10 disabled:opacity-60"
+                      className="absolute top-2 right-2 w-7 h-7 rounded-full bg-black/60 text-white flex items-center justify-center hover:bg-red-600 transition-colors z-10 disabled:opacity-60"
                     >
                       {deletingPhoto === url ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <X className="w-3.5 h-3.5" />}
                     </button>
@@ -602,11 +606,7 @@ export default function MyProfilePage() {
                   {username.replace(/^@/, '')}{age ? ', ' + age : ''}
                 </h2>
                 {isPlus && <PlusBadge size="profile" />}
-                {verificationStatus === 'verified' && (
-                  <span title="Verified Member">
-                    <ShieldCheck className="w-4 h-4 text-emerald-600 shrink-0" />
-                  </span>
-                )}
+                {verificationStatus === 'verified' && <VerifiedBadge size="md" showText />}
               </div>
               <div className="flex items-center gap-1.5 mt-0.5">
                 <MapPin className="w-3.5 h-3.5 text-[#6555B8] shrink-0" />
@@ -698,7 +698,7 @@ export default function MyProfilePage() {
             </button>
           </div>
         )}
-        <VoiceRecordModal open={voiceModalOpen} onClose={() => setVoiceModalOpen(false)} onSaved={setVoiceIntroUrl} />
+        {voiceModalOpen && <VoiceRecordModal open onClose={() => setVoiceModalOpen(false)} onSaved={setVoiceIntroUrl} />}
 
         {/* 2. REPUTATION */}
         <RepScoreCard score={repScore ?? 100} />

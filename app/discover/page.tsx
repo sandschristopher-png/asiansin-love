@@ -356,6 +356,8 @@ function DiscoverContent() {
   const [selectedHabits, setSelectedHabits] = useState<string[]>([]);
   const heightNarrowed = heightRange[0] > HEIGHT_MIN_CM || heightRange[1] < HEIGHT_MAX_CM;
   const [verifiedOnly, setVerifiedOnly] = useState<boolean>(false);
+  // Read by fetchProfiles; turning "Verified profiles only" on or off re-queries the server.
+  const verifiedOnlyRef = useRef(false);
   const [activeNowOnly, setActiveNowOnly] = useState<boolean>(false);
 
   const [matchedModalProfile, setMatchedModalProfile] = useState<{ id: string; name: string; avatarUrl?: string } | null>(null);
@@ -497,7 +499,8 @@ function DiscoverContent() {
     const controller = new AbortController();
     const timeout = window.setTimeout(() => controller.abort(), 12_000);
     try {
-      const res = await fetch('/api/discover', { cache: 'no-store', signal: controller.signal });
+      const url = verifiedOnlyRef.current ? '/api/discover?verified=1' : '/api/discover';
+      const res = await fetch(url, { cache: 'no-store', signal: controller.signal });
       if (res.ok) {
         const payload = await res.json();
         if (Array.isArray(payload.profiles)) {
@@ -511,6 +514,13 @@ function DiscoverContent() {
       window.clearTimeout(timeout);
     }
   };
+
+  useEffect(() => {
+    if (verifiedOnlyRef.current === verifiedOnly) return;
+    verifiedOnlyRef.current = verifiedOnly;
+    void fetchProfiles();
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- fetchProfiles reads the ref
+  }, [verifiedOnly]);
 
   const refreshFeed = async () => {
     if (isRefreshing) return;

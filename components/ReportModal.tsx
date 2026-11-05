@@ -24,6 +24,7 @@ export function ReportModal({
   reportedId,
   name,
   context,
+  messageId,
   onClose,
   onDone,
 }: {
@@ -32,6 +33,8 @@ export function ReportModal({
   name: string;
   /** Where the report is filed from (kept with the report for moderators). */
   context?: 'chat' | 'profile';
+  /** Reporting one chat message: the server quotes it plus the 5 messages before it. */
+  messageId?: string;
   onClose: () => void;
   onDone: (blocked: boolean) => void;
 }) {
@@ -57,7 +60,7 @@ export function ReportModal({
       const res = await fetch('/api/reports', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ reported_id: reportedId, reason_category: category, details, block: false, context }),
+        body: JSON.stringify({ reported_id: reportedId, reason_category: category, details, block: false, context, message_id: messageId }),
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || 'Could not submit your report.');
@@ -88,7 +91,7 @@ export function ReportModal({
         </div>
         <div className="flex items-start justify-between gap-3 px-5 pb-3 border-b border-[#ECE8F4] shrink-0">
           <div className="min-w-0">
-            <h2 className="font-brand text-base font-bold text-[#2D264B]">Report Member</h2>
+            <h2 className="font-brand text-base font-bold text-[#2D264B]">{messageId ? 'Report Message' : 'Report Member'}</h2>
             <p className="text-xs text-[#6C637B] leading-relaxed mt-0.5">
               Reports are confidential. We review every report to protect community safety.
             </p>
