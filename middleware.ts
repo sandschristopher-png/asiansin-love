@@ -1,12 +1,11 @@
 import { createServerClient } from '@supabase/ssr';
 import { createClient } from '@supabase/supabase-js';
 import { NextResponse, type NextRequest } from 'next/server';
-import { adminRoleOf, isStaff } from '@/lib/adminRoles';
 import { safeReturnTo } from '@/lib/authRedirect';
 
 const PROTECTED_PREFIXES = [
   '/discover', '/sparks', '/messages', '/profile', '/chat', '/settings',
-  '/favorites', '/notifications', '/announcements', '/verify', '/admin',
+  '/favorites', '/notifications', '/announcements', '/verify',
 ];
 
 /** Signed-out request for a protected page -> /login?returnTo=<that page>. */
@@ -58,17 +57,11 @@ export async function middleware(request: NextRequest) {
   const hasVisitedBefore = request.cookies.get('ail_returning')?.value === '1';
 
   // --- ADMIN ROUTES ---
-  // Signed out -> /login?returnTo=/admin; signed in without a staff role (or banned) -> /discover.
-  // app/admin/layout.tsx re-checks the role server-side and every /api/admin/* route re-checks
-  // with verifyAdminCaller(), so this is the first of three gates, not the only one.
+  // Stealth: no redirect here (a redirect to /login or away would reveal that /admin exists).
+  // app/admin/layout.tsx checks the staff role server-side and renders the ordinary 404 for
+  // signed-out visitors and non-staff alike; every /api/admin/* route re-checks with
+  // verifyAdminCaller().
   if (pathname === '/admin' || pathname.startsWith('/admin/')) {
-    if (!user) return loginRedirect(request);
-    if (!supabaseServiceKey) return NextResponse.redirect(new URL('/discover', request.url));
-    const adminClient = createClient(supabaseUrl, supabaseServiceKey, { auth: { persistSession: false } });
-    const { data: me } = await adminClient.from('profiles').select('*').eq('id', user.id).maybeSingle();
-    if (!isStaff(adminRoleOf(me)) || me?.is_banned === true) {
-      return NextResponse.redirect(new URL('/discover', request.url));
-    }
     return response;
   }
 
