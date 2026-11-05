@@ -1,5 +1,5 @@
 import React from 'react';
-import { Award, ShieldCheck } from 'lucide-react';
+import { Award, MapPin } from 'lucide-react';
 
 const NEW_MEMBER_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -27,9 +27,9 @@ export function VerifiedLocationBadge({ title, className = '' }: { title?: strin
   return (
     <span
       title={title}
-      className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-black/40 backdrop-blur-md border border-white/20 text-white text-[11px] font-medium whitespace-nowrap ${className}`}
+      className={`inline-flex items-center gap-1.5 rounded-full border border-[#D5C6EC] bg-[#E8DFF5]/50 px-2.5 py-0.5 text-xs font-medium text-[#51376D] shadow-brand-sm whitespace-nowrap ${className}`}
     >
-      <ShieldCheck className="w-3 h-3 text-white stroke-[2.5]" />
+      <MapPin className="text-[#72519A] h-3.5 w-3.5" aria-hidden />
       Verified Location
     </span>
   );
@@ -41,7 +41,7 @@ export function DayOneBadge({ number, className = '' }: { number: number | null 
   return (
     <span
       title="One of the first 200 verified members"
-      className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white border border-[#D5C6EC] text-[#51376D] text-xs font-semibold shadow-sm ${className}`}
+      className={`inline-flex items-center gap-1.5 border border-[#D5C6EC] bg-white text-[#51376D] px-2.5 py-0.5 text-xs font-medium rounded-full shadow-brand-sm ${className}`}
     >
       <Award className="w-3.5 h-3.5 text-[#72519A] stroke-[2.5]" />
       Day 1 · #{String(number).padStart(3, '0')}

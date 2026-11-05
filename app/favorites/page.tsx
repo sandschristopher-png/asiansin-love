@@ -389,6 +389,9 @@ export default function SparksPage() {
     { id: 'visited', label: 'Visitors', count: visitedList.length }
   ], [sparkedList.length, sparkedYouList.length, mutualList.length, visitedList.length]);
 
+  // Members the viewer has sparked: their cards show a filled heart in every tab.
+  const sparkedIds = useMemo(() => new Set(sparkedList.map((p) => p.id)), [sparkedList]);
+
   const currentList = useMemo(() => {
     if (activeTab === 'sparked') return sparkedList;
     if (activeTab === 'sparked_you') return sparkedYouList;
@@ -503,8 +506,14 @@ export default function SparksPage() {
                   <SparkCardPhoto src={photo} name={publicName} className={`object-cover transition-transform duration-300 group-hover:scale-105 ${shouldBlur ? 'blur-md scale-110' : ''}`} />
                   {/* Same overlay layout as Discover cards (top-left Reputation, top-right heart). */}
                   {!shouldBlur && <ReputationBadge score={rep} variant="frosted" size="xs" className="absolute top-2.5 left-2.5 z-20" />}
-                  <span aria-hidden className="absolute top-3 right-3 z-20 p-1 text-[#9474C3] drop-shadow-[0_2px_5px_rgba(0,0,0,0.45)]">
-                    <Heart className="w-6 h-6 fill-[#72519A] stroke-none drop-shadow-[0_1px_3px_rgba(0,0,0,0.3)]" />
+                  {/* Same bare heart as Discover: white stroke keys it against dark hair and backgrounds.
+                      Filled once the viewer has sparked this member (Sent, Mutual), outline otherwise. */}
+                  <span aria-hidden className="absolute top-3 right-3 z-20 p-1.5 pointer-events-none">
+                    {sparkedIds.has(person.id) ? (
+                      <Heart className="w-7 h-7 fill-[#72519A] stroke-white drop-shadow-[0_2px_5px_rgba(0,0,0,0.5)]" strokeWidth={1.5} />
+                    ) : (
+                      <Heart className="w-7 h-7 fill-none stroke-white drop-shadow-[0_2px_5px_rgba(0,0,0,0.7)]" strokeWidth={2.5} />
+                    )}
                   </span>
                   {shouldBlur && (
                     <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/30 p-3 text-center">
@@ -512,7 +521,8 @@ export default function SparksPage() {
                       <span className="text-[11px] font-bold text-white drop-shadow">Tap to Unblur with Plus</span>
                     </div>
                   )}
-                  <div className="absolute bottom-0 inset-x-0 pt-10 pb-3 px-3 z-10 pointer-events-none bg-gradient-to-t from-black/65 via-black/25 to-transparent text-white">
+                  <div aria-hidden className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-black/70 via-black/25 to-transparent pointer-events-none rounded-b-2xl z-[5]" />
+                  <div className="absolute bottom-0 inset-x-0 pt-10 pb-3 px-3 z-10 pointer-events-none text-white">
                     <h3 className="font-brand text-sm font-bold leading-tight truncate">{shouldBlur ? 'Someone Sparked You' : `${publicName}${age ? `, ${age}` : ''}`}</h3>
                     <p className="text-[11px] text-white/90 font-medium mt-0.5 truncate pr-7">{location}</p>
                   </div>

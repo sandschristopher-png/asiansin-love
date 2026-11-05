@@ -2,6 +2,7 @@
 
 import React, { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
+import { MotionConfig, motion } from 'framer-motion';
 import { AlertCircle, ArrowLeft, Eye, EyeOff, Loader2, Mail, MailCheck, X } from 'lucide-react';
 import { BrandLogo } from '@/components/BrandLogo';
 import { InAppToast } from '@/components/InAppToast';
@@ -192,12 +193,27 @@ export function AuthScreen({ mode, cities }: { mode: 'login' | 'signup'; cities?
   return (
     // LayoutShell supplies the centered 430px frame on the #FFFFFF canvas.
     <div className="relative isolate min-h-[100dvh] w-full flex flex-col bg-white font-sans antialiased overflow-hidden pb-[max(2.5rem,env(safe-area-inset-bottom))]">
-      {/* Layered breathing aura on the white canvas. */}
-      <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden z-0">
-        <div className="w-[30rem] h-[30rem] rounded-full bg-[#E8DFF5]/70 blur-3xl animate-pulse pointer-events-none absolute -top-24 -left-24" />
-        <div className="w-[26rem] h-[26rem] rounded-full bg-[#D5C6EC]/45 blur-3xl animate-pulse pointer-events-none absolute top-1/3 -right-20 [animation-delay:1.5s]" />
-        <div className="w-96 h-96 rounded-full bg-[#E8DFF5]/50 blur-3xl animate-pulse pointer-events-none absolute -bottom-20 left-1/4 [animation-delay:3s]" />
-      </div>
+      {/* Layered lavender aura drifting on the white canvas (same loops as AmbientAurora: 4.5-5.2 s,
+          25-50 px drift, 0.92-1.15 scale). reducedMotion="never": the OS setting never freezes it. */}
+      <MotionConfig reducedMotion="never">
+        <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden z-0">
+          <motion.div
+            animate={{ x: [0, 50, -25, 0], y: [0, -35, 25, 0], scale: [1, 1.15, 0.92, 1] }}
+            transition={{ duration: 4.8, repeat: Infinity, ease: 'easeInOut' }}
+            className="w-[30rem] h-[30rem] rounded-full bg-[#E8DFF5]/70 blur-3xl pointer-events-none absolute -top-24 -left-24 will-change-transform"
+          />
+          <motion.div
+            animate={{ x: [0, -45, 25, 0], y: [0, 35, -30, 0], scale: [1, 0.9, 1.14, 1] }}
+            transition={{ duration: 5.2, repeat: Infinity, ease: 'easeInOut' }}
+            className="w-[26rem] h-[26rem] rounded-full bg-[#D5C6EC]/45 blur-3xl pointer-events-none absolute top-1/3 -right-20 will-change-transform"
+          />
+          <motion.div
+            animate={{ x: [0, 35, -35, 0], y: [0, -25, 20, 0], scale: [1, 1.15, 0.92, 1] }}
+            transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
+            className="w-96 h-96 rounded-full bg-[#E8DFF5]/50 blur-3xl pointer-events-none absolute -bottom-20 left-1/4 will-change-transform"
+          />
+        </div>
+      </MotionConfig>
       <InAppToast message={toast} onClose={closeToast} durationMs={7000} />
       {/* Sign-in errors float above the card (fixed), so they never push the buttons down. */}
       {error && (
