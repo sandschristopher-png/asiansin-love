@@ -59,7 +59,7 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   // Matches public/manifest.webmanifest theme_color (Android status bar / task switcher).
-  themeColor: '#653C87',
+  themeColor: '#72519A',
   interactiveWidget: 'resizes-content',
   // Without cover, iOS reports every env(safe-area-inset-*) as 0, so the BottomNav, docks and
   // toasts (all padded with max(..., env(safe-area-inset-bottom))) would sit on the home indicator
