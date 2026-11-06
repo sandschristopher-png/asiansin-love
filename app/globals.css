@@ -10,11 +10,26 @@
   --color-brand-300: #9474C3; /* medium iris: accent hover, gradient transitions */
   --color-brand-500: #72519A; /* refined deep purple: primary CTA, active pills, sparked heart */
   --color-brand-900: #51376D; /* deep muted purple: typography and headers */
+  /* Soft accent sampled from the character art's shirt (public/hero-woman.png). Illustration
+     auras and soft secondary accents only: never CTAs, links, active pills or the wordmark. */
+  --color-periwinkle: #979BCA;
 
   /* Soft aubergine-tinted elevation (never gray): shadow-brand-sm / -md / -glow, with hover: etc. */
   --shadow-brand-sm: 0 1px 3px rgba(81, 55, 109, 0.05), 0 1px 2px rgba(81, 55, 109, 0.04);
   --shadow-brand-md: 0 4px 14px rgba(81, 55, 109, 0.08), 0 2px 6px rgba(81, 55, 109, 0.04);
   --shadow-brand-glow: 0 4px 20px rgba(114, 81, 154, 0.18);
+}
+
+/* Character aura: periwinkle at low opacity in the centre, fading to white at the edges. Pair with
+   mix-blend-multiply on opaque white-background art (the white takes the glow, linework stays). */
+.periwinkle-aura {
+  background-color: #FFFFFF;
+  background-image: radial-gradient(
+    closest-side,
+    color-mix(in srgb, var(--color-periwinkle) 34%, transparent) 0%,
+    color-mix(in srgb, var(--color-periwinkle) 14%, transparent) 62%,
+    transparent 100%
+  );
 }
 
 @keyframes ailHeadsUpIn {

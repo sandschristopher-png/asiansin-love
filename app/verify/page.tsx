@@ -63,13 +63,16 @@ async function snapshotFromVideo(video: HTMLVideoElement): Promise<{ snap?: Omit
 }
 
 function PoseImage({ pose, className = '' }: { pose: VerificationPose; className?: string }) {
+  // Periwinkle aura behind the character; the opaque white art multiplies onto it.
   return (
-    <img
-      src={pose.image}
-      alt={pose.label}
-      className={`object-contain bg-[#E8DFF5]/60 ${className}`}
-      draggable={false}
-    />
+    <span className={`block overflow-hidden periwinkle-aura ${className}`}>
+      <img
+        src={pose.image}
+        alt={pose.label}
+        className="block w-full h-full object-contain mix-blend-multiply"
+        draggable={false}
+      />
+    </span>
   );
 }
 
@@ -324,8 +327,8 @@ export default function VerifyPage() {
 
       {done ? (
         <div className="rounded-3xl bg-white border border-[#D5C6EC] p-8 text-center space-y-4 shadow-xl mx-4 mt-4">
-          <div className="w-44 h-44 mx-auto rounded-3xl overflow-hidden border border-[#D5C6EC] shadow-sm bg-white">
-            <img src="/images/verification/approved.png" alt="Submitted" className="w-full h-full object-contain" />
+          <div className="w-44 h-44 mx-auto rounded-3xl overflow-hidden border border-[#D5C6EC] shadow-sm periwinkle-aura">
+            <img src="/images/verification/approved.png" alt="Submitted" className="w-full h-full object-contain mix-blend-multiply" />
           </div>
           <h2 className="text-xl font-medium text-[#51376D]">Submitted for review</h2>
           <p className="text-sm text-[#51376D]/75 leading-relaxed">
