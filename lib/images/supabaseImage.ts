@@ -26,6 +26,12 @@ export interface EdgeImageOptions {
 
 /** Card defaults: 3:4 at 480x640, quality 75, center crop. */
 export const CARD_IMAGE: Required<EdgeImageOptions> = { width: 480, height: 640, quality: 75, resize: 'cover' };
+/** Round avatars up to ~48px (96px covers 2x screens; one size so the browser caches it once). */
+export const AVATAR_IMAGE: Required<EdgeImageOptions> = { width: 96, height: 96, quality: 75, resize: 'cover' };
+/** Larger round avatars (~80px, mutual Spark modal). */
+export const AVATAR_LG_IMAGE: Required<EdgeImageOptions> = { width: 160, height: 160, quality: 75, resize: 'cover' };
+/** Small 3:4 photo tiles (profile thumbnails, Edit Profile photo grid). */
+export const TILE_IMAGE: Required<EdgeImageOptions> = { width: 320, height: 427, quality: 70, resize: 'cover' };
 /** Profile detail hero: 4:5 at 1080x1350 for full-width phones. */
 export const DETAIL_IMAGE: Required<EdgeImageOptions> = { width: 1080, height: 1350, quality: 75, resize: 'cover' };
 

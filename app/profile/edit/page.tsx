@@ -1,6 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import { TILE_IMAGE, supabaseImage } from '@/lib/images/supabaseImage';
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
@@ -462,7 +463,7 @@ export default function EditProfilePage() {
                     className="relative aspect-[3/4] rounded-xl overflow-hidden bg-[#FFFFFF] border border-[#D5C6EC] group"
                   >
                     <img
-                      src={photo}
+                      src={supabaseImage(photo, TILE_IMAGE)}
                       alt={`Photo ${slotIdx + 1}`}
                       className="w-full h-full object-cover"
                     />

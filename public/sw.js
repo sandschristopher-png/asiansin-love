@@ -2,7 +2,8 @@
 // v3: notification Reply / View actions.
 // v4: precached offline fallback + app shell assets.
 // v5: pushsubscriptionchange re-subscribe.
-const CACHE_NAME = 'ail-cache-v5';
+// v6: cache-first for content-hashed /_next/static files.
+const CACHE_NAME = 'ail-cache-v6';
 const OFFLINE_URL = '/offline.html';
 // App shell that must work with no network. Next.js JS / CSS chunks are content-hashed and are
 // cached at runtime on first use (fetch handler below).
@@ -27,6 +28,25 @@ self.addEventListener('fetch', (event) => {
   const url = new URL(event.request.url);
   // Never cache API responses (messages, profiles, signed URLs), auth hops or cross-origin requests.
   if (url.origin !== self.location.origin || url.pathname.startsWith('/api/') || url.pathname.startsWith('/auth/')) return;
+
+  // Build assets: file names carry a content hash, so a cached copy is always correct. Cache first
+  // (instant repeat loads and installed-PWA launches), network on a miss.
+  if (url.pathname.startsWith('/_next/static/')) {
+    event.respondWith(
+      caches.match(event.request).then(
+        (hit) =>
+          hit ||
+          fetch(event.request).then((response) => {
+            if (response && response.ok) {
+              const copy = response.clone();
+              event.waitUntil(caches.open(CACHE_NAME).then((c) => c.put(event.request, copy)));
+            }
+            return response;
+          })
+      )
+    );
+    return;
+  }
 
   // Pages: network first; offline falls back to the cached copy, then to the offline page.
   if (event.request.mode === 'navigate') {

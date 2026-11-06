@@ -7,6 +7,7 @@ import { Check, Mail, MessageCircle, Search, ShieldCheck, Trash2 } from 'lucide-
 import { supabase } from '@/lib/supabase/client';
 import { ReputationBadge } from '@/components/ReputationBadge';
 import { SwipeableRow } from '@/components/SwipeableRow';
+import { AVATAR_IMAGE, supabaseImage } from '@/lib/images/supabaseImage';
 import { useActionToast } from '@/components/ActionToast';
 
 interface ConversationItem {
@@ -433,7 +434,7 @@ export default function MessagesPage() {
               >
                 <div className="relative w-12 h-12 shrink-0">
                   <img
-                    src={conv.avatarUrl}
+                    src={supabaseImage(conv.avatarUrl, AVATAR_IMAGE)}
                     alt={conv.name}
                     className="rounded-full object-cover w-12 h-12 border border-[#D5C6EC]"
                   />

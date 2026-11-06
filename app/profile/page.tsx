@@ -1,6 +1,7 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import { DETAIL_IMAGE, TILE_IMAGE, supabaseImage } from '@/lib/images/supabaseImage';
 import VerifiedBadge from '@/components/VerifiedBadge';
 
 import { captureCurrentLocation, formatVerifiedDate } from '@/lib/location';
@@ -459,7 +460,7 @@ export default function MyProfilePage() {
                 touchStartX.current = null;
               }}
             >
-              <img src={currentImg} alt={username} className="w-full h-full object-cover pointer-events-none" draggable={false} />
+              <img src={supabaseImage(currentImg, DETAIL_IMAGE)} alt={username} className="w-full h-full object-cover pointer-events-none" draggable={false} />
             </div>
           ) : (
             <Link href="/profile/edit" className="flex flex-col items-center justify-center text-[#72519A] p-6 text-center">
@@ -507,7 +508,7 @@ export default function MyProfilePage() {
             <div className="flex gap-2 overflow-x-auto no-scrollbar [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pb-1">
               {photoList.map((url, idx) => (
                 <div key={url} className="relative w-20 aspect-[3/4] shrink-0 rounded-xl overflow-hidden bg-[#E8DFF5]/60 border border-[#D5C6EC]">
-                  <img src={url} alt={idx === 0 ? 'Main photo' : `Photo ${idx + 1}`} className="w-full h-full object-cover" />
+                  <img src={supabaseImage(url, TILE_IMAGE)} alt={idx === 0 ? 'Main photo' : `Photo ${idx + 1}`} className="w-full h-full object-cover" />
                   {idx === 0 && (
                     <span className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded-full bg-[#72519A]/90 text-white text-[9px] font-semibold">
                       Main

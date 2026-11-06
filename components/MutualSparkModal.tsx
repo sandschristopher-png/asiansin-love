@@ -3,6 +3,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { AmbientAurora } from '@/components/ui/AmbientAurora';
+import { AVATAR_LG_IMAGE, supabaseImage } from '@/lib/images/supabaseImage';
 
 /**
  * "It's a Mutual Spark!" celebration: dimmed backdrop, modal pops in (0.92 -> 1), the two
@@ -44,12 +45,12 @@ export function MutualSparkModal({
         <div className="relative my-3 h-24 w-40 flex items-center justify-center">
           {/* Two 80px avatars overlapping by 12px */}
           <img
-            src={myAvatar || '/placeholder-avatar.svg'}
+            src={supabaseImage(myAvatar, AVATAR_LG_IMAGE)}
             alt="You"
             className="ail-avatar-left relative z-10 w-20 h-20 rounded-full object-cover border-4 border-white shadow-md -mr-3"
           />
           <img
-            src={theirAvatar || '/placeholder-avatar.svg'}
+            src={supabaseImage(theirAvatar, AVATAR_LG_IMAGE)}
             alt={name}
             className="ail-avatar-right relative z-20 w-20 h-20 rounded-full object-cover border-4 border-white shadow-md"
           />

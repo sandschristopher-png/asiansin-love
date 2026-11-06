@@ -2,6 +2,7 @@
 
 import React, { useEffect } from 'react';
 import { Eye, Heart, MessageCircle } from 'lucide-react';
+import { AVATAR_IMAGE, supabaseImage } from '@/lib/images/supabaseImage';
 
 export type NotificationKind = 'message' | 'spark' | 'mutual' | 'visit';
 
@@ -62,7 +63,7 @@ export function NotificationToast({
         }`}
       >
         <img
-          src={toast.avatarUrl || '/placeholder-avatar.svg'}
+          src={supabaseImage(toast.avatarUrl, AVATAR_IMAGE)}
           alt=""
           className="w-11 h-11 rounded-full object-cover ring-2 ring-[#72519A]/20 shrink-0"
         />
