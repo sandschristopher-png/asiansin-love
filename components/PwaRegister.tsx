@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { registerServiceWorker, syncPushSubscription } from '@/lib/push';
+import { startInstallCapture } from '@/lib/pwaInstall';
 
 /**
  * Registers public/sw.js (offline cache + push / notificationclick handlers) and, when the
@@ -10,6 +11,7 @@ import { registerServiceWorker, syncPushSubscription } from '@/lib/push';
  */
 export default function PwaRegister() {
   useEffect(() => {
+    startInstallCapture(); // custom Install card (components/InstallAppCard.tsx)
     registerServiceWorker().then(() => syncPushSubscription());
   }, []);
 

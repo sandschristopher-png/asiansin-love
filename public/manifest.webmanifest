@@ -1,16 +1,43 @@
 {
-  "name": "Asians in Love",
-  "short_name": "Asians in Love",
-  "description": "Sincere Cross-Border Connections",
+  "id": "/",
+  "name": "asiansin.love",
+  "short_name": "asiansin.love",
+  "description": "Serious international dating with verified singles across Asia.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
-  "background_color": "#F9F8FC",
-  "theme_color": "#6555B8",
+  "orientation": "portrait-primary",
+  "background_color": "#FFFFFF",
+  "theme_color": "#653C87",
+  "categories": ["social", "lifestyle"],
   "icons": [
     { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
     { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
     { "src": "/icon-192-maskable.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" },
     { "src": "/icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" },
     { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ],
+  "shortcuts": [
+    {
+      "name": "Discover",
+      "short_name": "Discover",
+      "description": "Browse members",
+      "url": "/discover",
+      "icons": [{ "src": "/icon-192-maskable.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" }]
+    },
+    {
+      "name": "Sparks",
+      "short_name": "Sparks",
+      "description": "Sparks, matches and visitors",
+      "url": "/favorites",
+      "icons": [{ "src": "/icon-192-maskable.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" }]
+    },
+    {
+      "name": "Messages",
+      "short_name": "Messages",
+      "description": "Your conversations",
+      "url": "/messages",
+      "icons": [{ "src": "/icon-192-maskable.png", "sizes": "192x192", "type": "image/png", "purpose": "maskable" }]
+    }
   ]
 }

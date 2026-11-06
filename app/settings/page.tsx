@@ -21,6 +21,7 @@ import {
 import { supabase } from '@/lib/supabase/client';
 import { hardSignOut } from '@/lib/hardSignOut';
 import { PushDeviceRow } from '@/components/PushDeviceRow';
+import { InstallAppCard } from '@/components/InstallAppCard';
 import { HapticsRow } from '@/components/HapticsRow';
 import { AlertPrefsRows } from '@/components/AlertPrefsRows';
 import { PlusBadge } from '@/components/ui/PlusBadge';
@@ -396,6 +397,7 @@ export default function SettingsHubPage() {
             onClick={() => handleToggle('notify_messages')}
           />
 
+          <InstallAppCard variant="settings" />
           <PushDeviceRow />
           <AlertPrefsRows />
           <HapticsRow />

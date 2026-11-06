@@ -58,7 +58,8 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  themeColor: '#72519A',
+  // Matches public/manifest.webmanifest theme_color (Android status bar / task switcher).
+  themeColor: '#653C87',
   interactiveWidget: 'resizes-content',
 };
 
@@ -70,6 +71,15 @@ export default function RootLayout({
 
   return (
     <html lang="en" className={`h-full ${plusJakarta.variable}`}>
+      <head>
+        {/* Keep Chrome's install event if it fires before React hydrates (lib/pwaInstall.ts). */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();window.__ailInstallEvent=e;});",
+          }}
+        />
+      </head>
       <body className="font-sans bg-[#E8DFF5]/60 text-[#51376D] h-full selection:bg-[#72519A] selection:text-white antialiased overflow-hidden">
         <LayoutShell>{children}</LayoutShell>
         <PwaRegister />

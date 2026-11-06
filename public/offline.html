@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#653C87" />
+<title>Offline | asiansin.love</title>
+<style>
+  :root { color-scheme: light; }
+  html, body { margin: 0; height: 100%; background: #FFFFFF; color: #51376D;
+    font-family: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { min-height: 100%; box-sizing: border-box; display: flex; flex-direction: column; align-items: center;
+    justify-content: center; text-align: center; padding: max(24px, env(safe-area-inset-top)) 24px max(24px, env(safe-area-inset-bottom)); }
+  .mark { font-size: 22px; font-weight: 800; letter-spacing: -0.02em; }
+  .mark span { color: #72519A; }
+  .card { margin-top: 24px; max-width: 340px; border: 1px solid #D5C6EC; border-radius: 16px; padding: 20px; }
+  h1 { margin: 0; font-size: 17px; font-weight: 700; }
+  p { margin: 8px 0 0; font-size: 13px; line-height: 1.5; color: rgba(81, 55, 109, 0.75); }
+  button { margin-top: 16px; height: 44px; padding: 0 24px; border: 0; border-radius: 9999px; background: #72519A;
+    color: #FFFFFF; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+</style>
+</head>
+<body>
+<main>
+  <div class="mark">asiansin.<span>love</span></div>
+  <div class="card">
+    <h1>You're offline</h1>
+    <p>Check your connection. Your messages and matches will be here when you're back online.</p>
+    <button type="button" onclick="location.reload()">Try again</button>
+  </div>
+</main>
+</body>
+</html>

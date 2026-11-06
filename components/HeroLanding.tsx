@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { ShieldCheck, ChevronRight, Target, BadgeCheck, MessageCircleHeart, Mic, HeartHandshake } from 'lucide-react';
 import { BrandLogo } from '@/components/BrandLogo';
 import { AmbientAurora } from '@/components/ui/AmbientAurora';
+import { InstallAppCard } from '@/components/InstallAppCard';
 
 /** Signature gradient pill for the landing page's primary actions. */
 const CTA_PILL =
@@ -112,6 +113,7 @@ export function HeroLanding() {
                 <p className="mt-2.5 text-[11px] text-[#51376D]/55">
                   Free to join. By joining you agree to our Terms &amp; Privacy Policy.
                 </p>
+                <InstallAppCard variant="hero" />
               </div>
 
               <ul className="mt-8 grid grid-cols-2 gap-2.5 max-w-[340px] md:max-w-[440px] mx-auto md:mx-0">

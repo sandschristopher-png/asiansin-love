@@ -1,9 +1,16 @@
 // v2: stop caching /api responses (private data) - activating v2 deletes the old cache.
 // v3: notification Reply / View actions.
-const CACHE_NAME = 'ail-cache-v3';
+// v4: precached offline fallback + app shell assets.
+const CACHE_NAME = 'ail-cache-v4';
+const OFFLINE_URL = '/offline.html';
+// App shell that must work with no network. Next.js JS / CSS chunks are content-hashed and are
+// cached at runtime on first use (fetch handler below).
+const PRECACHE = [OFFLINE_URL, '/manifest.webmanifest', '/icon-192.png', '/icon-512.png', '/icon.svg'];
 
 self.addEventListener('install', (event) => {
-  self.skipWaiting();
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((c) => c.addAll(PRECACHE)).then(() => self.skipWaiting())
+  );
 });
 
 self.addEventListener('activate', (event) => {
@@ -17,8 +24,18 @@ self.addEventListener('activate', (event) => {
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
   const url = new URL(event.request.url);
-  // Never cache API responses (messages, profiles, signed URLs) or cross-origin requests.
-  if (url.origin !== self.location.origin || url.pathname.startsWith('/api/')) return;
+  // Never cache API responses (messages, profiles, signed URLs), auth hops or cross-origin requests.
+  if (url.origin !== self.location.origin || url.pathname.startsWith('/api/') || url.pathname.startsWith('/auth/')) return;
+
+  // Pages: network first; offline falls back to the cached copy, then to the offline page.
+  if (event.request.mode === 'navigate') {
+    event.respondWith(
+      fetch(event.request).catch(() =>
+        caches.match(event.request).then((hit) => hit || caches.match(OFFLINE_URL))
+      )
+    );
+    return;
+  }
 
   event.respondWith(
     fetch(event.request).then((response) => {
