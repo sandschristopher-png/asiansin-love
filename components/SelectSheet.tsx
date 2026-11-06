@@ -42,7 +42,7 @@ export function SelectSheet({
         onClick={() => setOpen(true)}
         aria-haspopup="dialog"
         aria-label={`${label}: ${value || placeholder}`}
-        className="inline-flex max-w-[60vw] items-center gap-1.5 pl-3 pr-2.5 py-1.5 rounded-xl bg-[#E8DFF5]/60 border border-[#72519A]/20 text-xs font-semibold text-[#72519A] cursor-pointer active:scale-95 transition"
+        className="inline-flex max-w-[60vw] items-center gap-1.5 pl-3 pr-2.5 py-1.5 rounded-xl bg-[#E8E6F1]/60 border border-[#665D96]/20 text-xs font-semibold text-[#665D96] cursor-pointer active:scale-95 transition"
       >
         <span className="truncate">{value || placeholder}</span>
         <ChevronDown className="w-3.5 h-3.5 shrink-0" />
@@ -57,18 +57,18 @@ export function SelectSheet({
           aria-label={label}
         >
           <div
-            className="w-full max-w-[430px] max-h-[75dvh] flex flex-col rounded-t-3xl bg-white border border-[#D5C6EC] shadow-xl ail-sheet-up"
+            className="w-full max-w-[430px] max-h-[75dvh] flex flex-col rounded-t-3xl bg-white border border-[#D0CDE1] shadow-xl ail-sheet-up"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="pt-2.5 shrink-0" aria-hidden>
-              <div className="w-10 h-1 rounded-full bg-[#E8DFF5] mx-auto mb-3" />
+              <div className="w-10 h-1 rounded-full bg-[#E8E6F1] mx-auto mb-3" />
             </div>
-            <div className="flex items-center justify-between px-5 pb-3 border-b border-[#D5C6EC] shrink-0">
-              <h3 className="text-sm font-bold text-[#51376D]">{label}</h3>
+            <div className="flex items-center justify-between px-5 pb-3 border-b border-[#D0CDE1] shrink-0">
+              <h3 className="text-sm font-bold text-[#413B5E]">{label}</h3>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="w-8 h-8 rounded-full flex items-center justify-center text-[#51376D]/55 hover:bg-[#E8DFF5]/70"
+                className="w-8 h-8 rounded-full flex items-center justify-center text-[#413B5E]/55 hover:bg-[#E8E6F1]/70"
                 aria-label="Close"
               >
                 <X className="w-4 h-4" />
@@ -86,7 +86,7 @@ export function SelectSheet({
                         setOpen(false);
                       }}
                       className={`w-full flex items-center justify-between px-3 py-3 rounded-2xl text-left text-sm transition ${
-                        selected ? 'bg-[#E8DFF5]/60 font-semibold text-[#72519A]' : 'text-[#51376D] hover:bg-[#E8DFF5]/40'
+                        selected ? 'bg-[#E8E6F1]/60 font-semibold text-[#665D96]' : 'text-[#413B5E] hover:bg-[#E8E6F1]/40'
                       }`}
                     >
                       <span>{opt}</span>

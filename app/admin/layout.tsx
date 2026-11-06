@@ -16,7 +16,7 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (!admin) notFound();
 
   return (
-    <div className="flex-1 flex flex-col bg-white text-[#51376D]">
+    <div className="flex-1 flex flex-col bg-white text-[#413B5E]">
       <AdminHeader name={admin.name} />
       <div className="flex-1 bg-white px-4 py-4 pb-16">{children}</div>
     </div>

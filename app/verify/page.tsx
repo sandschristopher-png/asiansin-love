@@ -304,50 +304,50 @@ export default function VerifyPage() {
   }, [attemptToken, snapshot, requestChallenge, router]);
 
   return (
-    <main className="min-h-screen bg-white text-[#51376D] flex flex-col justify-start">
+    <main className="min-h-screen bg-white text-[#413B5E] flex flex-col justify-start">
       {!cameraOn && (
-        <div className="flex items-center justify-between pt-3 pb-4 border-b border-[#D5C6EC] px-4">
+        <div className="flex items-center justify-between pt-3 pb-4 border-b border-[#D0CDE1] px-4">
           <button
             type="button"
             onClick={() => router.back()}
-            className="h-10 w-10 rounded-2xl bg-white border border-[#D5C6EC] text-[#51376D] hover:bg-[#E8DFF5]/70 flex items-center justify-center text-sm active:scale-95 transition shadow-xs"
+            className="h-10 w-10 rounded-2xl bg-white border border-[#D0CDE1] text-[#413B5E] hover:bg-[#E8E6F1]/70 flex items-center justify-center text-sm active:scale-95 transition shadow-xs"
             aria-label="Back"
           >
-            <ArrowLeft className="w-5 h-5 text-[#51376D]" />
+            <ArrowLeft className="w-5 h-5 text-[#413B5E]" />
           </button>
           <div className="flex items-center gap-2">
-            <ShieldCheck className="w-5 h-5 text-[#72519A]" />
-            <h1 className="text-xl font-medium text-[#51376D]">Profile Verification</h1>
+            <ShieldCheck className="w-5 h-5 text-[#665D96]" />
+            <h1 className="text-xl font-medium text-[#413B5E]">Profile Verification</h1>
           </div>
           <div className="w-10" />
         </div>
       )}
 
       {done ? (
-        <div className="rounded-3xl bg-white border border-[#D5C6EC] p-8 text-center space-y-4 shadow-xl mx-4 mt-4">
+        <div className="rounded-3xl bg-white border border-[#D0CDE1] p-8 text-center space-y-4 shadow-xl mx-4 mt-4">
           <div className="w-44 h-44 mx-auto rounded-3xl overflow-hidden bg-white">
             <img src="/images/verification/approved.png" alt="Submitted" className="w-full h-full object-contain" />
           </div>
-          <h2 className="text-xl font-medium text-[#51376D]">Submitted for review</h2>
-          <p className="text-sm text-[#51376D]/75 leading-relaxed">
+          <h2 className="text-xl font-medium text-[#413B5E]">Submitted for review</h2>
+          <p className="text-sm text-[#413B5E]/75 leading-relaxed">
             {done.message} Taking you back to Discover...
           </p>
         </div>
       ) : starting ? (
         <div className="p-6 text-center space-y-3">
-          <Loader2 className="w-8 h-8 text-[#72519A] animate-spin mx-auto" />
-          <p className="text-xs font-semibold text-[#51376D]/75">Preparing your pose...</p>
+          <Loader2 className="w-8 h-8 text-[#665D96] animate-spin mx-auto" />
+          <p className="text-xs font-semibold text-[#413B5E]/75">Preparing your pose...</p>
         </div>
       ) : startError || !pose ? (
-        <div className="rounded-3xl bg-white border border-[#D5C6EC] p-8 text-center space-y-4 shadow-sm mx-4 mt-4">
+        <div className="rounded-3xl bg-white border border-[#D0CDE1] p-8 text-center space-y-4 shadow-sm mx-4 mt-4">
           <div className="h-16 w-16 mx-auto rounded-full bg-red-50 border border-red-200 text-red-600 flex items-center justify-center">
             <AlertCircle className="w-8 h-8" />
           </div>
-          <p className="text-sm text-[#51376D]/75 leading-relaxed">{startError || 'Could not start verification.'}</p>
+          <p className="text-sm text-[#413B5E]/75 leading-relaxed">{startError || 'Could not start verification.'}</p>
           <button
             type="button"
             onClick={() => router.push(startError?.includes('profile photo') ? '/profile/edit' : '/discover')}
-            className="text-xs font-semibold text-[#72519A] hover:text-[#51376D] transition"
+            className="text-xs font-semibold text-[#665D96] hover:text-[#413B5E] transition"
           >
             {startError?.includes('profile photo') ? 'Add a main photo' : 'Back to Discover'}
           </button>
@@ -374,7 +374,7 @@ export default function VerifyPage() {
               <div
                 role="status"
                 aria-live="polite"
-                className="absolute -top-12 left-1/2 -translate-x-1/2 whitespace-nowrap inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white text-[#51376D] text-xs font-semibold shadow-lg"
+                className="absolute -top-12 left-1/2 -translate-x-1/2 whitespace-nowrap inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white text-[#413B5E] text-xs font-semibold shadow-lg"
               >
                 <span
                   aria-hidden
@@ -429,10 +429,10 @@ export default function VerifyPage() {
               type="button"
               onClick={takeSnapshot}
               disabled={gateState !== 'ready' || faceStatus !== 'ok'}
-              className="h-20 w-20 rounded-full bg-white border-4 border-[#72519A] flex items-center justify-center active:scale-95 transition shadow-lg disabled:opacity-40 disabled:border-white/60 disabled:active:scale-100"
+              className="h-20 w-20 rounded-full bg-white border-4 border-[#665D96] flex items-center justify-center active:scale-95 transition shadow-lg disabled:opacity-40 disabled:border-white/60 disabled:active:scale-100"
               aria-label="Take photo"
             >
-              <Camera className="w-7 h-7 text-[#72519A]" />
+              <Camera className="w-7 h-7 text-[#665D96]" />
             </button>
             <span className="text-[11px] text-white/85 font-medium">
               {gateState === 'ready' && faceStatus === 'ok' ? 'Do the pose, then tap to capture' : 'Face in the oval, pose clearly visible'}
@@ -441,20 +441,20 @@ export default function VerifyPage() {
         </div>
       ) : snapshot ? (
         <div className="mx-4 mt-4 space-y-4 pb-28">
-          <div className="p-4 rounded-3xl bg-white border border-[#D5C6EC] shadow-sm space-y-3">
-            <span className="text-[11px] font-medium uppercase tracking-wider text-[#72519A]">Check your photo</span>
+          <div className="p-4 rounded-3xl bg-white border border-[#D0CDE1] shadow-sm space-y-3">
+            <span className="text-[11px] font-medium uppercase tracking-wider text-[#665D96]">Check your photo</span>
             <div className="grid grid-cols-[1fr_88px] gap-3 items-start">
               <img
                 src={snapshot.previewUrl}
                 alt="Your verification selfie"
-                className="w-full aspect-[3/4] object-cover rounded-2xl border border-[#D5C6EC] scale-x-[-1]"
+                className="w-full aspect-[3/4] object-cover rounded-2xl border border-[#D0CDE1] scale-x-[-1]"
               />
               <figure className="space-y-1">
                 <PoseImage pose={pose} className="w-full aspect-square rounded-2xl" />
-                <figcaption className="text-[10px] text-center text-[#51376D]/55 leading-tight">{pose.label}</figcaption>
+                <figcaption className="text-[10px] text-center text-[#413B5E]/55 leading-tight">{pose.label}</figcaption>
               </figure>
             </div>
-            <p className="text-xs text-[#51376D]/75">
+            <p className="text-xs text-[#413B5E]/75">
               Make sure your whole face and the pose are clearly visible.
             </p>
           </div>
@@ -466,7 +466,7 @@ export default function VerifyPage() {
               type="button"
               disabled={submitting}
               onClick={retake}
-              className="py-3.5 rounded-2xl bg-white border border-[#D5C6EC] text-[#51376D] text-xs font-semibold flex items-center justify-center gap-1.5 active:scale-95 transition disabled:opacity-50"
+              className="py-3.5 rounded-2xl bg-white border border-[#D0CDE1] text-[#413B5E] text-xs font-semibold flex items-center justify-center gap-1.5 active:scale-95 transition disabled:opacity-50"
             >
               <RotateCcw className="w-4 h-4" />
               Retake
@@ -475,7 +475,7 @@ export default function VerifyPage() {
               type="button"
               disabled={submitting}
               onClick={handleSubmit}
-              className="py-3.5 rounded-2xl bg-[#72519A] hover:bg-[#51376D] text-white text-xs font-semibold flex items-center justify-center gap-1.5 shadow-md shadow-[#72519A]/30 active:scale-95 transition disabled:opacity-60"
+              className="py-3.5 rounded-2xl bg-[#665D96] hover:bg-[#413B5E] text-white text-xs font-semibold flex items-center justify-center gap-1.5 shadow-md shadow-[#665D96]/30 active:scale-95 transition disabled:opacity-60"
             >
               {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <ScanFace className="w-4 h-4" />}
               {submitting ? 'Checking...' : 'Verify with AI'}
@@ -484,11 +484,11 @@ export default function VerifyPage() {
         </div>
       ) : (
         <div className="mx-4 mt-4 space-y-4 pb-28">
-          <div className="p-5 rounded-3xl bg-white border border-[#D5C6EC] space-y-3 shadow-sm">
-            <span className="text-[11px] font-medium uppercase tracking-wider text-[#72519A]">Match this pose:</span>
+          <div className="p-5 rounded-3xl bg-white border border-[#D0CDE1] space-y-3 shadow-sm">
+            <span className="text-[11px] font-medium uppercase tracking-wider text-[#665D96]">Match this pose:</span>
             <PoseImage pose={pose} className="w-44 h-44 mx-auto rounded-3xl" />
-            <p className="text-center text-sm font-medium text-[#51376D]">{pose.label}</p>
-            <p className="text-xs text-[#51376D]/75 leading-relaxed text-center">
+            <p className="text-center text-sm font-medium text-[#413B5E]">{pose.label}</p>
+            <p className="text-xs text-[#413B5E]/75 leading-relaxed text-center">
               Take one live selfie copying this pose. We compare it with your main photo, then a member of
               our team approves your badge.
             </p>
@@ -499,7 +499,7 @@ export default function VerifyPage() {
           <button
             type="button"
             onClick={startCamera}
-            className="w-full py-3.5 rounded-2xl bg-[#72519A] hover:bg-[#51376D] text-white text-xs font-semibold uppercase tracking-wider flex items-center justify-center gap-2 shadow-md shadow-[#72519A]/30 active:scale-95 transition"
+            className="w-full py-3.5 rounded-2xl bg-[#665D96] hover:bg-[#413B5E] text-white text-xs font-semibold uppercase tracking-wider flex items-center justify-center gap-2 shadow-md shadow-[#665D96]/30 active:scale-95 transition"
           >
             <Camera className="w-4 h-4" />
             Open camera

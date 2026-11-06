@@ -22,7 +22,7 @@ export default function VerifiedBadge({ size = "md", className = "", showText = 
   const s = sizeConfig[size] || sizeConfig.md;
   return (
     <span
-      className={`inline-flex items-center shrink-0 rounded-full border border-[#D5C6EC] bg-white bg-[linear-gradient(rgba(232,223,245,0.5),rgba(232,223,245,0.5))] shadow-brand-sm text-[#72519A] font-semibold leading-none select-none ${s.pill} ${className}`}
+      className={`inline-flex items-center shrink-0 rounded-full border border-[#D0CDE1] bg-white bg-[linear-gradient(rgba(232,230,241,0.5),rgba(232,230,241,0.5))] shadow-brand-sm text-[#665D96] font-semibold leading-none select-none ${s.pill} ${className}`}
       title="Selfie verified member"
       aria-label="Verified member"
     >

@@ -20,7 +20,7 @@ const RESTING_HEIGHTS = [
  * Voice waveform: rests at a fixed fingerprint; while playing, each bar loops through staggered
  * bounce heights (Framer Motion, so it runs regardless of CSS keyframes) and settles back to its
  * resting height in 250 ms on pause. Bars before the playback position fill with the brand
- * gradient; the rest stay #D5C6EC. Heights are percentages of the fixed h-7 row, so nothing
+ * gradient; the rest stay #D0CDE1. Heights are percentages of the fixed h-7 row, so nothing
  * around it moves.
  */
 export function AnimatedWaveform({ isPlaying, progress, barCount = 24 }: WaveformProps) {
@@ -38,7 +38,7 @@ export function AnimatedWaveform({ isPlaying, progress, barCount = 24 }: Wavefor
             key={i}
             aria-hidden
             className={`w-[3px] rounded-full transition-colors duration-200 ${
-              isPlayed ? 'bg-[#72519A]' : 'bg-[#D5C6EC]'
+              isPlayed ? 'bg-[#665D96]' : 'bg-[#D0CDE1]'
             }`}
             initial={false}
             animate={

@@ -33,8 +33,8 @@ export function BrandLogo({ className = '', href = '/discover', size = 'md', tex
       ].filter(Boolean).join(' ')}
       aria-label="asiansin.love"
     >
-      <span className={`font-bold ${onDark ? 'text-white' : 'text-[#51376D]'}`}>asiansin.</span>
-      <span className="bg-gradient-to-r from-[#72519A] via-[#9474C3] to-[#B5A0DA] bg-clip-text text-transparent font-extrabold">love</span>
+      <span className={`font-bold ${onDark ? 'text-white' : 'text-[#413B5E]'}`}>asiansin.</span>
+      <span className="bg-gradient-to-r from-[#665D96] via-[#9A93BC] to-[#B8B3D1] bg-clip-text text-transparent font-extrabold">love</span>
     </span>
   );
 

@@ -24,25 +24,25 @@ export function AmbientAurora({ layer = 'page' }: { layer?: 'page' | 'card' }) {
     // reducedMotion="never": the OS / browser reduce-motion setting never freezes the drift.
     <MotionConfig reducedMotion="never">
     <div aria-hidden className={`absolute inset-0 overflow-hidden pointer-events-none ${layer === 'card' ? '-z-10' : 'z-0'}`}>
-      {/* Blob 1: Iris / Brand Violet (#72519A) - Lower-Mid Left */}
+      {/* Blob 1: Iris / Brand Violet (#665D96) - Lower-Mid Left */}
       <motion.div
         animate={{ x: [0, 50, -25, 0], y: [0, -35, 25, 0], scale: [1, 1.15, 0.92, 1] }}
         transition={{ duration: 4.8, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute top-[42%] -left-12 sm:left-4 w-[280px] h-[260px] sm:w-[340px] sm:h-[300px] rounded-full bg-[#E8DFF5]/80 blur-[70px] will-change-transform"
+        className="absolute top-[42%] -left-12 sm:left-4 w-[280px] h-[260px] sm:w-[340px] sm:h-[300px] rounded-full bg-[#E8E6F1]/80 blur-[70px] will-change-transform"
       />
 
-      {/* Blob 2: Radiant Pink (#9474C3) - Lower-Mid Right */}
+      {/* Blob 2: Radiant Pink (#9A93BC) - Lower-Mid Right */}
       <motion.div
         animate={{ x: [0, -45, 25, 0], y: [0, 35, -30, 0], scale: [1, 0.9, 1.14, 1] }}
         transition={{ duration: 5.2, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute top-[52%] -right-12 sm:right-4 w-[270px] h-[260px] sm:w-[320px] sm:h-[290px] rounded-full bg-[#D5C6EC]/60 blur-[70px] will-change-transform"
+        className="absolute top-[52%] -right-12 sm:right-4 w-[270px] h-[260px] sm:w-[320px] sm:h-[290px] rounded-full bg-[#D0CDE1]/60 blur-[70px] will-change-transform"
       />
 
-      {/* Blob 3: Warm Lilac / Rose (#D5C6EC) - Bottom Center Base */}
+      {/* Blob 3: Warm Lilac / Rose (#D0CDE1) - Bottom Center Base */}
       <motion.div
         animate={{ x: [0, 35, -35, 0], y: [0, -25, 20, 0], scale: [1, 1.15, 0.92, 1] }}
         transition={{ duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
-        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[320px] h-[240px] sm:w-[380px] sm:h-[280px] rounded-full bg-[#E8DFF5]/70 blur-[75px] will-change-transform"
+        className="absolute bottom-0 left-1/2 -translate-x-1/2 w-[320px] h-[240px] sm:w-[380px] sm:h-[280px] rounded-full bg-[#E8E6F1]/70 blur-[75px] will-change-transform"
       />
     </div>
     </MotionConfig>

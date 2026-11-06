@@ -53,22 +53,22 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="min-h-screen w-full bg-white flex items-center justify-center p-4 sm:p-6 font-sans antialiased">
-      <main className="w-full max-w-[420px] bg-white rounded-3xl border border-[#D5C6EC] shadow-brand-md p-7 sm:p-9 space-y-6">
+      <main className="w-full max-w-[420px] bg-white rounded-3xl border border-[#D0CDE1] shadow-brand-md p-7 sm:p-9 space-y-6">
         <div className="flex justify-center">
           <BrandLogo size="md" />
         </div>
 
         {sentTo ? (
           <div className="text-center space-y-3">
-            <div className="w-14 h-14 mx-auto rounded-2xl bg-[#E8DFF5]/60 border border-[#D5C6EC] text-[#72519A] flex items-center justify-center">
+            <div className="w-14 h-14 mx-auto rounded-2xl bg-[#E8E6F1]/60 border border-[#D0CDE1] text-[#665D96] flex items-center justify-center">
               <CheckCircle2 className="w-7 h-7" />
             </div>
-            <h1 className="text-xl font-extrabold text-[#51376D] tracking-tight">Check your inbox</h1>
-            <p className="text-xs text-[#51376D]/75 leading-relaxed">
+            <h1 className="text-xl font-extrabold text-[#413B5E] tracking-tight">Check your inbox</h1>
+            <p className="text-xs text-[#413B5E]/75 leading-relaxed">
               We&apos;ve sent a password reset link to{' '}
-              <span className="font-semibold text-[#51376D] break-all">{sentTo}</span>.
+              <span className="font-semibold text-[#413B5E] break-all">{sentTo}</span>.
             </p>
-            <p className="text-[11px] text-[#51376D]/55 leading-relaxed bg-white border border-[#D5C6EC] rounded-xl px-3.5 py-2.5 text-left">
+            <p className="text-[11px] text-[#413B5E]/55 leading-relaxed bg-white border border-[#D0CDE1] rounded-xl px-3.5 py-2.5 text-left">
               Nothing after a couple of minutes? Check your spam or promotions folder.
             </p>
             {error && (
@@ -80,7 +80,7 @@ export default function ForgotPasswordPage() {
               type="button"
               disabled={cooldown > 0 || isLoading}
               onClick={() => void send(sentTo)}
-              className="w-full h-11 rounded-full border border-[#D5C6EC] bg-white text-sm font-medium text-[#51376D] hover:bg-[#E8DFF5]/30 transition-colors disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2"
+              className="w-full h-11 rounded-full border border-[#D0CDE1] bg-white text-sm font-medium text-[#413B5E] hover:bg-[#E8E6F1]/30 transition-colors disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2"
             >
               {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
               {cooldown > 0 ? `Resend link in ${cooldown}s` : 'Resend link'}
@@ -91,7 +91,7 @@ export default function ForgotPasswordPage() {
                 setSentTo(null);
                 setError(null);
               }}
-              className="text-xs font-semibold text-[#72519A] hover:underline"
+              className="text-xs font-semibold text-[#665D96] hover:underline"
             >
               Use a different email
             </button>
@@ -99,18 +99,18 @@ export default function ForgotPasswordPage() {
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="text-center space-y-2">
-              <h1 className="text-2xl font-extrabold text-[#51376D] tracking-tight">Reset your password</h1>
-              <p className="text-xs text-[#51376D]/75 leading-relaxed">
+              <h1 className="text-2xl font-extrabold text-[#413B5E] tracking-tight">Reset your password</h1>
+              <p className="text-xs text-[#413B5E]/75 leading-relaxed">
                 Enter your registered email address and we&apos;ll send you a recovery link.
               </p>
             </div>
 
             <div className="space-y-1.5 text-left">
-              <label htmlFor="email" className="text-xs font-bold text-[#51376D] block">
+              <label htmlFor="email" className="text-xs font-bold text-[#413B5E] block">
                 Email address
               </label>
               <div className="relative">
-                <Mail className="w-4 h-4 text-[#51376D]/55 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <Mail className="w-4 h-4 text-[#413B5E]/55 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   id="email"
                   type="email"
@@ -119,7 +119,7 @@ export default function ForgotPasswordPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
-                  className="w-full h-12 pl-10 pr-4 rounded-full bg-white border border-[#D5C6EC] text-base sm:text-sm text-[#51376D] placeholder:text-[#51376D]/40 focus:outline-none focus:border-[#72519A] focus:ring-2 focus:ring-[#72519A]/30 transition"
+                  className="w-full h-12 pl-10 pr-4 rounded-full bg-white border border-[#D0CDE1] text-base sm:text-sm text-[#413B5E] placeholder:text-[#413B5E]/40 focus:outline-none focus:border-[#665D96] focus:ring-2 focus:ring-[#665D96]/30 transition"
                 />
               </div>
             </div>
@@ -133,7 +133,7 @@ export default function ForgotPasswordPage() {
             <button
               type="submit"
               disabled={isLoading || !email.trim() || cooldown > 0}
-              className="w-full h-12 rounded-full bg-gradient-to-r from-[#72519A] to-[#9474C3] text-white text-sm font-semibold flex items-center justify-center gap-2 shadow-brand-glow hover:opacity-95 active:scale-[0.99] transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+              className="w-full h-12 rounded-full bg-gradient-to-r from-[#665D96] to-[#9A93BC] text-white text-sm font-semibold flex items-center justify-center gap-2 shadow-brand-glow hover:opacity-95 active:scale-[0.99] transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
               <span>{isLoading ? 'Sending...' : 'Send Reset Link'}</span>
@@ -141,10 +141,10 @@ export default function ForgotPasswordPage() {
           </form>
         )}
 
-        <div className="pt-2 text-center text-xs text-[#51376D]/75 border-t border-[#D5C6EC]">
+        <div className="pt-2 text-center text-xs text-[#413B5E]/75 border-t border-[#D0CDE1]">
           <span className="inline-block pt-3">
             Remembered your password?{' '}
-            <Link href="/login" className="font-bold text-[#72519A] hover:underline">
+            <Link href="/login" className="font-bold text-[#665D96] hover:underline">
               Sign in
             </Link>
           </span>

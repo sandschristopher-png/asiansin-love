@@ -91,27 +91,27 @@ export function EditHighlightsModal({
       onClick={onClose}
     >
       <div
-        className="w-full max-w-lg rounded-t-3xl sm:rounded-3xl border border-[#D5C6EC] bg-white shadow-xl max-h-[90dvh] flex flex-col ail-sheet-up"
+        className="w-full max-w-lg rounded-t-3xl sm:rounded-3xl border border-[#D0CDE1] bg-white shadow-xl max-h-[90dvh] flex flex-col ail-sheet-up"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="pt-2.5 shrink-0 sm:hidden" aria-hidden>
-          <div className="w-10 h-1 rounded-full bg-[#E8DFF5] mx-auto mb-1" />
+          <div className="w-10 h-1 rounded-full bg-[#E8E6F1] mx-auto mb-1" />
         </div>
-        <div className="flex items-center justify-between px-5 pt-4 pb-3 border-b border-[#D5C6EC] shrink-0">
-          <h3 className="text-sm font-bold text-[#51376D]">
+        <div className="flex items-center justify-between px-5 pt-4 pb-3 border-b border-[#D0CDE1] shrink-0">
+          <h3 className="text-sm font-bold text-[#413B5E]">
             Curate Your Top 3 Highlights
           </h3>
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full p-1.5 text-[#51376D]/75 hover:bg-[#E8DFF5]/70 transition-colors"
+            className="rounded-full p-1.5 text-[#413B5E]/75 hover:bg-[#E8E6F1]/70 transition-colors"
           >
             <X className="h-4 w-4" />
           </button>
         </div>
 
         <form onSubmit={handleSubmit} className="flex-1 overflow-y-auto no-scrollbar px-5 py-4 space-y-4">
-          <p className="text-xs text-[#51376D]/75 leading-relaxed">
+          <p className="text-xs text-[#413B5E]/75 leading-relaxed">
             Pick up to 3 interests to spotlight on your profile and write a quick story or comment to give matches an easy conversation starter.
           </p>
 
@@ -126,7 +126,7 @@ export function EditHighlightsModal({
           )}
 
           <div className="space-y-2">
-            <div className="flex justify-between items-center text-xs font-semibold text-[#51376D]/85">
+            <div className="flex justify-between items-center text-xs font-semibold text-[#413B5E]/85">
               <span>Select Interests ({selectedIds.length}/3)</span>
             </div>
             <div className="flex flex-wrap gap-2 max-h-36 overflow-y-auto p-1">
@@ -138,8 +138,8 @@ export function EditHighlightsModal({
                     type="button"
                     onClick={() => toggleHighlight(item.tag_id)}
                     className={'inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-colors ' + (isSelected
-                      ? 'bg-[#72519A] text-white shadow-xs'
-                      : 'border border-[#D5C6EC] bg-white text-[#51376D]/85 hover:border-[#72519A]/50')}
+                      ? 'bg-[#665D96] text-white shadow-xs'
+                      : 'border border-[#D0CDE1] bg-white text-[#413B5E]/85 hover:border-[#665D96]/50')}
                   >
                     {isSelected && <Check className="h-3 w-3" />}
                     {item.label}
@@ -151,7 +151,7 @@ export function EditHighlightsModal({
 
           {selectedObjects.length > 0 && (
             <div className="space-y-3 pt-2">
-              <span className="text-xs font-semibold text-[#51376D]/85">
+              <span className="text-xs font-semibold text-[#413B5E]/85">
                 Mini-Stories &amp; Context
               </span>
               <div className="space-y-3">
@@ -160,13 +160,13 @@ export function EditHighlightsModal({
                   return (
                     <div
                       key={item.tag_id}
-                      className="rounded-xl border border-[#D5C6EC] bg-white p-3"
+                      className="rounded-xl border border-[#D0CDE1] bg-white p-3"
                     >
                       <div className="flex justify-between items-center mb-1.5">
-                        <span className="text-xs font-bold text-[#51376D]">
+                        <span className="text-xs font-bold text-[#413B5E]">
                           {item.label}
                         </span>
-                        <span className="text-[10px] text-[#51376D]/75">
+                        <span className="text-[10px] text-[#413B5E]/75">
                           {val.length}/120
                         </span>
                       </div>
@@ -176,7 +176,7 @@ export function EditHighlightsModal({
                         maxLength={120}
                         onChange={(e) => handleStoryChange(item.tag_id, e.target.value)}
                         placeholder={`Why do you love ${item.label}? (e.g., favorite spots, habits)`}
-                        className="w-full rounded-lg border border-[#D5C6EC] bg-white px-3 py-2 text-xs text-[#51376D] outline-none focus:border-[#72519A] transition-colors"
+                        className="w-full rounded-lg border border-[#D0CDE1] bg-white px-3 py-2 text-xs text-[#413B5E] outline-none focus:border-[#665D96] transition-colors"
                       />
                     </div>
                   );
@@ -189,7 +189,7 @@ export function EditHighlightsModal({
             <button
               type="submit"
               disabled={isSaving}
-              className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-[#72519A] py-2.5 text-xs font-semibold text-white shadow-xs transition hover:bg-[#72519A] disabled:opacity-50"
+              className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-[#665D96] py-2.5 text-xs font-semibold text-white shadow-xs transition hover:bg-[#665D96] disabled:opacity-50"
             >
               {isSaving ? (
                 <>

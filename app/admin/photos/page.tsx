@@ -52,18 +52,18 @@ function PhotoCard({ member, onDone }: { member: PendingMember; onDone: (id: str
     });
 
   return (
-    <article className="p-4 rounded-2xl border border-[#D5C6EC] bg-white mb-3 shadow-2xs">
+    <article className="p-4 rounded-2xl border border-[#D0CDE1] bg-white mb-3 shadow-2xs">
       <div className="flex items-center gap-3">
         <AdminAvatar url={member.avatarUrl} name={member.name} size={44} />
         <div className="min-w-0 flex-1">
-          <p className="font-semibold text-[#51376D] flex items-center gap-1 min-w-0">
+          <p className="font-semibold text-[#413B5E] flex items-center gap-1 min-w-0">
             <span className="truncate">
               {member.name}
-              {member.age !== null && <span className="font-normal text-[#51376D]/75">, {member.age}</span>}
+              {member.age !== null && <span className="font-normal text-[#413B5E]/75">, {member.age}</span>}
             </span>
-            {verified && <BadgeCheck className="w-4 h-4 shrink-0 text-[#72519A]" aria-label="Verified" />}
+            {verified && <BadgeCheck className="w-4 h-4 shrink-0 text-[#665D96]" aria-label="Verified" />}
           </p>
-          <p className="text-xs text-[#51376D]/75 flex items-center gap-1 min-w-0">
+          <p className="text-xs text-[#413B5E]/75 flex items-center gap-1 min-w-0">
             {member.location && <MapPin className="w-3 h-3 shrink-0" aria-hidden />}
             <span className="truncate">
               {[member.location, `Uploaded ${timeAgo(member.uploadedAt)}`].filter(Boolean).join(' · ')}
@@ -74,7 +74,7 @@ function PhotoCard({ member, onDone }: { member: PendingMember; onDone: (id: str
       </div>
 
       {member.photos.length === 0 ? (
-        <p className="mt-3 text-sm text-[#51376D]/75">No photos on file.</p>
+        <p className="mt-3 text-sm text-[#413B5E]/75">No photos on file.</p>
       ) : (
         <div className="mt-3 grid grid-cols-3 gap-2">
           {member.photos.map((url) => {
@@ -88,13 +88,13 @@ function PhotoCard({ member, onDone }: { member: PendingMember; onDone: (id: str
                 aria-label={rejecting ? `Flag photo` : `Expand photo`}
                 aria-pressed={rejecting ? flagged : undefined}
                 className={`relative aspect-[3/4] overflow-hidden rounded-xl border ${
-                  flagged ? 'border-red-500 ring-2 ring-red-300' : 'border-[#D5C6EC]'
+                  flagged ? 'border-red-500 ring-2 ring-red-300' : 'border-[#D0CDE1]'
                 } cursor-pointer`}
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={url} alt={`${member.name} photo`} className={`w-full h-full object-cover ${flagged ? 'opacity-50' : ''}`} />
                 {isMain && (
-                  <span className="absolute top-1 left-1 rounded-full bg-[#51376D]/80 px-1.5 py-0.5 text-[9px] font-semibold text-white">Main</span>
+                  <span className="absolute top-1 left-1 rounded-full bg-[#413B5E]/80 px-1.5 py-0.5 text-[9px] font-semibold text-white">Main</span>
                 )}
                 {flagged && <XCircle className="absolute inset-0 m-auto w-7 h-7 text-red-600" aria-hidden />}
               </button>
@@ -117,17 +117,17 @@ function PhotoCard({ member, onDone }: { member: PendingMember; onDone: (id: str
             onChange={(e) => setReason(e.target.value)}
             maxLength={200}
             placeholder="Reason shown to the member (optional)"
-            className="w-full h-10 rounded-xl border border-[#D5C6EC] bg-white px-3 text-sm outline-none focus:border-[#72519A]"
+            className="w-full h-10 rounded-xl border border-[#D0CDE1] bg-white px-3 text-sm outline-none focus:border-[#665D96]"
           />
           <div className="flex flex-wrap items-center gap-2">
-            <label className="text-xs text-[#51376D]/75" htmlFor={`pen-${member.id}`}>
+            <label className="text-xs text-[#413B5E]/75" htmlFor={`pen-${member.id}`}>
               Penalty
             </label>
             <select
               id={`pen-${member.id}`}
               value={points}
               onChange={(e) => setPoints(Number(e.target.value))}
-              className="h-9 rounded-lg border border-[#D5C6EC] bg-white px-2 text-sm"
+              className="h-9 rounded-lg border border-[#D0CDE1] bg-white px-2 text-sm"
             >
               <option value={0}>None</option>
               <option value={5}>-5%</option>
@@ -174,7 +174,7 @@ function PhotoCard({ member, onDone }: { member: PendingMember; onDone: (id: str
       )}
 
       {expanded && (
-        <div className="fixed inset-0 z-50 bg-[#51376D]/90 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Photo" onClick={() => setExpanded(null)}>
+        <div className="fixed inset-0 z-50 bg-[#413B5E]/90 flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label="Photo" onClick={() => setExpanded(null)}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={expanded} alt={`${member.name} photo`} className="w-full max-w-[398px] max-h-full rounded-2xl object-contain" />
           <button type="button" className="absolute top-4 right-4 p-2 rounded-full bg-white/15 text-white" aria-label="Close">

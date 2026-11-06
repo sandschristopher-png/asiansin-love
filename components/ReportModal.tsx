@@ -87,19 +87,19 @@ export function ReportModal({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="pt-2.5 shrink-0" aria-hidden>
-          <div className="w-10 h-1 rounded-full bg-[#E8DFF5] mx-auto mb-2" />
+          <div className="w-10 h-1 rounded-full bg-[#E8E6F1] mx-auto mb-2" />
         </div>
-        <div className="flex items-start justify-between gap-3 px-5 pb-3 border-b border-[#D5C6EC] shrink-0">
+        <div className="flex items-start justify-between gap-3 px-5 pb-3 border-b border-[#D0CDE1] shrink-0">
           <div className="min-w-0">
-            <h2 className="font-brand text-base font-bold text-[#51376D]">{messageId ? 'Report Message' : 'Report Member'}</h2>
-            <p className="text-xs text-[#51376D]/75 leading-relaxed mt-0.5">
+            <h2 className="font-brand text-base font-bold text-[#413B5E]">{messageId ? 'Report Message' : 'Report Member'}</h2>
+            <p className="text-xs text-[#413B5E]/75 leading-relaxed mt-0.5">
               Reports are confidential. We review every report to protect community safety.
             </p>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="w-8 h-8 rounded-full flex items-center justify-center text-[#51376D]/55 hover:bg-[#E8DFF5]/70 shrink-0"
+            className="w-8 h-8 rounded-full flex items-center justify-center text-[#413B5E]/55 hover:bg-[#E8E6F1]/70 shrink-0"
             aria-label="Close"
           >
             <X className="w-4 h-4" />
@@ -118,16 +118,16 @@ export function ReportModal({
                   aria-checked={selected}
                   onClick={() => setCategory(c.id)}
                   className={`w-full flex items-center gap-3 rounded-2xl border px-3.5 py-3 text-left text-[13px] transition ${
-                    selected ? 'border-[#72519A] bg-[#72519A]/5 text-[#51376D] font-semibold' : 'border-[#D5C6EC] text-[#51376D] hover:bg-[#E8DFF5]/40'
+                    selected ? 'border-[#665D96] bg-[#665D96]/5 text-[#413B5E] font-semibold' : 'border-[#D0CDE1] text-[#413B5E] hover:bg-[#E8E6F1]/40'
                   }`}
                 >
                   <span
                     aria-hidden
                     className={`w-4 h-4 rounded-full border-2 shrink-0 flex items-center justify-center ${
-                      selected ? 'border-[#72519A]' : 'border-[#D5C6EC]'
+                      selected ? 'border-[#665D96]' : 'border-[#D0CDE1]'
                     }`}
                   >
-                    {selected && <span className="w-2 h-2 rounded-full bg-[#72519A]" />}
+                    {selected && <span className="w-2 h-2 rounded-full bg-[#665D96]" />}
                   </span>
                   <span>{c.label}</span>
                 </button>
@@ -141,7 +141,7 @@ export function ReportModal({
             maxLength={300}
             rows={3}
             placeholder="Provide additional context (optional)..."
-            className="w-full p-3 rounded-2xl bg-white border border-[#D5C6EC] text-base sm:text-xs text-[#51376D] placeholder:text-[#51376D]/55 focus:outline-none focus:border-[#72519A] resize-none"
+            className="w-full p-3 rounded-2xl bg-white border border-[#D0CDE1] text-base sm:text-xs text-[#413B5E] placeholder:text-[#413B5E]/55 focus:outline-none focus:border-[#665D96] resize-none"
           />
 
           {error && (
@@ -156,12 +156,12 @@ export function ReportModal({
             type="button"
             onClick={submit}
             disabled={!category || submitting}
-            className="w-full inline-flex items-center justify-center gap-2 bg-[#51376D] text-white rounded-xl py-2.5 font-semibold text-sm hover:bg-[#51376D] transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full inline-flex items-center justify-center gap-2 bg-[#413B5E] text-white rounded-xl py-2.5 font-semibold text-sm hover:bg-[#413B5E] transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
             Submit Report
           </button>
-          <button type="button" onClick={onClose} className="w-full py-2 text-[#51376D]/55 hover:text-[#51376D]/85 text-sm">
+          <button type="button" onClick={onClose} className="w-full py-2 text-[#413B5E]/55 hover:text-[#413B5E]/85 text-sm">
             Cancel
           </button>
         </div>

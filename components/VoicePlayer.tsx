@@ -139,12 +139,12 @@ function VoicePlayerCard({
   return (
     <div className={className}>
       {/* One rigid row that never wraps: play | waveform (flexes, clips) | timer | actions. */}
-      <section aria-label={title} className="flex flex-nowrap items-center justify-between gap-3 w-full rounded-2xl border border-[#D5C6EC] bg-white p-3.5 shadow-brand-sm">
+      <section aria-label={title} className="flex flex-nowrap items-center justify-between gap-3 w-full rounded-2xl border border-[#D0CDE1] bg-white p-3.5 shadow-brand-sm">
         <button
           type="button"
           onClick={toggle}
           aria-label={playing ? `Pause ${title}` : `Play ${title}`}
-          className="w-10 h-10 shrink-0 rounded-full bg-gradient-to-br from-[#72519A] to-[#9474C3] text-white flex items-center justify-center shadow-brand-sm hover:shadow-brand-glow transition-shadow active:scale-95"
+          className="w-10 h-10 shrink-0 rounded-full bg-gradient-to-br from-[#665D96] to-[#9A93BC] text-white flex items-center justify-center shadow-brand-sm hover:shadow-brand-glow transition-shadow active:scale-95"
         >
           {loading ? (
             <Loader2 className="w-4 h-4 animate-spin" />
@@ -166,7 +166,7 @@ function VoicePlayerCard({
             aria-valuetext={totalMs > 0 ? `${formatSeconds(positionMs)} of ${formatSeconds(totalMs)}` : undefined}
             onClick={onWaveClick}
             onKeyDown={onWaveKey}
-            className={`w-fit max-w-full rounded-md outline-none focus-visible:ring-2 focus-visible:ring-[#72519A]/40 ${
+            className={`w-fit max-w-full rounded-md outline-none focus-visible:ring-2 focus-visible:ring-[#665D96]/40 ${
               totalMs > 0 ? 'cursor-pointer' : 'cursor-default'
             }`}
           >
@@ -177,17 +177,17 @@ function VoicePlayerCard({
           </div>
         </div>
 
-        <span className="shrink-0 whitespace-nowrap font-mono text-[11px] tabular-nums text-[#51376D]/60">
+        <span className="shrink-0 whitespace-nowrap font-mono text-[11px] tabular-nums text-[#413B5E]/60">
           {/* WebM from MediaRecorder reports no length until played: show elapsed only then */}
           {totalMs > 0 ? `${formatSeconds(positionMs)} / ${formatSeconds(totalMs)}` : formatSeconds(positionMs)}
         </span>
 
         {children ? <div className="shrink-0 flex items-center">{children}</div> : null}
       </section>
-      <p className={`text-[11px] mt-1.5 px-1 ${failed ? 'text-red-600' : 'text-[#51376D]/55'}`}>
+      <p className={`text-[11px] mt-1.5 px-1 ${failed ? 'text-red-600' : 'text-[#413B5E]/55'}`}>
         {failed ? 'Could not play this clip.' : (
           <>
-            <span className="font-semibold text-[#51376D]/75">{title}</span>
+            <span className="font-semibold text-[#413B5E]/75">{title}</span>
             {subtitle ? ` · ${subtitle}` : ''}
           </>
         )}

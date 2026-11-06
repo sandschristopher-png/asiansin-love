@@ -99,7 +99,7 @@ function VerifyContent() {
 
   return (
     <div className="min-h-[100dvh] w-full bg-white flex items-center justify-center p-4 sm:p-6 font-sans antialiased">
-      <main className="w-full max-w-[420px] bg-white rounded-3xl border border-[#D5C6EC] shadow-brand-md p-7 sm:p-9 space-y-6">
+      <main className="w-full max-w-[420px] bg-white rounded-3xl border border-[#D0CDE1] shadow-brand-md p-7 sm:p-9 space-y-6">
         <div className="flex justify-center">
           <BrandLogo size="md" href="/" />
         </div>
@@ -109,13 +109,13 @@ function VerifyContent() {
             <div className="w-14 h-14 mx-auto rounded-2xl bg-emerald-50 border border-emerald-200 text-[#10B981] flex items-center justify-center">
               <CheckCircle2 className="w-7 h-7" aria-hidden />
             </div>
-            <h1 className="text-xl font-extrabold text-[#51376D] tracking-tight">You&apos;re verified</h1>
-            <p className="text-xs text-[#51376D]/75">Taking you in...</p>
+            <h1 className="text-xl font-extrabold text-[#413B5E] tracking-tight">You&apos;re verified</h1>
+            <p className="text-xs text-[#413B5E]/75">Taking you in...</p>
           </div>
         ) : tokenHash && status === 'verifying' ? (
           <div className="text-center space-y-3" role="status">
-            <Loader2 className="w-7 h-7 mx-auto animate-spin text-[#72519A]" aria-hidden />
-            <p className="text-sm font-semibold text-[#51376D]">Verifying your email...</p>
+            <Loader2 className="w-7 h-7 mx-auto animate-spin text-[#665D96]" aria-hidden />
+            <p className="text-sm font-semibold text-[#413B5E]">Verifying your email...</p>
           </div>
         ) : (
           <form
@@ -126,18 +126,18 @@ function VerifyContent() {
             }}
           >
             <div className="text-center space-y-2">
-              <div className="w-12 h-12 mx-auto rounded-2xl bg-[#E8DFF5]/60 border border-[#D5C6EC] text-[#72519A] flex items-center justify-center">
+              <div className="w-12 h-12 mx-auto rounded-2xl bg-[#E8E6F1]/60 border border-[#D0CDE1] text-[#665D96] flex items-center justify-center">
                 <MailCheck className="w-6 h-6" aria-hidden />
               </div>
-              <h1 className="text-2xl font-extrabold text-[#51376D] tracking-tight">Enter your code</h1>
-              <p className="text-xs text-[#51376D]/75 leading-relaxed">
+              <h1 className="text-2xl font-extrabold text-[#413B5E] tracking-tight">Enter your code</h1>
+              <p className="text-xs text-[#413B5E]/75 leading-relaxed">
                 We sent a 6-digit code to your email. It works once and expires after a short while.
               </p>
             </div>
 
             {!params.get('email') && (
               <div className="space-y-1.5">
-                <label htmlFor="verify-email" className="text-xs font-bold text-[#51376D] block">
+                <label htmlFor="verify-email" className="text-xs font-bold text-[#413B5E] block">
                   Email address
                 </label>
                 <input
@@ -147,13 +147,13 @@ function VerifyContent() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
-                  className="h-12 w-full rounded-full border border-[#D5C6EC] bg-white px-4 text-base sm:text-sm text-[#51376D] placeholder:text-[#51376D]/40 focus:outline-none focus:border-[#72519A] focus:ring-2 focus:ring-[#72519A]/30"
+                  className="h-12 w-full rounded-full border border-[#D0CDE1] bg-white px-4 text-base sm:text-sm text-[#413B5E] placeholder:text-[#413B5E]/40 focus:outline-none focus:border-[#665D96] focus:ring-2 focus:ring-[#665D96]/30"
                 />
               </div>
             )}
 
             <div className="space-y-1.5">
-              <label htmlFor="verify-code" className="text-xs font-bold text-[#51376D] block">
+              <label htmlFor="verify-code" className="text-xs font-bold text-[#413B5E] block">
                 6-digit code
               </label>
               <input
@@ -172,7 +172,7 @@ function VerifyContent() {
                 }}
                 placeholder="000000"
                 aria-invalid={status === 'error'}
-                className="h-14 w-full rounded-2xl border border-[#D5C6EC] bg-white text-center font-mono text-2xl tracking-[0.5em] text-[#51376D] placeholder:text-[#D5C6EC] focus:outline-none focus:border-[#72519A] focus:ring-2 focus:ring-[#72519A]/30 disabled:opacity-60"
+                className="h-14 w-full rounded-2xl border border-[#D0CDE1] bg-white text-center font-mono text-2xl tracking-[0.5em] text-[#413B5E] placeholder:text-[#D0CDE1] focus:outline-none focus:border-[#665D96] focus:ring-2 focus:ring-[#665D96]/30 disabled:opacity-60"
               />
             </div>
 
@@ -185,7 +185,7 @@ function VerifyContent() {
             <button
               type="submit"
               disabled={busy || code.length !== 6 || !emailValid}
-              className="h-12 w-full rounded-full bg-gradient-to-r from-[#72519A] to-[#9474C3] text-white font-semibold text-sm shadow-brand-glow hover:opacity-95 transition-opacity flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+              className="h-12 w-full rounded-full bg-gradient-to-r from-[#665D96] to-[#9A93BC] text-white font-semibold text-sm shadow-brand-glow hover:opacity-95 transition-opacity flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {status === 'verifying' && <Loader2 className="w-4 h-4 animate-spin" aria-hidden />}
               {status === 'verifying' ? 'Verifying...' : 'Verify'}
@@ -195,17 +195,17 @@ function VerifyContent() {
               type="button"
               onClick={() => void resend()}
               disabled={!emailValid || cooldown > 0 || busy}
-              className="w-full text-xs font-semibold text-[#72519A] hover:underline disabled:opacity-50 disabled:no-underline"
+              className="w-full text-xs font-semibold text-[#665D96] hover:underline disabled:opacity-50 disabled:no-underline"
             >
               {cooldown > 0 ? `Send a new code in ${cooldown}s` : 'Send a new code'}
             </button>
           </form>
         )}
 
-        <div className="pt-2 text-center text-xs text-[#51376D]/75 border-t border-[#D5C6EC]">
+        <div className="pt-2 text-center text-xs text-[#413B5E]/75 border-t border-[#D0CDE1]">
           <span className="inline-block pt-3">
             Wrong account?{' '}
-            <Link href="/login" className="font-bold text-[#72519A] hover:underline">
+            <Link href="/login" className="font-bold text-[#665D96] hover:underline">
               Back to sign in
             </Link>
           </span>

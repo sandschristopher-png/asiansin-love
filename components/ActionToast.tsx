@@ -53,7 +53,7 @@ export function ActionToastProvider({ children }: { children: React.ReactNode })
             key={toast.id}
             role="status"
             aria-live="polite"
-            className="ail-action-toast-in inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#51376D]/95 text-white text-xs font-medium shadow-xl backdrop-blur-md"
+            className="ail-action-toast-in inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#413B5E]/95 text-white text-xs font-medium shadow-xl backdrop-blur-md"
           >
             <Icon className="w-3.5 h-3.5 shrink-0" strokeWidth={2.25} />
             <span>{toast.message}</span>

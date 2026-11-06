@@ -8,8 +8,8 @@ import { alertPrefs } from '@/lib/notificationStore';
 function Toggle({ on }: { on: boolean }) {
   return (
     <span aria-hidden className="relative inline-flex h-6 w-11 shrink-0 rounded-full overflow-hidden">
-      <span className="absolute inset-0 bg-[#D5C6EC]" />
-      <span className={`absolute inset-0 bg-[#72519A] transition-opacity duration-200 motion-reduce:transition-none ${on ? 'opacity-100' : 'opacity-0'}`} />
+      <span className="absolute inset-0 bg-[#D0CDE1]" />
+      <span className={`absolute inset-0 bg-[#665D96] transition-opacity duration-200 motion-reduce:transition-none ${on ? 'opacity-100' : 'opacity-0'}`} />
       <span className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow-brand-sm transition-transform duration-200 motion-reduce:transition-none ${on ? 'translate-x-5' : 'translate-x-0'}`} />
     </span>
   );
@@ -47,7 +47,7 @@ export function AlertPrefsRows() {
     setBrowser(true);
   };
 
-  const rowCls = 'w-full flex items-center justify-between gap-3 p-3 rounded-2xl hover:bg-[#E8DFF5]/40 transition cursor-pointer text-left';
+  const rowCls = 'w-full flex items-center justify-between gap-3 p-3 rounded-2xl hover:bg-[#E8E6F1]/40 transition cursor-pointer text-left';
   return (
     <>
       <button
@@ -58,12 +58,12 @@ export function AlertPrefsRows() {
         className={rowCls}
       >
         <span className="flex items-center gap-3 min-w-0">
-          <span className="w-8 h-8 rounded-xl bg-[#E8DFF5]/60 text-[#72519A] flex items-center justify-center shrink-0">
+          <span className="w-8 h-8 rounded-xl bg-[#E8E6F1]/60 text-[#665D96] flex items-center justify-center shrink-0">
             <BellRing className="w-4 h-4" />
           </span>
           <span className="min-w-0">
-            <span className="block text-xs font-bold text-[#51376D]">Enable Notifications</span>
-            <span className="block text-[11px] text-[#51376D]/75">Browser alerts when this tab is in the background</span>
+            <span className="block text-xs font-bold text-[#413B5E]">Enable Notifications</span>
+            <span className="block text-[11px] text-[#413B5E]/75">Browser alerts when this tab is in the background</span>
           </span>
         </span>
         <Toggle on={browser} />

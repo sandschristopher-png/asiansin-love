@@ -26,8 +26,8 @@ function PersonRow({ person, label }: { person: Person; label: string }) {
     <div className="flex items-center gap-2.5 min-w-0">
       <AdminAvatar url={person?.avatarUrl ?? null} name={person?.name || 'Member'} size={32} />
       <div className="min-w-0 flex-1">
-        <p className="text-sm font-semibold text-[#51376D] truncate">{person?.name || 'Deleted member'}</p>
-        <p className="text-[10px] uppercase tracking-wider font-semibold text-[#51376D]/55">{label}</p>
+        <p className="text-sm font-semibold text-[#413B5E] truncate">{person?.name || 'Deleted member'}</p>
+        <p className="text-[10px] uppercase tracking-wider font-semibold text-[#413B5E]/55">{label}</p>
       </div>
       {person && (
         <div className="flex items-center gap-1 shrink-0">
@@ -58,17 +58,17 @@ function ContextSheet({ report, onClose }: { report: Report; onClose: () => void
         {error && <Notice kind="error">{error}</Notice>}
         {!messages && !error && <Loading />}
         {messages && messages.length === 0 && (
-          <p className="text-sm text-center text-[#51376D]/75 py-10">These members have not exchanged messages.</p>
+          <p className="text-sm text-center text-[#413B5E]/75 py-10">These members have not exchanged messages.</p>
         )}
         {messages?.map((m) => (
           <div key={m.id} className={`flex ${m.fromReported ? 'justify-start' : 'justify-end'}`}>
             <div
               className={`max-w-[80%] rounded-2xl px-3 py-2 text-sm ${
-                m.fromReported ? 'bg-white border border-[#D5C6EC] text-[#51376D]' : 'bg-[#51376D] text-white'
+                m.fromReported ? 'bg-white border border-[#D0CDE1] text-[#413B5E]' : 'bg-[#413B5E] text-white'
               } ${m.quarantined ? 'ring-2 ring-red-300' : ''}`}
             >
               <p className="whitespace-pre-wrap break-words">{m.content}</p>
-              <p className={`mt-1 text-[10px] ${m.fromReported ? 'text-[#51376D]/55' : 'text-white/60'}`}>
+              <p className={`mt-1 text-[10px] ${m.fromReported ? 'text-[#413B5E]/55' : 'text-white/60'}`}>
                 {m.fromReported ? report.reported?.name : report.reporter?.name} · {timeAgo(m.createdAt)}
                 {m.quarantined && ' · quarantined'}
               </p>
@@ -100,29 +100,29 @@ function ReportCard({
   };
 
   return (
-    <article className="p-4 rounded-2xl border border-[#D5C6EC] bg-white mb-3 shadow-2xs">
+    <article className="p-4 rounded-2xl border border-[#D0CDE1] bg-white mb-3 shadow-2xs">
       <div className="flex flex-wrap items-center gap-1.5 mb-3">
         <span className="inline-flex items-center gap-1 rounded-full bg-red-50 border border-red-200 px-2 py-0.5 text-[11px] font-semibold text-red-700">
           <Flag className="w-3 h-3" aria-hidden />
           {report.reasonLabel}
         </span>
         {report.source && (
-          <span className="inline-flex items-center gap-1 rounded-full bg-[#72519A]/10 px-2 py-0.5 text-[11px] font-semibold text-[#72519A]">
+          <span className="inline-flex items-center gap-1 rounded-full bg-[#665D96]/10 px-2 py-0.5 text-[11px] font-semibold text-[#665D96]">
             {report.source === 'chat' ? <MessageCircle className="w-3 h-3" aria-hidden /> : <UserRound className="w-3 h-3" aria-hidden />}
             {report.source === 'chat' ? 'Chat' : 'Profile'}
           </span>
         )}
-        <span className="ml-auto text-[11px] text-[#51376D]/55">{timeAgo(report.createdAt)}</span>
+        <span className="ml-auto text-[11px] text-[#413B5E]/55">{timeAgo(report.createdAt)}</span>
       </div>
 
-      <div className="space-y-2.5 rounded-xl border border-[#D5C6EC] p-3">
+      <div className="space-y-2.5 rounded-xl border border-[#D0CDE1] p-3">
         <PersonRow person={report.reported} label="Reported" />
-        <div className="h-px bg-[#E8DFF5]/60" />
+        <div className="h-px bg-[#E8E6F1]/60" />
         <PersonRow person={report.reporter} label="Reported by" />
       </div>
 
       {report.details && (
-        <p className="mt-3 rounded-xl bg-white px-3 py-2 text-sm text-[#51376D] whitespace-pre-wrap break-words">{report.details}</p>
+        <p className="mt-3 rounded-xl bg-white px-3 py-2 text-sm text-[#413B5E] whitespace-pre-wrap break-words">{report.details}</p>
       )}
 
       <input
@@ -131,7 +131,7 @@ function ReportCard({
         maxLength={300}
         enterKeyHint="done"
         placeholder="Internal note (optional)"
-        className="mt-3 w-full h-10 rounded-xl border border-[#D5C6EC] bg-white px-3 text-sm outline-none focus:border-[#72519A]"
+        className="mt-3 w-full h-10 rounded-xl border border-[#D0CDE1] bg-white px-3 text-sm outline-none focus:border-[#665D96]"
       />
 
       <AdminButton size="lg" className="mt-2 w-full" onClick={() => setInspect(true)}>

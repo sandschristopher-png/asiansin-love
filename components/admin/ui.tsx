@@ -28,9 +28,9 @@ export function timeAgo(iso: string | null | undefined): string {
 export function AdminAvatar({ url, name, size = 40 }: { url: string | null; name: string; size?: number }) {
   return url ? (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={url} alt={name} width={size} height={size} className="rounded-full object-cover shrink-0 bg-[#E8DFF5]/60" style={{ width: size, height: size }} />
+    <img src={url} alt={name} width={size} height={size} className="rounded-full object-cover shrink-0 bg-[#E8E6F1]/60" style={{ width: size, height: size }} />
   ) : (
-    <span className="rounded-full shrink-0 bg-[#E8DFF5]/60 flex items-center justify-center text-[#72519A]" style={{ width: size, height: size }}>
+    <span className="rounded-full shrink-0 bg-[#E8E6F1]/60 flex items-center justify-center text-[#665D96]" style={{ width: size, height: size }}>
       <UserRound className="w-1/2 h-1/2" aria-hidden />
     </span>
   );
@@ -40,8 +40,8 @@ export function PageTitle({ title, subtitle, right }: { title: string; subtitle?
   return (
     <div className="flex items-center justify-between gap-3 mb-4">
       <div>
-        <h1 className="text-lg font-bold text-[#51376D]">{title}</h1>
-        {subtitle && <p className="text-xs text-[#51376D]/75 mt-0.5">{subtitle}</p>}
+        <h1 className="text-lg font-bold text-[#413B5E]">{title}</h1>
+        {subtitle && <p className="text-xs text-[#413B5E]/75 mt-0.5">{subtitle}</p>}
       </div>
       {right}
     </div>
@@ -63,17 +63,17 @@ export function Notice({ kind, children }: { kind: 'error' | 'success'; children
 
 export function EmptyState({ icon: Icon, title, body }: { icon: React.ComponentType<{ className?: string }>; title: string; body: string }) {
   return (
-    <div className="rounded-2xl border border-dashed border-[#D5C6EC] bg-white py-14 px-6 text-center">
-      <Icon className="w-8 h-8 mx-auto text-[#72519A]" />
-      <p className="mt-3 font-semibold text-[#51376D]">{title}</p>
-      <p className="mt-1 text-sm text-[#51376D]/75">{body}</p>
+    <div className="rounded-2xl border border-dashed border-[#D0CDE1] bg-white py-14 px-6 text-center">
+      <Icon className="w-8 h-8 mx-auto text-[#665D96]" />
+      <p className="mt-3 font-semibold text-[#413B5E]">{title}</p>
+      <p className="mt-1 text-sm text-[#413B5E]/75">{body}</p>
     </div>
   );
 }
 
 export function Loading() {
   return (
-    <div className="py-16 flex justify-center text-[#72519A]">
+    <div className="py-16 flex justify-center text-[#665D96]">
       <Loader2 className="w-6 h-6 animate-spin" aria-label="Loading" />
     </div>
   );
@@ -99,18 +99,18 @@ export function BottomSheet({
 
   return (
     <div className="fixed inset-0 z-50 flex items-end justify-center" role="dialog" aria-modal="true" aria-label={title}>
-      <button type="button" className="absolute inset-0 bg-[#51376D]/35" aria-label="Close" onClick={onClose} />
+      <button type="button" className="absolute inset-0 bg-[#413B5E]/35" aria-label="Close" onClick={onClose} />
       <div className="relative w-full max-w-[430px] mx-auto max-h-[85dvh] rounded-t-3xl bg-white shadow-xl flex flex-col">
         <div className="pt-2.5 pb-1 flex justify-center" aria-hidden>
-          <span className="w-10 h-1 rounded-full bg-[#E8DFF5]/60" />
+          <span className="w-10 h-1 rounded-full bg-[#E8E6F1]/60" />
         </div>
-        <header className="flex items-start justify-between gap-3 px-4 pb-3 border-b border-[#D5C6EC]">
+        <header className="flex items-start justify-between gap-3 px-4 pb-3 border-b border-[#D0CDE1]">
           <div className="min-w-0">
-            <p className="text-sm font-bold text-[#51376D]">{title}</p>
-            {subtitle && <p className="text-[11px] text-[#51376D]/75 truncate">{subtitle}</p>}
+            <p className="text-sm font-bold text-[#413B5E]">{title}</p>
+            {subtitle && <p className="text-[11px] text-[#413B5E]/75 truncate">{subtitle}</p>}
           </div>
-          <button type="button" onClick={onClose} className="p-1.5 -mr-1.5 rounded-lg hover:bg-[#E8DFF5]/40" aria-label="Close">
-            <X className="w-4 h-4 text-[#51376D]/75" />
+          <button type="button" onClick={onClose} className="p-1.5 -mr-1.5 rounded-lg hover:bg-[#E8E6F1]/40" aria-label="Close">
+            <X className="w-4 h-4 text-[#413B5E]/75" />
           </button>
         </header>
         <div className="flex-1 overflow-y-auto overscroll-contain">{children}</div>
@@ -121,8 +121,8 @@ export function BottomSheet({
 
 type BtnTone = 'primary' | 'neutral' | 'danger' | 'warn';
 const TONES: Record<BtnTone, string> = {
-  primary: 'bg-gradient-to-r from-[#72519A] to-[#9474C3] text-white border-transparent hover:opacity-95',
-  neutral: 'bg-white text-[#51376D] border-[#D5C6EC] hover:bg-[#E8DFF5]/40',
+  primary: 'bg-gradient-to-r from-[#665D96] to-[#9A93BC] text-white border-transparent hover:opacity-95',
+  neutral: 'bg-white text-[#413B5E] border-[#D0CDE1] hover:bg-[#E8E6F1]/40',
   danger: 'bg-red-600 text-white border-transparent hover:bg-red-700',
   warn: 'bg-amber-50 text-amber-800 border-amber-200 hover:bg-amber-100',
 };

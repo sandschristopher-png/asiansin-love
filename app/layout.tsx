@@ -58,8 +58,8 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  // Matches public/manifest.webmanifest theme_color (Android status bar / task switcher).
-  themeColor: '#72519A',
+  // White browser chrome and status bar; matches public/manifest.webmanifest theme_color.
+  themeColor: '#FFFFFF',
   interactiveWidget: 'resizes-content',
   // Without cover, iOS reports every env(safe-area-inset-*) as 0, so the BottomNav, docks and
   // toasts (all padded with max(..., env(safe-area-inset-bottom))) would sit on the home indicator
@@ -84,7 +84,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="font-sans bg-[#E8DFF5]/60 text-[#51376D] h-full selection:bg-[#72519A] selection:text-white antialiased overflow-hidden">
+      <body className="font-sans bg-[#E8E6F1]/60 text-[#413B5E] h-full selection:bg-[#665D96] selection:text-white antialiased overflow-hidden">
         <LayoutShell>{children}</LayoutShell>
         <PwaRegister />
       </body>

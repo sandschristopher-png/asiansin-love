@@ -48,7 +48,7 @@ function MemberSheet({ member, onClose, onChange }: { member: Member; onClose: (
         {error && <Notice kind="error">{error}</Notice>}
 
         <section>
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-[#51376D]/55 mb-1.5">Role</p>
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-[#413B5E]/55 mb-1.5">Role</p>
           <div className="grid grid-cols-2 gap-2">
             {(['member', 'moderator'] as const).map((r) => (
               <button
@@ -60,7 +60,7 @@ function MemberSheet({ member, onClose, onChange }: { member: Member; onClose: (
                   call('role', '/api/admin/roles', { role: r }, { role: r }, r === 'moderator' ? `${member.name} is now a moderator.` : `${member.name}'s admin access was revoked.`)
                 }
                 className={`h-10 rounded-xl text-sm font-semibold border transition disabled:cursor-not-allowed ${
-                  member.role === r ? 'bg-[#51376D] text-white border-transparent' : 'bg-white text-[#51376D] border-[#D5C6EC] disabled:opacity-50'
+                  member.role === r ? 'bg-[#413B5E] text-white border-transparent' : 'bg-white text-[#413B5E] border-[#D0CDE1] disabled:opacity-50'
                 }`}
               >
                 {ADMIN_ROLE_LABEL[r]}
@@ -70,7 +70,7 @@ function MemberSheet({ member, onClose, onChange }: { member: Member; onClose: (
         </section>
 
         <section>
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-[#51376D]/55 mb-1.5 flex items-center gap-2">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-[#413B5E]/55 mb-1.5 flex items-center gap-2">
             Reputation <ReputationBadge score={member.reputation} size="xs" />
           </p>
           <form
@@ -91,7 +91,7 @@ function MemberSheet({ member, onClose, onChange }: { member: Member; onClose: (
               value={rep}
               onChange={(e) => setRep(e.target.value)}
               aria-label="Reputation score, 0 to 100"
-              className="flex-1 min-w-0 h-10 rounded-xl border border-[#D5C6EC] px-3 text-sm tabular-nums outline-none focus:border-[#72519A]"
+              className="flex-1 min-w-0 h-10 rounded-xl border border-[#D0CDE1] px-3 text-sm tabular-nums outline-none focus:border-[#665D96]"
             />
             <AdminButton type="submit" size="lg" tone="primary" busy={busy === 'rep'} disabled={!!busy || !repValid || Math.round(repNum) === member.reputation}>
               Save
@@ -99,9 +99,9 @@ function MemberSheet({ member, onClose, onChange }: { member: Member; onClose: (
           </form>
         </section>
 
-        <section className="flex items-center justify-between rounded-xl border border-[#D5C6EC] px-3 h-12">
-          <span className="text-sm font-semibold text-[#51376D] flex items-center gap-1.5">
-            <BadgeCheck className="w-4 h-4 text-[#72519A]" aria-hidden />
+        <section className="flex items-center justify-between rounded-xl border border-[#D0CDE1] px-3 h-12">
+          <span className="text-sm font-semibold text-[#413B5E] flex items-center gap-1.5">
+            <BadgeCheck className="w-4 h-4 text-[#665D96]" aria-hidden />
             Verified badge
           </span>
           <button
@@ -113,7 +113,7 @@ function MemberSheet({ member, onClose, onChange }: { member: Member; onClose: (
             onClick={() =>
               call('ver', '/api/admin/members', { action: 'set_verified', verified: !member.isVerified }, { isVerified: !member.isVerified }, !member.isVerified ? `${member.name} is now verified.` : `Removed ${member.name}'s verified badge.`)
             }
-            className={`w-11 h-6 rounded-full relative transition-colors disabled:opacity-50 ${member.isVerified ? 'bg-[#72519A]' : 'bg-[#E8DFF5]'}`}
+            className={`w-11 h-6 rounded-full relative transition-colors disabled:opacity-50 ${member.isVerified ? 'bg-[#665D96]' : 'bg-[#E8E6F1]'}`}
           >
             <span className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-all ${member.isVerified ? 'left-6' : 'left-1'}`} />
           </button>
@@ -210,8 +210,8 @@ export function MembersManager({ selfId, ownerId, isOwner }: { selfId: string; o
     <div>
       <PageTitle title="Members & Roles" subtitle="Delegate moderator access and manage standing." />
 
-      <form onSubmit={grant} className="mb-4 p-4 rounded-2xl border border-[#D5C6EC] bg-white shadow-2xs space-y-2">
-        <label htmlFor="grant-name" className="block text-[11px] font-semibold uppercase tracking-wider text-[#51376D]/55">
+      <form onSubmit={grant} className="mb-4 p-4 rounded-2xl border border-[#D0CDE1] bg-white shadow-2xs space-y-2">
+        <label htmlFor="grant-name" className="block text-[11px] font-semibold uppercase tracking-wider text-[#413B5E]/55">
           Grant access by username
         </label>
         <input
@@ -223,13 +223,13 @@ export function MembersManager({ selfId, ownerId, isOwner }: { selfId: string; o
           autoCorrect="off"
           spellCheck={false}
           enterKeyHint="go"
-          className="w-full h-10 rounded-xl border border-[#D5C6EC] px-3 text-sm outline-none focus:border-[#72519A]"
+          className="w-full h-10 rounded-xl border border-[#D0CDE1] px-3 text-sm outline-none focus:border-[#665D96]"
         />
         <select
           aria-label="Role to grant"
           value={grantRole}
           onChange={(e) => setGrantRole(e.target.value as 'moderator' | 'member')}
-          className="w-full h-10 rounded-xl border border-[#D5C6EC] bg-white px-3 text-sm"
+          className="w-full h-10 rounded-xl border border-[#D0CDE1] bg-white px-3 text-sm"
         >
           <option value="moderator">Mod</option>
           <option value="member">Member (revoke access)</option>
@@ -244,7 +244,7 @@ export function MembersManager({ selfId, ownerId, isOwner }: { selfId: string; o
       {error && <Notice kind="error">{error}</Notice>}
 
       <div className="relative mb-2">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#51376D]/55" aria-hidden />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#413B5E]/55" aria-hidden />
         <input
           type="search"
           value={query}
@@ -254,17 +254,17 @@ export function MembersManager({ selfId, ownerId, isOwner }: { selfId: string; o
           autoCapitalize="none"
           autoCorrect="off"
           enterKeyHint="search"
-          className="w-full h-10 rounded-xl border border-[#D5C6EC] bg-white pl-9 pr-3 text-sm outline-none focus:border-[#72519A]"
+          className="w-full h-10 rounded-xl border border-[#D0CDE1] bg-white pl-9 pr-3 text-sm outline-none focus:border-[#665D96]"
         />
       </div>
-      {!query.trim() && <p className="text-xs text-[#51376D]/75 mb-2">Showing current staff. Search to find any member.</p>}
+      {!query.trim() && <p className="text-xs text-[#413B5E]/75 mb-2">Showing current staff. Search to find any member.</p>}
 
       {!members ? (
         <Loading />
       ) : members.length === 0 ? (
         <EmptyState icon={Users} title="No members found" body="Try a different username or display name." />
       ) : (
-        <ul className="rounded-2xl border border-[#D5C6EC] bg-white divide-y divide-[#D5C6EC] overflow-hidden">
+        <ul className="rounded-2xl border border-[#D0CDE1] bg-white divide-y divide-[#D0CDE1] overflow-hidden">
           {members.map((m) => {
             // Your own row and the owner's row are never editable; other super admins only by the owner.
             const isSelf = m.id === selfId;
@@ -273,12 +273,12 @@ export function MembersManager({ selfId, ownerId, isOwner }: { selfId: string; o
               <>
                 <AdminAvatar url={m.avatarUrl} name={m.name} size={40} />
                 <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-[#51376D] flex items-center gap-1 min-w-0">
+                  <p className="text-sm font-semibold text-[#413B5E] flex items-center gap-1 min-w-0">
                     <span className="truncate">
                       {m.name}
-                      {m.age !== null && <span className="font-normal text-[#51376D]/75">, {m.age}</span>}
+                      {m.age !== null && <span className="font-normal text-[#413B5E]/75">, {m.age}</span>}
                     </span>
-                    {m.isVerified && <BadgeCheck className="w-3.5 h-3.5 shrink-0 text-[#72519A]" aria-label="Verified" />}
+                    {m.isVerified && <BadgeCheck className="w-3.5 h-3.5 shrink-0 text-[#665D96]" aria-label="Verified" />}
                   </p>
                   <div className="mt-0.5 flex items-center gap-1.5">
                     <ReputationBadge score={m.reputation} size="xs" />
@@ -292,12 +292,12 @@ export function MembersManager({ selfId, ownerId, isOwner }: { selfId: string; o
                 {locked ? (
                   <div className="flex items-center gap-3 px-3 py-3">
                     {body}
-                    {isSelf && <span className="text-[10px] text-[#51376D]/55 shrink-0">You</span>}
+                    {isSelf && <span className="text-[10px] text-[#413B5E]/55 shrink-0">You</span>}
                   </div>
                 ) : (
-                  <button type="button" onClick={() => setEditing(m)} className="w-full flex items-center gap-3 px-3 py-3 text-left active:bg-[#E8DFF5]/40">
+                  <button type="button" onClick={() => setEditing(m)} className="w-full flex items-center gap-3 px-3 py-3 text-left active:bg-[#E8E6F1]/40">
                     {body}
-                    <ChevronRight className="w-4 h-4 text-[#E8DFF5]/50 shrink-0" aria-hidden />
+                    <ChevronRight className="w-4 h-4 text-[#E8E6F1]/50 shrink-0" aria-hidden />
                   </button>
                 )}
               </li>

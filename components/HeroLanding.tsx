@@ -13,19 +13,19 @@ import { InstallAppCard } from '@/components/InstallAppCard';
  *   Radius scale: 24px (rounded-3xl) on every frame and card; fully rounded on buttons and chips.
  *   Rhythm: every section uses the same vertical padding and container; tints alternate
  *   white / faint wash so sections read as separate without borders or heavy shadows.
- *   Colour: ink #51376D headlines, #72519A only for buttons and eyebrows, periwinkle only in the
+ *   Colour: ink #413B5E headlines, #665D96 only for buttons and eyebrows, periwinkle only in the
  *   character auras (.hero-aura).
  *
  * Framing law for illustrations: a deliberate portrait (head to upper chest, art's bottom edge on
  * the frame's bottom edge, headroom above, props fully inside) or a full figure. Never a waist cut.
  */
 const BTN_PRIMARY =
-  'inline-flex items-center justify-center h-12 px-8 rounded-full bg-[#72519A] hover:bg-[#51376D] text-white text-sm font-bold tracking-tight transition-colors active:scale-95';
+  'inline-flex items-center justify-center h-12 px-8 rounded-full bg-[#665D96] hover:bg-[#413B5E] text-white text-sm font-bold tracking-tight transition-colors active:scale-95';
 const BTN_SECONDARY =
-  'inline-flex items-center justify-center h-12 px-8 rounded-full border border-[#D5C6EC] bg-white text-[#51376D] text-sm font-semibold hover:bg-[#E8DFF5]/40 transition-colors active:scale-95';
+  'inline-flex items-center justify-center h-12 px-8 rounded-full border border-[#D0CDE1] bg-white text-[#413B5E] text-sm font-semibold hover:bg-[#E8E6F1]/40 transition-colors active:scale-95';
 const SECTION = 'py-20 md:py-28';
 const CONTAINER = 'max-w-6xl mx-auto px-6 sm:px-8 lg:px-12';
-const EYEBROW = 'text-[11px] font-bold tracking-[0.2em] uppercase text-[#72519A]';
+const EYEBROW = 'text-[11px] font-bold tracking-[0.2em] uppercase text-[#665D96]';
 
 /** Trust anchors under the hero CTA. */
 const TRUST_BADGES = [
@@ -72,7 +72,7 @@ function PortraitFrame({
 }) {
   const { framing } = art;
   return (
-    <div className={`relative overflow-hidden rounded-3xl border border-[#E8DFF5] bg-white hero-aura ${framing.aspect} ${className}`}>
+    <div className={`relative overflow-hidden rounded-3xl border border-[#E8E6F1] bg-white hero-aura ${framing.aspect} ${className}`}>
       {framing.kind === 'fit' ? (
         <div className={`absolute ${framing.inset ?? 'inset-0'}`}>
           <Image
@@ -154,14 +154,14 @@ const FEATURES: { eyebrow: string; title: string; body: string; art: Illustratio
 
 export function HeroLanding() {
   return (
-    <div className="w-full bg-white min-h-screen overflow-x-hidden text-[#51376D] selection:bg-[#72519A]/15 selection:text-[#72519A]">
+    <div className="w-full bg-white min-h-screen overflow-x-hidden text-[#413B5E] selection:bg-[#665D96]/15 selection:text-[#665D96]">
       {/* ===== Header ===== */}
-      <header className="sticky top-0 z-40 w-full bg-white/90 backdrop-blur-md border-b border-[#E8DFF5]">
+      <header className="sticky top-0 z-40 w-full bg-white/90 backdrop-blur-md border-b border-[#E8E6F1]">
         <div className={`${CONTAINER} h-14 flex items-center justify-between`}>
           <BrandLogo href="/" size="header" />
           <Link
             href="/login"
-            className="px-4 py-1.5 rounded-full text-[#51376D] text-sm font-semibold hover:bg-[#E8DFF5]/70 active:scale-95 transition-colors"
+            className="px-4 py-1.5 rounded-full text-[#413B5E] text-sm font-semibold hover:bg-[#E8E6F1]/70 active:scale-95 transition-colors"
           >
             Sign In
           </Link>
@@ -176,10 +176,10 @@ export function HeroLanding() {
         <div className={`relative z-10 ${CONTAINER} pt-12 pb-20 md:pt-20 md:pb-28 grid grid-cols-1 md:grid-cols-2 items-center gap-12 md:gap-16`}>
           <div className="text-center md:text-left">
             <p className={EYEBROW}>Modern Matchmaking</p>
-            <h1 className="mt-3 font-brand font-extrabold text-3xl sm:text-4xl md:text-5xl lg:text-[56px] text-[#51376D] tracking-tight leading-[1.15] md:leading-[1.08]">
+            <h1 className="mt-3 font-brand font-extrabold text-3xl sm:text-4xl md:text-5xl lg:text-[56px] text-[#413B5E] tracking-tight leading-[1.15] md:leading-[1.08]">
               Real connection, without the guesswork.
             </h1>
-            <p className="mt-4 md:mt-5 text-[15px] md:text-base text-[#51376D]/75 leading-relaxed max-w-[340px] md:max-w-[460px] mx-auto md:mx-0">
+            <p className="mt-4 md:mt-5 text-[15px] md:text-base text-[#413B5E]/75 leading-relaxed max-w-[340px] md:max-w-[460px] mx-auto md:mx-0">
               Photo-verified members, clear intentions up front, and an authentic community built for real relationships.
             </p>
 
@@ -188,7 +188,7 @@ export function HeroLanding() {
                 <span>Join for Free</span>
                 <ChevronRight className="ml-1 w-4 h-4" />
               </Link>
-              <p className="mt-3 text-[11px] text-[#51376D]/55">
+              <p className="mt-3 text-[11px] text-[#413B5E]/55">
                 Free to join. By joining you agree to our Terms &amp; Privacy Policy.
               </p>
               <InstallAppCard variant="hero" />
@@ -196,11 +196,11 @@ export function HeroLanding() {
 
             <ul className="mt-8 grid grid-cols-2 gap-2.5 max-w-[340px] md:max-w-[440px] mx-auto md:mx-0">
               {TRUST_BADGES.map(({ Icon, label }) => (
-                <li key={label} className="flex items-center gap-2 rounded-full bg-white border border-[#E8DFF5] pl-1.5 pr-3 py-1.5 text-left">
-                  <span className="w-7 h-7 shrink-0 rounded-full bg-[#E8DFF5]/70 text-[#72519A] flex items-center justify-center">
+                <li key={label} className="flex items-center gap-2 rounded-full bg-white border border-[#E8E6F1] pl-1.5 pr-3 py-1.5 text-left">
+                  <span className="w-7 h-7 shrink-0 rounded-full bg-[#E8E6F1]/70 text-[#665D96] flex items-center justify-center">
                     <Icon className="w-3.5 h-3.5" aria-hidden />
                   </span>
-                  <span className="text-[12px] font-semibold text-[#51376D] leading-tight">{label}</span>
+                  <span className="text-[12px] font-semibold text-[#413B5E] leading-tight">{label}</span>
                 </li>
               ))}
             </ul>
@@ -213,22 +213,22 @@ export function HeroLanding() {
       </section>
 
       {/* ===== How it works ===== */}
-      <section className={`${SECTION} bg-[#E8DFF5]/30`}>
+      <section className={`${SECTION} bg-[#E8E6F1]/30`}>
         <div className={CONTAINER}>
           <div className="text-center">
             <p className={EYEBROW}>How it works</p>
-            <h2 className="mt-3 font-brand text-2xl md:text-3xl font-extrabold tracking-tight text-[#51376D]">How connections happen</h2>
-            <p className="mt-3 text-[15px] text-[#51376D]/75 max-w-md mx-auto">Match on intention, not luck. Three steps to meeting someone real.</p>
+            <h2 className="mt-3 font-brand text-2xl md:text-3xl font-extrabold tracking-tight text-[#413B5E]">How connections happen</h2>
+            <p className="mt-3 text-[15px] text-[#413B5E]/75 max-w-md mx-auto">Match on intention, not luck. Three steps to meeting someone real.</p>
           </div>
           <div className="mt-10 grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
             {STEPS.map(({ Icon, title, desc }) => (
-              <div key={title} className="bg-white rounded-3xl p-6 border border-[#E8DFF5] flex items-start gap-4">
-                <span className="w-10 h-10 shrink-0 rounded-full bg-[#E8DFF5]/70 text-[#72519A] flex items-center justify-center">
+              <div key={title} className="bg-white rounded-3xl p-6 border border-[#E8E6F1] flex items-start gap-4">
+                <span className="w-10 h-10 shrink-0 rounded-full bg-[#E8E6F1]/70 text-[#665D96] flex items-center justify-center">
                   <Icon className="w-5 h-5" aria-hidden />
                 </span>
                 <div className="min-w-0">
-                  <p className="text-[15px] font-bold text-[#51376D] leading-snug">{title}</p>
-                  <p className="text-[13px] text-[#51376D]/75 leading-relaxed mt-1">{desc}</p>
+                  <p className="text-[15px] font-bold text-[#413B5E] leading-snug">{title}</p>
+                  <p className="text-[13px] text-[#413B5E]/75 leading-relaxed mt-1">{desc}</p>
                 </div>
               </div>
             ))}
@@ -240,15 +240,15 @@ export function HeroLanding() {
       {FEATURES.map(({ eyebrow, title, body, art }, i) => {
         const imageRight = i % 2 === 0; // desktop: text left / art right, then flipped
         return (
-          <section key={eyebrow} className={`${SECTION} ${i % 2 === 0 ? 'bg-white' : 'bg-[#E8DFF5]/30'}`}>
+          <section key={eyebrow} className={`${SECTION} ${i % 2 === 0 ? 'bg-white' : 'bg-[#E8E6F1]/30'}`}>
             <div className={`${CONTAINER} grid grid-cols-1 md:grid-cols-2 items-center gap-10 md:gap-16`}>
               <div className={`w-full max-w-[420px] mx-auto ${imageRight ? 'md:order-2' : ''}`}>
                 <PortraitFrame art={art} sizes="(max-width: 767px) 85vw, 420px" />
               </div>
               <div className={`text-center md:text-left ${imageRight ? 'md:order-1' : ''}`}>
                 <p className={EYEBROW}>{eyebrow}</p>
-                <h2 className="mt-3 font-brand text-2xl md:text-3xl font-extrabold tracking-tight text-[#51376D]">{title}</h2>
-                <p className="mt-3 text-[15px] leading-relaxed text-[#51376D]/75 max-w-[440px] mx-auto md:mx-0">{body}</p>
+                <h2 className="mt-3 font-brand text-2xl md:text-3xl font-extrabold tracking-tight text-[#413B5E]">{title}</h2>
+                <p className="mt-3 text-[15px] leading-relaxed text-[#413B5E]/75 max-w-[440px] mx-auto md:mx-0">{body}</p>
               </div>
             </div>
           </section>
@@ -259,8 +259,8 @@ export function HeroLanding() {
       <section className="py-24 md:py-32 bg-white">
         <div className={`${CONTAINER} text-center`}>
           <p className={EYEBROW}>Join the community</p>
-          <h2 className="mt-3 font-brand text-3xl md:text-4xl font-extrabold tracking-tight text-[#51376D]">Be one of our first members.</h2>
-          <p className="mt-3 text-[15px] text-[#51376D]/75 max-w-md mx-auto">
+          <h2 className="mt-3 font-brand text-3xl md:text-4xl font-extrabold tracking-tight text-[#413B5E]">Be one of our first members.</h2>
+          <p className="mt-3 text-[15px] text-[#413B5E]/75 max-w-md mx-auto">
             Join free and start meeting genuine singles across Southeast Asia today.
           </p>
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-center gap-3">
@@ -276,10 +276,10 @@ export function HeroLanding() {
       </section>
 
       {/* ===== Footer ===== */}
-      <footer className="bg-white py-10 border-t border-[#E8DFF5]">
+      <footer className="bg-white py-10 border-t border-[#E8E6F1]">
         <div className={`${CONTAINER} text-center space-y-2`}>
           <BrandLogo href="/" size="md" className="justify-center" />
-          <p className="text-xs text-[#51376D]/55">Real connection for genuine singles across Southeast Asia.</p>
+          <p className="text-xs text-[#413B5E]/55">Real connection for genuine singles across Southeast Asia.</p>
         </div>
       </footer>
     </div>

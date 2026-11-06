@@ -6,8 +6,8 @@ import React from 'react';
  * Optimistic toggle: flips the instant it is tapped (the caller updates state first and saves in
  * the background, rolling back only on failure), so there is never a spinner in its place.
  *
- * Animates only composited properties: the active plum track (#72519A) cross-fades over the
- * lilac one (#D5C6EC) by opacity, and the thumb slides by transform on its own layer. No motion
+ * Animates only composited properties: the active plum track (#665D96) cross-fades over the
+ * lilac one (#D0CDE1) by opacity, and the thumb slides by transform on its own layer. No motion
  * under prefers-reduced-motion.
  */
 export function Switch({
@@ -30,12 +30,12 @@ export function Switch({
       aria-label={label}
       disabled={disabled}
       onClick={onClick}
-      className="relative h-6 w-11 shrink-0 rounded-full overflow-hidden cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-[#72519A]/40 focus-visible:ring-offset-2"
+      className="relative h-6 w-11 shrink-0 rounded-full overflow-hidden cursor-pointer disabled:opacity-40 disabled:cursor-not-allowed focus:outline-none focus-visible:ring-2 focus-visible:ring-[#665D96]/40 focus-visible:ring-offset-2"
     >
-      <span aria-hidden className="absolute inset-0 rounded-full bg-[#D5C6EC]" />
+      <span aria-hidden className="absolute inset-0 rounded-full bg-[#D0CDE1]" />
       <span
         aria-hidden
-        className={`absolute inset-0 rounded-full bg-[#72519A] transition-opacity duration-200 motion-reduce:transition-none ${on ? 'opacity-100' : 'opacity-0'}`}
+        className={`absolute inset-0 rounded-full bg-[#665D96] transition-opacity duration-200 motion-reduce:transition-none ${on ? 'opacity-100' : 'opacity-0'}`}
       />
       <span
         aria-hidden

@@ -68,7 +68,7 @@ export function SparkHeartButton({
         <Heart
           className={`transition-colors duration-200 ${
             isSparked
-              ? 'w-7 h-7 fill-[#72519A] stroke-white stroke-[1.5] drop-shadow-[0_2px_6px_rgba(0,0,0,0.5)]'
+              ? 'w-7 h-7 fill-[#665D96] stroke-white stroke-[1.5] drop-shadow-[0_2px_6px_rgba(0,0,0,0.5)]'
               : 'w-7 h-7 stroke-white fill-none stroke-[2.2] drop-shadow-[0_2px_6px_rgba(0,0,0,0.65)]'
           }`}
         />

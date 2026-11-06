@@ -37,7 +37,7 @@ export function MutualSparkModal({
         aria-modal="true"
         aria-label="It's a Mutual Spark"
         onClick={(e) => e.stopPropagation()}
-        className={`relative isolate overflow-hidden w-full max-w-sm rounded-3xl bg-white border border-[#D5C6EC]/60 p-6 shadow-2xl flex flex-col items-center text-center ail-modal-pop transition-all duration-200 ${
+        className={`relative isolate overflow-hidden w-full max-w-sm rounded-3xl bg-white border border-[#D0CDE1]/60 p-6 shadow-2xl flex flex-col items-center text-center ail-modal-pop transition-all duration-200 ${
           closing ? 'scale-90 opacity-0' : ''
         }`}
       >
@@ -56,22 +56,22 @@ export function MutualSparkModal({
           />
         </div>
 
-        <h3 className="text-xl font-bold text-[#51376D]">It&apos;s a Mutual Spark!</h3>
-        <p className="text-xs text-[#51376D]/75 mt-1.5">
-          You and <span className="font-semibold text-[#51376D]">{name}</span> sparked each other.
+        <h3 className="text-xl font-bold text-[#413B5E]">It&apos;s a Mutual Spark!</h3>
+        <p className="text-xs text-[#413B5E]/75 mt-1.5">
+          You and <span className="font-semibold text-[#413B5E]">{name}</span> sparked each other.
         </p>
 
         <div className="w-full flex flex-col gap-2 mt-5">
           <Link
             href={chatHref}
-            className="w-full py-3 px-4 rounded-full bg-[#72519A] hover:bg-[#51376D] text-white text-xs font-semibold shadow-md transition flex items-center justify-center"
+            className="w-full py-3 px-4 rounded-full bg-[#665D96] hover:bg-[#413B5E] text-white text-xs font-semibold shadow-md transition flex items-center justify-center"
           >
             Send First Message
           </Link>
           <button
             type="button"
             onClick={onClose}
-            className="w-full py-2.5 px-4 rounded-full text-xs font-semibold text-[#51376D]/75 hover:text-[#51376D] hover:bg-[#E8DFF5]/70 transition cursor-pointer"
+            className="w-full py-2.5 px-4 rounded-full text-xs font-semibold text-[#413B5E]/75 hover:text-[#413B5E] hover:bg-[#E8E6F1]/70 transition cursor-pointer"
           >
             Keep Browsing
           </button>

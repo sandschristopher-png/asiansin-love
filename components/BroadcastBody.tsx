@@ -12,7 +12,7 @@ export function BroadcastBody({ text, className = '' }: { text: string; classNam
     <p className={`whitespace-pre-line break-words ${className}`}>
       {parts.map((part, i) =>
         i % 2 === 1 ? (
-          <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="text-[#72519A] underline underline-offset-2 hover:text-[#9474C3] transition-colors">
+          <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="text-[#665D96] underline underline-offset-2 hover:text-[#9A93BC] transition-colors">
             {part}
           </a>
         ) : (

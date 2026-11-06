@@ -217,7 +217,7 @@ export function SwipeableRow({
                 tabIndex={open ? 0 : -1}
                 onClick={() => run(a)}
                 className={`h-full flex flex-col items-center justify-center gap-1 text-[11px] font-semibold ${
-                  a.tone === 'danger' ? 'bg-[#DC2626] text-white' : 'bg-[#E8DFF5] text-[#72519A]'
+                  a.tone === 'danger' ? 'bg-[#DC2626] text-white' : 'bg-[#E8E6F1] text-[#665D96]'
                 }`}
                 style={{ width: ACTION_WIDTH }}
               >
@@ -250,7 +250,7 @@ export function SwipeableRow({
               onClick={() => setSheet(true)}
               aria-label={`More actions for ${label}`}
               aria-haspopup="dialog"
-              className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center text-[#B5A0DA] hover:bg-black/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#72519A]/40"
+              className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center text-[#B8B3D1] hover:bg-black/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#665D96]/40"
             >
               <MoreHorizontal className="w-4 h-4" aria-hidden />
             </button>
@@ -273,8 +273,8 @@ export function SwipeableRow({
               onClick={(e) => e.stopPropagation()}
               className="w-full max-w-[430px] rounded-t-3xl bg-white shadow-xl ail-sheet-up px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] [transform:translate3d(0,0,0)]"
             >
-              <div className="mx-auto mb-3 h-1.5 w-10 rounded-full bg-[#D5C6EC]" aria-hidden />
-              <p className="px-1 pb-2 text-xs font-semibold text-[#51376D]/60 truncate">{label}</p>
+              <div className="mx-auto mb-3 h-1.5 w-10 rounded-full bg-[#D0CDE1]" aria-hidden />
+              <p className="px-1 pb-2 text-xs font-semibold text-[#413B5E]/60 truncate">{label}</p>
               <div className="space-y-1">
                 {actions.map((a, i) => (
                   <button
@@ -282,8 +282,8 @@ export function SwipeableRow({
                     type="button"
                     autoFocus={i === 0}
                     onClick={() => run(a)}
-                    className={`w-full h-12 px-3 rounded-2xl flex items-center gap-3 text-sm font-semibold text-left hover:bg-black/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#72519A]/40 ${
-                      a.tone === 'danger' ? 'text-[#DC2626]' : 'text-[#51376D]'
+                    className={`w-full h-12 px-3 rounded-2xl flex items-center gap-3 text-sm font-semibold text-left hover:bg-black/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#665D96]/40 ${
+                      a.tone === 'danger' ? 'text-[#DC2626]' : 'text-[#413B5E]'
                     }`}
                   >
                     <a.icon className="w-5 h-5" aria-hidden />
@@ -294,7 +294,7 @@ export function SwipeableRow({
               <button
                 type="button"
                 onClick={() => setSheet(false)}
-                className="mt-2 w-full h-12 rounded-full border border-[#D5C6EC] bg-white text-sm font-medium text-[#51376D] hover:bg-black/5"
+                className="mt-2 w-full h-12 rounded-full border border-[#D0CDE1] bg-white text-sm font-medium text-[#413B5E] hover:bg-black/5"
               >
                 Cancel
               </button>

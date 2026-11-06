@@ -1,11 +1,13 @@
 /** Shared limits and helpers for voice intros and in-chat voice notes. */
 
 export const VOICE_INTRO_MIN_MS = 3000;
-/** 20 s at 32 kbps mono Opus is ~80 KB: light enough for provincial 3G. */
 export const VOICE_INTRO_MAX_MS = 20000;
 export const VOICE_NOTE_MAX_MS = 60000;
 
-/** Upload caps (opus at ~32 kbps is ~80 KB for 20 s; AAC on iOS is larger). */
+/** Recording bitrate: 128 kbps Opus/AAC. 20 s intro is ~320 KB, 60 s note ~960 KB. */
+export const VOICE_BITRATE = 128000;
+
+/** Upload caps: both sit well above a full-length clip at VOICE_BITRATE. */
 export const VOICE_INTRO_MAX_BYTES = 1024 * 1024;
 export const VOICE_NOTE_MAX_BYTES = 2 * 1024 * 1024;
 

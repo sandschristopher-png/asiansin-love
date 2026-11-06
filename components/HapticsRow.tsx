@@ -23,14 +23,14 @@ export function HapticsRow() {
   };
 
   return (
-    <div className="flex items-center justify-between p-3 rounded-2xl hover:bg-[#E8DFF5]/40 transition">
+    <div className="flex items-center justify-between p-3 rounded-2xl hover:bg-[#E8E6F1]/40 transition">
       <div className="flex items-center gap-3 pr-4">
-        <div className="w-8 h-8 rounded-xl bg-white text-[#51376D]/85 flex items-center justify-center shrink-0">
+        <div className="w-8 h-8 rounded-xl bg-white text-[#413B5E]/85 flex items-center justify-center shrink-0">
           <Vibrate className="w-4 h-4" />
         </div>
         <div>
-          <p className="text-xs font-bold text-[#51376D]">Haptic feedback</p>
-          <p className="text-[11px] text-[#51376D]/75">
+          <p className="text-xs font-bold text-[#413B5E]">Haptic feedback</p>
+          <p className="text-[11px] text-[#413B5E]/75">
             {supported ? 'Gentle vibrations on taps, sends and photos' : 'Not supported on this device'}
           </p>
         </div>

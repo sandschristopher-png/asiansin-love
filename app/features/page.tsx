@@ -51,27 +51,27 @@ const features = [
 
 export default function FeaturesPage() {
   return (
-    <div className="min-h-dvh bg-white font-sans text-[#51376D] selection:bg-[#72519A] selection:text-white pb-16 relative">
+    <div className="min-h-dvh bg-white font-sans text-[#413B5E] selection:bg-[#665D96] selection:text-white pb-16 relative">
 
       
       {/* Soft Ambient Plum Glow */}
-      <div className="pointer-events-none absolute -top-32 left-1/2 -translate-x-1/2 h-72 w-[600px] bg-gradient-to-b from-[#72519A]/20 to-transparent blur-3xl opacity-60" />
+      <div className="pointer-events-none absolute -top-32 left-1/2 -translate-x-1/2 h-72 w-[600px] bg-gradient-to-b from-[#665D96]/20 to-transparent blur-3xl opacity-60" />
 
       {/* Header */}
-      <header className="sticky top-0 z-40 border-b border-[#B5A0DA]/25 bg-[#FFFFFF]/90 px-4 sm:px-6 py-3.5 backdrop-blur-md flex items-center justify-between">
+      <header className="sticky top-0 z-40 border-b border-[#B8B3D1]/25 bg-[#FFFFFF]/90 px-4 sm:px-6 py-3.5 backdrop-blur-md flex items-center justify-between">
         <Link href="/" className="hover:opacity-90 transition">
           <Logo textSize="text-base sm:text-lg" />
         </Link>
         <div className="flex items-center gap-3">
           <Link
             href="/discover"
-            className="text-xs font-semibold text-[#51376D] hover:text-[#51376D] transition hidden sm:inline"
+            className="text-xs font-semibold text-[#413B5E] hover:text-[#413B5E] transition hidden sm:inline"
           >
             Explore Profiles
           </Link>
           <Link
             href="/signup"
-            className="rounded-xl bg-[#72519A] hover:bg-[#9474C3] px-3.5 py-1.5 text-xs font-medium text-white transition shadow-md shadow-[#72519A]/40 active:scale-95"
+            className="rounded-xl bg-[#665D96] hover:bg-[#9A93BC] px-3.5 py-1.5 text-xs font-medium text-white transition shadow-md shadow-[#665D96]/40 active:scale-95"
           >
             Join Free
           </Link>
@@ -82,16 +82,16 @@ export default function FeaturesPage() {
         
         {/* Hero Header */}
         <div className="text-center max-w-xl mx-auto space-y-3 mb-12">
-          <span className="text-xs font-medium uppercase tracking-wider text-[#51376D]/55">
+          <span className="text-xs font-medium uppercase tracking-wider text-[#413B5E]/55">
             Platform Standards
           </span>
-          <h1 className="text-3xl sm:text-4xl md:text-5xl font-medium text-[#51376D]  leading-tight">
+          <h1 className="text-3xl sm:text-4xl md:text-5xl font-medium text-[#413B5E]  leading-tight">
             Engineered For Serious Love, <br />
-            <span className="bg-gradient-to-r from-[#B5A0DA] via-[#51376D] to-white bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#B8B3D1] via-[#413B5E] to-white bg-clip-text text-transparent">
               Not Casual Scams
             </span>
           </h1>
-          <p className="text-sm text-[#51376D] leading-relaxed">
+          <p className="text-sm text-[#413B5E] leading-relaxed">
             Legacy dating sites are cluttered with spammers, money solicitations, and abandoned profiles. Here is how asiansin.love protects your journey.
           </p>
         </div>
@@ -103,15 +103,15 @@ export default function FeaturesPage() {
             return (
               <div 
                 key={idx} 
-                className="rounded-3xl border border-[#B5A0DA]/35 bg-[#FFFFFF] p-6 hover:border-[#B5A0DA]/70 hover:shadow-xl transition flex flex-col justify-start space-y-3 shadow-lg"
+                className="rounded-3xl border border-[#B8B3D1]/35 bg-[#FFFFFF] p-6 hover:border-[#B8B3D1]/70 hover:shadow-xl transition flex flex-col justify-start space-y-3 shadow-lg"
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-2.5 rounded-2xl bg-[#FFFFFF] border border-[#B5A0DA]/40 text-[#51376D]/55 shrink-0">
-                    <Icon className="h-5 w-5 text-[#D5C6EC]" />
+                  <div className="p-2.5 rounded-2xl bg-[#FFFFFF] border border-[#B8B3D1]/40 text-[#413B5E]/55 shrink-0">
+                    <Icon className="h-5 w-5 text-[#D0CDE1]" />
                   </div>
-                  <h2 className="text-sm font-medium text-[#51376D] ">{item.title}</h2>
+                  <h2 className="text-sm font-medium text-[#413B5E] ">{item.title}</h2>
                 </div>
-                <p className="text-xs sm:text-sm text-[#51376D] leading-relaxed">
+                <p className="text-xs sm:text-sm text-[#413B5E] leading-relaxed">
                   {item.desc}
                 </p>
               </div>
@@ -120,19 +120,19 @@ export default function FeaturesPage() {
         </div>
 
         {/* Commitment Strip */}
-        <section className="mt-12 rounded-3xl border border-[#B5A0DA]/35 bg-[#FFFFFF] p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-2xl">
+        <section className="mt-12 rounded-3xl border border-[#B8B3D1]/35 bg-[#FFFFFF] p-6 sm:p-8 flex flex-col sm:flex-row items-center justify-between gap-6 shadow-2xl">
           <div className="space-y-1.5 text-center sm:text-left">
-            <h2 className="text-base sm:text-lg font-medium text-[#51376D]">
+            <h2 className="text-base sm:text-lg font-medium text-[#413B5E]">
               100% Free For Local Southeast Asian Members
             </h2>
-            <p className="text-xs sm:text-sm text-[#51376D] max-w-xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-[#413B5E] max-w-xl leading-relaxed">
               Local singles across Southeast Asia can browse, match, and chat completely free of charge. No hidden fees or bait-and-switch paywalls.
             </p>
           </div>
           <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
             <Link
               href="/signup"
-              className="w-full sm:w-auto rounded-2xl bg-[#72519A] hover:bg-[#9474C3] px-6 py-3 text-xs sm:text-sm font-medium text-white transition shadow-lg shadow-[#72519A]/40 flex items-center justify-center gap-2 active:scale-95"
+              className="w-full sm:w-auto rounded-2xl bg-[#665D96] hover:bg-[#9A93BC] px-6 py-3 text-xs sm:text-sm font-medium text-white transition shadow-lg shadow-[#665D96]/40 flex items-center justify-center gap-2 active:scale-95"
             >
               <span>Get Started</span>
               <ArrowRight className="h-4 w-4" />

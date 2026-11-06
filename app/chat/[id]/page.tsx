@@ -895,13 +895,13 @@ export default function ChatConversationPage() {
   };
 
   return (
-    <div className="w-full h-[100dvh] max-h-[100dvh] flex flex-col bg-white text-[#51376D] font-sans relative overflow-hidden">
+    <div className="w-full h-[100dvh] max-h-[100dvh] flex flex-col bg-white text-[#413B5E] font-sans relative overflow-hidden">
       {/* Sticky Header */}
-      <header className="flex items-center justify-between px-3.5 py-2.5 bg-white/95 backdrop-blur-md border-b border-[#D5C6EC] shrink-0 z-20">
+      <header className="flex items-center justify-between px-3.5 py-2.5 bg-white/95 backdrop-blur-md border-b border-[#D0CDE1] shrink-0 z-20">
         <div className="flex items-center gap-2.5 min-w-0">
           <Link
             href="/messages"
-            className="w-8 h-8 rounded-full flex items-center justify-center text-[#51376D]/85 hover:text-[#72519A] hover:bg-[#E8DFF5]/70 transition shrink-0"
+            className="w-8 h-8 rounded-full flex items-center justify-center text-[#413B5E]/85 hover:text-[#665D96] hover:bg-[#E8E6F1]/70 transition shrink-0"
             aria-label="Back to messages"
           >
             <ArrowLeft className="w-4 h-4" />
@@ -909,10 +909,10 @@ export default function ChatConversationPage() {
 
           {isInitialLoading ? (
             <div className="flex items-center gap-2.5 animate-pulse">
-              <div className="w-9 h-9 rounded-full bg-[#E8DFF5]/60" />
+              <div className="w-9 h-9 rounded-full bg-[#E8E6F1]/60" />
               <div className="space-y-1.5">
-                <div className="w-24 h-3.5 bg-[#E8DFF5]/60 rounded-full" />
-                <div className="w-16 h-2.5 bg-[#E8DFF5]/60 rounded-full" />
+                <div className="w-24 h-3.5 bg-[#E8E6F1]/60 rounded-full" />
+                <div className="w-16 h-2.5 bg-[#E8E6F1]/60 rounded-full" />
               </div>
             </div>
           ) : (
@@ -920,7 +920,7 @@ export default function ChatConversationPage() {
               href={'/profile/' + (resolvedTargetUuid || rawParam)}
               className="flex items-center gap-2.5 min-w-0 group"
             >
-              <div className="relative w-9 h-9 rounded-full overflow-hidden border border-[#D5C6EC] shrink-0 bg-[#E8DFF5]/60">
+              <div className="relative w-9 h-9 rounded-full overflow-hidden border border-[#D0CDE1] shrink-0 bg-[#E8E6F1]/60">
                 <Image
                   src={targetInfo.avatar}
                   alt={targetInfo.name || 'Member'}
@@ -932,7 +932,7 @@ export default function ChatConversationPage() {
               <div className="flex flex-col min-w-0">
                 <span className="flex items-center gap-1 min-w-0">
                   <span
-                    className="text-[13.5px] font-bold text-[#51376D] group-hover:text-[#72519A] transition leading-tight truncate"
+                    className="text-[13.5px] font-bold text-[#413B5E] group-hover:text-[#665D96] transition leading-tight truncate"
                     style={{ fontFamily: 'var(--font-brand)' }}
                   >
                     {targetInfo.name || 'Member'}
@@ -956,9 +956,9 @@ export default function ChatConversationPage() {
                   return (
                     <div className="flex items-center gap-1.5 mt-0.5 min-w-0">
                       {online && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block shrink-0" />}
-                      {label && <span className="text-[11px] text-[#51376D]/55 font-medium truncate shrink-0">{label}</span>}
+                      {label && <span className="text-[11px] text-[#413B5E]/55 font-medium truncate shrink-0">{label}</span>}
                       {cityLabel && (
-                        <span className="px-1.5 py-px rounded-full bg-[#E8DFF5]/60 text-[10px] font-semibold text-[#72519A] whitespace-nowrap truncate">
+                        <span className="px-1.5 py-px rounded-full bg-[#E8E6F1]/60 text-[10px] font-semibold text-[#665D96] whitespace-nowrap truncate">
                           {cityLabel}
                         </span>
                       )}
@@ -978,7 +978,7 @@ export default function ChatConversationPage() {
           <button
             type="button"
             onClick={() => setShowReportModal(true)}
-            className="w-8 h-8 flex items-center justify-center text-[#51376D]/55 hover:text-red-600 hover:bg-red-50 rounded-full transition cursor-pointer"
+            className="w-8 h-8 flex items-center justify-center text-[#413B5E]/55 hover:text-red-600 hover:bg-red-50 rounded-full transition cursor-pointer"
             title="Safety & Moderation"
           >
             <ShieldAlert className="w-4 h-4" />
@@ -996,36 +996,36 @@ export default function ChatConversationPage() {
         {isInitialLoading ? (
           <div className="space-y-4 py-4 animate-pulse">
             <div className="flex items-end gap-2">
-              <div className="w-6 h-6 rounded-full bg-[#E8DFF5]/60 shrink-0" />
-              <div className="w-48 h-10 bg-white rounded-2xl rounded-bl-xs border border-[#D5C6EC]" />
+              <div className="w-6 h-6 rounded-full bg-[#E8E6F1]/60 shrink-0" />
+              <div className="w-48 h-10 bg-white rounded-2xl rounded-bl-xs border border-[#D0CDE1]" />
             </div>
             <div className="flex justify-end">
-              <div className="w-52 h-11 bg-[#72519A]/20 rounded-2xl rounded-br-xs" />
+              <div className="w-52 h-11 bg-[#665D96]/20 rounded-2xl rounded-br-xs" />
             </div>
             <div className="flex items-end gap-2">
-              <div className="w-6 h-6 rounded-full bg-[#E8DFF5]/60 shrink-0" />
-              <div className="w-40 h-9 bg-white rounded-2xl rounded-bl-xs border border-[#D5C6EC]" />
+              <div className="w-6 h-6 rounded-full bg-[#E8E6F1]/60 shrink-0" />
+              <div className="w-40 h-9 bg-white rounded-2xl rounded-bl-xs border border-[#D0CDE1]" />
             </div>
           </div>
         ) : (
           <>
             {showIcebreaker && icebreakerPrompt && messages.length > 0 && messages.length < 3 && (
-              <div className="mb-3 p-3.5 rounded-2xl bg-white border border-[#D5C6EC] shadow-[0_2px_10px_rgba(114,81,154,0.05)] space-y-2">
+              <div className="mb-3 p-3.5 rounded-2xl bg-white border border-[#D0CDE1] shadow-[0_2px_10px_rgba(102,93,150,0.05)] space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-[#72519A]">
-                    <Lightbulb className="w-3.5 h-3.5 text-[#72519A]" />
+                  <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-[#665D96]">
+                    <Lightbulb className="w-3.5 h-3.5 text-[#665D96]" />
                     <span>Conversation Starter</span>
                   </span>
                   <button
                     type="button"
                     onClick={() => setShowIcebreaker(false)}
-                    className="text-[#51376D]/55 hover:text-[#51376D] p-0.5 cursor-pointer"
+                    className="text-[#413B5E]/55 hover:text-[#413B5E] p-0.5 cursor-pointer"
                     aria-label="Dismiss icebreaker"
                   >
                     <X className="w-3.5 h-3.5" />
                   </button>
                 </div>
-                <p className="text-xs text-[#51376D] leading-relaxed bg-white p-2.5 rounded-xl border border-[#D5C6EC]">
+                <p className="text-xs text-[#413B5E] leading-relaxed bg-white p-2.5 rounded-xl border border-[#D0CDE1]">
                   &ldquo;{icebreakerPrompt}&rdquo;
                 </p>
                 <button
@@ -1034,7 +1034,7 @@ export default function ChatConversationPage() {
                     setInputText(icebreakerPrompt);
                     textareaRef.current?.focus();
                   }}
-                  className="text-[11px] font-semibold text-[#72519A] hover:underline cursor-pointer"
+                  className="text-[11px] font-semibold text-[#665D96] hover:underline cursor-pointer"
                 >
                   Tap to use this starter &rarr;
                 </button>
@@ -1057,8 +1057,8 @@ export default function ChatConversationPage() {
             )}
 
             {showSafetyNotice && (
-              <div className="mb-3 p-3 rounded-2xl bg-[#E8DFF5]/60 border border-[#D5C6EC] text-xs text-[#72519A] flex items-start gap-2.5">
-                <ShieldAlert className="w-4 h-4 text-[#72519A] shrink-0 mt-0.5" />
+              <div className="mb-3 p-3 rounded-2xl bg-[#E8E6F1]/60 border border-[#D0CDE1] text-xs text-[#665D96] flex items-start gap-2.5">
+                <ShieldAlert className="w-4 h-4 text-[#665D96] shrink-0 mt-0.5" />
                 <p className="leading-relaxed">
                   <strong className="font-semibold">Safety Gate:</strong> Contact details and voice notes unlock after 3 substantive replies from both members.
                 </p>
@@ -1067,7 +1067,7 @@ export default function ChatConversationPage() {
 
             {messages.length === 0 ? (
               <div className="py-16 text-center space-y-2">
-                <div className="w-12 h-12 rounded-full overflow-hidden mx-auto border border-[#D5C6EC] bg-[#E8DFF5]/60 relative">
+                <div className="w-12 h-12 rounded-full overflow-hidden mx-auto border border-[#D0CDE1] bg-[#E8E6F1]/60 relative">
                   <Image
                     src={targetInfo.avatar}
                     alt={targetInfo.name || 'Member'}
@@ -1076,10 +1076,10 @@ export default function ChatConversationPage() {
                     className="object-cover"
                   />
                 </div>
-                <p className="text-xs font-semibold text-[#51376D]">
+                <p className="text-xs font-semibold text-[#413B5E]">
                   Start a conversation with  {targetInfo.name}
                 </p>
-                <p className="text-[11px] text-[#51376D]/55 max-w-[240px] mx-auto leading-relaxed">
+                <p className="text-[11px] text-[#413B5E]/55 max-w-[240px] mx-auto leading-relaxed">
                   {sharedInterests.length > 0
                     ? `You both love ${sharedInterests.slice(0, 2).join(' & ')}! Break the ice with a suggestion below.`
                     : 'Send a friendly note to break the ice.'}
@@ -1103,7 +1103,7 @@ export default function ChatConversationPage() {
                             el.style.height = Math.min(el.scrollHeight, 108) + 'px';
                           });
                         }}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#E8DFF5]/60 border border-[#D5C6EC] text-[#72519A] text-[11.5px] font-semibold hover:bg-[#E8DFF5]/60 active:scale-95 transition"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#E8E6F1]/60 border border-[#D0CDE1] text-[#665D96] text-[11.5px] font-semibold hover:bg-[#E8E6F1]/60 active:scale-95 transition"
                       >
                         <Lightbulb className="w-3 h-3" />
                         {chip.label}
@@ -1157,7 +1157,7 @@ export default function ChatConversationPage() {
                   <React.Fragment key={msg.id}>
                     {showDateHeader && (
                       <div className="flex justify-center my-1.5 select-none">
-                        <span className="px-3 py-0.5 rounded-full bg-[#E8DFF5]/60 text-[#51376D]/55 text-[10px] font-semibold tracking-wide">
+                        <span className="px-3 py-0.5 rounded-full bg-[#E8E6F1]/60 text-[#413B5E]/55 text-[10px] font-semibold tracking-wide">
                           {currentDayLabel}
                         </span>
                       </div>
@@ -1174,7 +1174,7 @@ export default function ChatConversationPage() {
                         {!isMe && (
                           <div className="w-6 h-6 shrink-0">
                             {!isSameSenderAsNext ? (
-                              <div className="relative w-6 h-6 rounded-full overflow-hidden border border-[#D5C6EC] bg-[#E8DFF5]/60">
+                              <div className="relative w-6 h-6 rounded-full overflow-hidden border border-[#D0CDE1] bg-[#E8E6F1]/60">
                                 <Image
                                   src={targetInfo.avatar}
                                   alt={targetInfo.name}
@@ -1201,12 +1201,12 @@ export default function ChatConversationPage() {
                             (!isMe && isRealId ? 'cursor-pointer ' : '') +
                             (msg.pending ? 'opacity-75 ' : msg.failed ? 'opacity-60 ' : 'opacity-100 ') +
                             (isMe
-                              ? 'bg-[#72519A] text-white rounded-2xl ' +
+                              ? 'bg-[#665D96] text-white rounded-2xl ' +
                                 (isSameSenderAsNext ? 'rounded-br-md' : 'rounded-br-xs') +
-                                ' shadow-[0_1px_6px_rgba(114,81,154,0.18)]'
-                              : 'bg-white text-[#51376D] border border-[#D5C6EC] rounded-2xl ' +
+                                ' shadow-[0_1px_6px_rgba(102,93,150,0.18)]'
+                              : 'bg-white text-[#413B5E] border border-[#D0CDE1] rounded-2xl ' +
                                 (isSameSenderAsNext ? 'rounded-bl-md' : 'rounded-bl-xs') +
-                                ' shadow-[0_1px_3px_rgba(81,55,109,0.03)]')
+                                ' shadow-[0_1px_3px_rgba(65,59,94,0.03)]')
                           }
                         >
                           {msg.hasAudio ? (
@@ -1221,10 +1221,10 @@ export default function ChatConversationPage() {
                           ) : translations[msg.id]?.showing && translations[msg.id]?.text ? (
                             <span className="block">
                               <span className="block">{msg.text}</span>
-                              <span className="block mt-1.5 pt-1.5 border-t border-[#D5C6EC] italic text-[#51376D]">
+                              <span className="block mt-1.5 pt-1.5 border-t border-[#D0CDE1] italic text-[#413B5E]">
                                 {translations[msg.id]?.text}
                               </span>
-                              <span className="mt-1.5 inline-flex items-center px-1.5 py-0.5 rounded-md bg-[#E8DFF5]/60 text-[9.5px] font-semibold not-italic text-[#72519A]">
+                              <span className="mt-1.5 inline-flex items-center px-1.5 py-0.5 rounded-md bg-[#E8E6F1]/60 text-[9.5px] font-semibold not-italic text-[#665D96]">
                                 Translated
                               </span>
                             </span>
@@ -1235,7 +1235,7 @@ export default function ChatConversationPage() {
                       </div>
 
                       {earlyContact && (
-                        <p className="mt-1 ml-8 max-w-[84%] rounded-xl border border-[#D5C6EC] bg-white px-2.5 py-1.5 text-[10.5px] leading-snug text-[#51376D]/70">
+                        <p className="mt-1 ml-8 max-w-[84%] rounded-xl border border-[#D0CDE1] bg-white px-2.5 py-1.5 text-[10.5px] leading-snug text-[#413B5E]/70">
                           {EARLY_CONTACT_NOTICE}
                         </p>
                       )}
@@ -1243,7 +1243,7 @@ export default function ChatConversationPage() {
                       {(!isSameSenderAsNext || canTranslate || msg.failed || showActions) && (
                         <div
                           className={
-                            'flex items-center gap-1 mt-1 text-[10px] text-[#51376D]/55 select-none ' +
+                            'flex items-center gap-1 mt-1 text-[10px] text-[#413B5E]/55 select-none ' +
                             (isMe ? 'pr-0.5' : 'pl-8')
                           }
                         >
@@ -1251,7 +1251,7 @@ export default function ChatConversationPage() {
                             <>
                               <span className="text-red-600 font-semibold">Not delivered</span>
                               <span aria-hidden>·</span>
-                              <button type="button" onClick={() => retryMessage(msg)} className="font-semibold text-[#72519A] hover:underline">
+                              <button type="button" onClick={() => retryMessage(msg)} className="font-semibold text-[#665D96] hover:underline">
                                 Retry
                               </button>
                             </>
@@ -1267,7 +1267,7 @@ export default function ChatConversationPage() {
                                   setReportMessageId(msg.id);
                                   setActiveMsgId(null);
                                 }}
-                                className="font-semibold text-[#51376D]/60 hover:text-red-600"
+                                className="font-semibold text-[#413B5E]/60 hover:text-red-600"
                               >
                                 Report message
                               </button>
@@ -1280,7 +1280,7 @@ export default function ChatConversationPage() {
                                 type="button"
                                 onClick={() => toggleTranslation(msg)}
                                 disabled={translations[msg.id]?.loading}
-                                className="font-semibold text-[#72519A] hover:underline cursor-pointer disabled:opacity-60 inline-flex items-center gap-1"
+                                className="font-semibold text-[#665D96] hover:underline cursor-pointer disabled:opacity-60 inline-flex items-center gap-1"
                               >
                                 {translations[msg.id]?.loading && <Loader2 className="w-2.5 h-2.5 animate-spin" />}
                                 {translations[msg.id]?.loading
@@ -1294,9 +1294,9 @@ export default function ChatConversationPage() {
                           {/* Delivered / Read indicators: Plus (free members see timestamps only) */}
                           {isMe && !msg.pending && isPlus && (
                             msg.read ? (
-                              <CheckCheck className="w-3 h-3 text-[#72519A]" />
+                              <CheckCheck className="w-3 h-3 text-[#665D96]" />
                             ) : (
-                              <Check className="w-3 h-3 text-[#51376D]/55" />
+                              <Check className="w-3 h-3 text-[#413B5E]/55" />
                             )
                           )}
                         </div>
@@ -1315,7 +1315,7 @@ export default function ChatConversationPage() {
         <button
           type="button"
           onClick={() => scrollToBottom('smooth')}
-          className="absolute bottom-16 left-1/2 -translate-x-1/2 z-30 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#72519A] text-white text-xs font-semibold shadow-lg hover:bg-[#51376D] transition cursor-pointer"
+          className="absolute bottom-16 left-1/2 -translate-x-1/2 z-30 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#665D96] text-white text-xs font-semibold shadow-lg hover:bg-[#413B5E] transition cursor-pointer"
         >
           <span>New message</span>
           <ArrowDown className="w-3.5 h-3.5" />
@@ -1323,7 +1323,7 @@ export default function ChatConversationPage() {
       )}
 
       {/* Docked Flex Composer (Never overlaps message feed) */}
-      <div className="shrink-0 w-full bg-white/95 backdrop-blur-md border-t border-[#D5C6EC] px-3 pt-2 pb-[max(0.625rem,env(safe-area-inset-bottom))] z-20">
+      <div className="shrink-0 w-full bg-white/95 backdrop-blur-md border-t border-[#D0CDE1] px-3 pt-2 pb-[max(0.625rem,env(safe-area-inset-bottom))] z-20">
         {!isInitialLoading && !gateUnlocked && (() => {
           // One friendly line; shows whichever side still needs messages (each member needs 3).
           const mine = Math.min(liveGate.senderSubstantiveCount, CONTACT_UNLOCK_TURNS);
@@ -1337,11 +1337,11 @@ export default function ChatConversationPage() {
                 : `${them}: ${theirs}/${CONTACT_UNLOCK_TURNS}`;
           return (
             <p
-              className="text-xs text-[#51376D]/55 bg-white border border-[#D5C6EC] py-1.5 px-3 rounded-xl mx-auto mb-2 text-center max-w-md flex items-center justify-center gap-1.5"
+              className="text-xs text-[#413B5E]/55 bg-white border border-[#D0CDE1] py-1.5 px-3 rounded-xl mx-auto mb-2 text-center max-w-md flex items-center justify-center gap-1.5"
               aria-live="polite"
               title="Messages count when they have a few words (15+ characters)."
             >
-              <Lock className="w-3.5 h-3.5 shrink-0 text-[#72519A]" aria-hidden />
+              <Lock className="w-3.5 h-3.5 shrink-0 text-[#665D96]" aria-hidden />
               <span>
                 Voice notes &amp; contact sharing unlock after {CONTACT_UNLOCK_TURNS} meaningful messages each ({progress})
               </span>
@@ -1358,18 +1358,18 @@ export default function ChatConversationPage() {
           </p>
         )}
         {cooldownSeconds > 0 ? (
-          <div className="p-3 rounded-2xl bg-white border border-[#D5C6EC] flex flex-col items-center gap-2 shadow-xs text-center">
-            <div className="flex items-center gap-1.5 text-xs text-[#51376D]/85">
+          <div className="p-3 rounded-2xl bg-white border border-[#D0CDE1] flex flex-col items-center gap-2 shadow-xs text-center">
+            <div className="flex items-center gap-1.5 text-xs text-[#413B5E]/85">
               <Clock className="w-4 h-4 text-amber-500" />
               <span>Next free message unlocks in</span>
             </div>
-            <span className="text-lg font-bold tracking-wider text-[#51376D]">
+            <span className="text-lg font-bold tracking-wider text-[#413B5E]">
               {formatTimer(cooldownSeconds)}
             </span>
             <button
               type="button"
               onClick={() => setShowUpgradeModal(true)}
-              className="w-full flex items-center justify-center gap-2 py-2 rounded-full bg-[#72519A] hover:bg-[#51376D] text-white font-semibold text-xs shadow-sm transition cursor-pointer"
+              className="w-full flex items-center justify-center gap-2 py-2 rounded-full bg-[#665D96] hover:bg-[#413B5E] text-white font-semibold text-xs shadow-sm transition cursor-pointer"
             >
               <Zap className="w-3.5 h-3.5 fill-current" />
               Skip the Wait with Plus
@@ -1382,20 +1382,20 @@ export default function ChatConversationPage() {
               onClick={() => (voice.state === 'recording' ? voice.cancel() : voice.reset())}
               disabled={voiceSending}
               aria-label="Discard voice note"
-              className="w-9 h-9 rounded-full border border-[#D5C6EC] text-[#51376D]/55 hover:text-red-600 flex items-center justify-center shrink-0 disabled:opacity-40"
+              className="w-9 h-9 rounded-full border border-[#D0CDE1] text-[#413B5E]/55 hover:text-red-600 flex items-center justify-center shrink-0 disabled:opacity-40"
             >
               <Trash2 className="w-4 h-4" />
             </button>
-            <div className="flex-1 h-10 rounded-3xl bg-white border border-[#D5C6EC] px-3 flex items-center gap-2 min-w-0">
+            <div className="flex-1 h-10 rounded-3xl bg-white border border-[#D0CDE1] px-3 flex items-center gap-2 min-w-0">
               {voice.state === 'recording' ? (
                 <>
                   <span className="w-2 h-2 rounded-full bg-red-500 animate-pulse shrink-0" />
-                  <span className="text-xs font-semibold text-[#51376D] tabular-nums shrink-0">
+                  <span className="text-xs font-semibold text-[#413B5E] tabular-nums shrink-0">
                     {formatSeconds(voice.elapsedMs)} / {formatSeconds(VOICE_NOTE_MAX_MS)}
                   </span>
                   <span className="flex-1 flex items-center gap-[2px] h-5 min-w-0 overflow-hidden" aria-hidden>
                     {voice.levels.map((l, i) => (
-                      <span key={i} className="flex-1 rounded-full bg-[#72519A]" style={{ height: `${Math.round(l * 100)}%` }} />
+                      <span key={i} className="flex-1 rounded-full bg-[#665D96]" style={{ height: `${Math.round(l * 100)}%` }} />
                     ))}
                   </span>
                 </>
@@ -1414,7 +1414,7 @@ export default function ChatConversationPage() {
                 type="button"
                 onClick={voice.stop}
                 aria-label="Stop recording"
-                className="w-9 h-9 rounded-full bg-[#51376D] text-white flex items-center justify-center shrink-0"
+                className="w-9 h-9 rounded-full bg-[#413B5E] text-white flex items-center justify-center shrink-0"
               >
                 <Square className="w-3.5 h-3.5 fill-current" />
               </button>
@@ -1424,7 +1424,7 @@ export default function ChatConversationPage() {
                 onClick={sendVoiceNote}
                 disabled={voiceSending || !voice.blob}
                 aria-label="Send voice note"
-                className="w-9 h-9 rounded-full bg-[#72519A] hover:bg-[#51376D] text-white flex items-center justify-center shrink-0 disabled:opacity-40"
+                className="w-9 h-9 rounded-full bg-[#665D96] hover:bg-[#413B5E] text-white flex items-center justify-center shrink-0 disabled:opacity-40"
               >
                 {voiceSending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4 translate-x-[0.5px]" />}
               </button>
@@ -1432,7 +1432,7 @@ export default function ChatConversationPage() {
           </div>
         ) : (
           <form onSubmit={handleSendMessage} className="flex items-end gap-2">
-            <div className="flex-1 bg-white border border-[#D5C6EC] focus-within:border-[#72519A] focus-within:bg-white focus-within:ring-2 focus-within:ring-[#72519A]/15 rounded-3xl px-3.5 py-2 transition-all flex items-center">
+            <div className="flex-1 bg-white border border-[#D0CDE1] focus-within:border-[#665D96] focus-within:bg-white focus-within:ring-2 focus-within:ring-[#665D96]/15 rounded-3xl px-3.5 py-2 transition-all flex items-center">
               <textarea
                 ref={textareaRef}
                 rows={1}
@@ -1443,7 +1443,7 @@ export default function ChatConversationPage() {
                 onFocus={() => {
                   setTimeout(() => scrollToBottom('smooth'), 180);
                 }}
-                className="w-full bg-transparent text-[#51376D] placeholder-[#51376D]/55 text-[13.5px] leading-snug outline-none resize-none max-h-28 overflow-y-auto"
+                className="w-full bg-transparent text-[#413B5E] placeholder-[#413B5E]/55 text-[13.5px] leading-snug outline-none resize-none max-h-28 overflow-y-auto"
               />
             </div>
             {!inputText.trim() && (
@@ -1455,8 +1455,8 @@ export default function ChatConversationPage() {
                   title={voiceAllowed ? `Record a voice note (up to ${VOICE_NOTE_MAX_MS / 1000}s)` : voiceLockedMessage}
                   className={`w-10 h-10 rounded-full border flex items-center justify-center transition cursor-pointer active:scale-95 ${
                     voiceAllowed
-                      ? 'border-[#D5C6EC] bg-[#E8DFF5]/60 text-[#72519A] hover:bg-[#E8DFF5]/60'
-                      : 'border-[#D5C6EC] bg-white text-[#D5C6EC]'
+                      ? 'border-[#D0CDE1] bg-[#E8E6F1]/60 text-[#665D96] hover:bg-[#E8E6F1]/60'
+                      : 'border-[#D0CDE1] bg-white text-[#D0CDE1]'
                   }`}
                 >
                   <Mic className="w-4 h-4" />
@@ -1464,7 +1464,7 @@ export default function ChatConversationPage() {
                 {!voiceAllowed && (
                   <span
                     aria-hidden
-                    className="pointer-events-none absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-white text-[#72519A] rounded-full flex items-center justify-center shadow-xs border border-[#D5C6EC]"
+                    className="pointer-events-none absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-white text-[#665D96] rounded-full flex items-center justify-center shadow-xs border border-[#D0CDE1]"
                   >
                     <Lock className="w-2 h-2" strokeWidth={3} />
                   </span>
@@ -1475,7 +1475,7 @@ export default function ChatConversationPage() {
               type="submit"
               disabled={!inputText.trim()}
               aria-label="Send message"
-              className="w-9 h-9 rounded-full bg-[#72519A] hover:bg-[#51376D] active:scale-90 disabled:opacity-35 text-white flex items-center justify-center transition-all shadow-xs shrink-0 cursor-pointer"
+              className="w-9 h-9 rounded-full bg-[#665D96] hover:bg-[#413B5E] active:scale-90 disabled:opacity-35 text-white flex items-center justify-center transition-all shadow-xs shrink-0 cursor-pointer"
             >
               <Send className="w-4 h-4 translate-x-[0.5px]" />
             </button>

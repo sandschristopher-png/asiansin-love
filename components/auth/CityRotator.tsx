@@ -24,7 +24,7 @@ export function CityRotator({ cities = SEA_CITIES }: { cities?: readonly string[
 
   return (
     <div className="flex flex-col items-center justify-center text-center mt-6 mb-8 select-none">
-      <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#51376D]/65 mb-1.5 select-none">Meet someone in</p>
+      <p className="text-[11px] font-bold tracking-[0.2em] uppercase text-[#413B5E]/65 mb-1.5 select-none">Meet someone in</p>
       <div className="h-12 overflow-hidden flex items-center justify-center relative w-full" aria-live="polite" aria-atomic="true">
         <AnimatePresence mode="wait">
           <motion.span
@@ -33,7 +33,7 @@ export function CityRotator({ cities = SEA_CITIES }: { cities?: readonly string[
             animate={{ opacity: 1, x: 0 }}
             exit={{ opacity: 0, x: -28 }}
             transition={{ duration: 0.32, ease: [0.16, 1, 0.3, 1] }}
-            className="inline-block text-2xl sm:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-[#72519A] via-[#9474C3] to-[#72519A] bg-clip-text text-transparent leading-tight text-center"
+            className="inline-block text-2xl sm:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-[#665D96] via-[#9A93BC] to-[#665D96] bg-clip-text text-transparent leading-tight text-center"
           >
             {city}
           </motion.span>

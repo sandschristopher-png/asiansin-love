@@ -78,7 +78,7 @@ const Chip = ({ tone, children }: { tone: 'good' | 'bad' | 'neutral'; children: 
         ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
         : tone === 'bad'
           ? 'bg-red-50 border-red-200 text-red-700'
-          : 'bg-[#E8DFF5]/60 border-[#D5C6EC] text-[#72519A]'
+          : 'bg-[#E8E6F1]/60 border-[#D0CDE1] text-[#665D96]'
     }`}
   >
     {children}
@@ -173,7 +173,7 @@ export default function AdminVerificationsPage() {
         <button
           onClick={() => decide(kind, userId, 'approve')}
           disabled={isBusy}
-          className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#72519A] hover:bg-[#72519A] text-white text-xs font-semibold disabled:opacity-50 min-h-[42px]"
+          className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#665D96] hover:bg-[#665D96] text-white text-xs font-semibold disabled:opacity-50 min-h-[42px]"
         >
           {isBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
           {labels[0]}
@@ -192,30 +192,30 @@ export default function AdminVerificationsPage() {
 
   const SectionTitle = ({ icon, title, count }: { icon: React.ReactNode; title: string; count: number }) => (
     <div className="flex items-center justify-between">
-      <h2 className="flex items-center gap-2 text-sm font-bold text-[#51376D]" style={{ fontFamily: 'var(--font-brand)' }}>
+      <h2 className="flex items-center gap-2 text-sm font-bold text-[#413B5E]" style={{ fontFamily: 'var(--font-brand)' }}>
         {icon}
         {title}
       </h2>
-      <span className="px-2 py-0.5 rounded-full bg-[#E8DFF5]/60 text-[#72519A] text-[11px] font-semibold">{count}</span>
+      <span className="px-2 py-0.5 rounded-full bg-[#E8E6F1]/60 text-[#665D96] text-[11px] font-semibold">{count}</span>
     </div>
   );
 
   const Empty = ({ text }: { text: string }) => (
-    <p className="p-5 text-center text-xs text-[#51376D]/55 bg-white rounded-2xl border border-[#D5C6EC]">{text}</p>
+    <p className="p-5 text-center text-xs text-[#413B5E]/55 bg-white rounded-2xl border border-[#D0CDE1]">{text}</p>
   );
 
   return (
-    <div className="text-[#51376D]">
+    <div className="text-[#413B5E]">
       <div className="space-y-4">
         <header className="space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="p-2 bg-[#E8DFF5]/60 border border-[#D5C6EC] rounded-xl text-[#72519A]">
+              <div className="p-2 bg-[#E8E6F1]/60 border border-[#D0CDE1] rounded-xl text-[#665D96]">
                 <BadgeCheck className="w-4 h-4" />
               </div>
               <div>
-                <h1 className="text-lg font-bold text-[#51376D]">ID Checks</h1>
-                <p className="text-xs text-[#51376D]/75">
+                <h1 className="text-lg font-bold text-[#413B5E]">ID Checks</h1>
+                <p className="text-xs text-[#413B5E]/75">
                   {loading ? 'Loading...' : `${identity.length} pending identity check${identity.length === 1 ? '' : 's'}`} · main photos · reports
                 </p>
               </div>
@@ -223,7 +223,7 @@ export default function AdminVerificationsPage() {
             <button
               onClick={() => load()}
               disabled={loading}
-              className="p-2.5 rounded-xl bg-white border border-[#D5C6EC] hover:bg-[#E8DFF5]/70 text-[#51376D]/75 disabled:opacity-50"
+              className="p-2.5 rounded-xl bg-white border border-[#D0CDE1] hover:bg-[#E8E6F1]/70 text-[#413B5E]/75 disabled:opacity-50"
               aria-label="Refresh queue"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
@@ -247,8 +247,8 @@ export default function AdminVerificationsPage() {
         )}
 
         {loading ? (
-          <div className="p-12 text-center text-[#51376D]/75 flex flex-col items-center gap-3 bg-white rounded-2xl border border-[#D5C6EC]">
-            <Loader2 className="w-7 h-7 animate-spin text-[#72519A]" />
+          <div className="p-12 text-center text-[#413B5E]/75 flex flex-col items-center gap-3 bg-white rounded-2xl border border-[#D0CDE1]">
+            <Loader2 className="w-7 h-7 animate-spin text-[#665D96]" />
             <p className="text-xs">Loading review queue...</p>
           </div>
         ) : error ? (
@@ -263,17 +263,17 @@ export default function AdminVerificationsPage() {
           <>
             {/* Identity verifications */}
             <section className="space-y-3">
-              <SectionTitle icon={<BadgeCheck className="w-4 h-4 text-[#72519A]" />} title="Identity verification" count={identity.length} />
+              <SectionTitle icon={<BadgeCheck className="w-4 h-4 text-[#665D96]" />} title="Identity verification" count={identity.length} />
               {identity.length === 0 ? (
                 <Empty text="All verifications caught up" />
               ) : (
                 identity.map((item) => (
-                  <div key={item.id} className="p-4 rounded-2xl bg-white border border-[#D5C6EC] shadow-sm space-y-3">
+                  <div key={item.id} className="p-4 rounded-2xl bg-white border border-[#D0CDE1] shadow-sm space-y-3">
                     <div className="flex items-center gap-3">
                       {item.avatar_url ? (
-                        <img src={item.avatar_url} alt="" className="w-11 h-11 rounded-full object-cover border border-[#D5C6EC]" />
+                        <img src={item.avatar_url} alt="" className="w-11 h-11 rounded-full object-cover border border-[#D0CDE1]" />
                       ) : (
-                        <div className="w-11 h-11 rounded-full bg-[#E8DFF5]/60" />
+                        <div className="w-11 h-11 rounded-full bg-[#E8E6F1]/60" />
                       )}
                       <div className="min-w-0">
                         <p className="text-sm font-semibold truncate">
@@ -284,10 +284,10 @@ export default function AdminVerificationsPage() {
                               (item.birthdate
                                 ? Math.floor((Date.now() - new Date(item.birthdate).getTime()) / (365.25 * 24 * 3600 * 1000))
                                 : null);
-                            return age ? <span className="font-normal text-[#51376D]/75">, {age}</span> : null;
+                            return age ? <span className="font-normal text-[#413B5E]/75">, {age}</span> : null;
                           })()}
                         </p>
-                        <p className="text-[11px] text-[#51376D]/55 truncate">
+                        <p className="text-[11px] text-[#413B5E]/55 truncate">
                           {[item.city, item.country].filter(Boolean).join(', ') || 'No location'}
                           {item.submission.submittedAt && ` · ${new Date(item.submission.submittedAt).toLocaleString()}`}
                         </p>
@@ -304,24 +304,24 @@ export default function AdminVerificationsPage() {
                             <div className="grid grid-cols-3 gap-2">
                               <figure className="space-y-1">
                                 {item.avatar_url ? (
-                                  <img src={item.avatar_url} alt="Profile photo" className="w-full aspect-[3/4] object-cover rounded-xl border border-[#D5C6EC]" />
+                                  <img src={item.avatar_url} alt="Profile photo" className="w-full aspect-[3/4] object-cover rounded-xl border border-[#D0CDE1]" />
                                 ) : (
-                                  <div className="w-full aspect-[3/4] rounded-xl bg-[#E8DFF5]/60" />
+                                  <div className="w-full aspect-[3/4] rounded-xl bg-[#E8E6F1]/60" />
                                 )}
-                                <figcaption className="text-[10px] text-center text-[#51376D]/55">Main photo</figcaption>
+                                <figcaption className="text-[10px] text-center text-[#413B5E]/55">Main photo</figcaption>
                               </figure>
                               {sub.photos.map((url, i) => (
                                 <figure key={url} className="space-y-1">
                                   <a href={url} target="_blank" rel="noreferrer">
-                                    <img src={url} alt={pose ? 'Selfie' : `Pose ${i + 1}`} className="w-full aspect-[3/4] object-cover rounded-xl border border-[#D5C6EC]" />
+                                    <img src={url} alt={pose ? 'Selfie' : `Pose ${i + 1}`} className="w-full aspect-[3/4] object-cover rounded-xl border border-[#D0CDE1]" />
                                   </a>
-                                  <figcaption className="text-[10px] text-center text-[#51376D]/55">{pose ? 'Captured selfie' : `Pose ${i + 1}`}</figcaption>
+                                  <figcaption className="text-[10px] text-center text-[#413B5E]/55">{pose ? 'Captured selfie' : `Pose ${i + 1}`}</figcaption>
                                 </figure>
                               ))}
                               {pose && (
                                 <figure className="space-y-1">
-                                  <img src={pose.image} alt={pose.label} className="w-full aspect-[3/4] object-contain rounded-xl border border-[#D5C6EC] bg-[#E8DFF5]/60" />
-                                  <figcaption className="text-[10px] text-center text-[#51376D]/55 leading-tight">{pose.label}</figcaption>
+                                  <img src={pose.image} alt={pose.label} className="w-full aspect-[3/4] object-contain rounded-xl border border-[#D0CDE1] bg-[#E8E6F1]/60" />
+                                  <figcaption className="text-[10px] text-center text-[#413B5E]/55 leading-tight">{pose.label}</figcaption>
                                 </figure>
                               )}
                             </div>
@@ -332,13 +332,13 @@ export default function AdminVerificationsPage() {
                           )}
 
                           {!pose && sub.poses && (
-                            <p className="text-[11px] text-[#51376D]/75">
-                              Requested poses: <span className="font-semibold text-[#51376D]">{sub.poses}</span>
+                            <p className="text-[11px] text-[#413B5E]/75">
+                              Requested poses: <span className="font-semibold text-[#413B5E]">{sub.poses}</span>
                             </p>
                           )}
 
                           {review ? (
-                            <div className="space-y-2 bg-white border border-[#D5C6EC] rounded-xl p-2.5">
+                            <div className="space-y-2 bg-white border border-[#D0CDE1] rounded-xl p-2.5">
                               <div className="flex flex-wrap gap-1.5">
                                 {sub.fastTrack && (
                       <Chip tone="neutral">
@@ -356,23 +356,23 @@ export default function AdminVerificationsPage() {
                                 </Chip>
                               </div>
                               {review.summary && (
-                                <p className="flex items-start gap-1.5 text-[11px] text-[#51376D]">
-                                  <ScanFace className="w-3.5 h-3.5 text-[#72519A] shrink-0 mt-0.5" />
+                                <p className="flex items-start gap-1.5 text-[11px] text-[#413B5E]">
+                                  <ScanFace className="w-3.5 h-3.5 text-[#665D96] shrink-0 mt-0.5" />
                                   <span>{review.summary}</span>
                                 </p>
                               )}
                             </div>
                           ) : sub.ai ? (
-                            <div className="flex items-start gap-2 text-[11px] bg-white border border-[#D5C6EC] rounded-xl p-2.5 text-[#51376D]">
-                              <ScanFace className="w-3.5 h-3.5 text-[#72519A] shrink-0 mt-0.5" />
+                            <div className="flex items-start gap-2 text-[11px] bg-white border border-[#D0CDE1] rounded-xl p-2.5 text-[#413B5E]">
+                              <ScanFace className="w-3.5 h-3.5 text-[#665D96] shrink-0 mt-0.5" />
                               <span>
                                 AI pre-check: {sub.ai.isSafe ? 'safe' : 'NOT safe'},{' '}
                                 {sub.ai.poseMatchesPrompt ? 'pose matches' : 'pose does NOT match'}.{' '}
-                                <span className="text-[#51376D]/75">{sub.ai.reason}</span>
+                                <span className="text-[#413B5E]/75">{sub.ai.reason}</span>
                               </span>
                             </div>
                           ) : (
-                            <p className="text-[11px] text-[#51376D]/75 bg-white border border-[#D5C6EC] rounded-xl p-2.5">
+                            <p className="text-[11px] text-[#413B5E]/75 bg-white border border-[#D0CDE1] rounded-xl p-2.5">
                               AI pre-screen unavailable for this submission. Review the photos manually.
                             </p>
                           )}
@@ -386,7 +386,7 @@ export default function AdminVerificationsPage() {
                       onChange={(e) => setRejectReasons((prev) => ({ ...prev, [item.id]: e.target.value }))}
                       maxLength={300}
                       placeholder="Rejection reason (optional, sent to the member)"
-                      className="w-full px-3 py-2 rounded-xl bg-white border border-[#D5C6EC] text-xs text-[#51376D] placeholder:text-[#51376D]/55 focus:outline-none focus:border-[#72519A]"
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-[#D0CDE1] text-xs text-[#413B5E] placeholder:text-[#413B5E]/55 focus:outline-none focus:border-[#665D96]"
                     />
 
                     <ActionButtons kind="identity" userId={item.id} labels={['Approve Identity', 'Reject']} />
@@ -397,19 +397,19 @@ export default function AdminVerificationsPage() {
 
             {/* Main photos */}
             <section className="space-y-3">
-              <SectionTitle icon={<ImageIcon className="w-4 h-4 text-[#72519A]" />} title="Main photos" count={avatars.length} />
+              <SectionTitle icon={<ImageIcon className="w-4 h-4 text-[#665D96]" />} title="Main photos" count={avatars.length} />
               {avatars.length === 0 ? (
                 <Empty text="No main photos waiting for review." />
               ) : (
                 <div className="grid grid-cols-2 gap-3">
                   {avatars.map((a) => (
-                    <div key={a.id} className="p-3 rounded-2xl bg-white border border-[#D5C6EC] shadow-sm space-y-2">
+                    <div key={a.id} className="p-3 rounded-2xl bg-white border border-[#D0CDE1] shadow-sm space-y-2">
                       {a.avatar_url ? (
                         <a href={a.avatar_url} target="_blank" rel="noreferrer">
                           <img src={a.avatar_url} alt="Main photo" className="w-full aspect-[4/5] object-cover rounded-xl" />
                         </a>
                       ) : (
-                        <div className="w-full aspect-[4/5] rounded-xl bg-[#E8DFF5]/60" />
+                        <div className="w-full aspect-[4/5] rounded-xl bg-[#E8E6F1]/60" />
                       )}
                       <p className="text-xs font-semibold truncate">{nameOf(a)}</p>
                       <ActionButtons kind="avatar" userId={a.id} />
@@ -426,23 +426,23 @@ export default function AdminVerificationsPage() {
                 <Empty text="No open reports." />
               ) : (
                 reports.map((r) => (
-                  <div key={r.id} className="p-3.5 rounded-2xl bg-white border border-[#D5C6EC] text-xs space-y-1.5">
+                  <div key={r.id} className="p-3.5 rounded-2xl bg-white border border-[#D0CDE1] text-xs space-y-1.5">
                     <div className="flex items-center justify-between">
                       <span className="px-2 py-0.5 rounded-full bg-red-50 text-red-600 font-semibold text-[11px]">
                         {r.reason.replace(/_/g, ' ')}
                       </span>
                       {r.created_at && (
-                        <span className="text-[11px] text-[#51376D]/55">{new Date(r.created_at).toLocaleString()}</span>
+                        <span className="text-[11px] text-[#413B5E]/55">{new Date(r.created_at).toLocaleString()}</span>
                       )}
                     </div>
-                    <p className="text-[#51376D]">
+                    <p className="text-[#413B5E]">
                       Reported:{' '}
-                      <a href={`/profile/${r.reported_id}`} className="font-mono text-[#72519A] underline">
+                      <a href={`/profile/${r.reported_id}`} className="font-mono text-[#665D96] underline">
                         {r.reported_id.slice(0, 8)}
                       </a>{' '}
                       · by <span className="font-mono">{r.reporter_id.slice(0, 8)}</span>
                     </p>
-                    {r.details && <p className="text-[#51376D]/75 break-words">{r.details}</p>}
+                    {r.details && <p className="text-[#413B5E]/75 break-words">{r.details}</p>}
                     <ActionButtons kind="report" userId={r.id} labels={[`Confirm (-${REPUTATION_RULES.confirmedReport} rep)`, 'Dismiss']} />
                   </div>
                 ))

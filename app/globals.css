@@ -1,23 +1,24 @@
 @import "tailwindcss";
 
 /* Brand palette (Tailwind v4 reads tokens from @theme): bg-brand-500, text-brand-900, ...
-   Pure white canvas, soft monochromatic lavender / purple. */
+   Pure white canvas, soft lilac-lavender. 50-500 are the four palette shades; 700 and 900 are
+   darker shades of the same hue so text and white button labels stay readable (WCAG AA). */
 @theme {
   --color-brand-canvas: #FFFFFF;
-  --color-brand-50: #E8DFF5;  /* ultra-light lavender: washes, selection tint */
-  --color-brand-100: #D5C6EC; /* soft lilac: hairline borders, subtle badges */
-  --color-brand-200: #B5A0DA; /* muted lavender: secondary icons, inactive states */
-  --color-brand-300: #9474C3; /* medium iris: accent hover, gradient transitions */
-  --color-brand-500: #72519A; /* refined deep purple: primary CTA, active pills, sparked heart */
-  --color-brand-900: #51376D; /* deep muted purple: typography and headers */
+  --color-brand-50: #E8E6F1;  /* softest washes, badge backdrops */
+  --color-brand-100: #D0CDE1; /* hairline borders, dividers, card outlines */
+  --color-brand-200: #B8B3D1; /* muted icons, secondary states */
+  --color-brand-500: #9A93BC; /* interactive accent: gradient ends, focus, decorative fills */
+  --color-brand-700: #665D96; /* text links, active labels, solid buttons (5.9:1 with white) */
+  --color-brand-900: #413B5E; /* headings and body text (10.4:1 on white) */
   /* Soft accent sampled from the character art's shirt (public/hero-woman.png). Illustration
      auras and soft secondary accents only: never CTAs, links, active pills or the wordmark. */
   --color-periwinkle: #979BCA;
 
   /* Soft aubergine-tinted elevation (never gray): shadow-brand-sm / -md / -glow, with hover: etc. */
-  --shadow-brand-sm: 0 1px 3px rgba(81, 55, 109, 0.05), 0 1px 2px rgba(81, 55, 109, 0.04);
-  --shadow-brand-md: 0 4px 14px rgba(81, 55, 109, 0.08), 0 2px 6px rgba(81, 55, 109, 0.04);
-  --shadow-brand-glow: 0 4px 20px rgba(114, 81, 154, 0.18);
+  --shadow-brand-sm: 0 1px 3px rgba(65, 59, 94, 0.05), 0 1px 2px rgba(65, 59, 94, 0.04);
+  --shadow-brand-md: 0 4px 14px rgba(65, 59, 94, 0.08), 0 2px 6px rgba(65, 59, 94, 0.04);
+  --shadow-brand-glow: 0 4px 20px rgba(102, 93, 150, 0.18);
 }
 
 /* Landing hero character aura: gentle ambient periwinkle light behind the transparent-background
@@ -95,7 +96,7 @@ html, body {
 
 body {
   background-color: #FFFFFF !important;
-  color: #51376D;
+  color: #413B5E;
 }
 
 .smooth-scroll {
@@ -147,15 +148,15 @@ a:active,
 /* Lavender brand text selection, native control accents and hairline scrollbars.
    (.no-scrollbar above is more specific, so hidden scrollbars stay hidden.) */
 ::selection {
-  background-color: rgba(232, 223, 245, 0.6);
-  color: #51376D;
+  background-color: rgba(232, 230, 241, 0.6);
+  color: #413B5E;
 }
 ::-moz-selection {
-  background-color: rgba(232, 223, 245, 0.6);
-  color: #51376D;
+  background-color: rgba(232, 230, 241, 0.6);
+  color: #413B5E;
 }
 :root {
-  accent-color: #72519A;
+  accent-color: #665D96;
 }
 ::-webkit-scrollbar {
   width: 6px;
@@ -165,11 +166,11 @@ a:active,
   background: transparent;
 }
 ::-webkit-scrollbar-thumb {
-  background: #D5C6EC;
+  background: #D0CDE1;
   border-radius: 9999px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #B5A0DA;
+  background: #B8B3D1;
 }
 
 
@@ -184,7 +185,7 @@ a:active,
 
 /* Liquid purple brand gradient (wordmark "love") */
 .text-brand-gradient {
-  background-image: linear-gradient(90deg, #72519A 0%, #9474C3 100%);
+  background-image: linear-gradient(90deg, #665D96 0%, #9A93BC 100%);
   -webkit-background-clip: text;
   background-clip: text;
   color: transparent;
@@ -240,7 +241,7 @@ nextjs-portal,
   100% { background-position: -200% 0; }
 }
 .ail-shimmer {
-  background-image: linear-gradient(90deg, rgba(213, 198, 236, 0.18) 0%, rgba(213, 198, 236, 0.38) 50%, rgba(213, 198, 236, 0.18) 100%);
+  background-image: linear-gradient(90deg, rgba(208, 205, 225, 0.18) 0%, rgba(208, 205, 225, 0.38) 50%, rgba(208, 205, 225, 0.18) 100%);
   background-size: 200% 100%;
   animation: ailShimmer 1.4s linear infinite;
 }

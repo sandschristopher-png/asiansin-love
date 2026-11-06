@@ -46,15 +46,15 @@ export function ChatSafetyBanner({ conversationKey }: { conversationKey: string 
   return (
     <aside
       aria-label="Safety tips"
-      className="relative my-3 p-3.5 pr-9 rounded-2xl border border-[#D5C6EC] bg-[#E8DFF5]/40 shadow-brand-sm"
+      className="relative my-3 p-3.5 pr-9 rounded-2xl border border-[#D0CDE1] bg-[#E8E6F1]/40 shadow-brand-sm"
     >
       <div className="flex items-center gap-2">
-        <ShieldCheck className="w-4 h-4 shrink-0 text-[#72519A]" aria-hidden />
-        <p className="text-[12.5px] font-bold text-[#51376D]">Safety &amp; Trust Guidelines</p>
+        <ShieldCheck className="w-4 h-4 shrink-0 text-[#665D96]" aria-hidden />
+        <p className="text-[12.5px] font-bold text-[#413B5E]">Safety &amp; Trust Guidelines</p>
       </div>
-      <ul className="mt-1.5 space-y-1 pl-6 list-disc marker:text-[#B5A0DA]">
+      <ul className="mt-1.5 space-y-1 pl-6 list-disc marker:text-[#B8B3D1]">
         {TIPS.map((tip) => (
-          <li key={tip} className="text-[11.5px] leading-snug text-[#51376D]/75">
+          <li key={tip} className="text-[11.5px] leading-snug text-[#413B5E]/75">
             {tip}
           </li>
         ))}
@@ -63,7 +63,7 @@ export function ChatSafetyBanner({ conversationKey }: { conversationKey: string 
         type="button"
         onClick={dismiss}
         aria-label="Dismiss safety tips"
-        className="absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center text-[#B5A0DA] hover:text-[#51376D] hover:bg-white/70 transition-colors"
+        className="absolute top-2 right-2 w-7 h-7 rounded-full flex items-center justify-center text-[#B8B3D1] hover:text-[#413B5E] hover:bg-white/70 transition-colors"
       >
         <X className="w-3.5 h-3.5" aria-hidden />
       </button>

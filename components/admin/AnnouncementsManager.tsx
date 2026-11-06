@@ -92,10 +92,10 @@ export function AnnouncementsManager() {
           e.preventDefault();
           if (canSend) setConfirming(true);
         }}
-        className="mb-6 p-4 rounded-2xl border border-[#D5C6EC] bg-white shadow-2xs space-y-3"
+        className="mb-6 p-4 rounded-2xl border border-[#D0CDE1] bg-white shadow-2xs space-y-3"
       >
         <div>
-          <label htmlFor="ann-title" className="block text-[11px] font-semibold uppercase tracking-wider text-[#51376D]/55 mb-1.5">
+          <label htmlFor="ann-title" className="block text-[11px] font-semibold uppercase tracking-wider text-[#413B5E]/55 mb-1.5">
             Title
           </label>
           <input
@@ -104,12 +104,12 @@ export function AnnouncementsManager() {
             maxLength={BROADCAST_TITLE_MAX}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="e.g. Voice intros are here"
-            className="w-full h-11 px-3 border border-[#D5C6EC] focus:border-[#72519A] rounded-xl text-[#51376D] font-semibold outline-none"
+            className="w-full h-11 px-3 border border-[#D0CDE1] focus:border-[#665D96] rounded-xl text-[#413B5E] font-semibold outline-none"
           />
         </div>
 
         <div>
-          <p className="block text-[11px] font-semibold uppercase tracking-wider text-[#51376D]/55 mb-1.5">Category</p>
+          <p className="block text-[11px] font-semibold uppercase tracking-wider text-[#413B5E]/55 mb-1.5">Category</p>
           <div className="flex flex-wrap gap-1.5" role="radiogroup" aria-label="Category">
             {BROADCAST_TAGS.map((t) => (
               <button
@@ -119,7 +119,7 @@ export function AnnouncementsManager() {
                 aria-checked={tag === t}
                 onClick={() => setTag(t)}
                 className={`h-8 px-3 rounded-full border text-xs font-semibold transition-colors ${
-                  tag === t ? 'bg-[#51376D] text-white border-[#51376D]' : 'bg-white text-[#51376D] border-[#D5C6EC] hover:border-[#72519A]/40'
+                  tag === t ? 'bg-[#413B5E] text-white border-[#413B5E]' : 'bg-white text-[#413B5E] border-[#D0CDE1] hover:border-[#665D96]/40'
                 }`}
               >
                 {t}
@@ -129,7 +129,7 @@ export function AnnouncementsManager() {
         </div>
 
         <div>
-          <label htmlFor="ann-body" className="block text-[11px] font-semibold uppercase tracking-wider text-[#51376D]/55 mb-1.5">
+          <label htmlFor="ann-body" className="block text-[11px] font-semibold uppercase tracking-wider text-[#413B5E]/55 mb-1.5">
             Message
           </label>
           <textarea
@@ -139,16 +139,16 @@ export function AnnouncementsManager() {
             onChange={(e) => setBody(e.target.value)}
             rows={6}
             placeholder={'Write the announcement. Blank lines start new paragraphs; https:// links become tappable.'}
-            className="w-full px-3 py-2.5 border border-[#D5C6EC] focus:border-[#72519A] rounded-xl text-sm leading-relaxed text-[#51376D] outline-none resize-y"
+            className="w-full px-3 py-2.5 border border-[#D0CDE1] focus:border-[#665D96] rounded-xl text-sm leading-relaxed text-[#413B5E] outline-none resize-y"
           />
-          <p className="mt-1 text-right text-[11px] text-[#51376D]/55 tabular-nums">
+          <p className="mt-1 text-right text-[11px] text-[#413B5E]/55 tabular-nums">
             {body.length}/{BROADCAST_BODY_MAX}
           </p>
         </div>
 
-        <div className="flex items-center justify-between rounded-xl border border-[#D5C6EC] px-3 h-12">
-          <span className="text-sm font-semibold text-[#51376D] flex items-center gap-1.5">
-            <Pin className="w-4 h-4 text-[#72519A]" aria-hidden />
+        <div className="flex items-center justify-between rounded-xl border border-[#D0CDE1] px-3 h-12">
+          <span className="text-sm font-semibold text-[#413B5E] flex items-center gap-1.5">
+            <Pin className="w-4 h-4 text-[#665D96]" aria-hidden />
             Pin to top
           </span>
           <button
@@ -157,7 +157,7 @@ export function AnnouncementsManager() {
             aria-checked={pinned}
             aria-label="Pin to top"
             onClick={() => setPinned((v) => !v)}
-            className={`w-11 h-6 rounded-full relative transition-colors ${pinned ? 'bg-[#72519A]' : 'bg-[#E8DFF5]'}`}
+            className={`w-11 h-6 rounded-full relative transition-colors ${pinned ? 'bg-[#665D96]' : 'bg-[#E8E6F1]'}`}
           >
             <span className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-all ${pinned ? 'left-6' : 'left-1'}`} />
           </button>
@@ -166,34 +166,34 @@ export function AnnouncementsManager() {
         <button
           type="submit"
           disabled={!canSend}
-          className="w-full bg-gradient-to-r from-[#72519A] to-[#9474C3] text-white font-bold h-11 px-6 rounded-full shadow-[0_2px_10px_rgba(114,81,154,0.25)] hover:opacity-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-gradient-to-r from-[#665D96] to-[#9A93BC] text-white font-bold h-11 px-6 rounded-full shadow-[0_2px_10px_rgba(102,93,150,0.25)] hover:opacity-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Send className="w-4 h-4" aria-hidden />
           Broadcast to All Members
         </button>
       </form>
 
-      <p className="text-[11px] font-semibold uppercase tracking-wider text-[#51376D]/55 mb-2">Past broadcasts</p>
+      <p className="text-[11px] font-semibold uppercase tracking-wider text-[#413B5E]/55 mb-2">Past broadcasts</p>
       {!items ? (
         <Loading />
       ) : items.length === 0 ? (
         <EmptyState icon={Megaphone} title="No announcements yet" body="Broadcasts you send appear here." />
       ) : (
-        <ul className="rounded-2xl border border-[#D5C6EC] bg-white divide-y divide-[#D5C6EC] overflow-hidden">
+        <ul className="rounded-2xl border border-[#D0CDE1] bg-white divide-y divide-[#D0CDE1] overflow-hidden">
           {items.map((a) => (
             <li key={a.id} className="px-3 py-3">
               <div className="flex items-center gap-2 text-[11px]">
-                <span className="text-[#51376D]/75 tabular-nums">{formatDate(a.published_at)}</span>
-                <span className="bg-[#72519A]/10 text-[#72519A] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider text-[10px]">{a.tag}</span>
+                <span className="text-[#413B5E]/75 tabular-nums">{formatDate(a.published_at)}</span>
+                <span className="bg-[#665D96]/10 text-[#665D96] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider text-[10px]">{a.tag}</span>
                 {a.is_pinned && (
-                  <span className="inline-flex items-center gap-0.5 font-semibold text-[#51376D]">
+                  <span className="inline-flex items-center gap-0.5 font-semibold text-[#413B5E]">
                     <Pin className="w-3 h-3" aria-hidden />
                     Pinned
                   </span>
                 )}
               </div>
-              <p className="mt-1 text-sm font-semibold text-[#51376D]">{a.title}</p>
-              <BroadcastBody text={a.body} className="mt-0.5 text-xs text-[#51376D]/75 leading-relaxed line-clamp-2" />
+              <p className="mt-1 text-sm font-semibold text-[#413B5E]">{a.title}</p>
+              <BroadcastBody text={a.body} className="mt-0.5 text-xs text-[#413B5E]/75 leading-relaxed line-clamp-2" />
               <div className="mt-2 flex gap-2">
                 <AdminButton
                   busy={busyId === a.id}
@@ -216,7 +216,7 @@ export function AnnouncementsManager() {
       {confirming && (
         <BottomSheet title="Broadcast to all members?" subtitle={title.trim()} onClose={() => !sending && setConfirming(false)}>
           <div className="p-4 space-y-4">
-            <p className="text-sm text-[#51376D]/80 leading-relaxed">
+            <p className="text-sm text-[#413B5E]/80 leading-relaxed">
               This announcement appears immediately in every member&apos;s Announcements feed, and members see an unread dot in the menu.
             </p>
             <div className="grid grid-cols-2 gap-2">

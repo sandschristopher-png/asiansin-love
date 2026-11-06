@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { Eye, EyeOff, Heart, Loader2, Plane, X, Zap } from 'lucide-react';
 import { AmbientAurora } from '@/components/ui/AmbientAurora';
+import { PlusBadge } from '@/components/ui/PlusBadge';
 import { PLUS_PLANS, type PlusPlanId } from '@/lib/plusPlans';
 
 type PlanId = PlusPlanId;
@@ -86,20 +87,18 @@ export function AILPlusModal({
       >
         <AmbientAurora layer="card" />
         <div className="pt-2.5" aria-hidden>
-          <div className="w-10 h-1 rounded-full bg-[#E8DFF5] mx-auto mb-3" />
+          <div className="w-10 h-1 rounded-full bg-[#E8E6F1] mx-auto mb-3" />
         </div>
         <div className="px-5 pb-[calc(1.25rem+env(safe-area-inset-bottom,16px))] space-y-4">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#E8DFF5]/60 text-[10px] font-extrabold tracking-widest uppercase text-[#72519A]">
-                <Zap className="w-3 h-3 fill-current" /> PLUS
-              </span>
-              <h2 className="mt-1.5 text-lg font-bold text-[#51376D] leading-snug">{title}</h2>
+              <PlusBadge />
+              <h2 className="mt-1.5 text-lg font-bold text-[#413B5E] leading-snug">{title}</h2>
             </div>
             <button
               type="button"
               onClick={onClose}
-              className="w-8 h-8 rounded-full flex items-center justify-center text-[#51376D]/55 hover:bg-[#E8DFF5]/70"
+              className="w-8 h-8 rounded-full flex items-center justify-center text-[#413B5E]/55 hover:bg-[#E8E6F1]/70"
               aria-label="Close"
             >
               <X className="w-4 h-4" />
@@ -108,10 +107,10 @@ export function AILPlusModal({
 
           <ul className="space-y-2.5">
             {PERKS.map((p) => (
-              <li key={p.title} className="flex items-start gap-2.5 text-xs text-[#51376D]/85 leading-relaxed">
-                <p.Icon className="w-4 h-4 text-[#72519A] shrink-0" aria-hidden />
+              <li key={p.title} className="flex items-start gap-2.5 text-xs text-[#413B5E]/85 leading-relaxed">
+                <p.Icon className="w-4 h-4 text-[#665D96] shrink-0" aria-hidden />
                 <span>
-                  <span className="font-semibold text-[#51376D]">{p.title}:</span> {p.text}
+                  <span className="font-semibold text-[#413B5E]">{p.title}:</span> {p.text}
                 </span>
               </li>
             ))}
@@ -128,17 +127,17 @@ export function AILPlusModal({
                   aria-checked={active}
                   onClick={() => setPlan(p.id)}
                   className={`relative rounded-2xl border px-2 pt-4 pb-2.5 text-center transition ${
-                    active ? 'border-[#72519A] bg-[#E8DFF5]/60 ring-1 ring-[#72519A]' : 'border-[#D5C6EC] bg-white'
+                    active ? 'border-[#665D96] bg-[#E8E6F1]/60 ring-1 ring-[#665D96]' : 'border-[#D0CDE1] bg-white'
                   }`}
                 >
                   {p.badge && (
-                    <span className="absolute -top-2 left-1/2 -translate-x-1/2 whitespace-nowrap px-1.5 py-0.5 rounded-full bg-[#72519A] text-[8.5px] font-bold text-white">
+                    <span className="absolute -top-2 left-1/2 -translate-x-1/2 whitespace-nowrap px-1.5 py-0.5 rounded-full bg-[#665D96] text-[8.5px] font-bold text-white">
                       {p.badge}
                     </span>
                   )}
-                  <span className="block text-[11px] font-bold text-[#51376D]">{p.label}</span>
-                  <span className="block mt-1 text-sm font-bold text-[#51376D]">{p.perMonth}</span>
-                  <span className="block text-[9px] text-[#51376D]/55">{p.note}</span>
+                  <span className="block text-[11px] font-bold text-[#413B5E]">{p.label}</span>
+                  <span className="block mt-1 text-sm font-bold text-[#413B5E]">{p.perMonth}</span>
+                  <span className="block text-[9px] text-[#413B5E]/55">{p.note}</span>
                 </button>
               );
             })}
@@ -154,12 +153,12 @@ export function AILPlusModal({
             type="button"
             onClick={checkout}
             disabled={busy}
-            className="w-full py-3.5 rounded-2xl bg-[#72519A] hover:bg-[#51376D] text-white text-sm font-semibold shadow-md shadow-[#72519A]/25 flex items-center justify-center gap-2 disabled:opacity-60"
+            className="w-full py-3.5 rounded-2xl bg-[#665D96] hover:bg-[#413B5E] text-white text-sm font-semibold shadow-md shadow-[#665D96]/25 flex items-center justify-center gap-2 disabled:opacity-60"
           >
             {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4 fill-current" />}
             Upgrade to Plus
           </button>
-          <Link href="/plus" onClick={onClose} className="block text-center text-xs font-semibold text-[#72519A] hover:underline">
+          <Link href="/plus" onClick={onClose} className="block text-center text-xs font-semibold text-[#665D96] hover:underline">
             View all member perks
           </Link>
         </div>

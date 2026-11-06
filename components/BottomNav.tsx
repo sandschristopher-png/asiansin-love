@@ -91,7 +91,7 @@ export function BottomNav() {
         isKeyboardOpen ? 'translate-y-24 opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'
       }`}
     >
-      <nav className="bg-white/95 border border-[#D5C6EC] shadow-[0_12px_36px_rgba(114,81,154,0.14),0_2px_8px_rgba(0,0,0,0.04)] rounded-full px-2 py-1.5 flex items-center justify-around select-none">
+      <nav className="bg-white/95 border border-[#D0CDE1] shadow-[0_12px_36px_rgba(102,93,150,0.14),0_2px_8px_rgba(0,0,0,0.04)] rounded-full px-2 py-1.5 flex items-center justify-around select-none">
         {navItems.map((item) => {
           const active = isActive(item.href);
           const Icon = item.icon;
@@ -103,8 +103,8 @@ export function BottomNav() {
               href={item.href}
               className={`relative flex-1 flex flex-col items-center justify-center py-1 px-2 rounded-2xl transition-all duration-200 ease-out active:scale-95 select-none cursor-pointer ${
                 active 
-                  ? 'text-[#51376D]'
-                  : 'text-[#B5A0DA] hover:text-[#72519A] transition-colors'
+                  ? 'text-[#413B5E]'
+                  : 'text-[#B8B3D1] hover:text-[#665D96] transition-colors'
               }`}
               aria-label={item.label}
             >
@@ -119,7 +119,7 @@ export function BottomNav() {
                   return (
                     <span
                       aria-label={`${label} new`}
-                      className={`absolute -top-1 -right-2.5 inline-flex items-center justify-center h-4.5 rounded-full bg-[#9474C3] text-white text-[9px] font-extrabold leading-none tabular-nums ring-2 ring-white shadow-xs whitespace-nowrap pointer-events-none select-none ${
+                      className={`absolute -top-1 -right-2.5 inline-flex items-center justify-center h-4.5 rounded-full bg-[#9A93BC] text-white text-[9px] font-extrabold leading-none tabular-nums ring-2 ring-white shadow-xs whitespace-nowrap pointer-events-none select-none ${
                         label.length === 1 ? 'w-4.5 p-0' : 'min-w-[18px] px-1.5'
                       }`}
                     >
@@ -129,7 +129,7 @@ export function BottomNav() {
                 })()}
               </div>
               <span className={`text-[10px] tracking-tight mt-0.5 leading-tight transition-colors duration-200 ${
-                active ? 'font-bold text-[#51376D]' : 'font-medium text-[#51376D]/55'
+                active ? 'font-bold text-[#413B5E]' : 'font-medium text-[#413B5E]/55'
               }`}>
                 {item.label}
               </span>

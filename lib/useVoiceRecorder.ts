@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { baseMime, pickRecorderMime } from '@/lib/audio';
+import { baseMime, pickRecorderMime, VOICE_BITRATE } from '@/lib/audio';
 
 export type RecorderState = 'idle' | 'recording' | 'recorded';
 
@@ -63,7 +63,8 @@ export function useVoiceRecorder(maxMs: number) {
     let stream: MediaStream;
     try {
       stream = await navigator.mediaDevices.getUserMedia({
-        audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true },
+        // Bare values are "ideal", so a mic that can't do 48 kHz still records instead of failing.
+        audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true, sampleRate: 48000 },
       });
     } catch {
       setError('Microphone access is needed to record. Allow it in your browser settings.');
@@ -100,7 +101,8 @@ export function useVoiceRecorder(maxMs: number) {
 
     let recorder: MediaRecorder;
     try {
-      recorder = new MediaRecorder(stream, { mimeType: mime, audioBitsPerSecond: 32000 });
+      // 128 kbps Opus (audio/webm;codecs=opus where supported, AAC on Safari): clear, not muffled.
+      recorder = new MediaRecorder(stream, { mimeType: mime, audioBitsPerSecond: VOICE_BITRATE });
     } catch {
       teardown();
       setError('Voice recording is not supported in this browser.');

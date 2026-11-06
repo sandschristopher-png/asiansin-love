@@ -130,7 +130,7 @@ export default function AdminModerationPage() {
   const getReputationBadge = (score?: number) => <ReputationBadge score={score ?? 100} />;
 
   return (
-    <div className="text-[#51376D]">
+    <div className="text-[#413B5E]">
       {/* Inside the Admin Console's mobile frame (app/admin/layout.tsx) */}
       <div className="space-y-4">
         <header className="space-y-3">
@@ -140,15 +140,15 @@ export default function AdminModerationPage() {
                 <ShieldAlert className="w-4 h-4" />
               </div>
               <div>
-                <h1 className="text-lg font-bold text-[#51376D]">Messages</h1>
-                <p className="text-xs text-[#51376D]/75">Review quarantined safety incidents</p>
+                <h1 className="text-lg font-bold text-[#413B5E]">Messages</h1>
+                <p className="text-xs text-[#413B5E]/75">Review quarantined safety incidents</p>
               </div>
             </div>
 
             <button
               onClick={() => fetchQuarantinedMessages()}
               disabled={loading}
-              className="p-2.5 rounded-xl bg-white border border-[#D5C6EC] hover:bg-[#E8DFF5]/70 text-[#51376D] transition disabled:opacity-50"
+              className="p-2.5 rounded-xl bg-white border border-[#D0CDE1] hover:bg-[#E8E6F1]/70 text-[#413B5E] transition disabled:opacity-50"
               aria-label="Refresh queue"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
@@ -158,13 +158,13 @@ export default function AdminModerationPage() {
 
           {/* Search Bar */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#51376D]/55" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#413B5E]/55" />
             <input
               type="text"
               placeholder="Filter by keyword or username..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-10 pl-9 pr-4 bg-white border border-[#D5C6EC] rounded-xl text-sm placeholder:text-[#51376D]/55 focus:outline-none focus:border-[#72519A] text-[#51376D]"
+              className="w-full h-10 pl-9 pr-4 bg-white border border-[#D0CDE1] rounded-xl text-sm placeholder:text-[#413B5E]/55 focus:outline-none focus:border-[#665D96] text-[#413B5E]"
             />
           </div>
         </header>
@@ -188,7 +188,7 @@ export default function AdminModerationPage() {
             </div>
             <button
               onClick={() => setActionFeedback(null)}
-              className="underline text-[#51376D]/75 hover:text-[#51376D] ml-3"
+              className="underline text-[#413B5E]/75 hover:text-[#413B5E] ml-3"
             >
               Dismiss
             </button>
@@ -197,8 +197,8 @@ export default function AdminModerationPage() {
 
         {/* Status / Message List */}
         {loading ? (
-          <div className="p-12 text-center text-[#51376D]/75 flex flex-col items-center gap-3 bg-white rounded-2xl border border-[#D5C6EC]">
-            <Loader2 className="w-7 h-7 animate-spin text-[#72519A]" />
+          <div className="p-12 text-center text-[#413B5E]/75 flex flex-col items-center gap-3 bg-white rounded-2xl border border-[#D0CDE1]">
+            <Loader2 className="w-7 h-7 animate-spin text-[#665D96]" />
             <p className="text-xs">Loading pending items...</p>
           </div>
         ) : error ? (
@@ -213,10 +213,10 @@ export default function AdminModerationPage() {
             </button>
           </div>
         ) : filteredMessages.length === 0 ? (
-          <div className="p-12 text-center text-[#51376D]/75 bg-white rounded-2xl border border-[#D5C6EC] space-y-2">
+          <div className="p-12 text-center text-[#413B5E]/75 bg-white rounded-2xl border border-[#D0CDE1] space-y-2">
             <CheckCircle2 className="w-9 h-9 text-emerald-500/80 mx-auto" />
-            <p className="text-sm font-semibold text-[#51376D]">All Clean</p>
-            <p className="text-xs text-[#51376D]/55">No quarantined messages need review right now.</p>
+            <p className="text-sm font-semibold text-[#413B5E]">All Clean</p>
+            <p className="text-xs text-[#413B5E]/55">No quarantined messages need review right now.</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -232,24 +232,24 @@ export default function AdminModerationPage() {
                   }}
                   role="button"
                   tabIndex={0}
-                  className="w-full text-left p-4 rounded-2xl border bg-white border-[#D5C6EC] active:scale-[0.99] hover:border-[#D5C6EC] transition cursor-pointer space-y-2.5"
+                  className="w-full text-left p-4 rounded-2xl border bg-white border-[#D0CDE1] active:scale-[0.99] hover:border-[#D0CDE1] transition cursor-pointer space-y-2.5"
                 >
                   <div className="flex items-center justify-between text-xs">
                     <div className="flex items-center gap-2">
-                      <User className="w-3.5 h-3.5 text-[#51376D]/75" />
-                      <span className="font-medium text-[#51376D] truncate max-w-[140px]">
+                      <User className="w-3.5 h-3.5 text-[#413B5E]/75" />
+                      <span className="font-medium text-[#413B5E] truncate max-w-[140px]">
                         {senderLabel}
                       </span>
                       {getReputationBadge(msg.sender?.reputation_score)}
                     </div>
-                    <span className="text-[11px] text-[#51376D]/55 flex items-center gap-1">
+                    <span className="text-[11px] text-[#413B5E]/55 flex items-center gap-1">
                       <Clock className="w-3 h-3" />
                       {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>
                   </div>
 
                   {/* Flagged Content Preview */}
-                  <p className="text-sm text-[#51376D] bg-white p-3 rounded-xl border border-[#D5C6EC] break-words line-clamp-3">
+                  <p className="text-sm text-[#413B5E] bg-white p-3 rounded-xl border border-[#D0CDE1] break-words line-clamp-3">
                     "{msg.content}"
                   </p>
 
@@ -257,7 +257,7 @@ export default function AdminModerationPage() {
                     <span className="text-red-600 text-[11px] font-medium flex items-center gap-1">
                       <AlertTriangle className="w-3 h-3" /> Quarantined
                     </span>
-                    <span className="text-[#51376D]/75 font-medium flex items-center gap-1 text-[11px]">
+                    <span className="text-[#413B5E]/75 font-medium flex items-center gap-1 text-[11px]">
                       Review & Actions <ChevronRight className="w-3.5 h-3.5" />
                     </span>
                   </div>
@@ -273,50 +273,50 @@ export default function AdminModerationPage() {
         <div className="fixed inset-0 z-[70] flex items-end justify-center" role="dialog" aria-modal="true" aria-label="Review message">
           {/* Backdrop */}
           <div
-            className="fixed inset-0 bg-[#51376D]/40 backdrop-blur-sm transition-opacity"
+            className="fixed inset-0 bg-[#413B5E]/40 backdrop-blur-sm transition-opacity"
             onClick={() => setActiveMessage(null)}
           />
 
           {/* Drawer Body */}
-          <div className="relative w-full max-w-[430px] mx-auto bg-white border-t border-[#D5C6EC] rounded-t-3xl max-h-[85dvh] overflow-y-auto p-5 space-y-5 shadow-2xl z-10 animate-in slide-in-from-bottom duration-200">
+          <div className="relative w-full max-w-[430px] mx-auto bg-white border-t border-[#D0CDE1] rounded-t-3xl max-h-[85dvh] overflow-y-auto p-5 space-y-5 shadow-2xl z-10 animate-in slide-in-from-bottom duration-200">
             {/* Sheet Grab Handle on Mobile */}
-            <div className="w-10 h-1 bg-[#E8DFF5]/60 rounded-full mx-auto" />
+            <div className="w-10 h-1 bg-[#E8E6F1]/60 rounded-full mx-auto" />
 
-            <div className="flex items-center justify-between pb-2 border-b border-[#D5C6EC]">
+            <div className="flex items-center justify-between pb-2 border-b border-[#D0CDE1]">
               <div className="flex items-center gap-2">
                 <ShieldAlert className="w-5 h-5 text-red-600" />
-                <h3 className="text-base font-semibold text-[#51376D]">Review Message</h3>
+                <h3 className="text-base font-semibold text-[#413B5E]">Review Message</h3>
               </div>
               <button
                 onClick={() => setActiveMessage(null)}
                 aria-label="Close"
-                className="p-1.5 rounded-full text-[#51376D]/75 hover:text-[#51376D] hover:bg-[#E8DFF5]/70 transition"
+                className="p-1.5 rounded-full text-[#413B5E]/75 hover:text-[#413B5E] hover:bg-[#E8E6F1]/70 transition"
               >
                 <X className="w-5 h-5" />
               </button>
             </div>
 
             {/* Sender Metadata Bar */}
-            <div className="bg-white p-3.5 rounded-xl border border-[#D5C6EC] text-xs space-y-2">
+            <div className="bg-white p-3.5 rounded-xl border border-[#D0CDE1] text-xs space-y-2">
               <div className="flex justify-between items-center">
-                <span className="text-[#51376D]/75">Sender:</span>
-                <span className="font-semibold text-[#51376D]">
+                <span className="text-[#413B5E]/75">Sender:</span>
+                <span className="font-semibold text-[#413B5E]">
                   {activeMessage.sender?.username || activeMessage.sender_id.slice(0, 12)}
                 </span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-[#51376D]/75">Reputation:</span>
+                <span className="text-[#413B5E]/75">Reputation:</span>
                 <div>{getReputationBadge(activeMessage.sender?.reputation_score)}</div>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-[#51376D]/75">Timestamp:</span>
-                <span className="text-[#51376D]">{new Date(activeMessage.created_at).toLocaleString()}</span>
+                <span className="text-[#413B5E]/75">Timestamp:</span>
+                <span className="text-[#413B5E]">{new Date(activeMessage.created_at).toLocaleString()}</span>
               </div>
             </div>
 
             {/* Flagged Message Box */}
             <div className="space-y-1.5">
-              <label className="text-[11px] font-semibold text-[#51376D]/75 uppercase tracking-wider">
+              <label className="text-[11px] font-semibold text-[#413B5E]/75 uppercase tracking-wider">
                 Quarantined Content
               </label>
               <div className="p-3.5 bg-red-50 border border-red-200 rounded-xl text-red-700 text-sm break-words select-all">
@@ -325,15 +325,15 @@ export default function AdminModerationPage() {
             </div>
 
             {/* Penalty Setting */}
-            <div className="space-y-3 pt-2 border-t border-[#D5C6EC]">
+            <div className="space-y-3 pt-2 border-t border-[#D0CDE1]">
               <div>
-                <label className="text-xs font-semibold text-[#51376D] block mb-1">
+                <label className="text-xs font-semibold text-[#413B5E] block mb-1">
                   Penalty Points (if confirming violation)
                 </label>
                 <select
                   value={penaltyPoints}
                   onChange={(e) => setPenaltyPoints(Number(e.target.value))}
-                  className="w-full bg-white border border-[#D5C6EC] rounded-xl px-3 py-2.5 text-xs text-[#51376D] focus:outline-none focus:border-[#72519A]"
+                  className="w-full bg-white border border-[#D0CDE1] rounded-xl px-3 py-2.5 text-xs text-[#413B5E] focus:outline-none focus:border-[#665D96]"
                 >
                   <option value={0}>0 pts (No deduction)</option>
                   <option value={10}>-10 pts (Minor caution)</option>
@@ -344,7 +344,7 @@ export default function AdminModerationPage() {
               </div>
 
               <div>
-                <label className="text-xs font-semibold text-[#51376D] block mb-1">
+                <label className="text-xs font-semibold text-[#413B5E] block mb-1">
                   Review Notes (Optional)
                 </label>
                 <textarea
@@ -352,7 +352,7 @@ export default function AdminModerationPage() {
                   onChange={(e) => setReviewNotes(e.target.value)}
                   placeholder="Reason for releasing or confirming..."
                   rows={2}
-                  className="w-full bg-white border border-[#D5C6EC] rounded-xl p-2.5 text-xs text-[#51376D] placeholder:text-[#51376D]/55 focus:outline-none focus:border-[#72519A] resize-none"
+                  className="w-full bg-white border border-[#D0CDE1] rounded-xl p-2.5 text-xs text-[#413B5E] placeholder:text-[#413B5E]/55 focus:outline-none focus:border-[#665D96] resize-none"
                 />
               </div>
             </div>
