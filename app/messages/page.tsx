@@ -3,10 +3,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { MessageCircle, Search, ChevronRight, ShieldCheck } from 'lucide-react';
+import { Check, Mail, MessageCircle, Search, ShieldCheck, Trash2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { ReputationBadge } from '@/components/ReputationBadge';
-import { SwipeableConversationItem } from '@/components/chat/SwipeableConversationItem';
+import { SwipeableRow } from '@/components/SwipeableRow';
+import { useActionToast } from '@/components/ActionToast';
 
 interface ConversationItem {
   id: string;
@@ -227,7 +228,7 @@ export default function MessagesPage() {
   }, [router, loadConversations]);
 
   const [actionError, setActionError] = useState<string | null>(null);
-  const [pendingDelete, setPendingDelete] = useState<ConversationItem | null>(null);
+  const showActionToast = useActionToast();
 
   const patchConversation = (recipientId: string, patch: Partial<ConversationItem>) =>
     setConversations((prev) => prev.map((c) => (c.recipientId === recipientId ? { ...c, ...patch } : c)));
@@ -270,11 +271,11 @@ export default function MessagesPage() {
     }
   };
 
-  /** Confirmed delete: hidden for this member only (the other member keeps the thread). */
-  const confirmDelete = async () => {
-    const conv = pendingDelete;
-    setPendingDelete(null);
-    if (!conv) return;
+  /**
+   * Swipe / sheet Delete (runs after the row has collapsed): hidden for this member only, the
+   * other member keeps the thread. Restored with an error if saving fails.
+   */
+  const deleteConversation = async (conv: ConversationItem) => {
     setActionError(null);
     const { data: { session } } = await supabase.auth.getSession();
     const uid = session?.user?.id;
@@ -291,7 +292,9 @@ export default function MessagesPage() {
     if (error) {
       setConversations(previous);
       setActionError('Could not delete the conversation. Please try again.');
+      return;
     }
+    showActionToast('Conversation deleted', 'check');
   };
 
   // Unread conversations first (chat alerts live here and on the Messages tab badge), newest first within each group.
@@ -363,7 +366,7 @@ export default function MessagesPage() {
           </p>
         )}
 
-        <div className="space-y-2">
+        <div>
           {loading ? (
             <div className="space-y-2" aria-busy="true" aria-label="Loading conversations">
               {Array.from({ length: 6 }).map((_, i) => (
@@ -398,21 +401,34 @@ export default function MessagesPage() {
             </div>
           ) : (
             filteredConversations.map((conv) => (
-              <SwipeableConversationItem
+              <SwipeableRow
                 key={conv.recipientId}
                 label={conv.name}
-                unread={isUnread(conv)}
-                onToggleRead={() => void toggleRead(conv)}
-                onDelete={() => setPendingDelete(conv)}
+                spacing="pb-2"
+                actions={[
+                  {
+                    key: 'read',
+                    label: isUnread(conv) ? 'Read' : 'Unread',
+                    icon: isUnread(conv) ? Check : Mail,
+                    onSelect: () => void toggleRead(conv),
+                  },
+                  {
+                    key: 'delete',
+                    label: 'Delete',
+                    icon: Trash2,
+                    tone: 'danger',
+                    removes: true,
+                    onSelect: () => void deleteConversation(conv),
+                  },
+                ]}
               >
+              {/* Hover: background tint only. pr-12 leaves room for the row's More button. */}
               <Link
                 href={'/chat/' + conv.recipientId}
                 draggable={false}
                 className={
-                  'flex items-center gap-3.5 px-3.5 py-3 bg-white border rounded-2xl transition-colors ' +
-                  (isUnread(conv)
-                    ? 'border-[#72519A]/40 bg-white'
-                    : 'border-[#D5C6EC] hover:border-[#72519A]/30 hover:bg-[#E8DFF5]/40')
+                  'flex items-center gap-3.5 pl-3.5 pr-12 py-3 bg-white border rounded-2xl transition-colors hover:bg-[#E8DFF5]/40 ' +
+                  (isUnread(conv) ? 'border-[#72519A]/40' : 'border-[#D5C6EC]')
                 }
               >
                 <div className="relative w-12 h-12 shrink-0">
@@ -464,48 +480,13 @@ export default function MessagesPage() {
                   </div>
                 </div>
 
-                <ChevronRight className="w-4 h-4 text-[#51376D]/55 shrink-0" />
               </Link>
-              </SwipeableConversationItem>
+              </SwipeableRow>
             ))
           )}
         </div>
       </main>
 
-      {pendingDelete && (
-        <div className="fixed inset-0 z-[80] flex items-end sm:items-center justify-center bg-black/40 px-4 pb-[max(1rem,env(safe-area-inset-bottom))]" onClick={() => setPendingDelete(null)}>
-          <div
-            role="alertdialog"
-            aria-modal="true"
-            aria-labelledby="delete-conv-title"
-            onClick={(e) => e.stopPropagation()}
-            className="w-full max-w-[380px] rounded-3xl bg-white border border-[#D5C6EC] p-5 shadow-brand-md"
-          >
-            <h2 id="delete-conv-title" className="text-sm font-bold text-[#51376D]">
-              Delete conversation with {pendingDelete.name}?
-            </h2>
-            <p className="mt-1.5 text-xs leading-relaxed text-[#51376D]/75">
-              It disappears from your Messages. {pendingDelete.name} keeps their copy, and a new message from them starts a fresh conversation.
-            </p>
-            <div className="mt-4 flex gap-2.5">
-              <button
-                type="button"
-                onClick={() => setPendingDelete(null)}
-                className="flex-1 h-11 rounded-full border border-[#D5C6EC] bg-white text-sm font-medium text-[#51376D] hover:bg-[#E8DFF5]/30 transition-colors"
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={() => void confirmDelete()}
-                className="flex-1 h-11 rounded-full bg-[#DC2626] text-sm font-semibold text-white hover:bg-red-700 transition-colors"
-              >
-                Delete
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
