@@ -40,7 +40,15 @@ export function BrandLogo({ className = '', href = '/discover', size = 'md', tex
 
   if (href) {
     return (
-      <Link href={href} aria-label="asiansin.love home" className="inline-flex items-center focus:outline-none">
+      // Never prefetch "/": the middleware redirects it (returning visitors to /login, members to
+      // /discover), and a redirected prefetch of the page you are on makes the router re-prefetch
+      // in a loop (150+ requests/s on the hero for every first-time visitor).
+      <Link
+        href={href}
+        prefetch={href === '/' ? false : undefined}
+        aria-label="asiansin.love home"
+        className="inline-flex items-center focus:outline-none"
+      >
         {wordmark}
       </Link>
     );
