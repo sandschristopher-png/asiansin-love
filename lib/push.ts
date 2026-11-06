@@ -69,16 +69,47 @@ async function subscribe(reg: ServiceWorkerRegistration): Promise<PushSubscripti
   });
 }
 
+/**
+ * Permission granted but the subscription never reached the server (e.g. offline at sign-up).
+ * PwaRegister retries silently on every app open; Settings shows a small "reconnecting" note.
+ */
+const SYNC_FAILED_KEY = 'ail_push_sync_failed';
+const SYNC_EVENT = 'ail-push-sync';
+function setSyncFailed(failed: boolean) {
+  try {
+    if (failed) localStorage.setItem(SYNC_FAILED_KEY, '1');
+    else localStorage.removeItem(SYNC_FAILED_KEY);
+  } catch {
+    // storage unavailable: the retry still happens on the next open
+  }
+  window.dispatchEvent(new Event(SYNC_EVENT));
+}
+export function isPushSyncPending(): boolean {
+  try {
+    return localStorage.getItem(SYNC_FAILED_KEY) === '1';
+  } catch {
+    return false;
+  }
+}
+export function onPushSyncChange(cb: () => void): () => void {
+  window.addEventListener(SYNC_EVENT, cb);
+  return () => window.removeEventListener(SYNC_EVENT, cb);
+}
+
 /** Silent: keeps the server copy of an already-granted subscription fresh. Never prompts. */
-export async function syncPushSubscription(): Promise<void> {
-  if (getPushSupport() !== 'granted') return;
+export async function syncPushSubscription(): Promise<boolean> {
+  if (getPushSupport() !== 'granted') return false;
   const reg = await registerServiceWorker();
-  if (!reg) return;
+  if (!reg) return false;
   try {
     const sub = await subscribe(reg);
-    if (sub) await saveSubscription(sub);
+    const ok = sub ? await saveSubscription(sub) : false;
+    setSyncFailed(!ok);
+    return ok;
   } catch (err) {
     console.warn('[push] sync failed:', err);
+    setSyncFailed(true);
+    return false;
   }
 }
 
@@ -93,9 +124,12 @@ export async function enablePushNotifications(): Promise<PushSupport | 'error'> 
   try {
     const sub = await subscribe(reg);
     if (!sub) return 'error';
-    return (await saveSubscription(sub)) ? 'granted' : 'error';
+    const ok = await saveSubscription(sub);
+    setSyncFailed(!ok); // permission is granted either way; a failed save is retried on next open
+    return ok ? 'granted' : 'error';
   } catch (err) {
     console.warn('[push] enable failed:', err);
+    if (Notification.permission === 'granted') setSyncFailed(true);
     return 'error';
   }
 }

@@ -1,7 +1,8 @@
 // v2: stop caching /api responses (private data) - activating v2 deletes the old cache.
 // v3: notification Reply / View actions.
 // v4: precached offline fallback + app shell assets.
-const CACHE_NAME = 'ail-cache-v4';
+// v5: pushsubscriptionchange re-subscribe.
+const CACHE_NAME = 'ail-cache-v5';
 const OFFLINE_URL = '/offline.html';
 // App shell that must work with no network. Next.js JS / CSS chunks are content-hashed and are
 // cached at runtime on first use (fetch handler below).
@@ -84,6 +85,42 @@ self.addEventListener('push', (event) => {
   };
 
   event.waitUntil(self.registration.showNotification(title, options));
+});
+
+// --- Subscription rotation ---
+// The browser can replace a push subscription (key rotation, expiry). Re-subscribe with our VAPID
+// key and save the new endpoint, so the member keeps getting alerts without opening the app. If
+// the session has expired the save fails quietly; PwaRegister re-syncs on the next app open, and
+// the server prunes the old endpoint on its next 404 / 410.
+function urlB64ToUint8Array(b64) {
+  const padding = '='.repeat((4 - (b64.length % 4)) % 4);
+  const raw = atob((b64 + padding).replace(/-/g, '+').replace(/_/g, '/'));
+  return Uint8Array.from(raw, (c) => c.charCodeAt(0));
+}
+
+self.addEventListener('pushsubscriptionchange', (event) => {
+  event.waitUntil(
+    (async () => {
+      let sub = event.newSubscription;
+      if (!sub) {
+        const res = await fetch('/api/push/public-key');
+        if (!res.ok) return;
+        const { publicKey } = await res.json();
+        if (!publicKey) return;
+        sub = await self.registration.pushManager.subscribe({
+          userVisibleOnly: true,
+          applicationServerKey: urlB64ToUint8Array(publicKey),
+        });
+      }
+      const json = sub.toJSON();
+      await fetch('/api/push/subscribe', {
+        method: 'POST',
+        credentials: 'same-origin',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ endpoint: json.endpoint, p256dh: json.keys && json.keys.p256dh, auth: json.keys && json.keys.auth }),
+      });
+    })().catch(() => {})
+  );
 });
 
 // --- Notification Click Handler ---

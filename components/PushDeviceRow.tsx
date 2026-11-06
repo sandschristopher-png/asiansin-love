@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from 'react';
 import { BellRing, Loader2 } from 'lucide-react';
-import { enablePushNotifications, getPushSupport, type PushSupport } from '@/lib/push';
+import { enablePushNotifications, getPushSupport, isPushSyncPending, onPushSyncChange, syncPushSubscription, type PushSupport } from '@/lib/push';
 import { PushPermissionCard } from '@/components/PushPermissionCard';
 
 const COPY: Record<PushSupport | 'error', string> = {
@@ -14,11 +14,18 @@ const COPY: Record<PushSupport | 'error', string> = {
   error: 'Could not turn on - please try again',
 };
 
-/** Settings row: turns on native push notifications for the current device (needs a tap). */
+/** Settings row: turns on web push notifications for the current device (needs a tap). */
 export function PushDeviceRow() {
   const [state, setState] = useState<PushSupport | 'error'>('default');
   const [busy, setBusy] = useState(false);
   const [explaining, setExplaining] = useState(false);
+  // Granted, but the last save never reached the server: retried silently on every app open.
+  const [syncPending, setSyncPending] = useState(false);
+  useEffect(() => {
+    const read = () => setSyncPending(isPushSyncPending());
+    read();
+    return onPushSyncChange(read);
+  }, []);
 
   useEffect(() => setState(getPushSupport()), []);
 
@@ -43,6 +50,20 @@ export function PushDeviceRow() {
         >
           {busy && <Loader2 className="w-3 h-3 animate-spin" />}
           Turn on
+        </button>
+      ) : state === 'granted' && syncPending ? (
+        <button
+          type="button"
+          disabled={busy}
+          onClick={async () => {
+            setBusy(true);
+            await syncPushSubscription();
+            setBusy(false);
+          }}
+          className="text-[11px] font-semibold text-[#F59E0B] hover:underline shrink-0 disabled:opacity-60"
+          title="Alerts are on, but this device hasn't finished connecting. We'll retry automatically."
+        >
+          {busy ? 'Connecting...' : 'Reconnecting'}
         </button>
       ) : state === 'granted' ? (
         <span className="text-[11px] font-semibold text-emerald-600 shrink-0">Enabled</span>

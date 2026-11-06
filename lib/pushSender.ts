@@ -108,7 +108,8 @@ export async function sendPushToUser({ userId, type, conversationId }: SendOpts)
             keys: { p256dh: sub.p256dh, auth: sub.auth },
           },
           payload,
-          // Messages and matches: high urgency, so the push service (FCM on Android, Apple on iOS)
+          // Messages and matches: high urgency, so the browser's push service (Google's for Chrome,
+          // Apple's for Safari)
           // delivers at once instead of batching for battery. Sparks / visits can wait. TTL: a
           // stale alert after an hour is noise, so the service may drop it.
           { urgency: type === 'message' || type === 'match' ? 'high' : 'normal', TTL: 3600 }
