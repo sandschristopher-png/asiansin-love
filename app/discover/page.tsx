@@ -1148,7 +1148,7 @@ function DiscoverContent() {
         )}
 
         {lastPassed && (
-          <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[60] flex items-center gap-3 px-4 py-2.5 rounded-full bg-white/95 border border-[#D5C6EC] shadow-2xl">
+          <div className="fixed bottom-24 mb-[env(safe-area-inset-bottom,0px)] left-1/2 -translate-x-1/2 z-[60] flex items-center gap-3 px-4 py-2.5 rounded-full bg-white/95 border border-[#D5C6EC] shadow-2xl">
             <span className="text-xs text-[#51376D]">
               Passed <strong>{lastPassed.name}</strong>
             </span>

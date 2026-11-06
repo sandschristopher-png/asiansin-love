@@ -4,12 +4,13 @@ import React, { useEffect, useState } from 'react';
 import { BellRing, Loader2 } from 'lucide-react';
 import { enablePushNotifications, getPushSupport, isPushSyncPending, onPushSyncChange, syncPushSubscription, type PushSupport } from '@/lib/push';
 import { PushPermissionCard } from '@/components/PushPermissionCard';
+import { isIosDevice } from '@/lib/pwaInstall';
 
 const COPY: Record<PushSupport | 'error', string> = {
   granted: 'On for this device',
   default: 'Get alerts for messages and matches',
   denied: 'Blocked - allow notifications in your browser settings',
-  'needs-install': 'On iPhone: Share > Add to Home Screen, then open the app',
+  'needs-install': 'On iPhone, tap Share, then Add to Home Screen, and open the app from there.',
   unsupported: 'Not supported in this browser',
   error: 'Could not turn on - please try again',
 };
@@ -38,7 +39,10 @@ export function PushDeviceRow() {
         </div>
         <div>
           <p className="text-xs font-bold text-[#51376D]">Push on this device</p>
-          <p className="text-[11px] text-[#51376D]/75">{COPY[state]}</p>
+          <p className="text-[11px] text-[#51376D]/75">
+            {/* iPhone web push needs iOS 16.4+ and the Home Screen app; older iOS has no PushManager. */}
+            {state === 'unsupported' && isIosDevice() ? 'Alerts need iOS 16.4 or later. Update iOS to turn them on.' : COPY[state]}
+          </p>
         </div>
       </div>
       {canEnable ? (
