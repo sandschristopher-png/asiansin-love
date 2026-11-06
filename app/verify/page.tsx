@@ -63,16 +63,14 @@ async function snapshotFromVideo(video: HTMLVideoElement): Promise<{ snap?: Omit
 }
 
 function PoseImage({ pose, className = '' }: { pose: VerificationPose; className?: string }) {
-  // Periwinkle aura behind the character; the opaque white art multiplies onto it.
+  // Functional figure: plain white, flat (no aura, border or glow).
   return (
-    <span className={`block overflow-hidden periwinkle-aura ${className}`}>
-      <img
-        src={pose.image}
-        alt={pose.label}
-        className="block w-full h-full object-contain mix-blend-multiply"
-        draggable={false}
-      />
-    </span>
+    <img
+      src={pose.image}
+      alt={pose.label}
+      className={`object-contain bg-white ${className}`}
+      draggable={false}
+    />
   );
 }
 
@@ -327,8 +325,8 @@ export default function VerifyPage() {
 
       {done ? (
         <div className="rounded-3xl bg-white border border-[#D5C6EC] p-8 text-center space-y-4 shadow-xl mx-4 mt-4">
-          <div className="w-44 h-44 mx-auto rounded-3xl overflow-hidden border border-[#D5C6EC] shadow-sm periwinkle-aura">
-            <img src="/images/verification/approved.png" alt="Submitted" className="w-full h-full object-contain mix-blend-multiply" />
+          <div className="w-44 h-44 mx-auto rounded-3xl overflow-hidden bg-white">
+            <img src="/images/verification/approved.png" alt="Submitted" className="w-full h-full object-contain" />
           </div>
           <h2 className="text-xl font-medium text-[#51376D]">Submitted for review</h2>
           <p className="text-sm text-[#51376D]/75 leading-relaxed">
@@ -452,7 +450,7 @@ export default function VerifyPage() {
                 className="w-full aspect-[3/4] object-cover rounded-2xl border border-[#D5C6EC] scale-x-[-1]"
               />
               <figure className="space-y-1">
-                <PoseImage pose={pose} className="w-full aspect-square rounded-2xl border border-[#D5C6EC]" />
+                <PoseImage pose={pose} className="w-full aspect-square rounded-2xl" />
                 <figcaption className="text-[10px] text-center text-[#51376D]/55 leading-tight">{pose.label}</figcaption>
               </figure>
             </div>
@@ -488,7 +486,7 @@ export default function VerifyPage() {
         <div className="mx-4 mt-4 space-y-4 pb-28">
           <div className="p-5 rounded-3xl bg-white border border-[#D5C6EC] space-y-3 shadow-sm">
             <span className="text-[11px] font-medium uppercase tracking-wider text-[#72519A]">Match this pose:</span>
-            <PoseImage pose={pose} className="w-44 h-44 mx-auto rounded-3xl border border-[#D5C6EC]" />
+            <PoseImage pose={pose} className="w-44 h-44 mx-auto rounded-3xl" />
             <p className="text-center text-sm font-medium text-[#51376D]">{pose.label}</p>
             <p className="text-xs text-[#51376D]/75 leading-relaxed text-center">
               Take one live selfie copying this pose. We compare it with your main photo, then a member of

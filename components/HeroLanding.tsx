@@ -131,7 +131,7 @@ export function HeroLanding() {
               </ul>
             </div>
 
-            <div className="pt-8 md:pt-0 mt-auto md:flex-1 flex items-end justify-center md:justify-end overflow-hidden leading-none">
+            <div className="hero-aura pt-8 md:pt-0 mt-auto md:flex-1 flex items-end justify-center md:justify-end overflow-hidden leading-none">
               <Image
                 src="/hero-woman.png"
                 alt="Illustrated member smiling"
@@ -194,7 +194,7 @@ export function HeroLanding() {
                 <h2 className="font-brand text-lg font-extrabold tracking-tight text-[#51376D]">{title}</h2>
                 <p className="text-[13px] text-[#51376D]/75 leading-relaxed">{body}</p>
               </div>
-              <div className="mt-auto w-full flex items-end justify-center overflow-hidden leading-none">
+              <div className="hero-aura mt-auto w-full flex items-end justify-center overflow-hidden leading-none">
                 <Image
                   src={src}
                   alt={alt}

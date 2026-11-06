@@ -20,16 +20,18 @@
   --shadow-brand-glow: 0 4px 20px rgba(114, 81, 154, 0.18);
 }
 
-/* Character aura: periwinkle at low opacity in the centre, fading to white at the edges. Pair with
-   mix-blend-multiply on opaque white-background art (the white takes the glow, linework stays). */
-.periwinkle-aura {
-  background-color: #FFFFFF;
+/* Landing hero character aura: gentle ambient periwinkle light behind the transparent-background
+   character art. 14% at the centre, feathered to fully transparent well inside the element, so
+   there is no visible box edge. Background layer only: no blend modes, no ring, no shadow. */
+.hero-aura {
   background-image: radial-gradient(
-    closest-side,
-    color-mix(in srgb, var(--color-periwinkle) 34%, transparent) 0%,
-    color-mix(in srgb, var(--color-periwinkle) 14%, transparent) 62%,
+    closest-side at 50% var(--aura-y, 62%),
+    color-mix(in srgb, var(--color-periwinkle) 14%, transparent) 0%,
+    color-mix(in srgb, var(--color-periwinkle) 9%, transparent) 38%,
+    color-mix(in srgb, var(--color-periwinkle) 4%, transparent) 68%,
     transparent 100%
   );
+  background-repeat: no-repeat;
 }
 
 @keyframes ailHeadsUpIn {
