@@ -1,11 +1,11 @@
 import React from 'react';
 import Link from 'next/link';
-import { ArrowLeft, ShieldCheck, Globe2, Home } from 'lucide-react';
+import { ArrowLeft, ShieldCheck, Globe2, Home, MapPin } from 'lucide-react';
 import { BrandLogo } from '@/components/BrandLogo';
 
 export const metadata = {
   title: 'Safety Blueprint — asiansin.love',
-  description: 'Practical safety guides for international dating in Southeast Asia: scam prevention, trafficking awareness, legal protection, and meeting protocols for both local and foreign members.',
+  description: 'Practical, comprehensive safety guide for cross-border dating in Southeast Asia: scam prevention, legal protections, meeting protocols, and cultural realities for both local and foreign members.',
 };
 
 type Topic = { title: string; body: string };
@@ -14,43 +14,47 @@ type Group = { icon: React.ComponentType<{ className?: string }>; label: string;
 const UNIVERSAL: Group = {
   icon: ShieldCheck,
   label: 'Universal Safety Rules',
-  blurb: 'Non-negotiable rules for every member, wherever you live.',
+  blurb: 'Non-negotiable foundational boundaries for every member, regardless of location.',
   topics: [
     {
-      title: 'The No-Transfer Rule',
-      body: 'Never send money, e-wallet transfers, gifts, or financial aid to someone you have not met and spent significant in-person time with. Sending cash shifts a relationship from mutual attraction to financial sponsorship. Refuse all requests via GCash, Maya, PromptPay, TrueMoney, Palawan Express, Western Union, Wise, or Remitly.',
+      title: 'The Zero-Transfer Mandate',
+      body: 'Never send money, e-wallet top-ups, bank wires, or financial aid to someone you have not met and spent significant in-person time with. Sending cash immediately transforms a romantic connection into a financial dependency. Refuse all requests via GCash, Maya, PromptPay, TrueMoney, Palawan Express, Western Union, Wise, or Remitly.',
     },
     {
-      title: 'Love Bombing & Rushed Commitment',
-      body: 'Intense declarations of love within days, talk of forever before a first meeting, and guilt-tripping when you set a pace are scripts, not feelings. Scammers manufacture closeness quickly so a later money request feels like helping a partner. Genuine connections survive a normal timeline.',
+      title: 'The Micro-Transfer Compliance Test',
+      body: 'Scams rarely start with large requests. They begin with ₱1,000 (฿600) for prepaid mobile load, ₱2,000 (฿1,200) for groceries, or ₱3,500 (฿2,200) for an urgent utility bill. These small sums test your willingness to pay and establish a habit of compliance. Say no to the first request.',
     },
     {
-      title: 'Manufactured Emergencies',
-      body: 'Know the common scripts: sudden clinic bills, sick parents, roof damage after rain, boarding house rent, or passport fees. Requests often start small — around ₱1,000 (฿600) — to test compliance. Genuine partners resolve family matters through local support networks, not an online connection.',
+      title: 'Love Bombing & Manufactured Chemistry',
+      body: 'Intense declarations of love within days, pet names like "my future husband/wife" before meeting, and claims of spiritual destiny are manipulative scripts designed to lower your critical thinking. Real attraction develops through mutual consistency over time, not frantic digital flattery.',
     },
     {
-      title: 'Public First Dates & Neutral Transit',
-      body: 'Always hold initial meetings in crowded, well-lit commercial public areas like shopping malls or verified restaurants. Arrange your own transit using Grab or local rideshares. Never accept private pick-ups from unverified third parties or agree to meet at isolated private villas on day one.',
+      title: 'Manufactured Crisis Scripts',
+      body: 'Familiarize yourself with the common emergency scripts: a sick parent admitted to a clinic, a storm-damaged roof, impounded work motorbikes, or overdue boarding house rent. Genuine partners handle family hardships through their local community, extended family, or employment — not by asking an online contact.',
     },
     {
-      title: 'Protect Your Accounts & Identity',
-      body: 'Never share one-time PIN (OTP) codes, banking passwords, or photos of your passport and IDs — no legitimate reason exists for anyone to ask. Romance contacts are a common gateway to account takeover and SIM-swap fraud. Keep all conversation and plans inside asiansin.love until you have met in person.',
+      title: 'Public First Meetings & Independent Transit',
+      body: 'Always hold your first several dates in crowded, well-lit commercial public areas such as major shopping malls or reputable restaurants. Arrange your own transit using Grab or verified taxis. Never agree to meet at isolated private villas, secluded beaches, or private residences on day one.',
     },
     {
-      title: 'EXIF Geotag Metadata & Photo Scrubbing',
-      body: 'Smartphone cameras automatically embed exact GPS coordinates into photograph metadata. Sharing original, uncompressed camera-roll files via email or direct messaging can expose the precise building and street location of your home or workplace. Use compressed platform uploads that strip metadata.',
-    },
-    {
-      title: 'Identity Verification & Chatters',
-      body: 'Require multiple unscripted, well-lit live video calls before making travel plans. Commercial chat operators are sometimes hired to maintain profiles — inconsistent messaging habits and pre-recorded clips are warning signs. Look for our gesture-verified and location-verified badges as a starting signal.',
+      title: 'Mandatory Live Video Verification',
+      body: 'Require multiple unscripted, well-lit live video calls before making travel plans or emotional commitments. If a match claims their camera is permanently broken, says their mobile data is too slow for video (while active on streaming apps), or only sends short pre-recorded video clips, disconnect immediately.',
     },
     {
       title: 'Beware the Off-Platform Rush',
-      body: 'Be cautious of accounts that insist on moving to WhatsApp, Telegram, or Viber within the first few exchanges. Scammers move off-platform quickly to evade moderation, automated screening, and account bans before their profile gets flagged.',
+      body: 'Be cautious of matches who immediately push to move conversations to WhatsApp, Telegram, or Viber within the first two or three messages. Fraud syndicates move off-platform quickly to bypass automated platform security screening and account bans before their profile gets flagged.',
+    },
+    {
+      title: 'Account Takeover & OTP Protection',
+      body: 'Never share one-time PIN (OTP) verification codes, banking credentials, or full identification card numbers. Fraud rings frequently use dating rapport to initiate SIM-swap fraud or unauthorized password resets on third-party financial accounts.',
+    },
+    {
+      title: 'EXIF Geotag Metadata & Photo Scrubbing',
+      body: 'Smartphone cameras automatically embed exact GPS latitude and longitude coordinates into original photo metadata. Sending uncompressed camera-roll files via email or messaging apps can reveal your exact residential apartment building or workplace to strangers. Use platform uploads that automatically scrub location headers.',
     },
     {
       title: 'Zero Explicit Media Policy',
-      body: 'Never share nude, semi-nude, or explicit photos or video, no matter how much you trust the person. Screen-recording software captures live video without your knowledge, and recorded images are used for blackmail. Once sent, control is gone forever.',
+      body: 'Never share nude, semi-nude, or sexually compromising photos or video streams. Screen-recording software captures live video without your knowledge, and recorded footage is used for aggressive financial blackmail. Once media is sent over the internet, control over its distribution is gone forever.',
     },
   ],
 };
@@ -58,63 +62,63 @@ const UNIVERSAL: Group = {
 const LOCAL: Group = {
   icon: Home,
   label: 'For Members in Southeast Asia',
-  blurb: 'Protecting yourself against predatory foreign contacts, legal traps, and organized fraud.',
+  blurb: 'Protections for local members against predatory foreign contacts, trafficking, and cross-border fraud.',
   topics: [
     {
-      title: 'The Fake Courier / Customs Package Scam',
-      body: 'A "foreign suitor" claims he sent an expensive gift package — jewelry, electronics, or currency for an upcoming wedding. Days later, a fake courier or customs officer demands ₱5,000 to ₱30,000 (฿3,000 to ฿18,000) for clearance fees, import taxes, or anti-money-laundering certification. Real couriers never demand e-wallet payments to clear goods. Never pay fees for a package you did not order.',
+      title: 'The Fake Courier & Customs Fee Scam',
+      body: 'A foreign match claims he mailed you an expensive gift box containing jewelry, luxury bags, or cash for an upcoming wedding. Days later, a fake courier or "customs officer" calls demanding ₱5,000 to ₱30,000 (฿3,000 to ฿18,000) via GCash or PromptPay for import clearance or tax certification. Real international couriers never ask for e-wallet payments. Never pay fees for unsolicited packages.',
     },
     {
-      title: 'Fake Wealth & Frozen Account Lies',
-      body: 'Scammers pose as high-earning engineers, military officers, or executives on regional projects, then claim their card is blocked or salary frozen while traveling. They ask to borrow ₱10,000 to ₱50,000 for hotel bills or flights, promising to repay tenfold. Someone with genuine wealth abroad never needs your local savings.',
+      title: 'Fake Wealth & Frozen Account Excuses',
+      body: 'Scammers pose as high-earning foreign engineers, military officers, or executives, then claim their overseas bank card was blocked at an airport or their salary is temporarily frozen. They ask to borrow ₱10,000 to ₱50,000 for hotel rooms or domestic flights, promising to repay tenfold. Someone with genuine overseas wealth never needs your local savings.',
     },
     {
-      title: 'Mandatory CFO Certificate & Emigration Laws',
-      body: 'In the Philippines, the Commission on Filipinos Overseas (CFO) legally mandates that any Filipino emigrating as a fiancé or spouse of a foreign national must attend guidance counseling and obtain a CFO Certificate. Immigration officers will offload passengers at the airport who lack this document.',
+      title: 'Mandatory CFO Guidance & Emigration Law',
+      body: 'In the Philippines, the Commission on Filipinos Overseas (CFO) legally mandates that any Filipino citizen emigrating as the fiancé(e), spouse, or family member of a foreign national must complete the Guidance and Counseling Program (GCP) and obtain an official CFO Certificate. Airport immigration officers will offload travelers who do not present this document.',
     },
     {
       title: 'Realistic Visa Timelines vs. Expedited Fraud',
-      body: 'Legitimate partner visa immigration (such as US K-1/CR-1 or UK/Australian equivalents) takes 12 to 24 months and requires government civil registry checks and medical clearances. Anyone promising an "expedited visa in two weeks" for ₱50,000 to ₱150,000 (฿30,000 to ฿95,000) is running an immigration scam.',
+      body: 'Legitimate partner visa immigration (such as US K-1/CR-1 or European/Australian equivalents) requires 12 to 24 months, comprehensive civil background vetting, PSA civil registry checks, and approved medical screenings. Anyone claiming they can purchase an "expedited partner visa in two weeks" for ₱50,000 to ₱150,000 (฿30,000 to ฿95,000) is running an immigration scam.',
     },
     {
-      title: 'Protecting Children & Single Mothers',
-      body: 'Single mothers should never introduce an online connection to their children until extensive, verified in-person visits have established character. Be aware that cross-border child support enforcement is practically non-existent if an overseas father departs, and traveling abroad with minors requires formal DSWD travel clearance.',
+      title: 'Single Mothers & Child Protection',
+      body: 'Never introduce an online suitor to your children, either in person or over private video calls, until multiple in-person trips have thoroughly established his character. Foreign legal systems rarely enforce international child support if an unmarried foreign father departs, and traveling abroad with minors requires formal DSWD travel clearance.',
     },
     {
-      title: 'Identity Harvesting & Fake Visa Prep',
-      body: 'Be cautious of matches requesting copies of your government ID, passport, birth certificate, or National ID for "pre-filing a visa" or "checking flight tickets." Criminal operations use real documents to open bank accounts, secure digital loans, or create mule identities in your name.',
+      title: 'Identity Harvesting & Loan Fraud',
+      body: 'Be vigilant if a match asks for clear photos of your Philippine National ID, passport, UMID, or birth certificate under the pretext of "pre-filing visa forms" or "booking flights." Fraud rings use real identity documents to register fraudulent digital bank accounts and micro-loan apps in your name.',
     },
     {
-      title: 'Trafficking & Illegal Matchmaking',
-      body: 'Commercial matchmaking for marriage to foreign nationals is illegal in the Philippines under the Anti-Mail-Order Bride Law (Republic Act 10906). Legitimate partners date you directly — never through recruiters, modeling scouts, or marriage brokers demanding agency contracts.',
+      title: 'Illegal Matchmaking & Anti-Mail-Order Bride Laws',
+      body: 'Commercial matchmaking for marriage to foreign nationals is strictly illegal in the Philippines under Republic Act 10906. Legitimate foreign partners date you directly as an individual — never through third-party recruiters, talent agencies, or commercial matchmaking coordinators demanding membership fees.',
     },
     {
-      title: 'The Overseas Job / Modeling Pivot',
-      body: 'If a foreign connection or associate offers high-paying work abroad — customer service, casino hosting, or modeling in Cambodia, Laos, Myanmar, or the Middle East — treat it as an immediate trafficking threat. Victims arrive only to have passports confiscated and be forced into scam compounds or exploitation.',
+      title: 'The Overseas Job / Modeling Compound Trap',
+      body: 'If an online foreign connection or his associates offer you high-paying customer support, casino hosting, or modeling jobs in Cambodia, Laos, Myanmar, or the Middle East, treat it as an active human trafficking threat. Victims are routinely transported to enclosed cyber-scam compounds where passports are confiscated upon arrival.',
     },
     {
-      title: 'Never Surrender Your Documents',
-      body: 'Never give your physical passport, ID cards, or mobile phone to a suitor, travel companion, or visa handler under any circumstance. Legitimate embassies handle visa interviews in person; no private individual should ever hold your legal documents.',
+      title: 'Never Surrender Your Physical Documents',
+      body: 'Never surrender your physical passport, identification cards, or phone to a suitor, travel companion, or unofficial visa fixer. Legitimate embassies handle official visa interviews in person; no private third party has a legal right to hold your travel documents.',
     },
     {
-      title: 'The Secret Family / Dual Life',
-      body: 'Some foreign men maintain active marriages and families at home while presenting as single abroad. Before becoming emotionally invested, watch: do they only take video calls from cars, hotels, or offices — never their home? Are their social profiles bare or locked down? Do they dodge questions about their living situation or past divorces?',
+      title: 'Vetting Marital Status & Secret Families',
+      body: 'Some foreign visitors maintain active marriages and households in their home countries while presenting themselves as single abroad. Before becoming emotionally attached, check: does he freely video call you from inside his home, or only from cars, hotels, and offices? Are his personal social profiles completely blank or locked down? Does he avoid questions about past divorces?',
     },
     {
       title: 'Fetishization & Conquest Culture',
-      body: 'Be wary of men who fixate on stereotypes — claiming local women are "submissive," "traditional," or "unspoiled." Someone who views you through an ideological lens sees a disposable travel conquest, not a partner. How a man talks about women in his home country is how he will eventually talk about you.',
+      body: 'Be cautious of men who fixate on cultural stereotypes — claiming local women are uniquely "submissive," "traditional," or "unspoiled compared to Western women." Men viewing partners through an ideological lens often see local women as disposable conquests. How a man speaks about women in his home country is how he will treat you.',
     },
     {
-      title: 'Coercive Intimacy & Health Protection',
-      body: 'Never yield to pressure regarding unprotected intimacy. Insist on barrier contraception and mutual health screenings before any physical relationship. A partner who values your well-being respects boundaries without anger, guilt-trips, or manipulation.',
+      title: 'Coercive Intimacy & Sexual Health',
+      body: 'Never yield to pressure regarding unprotected intimacy. Insist on consistent barrier contraception and request mutual, verified health clinic screenings before physical intimacy. A partner who genuinely values your future will respect your boundaries without anger, guilt-trips, or manipulation.',
     },
     {
-      title: 'Home Address & Family Boundaries',
-      body: 'Keep your exact residential address, barangay gate, workplace, and children\'s school locations private during initial chatting. Share general city-level information only until you have met in person multiple times and verified their background.',
+      title: 'Home Address & Privacy Boundaries',
+      body: 'Keep your exact residential subdivision, barangay gate, and children\'s school locations private during the initial chatting phase. Provide general city-level information until you have met in person multiple times in public and confirmed his true background.',
     },
     {
-      title: 'Blackmail & Evidence Preservation',
-      body: 'If a match threatens you, pressures you for commercial acts, or acts aggressively: do not delete the chat. Take screenshots showing messages, handle, and phone number, block the user, then submit an in-app report to moderation — and file with local cybercrime authorities if threats involve money or images.',
+      title: 'Evidence Preservation & Cybercrime Reporting',
+      body: 'If a match threatens you, demands money under duress, or attempts blackmail, do not immediately delete the conversation history. Take comprehensive screenshots showing the messages, handle, and contact number, block the user across all platforms, submit an in-app report, and file a formal report with local cybercrime authorities.',
     },
   ],
 };
@@ -122,72 +126,96 @@ const LOCAL: Group = {
 const ABROAD: Group = {
   icon: Globe2,
   label: 'For Members Abroad',
-  blurb: 'Legal exposure, street-level security, and schemes targeting foreign visitors.',
+  blurb: 'Legal exposure, personal security, and common schemes targeting foreign visitors in Southeast Asia.',
   topics: [
     {
-      title: 'Marital Status & the Adultery Trap',
-      body: 'In jurisdictions where civil divorce does not exist (such as the Philippines), many people are separated for years without legal annulment. Dating a legally married person can expose you to criminal prosecution for adultery or concubinage, with an estranged spouse able to file charges leading to arrest and extortion settlements. Verify legal marital status before committing.',
+      title: 'The Legal Adultery Trap in the Philippines',
+      body: 'In the Philippines, where civil divorce does not exist under standard law, many individuals have been separated for years without obtaining a legal court annulment. Dating a legally married person can expose you to criminal prosecution for adultery or concubinage under the Revised Penal Code, where an estranged spouse can file charges resulting in arrest warrants and costly extortion settlements. Always verify legal marital status before committing.',
     },
     {
-      title: 'De-escalate Conflicts (RA 9262)',
-      body: 'Local laws such as the Philippines\' Republic Act 9262 allow immediate protective orders over alleged emotional, psychological, or economic abuse. An escalating argument can become a police complaint, weekend detention, or a hold-departure order. Stay calm, de-escalate, and never withhold someone\'s passport or property.',
+      title: 'De-escalate Conflicts (RA 9262 Exposure)',
+      body: 'Local statutes such as Republic Act 9262 in the Philippines provide for immediate, ex-parte protection orders over allegations of physical, psychological, or economic abuse. An escalating argument can rapidly become a formal police complaint, weekend detention, and an immigration Hold Departure Order preventing you from boarding your flight home. Stay calm, de-escalate disagreements, and never withhold anyone\'s passport or property.',
     },
     {
-      title: 'Cyber Libel Is Criminal Here',
-      body: 'Defamation carries criminal penalties — not just civil — in the Philippines and Thailand. Posting a critical exposé of a local scammer, venue, or individual online can result in cyber libel warrants and airport hold orders. Handle disputes privately through legal representation or your embassy, not on social media.',
+      title: 'Criminal Cyber Libel Laws',
+      body: 'Defamation and libel carry criminal penalties — not just civil damages — in countries like the Philippines and Thailand. Posting a public exposé, naming a local scammer, or writing an angry social media review can result in criminal cyber libel arrest warrants and airport border holds. Settle disputes privately through verified legal counsel or consular channels, never on social media.',
     },
     {
-      title: 'Hospital Deposits & MedEvac Insurance',
-      body: 'Private regional hospitals demand immediate cash or card deposits of ₱100,000 to ₱300,000 (฿60,000 to ฿180,000) before admitting patients to intensive care or surgery. Standard travel policies rarely direct-bill local facilities. Always secure travel insurance with explicit medical evacuation coverage.',
+      title: 'Hospital Cash Deposits & MedEvac Coverage',
+      body: 'Top private regional hospitals (such as St. Luke\'s or Medical City in the Philippines, and Bumrungrad or Bangkok Hospital in Thailand) require immediate cash or credit card deposits of ₱100,000 to ₱300,000 (฿60,000 to ฿180,000) prior to admitting international patients for surgery or ICU care. Standard domestic travel insurance rarely direct-bills local hospitals. Always carry international medical insurance with explicit medical evacuation (MedEvac) coverage.',
     },
     {
-      title: 'Cultural Harmony, "Loss of Face" & Barangay Mediation',
-      body: 'In Southeast Asia, shouting, pointing fingers, or public anger causes intense humiliation ("loss of face") and risks physical confrontation or community intervention. Disagreements in residential zones are often brought before the local Barangay Lupon. Maintain composure and navigate emotional withdrawal (such as Filipino tampo) with patience.',
+      title: 'Cultural Harmony, "Loss of Face" & Barangay Councils',
+      body: 'In Southeast Asian cultures, shouting, pointing fingers, or showing public anger causes intense humiliation ("loss of face") and can provoke immediate intervention from venue staff or bystanders. Domestic and neighborly disputes in residential areas are typically referred first to the local Barangay Lupon for mediation. Maintain composure and learn to navigate quiet emotional withdrawal (such as Filipino tampo) with calm patience.',
     },
     {
       title: 'The "Tourist Visa Guarantee" Myth',
-      body: 'Foreigners cannot "guarantee" a Western tourist visa for an unemployed or low-income partner simply by writing an invitation letter. Western embassies evaluate domestic socioeconomic ties and reject the vast majority of visitor visas, forfeiting non-refundable application fees.',
+      body: 'Foreign nationals cannot "guarantee" a Western tourist visa for an unemployed or low-income Southeast Asian partner simply by writing a formal invitation letter or signing an affidavit of support. Consulates evaluate applicants strictly on their own domestic economic ties (career, property, enrolled children) and reject the vast majority of first-time visitor visas, forfeiting non-refundable visa application fees.',
     },
     {
-      title: 'Consular Limits in Emergencies',
-      body: 'Foreign embassies cannot post bail, pay hospital invoices, provide legal representation, or override local court processes. Their authority is restricted to issuing emergency passports, providing attorney lists, and monitoring citizen welfare.',
+      title: 'Consular Limits in True Emergencies',
+      body: 'Foreign embassies cannot post bail, pay private hospital invoices, provide legal representation in court, or intervene in sovereign local police proceedings. Embassy assistance is limited to providing rosters of English-speaking attorneys, visiting detained citizens in jail, and issuing emergency replacement passports.',
     },
     {
       title: 'Zero-Tolerance Narcotics Laws',
-      body: 'Southeast Asian jurisdictions enforce severe penalties for narcotics, up to life imprisonment or worse. Never hold luggage, packages, or envelopes for a partner, their friends, or family, and avoid recreational substances entirely while abroad.',
+      body: 'Southeast Asian jurisdictions enforce severe legal penalties for recreational narcotics, ranging from extended prison terms in regional facilities to life imprisonment or capital punishment. Never agree to transport luggage, sealed parcels, or envelopes for a partner, their friends, or acquaintances, and avoid nightlife narcotics completely.',
     },
     {
-      title: 'The Crypto / Investment Pivot',
-      body: 'If an attractive connection mentions a wealthy relative trading gold, forex, or crypto — or asks you to deposit into an "exclusive trading exchange" — it is an organized pig-butchering operation. Disconnect immediately.',
+      title: 'The Crypto / Investment Pivot (Pig Butchering)',
+      body: 'If an attractive connection mentions an uncle in Hong Kong, Singapore, or Bangkok who trades gold, foreign exchange, or cryptocurrency — or encourages you to deposit ₱15,000 to ₱100,000 (฿10,000 to ฿60,000) into an "exclusive trading platform" — it is an organized syndicate operation. Disconnect immediately.',
     },
     {
-      title: 'ATM & Cash Hygiene',
-      body: 'Avoid standalone outdoor ATMs at night; use machines inside bank branches or secure malls. Never count withdrawn cash openly. Split your funds: daily transit money in one pocket, larger sums in a neck pouch or interior wallet.',
+      title: 'ATM Hygiene & Cash Handling',
+      body: 'Avoid freestanding, unmonitored street ATMs at night; withdraw funds exclusively from machines located inside operating bank branches or high-security shopping malls. Never count large stacks of cash openly in public. Divide your currency: keep transit cash in a front pocket and larger sums in an interior hidden wallet.',
     },
     {
-      title: 'Joint Accounts & Banking Access',
-      body: 'Never open joint local bank accounts with a romantic interest, and never grant access to your online banking, ATM cards, or PINs. Once funds sit in a local account under their control, legal retrieval is practically impossible.',
+      title: 'Joint Bank Accounts & Asset Control',
+      body: 'Never open joint local bank accounts with a romantic interest, and never allow anyone access to your primary banking applications, ATM cards, or PINs. Once funds enter a local Southeast Asian account under a partner\'s legal name, recovering those funds through the judicial system is practically impossible.',
     },
     {
-      title: 'The Family Feast Expectation',
-      body: 'Clarify attendance before inviting a date to dinner. Extended relatives sometimes arrive unannounced expecting an all-inclusive feast billed to you. Establish the meeting is one-on-one upfront, and if relatives do attend, pick a venue with fixed set menus rather than open-ended billing.',
+      title: 'The "Family Feast" Expectation',
+      body: 'Clarify attendance before inviting a date to dinner. In collectivist cultures, extended relatives (siblings, cousins, neighbors) may arrive unannounced expecting an all-inclusive meal billed entirely to the foreign visitor. Establish expectations politely in advance. If family members attend, select a restaurant with fixed set menus rather than open-ended ordering.',
     },
     {
-      title: 'Bar-Fine & KTV Bill Padding',
-      body: 'Avoid meeting connections in hostess bars, KTVs, or nightlife corridors. A match may direct you to a specific lounge where ladies\' drinks and room charges hit ₱20,000 to ₱50,000 in minutes, with security blocking exits until the bill is settled.',
+      title: 'Nightlife Bill Padding & Hostess Traps',
+      body: 'Avoid meeting initial dating connections in nightlife entertainment corridors or hostess lounges. A match may guide you into a specific venue where staff quietly run up bills of ₱20,000 to ₱50,000 (฿12,000 to ฿30,000) in minutes for "ladies\' drinks" and VIP rooms, with venue security blocking exits until the invoice is settled.',
     },
     {
-      title: 'Drink Tampering',
-      body: 'Never leave beverages or food unattended, even briefly. Spiking ("Ativan gang" tactics) happens in hotel lobbies and ordinary restaurants, and victims wake up a day later with electronics, cards, cash, and safes cleared out. If your glass moved or was replaced, order fresh.',
+      title: 'Drink Tampering & Spiking Defense',
+      body: 'Never leave drinks or food unattended, even for a brief trip to the restroom. Drink spiking with sedatives (often referred to locally as "Ativan gangs") occurs in hotel bars and casual dining spots. Victims wake up 24 hours later in their hotel room with credit cards, mobile phones, and room safes completely emptied. If a glass has moved, order a fresh beverage.',
     },
     {
-      title: 'Vehicle Rentals & Passport Collateral',
-      body: 'When renting scooters or cars, never surrender your physical passport as collateral — provide a photocopy only. Operators manufacture damage claims (₱15,000 for pre-existing scratches) and hold passports hostage. Carry a valid International Driving Permit to avoid impoundment and voided insurance.',
+      title: 'Vehicle Rentals & Passport Hostage Tactics',
+      body: 'When renting scooters or cars to visit provincial areas, never surrender your physical passport as rental collateral — provide a printed photocopy only. Unscrupulous operators frequently manufacture pre-existing damage claims (demanding ₱15,000 / ฿10,000) and hold passports hostage until paid. Always hold a valid International Driving Permit (IDP) to prevent impoundment and voided insurance.',
     },
   ],
 };
 
-const GROUPS: Group[] = [UNIVERSAL, LOCAL, ABROAD];
+const REGIONAL: Group = {
+  icon: MapPin,
+  label: 'Country-Specific Realities',
+  blurb: 'Essential legal, administrative, and cultural nuances across key Southeast Asian destinations.',
+  topics: [
+    {
+      title: 'Cambodia: Foreign Marriage Restrictions & Border Compounds',
+      body: 'Under Cambodian Ministry of Foreign Affairs sub-decrees designed to prevent human trafficking, foreign men wishing to marry Cambodian women in-country must legally be under 50 years of age and present certified proof of a monthly income of at least ฿85,000 (₱140,000). Furthermore, never agree to travel to border casino enclaves or Special Economic Zones (such as Poipet, Bavet, or certain commercial zones in Sihanoukville) for a date, as cyber-scam syndicates operate heavily in those zones.',
+    },
+    {
+      title: 'Vietnam: Hotel Room Marriage Rules & Ward Police Registration',
+      body: 'Under Vietnamese public security regulations, budget hotels, boutique guesthouses, and homestays are legally required to verify an official marriage certificate before allowing an unmarried foreign male and Vietnamese female to share a single room (though luxury international hotels rarely enforce this). Additionally, any foreigner staying overnight outside an accredited hotel — such as an apartment or family residence — must be declared to the local ward police (Công an phường) within 24 hours.',
+    },
+    {
+      title: 'Thailand: Vaping Penalties, Royal Speech Laws & Sin Sod',
+      body: 'Vaping devices and e-liquids are strictly prohibited under Thai law; carrying a vape on the street routinely results in immediate police stops, confiscation, and on-the-spot fines of ฿20,000 to ฿50,000 (₱33,000 to ₱82,000). Section 112 of the Thai Penal Code (Lèse-Majesté) strictly punishes any criticism, joke, or meme regarding the royal family, even in private chat messages, with 3 to 15 years in prison. In rural areas, clarify early whether family Sin Sod (dowry) expectations are purely symbolic or involve non-refundable cash transfers.',
+    },
+    {
+      title: 'Indonesia: Interfaith Marriage Bans & Community Oversight',
+      body: 'Indonesian civil law (Law No. 1/1974 and Supreme Court Circular SEMA No. 2/2023) does not recognize interfaith marriages; both partners must legally profess the same recognized religion before a civil marriage can be registered. Outside major international resorts in Bali, local neighborhood councils (RT/RW in Java and Pecalang in Bali) maintain active community oversight over local boarding houses (kost) and residential compounds, where unmarried couples can face neighborhood mediation if complaints are raised.',
+    },
+  ],
+};
+
+const GROUPS: Group[] = [UNIVERSAL, LOCAL, ABROAD, REGIONAL];
 
 export default function SafetyBlueprintPage() {
   return (
@@ -218,7 +246,7 @@ export default function SafetyBlueprintPage() {
             International Dating &amp; Safety Protocol
           </h1>
           <p className="text-base sm:text-lg text-[#655E72] leading-relaxed max-w-2xl">
-            Practical guides for building genuine cross-border relationships. Tap any topic to expand it. Every member benefits from gesture verification, GPS location checks, and messaging that stays on-platform.
+            A comprehensive, practical guide to building genuine cross-border relationships while safeguarding your personal safety, legal standing, and finances. Every member benefits from gesture verification, GPS location checks, and messaging that stays on-platform until you meet in person. Tap any topic to read the full breakdown.
           </p>
         </div>
 
@@ -273,7 +301,7 @@ export default function SafetyBlueprintPage() {
             Spot a suspicious profile or a request for funds?
           </h2>
           <p className="text-sm text-[#655E72] max-w-lg mx-auto">
-            asiansin.love prohibits money solicitations, commercial services, and identity misrepresentation. Use the report button on any profile or message and moderation will review it immediately.
+            asiansin.love strictly prohibits solicitations for cash, commercial matchmaking, and identity misrepresentation. Tap the report button on any profile or direct message to notify moderation immediately.
           </p>
           <div className="pt-2">
             <Link
