@@ -146,7 +146,7 @@ export function Navbar() {
   if (isChatThread || pathname === '/plus' || (pathname || '').startsWith('/plus/') || pathname === '/profile/edit' || (pathname || '').startsWith('/profile/edit/') || pathname === '/settings' || (pathname || '').startsWith('/settings/')) return null;
   return (
     // On Discover the frosted filter bar sits directly below: drop the divider so both read as one surface.
-    <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md border-b border-[#D0CDE1]/50 shadow-brand-sm">
+    <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md">
       <div className="max-w-[430px] mx-auto px-4 h-14 flex items-center justify-between relative">
         <div className={`flex items-center gap-2 ${pageTitle ? 'min-w-0' : 'shrink-0'}`}>
           <div
