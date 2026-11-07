@@ -34,7 +34,7 @@ export function BrandLogo({ className = '', href = '/discover', size = 'md', tex
       aria-label="asiansin.love"
     >
       <span className={`font-bold ${onDark ? 'text-white' : 'text-[#413B5E]'}`}>asiansin.</span>
-      <span className="bg-gradient-to-r from-[#665D96] via-[#9A93BC] to-[#B8B3D1] bg-clip-text text-transparent font-extrabold">love</span>
+      <span className="bg-gradient-to-r from-[#8574B7] to-[#534377] bg-clip-text text-transparent font-extrabold">love</span>
     </span>
   );
 
