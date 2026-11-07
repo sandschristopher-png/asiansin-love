@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useSyncExternalStore } from 'react';
+import { useSyncExternalStore } from 'react';
 import { Download, X } from 'lucide-react';
 import {
   canPromptInstall,

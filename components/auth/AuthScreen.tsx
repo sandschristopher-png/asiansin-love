@@ -41,25 +41,24 @@ const LineIcon = () => (
 );
 
 /**
- * Sends the member on after an in-page sign-in (code or password): unfinished members to
+ * Sends the member on after an in-page sign-in (password): unfinished members to
  * /onboarding, everyone else to the page they were heading to (returnTo) or /discover.
  * OAuth and magic links go through /auth/callback, which applies the same rule.
  */
 type EmailStep = 'closed' | 'email' | 'sent' | 'password';
 
 /**
- * Sign-in / sign-up stack: Google, LINE, Email (magic link or 6-digit code). New accounts from
+ * Sign-in / sign-up stack: Google, LINE, Email (magic link). New accounts from
  * any provider land on /onboarding, where Step 1 asks for a handle (provider names are never shown).
  * No Apple, no Facebook, no SMS. Password sign-in stays reachable from the email panel for existing accounts.
  */
 export function AuthScreen({ mode, cities }: { mode: 'login' | 'signup'; cities?: readonly string[] }) {
-  const [busy, setBusy] = useState<null | 'google' | 'line' | 'email' | 'code' | 'password'>(null);
+  const [busy, setBusy] = useState<null | 'google' | 'line' | 'email' | 'password'>(null);
   const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
   const closeToast = useCallback(() => setToast(null), []);
   const [step, setStep] = useState<EmailStep>('closed');
   const [email, setEmail] = useState('');
-  const [code, setCode] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   // Page the member was heading to before being sent here (?returnTo=, set by middleware).
@@ -135,20 +134,6 @@ export function AuthScreen({ mode, cities }: { mode: 'login' | 'signup'; cities?
     setStep('sent');
   };
 
-  const verifyCode = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const token = code.replace(/\D/g, '');
-    if (token.length < 6) return;
-    setBusy('code');
-    setError(null);
-    const { data, error } = await supabase.auth.verifyOtp({ email: cleanEmail, token, type: 'email' });
-    if (error || !data.user) {
-      setError('That code is incorrect or has expired. Request a new one.');
-      setBusy(null);
-      return;
-    }
-    await routeAfterSignIn(data.user.id, returnTo);
-  };
 
   const passwordSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -272,7 +257,6 @@ export function AuthScreen({ mode, cities }: { mode: 'login' | 'signup'; cities?
                 onClick={() => {
                   setStep('closed');
                   setError(null);
-                  setCode('');
                   setPassword('');
                 }}
                 className="inline-flex items-center gap-1 text-xs font-semibold text-[#413B5E]/55 hover:text-[#413B5E]"
@@ -297,34 +281,18 @@ export function AuthScreen({ mode, cities }: { mode: 'login' | 'signup'; cities?
               )}
 
               {step === 'sent' && (
-                <form onSubmit={verifyCode} className="space-y-3">
+                <div className="space-y-3">
                   <div className="rounded-2xl bg-white border border-[#D0CDE1] p-4 text-center">
                     <MailCheck className="w-6 h-6 mx-auto text-[#665D96]" aria-hidden />
                     <p className="mt-2 text-sm font-semibold text-[#413B5E]">Check your inbox</p>
                     <p className="mt-1 text-xs text-[#413B5E]/55 leading-relaxed">
-                      We sent a sign-in link to <span className="font-semibold text-[#413B5E] break-all">{cleanEmail}</span>. Tap it, or enter the
-                      6-digit code from the email.
+                      We sent a sign-in link to <span className="font-semibold text-[#413B5E] break-all">{cleanEmail}</span>. Tap it on this device to sign in.
                     </p>
                   </div>
-                  <input
-                    inputMode="numeric"
-                    autoComplete="one-time-code"
-                    pattern="[0-9]*"
-                    maxLength={6}
-                    value={code}
-                    onChange={(e) => setCode(e.target.value.replace(/\D/g, ''))}
-                    placeholder="6-digit code"
-                    aria-label="6-digit code"
-                    className={`${INPUT} text-center tracking-[0.4em] tabular-nums`}
-                  />
-                  <button type="submit" className={PRIMARY} disabled={code.length < 6 || !!busy}>
-                    {busy === 'code' && <Loader2 className="w-4 h-4 animate-spin" />}
-                    Verify code
-                  </button>
                   <button type="button" onClick={() => sendLink()} disabled={!!busy} className="block mx-auto text-xs font-semibold text-[#665D96] hover:underline disabled:opacity-50">
                     Resend email
                   </button>
-                </form>
+                </div>
               )}
 
               {step === 'password' && (
