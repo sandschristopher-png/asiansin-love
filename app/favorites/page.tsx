@@ -89,9 +89,9 @@ function SparkCardPhoto({ src, name, className }: { src: string; name: string; c
   const [failedSrc, setFailedSrc] = useState<string | null>(null);
   if (!src || failedSrc === src) {
     return (
-      <div className="absolute inset-0 w-full h-full bg-gradient-to-br from-[#FFFFFF] to-[#E8E6F1]/60 flex flex-col items-center justify-center text-[#665D96]">
-        <User className="w-12 h-12 stroke-1 text-[#665D96]/40" />
-        <span className="mt-1 text-lg font-bold text-[#665D96]/70">{(name || '?').trim().charAt(0).toUpperCase()}</span>
+      <div className="absolute inset-0 w-full h-full bg-[#E8E6F1]/50 flex flex-col items-center justify-center text-[#8574B7]">
+        <User className="w-12 h-12 stroke-1 text-[#8574B7]/40" />
+        <span className="mt-1 text-lg font-bold text-[#8574B7]/70">{(name || '?').trim().charAt(0).toUpperCase()}</span>
       </div>
     );
   }
@@ -132,7 +132,7 @@ function VisitorsList({ visitors, onOpen }: { visitors: ProfileCardData[]; onOpe
             >
               <span className="relative w-11 h-11 shrink-0 rounded-full overflow-hidden bg-white border border-[#D0CDE1]">
                 {v.locked ? (
-                  <span aria-hidden className="absolute inset-0 bg-gradient-to-br from-[#665D96]/25 to-[#9A93BC]/20 blur-[6px] scale-110" />
+                  <span aria-hidden className="absolute inset-0 bg-[#8574B7]/15 blur-[6px] scale-110" />
                 ) : (
                   <SparkCardPhoto src={photo ? supabaseImage(photo, { width: 96, height: 96, quality: 75, resize: 'cover' }) : ''} name={name} className="object-cover" />
                 )}
@@ -187,7 +187,7 @@ function getInitialSparksState(): any {
 }
 
 const STATE_CTA_CLASS =
-  'inline-flex items-center justify-center gap-2 rounded-full px-5 py-2 text-xs font-semibold text-white bg-[#665D96] hover:bg-[#413B5E] active:scale-95 transition-all';
+  'inline-flex items-center justify-center gap-2 rounded-full px-5 py-2 text-xs font-semibold text-white bg-[#8574B7] hover:bg-[#534377] active:scale-95 transition-all';
 
 /** 1..99, then "99+"; nothing for zero. */
 const formatBadgeCount = (count: number) => {
@@ -212,7 +212,7 @@ function TabState({
 }) {
   return (
     <div className="animate-fade-in-up flex flex-col items-center text-center pt-10 pb-6 px-4">
-      <div className="w-14 h-14 rounded-2xl bg-[#665D96]/10 flex items-center justify-center text-[#665D96] mb-3 mx-auto">
+      <div className="w-14 h-14 rounded-2xl bg-[#8574B7]/10 flex items-center justify-center text-[#8574B7] mb-3 mx-auto">
         <Icon className="w-6 h-6" strokeWidth={1.75} />
       </div>
       <h2 className="font-bold text-base text-[#413B5E] text-center">{title}</h2>
@@ -440,10 +440,10 @@ export default function SparksPage() {
     <main className="min-h-[100dvh] bg-white pb-[calc(8rem+env(safe-area-inset-bottom,0px))] overscroll-y-contain">
       <div className="max-w-md mx-auto px-3.5 pt-2">
         {/* Horizontal Sub-Tab Navigation */}
-        {/* Discover-style text tabs: no pill backgrounds, no underline, no divider. Sticky at top-0 of the app's
+        {/* Discover-style pill tabs matching the discover filter pills. Sticky at top-0 of the app's
             scroll area (the Navbar sits outside it), so cards never show through above the bar. */}
-        <div className="sticky top-0 z-30 bg-white -mx-3.5 mb-2">
-          <div className="flex items-center gap-5 overflow-x-auto no-scrollbar [scrollbar-width:none] [&::-webkit-scrollbar]:hidden py-2 px-4" role="tablist">
+        <div className="sticky top-0 z-30 bg-white/80 backdrop-blur-md -mx-3.5 mb-2">
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar [scrollbar-width:none] [&::-webkit-scrollbar]:hidden py-2.5 px-3.5" role="tablist">
             {tabs.map((t) => {
               const active = activeTab === t.id;
               return (
@@ -453,15 +453,15 @@ export default function SparksPage() {
                   role="tab"
                   aria-selected={active}
                   onClick={() => setActiveTab(t.id)}
-                  className={`inline-flex items-center gap-1 h-8 whitespace-nowrap shrink-0 transition-colors cursor-pointer text-sm ${
-                    active ? 'text-[#665D96] font-bold' : 'text-black/40 font-medium'
+                  className={`inline-flex items-center gap-1 whitespace-nowrap shrink-0 transition-all active:scale-95 cursor-pointer text-xs px-3.5 py-1.5 rounded-full ${
+                    active ? 'bg-[#8574B7] text-white font-semibold border border-transparent shadow-xs' : 'border border-[#D0CDE1] bg-white text-[#413B5E] font-medium hover:border-[#8574B7]/40 hover:bg-[#8574B7]/5'
                   }`}
                 >
                   <span>{t.label}</span>
                   {formatBadgeCount(t.count) && (
                     <span
-                      className={`ml-1 text-[10px] font-bold leading-none tabular-nums px-1.5 py-0.5 rounded-full ${
-                        active ? 'bg-[#665D96]/10 text-[#665D96]' : 'bg-black/[0.04] text-black/40'
+                      className={`inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold leading-none tabular-nums ml-0.5 ${
+                        active ? 'bg-white text-[#8574B7]' : 'bg-[#8574B7]/10 text-[#8574B7]'
                       }`}
                     >
                       {formatBadgeCount(t.count)}
@@ -527,14 +527,14 @@ export default function SparksPage() {
                       Filled once the viewer has sparked this member (Sent, Mutual), outline otherwise. */}
                   <span aria-hidden className="absolute top-3 right-3 z-30 p-1.5 pointer-events-none">
                     {sparkedIds.has(person.id) ? (
-                      <Heart className="w-7 h-7 fill-[#665D96] stroke-white drop-shadow-[0_2px_5px_rgba(0,0,0,0.5)]" strokeWidth={1.5} />
+                      <Heart className="w-7 h-7 fill-[#8574B7] stroke-white drop-shadow-[0_2px_5px_rgba(0,0,0,0.5)]" strokeWidth={1.5} />
                     ) : (
                       <Heart className="w-7 h-7 fill-none stroke-white drop-shadow-[0_2px_5px_rgba(0,0,0,0.7)]" strokeWidth={2.5} />
                     )}
                   </span>
                   {shouldBlur && (
                     <div className="absolute inset-0 z-[26] flex flex-col items-center justify-center bg-black/30 p-3 text-center">
-                      <div className="w-9 h-9 rounded-full bg-[#665D96] text-white flex items-center justify-center mb-1.5 shadow-md"><Lock className="w-4 h-4" /></div>
+                      <div className="w-9 h-9 rounded-full bg-[#8574B7] text-white flex items-center justify-center mb-1.5 shadow-md"><Lock className="w-4 h-4" /></div>
                       <span className="text-[11px] font-bold text-white drop-shadow">Tap to Unblur with Plus</span>
                     </div>
                   )}
@@ -548,8 +548,8 @@ export default function SparksPage() {
             })}
           </div>
           {activeTab === 'sparked_you' && recentInboundCount >= 15 && (
-            <div className="mt-3.5 mb-1 mx-auto max-w-md px-3.5 py-2.5 rounded-xl bg-[#E8E6F1]/60 border border-[#665D96]/20 text-center">
-              <p className="text-[12px] font-semibold text-[#665D96]">You're getting a lot of attention - {recentInboundCount} sparks in the last 48 hours</p>
+            <div className="mt-3.5 mb-1 mx-auto max-w-md px-3.5 py-2.5 rounded-xl bg-[#E8E6F1]/60 border border-[#8574B7]/20 text-center">
+              <p className="text-[12px] font-semibold text-[#8574B7]">You're getting a lot of attention - {recentInboundCount} sparks in the last 48 hours</p>
               <p className="text-[11px] text-[#413B5E]/75 mt-0.5">Best matches first - profiles with photos and verification rise to the top</p>
             </div>
           )}
@@ -568,9 +568,9 @@ export default function SparksPage() {
                     <div
                       key={person.id}
                       onClick={() => router.push('/profile/' + person.id)}
-                      className="group relative aspect-[3/4] rounded-2xl overflow-hidden bg-gradient-to-br from-[#E8E6F1] to-[#E8E6F1] border border-[#D0CDE1] shadow-xs cursor-pointer active:scale-[0.98] transition-all duration-200 flex flex-col items-center justify-center p-3"
+                      className="group relative aspect-[3/4] rounded-2xl overflow-hidden bg-[#E8E6F1] border border-[#D0CDE1] shadow-xs cursor-pointer active:scale-[0.98] transition-all duration-200 flex flex-col items-center justify-center p-3"
                     >
-                      <div className="w-12 h-12 rounded-full bg-[#665D96]/15 flex items-center justify-center text-xl font-bold text-[#665D96]/60">{getPublicName(person)[0]}</div>
+                      <div className="w-12 h-12 rounded-full bg-[#8574B7]/15 flex items-center justify-center text-xl font-bold text-[#8574B7]/60">{getPublicName(person)[0]}</div>
                       <div className="text-[13px] font-bold text-[#413B5E] mt-2.5 truncate max-w-full">{getPublicName(person)}</div>
                       <div className="text-[11px] text-[#413B5E]/75 mt-0.5 truncate max-w-full">{getLocationLabel(person)}</div>
                     </div>
