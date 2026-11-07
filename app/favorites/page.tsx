@@ -454,13 +454,13 @@ export default function SparksPage() {
                   aria-selected={active}
                   onClick={() => setActiveTab(t.id)}
                   className={`inline-flex items-center gap-1 relative whitespace-nowrap shrink-0 transition-all active:scale-95 cursor-pointer text-xs px-3 py-1.5 rounded-full ${
-                    active ? 'bg-[#8574B7] text-white font-semibold border border-transparent shadow-xs' : 'border border-[#D0CDE1] bg-white text-[#413B5E] font-medium hover:border-[#8574B7]/40 hover:bg-[#8574B7]/5'
+                    active ? 'bg-[#8574B7] text-white font-semibold' : 'bg-[#8574B7]/[0.08] text-[#413B5E] font-medium hover:bg-[#8574B7]/[0.15]'
                   }`}
                 >
                   <span>{t.label}</span>
                   {formatBadgeCount(t.count) && (
                     <span
-                      className={`absolute -top-2 -right-1 inline-flex items-center justify-center min-w-[16px] h-4 px-1 rounded-full text-[9.5px] font-bold leading-none tabular-nums ring-2 ring-white ${
+                      className={`absolute -top-2 -right-1 inline-flex items-center justify-center min-w-[16px] h-4 px-1 rounded-full text-[9.5px] font-bold leading-none tabular-nums shadow-[0_1px_4px_rgba(65,59,94,0.18)] ${
                         active ? 'bg-[#8574B7] text-white' : 'bg-[#8574B7]/10 text-[#8574B7]'
                       }`}
                     >
