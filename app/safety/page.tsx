@@ -198,7 +198,7 @@ const REGIONAL: Group = {
   topics: [
     {
       title: 'Cambodia: Foreign Marriage Restrictions & Border Compounds',
-      body: 'Under Cambodian Ministry of Foreign Affairs sub-decrees designed to prevent human trafficking, foreign men wishing to marry Cambodian women in-country must legally be under 50 years of age and present certified proof of a monthly income of at least ฿85,000 (₱140,000). Furthermore, never agree to travel to border casino enclaves or Special Economic Zones (such as Poipet, Bavet, or certain commercial zones in Sihanoukville) for a date, as cyber-scam syndicates operate heavily in those zones.',
+      body: 'Under Cambodian Ministry of Foreign Affairs sub-decrees designed to prevent human trafficking, foreign men wishing to marry Cambodian women in-country must legally be under 50 years of age and present certified proof of a monthly income of at least US$2,500 (about ៛10 million riel). Furthermore, never agree to travel to border casino enclaves or Special Economic Zones (such as Poipet, Bavet, or certain commercial zones in Sihanoukville) for a date, as cyber-scam syndicates operate heavily in those zones.',
     },
     {
       title: 'Vietnam: Hotel Room Marriage Rules & Ward Police Registration',
