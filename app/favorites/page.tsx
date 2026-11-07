@@ -442,8 +442,8 @@ export default function SparksPage() {
         {/* Horizontal Sub-Tab Navigation */}
         {/* Discover-style pill tabs matching the discover filter pills. Sticky at top-0 of the app's
             scroll area (the Navbar sits outside it), so cards never show through above the bar. */}
-        <div className="sticky top-0 z-30 bg-white/80 backdrop-blur-md -mx-3.5 mb-2">
-          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar [scrollbar-width:none] [&::-webkit-scrollbar]:hidden py-2.5 px-3.5" role="tablist">
+        <div className="sticky top-0 z-30 bg-white/80 backdrop-blur-md -mx-3.5 mb-2 pt-1.5">
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pt-4 pb-2 px-3.5" role="tablist">
             {tabs.map((t) => {
               const active = activeTab === t.id;
               return (
@@ -453,15 +453,15 @@ export default function SparksPage() {
                   role="tab"
                   aria-selected={active}
                   onClick={() => setActiveTab(t.id)}
-                  className={`inline-flex items-center gap-1 whitespace-nowrap shrink-0 transition-all active:scale-95 cursor-pointer text-xs px-3.5 py-1.5 rounded-full ${
+                  className={`inline-flex items-center gap-1 relative whitespace-nowrap shrink-0 transition-all active:scale-95 cursor-pointer text-xs px-3 py-1.5 rounded-full ${
                     active ? 'bg-[#8574B7] text-white font-semibold border border-transparent shadow-xs' : 'border border-[#D0CDE1] bg-white text-[#413B5E] font-medium hover:border-[#8574B7]/40 hover:bg-[#8574B7]/5'
                   }`}
                 >
                   <span>{t.label}</span>
                   {formatBadgeCount(t.count) && (
                     <span
-                      className={`inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full text-[10px] font-bold leading-none tabular-nums ml-0.5 ${
-                        active ? 'bg-white text-[#8574B7]' : 'bg-[#8574B7]/10 text-[#8574B7]'
+                      className={`absolute -top-2 -right-1 inline-flex items-center justify-center min-w-[16px] h-4 px-1 rounded-full text-[9.5px] font-bold leading-none tabular-nums ring-2 ring-white ${
+                        active ? 'bg-[#8574B7] text-white' : 'bg-[#8574B7]/10 text-[#8574B7]'
                       }`}
                     >
                       {formatBadgeCount(t.count)}
