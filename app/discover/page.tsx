@@ -861,9 +861,9 @@ function DiscoverContent() {
           </span>
         )}
       </div>
-      <main className="w-full max-w-md mx-auto px-4 pt-4 pb-36 relative">
+      <main className="w-full max-w-md mx-auto px-4 pt-1 pb-36 relative">
         {/* Static Pinned Search & Filter Controls on Left + Horizontally Scrolling Categories on Right */}
-        <section aria-label="Search and Filters" className="sticky top-0 z-30 w-[calc(100%+2rem)] -mx-4 px-4 py-2 flex items-center gap-3 bg-white/80 backdrop-blur-md border-b border-[#D0CDE1]">
+        <section aria-label="Search and Filters" className="sticky top-0 z-30 w-[calc(100%+2rem)] -mx-4 px-4 py-2 flex items-center gap-3 bg-white/80 backdrop-blur-md">
           <div className={`flex items-center gap-1.5 ${searchOpen || searchQuery ? 'flex-1 min-w-0' : 'hidden'}`}>
             {searchOpen || searchQuery ? (
               <div className={`flex-1 min-w-0 h-9 flex items-center gap-1 bg-white border border-[#D0CDE1] focus-within:border-[#665D96] rounded-full pl-3 pr-2 shadow-2xs transition-all ${searchAnimating ? 'animate-[slideIn_200ms_cubic-bezier(0.16,1,0.3,1)]' : ''} ${searchClosing ? 'animate-[slideOut_180ms_ease-in_forwards]' : ''}`}>
@@ -921,8 +921,8 @@ function DiscoverContent() {
                     aria-pressed={active}
                     className={`shrink-0 whitespace-nowrap flex items-center transition-colors ${
                       active
-                        ? 'bg-gradient-to-r from-[#665D96] to-[#9A93BC] text-white text-xs font-semibold px-4 py-1.5 rounded-full shadow-brand-sm border border-transparent'
-                        : 'border border-[#D0CDE1]/60 bg-white text-[#413B5E]/70 text-xs font-medium px-3.5 py-1.5 rounded-full hover:border-[#B8B3D1] hover:text-[#413B5E] hover:bg-[#E8E6F1]/25 transition-all'
+                        ? 'bg-[#8574B7] text-white text-xs font-semibold px-4 py-1.5 rounded-full shadow-xs border border-transparent'
+                        : 'border border-[#D0CDE1] bg-white text-[#413B5E] text-xs font-medium px-3.5 py-1.5 rounded-full hover:border-[#8574B7]/40 hover:bg-[#8574B7]/5 hover:text-[#413B5E] transition-all'
                     }`}
                     
                   >
@@ -961,7 +961,7 @@ function DiscoverContent() {
 
         {/* 2-Column Feed Grid */}
         {/* Uniform 2-column directory grid (same rhythm and 3:4 cards as Sparks) */}
-        <div className="grid grid-cols-2 gap-3 sm:gap-4 w-full animate-fade-in-up">
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 w-full animate-fade-in-up pt-3">
           {isLoading || categorySwitching ? (
             <FeedSkeleton count={isLoading ? 8 : Math.min(8, Math.max(2, visibleProfiles.length))} />
           ) : (
@@ -1462,7 +1462,7 @@ function DiscoverContent() {
                     <button
                       type="button"
                       onClick={applyFilters}
-                      className="flex-1 py-2.5 rounded-full bg-gradient-to-r from-[#665D96] to-[#665D96] text-white text-xs font-bold shadow-[0_4px_14px_rgba(102,93,150,0.35)] hover:opacity-95 active:scale-[0.98] transition-all cursor-pointer"
+                      className="flex-1 py-2.5 rounded-full bg-[#8574B7] hover:bg-[#534377] text-white text-xs font-bold shadow-xs active:scale-[0.98] transition-all cursor-pointer"
                     >
                       Apply Filters
                     </button>

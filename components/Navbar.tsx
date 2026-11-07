@@ -146,7 +146,7 @@ export function Navbar() {
   if (isChatThread || pathname === '/plus' || (pathname || '').startsWith('/plus/') || pathname === '/profile/edit' || (pathname || '').startsWith('/profile/edit/') || pathname === '/settings' || (pathname || '').startsWith('/settings/')) return null;
   return (
     // On Discover the frosted filter bar sits directly below: drop the divider so both read as one surface.
-    <header className="sticky top-0 z-40 w-full bg-white/95 backdrop-blur-md">
+    <header className="sticky top-0 z-40 w-full bg-white/80 backdrop-blur-md">
       <div className="max-w-[430px] mx-auto px-4 h-14 flex items-center justify-between relative">
         <div className={`flex items-center gap-2 ${pageTitle ? 'min-w-0' : 'shrink-0'}`}>
           <div
@@ -237,7 +237,7 @@ export function Navbar() {
                           ) : isPlusProfile(profile) ? 'Membership' : 'Upgrade to Plus'}
                         </span>
                         {!profile ? null : isPlusProfile(profile) ? (
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-gradient-to-r from-[#665D96]/10 to-[#9A93BC]/10 border border-[#665D96]/20 text-[#665D96]">Active</span>
+                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#8574B7]/10 border border-[#8574B7]/20 text-[#8574B7]">Active</span>
                         ) : (
                           <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-white border border-[#D0CDE1] text-[#413B5E]/55">Upgrade</span>
                         )}
@@ -276,7 +276,7 @@ export function Navbar() {
           ) : !authLoading && !IN_APP_PREFIXES.some((p) => pathname === p || pathname?.startsWith(p + '/')) ? (
             <Link
               href="/login"
-              className="px-4 py-1.5 rounded-full bg-[#665D96] hover:bg-[#665D96] text-white text-xs font-semibold tracking-wide transition shadow-sm"
+              className="px-4 py-1.5 rounded-full bg-[#8574B7] hover:bg-[#534377] text-white text-xs font-semibold tracking-wide transition shadow-sm"
             >
               Sign In
             </Link>
