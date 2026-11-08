@@ -107,6 +107,9 @@ export default function VerifyPage() {
   const [gateState, setGateState] = useState<'idle' | 'loading' | 'ready' | 'error'>('idle');
   const [faceStatus, setFaceStatus] = useState<FaceGateStatus>('no_face');
   const lastResultRef = useRef<FaceGateResult | null>(null);
+  const okSinceRef = useRef(0);
+  const autoCapturedRef = useRef(false);
+  const takeSnapshotRef = useRef<() => void>(() => {});
 
   /** Server issues one random pose in a signed, short-lived token. */
   const requestChallenge = useCallback(async () => {
@@ -217,6 +220,15 @@ export default function VerifyPage() {
         const result = gate.evaluateFaceFrame(video, video.clientWidth, video.clientHeight);
         lastResultRef.current = result;
         setFaceStatus((prev) => (prev === result.status ? prev : result.status));
+            if (result.status === 'ok') {
+              if (okSinceRef.current === 0) okSinceRef.current = Date.now();
+              else if (Date.now() - okSinceRef.current >= 600 && !autoCapturedRef.current) {
+                autoCapturedRef.current = true;
+                takeSnapshotRef.current();
+              }
+            } else {
+              okSinceRef.current = 0;
+            }
       } catch {
         lastResultRef.current = null;
         setFaceStatus('no_face');
@@ -265,8 +277,11 @@ export default function VerifyPage() {
     });
     stopCamera();
   }, [stopCamera, gateState]);
+  takeSnapshotRef.current = takeSnapshot;
 
   const retake = useCallback(() => {
+    okSinceRef.current = 0;
+    autoCapturedRef.current = false;
     if (snapshot) URL.revokeObjectURL(snapshot.previewUrl);
     setSnapshot(null);
     startCamera();
@@ -425,17 +440,8 @@ export default function VerifyPage() {
           )}
 
           <div className="absolute bottom-8 left-0 right-0 flex flex-col items-center gap-2 z-50">
-            <button
-              type="button"
-              onClick={takeSnapshot}
-              disabled={gateState !== 'ready' || faceStatus !== 'ok'}
-              className="h-20 w-20 rounded-full bg-white border-4 border-[#8574B7] flex items-center justify-center active:scale-95 transition shadow-lg disabled:opacity-40 disabled:border-white/60 disabled:active:scale-100"
-              aria-label="Take photo"
-            >
-              <Camera className="w-7 h-7 text-[#8574B7]" />
-            </button>
             <span className="text-[11px] text-white/85 font-medium">
-              {gateState === 'ready' && faceStatus === 'ok' ? 'Do the pose, then tap to capture' : 'Face in the oval, pose clearly visible'}
+              {gateState === 'ready' && faceStatus === 'ok' ? 'Hold pose steady to capture' : 'Face in the oval, pose clearly visible'}
             </span>
           </div>
         </div>

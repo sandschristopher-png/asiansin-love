@@ -456,10 +456,10 @@ for (const [label, res] of [['outgoing', outSparksRes], ['incoming', inSparksRes
                   }`}
                 >
                   <span>{t.label}</span>
-                  {formatBadgeCount(t.count) && (
+                  {Boolean(formatBadgeCount(t.count)) && (
                     <span
-                      className={`absolute -top-2 -right-1 inline-flex items-center justify-center min-w-[16px] h-4 px-1 rounded-full text-[9.5px] font-bold leading-none tabular-nums shadow-[0_1px_4px_rgba(65,59,94,0.18)] ${
-                        active ? 'bg-[#8574B7] text-white' : 'bg-[#8574B7]/10 text-[#8574B7]'
+                      className={`inline-flex items-center justify-center min-w-[16px] h-4 px-1 rounded-full text-[9.5px] font-bold leading-none tabular-nums ${
+                        active ? 'bg-white/20 text-white' : 'bg-[#8574B7]/15 text-[#8574B7]'
                       }`}
                     >
                       {formatBadgeCount(t.count)}

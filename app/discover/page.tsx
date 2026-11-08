@@ -78,10 +78,22 @@ function FeedSkeleton({ count = 8 }: { count?: number }) {
 function FeedSkeletonPage() {
   return (
     <div className="w-full min-h-full bg-white" aria-busy="true" aria-label="Loading discover feed">
-      <main className="w-full max-w-md mx-auto px-4 pt-4 pb-36">
-        <div className="h-12" />
-        <div className="grid grid-cols-2 gap-3 sm:gap-4 w-full">
-          <FeedSkeleton />
+      <main className="w-full max-w-md mx-auto px-4 pt-2 pb-36">
+        <div className="flex items-center justify-between py-2">
+          <div className="h-7 w-32 rounded-lg bg-[#E8E6F1]/60 animate-pulse" />
+          <div className="flex items-center gap-2">
+            <div className="h-8 w-8 rounded-full bg-[#E8E6F1]/60 animate-pulse" />
+            <div className="h-8 w-8 rounded-full bg-[#E8E6F1]/60 animate-pulse" />
+          </div>
+        </div>
+        <div className="flex items-center gap-2 py-2 overflow-hidden border-b border-black/5">
+          <div className="h-7 w-12 rounded-full bg-[#8574B7]/20 animate-pulse shrink-0" />
+          <div className="h-7 w-16 rounded-full bg-[#E8E6F1]/60 animate-pulse shrink-0" />
+          <div className="h-7 w-20 rounded-full bg-[#E8E6F1]/60 animate-pulse shrink-0" />
+          <div className="h-7 w-14 rounded-full bg-[#E8E6F1]/60 animate-pulse shrink-0" />
+        </div>
+        <div className="grid grid-cols-2 gap-3 sm:gap-4 w-full pt-3">
+          <FeedSkeleton count={6} />
         </div>
       </main>
     </div>
