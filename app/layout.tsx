@@ -58,12 +58,7 @@ export const metadata: Metadata = {
 export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
-  // White browser chrome and status bar; matches public/manifest.webmanifest theme_color.
-  themeColor: '#FFFFFF',
-  interactiveWidget: 'resizes-content',
-  // Without cover, iOS reports every env(safe-area-inset-*) as 0, so the BottomNav, docks and
-  // toasts (all padded with max(..., env(safe-area-inset-bottom))) would sit on the home indicator
-  // in Home Screen mode. With statusBarStyle 'default' the page still starts below the status bar.
+  maximumScale: 1,
   viewportFit: 'cover',
 };
 
