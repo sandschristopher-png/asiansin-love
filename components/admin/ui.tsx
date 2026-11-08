@@ -30,7 +30,7 @@ export function AdminAvatar({ url, name, size = 40 }: { url: string | null; name
     // eslint-disable-next-line @next/next/no-img-element
     <img src={url} alt={name} width={size} height={size} className="rounded-full object-cover shrink-0 bg-[#E8E6F1]/60" style={{ width: size, height: size }} />
   ) : (
-    <span className="rounded-full shrink-0 bg-[#E8E6F1]/60 flex items-center justify-center text-[#665D96]" style={{ width: size, height: size }}>
+    <span className="rounded-full shrink-0 bg-[#E8E6F1]/60 flex items-center justify-center text-[#8574B7]" style={{ width: size, height: size }}>
       <UserRound className="w-1/2 h-1/2" aria-hidden />
     </span>
   );
@@ -64,7 +64,7 @@ export function Notice({ kind, children }: { kind: 'error' | 'success'; children
 export function EmptyState({ icon: Icon, title, body }: { icon: React.ComponentType<{ className?: string }>; title: string; body: string }) {
   return (
     <div className="rounded-2xl border border-dashed border-[#D0CDE1] bg-white py-14 px-6 text-center">
-      <Icon className="w-8 h-8 mx-auto text-[#665D96]" />
+      <Icon className="w-8 h-8 mx-auto text-[#8574B7]" />
       <p className="mt-3 font-semibold text-[#413B5E]">{title}</p>
       <p className="mt-1 text-sm text-[#413B5E]/75">{body}</p>
     </div>
@@ -73,7 +73,7 @@ export function EmptyState({ icon: Icon, title, body }: { icon: React.ComponentT
 
 export function Loading() {
   return (
-    <div className="py-16 flex justify-center text-[#665D96]">
+    <div className="py-16 flex justify-center text-[#8574B7]">
       <Loader2 className="w-6 h-6 animate-spin" aria-label="Loading" />
     </div>
   );
@@ -121,7 +121,7 @@ export function BottomSheet({
 
 type BtnTone = 'primary' | 'neutral' | 'danger' | 'warn';
 const TONES: Record<BtnTone, string> = {
-  primary: 'bg-gradient-to-r from-[#665D96] to-[#9A93BC] text-white border-transparent hover:opacity-95',
+  primary: 'bg-gradient-to-r from-[#8574B7] to-[#9A93BC] text-white border-transparent hover:opacity-95',
   neutral: 'bg-white text-[#413B5E] border-[#D0CDE1] hover:bg-[#E8E6F1]/40',
   danger: 'bg-red-600 text-white border-transparent hover:bg-red-700',
   warn: 'bg-amber-50 text-amber-800 border-amber-200 hover:bg-amber-100',

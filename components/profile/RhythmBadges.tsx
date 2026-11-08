@@ -4,7 +4,7 @@ import { reputationTier } from '@/lib/reputation';
 import { ReputationBadge } from '@/components/ReputationBadge';
 
 const REP_TIER_CLASS = {
-  good: 'bg-[#E8E6F1]/60 border-[#D0CDE1] text-[#665D96]',
+  good: 'bg-[#E8E6F1]/60 border-[#D0CDE1] text-[#8574B7]',
   fair: 'bg-amber-50 border-amber-200 text-amber-800',
   low: 'bg-red-50 border-red-200 text-red-700',
 } as const;
@@ -39,7 +39,7 @@ export function RhythmPill({
   const tone =
     variant === 'glass'
       ? 'bg-black/35 border-white/25 text-white'
-      : 'bg-[#E8E6F1]/60 border-[#D0CDE1] text-[#665D96]';
+      : 'bg-[#E8E6F1]/60 border-[#D0CDE1] text-[#8574B7]';
   return (
     <span
       className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] font-semibold whitespace-nowrap ${tone} ${className}`}
@@ -65,15 +65,15 @@ export function InCommonCard({ items, compact = false }: { items: string[]; comp
     );
   }
   return (
-    <div className="p-3 rounded-2xl bg-[#E8E6F1]/60 border border-[#665D96]/30 space-y-2">
-      <p className="text-xs font-bold text-[#665D96]">
+    <div className="p-3 rounded-2xl bg-[#E8E6F1]/60 border border-[#8574B7]/30 space-y-2">
+      <p className="text-xs font-bold text-[#8574B7]">
         {items.length} in common
       </p>
       <div className="flex flex-wrap gap-1.5">
         {items.map((item) => (
           <span
             key={item}
-            className="px-2.5 py-1 rounded-full bg-white border border-[#665D96]/30 text-[11px] font-semibold text-[#665D96]"
+            className="px-2.5 py-1 rounded-full bg-white border border-[#8574B7]/30 text-[11px] font-semibold text-[#8574B7]"
           >
             {item}
           </span>
@@ -110,7 +110,7 @@ export function RhythmSelector({
               aria-pressed={active}
               className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition active:scale-95 ${
                 active
-                  ? 'bg-[#665D96] border-[#665D96] text-white'
+                  ? 'bg-[#8574B7] border-[#8574B7] text-white'
                   : 'bg-white border-[#D0CDE1] text-[#413B5E] hover:bg-[#E8E6F1]/70'
               }`}
             >

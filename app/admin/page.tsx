@@ -107,7 +107,7 @@ function ReportCard({
           {report.reasonLabel}
         </span>
         {report.source && (
-          <span className="inline-flex items-center gap-1 rounded-full bg-[#665D96]/10 px-2 py-0.5 text-[11px] font-semibold text-[#665D96]">
+          <span className="inline-flex items-center gap-1 rounded-full bg-[#8574B7]/10 px-2 py-0.5 text-[11px] font-semibold text-[#8574B7]">
             {report.source === 'chat' ? <MessageCircle className="w-3 h-3" aria-hidden /> : <UserRound className="w-3 h-3" aria-hidden />}
             {report.source === 'chat' ? 'Chat' : 'Profile'}
           </span>
@@ -131,7 +131,7 @@ function ReportCard({
         maxLength={300}
         enterKeyHint="done"
         placeholder="Internal note (optional)"
-        className="mt-3 w-full h-10 rounded-xl border border-[#D0CDE1] bg-white px-3 text-sm outline-none focus:border-[#665D96]"
+        className="mt-3 w-full h-10 rounded-xl border border-[#D0CDE1] bg-white px-3 text-sm outline-none focus:border-[#8574B7]"
       />
 
       <AdminButton size="lg" className="mt-2 w-full" onClick={() => setInspect(true)}>

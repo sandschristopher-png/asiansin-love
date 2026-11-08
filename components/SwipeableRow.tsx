@@ -217,7 +217,7 @@ export function SwipeableRow({
                 tabIndex={open ? 0 : -1}
                 onClick={() => run(a)}
                 className={`h-full flex flex-col items-center justify-center gap-1 text-[11px] font-semibold ${
-                  a.tone === 'danger' ? 'bg-[#DC2626] text-white' : 'bg-[#E8E6F1] text-[#665D96]'
+                  a.tone === 'danger' ? 'bg-[#DC2626] text-white' : 'bg-[#E8E6F1] text-[#8574B7]'
                 }`}
                 style={{ width: ACTION_WIDTH }}
               >
@@ -250,7 +250,7 @@ export function SwipeableRow({
               onClick={() => setSheet(true)}
               aria-label={`More actions for ${label}`}
               aria-haspopup="dialog"
-              className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center text-[#B8B3D1] hover:bg-black/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#665D96]/40"
+              className="absolute right-2 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center text-[#B8B3D1] hover:bg-black/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8574B7]/40"
             >
               <MoreHorizontal className="w-4 h-4" aria-hidden />
             </button>
@@ -282,7 +282,7 @@ export function SwipeableRow({
                     type="button"
                     autoFocus={i === 0}
                     onClick={() => run(a)}
-                    className={`w-full h-12 px-3 rounded-2xl flex items-center gap-3 text-sm font-semibold text-left hover:bg-black/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#665D96]/40 ${
+                    className={`w-full h-12 px-3 rounded-2xl flex items-center gap-3 text-sm font-semibold text-left hover:bg-black/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8574B7]/40 ${
                       a.tone === 'danger' ? 'text-[#DC2626]' : 'text-[#413B5E]'
                     }`}
                   >

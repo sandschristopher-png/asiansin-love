@@ -91,7 +91,7 @@ function MemberSheet({ member, onClose, onChange }: { member: Member; onClose: (
               value={rep}
               onChange={(e) => setRep(e.target.value)}
               aria-label="Reputation score, 0 to 100"
-              className="flex-1 min-w-0 h-10 rounded-xl border border-[#D0CDE1] px-3 text-sm tabular-nums outline-none focus:border-[#665D96]"
+              className="flex-1 min-w-0 h-10 rounded-xl border border-[#D0CDE1] px-3 text-sm tabular-nums outline-none focus:border-[#8574B7]"
             />
             <AdminButton type="submit" size="lg" tone="primary" busy={busy === 'rep'} disabled={!!busy || !repValid || Math.round(repNum) === member.reputation}>
               Save
@@ -101,7 +101,7 @@ function MemberSheet({ member, onClose, onChange }: { member: Member; onClose: (
 
         <section className="flex items-center justify-between rounded-xl border border-[#D0CDE1] px-3 h-12">
           <span className="text-sm font-semibold text-[#413B5E] flex items-center gap-1.5">
-            <BadgeCheck className="w-4 h-4 text-[#665D96]" aria-hidden />
+            <BadgeCheck className="w-4 h-4 text-[#8574B7]" aria-hidden />
             Verified badge
           </span>
           <button
@@ -113,7 +113,7 @@ function MemberSheet({ member, onClose, onChange }: { member: Member; onClose: (
             onClick={() =>
               call('ver', '/api/admin/members', { action: 'set_verified', verified: !member.isVerified }, { isVerified: !member.isVerified }, !member.isVerified ? `${member.name} is now verified.` : `Removed ${member.name}'s verified badge.`)
             }
-            className={`w-11 h-6 rounded-full relative transition-colors disabled:opacity-50 ${member.isVerified ? 'bg-[#665D96]' : 'bg-[#E8E6F1]'}`}
+            className={`w-11 h-6 rounded-full relative transition-colors disabled:opacity-50 ${member.isVerified ? 'bg-[#8574B7]' : 'bg-[#E8E6F1]'}`}
           >
             <span className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-all ${member.isVerified ? 'left-6' : 'left-1'}`} />
           </button>
@@ -223,7 +223,7 @@ export function MembersManager({ selfId, ownerId, isOwner }: { selfId: string; o
           autoCorrect="off"
           spellCheck={false}
           enterKeyHint="go"
-          className="w-full h-10 rounded-xl border border-[#D0CDE1] px-3 text-sm outline-none focus:border-[#665D96]"
+          className="w-full h-10 rounded-xl border border-[#D0CDE1] px-3 text-sm outline-none focus:border-[#8574B7]"
         />
         <select
           aria-label="Role to grant"
@@ -254,7 +254,7 @@ export function MembersManager({ selfId, ownerId, isOwner }: { selfId: string; o
           autoCapitalize="none"
           autoCorrect="off"
           enterKeyHint="search"
-          className="w-full h-10 rounded-xl border border-[#D0CDE1] bg-white pl-9 pr-3 text-sm outline-none focus:border-[#665D96]"
+          className="w-full h-10 rounded-xl border border-[#D0CDE1] bg-white pl-9 pr-3 text-sm outline-none focus:border-[#8574B7]"
         />
       </div>
       {!query.trim() && <p className="text-xs text-[#413B5E]/75 mb-2">Showing current staff. Search to find any member.</p>}
@@ -278,7 +278,7 @@ export function MembersManager({ selfId, ownerId, isOwner }: { selfId: string; o
                       {m.name}
                       {m.age !== null && <span className="font-normal text-[#413B5E]/75">, {m.age}</span>}
                     </span>
-                    {m.isVerified && <BadgeCheck className="w-3.5 h-3.5 shrink-0 text-[#665D96]" aria-label="Verified" />}
+                    {m.isVerified && <BadgeCheck className="w-3.5 h-3.5 shrink-0 text-[#8574B7]" aria-label="Verified" />}
                   </p>
                   <div className="mt-0.5 flex items-center gap-1.5">
                     <ReputationBadge score={m.reputation} size="xs" />

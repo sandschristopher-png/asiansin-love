@@ -30,9 +30,9 @@ const TIERS: Record<ReputationTier, Omit<ReputationTokens, 'score' | 'percent'>>
     tierLabel: 'Pristine',
     light: {
       container: 'bg-[#E8E6F1]/50 border border-[#D0CDE1]',
-      text: 'text-[#665D96]',
-      icon: 'text-[#665D96]',
-      bar: 'bg-gradient-to-r from-[#665D96] to-[#9A93BC]',
+      text: 'text-[#8574B7]',
+      icon: 'text-[#8574B7]',
+      bar: 'bg-gradient-to-r from-[#8574B7] to-[#9A93BC]',
       track: 'bg-[#E8E6F1]',
     },
     frosted: { container: FROSTED_CONTAINER, text: 'text-white', icon: 'text-[#D0CDE1]' },

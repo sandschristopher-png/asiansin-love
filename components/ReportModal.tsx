@@ -118,16 +118,16 @@ export function ReportModal({
                   aria-checked={selected}
                   onClick={() => setCategory(c.id)}
                   className={`w-full flex items-center gap-3 rounded-2xl border px-3.5 py-3 text-left text-[13px] transition ${
-                    selected ? 'border-[#665D96] bg-[#665D96]/5 text-[#413B5E] font-semibold' : 'border-[#D0CDE1] text-[#413B5E] hover:bg-[#E8E6F1]/40'
+                    selected ? 'border-[#8574B7] bg-[#8574B7]/5 text-[#413B5E] font-semibold' : 'border-[#D0CDE1] text-[#413B5E] hover:bg-[#E8E6F1]/40'
                   }`}
                 >
                   <span
                     aria-hidden
                     className={`w-4 h-4 rounded-full border-2 shrink-0 flex items-center justify-center ${
-                      selected ? 'border-[#665D96]' : 'border-[#D0CDE1]'
+                      selected ? 'border-[#8574B7]' : 'border-[#D0CDE1]'
                     }`}
                   >
-                    {selected && <span className="w-2 h-2 rounded-full bg-[#665D96]" />}
+                    {selected && <span className="w-2 h-2 rounded-full bg-[#8574B7]" />}
                   </span>
                   <span>{c.label}</span>
                 </button>
@@ -141,7 +141,7 @@ export function ReportModal({
             maxLength={300}
             rows={3}
             placeholder="Provide additional context (optional)..."
-            className="w-full p-3 rounded-2xl bg-white border border-[#D0CDE1] text-base sm:text-xs text-[#413B5E] placeholder:text-[#413B5E]/55 focus:outline-none focus:border-[#665D96] resize-none"
+            className="w-full p-3 rounded-2xl bg-white border border-[#D0CDE1] text-base sm:text-xs text-[#413B5E] placeholder:text-[#413B5E]/55 focus:outline-none focus:border-[#8574B7] resize-none"
           />
 
           {error && (

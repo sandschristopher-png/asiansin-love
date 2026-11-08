@@ -32,7 +32,7 @@ export function InAppToast({
   return (
     <div role="status" aria-live="polite" className={`${TOAST_POSITION_CLASS} animate-slide-down`}>
       <div className="flex items-start gap-2.5 px-3.5 py-3 rounded-2xl bg-white/95 backdrop-blur-md border border-[#D0CDE1] shadow-[0_12px_32px_rgba(102,93,150,0.18)] text-xs text-[#413B5E]">
-        {icon && <span className="shrink-0 mt-0.5 text-[#665D96]">{icon}</span>}
+        {icon && <span className="shrink-0 mt-0.5 text-[#8574B7]">{icon}</span>}
         <p className="flex-1 leading-relaxed">{message}</p>
         {action && (
           <button

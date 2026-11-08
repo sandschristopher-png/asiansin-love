@@ -260,7 +260,7 @@ export default function SettingsHubPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
-        <Loader2 className="w-7 h-7 animate-spin text-[#665D96]" />
+        <Loader2 className="w-7 h-7 animate-spin text-[#8574B7]" />
       </div>
     );
   }
@@ -293,7 +293,7 @@ export default function SettingsHubPage() {
         {/* CARD 1: ACCOUNT & TRUST */}
         <div className="rounded-3xl bg-white border border-[#D0CDE1] p-2 shadow-2xs space-y-1">
           <div className="px-3 pt-2 pb-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-[#665D96]">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[#8574B7]">
               Account &amp; Trust
             </span>
           </div>
@@ -319,7 +319,7 @@ export default function SettingsHubPage() {
             className="flex items-center justify-between p-3 rounded-2xl hover:bg-[#E8E6F1]/40 transition cursor-pointer"
           >
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-[#E8E6F1]/60 text-[#665D96] flex items-center justify-center">
+              <div className="w-8 h-8 rounded-xl bg-[#E8E6F1]/60 text-[#8574B7] flex items-center justify-center">
                 <Lock className="w-4 h-4" />
               </div>
               <div>
@@ -334,7 +334,7 @@ export default function SettingsHubPage() {
         {/* CARD 2: PRIVACY & DISCRETION */}
         <div className="rounded-3xl bg-white border border-[#D0CDE1] p-2 shadow-2xs space-y-1">
           <div className="px-3 pt-2 pb-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-[#665D96]">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[#8574B7]">
               Privacy &amp; Discretion
             </span>
           </div>
@@ -376,7 +376,7 @@ export default function SettingsHubPage() {
         {/* CARD 3: NOTIFICATIONS */}
         <div className="rounded-3xl bg-white border border-[#D0CDE1] p-2 shadow-2xs space-y-1">
           <div className="px-3 pt-2 pb-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-[#665D96]">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[#8574B7]">
               Notifications
             </span>
           </div>
@@ -406,7 +406,7 @@ export default function SettingsHubPage() {
         {/* CARD 4: SAFETY & SUPPORT */}
         <div className="rounded-3xl bg-white border border-[#D0CDE1] p-2 shadow-2xs space-y-1">
           <div className="px-3 pt-2 pb-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-[#665D96]">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-[#8574B7]">
               Safety &amp; Support
             </span>
           </div>
@@ -466,7 +466,7 @@ export default function SettingsHubPage() {
               className="w-full flex items-center justify-between p-3 rounded-2xl hover:bg-[#E8E6F1]/40 transition cursor-pointer text-left disabled:opacity-60"
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-xl bg-[#E8E6F1]/60 text-[#665D96] flex items-center justify-center">
+                <div className="w-8 h-8 rounded-xl bg-[#E8E6F1]/60 text-[#8574B7] flex items-center justify-center">
                   <CreditCard className="w-4 h-4" />
                 </div>
                 <div>
@@ -475,7 +475,7 @@ export default function SettingsHubPage() {
                 </div>
               </div>
               {openingPortal ? (
-                <Loader2 className="w-4 h-4 animate-spin text-[#665D96]" />
+                <Loader2 className="w-4 h-4 animate-spin text-[#8574B7]" />
               ) : (
                 <ChevronRight className="w-4 h-4 text-[#413B5E]/55" />
               )}
@@ -505,7 +505,7 @@ export default function SettingsHubPage() {
                 <p className="text-[11px] text-[#413B5E]/75">Sign out of this browser session</p>
               </div>
             </div>
-            {loggingOut && <Loader2 className="w-4 h-4 animate-spin text-[#665D96]" />}
+            {loggingOut && <Loader2 className="w-4 h-4 animate-spin text-[#8574B7]" />}
           </button>
 
           <div className="my-1 border-t border-[#D0CDE1]" />
@@ -564,7 +564,7 @@ export default function SettingsHubPage() {
                 disabled={deletingAccount}
                 autoComplete="off"
                 spellCheck={false}
-                className="w-full mt-4 px-3 py-2.5 rounded-xl border border-[#D0CDE1] bg-white text-xs text-[#413B5E] placeholder:text-[#413B5E]/55 focus:outline-none focus:border-[#665D96] transition"
+                className="w-full mt-4 px-3 py-2.5 rounded-xl border border-[#D0CDE1] bg-white text-xs text-[#413B5E] placeholder:text-[#413B5E]/55 focus:outline-none focus:border-[#8574B7] transition"
               />
 
               <div className="mt-4 space-y-2">

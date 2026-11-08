@@ -34,7 +34,7 @@ export function PushDeviceRow() {
   return (
     <div className="flex items-center justify-between p-3 rounded-2xl hover:bg-[#E8E6F1]/40 transition">
       <div className="flex items-center gap-3 pr-4">
-        <div className="w-8 h-8 rounded-xl bg-[#E8E6F1]/60 text-[#665D96] flex items-center justify-center shrink-0">
+        <div className="w-8 h-8 rounded-xl bg-[#E8E6F1]/60 text-[#8574B7] flex items-center justify-center shrink-0">
           <BellRing className="w-4 h-4" />
         </div>
         <div>
@@ -50,7 +50,7 @@ export function PushDeviceRow() {
           type="button"
           disabled={busy}
           onClick={() => setExplaining(true)}
-          className="h-8 px-3.5 rounded-full bg-[#665D96] hover:bg-[#665D96] text-white text-[11px] font-semibold shrink-0 inline-flex items-center gap-1.5 disabled:opacity-60"
+          className="h-8 px-3.5 rounded-full bg-[#8574B7] hover:bg-[#8574B7] text-white text-[11px] font-semibold shrink-0 inline-flex items-center gap-1.5 disabled:opacity-60"
         >
           {busy && <Loader2 className="w-3 h-3 animate-spin" />}
           Turn on

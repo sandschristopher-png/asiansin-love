@@ -78,13 +78,13 @@ export default function AnnouncementsPage() {
   return (
     <main className="flex-1 w-full px-4 pt-4 pb-[calc(8rem+env(safe-area-inset-bottom,0px))] bg-white">
       {loading ? (
-        <div className="py-16 flex justify-center text-[#665D96]">
+        <div className="py-16 flex justify-center text-[#8574B7]">
           <Loader2 className="w-6 h-6 animate-spin" aria-label="Loading" />
         </div>
       ) : empty ? (
         <div className="mt-6 rounded-3xl bg-white border border-[#D0CDE1] py-14 px-6 text-center">
-          <span className="mx-auto w-14 h-14 rounded-full bg-gradient-to-br from-[#665D96]/10 to-[#9A93BC]/10 flex items-center justify-center">
-            <Megaphone className="w-6 h-6 text-[#665D96]" aria-hidden />
+          <span className="mx-auto w-14 h-14 rounded-full bg-gradient-to-br from-[#8574B7]/10 to-[#9A93BC]/10 flex items-center justify-center">
+            <Megaphone className="w-6 h-6 text-[#8574B7]" aria-hidden />
           </span>
           <p className="mt-3 text-sm font-semibold text-[#413B5E]">{error ? 'Could not load announcements' : 'All caught up'}</p>
           <p className="mt-1 text-xs text-[#413B5E]/55">{error ? 'Please try again in a moment.' : 'No announcements right now.'}</p>
@@ -99,7 +99,7 @@ export default function AnnouncementsPage() {
                   className="bg-white/95 border border-[#D0CDE1] rounded-2xl p-5 shadow-[0_2px_8px_rgba(65,59,94,0.03)] flex flex-col gap-2.5"
                 >
                   <div className="flex items-center gap-2">
-                    <span className="bg-[#665D96]/10 text-[#665D96] text-[11px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">{a.tag}</span>
+                    <span className="bg-[#8574B7]/10 text-[#8574B7] text-[11px] font-bold px-2.5 py-0.5 rounded-full uppercase tracking-wider">{a.tag}</span>
                     <span className="text-xs text-[#413B5E]/50">{formatDate(a.published_at)}</span>
                     {a.is_pinned && <Pin className="ml-auto w-3.5 h-3.5 text-[#413B5E]/40" aria-label="Pinned" />}
                   </div>
@@ -116,8 +116,8 @@ export default function AnnouncementsPage() {
                 const { Icon, title, href } = describeAnnouncement(n);
                 const body = (
                   <>
-                    <span className="w-10 h-10 rounded-full shrink-0 bg-gradient-to-br from-[#665D96]/10 to-[#9A93BC]/10 flex items-center justify-center">
-                      <Icon className="w-[18px] h-[18px] text-[#665D96]" />
+                    <span className="w-10 h-10 rounded-full shrink-0 bg-gradient-to-br from-[#8574B7]/10 to-[#9A93BC]/10 flex items-center justify-center">
+                      <Icon className="w-[18px] h-[18px] text-[#8574B7]" />
                     </span>
                     <span className="min-w-0 flex-1">
                       <span className={`block text-sm leading-snug ${n.is_read ? 'font-medium text-[#413B5E]' : 'font-semibold text-[#413B5E]'}`}>{title}</span>

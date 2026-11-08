@@ -21,9 +21,9 @@ const PILL_ICON = 'absolute left-4 sm:left-5 w-5 h-5 flex items-center justify-c
 const PILL_LINE = PILL.replace('hover:border-[#B8B3D1]', 'hover:border-[#06C755]/40');
 const PILL_LABEL = 'text-sm font-medium text-[#413B5E] tracking-tight';
 const INPUT =
-  'h-12 w-full rounded-full border border-[#D0CDE1] bg-white px-4 text-base sm:text-sm text-[#413B5E] focus:border-[#665D96] focus:ring-2 focus:ring-[#B8B3D1]/30 focus:outline-none placeholder:text-[#413B5E]/40 transition';
+  'h-12 w-full rounded-full border border-[#D0CDE1] bg-white px-4 text-base sm:text-sm text-[#413B5E] focus:border-[#8574B7] focus:ring-2 focus:ring-[#B8B3D1]/30 focus:outline-none placeholder:text-[#413B5E]/40 transition';
 const PRIMARY =
-  'h-12 w-full rounded-full bg-gradient-to-r from-[#665D96] to-[#9A93BC] text-white font-semibold text-sm shadow-brand-glow hover:opacity-95 transition-opacity flex items-center justify-center gap-2 active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed';
+  'h-12 w-full rounded-full bg-gradient-to-r from-[#8574B7] to-[#9A93BC] text-white font-semibold text-sm shadow-brand-glow hover:opacity-95 transition-opacity flex items-center justify-center gap-2 active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed';
 
 const GoogleIcon = () => (
   <svg className="w-4 h-4" viewBox="0 0 24 24" aria-hidden="true">
@@ -199,9 +199,9 @@ export function AuthScreen({ mode, cities }: { mode: 'login' | 'signup'; cities?
         <div className="fixed top-4 inset-x-0 z-50 flex justify-center px-4 pointer-events-none">
           <div
             role="alert"
-            className="pointer-events-auto w-full max-w-[380px] flex items-start gap-2.5 rounded-2xl bg-white/95 border border-[#665D96]/50 px-3.5 py-3 text-xs font-medium text-[#413B5E] shadow-[0_8px_24px_rgba(65,59,94,0.10)]"
+            className="pointer-events-auto w-full max-w-[380px] flex items-start gap-2.5 rounded-2xl bg-white/95 border border-[#8574B7]/50 px-3.5 py-3 text-xs font-medium text-[#413B5E] shadow-[0_8px_24px_rgba(65,59,94,0.10)]"
           >
-            <AlertCircle className="w-4 h-4 shrink-0 text-[#665D96] mt-px" aria-hidden />
+            <AlertCircle className="w-4 h-4 shrink-0 text-[#8574B7] mt-px" aria-hidden />
             <span className="flex-1 leading-relaxed">{error}</span>
             <button type="button" onClick={() => setError(null)} aria-label="Dismiss" className="shrink-0 -m-1 p-1 text-[#413B5E]/50 hover:text-[#413B5E]">
               <X className="w-3.5 h-3.5" />
@@ -211,7 +211,7 @@ export function AuthScreen({ mode, cities }: { mode: 'login' | 'signup'; cities?
       )}
       <main className="relative z-10 flex-1 w-full flex flex-col px-6 pt-10">
         <div className="text-center">
-          <span className="block text-[11px] font-semibold tracking-[0.25em] uppercase text-[#665D96] mb-2 text-center">
+          <span className="block text-[11px] font-semibold tracking-[0.25em] uppercase text-[#8574B7] mb-2 text-center">
             {mode === 'login' ? 'Welcome Back' : 'Welcome'}
           </span>
           <div className="flex justify-center">
@@ -225,7 +225,7 @@ export function AuthScreen({ mode, cities }: { mode: 'login' | 'signup'; cities?
             <div className="flex flex-col gap-3 w-full max-w-[340px] mx-auto" aria-busy={!!busy}>
               <button type="button" className={PILL} onClick={() => oauth('google')} disabled={!!busy}>
                 <span className={PILL_ICON}>
-                  {busy === 'google' ? <Loader2 className="w-4 h-4 animate-spin text-[#665D96]" /> : <GoogleIcon />}
+                  {busy === 'google' ? <Loader2 className="w-4 h-4 animate-spin text-[#8574B7]" /> : <GoogleIcon />}
                 </span>
                 <span className={PILL_LABEL}>Continue with Google</span>
               </button>
@@ -273,7 +273,7 @@ export function AuthScreen({ mode, cities }: { mode: 'login' | 'signup'; cities?
                     Send sign-in link
                   </button>
                   {mode === 'login' && (
-                    <button type="button" onClick={() => setStep('password')} className="block mx-auto text-xs font-semibold text-[#665D96] hover:underline">
+                    <button type="button" onClick={() => setStep('password')} className="block mx-auto text-xs font-semibold text-[#8574B7] hover:underline">
                       Use a password instead
                     </button>
                   )}
@@ -283,13 +283,13 @@ export function AuthScreen({ mode, cities }: { mode: 'login' | 'signup'; cities?
               {step === 'sent' && (
                 <div className="space-y-3">
                   <div className="rounded-2xl bg-white border border-[#D0CDE1] p-4 text-center">
-                    <MailCheck className="w-6 h-6 mx-auto text-[#665D96]" aria-hidden />
+                    <MailCheck className="w-6 h-6 mx-auto text-[#8574B7]" aria-hidden />
                     <p className="mt-2 text-sm font-semibold text-[#413B5E]">Check your inbox</p>
                     <p className="mt-1 text-xs text-[#413B5E]/55 leading-relaxed">
                       We sent a sign-in link to <span className="font-semibold text-[#413B5E] break-all">{cleanEmail}</span>. Tap it on this device to sign in.
                     </p>
                   </div>
-                  <button type="button" onClick={() => sendLink()} disabled={!!busy} className="block mx-auto text-xs font-semibold text-[#665D96] hover:underline disabled:opacity-50">
+                  <button type="button" onClick={() => sendLink()} disabled={!!busy} className="block mx-auto text-xs font-semibold text-[#8574B7] hover:underline disabled:opacity-50">
                     Resend email
                   </button>
                 </div>
@@ -323,7 +323,7 @@ export function AuthScreen({ mode, cities }: { mode: 'login' | 'signup'; cities?
                     Sign in
                   </button>
                   <div className="flex items-center justify-between text-xs font-semibold">
-                    <button type="button" onClick={() => setStep('email')} className="text-[#665D96] hover:underline">
+                    <button type="button" onClick={() => setStep('email')} className="text-[#8574B7] hover:underline">
                       Email me a link instead
                     </button>
                     <Link href="/forgot-password" className="text-[#413B5E]/55 hover:text-[#413B5E]">
@@ -341,14 +341,14 @@ export function AuthScreen({ mode, cities }: { mode: 'login' | 'signup'; cities?
           {mode === 'login' ? (
             <>
               <span className="text-xs font-medium text-[#413B5E]/70">New to asiansin.love?</span>{' '}
-              <Link href={authHref('/signup', returnTo)} className="text-xs font-bold text-[#665D96] hover:text-[#9A93BC] transition-colors">
+              <Link href={authHref('/signup', returnTo)} className="text-xs font-bold text-[#8574B7] hover:text-[#9A93BC] transition-colors">
                 Create an account
               </Link>
             </>
           ) : (
             <>
               <span className="text-xs font-medium text-[#413B5E]/70">Already a member?</span>{' '}
-              <Link href={authHref('/login', returnTo)} className="text-xs font-bold text-[#665D96] hover:text-[#9A93BC] transition-colors">
+              <Link href={authHref('/login', returnTo)} className="text-xs font-bold text-[#8574B7] hover:text-[#9A93BC] transition-colors">
                 Sign in
               </Link>
             </>
@@ -357,11 +357,11 @@ export function AuthScreen({ mode, cities }: { mode: 'login' | 'signup'; cities?
 
         <p className="mt-auto pt-10 text-[10px] leading-relaxed text-[#413B5E]/55 max-w-[340px] mx-auto text-center">
           Registration is strictly permitted for individuals 18 years of age and older. By continuing, you agree to our{' '}
-          <Link href="/terms" className="text-[#413B5E]/70 underline hover:text-[#665D96] transition-colors">
+          <Link href="/terms" className="text-[#413B5E]/70 underline hover:text-[#8574B7] transition-colors">
             Terms of Service
           </Link>{' '}
           and{' '}
-          <Link href="/privacy" className="text-[#413B5E]/70 underline hover:text-[#665D96] transition-colors">
+          <Link href="/privacy" className="text-[#413B5E]/70 underline hover:text-[#8574B7] transition-colors">
             Privacy Policy
           </Link>
           .

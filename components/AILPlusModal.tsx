@@ -108,7 +108,7 @@ export function AILPlusModal({
           <ul className="space-y-2.5">
             {PERKS.map((p) => (
               <li key={p.title} className="flex items-start gap-2.5 text-xs text-[#413B5E]/85 leading-relaxed">
-                <p.Icon className="w-4 h-4 text-[#665D96] shrink-0" aria-hidden />
+                <p.Icon className="w-4 h-4 text-[#8574B7] shrink-0" aria-hidden />
                 <span>
                   <span className="font-semibold text-[#413B5E]">{p.title}:</span> {p.text}
                 </span>
@@ -127,11 +127,11 @@ export function AILPlusModal({
                   aria-checked={active}
                   onClick={() => setPlan(p.id)}
                   className={`relative rounded-2xl border px-2 pt-4 pb-2.5 text-center transition ${
-                    active ? 'border-[#665D96] bg-[#E8E6F1]/60 ring-1 ring-[#665D96]' : 'border-[#D0CDE1] bg-white'
+                    active ? 'border-[#8574B7] bg-[#E8E6F1]/60 ring-1 ring-[#8574B7]' : 'border-[#D0CDE1] bg-white'
                   }`}
                 >
                   {p.badge && (
-                    <span className="absolute -top-2 left-1/2 -translate-x-1/2 whitespace-nowrap px-1.5 py-0.5 rounded-full bg-[#665D96] text-[8.5px] font-bold text-white">
+                    <span className="absolute -top-2 left-1/2 -translate-x-1/2 whitespace-nowrap px-1.5 py-0.5 rounded-full bg-[#8574B7] text-[8.5px] font-bold text-white">
                       {p.badge}
                     </span>
                   )}
@@ -153,12 +153,12 @@ export function AILPlusModal({
             type="button"
             onClick={checkout}
             disabled={busy}
-            className="w-full py-3.5 rounded-2xl bg-[#665D96] hover:bg-[#413B5E] text-white text-sm font-semibold shadow-md shadow-[#665D96]/25 flex items-center justify-center gap-2 disabled:opacity-60"
+            className="w-full py-3.5 rounded-2xl bg-[#8574B7] hover:bg-[#413B5E] text-white text-sm font-semibold shadow-md shadow-[#8574B7]/25 flex items-center justify-center gap-2 disabled:opacity-60"
           >
             {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4 fill-current" />}
             Upgrade to Plus
           </button>
-          <Link href="/plus" onClick={onClose} className="block text-center text-xs font-semibold text-[#665D96] hover:underline">
+          <Link href="/plus" onClick={onClose} className="block text-center text-xs font-semibold text-[#8574B7] hover:underline">
             View all member perks
           </Link>
         </div>

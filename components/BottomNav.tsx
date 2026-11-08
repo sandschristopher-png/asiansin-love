@@ -104,7 +104,7 @@ export function BottomNav() {
               className={`relative flex-1 flex flex-col items-center justify-center py-1 px-2 rounded-2xl transition-all duration-200 ease-out active:scale-95 select-none cursor-pointer ${
                 active 
                   ? 'text-[#413B5E]'
-                  : 'text-[#B8B3D1] hover:text-[#665D96] transition-colors'
+                  : 'text-[#B8B3D1] hover:text-[#8574B7] transition-colors'
               }`}
               aria-label={item.label}
             >

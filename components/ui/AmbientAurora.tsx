@@ -24,7 +24,7 @@ export function AmbientAurora({ layer = 'page' }: { layer?: 'page' | 'card' }) {
     // reducedMotion="never": the OS / browser reduce-motion setting never freezes the drift.
     <MotionConfig reducedMotion="never">
     <div aria-hidden className={`absolute inset-0 overflow-hidden pointer-events-none ${layer === 'card' ? '-z-10' : 'z-0'}`}>
-      {/* Blob 1: Iris / Brand Violet (#665D96) - Lower-Mid Left */}
+      {/* Blob 1: Iris / Brand Violet (#8574B7) - Lower-Mid Left */}
       <motion.div
         animate={{ x: [0, 50, -25, 0], y: [0, -35, 25, 0], scale: [1, 1.15, 0.92, 1] }}
         transition={{ duration: 4.8, repeat: Infinity, ease: 'easeInOut' }}

@@ -166,8 +166,8 @@ const HABIT_FILTERS: { id: string; label: string; test: (l: Record<string, strin
 ];
 const FILTER_CHIP =
   'py-1.5 px-3.5 rounded-full border text-xs font-semibold transition-all cursor-pointer active:scale-95 ';
-const FILTER_CHIP_ON = 'bg-[#665D96] text-white border-[#665D96] shadow-2xs';
-const FILTER_CHIP_OFF = 'bg-white text-[#413B5E] border-[#D0CDE1] hover:border-[#665D96]/40';
+const FILTER_CHIP_ON = 'bg-[#8574B7] text-white border-[#8574B7] shadow-2xs';
+const FILTER_CHIP_OFF = 'bg-white text-[#413B5E] border-[#D0CDE1] hover:border-[#8574B7]/40';
 const toggleIn = (list: string[], v: string) => (list.includes(v) ? list.filter((x) => x !== v) : [...list, v]);
 
 function DiscoverCardPhotoCarousel({
@@ -854,7 +854,7 @@ function DiscoverContent() {
             <span
               role={isRefreshing ? 'status' : undefined}
               aria-label={isRefreshing ? 'Refreshing' : undefined}
-              className={'block w-4 h-4 border-2 border-[#665D96] border-t-transparent rounded-full ' + (isRefreshing ? 'animate-spin' : '')}
+              className={'block w-4 h-4 border-2 border-[#8574B7] border-t-transparent rounded-full ' + (isRefreshing ? 'animate-spin' : '')}
               // While pulling, rotation tracks the pull; while refreshing, animate-spin owns transform.
               style={isRefreshing ? undefined : { transform: `rotate(${pullDistance * 6}deg)`, opacity: Math.min(1, pullDistance / 56) }}
             />
@@ -866,7 +866,7 @@ function DiscoverContent() {
         <section aria-label="Search and Filters" className="sticky top-0 z-30 w-[calc(100%+2rem)] -mx-4 px-4 py-2 flex items-center gap-3 bg-white/80 backdrop-blur-md">
           <div className={`flex items-center gap-1.5 ${searchOpen || searchQuery ? 'flex-1 min-w-0' : 'hidden'}`}>
             {searchOpen || searchQuery ? (
-              <div className={`flex-1 min-w-0 h-9 flex items-center gap-1 bg-white border border-[#D0CDE1] focus-within:border-[#665D96] rounded-full pl-3 pr-2 shadow-2xs transition-all ${searchAnimating ? 'animate-[slideIn_200ms_cubic-bezier(0.16,1,0.3,1)]' : ''} ${searchClosing ? 'animate-[slideOut_180ms_ease-in_forwards]' : ''}`}>
+              <div className={`flex-1 min-w-0 h-9 flex items-center gap-1 bg-white border border-[#D0CDE1] focus-within:border-[#8574B7] rounded-full pl-3 pr-2 shadow-2xs transition-all ${searchAnimating ? 'animate-[slideIn_200ms_cubic-bezier(0.16,1,0.3,1)]' : ''} ${searchClosing ? 'animate-[slideOut_180ms_ease-in_forwards]' : ''}`}>
                 <Search className="w-3.5 h-3.5 text-[#413B5E]/55 shrink-0" />
                 <input
                   autoFocus
@@ -952,7 +952,7 @@ function DiscoverContent() {
                 >
                   <SlidersHorizontal className="w-3.5 h-3.5" />
                   {hasActiveFilters && (
-                    <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-[#665D96] ring-2 ring-white" />
+                    <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-[#8574B7] ring-2 ring-white" />
                   )}
                 </button>
               </div>
@@ -1057,7 +1057,7 @@ function DiscoverContent() {
 
         {!isLoading && !categorySwitching && filteredProfiles.length === 0 && discoveryMode === 'near_me' && (
           <div className="mt-4 p-8 rounded-2xl bg-white border border-[#D0CDE1] text-center space-y-3 shadow-xs">
-            <div className="w-12 h-12 mx-auto rounded-2xl bg-[#E8E6F1]/60 flex items-center justify-center text-[#665D96]">
+            <div className="w-12 h-12 mx-auto rounded-2xl bg-[#E8E6F1]/60 flex items-center justify-center text-[#8574B7]">
               <MapPin className="w-5 h-5" aria-hidden />
             </div>
             <p className="font-brand text-base font-bold text-[#413B5E]">No members near your location yet.</p>
@@ -1067,7 +1067,7 @@ function DiscoverContent() {
             <button
               type="button"
               onClick={() => setDiscoveryMode('all')}
-              className="inline-flex items-center gap-1.5 px-5 py-2.5 text-xs font-semibold rounded-full bg-[#665D96] text-white hover:bg-[#413B5E] transition shadow-sm cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-5 py-2.5 text-xs font-semibold rounded-full bg-[#8574B7] text-white hover:bg-[#413B5E] transition shadow-sm cursor-pointer"
             >
               Browse All
             </button>
@@ -1076,7 +1076,7 @@ function DiscoverContent() {
 
         {!isLoading && !categorySwitching && filteredProfiles.length === 0 && isDefaultFeed && (
           <div className="mt-4 p-8 rounded-2xl bg-white border border-[#D0CDE1] text-center space-y-3 shadow-xs">
-            <div className="w-12 h-12 mx-auto rounded-2xl bg-[#E8E6F1]/60 flex items-center justify-center text-[#665D96]">
+            <div className="w-12 h-12 mx-auto rounded-2xl bg-[#E8E6F1]/60 flex items-center justify-center text-[#8574B7]">
               <Compass className="w-5 h-5" />
             </div>
             <p className="text-base font-bold text-[#413B5E]" style={{ fontFamily: 'var(--font-brand)' }}>
@@ -1087,7 +1087,7 @@ function DiscoverContent() {
             </p>
             <Link
               href="/favorites"
-              className="inline-flex items-center gap-1.5 px-5 py-2.5 text-xs font-semibold rounded-full bg-[#665D96] text-white hover:bg-[#413B5E] transition shadow-sm"
+              className="inline-flex items-center gap-1.5 px-5 py-2.5 text-xs font-semibold rounded-full bg-[#8574B7] text-white hover:bg-[#413B5E] transition shadow-sm"
             >
               View Your Sparks
             </Link>
@@ -1118,7 +1118,7 @@ function DiscoverContent() {
 
         {!isLoading && !categorySwitching && filteredProfiles.length === 0 && !isDefaultFeed && discoveryMode !== 'near_me' && (
           <div className="mt-4 p-8 rounded-2xl bg-white border border-[#D0CDE1] text-center space-y-3 shadow-xs">
-            <div className="w-12 h-12 mx-auto rounded-2xl bg-[#E8E6F1]/60 flex items-center justify-center text-[#665D96]">
+            <div className="w-12 h-12 mx-auto rounded-2xl bg-[#E8E6F1]/60 flex items-center justify-center text-[#8574B7]">
               <Search className="w-5 h-5" />
             </div>
             <p className="text-base font-bold text-[#413B5E]" style={{ fontFamily: 'var(--font-brand)' }}>
@@ -1127,7 +1127,7 @@ function DiscoverContent() {
             <button
               type="button"
               onClick={resetAndApplyFilters}
-              className="inline-flex items-center gap-1.5 px-5 py-2.5 text-xs font-semibold rounded-full bg-[#665D96] text-white hover:bg-[#413B5E] transition shadow-sm cursor-pointer"
+              className="inline-flex items-center gap-1.5 px-5 py-2.5 text-xs font-semibold rounded-full bg-[#8574B7] text-white hover:bg-[#413B5E] transition shadow-sm cursor-pointer"
             >
               <RotateCcw className="w-3.5 h-3.5" />
               <span>Reset Filters</span>
@@ -1140,7 +1140,7 @@ function DiscoverContent() {
             <button
               type="button"
               onClick={() => setVisibleLimit((prev) => prev + BATCH_SIZE)}
-              className="px-6 py-2.5 rounded-full bg-white border border-[#D0CDE1] text-[#413B5E] hover:border-[#665D96] text-xs font-semibold transition shadow-xs cursor-pointer"
+              className="px-6 py-2.5 rounded-full bg-white border border-[#D0CDE1] text-[#413B5E] hover:border-[#8574B7] text-xs font-semibold transition shadow-xs cursor-pointer"
             >
               Load More Profiles ({filteredProfiles.length - visibleLimit} remaining)
             </button>
@@ -1155,7 +1155,7 @@ function DiscoverContent() {
             <button
               type="button"
               onClick={undoLastPass}
-              className="px-3 py-1 rounded-full bg-[#665D96] hover:bg-[#413B5E] text-white text-xs font-semibold flex items-center gap-1 transition shadow-sm cursor-pointer"
+              className="px-3 py-1 rounded-full bg-[#8574B7] hover:bg-[#413B5E] text-white text-xs font-semibold flex items-center gap-1 transition shadow-sm cursor-pointer"
             >
               <RotateCcw className="w-3 h-3" />
               Undo
@@ -1219,7 +1219,7 @@ function DiscoverContent() {
                     onTouchCancel={handleSheetTouchEnd}
                   >
                     <div className="flex items-center gap-2">
-                      <SlidersHorizontal className="w-4 h-4 text-[#665D96]" />
+                      <SlidersHorizontal className="w-4 h-4 text-[#8574B7]" />
                       <h2 className="text-sm font-bold text-[#413B5E]">Refine Discover Feed</h2>
                     </div>
                     <button
@@ -1244,7 +1244,7 @@ function DiscoverContent() {
                             aria-label="Minimum age"
                             value={draftMinAge}
                             onChange={(e) => setDraftMinAge(Math.min(Number(e.target.value), draftMaxAge))}
-                            className="w-full appearance-none bg-white border border-[#D0CDE1] text-[#413B5E] font-medium rounded-xl pl-3 pr-9 py-2 text-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#665D96]/30"
+                            className="w-full appearance-none bg-white border border-[#D0CDE1] text-[#413B5E] font-medium rounded-xl pl-3 pr-9 py-2 text-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#8574B7]/30"
                           >
                             {AGE_OPTIONS.map((age) => (
                               <option key={age} value={age} className="bg-white text-[#413B5E]">{age}</option>
@@ -1258,7 +1258,7 @@ function DiscoverContent() {
                             aria-label="Maximum age"
                             value={draftMaxAge}
                             onChange={(e) => setDraftMaxAge(Math.max(Number(e.target.value), draftMinAge))}
-                            className="w-full appearance-none bg-white border border-[#D0CDE1] text-[#413B5E] font-medium rounded-xl pl-3 pr-9 py-2 text-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#665D96]/30"
+                            className="w-full appearance-none bg-white border border-[#D0CDE1] text-[#413B5E] font-medium rounded-xl pl-3 pr-9 py-2 text-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#8574B7]/30"
                           >
                             {AGE_OPTIONS.map((age) => (
                               <option key={age} value={age} className="bg-white text-[#413B5E]">{age}</option>
@@ -1284,7 +1284,7 @@ function DiscoverContent() {
                           disabled={countryLocked}
                           value={countryLocked ? ALL_COUNTRIES_VALUE : draftCountry}
                           onChange={(e) => setDraftCountry(e.target.value)}
-                          className="w-full appearance-none bg-white border border-[#D0CDE1] text-[#413B5E] font-medium rounded-xl pl-3 pr-9 py-2 text-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#665D96]/30 disabled:opacity-60 disabled:cursor-not-allowed"
+                          className="w-full appearance-none bg-white border border-[#D0CDE1] text-[#413B5E] font-medium rounded-xl pl-3 pr-9 py-2 text-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#8574B7]/30 disabled:opacity-60 disabled:cursor-not-allowed"
                         >
                           <option value={ALL_COUNTRIES_VALUE} className="bg-white text-[#413B5E]">All Countries</option>
                           {countryOptions.map((c) => (
@@ -1400,8 +1400,8 @@ function DiscoverContent() {
                             className={
                               'py-1.5 px-3.5 rounded-full border text-xs font-semibold transition-all cursor-pointer active:scale-95 ' +
                               (draftMode === mode.id
-                                ? 'bg-[#665D96] text-white border-[#665D96] shadow-2xs'
-                                : 'bg-white text-[#413B5E] border-[#D0CDE1] hover:border-[#665D96]/40')
+                                ? 'bg-[#8574B7] text-white border-[#8574B7] shadow-2xs'
+                                : 'bg-white text-[#413B5E] border-[#D0CDE1] hover:border-[#8574B7]/40')
                             }
                           >
                             {mode.label}
@@ -1439,7 +1439,7 @@ function DiscoverContent() {
                             {row.label}
                             {row.plus && <PlusBadge size="profile" />}
                           </span>
-                          <span className={'w-10 h-6 rounded-full transition-colors relative shrink-0 ' + (row.value ? 'bg-[#665D96]' : 'bg-[#E8E6F1]')}>
+                          <span className={'w-10 h-6 rounded-full transition-colors relative shrink-0 ' + (row.value ? 'bg-[#8574B7]' : 'bg-[#E8E6F1]')}>
                             <span className={'absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-all ' + (row.value ? 'left-5' : 'left-1')} />
                           </span>
                         </button>

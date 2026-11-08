@@ -41,7 +41,7 @@ export function AdminHeader({ name }: { name: string }) {
       <header className="h-14 bg-white/95 backdrop-blur-md border-b border-[#D0CDE1] px-4 flex items-center justify-between gap-2">
         <div className="flex items-center gap-1.5 min-w-0">
           <BrandLogo size="header" href="/admin" />
-          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[#665D96]/10 text-[#665D96]">ADMIN</span>
+          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[#8574B7]/10 text-[#8574B7]">ADMIN</span>
         </div>
         <div className="flex items-center gap-3 min-w-0">
           <span className="text-xs font-semibold text-[#413B5E] truncate max-w-[120px]">{name}</span>

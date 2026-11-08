@@ -69,13 +69,13 @@ export default function ResetPasswordPage() {
   if (checking) {
     return (
       <div className="min-h-screen w-full bg-white flex items-center justify-center">
-        <Loader2 className="w-7 h-7 animate-spin text-[#665D96]" />
+        <Loader2 className="w-7 h-7 animate-spin text-[#8574B7]" />
       </div>
     );
   }
 
   const inputClass =
-    'w-full py-3 px-4 pr-11 rounded-2xl bg-white border border-[#D0CDE1] text-xs text-[#413B5E] placeholder:text-[#413B5E]/55 focus:outline-none focus:border-[#665D96] focus:ring-4 focus:ring-[#665D96]/10 transition';
+    'w-full py-3 px-4 pr-11 rounded-2xl bg-white border border-[#D0CDE1] text-xs text-[#413B5E] placeholder:text-[#413B5E]/55 focus:outline-none focus:border-[#8574B7] focus:ring-4 focus:ring-[#8574B7]/10 transition';
 
   return (
     <div className="min-h-screen w-full bg-white flex items-center justify-center p-4 sm:p-6 font-sans antialiased">
@@ -141,7 +141,7 @@ export default function ResetPasswordPage() {
           <button
             type="submit"
             disabled={saving || Boolean(toast)}
-            className="w-full py-3.5 px-6 rounded-2xl bg-[#665D96] text-white text-xs font-bold flex items-center justify-center gap-2 shadow-md shadow-[#665D96]/20 hover:bg-[#413B5E] active:scale-[0.99] transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+            className="w-full py-3.5 px-6 rounded-2xl bg-[#8574B7] text-white text-xs font-bold flex items-center justify-center gap-2 shadow-md shadow-[#8574B7]/20 hover:bg-[#413B5E] active:scale-[0.99] transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <KeyRound className="w-4 h-4" />}
             <span>{saving ? 'Updating...' : 'Update Password'}</span>

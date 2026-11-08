@@ -58,9 +58,9 @@ const BILLING_TERMS: string[] = [
 ];
 
 function Mark({ cell, plus }: { cell: Cell; plus: boolean }) {
-  if (cell.included === true) return <Check className="w-3.5 h-3.5 mt-px shrink-0 text-[#665D96]" strokeWidth={2.5} aria-label="Included" />;
+  if (cell.included === true) return <Check className="w-3.5 h-3.5 mt-px shrink-0 text-[#8574B7]" strokeWidth={2.5} aria-label="Included" />;
   if (cell.included === false) return <X className="w-3.5 h-3.5 mt-px shrink-0 text-[#413B5E]/25" strokeWidth={2.5} aria-label="Not included" />;
-  return <Check className={`w-3.5 h-3.5 mt-px shrink-0 ${plus ? 'text-[#665D96]' : 'text-[#413B5E]/50'}`} strokeWidth={2.5} aria-hidden />;
+  return <Check className={`w-3.5 h-3.5 mt-px shrink-0 ${plus ? 'text-[#8574B7]' : 'text-[#413B5E]/50'}`} strokeWidth={2.5} aria-hidden />;
 }
 
 function Drawer({ title, children }: { title: string; children: React.ReactNode }) {
@@ -225,13 +225,13 @@ function PlusHubContent() {
 
         {isPostCheckoutSuccess && (
           <div className="p-4 rounded-2xl bg-white/90 border border-[#D0CDE1] shadow-sm flex flex-col items-center text-center">
-            <div className="w-10 h-10 rounded-full bg-[#665D96]/10 text-[#665D96] flex items-center justify-center mb-2">
+            <div className="w-10 h-10 rounded-full bg-[#8574B7]/10 text-[#8574B7] flex items-center justify-center mb-2">
               {isVerifyingPlus && !isPlus ? <Loader2 className="w-5 h-5 animate-spin" /> : <CheckCircle2 className="w-6 h-6" />}
             </div>
             <h2 className="text-base font-bold text-[#413B5E]">{isPlus ? 'Welcome to Plus' : 'Confirming your membership...'}</h2>
             <p className="text-xs text-[#413B5E]/60 mt-0.5 mb-3">{isPlus ? 'Everything below is now unlocked.' : 'Finishing up with Stripe.'}</p>
             <div className="flex items-center gap-2 w-full">
-              <Link href="/messages" className="flex-1 h-10 rounded-full bg-[#665D96] hover:bg-[#413B5E] text-white text-xs font-medium transition-colors flex items-center justify-center gap-1.5">
+              <Link href="/messages" className="flex-1 h-10 rounded-full bg-[#8574B7] hover:bg-[#413B5E] text-white text-xs font-medium transition-colors flex items-center justify-center gap-1.5">
                 <MessageSquare className="w-3.5 h-3.5" /> Messages
               </Link>
               <Link href="/discover" className="flex-1 h-10 rounded-full border border-[#D0CDE1] bg-white text-[#413B5E] text-xs font-semibold flex items-center justify-center gap-1.5 hover:bg-[#E8E6F1]/40 transition-colors">
@@ -267,12 +267,12 @@ function PlusHubContent() {
                   onClick={() => setSelectedPlan(p.id)}
                   className={`text-left flex flex-col gap-1 ${
                     active
-                      ? 'bg-white border-2 border-[#665D96] rounded-2xl p-4 shadow-brand-md relative'
+                      ? 'bg-white border-2 border-[#8574B7] rounded-2xl p-4 shadow-brand-md relative'
                       : 'relative bg-white/90 backdrop-blur-md border border-[#D0CDE1] rounded-2xl p-4 shadow-brand-sm hover:border-[#B8B3D1] transition-all text-[#413B5E]'
                   }`}
                 >
                   {p.badge && (
-                    <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap uppercase text-[10px] font-bold tracking-wider text-white bg-gradient-to-r from-[#665D96] to-[#9A93BC] px-2.5 py-0.5 rounded-full shadow-brand-sm">
+                    <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap uppercase text-[10px] font-bold tracking-wider text-white bg-gradient-to-r from-[#8574B7] to-[#9A93BC] px-2.5 py-0.5 rounded-full shadow-brand-sm">
                       {p.badge}
                     </span>
                   )}
@@ -282,7 +282,7 @@ function PlusHubContent() {
                     <span className="ml-1 text-[10px] font-medium text-[#413B5E]/50">{p.totalSuffix}</span>
                   </span>
                   <span className="text-[10px] text-[#413B5E]/55">{p.months > 1 ? `${p.perMonth} / mo` : p.billingNote}</span>
-                  {p.savings && <span className="text-[11px] font-semibold text-[#665D96]">{p.savings}</span>}
+                  {p.savings && <span className="text-[11px] font-semibold text-[#8574B7]">{p.savings}</span>}
                 </button>
               );
             })}
@@ -332,7 +332,7 @@ function PlusHubContent() {
             </ul>
             <p className="text-xs text-[#413B5E]/65">
               Full details in our{' '}
-              <Link href="/terms" className="font-semibold text-[#665D96] underline underline-offset-4">
+              <Link href="/terms" className="font-semibold text-[#8574B7] underline underline-offset-4">
                 Terms of Service
               </Link>
               .
@@ -357,7 +357,7 @@ function PlusHubContent() {
             onClick={handlePortal}
             className="w-full h-12 rounded-full border border-[#D0CDE1] bg-white text-sm font-semibold text-[#413B5E] hover:bg-[#E8E6F1]/40 transition-colors flex items-center justify-center gap-2 disabled:opacity-60"
           >
-            {openingPortal ? <Loader2 className="w-4 h-4 animate-spin" /> : <Settings className="w-4 h-4 text-[#665D96]" />}
+            {openingPortal ? <Loader2 className="w-4 h-4 animate-spin" /> : <Settings className="w-4 h-4 text-[#8574B7]" />}
             Manage Subscription
           </button>
         ) : (
@@ -372,7 +372,7 @@ function PlusHubContent() {
               type="button"
               disabled={starting || loading}
               onClick={handleSubscribe}
-              className="flex-1 min-w-0 h-12 px-8 rounded-full bg-gradient-to-r from-[#665D96] to-[#9A93BC] hover:opacity-95 text-white font-semibold text-sm shadow-brand-glow transition-opacity flex items-center justify-center gap-2 whitespace-nowrap disabled:opacity-70"
+              className="flex-1 min-w-0 h-12 px-8 rounded-full bg-gradient-to-r from-[#8574B7] to-[#9A93BC] hover:opacity-95 text-white font-semibold text-sm shadow-brand-glow transition-opacity flex items-center justify-center gap-2 whitespace-nowrap disabled:opacity-70"
             >
               {starting ? (
                 <>

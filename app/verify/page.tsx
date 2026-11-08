@@ -316,7 +316,7 @@ export default function VerifyPage() {
             <ArrowLeft className="w-5 h-5 text-[#413B5E]" />
           </button>
           <div className="flex items-center gap-2">
-            <ShieldCheck className="w-5 h-5 text-[#665D96]" />
+            <ShieldCheck className="w-5 h-5 text-[#8574B7]" />
             <h1 className="text-xl font-medium text-[#413B5E]">Profile Verification</h1>
           </div>
           <div className="w-10" />
@@ -335,7 +335,7 @@ export default function VerifyPage() {
         </div>
       ) : starting ? (
         <div className="p-6 text-center space-y-3">
-          <Loader2 className="w-8 h-8 text-[#665D96] animate-spin mx-auto" />
+          <Loader2 className="w-8 h-8 text-[#8574B7] animate-spin mx-auto" />
           <p className="text-xs font-semibold text-[#413B5E]/75">Preparing your pose...</p>
         </div>
       ) : startError || !pose ? (
@@ -347,7 +347,7 @@ export default function VerifyPage() {
           <button
             type="button"
             onClick={() => router.push(startError?.includes('profile photo') ? '/profile/edit' : '/discover')}
-            className="text-xs font-semibold text-[#665D96] hover:text-[#413B5E] transition"
+            className="text-xs font-semibold text-[#8574B7] hover:text-[#413B5E] transition"
           >
             {startError?.includes('profile photo') ? 'Add a main photo' : 'Back to Discover'}
           </button>
@@ -429,10 +429,10 @@ export default function VerifyPage() {
               type="button"
               onClick={takeSnapshot}
               disabled={gateState !== 'ready' || faceStatus !== 'ok'}
-              className="h-20 w-20 rounded-full bg-white border-4 border-[#665D96] flex items-center justify-center active:scale-95 transition shadow-lg disabled:opacity-40 disabled:border-white/60 disabled:active:scale-100"
+              className="h-20 w-20 rounded-full bg-white border-4 border-[#8574B7] flex items-center justify-center active:scale-95 transition shadow-lg disabled:opacity-40 disabled:border-white/60 disabled:active:scale-100"
               aria-label="Take photo"
             >
-              <Camera className="w-7 h-7 text-[#665D96]" />
+              <Camera className="w-7 h-7 text-[#8574B7]" />
             </button>
             <span className="text-[11px] text-white/85 font-medium">
               {gateState === 'ready' && faceStatus === 'ok' ? 'Do the pose, then tap to capture' : 'Face in the oval, pose clearly visible'}
@@ -442,7 +442,7 @@ export default function VerifyPage() {
       ) : snapshot ? (
         <div className="mx-4 mt-4 space-y-4 pb-28">
           <div className="p-4 rounded-3xl bg-white border border-[#D0CDE1] shadow-sm space-y-3">
-            <span className="text-[11px] font-medium uppercase tracking-wider text-[#665D96]">Check your photo</span>
+            <span className="text-[11px] font-medium uppercase tracking-wider text-[#8574B7]">Check your photo</span>
             <div className="grid grid-cols-[1fr_88px] gap-3 items-start">
               <img
                 src={snapshot.previewUrl}
@@ -475,7 +475,7 @@ export default function VerifyPage() {
               type="button"
               disabled={submitting}
               onClick={handleSubmit}
-              className="py-3.5 rounded-2xl bg-[#665D96] hover:bg-[#413B5E] text-white text-xs font-semibold flex items-center justify-center gap-1.5 shadow-md shadow-[#665D96]/30 active:scale-95 transition disabled:opacity-60"
+              className="py-3.5 rounded-2xl bg-[#8574B7] hover:bg-[#413B5E] text-white text-xs font-semibold flex items-center justify-center gap-1.5 shadow-md shadow-[#8574B7]/30 active:scale-95 transition disabled:opacity-60"
             >
               {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <ScanFace className="w-4 h-4" />}
               {submitting ? 'Checking...' : 'Verify with AI'}
@@ -485,7 +485,7 @@ export default function VerifyPage() {
       ) : (
         <div className="mx-4 mt-4 space-y-4 pb-28">
           <div className="p-5 rounded-3xl bg-white border border-[#D0CDE1] space-y-3 shadow-sm">
-            <span className="text-[11px] font-medium uppercase tracking-wider text-[#665D96]">Match this pose:</span>
+            <span className="text-[11px] font-medium uppercase tracking-wider text-[#8574B7]">Match this pose:</span>
             <PoseImage pose={pose} className="w-44 h-44 mx-auto rounded-3xl" />
             <p className="text-center text-sm font-medium text-[#413B5E]">{pose.label}</p>
             <p className="text-xs text-[#413B5E]/75 leading-relaxed text-center">
@@ -499,7 +499,7 @@ export default function VerifyPage() {
           <button
             type="button"
             onClick={startCamera}
-            className="w-full py-3.5 rounded-2xl bg-[#665D96] hover:bg-[#413B5E] text-white text-xs font-semibold uppercase tracking-wider flex items-center justify-center gap-2 shadow-md shadow-[#665D96]/30 active:scale-95 transition"
+            className="w-full py-3.5 rounded-2xl bg-[#8574B7] hover:bg-[#413B5E] text-white text-xs font-semibold uppercase tracking-wider flex items-center justify-center gap-2 shadow-md shadow-[#8574B7]/30 active:scale-95 transition"
           >
             <Camera className="w-4 h-4" />
             Open camera

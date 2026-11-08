@@ -84,7 +84,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="font-sans bg-[#E8E6F1]/60 text-[#413B5E] h-full selection:bg-[#665D96] selection:text-white antialiased overflow-hidden">
+      <body className="font-sans bg-[#E8E6F1]/60 text-[#413B5E] h-full selection:bg-[#8574B7] selection:text-white antialiased overflow-hidden">
         <LayoutShell>{children}</LayoutShell>
         <PwaRegister />
       </body>

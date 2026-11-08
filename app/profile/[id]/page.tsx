@@ -258,7 +258,7 @@ export default function PublicProfilePage() {
         <button
           type="button"
           onClick={() => router.back()}
-          className="px-4 py-2 rounded-xl bg-[#665D96] text-white text-xs font-semibold"
+          className="px-4 py-2 rounded-xl bg-[#8574B7] text-white text-xs font-semibold"
         >
           Go Back
         </button>
@@ -355,17 +355,17 @@ export default function PublicProfilePage() {
               disabled={sparkLoading}
               className={`flex h-11 w-full items-center justify-center gap-1.5 rounded-full border text-xs font-bold transition active:scale-95 cursor-pointer ${
                 isSparked
-                  ? 'border-[#665D96]/30 bg-[#E8E6F1]/60 text-[#665D96]'
+                  ? 'border-[#8574B7]/30 bg-[#E8E6F1]/60 text-[#8574B7]'
                   : 'border-[#D0CDE1] bg-white text-[#413B5E] hover:bg-[#E8E6F1]/70'
               }`}
             >
               {sparkLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin text-[#665D96]" />
+                <Loader2 className="h-4 w-4 animate-spin text-[#8574B7]" />
               ) : (
                 <>
                   <Heart
                     strokeWidth={2}
-                    className={`h-4 w-4 ${isSparked ? 'text-[#665D96] fill-[#665D96]' : 'text-[#413B5E]/55'}`}
+                    className={`h-4 w-4 ${isSparked ? 'text-[#8574B7] fill-[#8574B7]' : 'text-[#413B5E]/55'}`}
                   />
                   <span>{isSparked ? 'Sparked' : 'Spark'}</span>
                 </>
@@ -375,7 +375,7 @@ export default function PublicProfilePage() {
             <button
               type="button"
               onClick={() => router.push(`/chat/${targetUserId}`)}
-              className="flex h-11 w-full items-center justify-center gap-1.5 rounded-full bg-[#665D96] px-4 text-xs font-semibold text-white shadow-md shadow-[#665D96]/25 transition hover:bg-[#413B5E] active:scale-98 cursor-pointer"
+              className="flex h-11 w-full items-center justify-center gap-1.5 rounded-full bg-[#8574B7] px-4 text-xs font-semibold text-white shadow-md shadow-[#8574B7]/25 transition hover:bg-[#413B5E] active:scale-98 cursor-pointer"
             >
               <MessageCircle className="h-4 w-4" />
               <span>Message</span>
@@ -457,7 +457,7 @@ export default function PublicProfilePage() {
                       }}
                       className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs font-semibold text-[#413B5E] transition hover:bg-[#E8E6F1]/40"
                     >
-                      <Share2 className="h-4 w-4 text-[#665D96]" />
+                      <Share2 className="h-4 w-4 text-[#8574B7]" />
                       Share Profile
                     </button>
                     <button
@@ -509,7 +509,7 @@ export default function PublicProfilePage() {
             {isVerified && <VerifiedBadge size="md" showText />}
           </div>
           <div className="flex items-center gap-1.5 text-xs font-medium text-[#413B5E]/75">
-            <MapPin className="h-3.5 w-3.5 text-[#665D96] shrink-0" />
+            <MapPin className="h-3.5 w-3.5 text-[#8574B7] shrink-0" />
             <span className="truncate">{displayLocation}</span>
           </div>
           {(profile.location_source === 'gps_verified' || dayOneNumber) && (
@@ -532,7 +532,7 @@ export default function PublicProfilePage() {
         {/* 4. ABOUT ME (with things in common) */}
         <section className="p-4 rounded-3xl bg-white border border-[#D0CDE1] shadow-2xs space-y-2">
           <h2
-            className="text-xs font-bold uppercase tracking-wider text-[#665D96]"
+            className="text-xs font-bold uppercase tracking-wider text-[#8574B7]"
             style={{ fontFamily: 'var(--font-brand)' }}
           >
             About Me
@@ -551,7 +551,7 @@ export default function PublicProfilePage() {
           <section className="p-4 rounded-3xl bg-white border border-[#D0CDE1] shadow-2xs space-y-3">
             <div className="flex items-center justify-between">
               <h2
-                className="text-xs font-bold uppercase tracking-wider text-[#665D96]"
+                className="text-xs font-bold uppercase tracking-wider text-[#8574B7]"
                 style={{ fontFamily: 'var(--font-brand)' }}
               >
                 Highlights &amp; Stories
@@ -564,17 +564,17 @@ export default function PublicProfilePage() {
                 <div
                   key={item.tag_id}
                   onClick={() => router.push(`/chat/${targetUserId}`)}
-                  className="group cursor-pointer rounded-2xl border border-[#D0CDE1] bg-white p-3.5 transition hover:border-[#665D96]/50"
+                  className="group cursor-pointer rounded-2xl border border-[#D0CDE1] bg-white p-3.5 transition hover:border-[#8574B7]/50"
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       {(() => {
                         const Icon = interestIconOrDefault(item.label);
-                        return <Icon className="w-4 h-4 text-[#665D96] shrink-0" aria-hidden />;
+                        return <Icon className="w-4 h-4 text-[#8574B7] shrink-0" aria-hidden />;
                       })()}
                       <span className="text-xs font-bold text-[#413B5E]">{item.label}</span>
                     </div>
-                    <span className="text-[11px] font-semibold text-[#665D96]">
+                    <span className="text-[11px] font-semibold text-[#8574B7]">
                       <span className="inline-flex items-center gap-1">Reply <MessageCircle className="w-3 h-3" aria-hidden /></span>
                     </span>
                   </div>
@@ -594,14 +594,14 @@ export default function PublicProfilePage() {
           <section className="p-4 rounded-3xl bg-white border border-[#D0CDE1] shadow-2xs space-y-3">
             <div className="flex items-center justify-between gap-2">
               <h2
-                className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#665D96]"
+                className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-[#8574B7]"
                 style={{ fontFamily: 'var(--font-brand)' }}
               >
                 <Tag className="w-3.5 h-3.5" />
                 Interests &amp; Hobbies
               </h2>
               {sharedInterests.length > 0 && (
-                <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#665D96]/10 text-[#665D96] font-medium shrink-0">
+                <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#8574B7]/10 text-[#8574B7] font-medium shrink-0">
                   {sharedInterests.length} in common
                 </span>
               )}
@@ -618,7 +618,7 @@ export default function PublicProfilePage() {
                     key={tag}
                     className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium transition ${
                       isShared
-                        ? 'border-[#665D96] text-[#665D96] bg-[#665D96]/5'
+                        ? 'border-[#8574B7] text-[#8574B7] bg-[#8574B7]/5'
                         : 'border-transparent bg-white text-[#413B5E]'
                     }`}
                   >
@@ -635,7 +635,7 @@ export default function PublicProfilePage() {
         {(lookingForText || profile.reply_pace || relocationReadiness || timelineIntent) && (
           <section className="p-4 rounded-3xl bg-white border border-[#D0CDE1] shadow-2xs space-y-2">
             <h2
-              className="text-xs font-bold uppercase tracking-wider text-[#665D96]"
+              className="text-xs font-bold uppercase tracking-wider text-[#8574B7]"
               style={{ fontFamily: 'var(--font-brand)' }}
             >
               What I&apos;m Looking For
@@ -657,7 +657,7 @@ export default function PublicProfilePage() {
         {vitals.length > 0 && (
           <section className="p-4 rounded-3xl bg-white border border-[#D0CDE1] shadow-2xs space-y-3">
             <h2
-              className="text-xs font-bold uppercase tracking-wider text-[#665D96]"
+              className="text-xs font-bold uppercase tracking-wider text-[#8574B7]"
               style={{ fontFamily: 'var(--font-brand)' }}
             >
               Vitals &amp; Lifestyle
@@ -678,10 +678,10 @@ export default function PublicProfilePage() {
         {languagesList.length > 0 && (
           <section className="p-4 rounded-3xl bg-white border border-[#D0CDE1] shadow-2xs space-y-2.5">
             <h2
-              className="text-xs font-bold uppercase tracking-wider text-[#665D96] flex items-center gap-1.5"
+              className="text-xs font-bold uppercase tracking-wider text-[#8574B7] flex items-center gap-1.5"
               style={{ fontFamily: 'var(--font-brand)' }}
             >
-              <Languages className="w-4 h-4 text-[#665D96]" />
+              <Languages className="w-4 h-4 text-[#8574B7]" />
               <span>Languages Spoken</span>
             </h2>
             <div className="flex flex-wrap gap-1.5">
@@ -709,7 +709,7 @@ export default function PublicProfilePage() {
                   document.querySelector('[data-profile-hero]')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }}
                 aria-label={`Show photo ${idx + 1}`}
-                className={`relative aspect-[4/5] rounded-2xl overflow-hidden bg-white border ${idx === currentPhotoIdx ? 'border-[#665D96]' : 'border-[#D0CDE1]'}`}
+                className={`relative aspect-[4/5] rounded-2xl overflow-hidden bg-white border ${idx === currentPhotoIdx ? 'border-[#8574B7]' : 'border-[#D0CDE1]'}`}
               >
                 <CardPhoto src={supabaseImage(url, { width: 320, height: 400, quality: 70, resize: 'cover' })} alt="" placeholder={placeholders[url] ?? null} className="object-cover" />
               </button>

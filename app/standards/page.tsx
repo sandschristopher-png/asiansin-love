@@ -94,7 +94,7 @@ export default function CommunityStandardsPage() {
           <div className="pt-4 border-t border-[#B8B3D1]/20 text-center">
             <Link
               href="/settings"
-              className="inline-block px-8 py-3.5 rounded-2xl bg-[#665D96] hover:bg-[#9A93BC] text-white text-xs sm:text-sm font-medium shadow-lg shadow-[#665D96]/40 transition active:scale-[0.98]"
+              className="inline-block px-8 py-3.5 rounded-2xl bg-[#8574B7] hover:bg-[#9A93BC] text-white text-xs sm:text-sm font-medium shadow-lg shadow-[#8574B7]/40 transition active:scale-[0.98]"
             >
               Back to Settings
             </Link>

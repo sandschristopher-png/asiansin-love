@@ -25,9 +25,9 @@ export function HeightRangeSlider({
   const thumb =
     'absolute inset-x-0 top-1/2 -translate-y-1/2 w-full appearance-none bg-transparent pointer-events-none ' +
     '[&::-webkit-slider-thumb]:pointer-events-auto [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-5 [&::-webkit-slider-thumb]:h-5 ' +
-    '[&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-[#665D96] [&::-webkit-slider-thumb]:shadow ' +
+    '[&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white [&::-webkit-slider-thumb]:border-2 [&::-webkit-slider-thumb]:border-[#8574B7] [&::-webkit-slider-thumb]:shadow ' +
     '[&::-moz-range-thumb]:pointer-events-auto [&::-moz-range-thumb]:w-5 [&::-moz-range-thumb]:h-5 [&::-moz-range-thumb]:rounded-full ' +
-    '[&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-[#665D96]';
+    '[&::-moz-range-thumb]:bg-white [&::-moz-range-thumb]:border-2 [&::-moz-range-thumb]:border-[#8574B7]';
 
   return (
     <div className="space-y-2">
@@ -38,7 +38,7 @@ export function HeightRangeSlider({
       <div className="relative h-6">
         <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 h-1.5 rounded-full bg-[#E8E6F1]/60" />
         <div
-          className="absolute top-1/2 -translate-y-1/2 h-1.5 rounded-full bg-[#665D96]"
+          className="absolute top-1/2 -translate-y-1/2 h-1.5 rounded-full bg-[#8574B7]"
           style={{ left: `${pct(lo)}%`, right: `${100 - pct(hi)}%` }}
         />
         <input

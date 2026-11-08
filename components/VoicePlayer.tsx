@@ -144,7 +144,7 @@ function VoicePlayerCard({
           type="button"
           onClick={toggle}
           aria-label={playing ? `Pause ${title}` : `Play ${title}`}
-          className="w-10 h-10 shrink-0 rounded-full bg-gradient-to-br from-[#665D96] to-[#9A93BC] text-white flex items-center justify-center shadow-brand-sm hover:shadow-brand-glow transition-shadow active:scale-95"
+          className="w-10 h-10 shrink-0 rounded-full bg-gradient-to-br from-[#8574B7] to-[#9A93BC] text-white flex items-center justify-center shadow-brand-sm hover:shadow-brand-glow transition-shadow active:scale-95"
         >
           {loading ? (
             <Loader2 className="w-4 h-4 animate-spin" />
@@ -166,7 +166,7 @@ function VoicePlayerCard({
             aria-valuetext={totalMs > 0 ? `${formatSeconds(positionMs)} of ${formatSeconds(totalMs)}` : undefined}
             onClick={onWaveClick}
             onKeyDown={onWaveKey}
-            className={`w-fit max-w-full rounded-md outline-none focus-visible:ring-2 focus-visible:ring-[#665D96]/40 ${
+            className={`w-fit max-w-full rounded-md outline-none focus-visible:ring-2 focus-visible:ring-[#8574B7]/40 ${
               totalMs > 0 ? 'cursor-pointer' : 'cursor-default'
             }`}
           >

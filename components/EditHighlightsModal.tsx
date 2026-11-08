@@ -138,8 +138,8 @@ export function EditHighlightsModal({
                     type="button"
                     onClick={() => toggleHighlight(item.tag_id)}
                     className={'inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-colors ' + (isSelected
-                      ? 'bg-[#665D96] text-white shadow-xs'
-                      : 'border border-[#D0CDE1] bg-white text-[#413B5E]/85 hover:border-[#665D96]/50')}
+                      ? 'bg-[#8574B7] text-white shadow-xs'
+                      : 'border border-[#D0CDE1] bg-white text-[#413B5E]/85 hover:border-[#8574B7]/50')}
                   >
                     {isSelected && <Check className="h-3 w-3" />}
                     {item.label}
@@ -176,7 +176,7 @@ export function EditHighlightsModal({
                         maxLength={120}
                         onChange={(e) => handleStoryChange(item.tag_id, e.target.value)}
                         placeholder={`Why do you love ${item.label}? (e.g., favorite spots, habits)`}
-                        className="w-full rounded-lg border border-[#D0CDE1] bg-white px-3 py-2 text-xs text-[#413B5E] outline-none focus:border-[#665D96] transition-colors"
+                        className="w-full rounded-lg border border-[#D0CDE1] bg-white px-3 py-2 text-xs text-[#413B5E] outline-none focus:border-[#8574B7] transition-colors"
                       />
                     </div>
                   );
@@ -189,7 +189,7 @@ export function EditHighlightsModal({
             <button
               type="submit"
               disabled={isSaving}
-              className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-[#665D96] py-2.5 text-xs font-semibold text-white shadow-xs transition hover:bg-[#665D96] disabled:opacity-50"
+              className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-[#8574B7] py-2.5 text-xs font-semibold text-white shadow-xs transition hover:bg-[#8574B7] disabled:opacity-50"
             >
               {isSaving ? (
                 <>

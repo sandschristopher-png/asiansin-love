@@ -20,7 +20,7 @@ export function ProfileHighlightsEditorRow() {
         <button
           type="button"
           onClick={() => setIsModalOpen(true)}
-          className="inline-flex items-center gap-1 text-xs font-semibold text-[#665D96] hover:underline"
+          className="inline-flex items-center gap-1 text-xs font-semibold text-[#8574B7] hover:underline"
         >
           {activeHighlights.length > 0 ? `Manage (${activeHighlights.length}/3)` : 'Add Highlights'}
           <ChevronRight className="h-3.5 w-3.5" />
@@ -42,12 +42,12 @@ export function ProfileHighlightsEditorRow() {
               key={item.tag_id}
               className="rounded-2xl border border-[#D0CDE1] bg-white p-3"
             >
-              <span className="inline-flex items-center rounded-full border border-[#665D96]/30 bg-[#665D96]/10 px-2.5 py-1 text-[11px] font-semibold text-[#665D96]">
+              <span className="inline-flex items-center rounded-full border border-[#8574B7]/30 bg-[#8574B7]/10 px-2.5 py-1 text-[11px] font-semibold text-[#8574B7]">
                 {item.label}
               </span>
               {item.highlight_story && (
                 <div className="mt-2 flex items-start gap-2 rounded-xl bg-white p-2.5 text-xs text-[#413B5E]/75">
-                  <MessageCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#665D96]" />
+                  <MessageCircle className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#8574B7]" />
                   <p className="italic">{item.highlight_story}</p>
                 </div>
               )}

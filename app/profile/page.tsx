@@ -463,7 +463,7 @@ export default function MyProfilePage() {
               <img src={supabaseImage(currentImg, DETAIL_IMAGE)} alt={username} className="w-full h-full object-cover pointer-events-none" draggable={false} />
             </div>
           ) : (
-            <Link href="/profile/edit" className="flex flex-col items-center justify-center text-[#665D96] p-6 text-center">
+            <Link href="/profile/edit" className="flex flex-col items-center justify-center text-[#8574B7] p-6 text-center">
               <div className="w-14 h-14 rounded-2xl bg-[#E8E6F1]/60 flex items-center justify-center mb-2">
                 <Camera className="w-7 h-7" />
               </div>
@@ -510,7 +510,7 @@ export default function MyProfilePage() {
                 <div key={url} className="relative w-20 aspect-[3/4] shrink-0 rounded-xl overflow-hidden bg-[#E8E6F1]/60 border border-[#D0CDE1]">
                   <img src={supabaseImage(url, TILE_IMAGE)} alt={idx === 0 ? 'Main photo' : `Photo ${idx + 1}`} className="w-full h-full object-cover" />
                   {idx === 0 && (
-                    <span className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded-full bg-[#665D96]/90 text-white text-[9px] font-semibold">
+                    <span className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded-full bg-[#8574B7]/90 text-white text-[9px] font-semibold">
                       Main
                     </span>
                   )}
@@ -544,7 +544,7 @@ export default function MyProfilePage() {
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-2xl bg-white border border-[#D0CDE1] text-sm font-medium text-[#413B5E] focus:outline-none focus:border-[#665D96] focus:ring-2 focus:ring-[#665D96]/15"
+                className="w-full px-4 py-2.5 rounded-2xl bg-white border border-[#D0CDE1] text-sm font-medium text-[#413B5E] focus:outline-none focus:border-[#8574B7] focus:ring-2 focus:ring-[#8574B7]/15"
               />
             </div>
             <div className="grid grid-cols-[96px_1fr] gap-3">
@@ -554,7 +554,7 @@ export default function MyProfilePage() {
                   type="number"
                   value={age}
                   onChange={(e) => setAge(Number(e.target.value))}
-                  className="w-full px-4 py-2.5 rounded-2xl bg-white border border-[#D0CDE1] text-sm font-medium text-[#413B5E] focus:outline-none focus:border-[#665D96] focus:ring-2 focus:ring-[#665D96]/15"
+                  className="w-full px-4 py-2.5 rounded-2xl bg-white border border-[#D0CDE1] text-sm font-medium text-[#413B5E] focus:outline-none focus:border-[#8574B7] focus:ring-2 focus:ring-[#8574B7]/15"
                 />
               </div>
               <div>
@@ -567,7 +567,7 @@ export default function MyProfilePage() {
                     setLocation(e.target.value);
                     setLocationSource('self_reported');
                   }}
-                  className="w-full min-w-0 text-ellipsis overflow-hidden px-3.5 py-2.5 rounded-2xl bg-white border border-[#D0CDE1] text-[13px] font-medium text-[#413B5E] focus:outline-none focus:border-[#665D96] focus:ring-2 focus:ring-[#665D96]/15"
+                  className="w-full min-w-0 text-ellipsis overflow-hidden px-3.5 py-2.5 rounded-2xl bg-white border border-[#D0CDE1] text-[13px] font-medium text-[#413B5E] focus:outline-none focus:border-[#8574B7] focus:ring-2 focus:ring-[#8574B7]/15"
                 />
               </div>
             </div>
@@ -590,7 +590,7 @@ export default function MyProfilePage() {
                   setLocError(res.error);
                 }
               }}
-              className="w-full py-2.5 px-3 rounded-2xl bg-[#E8E6F1]/60 border border-[#665D96]/25 hover:bg-[#E8E6F1]/60 text-xs font-semibold text-[#665D96] flex items-center justify-center gap-1.5 transition"
+              className="w-full py-2.5 px-3 rounded-2xl bg-[#E8E6F1]/60 border border-[#8574B7]/25 hover:bg-[#E8E6F1]/60 text-xs font-semibold text-[#8574B7] flex items-center justify-center gap-1.5 transition"
             >
               {isLocating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Navigation className="w-3.5 h-3.5" />}
               <span>{isLocating ? 'Detecting GPS...' : 'Auto-Detect City with GPS'}</span>
@@ -612,7 +612,7 @@ export default function MyProfilePage() {
                 {verificationStatus === 'verified' && <VerifiedBadge size="md" showText />}
               </div>
               <div className="flex items-center gap-1.5 mt-0.5">
-                <MapPin className="w-3.5 h-3.5 text-[#665D96] shrink-0" />
+                <MapPin className="w-3.5 h-3.5 text-[#8574B7] shrink-0" />
                 <p className="text-xs font-medium text-[#413B5E]/75 truncate">
                   {location || 'Location not set'}
                 </p>
@@ -648,16 +648,16 @@ export default function MyProfilePage() {
         {verificationStatus !== 'verified' && verificationStatus !== 'pending' && (
           <Link
             href="/verify"
-            className="w-full p-3.5 rounded-2xl bg-[#E8E6F1]/50 border border-[#665D96]/20 flex items-center justify-between hover:bg-[#E8E6F1]/70 transition shadow-2xs"
+            className="w-full p-3.5 rounded-2xl bg-[#E8E6F1]/50 border border-[#8574B7]/20 flex items-center justify-between hover:bg-[#E8E6F1]/70 transition shadow-2xs"
           >
             <div className="flex items-center gap-2.5">
-              <ShieldAlert className="w-4 h-4 text-[#665D96] shrink-0" />
+              <ShieldAlert className="w-4 h-4 text-[#8574B7] shrink-0" />
               <div>
                 <p className="text-xs font-semibold text-[#413B5E]">Verify your profile</p>
                 <p className="text-[11px] text-[#413B5E]/75">Free for every member. Verified profiles get more replies.</p>
               </div>
             </div>
-            <span className="text-xs font-semibold text-[#665D96]">Verify &rarr;</span>
+            <span className="text-xs font-semibold text-[#8574B7]">Verify &rarr;</span>
           </Link>
         )}
 
@@ -684,8 +684,8 @@ export default function MyProfilePage() {
             </div>
           </VoicePlayer>
         ) : (
-          <div className="p-5 rounded-3xl border-2 border-dashed border-[#665D96]/30 bg-[#E8E6F1]/40 text-center space-y-2">
-            <div className="w-11 h-11 mx-auto rounded-2xl bg-[#665D96]/10 text-[#665D96] flex items-center justify-center">
+          <div className="p-5 rounded-3xl border-2 border-dashed border-[#8574B7]/30 bg-[#E8E6F1]/40 text-center space-y-2">
+            <div className="w-11 h-11 mx-auto rounded-2xl bg-[#8574B7]/10 text-[#8574B7] flex items-center justify-center">
               <Mic className="w-5 h-5" />
             </div>
             <h3 className="text-sm font-bold text-[#413B5E]">Add a 20-Second Voice Intro</h3>
@@ -695,7 +695,7 @@ export default function MyProfilePage() {
             <button
               type="button"
               onClick={() => setVoiceModalOpen(true)}
-              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-[#665D96] text-white text-xs font-semibold shadow-sm active:scale-95 transition"
+              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-[#8574B7] text-white text-xs font-semibold shadow-sm active:scale-95 transition"
             >
               <Mic className="w-3.5 h-3.5" /> Record Voice Intro
             </button>
@@ -723,7 +723,7 @@ export default function MyProfilePage() {
                   type="button"
                   onClick={handleSave}
                   disabled={saving}
-                  className="h-full flex-1 rounded-2xl bg-gradient-to-r from-[#665D96] to-[#9A93BC] text-white text-xs font-semibold shadow-sm hover:opacity-95 transition flex items-center justify-center gap-1.5 disabled:opacity-50 cursor-pointer active:scale-[0.99]"
+                  className="h-full flex-1 rounded-2xl bg-gradient-to-r from-[#8574B7] to-[#9A93BC] text-white text-xs font-semibold shadow-sm hover:opacity-95 transition flex items-center justify-center gap-1.5 disabled:opacity-50 cursor-pointer active:scale-[0.99]"
                 >
                   {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
                   <span>{saving ? 'Saving...' : 'Save Profile'}</span>
@@ -737,7 +737,7 @@ export default function MyProfilePage() {
                 onClick={() => setIsEditing(true)}
                 className="h-full w-full rounded-2xl bg-white border border-[#D0CDE1] text-xs font-semibold text-[#413B5E] hover:bg-[#E8E6F1]/40 transition flex items-center justify-center gap-2 shadow-xs cursor-pointer active:scale-[0.99]"
               >
-                <Edit3 className="w-3.5 h-3.5 text-[#665D96]" />
+                <Edit3 className="w-3.5 h-3.5 text-[#8574B7]" />
                 <span>Edit Profile Details</span>
               </button>
             )}
@@ -748,7 +748,7 @@ export default function MyProfilePage() {
         <div className="p-5 rounded-3xl bg-white border border-[#D0CDE1] shadow-xs space-y-2.5">
           <div className="flex items-center justify-between">
             <span
-              className="text-xs font-bold text-[#665D96] uppercase tracking-wider"
+              className="text-xs font-bold text-[#8574B7] uppercase tracking-wider"
               style={{ fontFamily: 'var(--font-brand)' }}
             >
               About Me
@@ -769,7 +769,7 @@ export default function MyProfilePage() {
               aria-invalid={bioRejected}
               placeholder="Share your passions, daily life, and what makes you smile..."
               className={`w-full p-3.5 rounded-2xl bg-white border text-base sm:text-sm text-[#413B5E] leading-relaxed placeholder-[#413B5E]/55 focus:outline-none focus:bg-white resize-none ${
-                bioRejected ? 'border-amber-500 ring-2 ring-amber-500/20' : 'border-[#D0CDE1] focus:border-[#665D96]'
+                bioRejected ? 'border-amber-500 ring-2 ring-amber-500/20' : 'border-[#D0CDE1] focus:border-[#8574B7]'
               }`}
             />
             {bioRejected && (
@@ -792,7 +792,7 @@ export default function MyProfilePage() {
         <div className="p-5 rounded-3xl bg-white border border-[#D0CDE1] shadow-xs space-y-3">
           <div className="flex items-center justify-between">
             <span
-              className="text-xs font-bold text-[#665D96] uppercase tracking-wider"
+              className="text-xs font-bold text-[#8574B7] uppercase tracking-wider"
               style={{ fontFamily: 'var(--font-brand)' }}
             >
               Interests &amp; Hobbies
@@ -811,7 +811,7 @@ export default function MyProfilePage() {
                     className={
                       'px-3 py-1.5 rounded-xl text-xs font-medium border transition ' +
                       (selected
-                        ? 'bg-[#665D96] border-[#665D96] text-white shadow-2xs'
+                        ? 'bg-[#8574B7] border-[#8574B7] text-white shadow-2xs'
                         : 'bg-white border-[#D0CDE1] text-[#413B5E]/85 hover:bg-[#E8E6F1]/70')
                     }
                   >
@@ -826,7 +826,7 @@ export default function MyProfilePage() {
                 interests.map((tag) => (
                   <span
                     key={tag}
-                    className="px-3 py-1 rounded-full bg-[#E8E6F1]/60 border border-[#665D96]/25 text-xs font-semibold text-[#665D96]"
+                    className="px-3 py-1 rounded-full bg-[#E8E6F1]/60 border border-[#8574B7]/25 text-xs font-semibold text-[#8574B7]"
                   >
                     {tag}
                   </span>
@@ -842,13 +842,13 @@ export default function MyProfilePage() {
         <div className="p-5 rounded-3xl bg-white border border-[#D0CDE1] shadow-xs space-y-2.5">
           <div className="flex items-center justify-between">
             <span
-              className="text-xs font-bold text-[#665D96] uppercase tracking-wider"
+              className="text-xs font-bold text-[#8574B7] uppercase tracking-wider"
               style={{ fontFamily: 'var(--font-brand)' }}
             >
               What They&apos;re Looking For
             </span>
             {!isEditing && (
-              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#E8E6F1]/60 text-[#665D96]">
+              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#E8E6F1]/60 text-[#8574B7]">
                 Goals
               </span>
             )}
@@ -860,7 +860,7 @@ export default function MyProfilePage() {
                 onChange={(e) => setLookingFor(e.target.value.slice(0, 200))}
                 rows={3}
                 placeholder="Describe the partner and relationship you are looking for..."
-                className="w-full px-4 pt-3 pb-7 rounded-2xl bg-white border border-[#D0CDE1] text-xs sm:text-sm text-[#413B5E] leading-relaxed placeholder-[#413B5E]/55 focus:outline-none focus:bg-white focus:border-[#665D96] resize-none"
+                className="w-full px-4 pt-3 pb-7 rounded-2xl bg-white border border-[#D0CDE1] text-xs sm:text-sm text-[#413B5E] leading-relaxed placeholder-[#413B5E]/55 focus:outline-none focus:bg-white focus:border-[#8574B7] resize-none"
               />
               <span className="absolute right-3 bottom-2 text-xs text-[#413B5E]/55 pointer-events-none">
                 {lookingFor.length}/200
@@ -875,7 +875,7 @@ export default function MyProfilePage() {
 
         {/* MY RHYTHM (reply pace, relocation, timeline) */}
         <div className="p-5 rounded-3xl bg-white border border-[#D0CDE1] shadow-xs space-y-2.5">
-          <h3 className="block text-xs font-bold text-[#665D96] uppercase tracking-wider leading-normal">
+          <h3 className="block text-xs font-bold text-[#8574B7] uppercase tracking-wider leading-normal">
             My Rhythm
           </h3>
           {isEditing ? (
@@ -896,7 +896,7 @@ export default function MyProfilePage() {
         {/* VITALS & LIFESTYLE */}
         <div className="p-5 rounded-3xl bg-white border border-[#D0CDE1] shadow-xs space-y-4">
           <h3
-            className="text-xs font-bold text-[#665D96] uppercase tracking-wider"
+            className="text-xs font-bold text-[#8574B7] uppercase tracking-wider"
             style={{ fontFamily: 'var(--font-brand)' }}
           >
             Vitals &amp; Lifestyle
@@ -918,7 +918,7 @@ export default function MyProfilePage() {
                         className={
                           'px-3 py-1.5 rounded-xl border text-xs font-semibold transition cursor-pointer ' +
                           (selected
-                            ? 'bg-[#665D96] text-white border-[#665D96]'
+                            ? 'bg-[#8574B7] text-white border-[#8574B7]'
                             : 'bg-white text-[#413B5E]/85 border-[#D0CDE1]')
                         }
                       >
@@ -951,7 +951,7 @@ export default function MyProfilePage() {
                   value={profession}
                   onChange={(e) => setProfession(e.target.value)}
                   placeholder="e.g. Nurse, Engineer"
-                  className="px-3 py-1.5 rounded-xl bg-white border border-[#D0CDE1] text-xs font-semibold text-[#413B5E] focus:outline-none focus:border-[#665D96]"
+                  className="px-3 py-1.5 rounded-xl bg-white border border-[#D0CDE1] text-xs font-semibold text-[#413B5E] focus:outline-none focus:border-[#8574B7]"
                 />
               ) : (
                 <span className="font-semibold text-[#413B5E]">{profession || 'Not specified'}</span>
@@ -1008,10 +1008,10 @@ export default function MyProfilePage() {
         {/* LANGUAGES SPOKEN */}
         <div className="p-5 rounded-3xl bg-white border border-[#D0CDE1] shadow-xs space-y-3">
           <h3
-            className="text-xs font-bold text-[#665D96] uppercase tracking-wider flex items-center gap-1.5"
+            className="text-xs font-bold text-[#8574B7] uppercase tracking-wider flex items-center gap-1.5"
             style={{ fontFamily: 'var(--font-brand)' }}
           >
-            <Languages className="w-4 h-4 text-[#665D96]" />
+            <Languages className="w-4 h-4 text-[#8574B7]" />
             <span>Languages Spoken</span>
           </h3>
 
@@ -1040,7 +1040,7 @@ export default function MyProfilePage() {
 
         {/* LIFESTYLE */}
         <div className="p-5 rounded-3xl bg-white border border-[#D0CDE1] shadow-xs space-y-3">
-          <h3 className="text-xs font-bold text-[#665D96] uppercase tracking-wider" style={{ fontFamily: 'var(--font-brand)' }}>
+          <h3 className="text-xs font-bold text-[#8574B7] uppercase tracking-wider" style={{ fontFamily: 'var(--font-brand)' }}>
             Lifestyle
           </h3>
           {isEditing ? (

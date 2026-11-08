@@ -63,7 +63,7 @@ export default async function CityLandingPage({ params }: { params: Promise<{ ci
 
       <header className="px-5 pt-6 flex items-center justify-between max-w-xl mx-auto">
         <BrandLogo href="/" size="sm" />
-        <Link href="/login" className="text-xs font-semibold text-[#665D96] hover:text-[#413B5E] transition-colors">
+        <Link href="/login" className="text-xs font-semibold text-[#8574B7] hover:text-[#413B5E] transition-colors">
           Sign in
         </Link>
       </header>
@@ -71,13 +71,13 @@ export default async function CityLandingPage({ params }: { params: Promise<{ ci
       <div className="max-w-xl mx-auto px-5 pb-[calc(3rem+env(safe-area-inset-bottom))]">
         {/* Hero */}
         <section className="pt-10 pb-8 text-center">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-[#D0CDE1] bg-[#E8E6F1]/50 px-3 py-1 text-[11px] font-semibold tracking-wide text-[#665D96] shadow-brand-sm">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-[#D0CDE1] bg-[#E8E6F1]/50 px-3 py-1 text-[11px] font-semibold tracking-wide text-[#8574B7] shadow-brand-sm">
             <ShieldCheck className="w-3.5 h-3.5" aria-hidden />
             {city.heroBadge}
           </span>
           <h1 className="mt-5 text-3xl sm:text-4xl font-extrabold tracking-tight leading-[1.15]">
             {city.heroHeadline}{' '}
-            <span className="bg-gradient-to-r from-[#665D96] via-[#9A93BC] to-[#B8B3D1] bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#8574B7] via-[#9A93BC] to-[#B8B3D1] bg-clip-text text-transparent">
               {city.heroHighlight}
             </span>
           </h1>
@@ -85,7 +85,7 @@ export default async function CityLandingPage({ params }: { params: Promise<{ ci
           <div className="mt-7 flex flex-col sm:flex-row gap-3 justify-center">
             <Link
               href="/signup"
-              className="h-12 px-8 rounded-full bg-gradient-to-r from-[#665D96] to-[#9A93BC] text-white text-sm font-semibold shadow-brand-glow hover:opacity-95 transition-opacity flex items-center justify-center"
+              className="h-12 px-8 rounded-full bg-gradient-to-r from-[#8574B7] to-[#9A93BC] text-white text-sm font-semibold shadow-brand-glow hover:opacity-95 transition-opacity flex items-center justify-center"
             >
               Create your free profile
             </Link>
@@ -120,7 +120,7 @@ export default async function CityLandingPage({ params }: { params: Promise<{ ci
           <p className="mt-2 text-sm leading-relaxed text-[#413B5E]/75">{city.searchThemes.description}</p>
           <ul className="mt-4 flex flex-wrap gap-2">
             {city.searchThemes.searchTags.map((tag) => (
-              <li key={tag} className="rounded-full border border-[#D0CDE1] bg-white px-3 py-1 text-xs font-medium text-[#665D96]">
+              <li key={tag} className="rounded-full border border-[#D0CDE1] bg-white px-3 py-1 text-xs font-medium text-[#8574B7]">
                 {tag}
               </li>
             ))}
@@ -137,7 +137,7 @@ export default async function CityLandingPage({ params }: { params: Promise<{ ci
               const Icon = INSIGHT_ICONS[i % INSIGHT_ICONS.length];
               return (
                 <article key={insight.title} className="flex gap-3 rounded-2xl border border-[#D0CDE1]/60 bg-white p-4 shadow-brand-sm">
-                  <span className="w-9 h-9 shrink-0 rounded-xl bg-[#E8E6F1]/70 text-[#665D96] flex items-center justify-center">
+                  <span className="w-9 h-9 shrink-0 rounded-xl bg-[#E8E6F1]/70 text-[#8574B7] flex items-center justify-center">
                     <Icon className="w-4 h-4" aria-hidden />
                   </span>
                   <div>
@@ -174,7 +174,7 @@ export default async function CityLandingPage({ params }: { params: Promise<{ ci
           <p className="mt-2 text-sm text-[#413B5E]/75">Free to join. Selfie verification is free for every member.</p>
           <Link
             href="/signup"
-            className="mt-5 inline-flex h-12 px-8 rounded-full bg-gradient-to-r from-[#665D96] to-[#9A93BC] text-white text-sm font-semibold shadow-brand-glow hover:opacity-95 transition-opacity items-center justify-center"
+            className="mt-5 inline-flex h-12 px-8 rounded-full bg-gradient-to-r from-[#8574B7] to-[#9A93BC] text-white text-sm font-semibold shadow-brand-glow hover:opacity-95 transition-opacity items-center justify-center"
           >
             Create your free profile
           </Link>

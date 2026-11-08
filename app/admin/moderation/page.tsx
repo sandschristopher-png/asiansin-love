@@ -164,7 +164,7 @@ export default function AdminModerationPage() {
               placeholder="Filter by keyword or username..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-10 pl-9 pr-4 bg-white border border-[#D0CDE1] rounded-xl text-sm placeholder:text-[#413B5E]/55 focus:outline-none focus:border-[#665D96] text-[#413B5E]"
+              className="w-full h-10 pl-9 pr-4 bg-white border border-[#D0CDE1] rounded-xl text-sm placeholder:text-[#413B5E]/55 focus:outline-none focus:border-[#8574B7] text-[#413B5E]"
             />
           </div>
         </header>
@@ -198,7 +198,7 @@ export default function AdminModerationPage() {
         {/* Status / Message List */}
         {loading ? (
           <div className="p-12 text-center text-[#413B5E]/75 flex flex-col items-center gap-3 bg-white rounded-2xl border border-[#D0CDE1]">
-            <Loader2 className="w-7 h-7 animate-spin text-[#665D96]" />
+            <Loader2 className="w-7 h-7 animate-spin text-[#8574B7]" />
             <p className="text-xs">Loading pending items...</p>
           </div>
         ) : error ? (
@@ -333,7 +333,7 @@ export default function AdminModerationPage() {
                 <select
                   value={penaltyPoints}
                   onChange={(e) => setPenaltyPoints(Number(e.target.value))}
-                  className="w-full bg-white border border-[#D0CDE1] rounded-xl px-3 py-2.5 text-xs text-[#413B5E] focus:outline-none focus:border-[#665D96]"
+                  className="w-full bg-white border border-[#D0CDE1] rounded-xl px-3 py-2.5 text-xs text-[#413B5E] focus:outline-none focus:border-[#8574B7]"
                 >
                   <option value={0}>0 pts (No deduction)</option>
                   <option value={10}>-10 pts (Minor caution)</option>
@@ -352,7 +352,7 @@ export default function AdminModerationPage() {
                   onChange={(e) => setReviewNotes(e.target.value)}
                   placeholder="Reason for releasing or confirming..."
                   rows={2}
-                  className="w-full bg-white border border-[#D0CDE1] rounded-xl p-2.5 text-xs text-[#413B5E] placeholder:text-[#413B5E]/55 focus:outline-none focus:border-[#665D96] resize-none"
+                  className="w-full bg-white border border-[#D0CDE1] rounded-xl p-2.5 text-xs text-[#413B5E] placeholder:text-[#413B5E]/55 focus:outline-none focus:border-[#8574B7] resize-none"
                 />
               </div>
             </div>

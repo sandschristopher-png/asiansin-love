@@ -64,7 +64,7 @@ export function MutualSparkModal({
         <div className="w-full flex flex-col gap-2 mt-5">
           <Link
             href={chatHref}
-            className="w-full py-3 px-4 rounded-full bg-[#665D96] hover:bg-[#413B5E] text-white text-xs font-semibold shadow-md transition flex items-center justify-center"
+            className="w-full py-3 px-4 rounded-full bg-[#8574B7] hover:bg-[#413B5E] text-white text-xs font-semibold shadow-md transition flex items-center justify-center"
           >
             Send First Message
           </Link>

@@ -53,7 +53,7 @@ export default function ReputationModal({
         {/* Header */}
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-[#E8E6F1]/60 border border-[#D0CDE1] flex items-center justify-center text-[#665D96] shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-[#E8E6F1]/60 border border-[#D0CDE1] flex items-center justify-center text-[#8574B7] shrink-0">
               <ShieldCheck className="w-5 h-5" />
             </div>
             <div>
@@ -74,7 +74,7 @@ export default function ReputationModal({
         {/* Current Standing Card */}
         <div className="p-3 rounded-xl bg-white border border-[#D0CDE1] flex items-center justify-between">
           <div className="space-y-0.5">
-            <span className="text-[9px] font-bold uppercase tracking-wider text-[#665D96]">Current Standing</span>
+            <span className="text-[9px] font-bold uppercase tracking-wider text-[#8574B7]">Current Standing</span>
             <p className="text-xs text-[#413B5E]/85 font-medium">
               {score >= 90 ? 'Unblemished: Exemplary standing' : 'Good standing: Active member'}
             </p>
@@ -117,7 +117,7 @@ export default function ReputationModal({
           <button
             type="button"
             onClick={onClose}
-            className="w-full py-2.5 rounded-full bg-[#665D96] hover:bg-[#413B5E] text-white text-xs font-semibold transition text-center cursor-pointer shadow-xs active:scale-[0.98]"
+            className="w-full py-2.5 rounded-full bg-[#8574B7] hover:bg-[#413B5E] text-white text-xs font-semibold transition text-center cursor-pointer shadow-xs active:scale-[0.98]"
           >
             Understood
           </button>

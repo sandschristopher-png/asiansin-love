@@ -46,9 +46,9 @@ export function RepScoreCard({
       {/* Direct Link to Mobile Screen */}
       <Link
         href="/profile/reputation"
-        className="self-start text-xs font-medium text-[#665D96] hover:text-[#413B5E] transition flex items-center gap-1.5 pt-0.5 cursor-pointer select-none"
+        className="self-start text-xs font-medium text-[#8574B7] hover:text-[#413B5E] transition flex items-center gap-1.5 pt-0.5 cursor-pointer select-none"
       >
-        <HelpCircle className="w-3.5 h-3.5 text-[#665D96]" />
+        <HelpCircle className="w-3.5 h-3.5 text-[#8574B7]" />
         <span>What&apos;s this?</span>
       </Link>
     </div>

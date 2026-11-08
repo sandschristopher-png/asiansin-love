@@ -51,11 +51,11 @@ const features = [
 
 export default function FeaturesPage() {
   return (
-    <div className="min-h-dvh bg-white font-sans text-[#413B5E] selection:bg-[#665D96] selection:text-white pb-16 relative">
+    <div className="min-h-dvh bg-white font-sans text-[#413B5E] selection:bg-[#8574B7] selection:text-white pb-16 relative">
 
       
       {/* Soft Ambient Plum Glow */}
-      <div className="pointer-events-none absolute -top-32 left-1/2 -translate-x-1/2 h-72 w-[600px] bg-gradient-to-b from-[#665D96]/20 to-transparent blur-3xl opacity-60" />
+      <div className="pointer-events-none absolute -top-32 left-1/2 -translate-x-1/2 h-72 w-[600px] bg-gradient-to-b from-[#8574B7]/20 to-transparent blur-3xl opacity-60" />
 
       {/* Header */}
       <header className="sticky top-0 z-40 border-b border-[#B8B3D1]/25 bg-[#FFFFFF]/90 px-4 sm:px-6 py-3.5 backdrop-blur-md flex items-center justify-between">
@@ -71,7 +71,7 @@ export default function FeaturesPage() {
           </Link>
           <Link
             href="/signup"
-            className="rounded-xl bg-[#665D96] hover:bg-[#9A93BC] px-3.5 py-1.5 text-xs font-medium text-white transition shadow-md shadow-[#665D96]/40 active:scale-95"
+            className="rounded-xl bg-[#8574B7] hover:bg-[#9A93BC] px-3.5 py-1.5 text-xs font-medium text-white transition shadow-md shadow-[#8574B7]/40 active:scale-95"
           >
             Join Free
           </Link>
@@ -132,7 +132,7 @@ export default function FeaturesPage() {
           <div className="flex items-center gap-2 shrink-0 w-full sm:w-auto">
             <Link
               href="/signup"
-              className="w-full sm:w-auto rounded-2xl bg-[#665D96] hover:bg-[#9A93BC] px-6 py-3 text-xs sm:text-sm font-medium text-white transition shadow-lg shadow-[#665D96]/40 flex items-center justify-center gap-2 active:scale-95"
+              className="w-full sm:w-auto rounded-2xl bg-[#8574B7] hover:bg-[#9A93BC] px-6 py-3 text-xs sm:text-sm font-medium text-white transition shadow-lg shadow-[#8574B7]/40 flex items-center justify-center gap-2 active:scale-95"
             >
               <span>Get Started</span>
               <ArrowRight className="h-4 w-4" />

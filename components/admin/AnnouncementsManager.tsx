@@ -104,7 +104,7 @@ export function AnnouncementsManager() {
             maxLength={BROADCAST_TITLE_MAX}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="e.g. Voice intros are here"
-            className="w-full h-11 px-3 border border-[#D0CDE1] focus:border-[#665D96] rounded-xl text-[#413B5E] font-semibold outline-none"
+            className="w-full h-11 px-3 border border-[#D0CDE1] focus:border-[#8574B7] rounded-xl text-[#413B5E] font-semibold outline-none"
           />
         </div>
 
@@ -119,7 +119,7 @@ export function AnnouncementsManager() {
                 aria-checked={tag === t}
                 onClick={() => setTag(t)}
                 className={`h-8 px-3 rounded-full border text-xs font-semibold transition-colors ${
-                  tag === t ? 'bg-[#413B5E] text-white border-[#413B5E]' : 'bg-white text-[#413B5E] border-[#D0CDE1] hover:border-[#665D96]/40'
+                  tag === t ? 'bg-[#413B5E] text-white border-[#413B5E]' : 'bg-white text-[#413B5E] border-[#D0CDE1] hover:border-[#8574B7]/40'
                 }`}
               >
                 {t}
@@ -139,7 +139,7 @@ export function AnnouncementsManager() {
             onChange={(e) => setBody(e.target.value)}
             rows={6}
             placeholder={'Write the announcement. Blank lines start new paragraphs; https:// links become tappable.'}
-            className="w-full px-3 py-2.5 border border-[#D0CDE1] focus:border-[#665D96] rounded-xl text-sm leading-relaxed text-[#413B5E] outline-none resize-y"
+            className="w-full px-3 py-2.5 border border-[#D0CDE1] focus:border-[#8574B7] rounded-xl text-sm leading-relaxed text-[#413B5E] outline-none resize-y"
           />
           <p className="mt-1 text-right text-[11px] text-[#413B5E]/55 tabular-nums">
             {body.length}/{BROADCAST_BODY_MAX}
@@ -148,7 +148,7 @@ export function AnnouncementsManager() {
 
         <div className="flex items-center justify-between rounded-xl border border-[#D0CDE1] px-3 h-12">
           <span className="text-sm font-semibold text-[#413B5E] flex items-center gap-1.5">
-            <Pin className="w-4 h-4 text-[#665D96]" aria-hidden />
+            <Pin className="w-4 h-4 text-[#8574B7]" aria-hidden />
             Pin to top
           </span>
           <button
@@ -157,7 +157,7 @@ export function AnnouncementsManager() {
             aria-checked={pinned}
             aria-label="Pin to top"
             onClick={() => setPinned((v) => !v)}
-            className={`w-11 h-6 rounded-full relative transition-colors ${pinned ? 'bg-[#665D96]' : 'bg-[#E8E6F1]'}`}
+            className={`w-11 h-6 rounded-full relative transition-colors ${pinned ? 'bg-[#8574B7]' : 'bg-[#E8E6F1]'}`}
           >
             <span className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-all ${pinned ? 'left-6' : 'left-1'}`} />
           </button>
@@ -166,7 +166,7 @@ export function AnnouncementsManager() {
         <button
           type="submit"
           disabled={!canSend}
-          className="w-full bg-gradient-to-r from-[#665D96] to-[#9A93BC] text-white font-bold h-11 px-6 rounded-full shadow-[0_2px_10px_rgba(102,93,150,0.25)] hover:opacity-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-gradient-to-r from-[#8574B7] to-[#9A93BC] text-white font-bold h-11 px-6 rounded-full shadow-[0_2px_10px_rgba(102,93,150,0.25)] hover:opacity-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Send className="w-4 h-4" aria-hidden />
           Broadcast to All Members
@@ -184,7 +184,7 @@ export function AnnouncementsManager() {
             <li key={a.id} className="px-3 py-3">
               <div className="flex items-center gap-2 text-[11px]">
                 <span className="text-[#413B5E]/75 tabular-nums">{formatDate(a.published_at)}</span>
-                <span className="bg-[#665D96]/10 text-[#665D96] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider text-[10px]">{a.tag}</span>
+                <span className="bg-[#8574B7]/10 text-[#8574B7] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider text-[10px]">{a.tag}</span>
                 {a.is_pinned && (
                   <span className="inline-flex items-center gap-0.5 font-semibold text-[#413B5E]">
                     <Pin className="w-3 h-3" aria-hidden />

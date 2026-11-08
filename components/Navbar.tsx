@@ -201,7 +201,7 @@ export function Navbar() {
             {pathname === '/profile' && (
               <Link
                 href="/settings"
-                className="w-8 h-8 rounded-full flex items-center justify-center text-[#665D96] hover:bg-[#E8E6F1]/70 transition-colors"
+                className="w-8 h-8 rounded-full flex items-center justify-center text-[#8574B7] hover:bg-[#E8E6F1]/70 transition-colors"
                 aria-label="Settings"
                 title="Settings"
               >

@@ -54,7 +54,7 @@ export default function ReputationScreen() {
         <div className="rounded-2xl bg-white border border-[#D0CDE1] p-4 shadow-xs space-y-3">
           <div className="flex items-center justify-between">
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-wider text-[#665D96]">Your Standing</span>
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#8574B7]">Your Standing</span>
               <p className="text-xs font-semibold text-[#413B5E]">
                 {score >= 90 ? 'Unblemished Community Trust' : 'Active Member Standing'}
               </p>
@@ -73,7 +73,7 @@ export default function ReputationScreen() {
         {/* Compact Conduct Summary Card */}
         <div className="rounded-2xl bg-white border border-[#D0CDE1] p-4 shadow-xs space-y-3">
           <div className="flex items-center gap-2">
-            <div className="w-7 h-7 rounded-lg bg-[#E8E6F1]/60 text-[#665D96] flex items-center justify-center shrink-0">
+            <div className="w-7 h-7 rounded-lg bg-[#E8E6F1]/60 text-[#8574B7] flex items-center justify-center shrink-0">
               <ShieldCheck className="w-4 h-4" />
             </div>
             <h2 className="text-xs font-bold text-[#413B5E]">How Community Trust Works</h2>
@@ -94,7 +94,7 @@ export default function ReputationScreen() {
           <div className="pt-1">
             <Link
               href="/terms"
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#665D96] hover:text-[#413B5E] transition group"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#8574B7] hover:text-[#413B5E] transition group"
             >
               <span className="group-hover:underline">Read full Safety Guidelines & Terms of Use</span>
               <ExternalLink className="w-3.5 h-3.5 shrink-0" />
