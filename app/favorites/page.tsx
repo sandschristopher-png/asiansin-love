@@ -71,8 +71,12 @@ function getAge(p: ProfileCardData): number | null {
 }
 
 function getPhoto(p: ProfileCardData): string {
-  if (p.avatar_url && p.avatar_url.trim()) return p.avatar_url;
-  if (Array.isArray(p.photos) && p.photos.length > 0 && p.photos[0]) return p.photos[0];
+  const clean = (u?: string | null) => (u && u.trim() !== '' && !u.endsWith('.svg') ? u : '');
+  if (clean(p.avatar_url)) return p.avatar_url as string;
+  if (Array.isArray(p.photos)) {
+    const hit = p.photos.find((x) => clean(x));
+    if (hit) return hit;
+  }
   return '';
 }
 
@@ -170,19 +174,9 @@ function getLocationLabel(p: ProfileCardData): string {
 
 let memorySparksCache: any = null;
 function getInitialSparksState(): any {
+  // Memory cache only: survives SPA navigation, safe during hydration.
+  // sessionStorage restore happens in the mount useEffect below.
   if (memorySparksCache) return JSON.parse(JSON.stringify(memorySparksCache));
-  if (typeof window !== 'undefined') {
-    try {
-      const raw = sessionStorage.getItem(CACHE_KEY);
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (parsed && Array.isArray(parsed.sparked)) {
-          memorySparksCache = parsed;
-          return JSON.parse(JSON.stringify(parsed));
-        }
-      }
-    } catch {}
-  }
   return null;
 }
 
@@ -329,6 +323,10 @@ export default function SparksPage() {
           r.status === 'fulfilled' ? r.value : null;
 
         const outSparkRows: any[] = (unwrap(outSparksRes)?.data as any[]) ?? [];
+for (const [label, res] of [['outgoing', outSparksRes], ['incoming', inSparksRes]] as const) {
+  if (res.status === 'rejected') console.warn(`Sparks load failed (${label}):`, res.reason);
+  else if (res.value.error) console.warn(`Sparks query error (${label}):`, res.value.error.message, res.value.error.code);
+}
         const inSparkRows: any[] = (unwrap(inSparksRes)?.data as any[]) ?? [];
 
         const outIds: string[] = Array.from(new Set<string>(
