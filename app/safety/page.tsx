@@ -225,10 +225,6 @@ export default function SafetyBlueprintPage() {
       <main className="max-w-4xl mx-auto px-6 py-12 md:py-16 space-y-14">
         {/* Title Area */}
         <div className="space-y-4 text-center md:text-left">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#8574B7]/10 text-xs font-bold text-[#413B5E]">
-            <ShieldCheck className="w-4 h-4 text-[#8574B7]" />
-            Safety Blueprint
-          </div>
           <h1 className="font-brand text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-[#413B5E] leading-tight">
             International Dating &amp; Safety Protocol
           </h1>
