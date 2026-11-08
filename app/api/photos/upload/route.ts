@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import exifr from 'exifr';
 import { createClient as createServerClient } from '@/lib/supabase/server';
 import { createClient } from '@supabase/supabase-js';
 import crypto from 'crypto';
@@ -117,6 +118,22 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
+    // AI-photo safeguard (20261108): classify upload origin before storing.
+    let aiStatus: 'camera' | 'suspect' | 'ai' = 'suspect';
+    try {
+      const latin = buffer.toString('latin1');
+      if (latin.includes('urn:c2pa') || latin.includes('c2pa')) {
+        aiStatus = 'ai'; // provenance manifest embedded by generator
+      } else {
+        const meta = await exifr.parse(buffer);
+        if (meta && (meta.Make || meta.make || meta.Model || meta.model)) {
+          aiStatus = 'camera';
+        }
+      }
+    } catch {
+      // Metadata unreadable: leave as 'suspect'. Upload never fails here.
+    }
+
     const filePath = `${userId}/${isPrimaryAvatar ? 'primary' : 'photo'}-${crypto.createHash('sha256').update(buffer).digest('hex').slice(0, 16)}.${safeExt}`;
 
     // 5. Upload under authenticated caller context (satisfies RLS)
@@ -148,7 +165,7 @@ export async function POST(req: Request) {
     // 7. Update profile row and sync photos array
     const { data: currentProfile } = await authenticatedClient
       .from('profiles')
-      .select('photos, avatar_url')
+      .select('photos, avatar_url, photo_ai_status')
       .eq('id', userId)
       .maybeSingle();
 
@@ -176,6 +193,16 @@ export async function POST(req: Request) {
       photos: updatedPhotos,
     };
 
+    // Sync per-photo AI classification map (pruned to surviving photos).
+    const existingAi: Record<string, string> =
+      currentProfile?.photo_ai_status && typeof currentProfile.photo_ai_status === 'object'
+        ? currentProfile.photo_ai_status
+        : {};
+    const nextAi: Record<string, string> = {};
+    for (const url of updatedPhotos) if (existingAi[url]) nextAi[url] = existingAi[url];
+    nextAi[photoUrl] = aiStatus;
+    updatePayload.photo_ai_status = nextAi;
+
     if (isPrimaryAvatar) {
       updatePayload.avatar_url = photoUrl;
       updatePayload.avatar_status = 'pending_review';
@@ -187,7 +214,7 @@ export async function POST(req: Request) {
       .update(updatePayload)
       .eq('id', userId);
     // photo_review_status arrives with 20261112_admin_console.sql; retry without it until then.
-    if (profileUpdateError && /photo_review_status/.test(profileUpdateError.message)) {
+    if (profileUpdateError && /photo_review_status|photo_ai_status/.test(profileUpdateError.message)) {
       delete updatePayload.photo_review_status;
       ({ error: profileUpdateError } = await serviceClient.from('profiles').update(updatePayload).eq('id', userId));
     }

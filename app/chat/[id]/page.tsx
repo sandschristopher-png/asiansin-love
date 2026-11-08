@@ -43,6 +43,7 @@ import { validateBio } from '@/lib/moderation/textFilter';
 import { isRestricted } from '@/lib/reputation';
 import { RepBadge, RhythmPill } from '@/components/profile/RhythmBadges';
 import { hapticError, hapticSuccess, hapticTap } from '@/lib/utils/haptics';
+import { BackButton } from '@/components/BackButton';
 
 /** Loaded on first open (keeps the upgrade sheet out of the page bundle). */
 const UpgradeModal = dynamic(() => import('@/components/UpgradeModal'), { ssr: false });
@@ -899,13 +900,7 @@ export default function ChatConversationPage() {
       {/* Sticky Header */}
       <header className="flex items-center justify-between px-3.5 py-2.5 bg-white/95 backdrop-blur-md border-b border-[#D0CDE1] shrink-0 z-20">
         <div className="flex items-center gap-2.5 min-w-0">
-          <Link
-            href="/messages"
-            className="w-8 h-8 rounded-full flex items-center justify-center text-[#413B5E]/85 hover:text-[#8574B7] hover:bg-[#E8E6F1]/70 transition shrink-0"
-            aria-label="Back to messages"
-          >
-            <ArrowLeft className="w-4 h-4" />
-          </Link>
+          <BackButton fallback="/messages" />
 
           {isInitialLoading ? (
             <div className="flex items-center gap-2.5 animate-pulse">

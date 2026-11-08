@@ -40,6 +40,7 @@ import { interestIcon, interestIconOrDefault } from '@/lib/interestIcons';
 import { languageLabel, readLanguages } from '@/lib/constants/languages';
 import { formatHeight, lifestyleOption, readHeightCm, readLifestyle } from '@/lib/lifestyle';
 import { LifestyleBadges } from '@/components/profile/LifestyleFields';
+import { BackButton } from '@/components/BackButton';
 
 /** Loaded on first open (keeps the report sheet out of the page bundle). */
 const ReportModal = dynamic(() => import('@/components/ReportModal').then((m) => m.ReportModal), { ssr: false });
@@ -416,14 +417,7 @@ export default function PublicProfilePage() {
 
           {/* Frosted Top Navigation (Back & More Menu) */}
           <div className="absolute top-0 inset-x-0 z-20 flex items-center justify-between p-3.5 pointer-events-none">
-            <button
-              type="button"
-              onClick={() => router.back()}
-              aria-label="Go back"
-              className="pointer-events-auto flex h-10 w-10 items-center justify-center rounded-full bg-black/45 text-white transition hover:bg-black/60 active:scale-95 shadow-xs cursor-pointer"
-            >
-              <ArrowLeft className="h-5 w-5" />
-            </button>
+            <BackButton variant="dark" className="pointer-events-auto" />
 
             <div className="relative pointer-events-auto">
               <button

@@ -7,6 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft, MapPin, Save, UserCheck, ShieldCheck, Camera, Loader2, Plus, X } from 'lucide-react';
+import { BackButton } from '@/components/BackButton';
 import { supabase } from '@/lib/supabase/client';
 import { resolveCountry } from '@/lib/countries';
 import { EMPTY_RHYTHM, RhythmSelectors, rhythmFromRow, type RhythmValues } from '@/components/profile/RhythmBadges';
@@ -403,14 +404,7 @@ export default function EditProfilePage() {
         {/* Header */}
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
-            <button
-              type="button"
-              onClick={() => router.back()}
-              className="h-10 w-10 rounded-2xl bg-[#FFFFFF] border border-[#B8B3D1]/35 text-[#413B5E] hover:text-[#413B5E] flex items-center justify-center text-sm active:scale-90 transition"
-              aria-label="Back"
-            >
-              <ArrowLeft className="w-5 h-5" />
-            </button>
+            <BackButton />
             <div>
               <h1 className="text-xl font-medium text-[#413B5E] ">Edit Profile</h1>
               <p className="text-xs text-[#413B5E]/55 mt-0.5">Manage your public information and identity handle</p>
