@@ -230,7 +230,7 @@ export async function POST(req: Request) {
 
         const uniqueRecipients = new Set((messagesToday || []).map((m: any) => m.receiver_id));
 
-        if (!uniqueRecipients.has(receiverId) && uniqueRecipients.size >= 5) {
+        if (!isPlus && !uniqueRecipients.has(receiverId) && uniqueRecipients.size >= 5) {
           return NextResponse.json(
             {
               error: 'Daily limit reached (5/5). Upgrade to Plus for unlimited introductions.',
