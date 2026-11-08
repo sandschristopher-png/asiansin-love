@@ -7,9 +7,9 @@ if (-not $html -or $html.Trim() -notmatch '<!DOCTYPE html>') {
   Write-Host "ABORTED: clipboard doesn't look like the offline page HTML - copy it from the canvas first" -ForegroundColor Yellow
 } else {
   [System.IO.File]::WriteAllText((Join-Path $PWD "public\offline.html"), ($html -replace "`r`n", "`n"), $utf8NoBom)
-  Write-Host "WROTE: public\offline.html ($(($html -replace "`r`n","`n")).Length chars)" -ForegroundColor Green
+  Write-Host "WROTE: public\offline.html" -ForegroundColor Green
   git add public/offline.html
-  git commit -m "feat(pwa): redesign offline page on brand - white canvas, soft blobs, spark motif, auto-reconnect"
+  git commit -m "feat(pwa): redesign offline page on brand - hero headline, feature cards, pill button, auto-reconnect"
   git push
   Write-Host "PUSHED - live in ~1-2 min" -ForegroundColor Green
 }
