@@ -2,24 +2,16 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { ShieldCheck, ChevronRight, BadgeCheck, Mic, HeartHandshake } from 'lucide-react';
+import { ChevronRight } from 'lucide-react';
 import { BrandLogo } from '@/components/BrandLogo';
-import { AmbientAurora } from '@/components/ui/AmbientAurora';
-import { InstallAppCard } from '@/components/InstallAppCard';
+import Hero from '@/components/Hero';
 
 const BTN_PRIMARY =
-  'inline-flex items-center justify-center h-11 sm:h-12 px-6 sm:px-8 rounded-full bg-[#9A93BC] hover:bg-[#8881AA] text-white text-sm font-bold tracking-tight transition-all active:scale-95 shadow-[0_4px_16px_rgba(154,147,188,0.25)]';
+  'inline-flex items-center justify-center h-11 sm:h-12 px-6 sm:px-8 rounded-full bg-[#8574B7] hover:bg-[#534377] text-white text-sm font-bold tracking-tight transition-all active:scale-95 shadow-[0_4px_16px_rgba(154,147,188,0.25)]';
 const BTN_SECONDARY =
   'inline-flex items-center justify-center h-11 sm:h-12 px-6 sm:px-8 rounded-full border border-[#D0CDE1] bg-white text-[#413B5E] text-sm font-semibold hover:bg-[#E8E6F1]/50 transition-all active:scale-95';
 const SECTION = 'py-10 sm:py-16 md:py-24';
 const CONTAINER = 'max-w-6xl mx-auto px-4 sm:px-6 lg:px-12';
-
-const TRUST_BADGES = [
-  { Icon: BadgeCheck, label: 'Photo Verified' },
-  { Icon: Mic, label: 'Audio Voice Intros' },
-  { Icon: ShieldCheck, label: '100% Reputation' },
-  { Icon: HeartHandshake, label: 'Shared Lifestyle Habits' },
-];
 
 const STEPS = [
   { step: '01', title: 'Share what you want', desc: 'Set your intentions and communication rhythm up front.' },
@@ -70,65 +62,7 @@ export function HeroLanding() {
         </div>
       </header>
 
-      {/* Hero Fold */}
-      <section className="relative w-full overflow-hidden bg-white">
-        <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-          <AmbientAurora />
-        </div>
-        <div className={`relative z-10 ${CONTAINER} pt-8 pb-12 sm:pt-12 sm:pb-20 md:pt-20 md:pb-28 grid grid-cols-1 lg:grid-cols-12 items-center gap-10 sm:gap-12 lg:gap-16`}>
-          <div className="lg:col-span-6 text-center lg:text-left">
-            <h1 className="font-brand font-extrabold text-3xl sm:text-4xl md:text-5xl lg:text-[54px] text-[#413B5E] tracking-tight leading-[1.12]">
-              Real connection, without the guesswork.
-            </h1>
-            <p className="mt-4 sm:mt-5 text-sm sm:text-base md:text-lg text-[#655E72] leading-relaxed max-w-lg mx-auto lg:mx-0">
-              Photo-verified members, clear intentions up front, and an authentic community built for real relationships.
-            </p>
-
-            <div className="mt-6 sm:mt-8 flex flex-col items-center lg:items-start">
-              <Link href="/signup" className={`${BTN_PRIMARY} w-full sm:w-auto`}>
-                <span>Join for Free</span>
-                <ChevronRight className="ml-1 w-4 h-4" />
-              </Link>
-              <p className="mt-3 text-xs text-[#8E86A0]">
-                Free to join. By joining you agree to our Terms &amp; Privacy Policy.
-              </p>
-              <InstallAppCard variant="hero" />
-            </div>
-
-            <ul className="mt-6 sm:mt-8 grid grid-cols-2 gap-2.5 sm:gap-3 max-w-md mx-auto lg:mx-0">
-              {TRUST_BADGES.map(({ Icon, label }) => (
-                <li key={label} className="flex items-center gap-2.5 rounded-2xl bg-white border border-[#D0CDE1] px-3 sm:px-3.5 py-2 sm:py-2.5 text-left shadow-xs">
-                  <span className="w-6 h-6 sm:w-7 sm:h-7 shrink-0 rounded-full bg-[#E8E6F1] text-[#9A93BC] flex items-center justify-center">
-                    <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4" aria-hidden />
-                  </span>
-                  <span className="text-[11px] sm:text-xs font-bold text-[#413B5E] leading-tight">{label}</span>
-                </li>
-              ))}
-            </ul>
-          </div>
-
-          <div className="lg:col-span-6 flex justify-center">
-            <div className="relative w-full max-w-[300px] sm:max-w-[380px] lg:max-w-[420px]">
-              {/* Diffused Lavender Ambient Halo */}
-              <div
-                aria-hidden="true"
-                className="pointer-events-none absolute -inset-4 sm:-inset-6 -z-10 rounded-[36px] bg-gradient-to-tr from-[#E8E6F1] via-[#D0CDE1]/60 to-[#E8E6F1]/30 blur-2xl opacity-90"
-              />
-              {/* Bottom-Anchored Pure White Canvas Card */}
-              <div className="relative flex h-[260px] sm:h-[340px] md:h-[400px] w-full items-end justify-center overflow-hidden rounded-3xl border border-[#D0CDE1] bg-white px-4 sm:px-6 pt-4 sm:pt-6 shadow-[0_12px_32px_-8px_rgba(154,147,188,0.2)]">
-                <Image
-                  src="/hero-woman.webp"
-                  alt="Illustrated member smiling"
-                  fill
-                  priority
-                  sizes="(max-width: 767px) 300px, 420px"
-                  className="object-contain object-bottom select-none pointer-events-none"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
+      <Hero />
 
       {/* How Connections Happen */}
       <section className={`${SECTION} bg-[#E8E6F1]/30 border-y border-[#D0CDE1]/50`}>
