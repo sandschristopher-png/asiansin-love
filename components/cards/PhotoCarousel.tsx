@@ -2,6 +2,7 @@
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import { CardPhoto, CARD_PHOTO_SIZES } from '@/components/CardPhoto';
 import { CARD_IMAGE, supabaseImage, type EdgeImageOptions } from '@/lib/images/supabaseImage';
 
@@ -13,12 +14,13 @@ import { CARD_IMAGE, supabaseImage, type EdgeImageOptions } from '@/lib/images/s
  * (translate3d + will-change: transform). Only the first slide of a `priority` carousel loads
  * eagerly; the rest are lazy. Photos come from the Supabase edge renderer (resized WebP).
  *
- * Taps: on a mouse / trackpad (pointer: fine) the left 30% shows the previous photo and the
- * rest shows the next one. On touch, taps fall through to `href` / the parent (open profile)
- * unless `tapNavigation="always"` (profile hero). A drag never counts as a tap.
+ * Taps: on cards a tap anywhere on the photo goes to `href` / the parent (open profile), on
+ * touch and mouse alike. Photos change by swiping, or with the arrow buttons on mouse / trackpad
+ * (pointer: fine). `tapNavigation="always"` (profile hero, where there is nothing to open): tap
+ * the left 30% for the previous photo, the rest for the next. A drag never counts as a tap.
  *
- * Story bars: hairline segments at top-2.5 inset-x-3, completed / active / upcoming shown by
- * opacity with a 200 ms fade (no fade under prefers-reduced-motion).
+ * Dots: centred at top-2.5; the active dot is solid white and wider, with a 200 ms transition
+ * (none under prefers-reduced-motion).
  */
 export function PhotoCarousel({
   photos,
@@ -29,7 +31,7 @@ export function PhotoCarousel({
   sizes = CARD_PHOTO_SIZES,
   edge = CARD_IMAGE,
   imgClassName = 'object-cover',
-  tapNavigation = 'desktop',
+  tapNavigation = 'arrows',
   index,
   onIndexChange,
   className = '',
@@ -44,7 +46,7 @@ export function PhotoCarousel({
   sizes?: string;
   edge?: EdgeImageOptions;
   imgClassName?: string;
-  tapNavigation?: 'desktop' | 'always';
+  tapNavigation?: 'arrows' | 'always';
   /** Controlled index (e.g. thumbnail grid below the profile hero). */
   index?: number;
   onIndexChange?: (i: number) => void;
@@ -101,15 +103,19 @@ export function PhotoCarousel({
       e.stopPropagation();
       return;
     }
-    if (!multiple) return;
-    const fine = window.matchMedia('(pointer: fine)').matches;
-    if (tapNavigation === 'desktop' && !fine) return; // touch tap: let it open the profile
+    if (!multiple || tapNavigation === 'arrows') return; // card tap: let it open the profile
     e.preventDefault();
     e.stopPropagation();
     const rect = e.currentTarget.getBoundingClientRect();
     const goPrev = e.clientX - rect.left < rect.width * 0.3;
     const next = goPrev ? Math.max(0, current - 1) : current + 1 >= count ? 0 : current + 1;
     scrollToIndex(next);
+  };
+
+  const stepPhoto = (e: React.MouseEvent, delta: number) => {
+    e.preventDefault();
+    e.stopPropagation(); // the arrows sit inside a card that opens the profile
+    scrollToIndex((current + delta + count) % count);
   };
 
   const slide = (url: string, i: number) => {
@@ -165,16 +171,37 @@ export function PhotoCarousel({
       </div>
 
       {multiple && (
-        <div aria-hidden className="absolute top-2.5 inset-x-3 z-20 flex gap-1.5 pointer-events-none">
+        <div aria-hidden className="absolute top-2.5 inset-x-0 z-20 flex items-center justify-center gap-1 pointer-events-none">
           {photos.map((_, i) => (
             <span
               key={i}
-              className={`h-[2px] flex-1 rounded-full bg-white shadow-[0_0_2px_rgba(0,0,0,0.35)] transition-opacity duration-200 motion-reduce:transition-none ${
-                i === current ? 'opacity-100' : i < current ? 'opacity-70' : 'opacity-35'
+              className={`h-1.5 rounded-full shadow-[0_0_2px_rgba(0,0,0,0.45)] transition-all duration-200 motion-reduce:transition-none ${
+                i === current ? 'w-3 bg-white' : 'w-1.5 bg-white/50'
               }`}
             />
           ))}
         </div>
+      )}
+
+      {multiple && tapNavigation === 'arrows' && (
+        <>
+          <button
+            type="button"
+            aria-label="Previous photo"
+            onClick={(e) => stepPhoto(e, -1)}
+            className="hidden [@media(pointer:fine)]:flex absolute left-1.5 top-[38%] -translate-y-1/2 z-20 w-7 h-7 items-center justify-center rounded-full bg-black/40 hover:bg-black/60 text-white transition-colors cursor-pointer"
+          >
+            <ChevronLeft className="w-4 h-4" aria-hidden />
+          </button>
+          <button
+            type="button"
+            aria-label="Next photo"
+            onClick={(e) => stepPhoto(e, 1)}
+            className="hidden [@media(pointer:fine)]:flex absolute right-1.5 top-[38%] -translate-y-1/2 z-20 w-7 h-7 items-center justify-center rounded-full bg-black/40 hover:bg-black/60 text-white transition-colors cursor-pointer"
+          >
+            <ChevronRight className="w-4 h-4" aria-hidden />
+          </button>
+        </>
       )}
     </div>
   );

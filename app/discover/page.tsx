@@ -216,7 +216,7 @@ function DiscoverCardPhotoCarousel({
 
   return (
     <div className="relative block h-full w-full overflow-hidden bg-white select-none">
-      {/* Native scroll-snap swiping; tap opens the profile (desktop: left / right side changes photo). */}
+      {/* Native scroll-snap swiping; tap opens the profile (desktop: arrow buttons change photo). */}
       <PhotoCarousel
         photos={displayPhotos}
         alt={name}
@@ -231,7 +231,7 @@ function DiscoverCardPhotoCarousel({
           {displayPhotos.length}
         </span>
       )}
-      {/* Below the story bars when there are several photos. */}
+      {/* Below the photo dots when there are several photos. */}
       <div className={`absolute ${hasMultiple ? 'top-5' : 'top-2.5'} left-2.5 flex items-center gap-1.5 z-20 pointer-events-none`}>
         <ReputationBadge score={repScore} variant="frosted" size="xs" />
         <NewMemberPill createdAt={createdAt} />

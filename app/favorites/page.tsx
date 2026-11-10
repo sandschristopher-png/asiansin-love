@@ -514,7 +514,7 @@ for (const [label, res] of [['outgoing', outSparksRes], ['incoming', inSparksRes
                   className="group relative isolate aspect-[3/4] rounded-2xl overflow-hidden bg-white border border-[#D0CDE1]/60 shadow-xs hover:shadow-md cursor-pointer active:scale-[0.98] transition-all duration-300"
                 >
                   {gallery.length > 0 ? (
-                    // Scroll-snap carousel (edge-resized WebP); a touch tap falls through to the card's onClick.
+                    // Scroll-snap carousel (edge-resized WebP); a tap falls through to the card's onClick.
                     <PhotoCarousel photos={gallery} alt={publicName} priority={idx < 2} className="absolute inset-0" />
                   ) : (
                     <SparkCardPhoto src={photo} name={publicName} className={`object-cover ${shouldBlur ? 'blur-md scale-110' : ''}`} />

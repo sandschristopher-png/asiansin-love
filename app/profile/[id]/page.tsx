@@ -400,7 +400,7 @@ export default function PublicProfilePage() {
         
         {/* 1. HERO PHOTO CARD (4:5 Aspect Ratio + Overlaid Controls + Bottom Scrim) */}
         <div data-profile-hero className="relative aspect-[4/5] w-full rounded-3xl overflow-hidden bg-white shadow-xs select-none">
-          {/* Scroll-snap swiping on touch; tap left 30% / right 70% for previous / next. Story bars
+          {/* Scroll-snap swiping on touch; tap left 30% / right 70% for previous / next. Photo dots
               and the thumbnail grid below stay in sync through currentPhotoIdx. */}
           <PhotoCarousel
             photos={photoList}
