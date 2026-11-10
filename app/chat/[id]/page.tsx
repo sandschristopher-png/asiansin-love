@@ -3,6 +3,10 @@
 import dynamic from 'next/dynamic';
 import VerifiedBadge from '@/components/VerifiedBadge';
 import { ChatSafetyBanner } from '@/components/chat/ChatSafetyBanner';
+import { TraitIcebreakers } from '@/components/chat/TraitIcebreakers';
+import { FirstMessageShield } from '@/components/chat/FirstMessageShield';
+import { inspectFirstMessageSafety } from '@/lib/safety/shield';
+import { isPlusProfile } from '@/lib/plus';
 
 import React, { useState, useEffect, useRef, useLayoutEffect, useCallback } from 'react';
 import Link from 'next/link';
@@ -19,7 +23,6 @@ import {
   Lightbulb,
   X,
   ArrowDown,
-  Sparkles,
   Mic,
   Lock,
   Square,
@@ -158,6 +161,8 @@ export default function ChatConversationPage() {
   });
   const [myRep, setMyRep] = useState(100);
   const [sharedInterests, setSharedInterests] = useState<string[]>([]);
+  const [myTraits, setMyTraits] = useState<string[]>([]);
+  const [theirTraits, setTheirTraits] = useState<string[]>([]);
   // Re-render once a minute so the match's local time stays current.
   const [clockTick, setClockTick] = useState(0);
   useEffect(() => {
@@ -393,7 +398,7 @@ export default function ChatConversationPage() {
       const [myProfRes, targetProfRes] = await Promise.all([
         supabase
           .from('profiles')
-          .select('is_plus, plus_enabled, membership_tier, interests, languages, reputation_score')
+          .select('is_plus, is_premium, subscription_status, current_period_end, plus_expires_at, interests, languages, reputation_score')
           .eq('id', user.id)
           .maybeSingle(),
         isUuid
@@ -411,7 +416,7 @@ export default function ChatConversationPage() {
       ]);
 
       const myProf = myProfRes.data;
-      if (myProf && (myProf.is_plus || myProf.plus_enabled || ['12m', '6m', '3m', '1m'].includes(myProf.membership_tier))) {
+      if (isPlusProfile(myProf)) {
         if (isMounted) setIsPlus(true);
       }
       const myInterests: string[] = Array.isArray(myProf?.interests) ? myProf.interests : [];
@@ -505,6 +510,8 @@ export default function ChatConversationPage() {
         );
 
         setSharedInterests(shared);
+        setMyTraits(myInterests);
+        setTheirTraits(theirInterests.filter((t) => typeof t === 'string' && t.trim().length > 0));
         setStarterChips(
           buildStarterChips({
             myInterests,
@@ -1079,7 +1086,25 @@ export default function ChatConversationPage() {
                     ? `You both love ${sharedInterests.slice(0, 2).join(' & ')}! Break the ice with a suggestion below.`
                     : 'Send a friendly note to break the ice.'}
                 </p>
-                {(starterChips.length > 0 || icebreakerPrompt) && (
+                {theirTraits.length > 0 ? (
+                  <div className="pt-3 max-w-[320px] mx-auto">
+                    <TraitIcebreakers
+                      myTraits={myTraits}
+                      theirTraits={theirTraits}
+                      theirName={targetInfo.name}
+                      onSelectPrompt={(text) => {
+                        setInputText(text);
+                        const el = textareaRef.current;
+                        el?.focus(); // inside the tap, so the mobile keyboard opens
+                        requestAnimationFrame(() => {
+                          if (!el) return;
+                          el.style.height = 'auto';
+                          el.style.height = Math.min(el.scrollHeight, 108) + 'px';
+                        });
+                      }}
+                    />
+                  </div>
+                ) : (starterChips.length > 0 || icebreakerPrompt) && (
                   <div className="pt-3 flex flex-wrap justify-center gap-2 max-w-[320px] mx-auto">
                     {(starterChips.length > 0
                       ? starterChips
@@ -1145,6 +1170,14 @@ export default function ChatConversationPage() {
                   idx < EARLY_THREAD_MESSAGES &&
                   !msg.hasAudio &&
                   (Boolean(msg.wasMasked) || !validateBio(msg.text || '').ok);
+                // First message received in the thread. The API masks contact details before the
+                // client sees them, so a masked message counts as well as a scanner hit.
+                const showFirstMessageShield =
+                  !isMe &&
+                  idx < EARLY_THREAD_MESSAGES &&
+                  !msg.hasAudio &&
+                  !messages.slice(0, idx).some((m) => m.sender !== 'me') &&
+                  (Boolean(msg.wasMasked) || inspectFirstMessageSafety(msg.text || '').isSuspicious);
                 const isRealId = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(msg.id);
                 const showActions = !isMe && isRealId && activeMsgId === msg.id;
 
@@ -1229,7 +1262,9 @@ export default function ChatConversationPage() {
                         </div>
                       </div>
 
-                      {earlyContact && (
+                      {showFirstMessageShield && <FirstMessageShield senderName={targetInfo.name} />}
+
+                      {earlyContact && !showFirstMessageShield && (
                         <p className="mt-1 ml-8 max-w-[84%] rounded-xl border border-[#D0CDE1] bg-white px-2.5 py-1.5 text-[10.5px] leading-snug text-[#413B5E]/70">
                           {EARLY_CONTACT_NOTICE}
                         </p>
@@ -1348,7 +1383,6 @@ export default function ChatConversationPage() {
             className="text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 py-1.5 px-3 rounded-xl mx-auto mb-2 text-center max-w-md flex items-center justify-center gap-1.5"
             aria-live="polite"
           >
-            <Sparkles className="w-3.5 h-3.5 shrink-0" aria-hidden />
             <span>Safety Gate unlocked · Voice notes &amp; direct sharing now available</span>
           </p>
         )}

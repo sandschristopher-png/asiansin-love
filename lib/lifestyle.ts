@@ -5,7 +5,7 @@
  * columns, so legacy labels ("Socially", "No") are mapped on read via normalizeDrinking/Smoking.
  */
 import type { LucideIcon } from 'lucide-react';
-import { Activity, Beer, Cigarette, CircleSlash, Dumbbell, Footprints, Gem, Home, Mountain, PenTool, Sparkles, User, Wind } from 'lucide-react';
+import { Activity, Beer, Cigarette, CircleSlash, Dumbbell, Footprints, Gem, Home, Mountain, PenTool, User, Wind } from 'lucide-react';
 
 export interface LifestyleOption<V extends string = string> {
   value: V;
@@ -17,7 +17,7 @@ export const BODY_TYPE_OPTIONS = [
   { value: 'slim', label: 'Slim', icon: User },
   { value: 'athletic', label: 'Athletic', icon: Activity },
   { value: 'average', label: 'Average', icon: User },
-  { value: 'curvy', label: 'Curvy', icon: Sparkles },
+  { value: 'curvy', label: 'Curvy', icon: User },
   { value: 'muscular', label: 'Muscular', icon: Dumbbell },
 ] as const satisfies readonly LifestyleOption[];
 
