@@ -641,6 +641,19 @@ function DiscoverContent() {
     await persistCardAction(supabase, id, action, isCurrentlyActive);
 
     if (action === 'like' && !isCurrentlyActive) {
+      // Revert the optimistic heart so the UI stays truthful when the Spark did not go through.
+      const undoOptimisticSpark = () => {
+        setCardActions((prev) => {
+          const next = { ...prev };
+          delete next[id];
+          return next;
+        });
+        persistCardAction(supabase, id, 'like', true);
+      };
+      const showSparkNotice = (message: string) => {
+        setSparkLimitNotice(message);
+        setTimeout(() => setSparkLimitNotice((cur) => (cur === message ? null : cur)), 4000);
+      };
       try {
         const res = await fetch('/api/spark', {
           method: 'POST',
@@ -649,21 +662,19 @@ function DiscoverContent() {
         });
         const data = await res.json().catch(() => ({}));
         if (!res.ok) {
-          // Revert optimistic spark (e.g. 429 daily cap) so the UI stays truthful
-          setCardActions((prev) => {
-            const next = { ...prev };
-            delete next[id];
-            return next;
-          });
-          persistCardAction(supabase, id, 'like', true);
+          undoOptimisticSpark();
           if (res.status === 429 && data?.code === 'QUOTA_EXCEEDED') {
             hapticWarning();
             setSparkLimitNotice(null);
             setSparkLimitOpen(true);
             return;
           }
-          setSparkLimitNotice(data?.error || 'Spark limit reached - try again later.');
-          setTimeout(() => setSparkLimitNotice(null), 4000);
+          if (res.status === 401) {
+            showSparkNotice('Your session has ended. Please sign in again.');
+            setTimeout(() => router.push('/login?returnTo=%2Fdiscover'), 1500);
+            return;
+          }
+          showSparkNotice(data?.error || 'Could not send your Spark. Please try again.');
           return;
         }
         if (data?.mutual || data?.is_mutual) {
@@ -673,7 +684,10 @@ function DiscoverContent() {
         } catch {}
           setMatchedModalProfile({ id, name: name || 'Member', avatarUrl: avatarUrl || '/placeholder-avatar.svg' });
         }
-      } catch {}
+      } catch {
+        undoOptimisticSpark();
+        showSparkNotice('Could not send your Spark. Check your connection and try again.');
+      }
     }
   };
 

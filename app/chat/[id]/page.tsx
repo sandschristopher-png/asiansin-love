@@ -7,6 +7,7 @@ import { TraitIcebreakers } from '@/components/chat/TraitIcebreakers';
 import { FirstMessageShield } from '@/components/chat/FirstMessageShield';
 import { inspectFirstMessageSafety } from '@/lib/safety/shield';
 import { isPlusProfile } from '@/lib/plus';
+import { publicName } from '@/lib/publicName';
 
 import React, { useState, useEffect, useRef, useLayoutEffect, useCallback } from 'react';
 import Link from 'next/link';
@@ -469,12 +470,7 @@ export default function ChatConversationPage() {
       setResolvedTargetUuid(targetUuid);
 
       if (profData) {
-        const cleanHandle = (
-          profData.username ||
-          profData.display_name ||
-          profData.full_name ||
-          'Member'
-        ).replace(/^@/, '');
+        const cleanHandle = publicName(profData);
 
         setTargetInfo({
           name: cleanHandle.replace(/^@+/, ''),

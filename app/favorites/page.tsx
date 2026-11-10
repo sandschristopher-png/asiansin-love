@@ -10,6 +10,7 @@ import { ReputationBadge } from '@/components/ReputationBadge';
 import { PlusBadge } from '@/components/ui/PlusBadge';
 import { PhotoCarousel } from '@/components/cards/PhotoCarousel';
 import { supabaseImage } from '@/lib/images/supabaseImage';
+import { publicName } from '@/lib/publicName';
 
 type SparkTab = 'sparked' | 'sparked_you' | 'mutual' | 'visited';
 
@@ -48,12 +49,7 @@ interface CachedSparksState {
 const CACHE_KEY = 'ail_sparks_fast_cache_v2';
 
 function getPublicName(p: ProfileCardData): string {
-  if (p.username && p.username.trim()) return p.username.trim().replace(/^@/, '');
-  if (p.display_name && p.display_name.trim()) return p.display_name.trim();
-  if (p.full_name && p.full_name.trim()) {
-    return p.full_name.trim().split(/\s+/)[0];
-  }
-  return 'Member';
+  return publicName(p); // username only, never the Google sign-in name
 }
 
 function getAge(p: ProfileCardData): number | null {

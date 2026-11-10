@@ -11,7 +11,7 @@ export default function SafetyAccordion({ title, body }: { title: string; body: 
         type="button"
         onClick={() => setOpen((o) => !o)}
         aria-expanded={open}
-        className="flex items-start justify-between gap-3 w-full text-left cursor-pointer px-4 py-3"
+        className="flex items-start justify-between gap-3 w-full text-left cursor-pointer px-4 py-3.5"
       >
         <span className="text-[12.5px] font-bold text-[#413B5E] leading-snug flex-1">{title}</span>
         <ChevronDown className={`w-4 h-4 text-[#8574B7] shrink-0 mt-0.5 transition-transform duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${open ? 'rotate-180' : ''}`} />

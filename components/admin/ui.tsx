@@ -121,7 +121,7 @@ export function BottomSheet({
 
 type BtnTone = 'primary' | 'neutral' | 'danger' | 'warn';
 const TONES: Record<BtnTone, string> = {
-  primary: 'bg-gradient-to-r from-[#8574B7] to-[#9A93BC] text-white border-transparent hover:opacity-95',
+  primary: 'bg-[#8574B7] hover:bg-[#534377] text-white border-transparent',
   neutral: 'bg-white text-[#413B5E] border-[#D0CDE1] hover:bg-[#E8E6F1]/40',
   danger: 'bg-red-600 text-white border-transparent hover:bg-red-700',
   warn: 'bg-amber-50 text-amber-800 border-amber-200 hover:bg-amber-100',

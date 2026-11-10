@@ -46,6 +46,7 @@ import { SelectSheet } from '@/components/SelectSheet';
 import { HeightInput, LanguagePicker, LifestyleBadges, LifestylePills } from '@/components/profile/LifestyleFields';
 import { languageLabel, readLanguages } from '@/lib/constants/languages';
 import { LIFESTYLE_KEYS, formatHeight, readHeightCm, readLifestyle, type LifestyleValues } from '@/lib/lifestyle';
+import { publicName } from '@/lib/publicName';
 
 /** Loaded on first open (recorder + waveform stay out of the profile bundle). */
 const VoiceRecordModal = dynamic(() => import('@/components/VoiceRecordModal').then((m) => m.VoiceRecordModal), { ssr: false });
@@ -184,11 +185,7 @@ export default function MyProfilePage() {
         .maybeSingle();
 
       if (data) {
-        const resolvedUsername =
-          (data.username && !data.username.startsWith('user_') ? data.username : '') ||
-          data.display_name ||
-          data.full_name ||
-          'Member';
+        const resolvedUsername = publicName(data);
         setUsername(resolvedUsername);
         setName(data.display_name || data.full_name || resolvedUsername);
         if (data.age) setAge(data.age);
@@ -723,7 +720,7 @@ export default function MyProfilePage() {
                   type="button"
                   onClick={handleSave}
                   disabled={saving}
-                  className="h-full flex-1 rounded-2xl bg-gradient-to-r from-[#8574B7] to-[#9A93BC] text-white text-xs font-semibold shadow-sm hover:opacity-95 transition flex items-center justify-center gap-1.5 disabled:opacity-50 cursor-pointer active:scale-[0.99]"
+                  className="h-full flex-1 rounded-2xl bg-[#8574B7] hover:bg-[#534377] text-white text-xs font-semibold shadow-sm transition flex items-center justify-center gap-1.5 disabled:opacity-50 cursor-pointer active:scale-[0.99]"
                 >
                   {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
                   <span>{saving ? 'Saving...' : 'Save Profile'}</span>

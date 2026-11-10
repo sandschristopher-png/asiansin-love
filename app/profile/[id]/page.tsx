@@ -41,6 +41,7 @@ import { languageLabel, readLanguages } from '@/lib/constants/languages';
 import { formatHeight, lifestyleOption, readHeightCm, readLifestyle } from '@/lib/lifestyle';
 import { LifestyleBadges } from '@/components/profile/LifestyleFields';
 import { BackButton } from '@/components/BackButton';
+import { publicName } from '@/lib/publicName';
 
 /** Loaded on first open (keeps the report sheet out of the page bundle). */
 const ReportModal = dynamic(() => import('@/components/ReportModal').then((m) => m.ReportModal), { ssr: false });
@@ -201,8 +202,14 @@ export default function PublicProfilePage() {
 
       const data = await res.json().catch(() => ({}));
 
+      if (res.status === 401) {
+        triggerToast('Your session has ended. Please sign in again.');
+        setTimeout(() => router.push('/login?returnTo=' + encodeURIComponent('/profile/' + targetUserId)), 1500);
+        return;
+      }
       if (!res.ok) {
-        triggerToast(data?.error || 'Spark limit reached. Try again later.');
+        // 429 carries the daily limit message from /api/spark.
+        triggerToast(data?.error || 'Could not update your Spark. Please try again.');
         return;
       }
 
@@ -267,16 +274,8 @@ export default function PublicProfilePage() {
     );
   }
 
-  // Strictly prioritize username; if unset on a Google Auth account, strip surname
-  const rawHandle =
-    (profile.username && !String(profile.username).startsWith('user_')
-      ? String(profile.username)
-      : '') ||
-    String(profile.display_name || profile.full_name || 'Member')
-      .trim()
-      .split(/\s+/)[0];
-
-  const displayName = rawHandle.replace(/^@/, '');
+  // Username only: never the real name from Google sign-in.
+  const displayName = publicName(profile);
   const memberAge = ageOf(profile);
   const displayAge = memberAge ? `, ${memberAge}` : '';
   const resolvedCountry = resolveCountry(profile.city, profile.country);

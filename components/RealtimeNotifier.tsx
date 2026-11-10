@@ -6,6 +6,7 @@ import { supabase } from '@/lib/supabase/client';
 import { applyContactRevealMask } from '@/lib/safety';
 import { alertPrefs, getNotificationCounts, setNotificationCounts } from '@/lib/notificationStore';
 import { NotificationToast, type NotificationKind, type NotificationToastData } from '@/components/NotificationToast';
+import { publicName } from '@/lib/publicName';
 
 const SPARKS_SEEN_KEY = 'ail_sparks_seen_at';
 
@@ -13,12 +14,7 @@ type Actor = { username?: string | null; display_name?: string | null; full_name
 
 function actorName(a: Actor | null, fallback: string): string {
   if (!a) return fallback;
-  return (
-    (a.username && !String(a.username).startsWith('user_') ? String(a.username).replace(/^@/, '') : '') ||
-    a.display_name ||
-    a.full_name ||
-    fallback
-  );
+  return publicName(a, fallback);
 }
 
 function sparksSeenAt(): string {

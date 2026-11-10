@@ -85,7 +85,7 @@ export default async function CityLandingPage({ params }: { params: Promise<{ ci
           <div className="mt-7 flex flex-col sm:flex-row gap-3 justify-center">
             <Link
               href="/signup"
-              className="h-12 px-8 rounded-full bg-gradient-to-r from-[#8574B7] to-[#9A93BC] text-white text-sm font-semibold shadow-brand-glow hover:opacity-95 transition-opacity flex items-center justify-center"
+              className="h-12 px-8 rounded-full bg-[#8574B7] hover:bg-[#534377] text-white text-sm font-semibold shadow-brand-glow transition-colors flex items-center justify-center"
             >
               Create your free profile
             </Link>
@@ -174,7 +174,7 @@ export default async function CityLandingPage({ params }: { params: Promise<{ ci
           <p className="mt-2 text-sm text-[#413B5E]/75">Free to join. Selfie verification is free for every member.</p>
           <Link
             href="/signup"
-            className="mt-5 inline-flex h-12 px-8 rounded-full bg-gradient-to-r from-[#8574B7] to-[#9A93BC] text-white text-sm font-semibold shadow-brand-glow hover:opacity-95 transition-opacity items-center justify-center"
+            className="mt-5 inline-flex h-12 px-8 rounded-full bg-[#8574B7] hover:bg-[#534377] text-white text-sm font-semibold shadow-brand-glow transition-colors items-center justify-center"
           >
             Create your free profile
           </Link>

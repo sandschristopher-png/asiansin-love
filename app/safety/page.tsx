@@ -243,7 +243,7 @@ export default function SafetyBlueprintPage() {
               <div>
                 <div className="flex items-center gap-2.5">
                   <h2 className="font-brand text-xl font-bold text-[#413B5E]">{label}</h2>
-                  <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#8574B7]/10 text-[#8574B7]">
+                  <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#8574B7]/10 text-[#8574B7] whitespace-nowrap shrink-0">
                     {topics.length} topics
                   </span>
                 </div>

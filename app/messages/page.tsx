@@ -9,6 +9,7 @@ import { ReputationBadge } from '@/components/ReputationBadge';
 import { SwipeableRow } from '@/components/SwipeableRow';
 import { AVATAR_IMAGE, supabaseImage } from '@/lib/images/supabaseImage';
 import { useActionToast } from '@/components/ActionToast';
+import { publicName } from '@/lib/publicName';
 
 interface ConversationItem {
   id: string;
@@ -150,13 +151,7 @@ export default function MessagesPage() {
           .map((partnerId) => {
             const info = partnerMap.get(partnerId)!;
             const partner = profileMap.get(partnerId) as any;
-            const cleanName =
-              (partner?.username && !partner.username.startsWith('user_')
-                ? partner.username.replace(/^@/, '')
-                : '') ||
-              partner?.display_name ||
-              partner?.full_name ||
-              'Member';
+            const cleanName = publicName(partner);
 
             return {
               id: info.messageId,

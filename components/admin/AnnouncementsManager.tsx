@@ -166,7 +166,7 @@ export function AnnouncementsManager() {
         <button
           type="submit"
           disabled={!canSend}
-          className="w-full bg-gradient-to-r from-[#8574B7] to-[#9A93BC] text-white font-bold h-11 px-6 rounded-full shadow-[0_2px_10px_rgba(102,93,150,0.25)] hover:opacity-95 transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-[#8574B7] hover:bg-[#534377] text-white font-bold h-11 px-6 rounded-full shadow-[0_2px_10px_rgba(102,93,150,0.25)] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Send className="w-4 h-4" aria-hidden />
           Broadcast to All Members

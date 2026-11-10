@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { createClient } from '@supabase/supabase-js';
 import { resolveCountry } from '@/lib/countries';
+import { publicName } from '@/lib/publicName';
 import { getPresenceStatus } from '@/lib/presence';
 import { canonicalCountry, countryMatches } from '@/lib/constants/countries';
 import { readLanguages } from '@/lib/constants/languages';
@@ -249,7 +250,7 @@ export async function GET(req: Request) {
         if (countryParam && !countryMatches(resolveCountry(row.city, row.country), countryParam)) return false;
 
         // Evict seed/test profiles by name
-        const lowerName = String(row.username || row.display_name || row.full_name || row.name || '').toLowerCase().trim();
+        const lowerName = String(row.username || '').toLowerCase().trim();
         if (lowerName === 'bobby') return false;
 
         // Require at least one real (non-placeholder) photo
@@ -282,12 +283,7 @@ export async function GET(req: Request) {
           computedAge = Math.max(18, Math.floor((Date.now() - dob.getTime()) / (1000 * 60 * 60 * 24 * 365.25)));
         }
 
-        const cleanName =
-          (row.username && !String(row.username).startsWith('user_') ? String(row.username).replace(/^@/, '') : '') ||
-          row.display_name ||
-          row.full_name ||
-          row.name ||
-          'Member';
+        const cleanName = publicName(row);
 
         return {
           id: row.id,

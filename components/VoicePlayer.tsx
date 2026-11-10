@@ -144,7 +144,7 @@ function VoicePlayerCard({
           type="button"
           onClick={toggle}
           aria-label={playing ? `Pause ${title}` : `Play ${title}`}
-          className="w-10 h-10 shrink-0 rounded-full bg-gradient-to-br from-[#8574B7] to-[#9A93BC] text-white flex items-center justify-center shadow-brand-sm hover:shadow-brand-glow transition-shadow active:scale-95"
+          className="w-10 h-10 shrink-0 rounded-full bg-[#8574B7] hover:bg-[#534377] text-white flex items-center justify-center shadow-brand-sm hover:shadow-brand-glow transition-[background-color,box-shadow] active:scale-95"
         >
           {loading ? (
             <Loader2 className="w-4 h-4 animate-spin" />

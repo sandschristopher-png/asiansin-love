@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
@@ -133,7 +133,7 @@ export default function ForgotPasswordPage() {
             <button
               type="submit"
               disabled={isLoading || !email.trim() || cooldown > 0}
-              className="w-full h-12 rounded-full bg-gradient-to-r from-[#8574B7] to-[#9A93BC] text-white text-sm font-semibold flex items-center justify-center gap-2 shadow-brand-glow hover:opacity-95 active:scale-[0.99] transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+              className="w-full h-12 rounded-full bg-[#8574B7] hover:bg-[#534377] text-white text-sm font-semibold flex items-center justify-center gap-2 shadow-brand-glow active:scale-[0.99] transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
               <span>{isLoading ? 'Sending...' : 'Send Reset Link'}</span>

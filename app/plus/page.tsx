@@ -272,7 +272,7 @@ function PlusHubContent() {
                   }`}
                 >
                   {p.badge && (
-                    <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap uppercase text-[10px] font-bold tracking-wider text-white bg-gradient-to-r from-[#8574B7] to-[#9A93BC] px-2.5 py-0.5 rounded-full shadow-brand-sm">
+                    <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap uppercase text-[10px] font-bold tracking-wider text-white bg-[#8574B7] px-2.5 py-0.5 rounded-full shadow-brand-sm">
                       {p.badge}
                     </span>
                   )}
@@ -372,7 +372,7 @@ function PlusHubContent() {
               type="button"
               disabled={starting || loading}
               onClick={handleSubscribe}
-              className="flex-1 min-w-0 h-12 px-8 rounded-full bg-gradient-to-r from-[#8574B7] to-[#9A93BC] hover:opacity-95 text-white font-semibold text-sm shadow-brand-glow transition-opacity flex items-center justify-center gap-2 whitespace-nowrap disabled:opacity-70"
+              className="flex-1 min-w-0 h-12 px-8 rounded-full bg-[#8574B7] hover:bg-[#534377] text-white font-semibold text-sm shadow-brand-glow transition-colors flex items-center justify-center gap-2 whitespace-nowrap disabled:opacity-70"
             >
               {starting ? (
                 <>

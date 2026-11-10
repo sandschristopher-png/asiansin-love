@@ -23,7 +23,7 @@ const PILL_LABEL = 'text-sm font-medium text-[#413B5E] tracking-tight';
 const INPUT =
   'h-12 w-full rounded-full border border-[#D0CDE1] bg-white px-4 text-base sm:text-sm text-[#413B5E] focus:border-[#8574B7] focus:ring-2 focus:ring-[#B8B3D1]/30 focus:outline-none placeholder:text-[#413B5E]/40 transition';
 const PRIMARY =
-  'h-12 w-full rounded-full bg-gradient-to-r from-[#8574B7] to-[#9A93BC] text-white font-semibold text-sm shadow-brand-glow hover:opacity-95 transition-opacity flex items-center justify-center gap-2 active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed';
+  'h-12 w-full rounded-full bg-[#8574B7] hover:bg-[#534377] text-white font-semibold text-sm shadow-brand-glow transition-colors flex items-center justify-center gap-2 active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed';
 
 const GoogleIcon = () => (
   <svg className="w-4 h-4" viewBox="0 0 24 24" aria-hidden="true">
