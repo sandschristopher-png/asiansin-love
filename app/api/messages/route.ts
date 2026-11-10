@@ -158,6 +158,17 @@ export async function POST(req: Request) {
       serviceRoleKey
     );
 
+    // 1.4 Blocks in either direction stop delivery (voice notes already check this).
+    const { data: block } = await serviceClient
+      .from('user_blocks')
+      .select('id')
+      .or(`and(blocker_id.eq.${senderId},blocked_id.eq.${receiverId}),and(blocker_id.eq.${receiverId},blocked_id.eq.${senderId})`)
+      .limit(1)
+      .maybeSingle();
+    if (block) {
+      return NextResponse.json({ error: 'You cannot message this member.' }, { status: 403 });
+    }
+
     // 1.5 Sender standing: reputation-based hourly limit (server-enforced)
     const { data: senderProfile } = await serviceClient
       .from('profiles')

@@ -76,14 +76,31 @@ export function RealtimeNotifier() {
     let cancelled = false;
     let visitorAccess = false;
     let subscribedUid: string | null = null;
+    /** Members blocked in either direction: no toasts, and their rows never count toward badges. */
+    let blockedIds = new Set<string>();
+
+    const loadBlocks = async (uid: string) => {
+      const { data } = await supabase
+        .from('user_blocks')
+        .select('blocker_id, blocked_id')
+        .or(`blocker_id.eq.${uid},blocked_id.eq.${uid}`);
+      blockedIds = new Set(
+        ((data || []) as { blocker_id: string; blocked_id: string }[]).map((b) => (b.blocker_id === uid ? b.blocked_id : b.blocker_id))
+      );
+    };
+    // PostgREST "not in" list for badge counts (no-op when nobody is blocked).
+    const notInBlocked = () => (blockedIds.size ? `(${Array.from(blockedIds).join(',')})` : null);
 
     const refreshUnreadMessages = async (uid: string) => {
-      const { count } = await supabase
+      let q = supabase
         .from('messages')
         .select('id', { count: 'exact', head: true })
         .eq('receiver_id', uid)
         .eq('is_read', false)
         .eq('is_quarantined', false);
+      const blocked = notInBlocked();
+      if (blocked) q = q.not('sender_id', 'in', blocked);
+      const { count } = await q;
       if (!cancelled) setNotificationCounts({ unreadMessages: count || 0 });
     };
 
@@ -92,12 +109,12 @@ export function RealtimeNotifier() {
     const refreshUnseenSparks = async (uid: string) => {
       if (pathRef.current?.startsWith('/favorites')) return setNotificationCounts({ unseenSparks: 0 });
       const since = sparksSeenAt();
-      const [sparks, views] = await Promise.all([
-        supabase.from('sparks').select('id', { count: 'exact', head: true }).eq('receiver_id', uid).gt('created_at', since),
-        visitorAccess
-          ? supabase.from('profile_views').select('id', { count: 'exact', head: true }).eq('viewed_id', uid).neq('viewer_id', uid).gt('created_at', since)
-          : Promise.resolve({ count: 0 }),
-      ]);
+      const blocked = notInBlocked();
+      let sparksQ = supabase.from('sparks').select('id', { count: 'exact', head: true }).eq('receiver_id', uid).gt('created_at', since);
+      if (blocked) sparksQ = sparksQ.not('sender_id', 'in', blocked);
+      let viewsQ = supabase.from('profile_views').select('id', { count: 'exact', head: true }).eq('viewed_id', uid).neq('viewer_id', uid).gt('created_at', since);
+      if (blocked) viewsQ = viewsQ.not('viewer_id', 'in', blocked);
+      const [sparks, views] = await Promise.all([sparksQ, visitorAccess ? viewsQ : Promise.resolve({ count: 0 })]);
       if (!cancelled) setNotificationCounts({ unseenSparks: (sparks.count || 0) + (views.count || 0) });
     };
 
@@ -145,13 +162,31 @@ export function RealtimeNotifier() {
       }
     };
 
-    const subscribe = async (uid: string) => {
-      // getSession() and a SIGNED_IN event can both fire on load: subscribe once per member.
-      if (subscribedUid === uid && channel) return;
-      subscribedUid = uid;
-      if (channel) await supabase.removeChannel(channel);
+    const refreshAll = (uid: string) => {
+      void loadBlocks(uid).then(() => {
+        if (cancelled || subscribedUid !== uid) return;
+        refreshUnreadMessages(uid);
+        refreshUnseenSparks(uid);
+      });
+    };
 
-      const { data: me } = await supabase.from('profiles').select('is_plus, gender').eq('id', uid).maybeSingle();
+    const subscribe = async (uid: string) => {
+      // getSession() and a SIGNED_IN event both fire on load. subscribedUid is claimed before the
+      // first await, so the second call returns instead of opening a duplicate channel.
+      if (subscribedUid === uid) return;
+      subscribedUid = uid;
+      if (channel) {
+        const old = channel;
+        channel = null;
+        await supabase.removeChannel(old);
+      }
+
+      const [{ data: me }] = await Promise.all([
+        supabase.from('profiles').select('is_plus, gender').eq('id', uid).maybeSingle(),
+        loadBlocks(uid),
+      ]);
+      // Unmounted, signed out or switched member while we waited: open nothing.
+      if (cancelled || subscribedUid !== uid) return;
       visitorAccess = Boolean(me?.is_plus) || me?.gender === 'female';
       refreshUnreadMessages(uid);
       refreshUnseenSparks(uid);
@@ -170,7 +205,7 @@ export function RealtimeNotifier() {
             if (row.receiver_id !== uid && old.receiver_id !== uid) return;
             refreshUnreadMessages(uid);
             if (payload.eventType !== 'INSERT' || row.receiver_id !== uid) return;
-            if (!row.sender_id || row.is_quarantined) return;
+            if (!row.sender_id || row.is_quarantined || blockedIds.has(row.sender_id)) return;
             const actor = await fetchActor(row.sender_id);
             // Only that exact conversation, open and on screen, swallows the toast. Discover, Sparks,
             // Profile, the /messages inbox, other chats or a background tab all still notify.
@@ -198,7 +233,7 @@ export function RealtimeNotifier() {
           { event: 'INSERT', schema: 'public', table: 'sparks', filter: `receiver_id=eq.${uid}` },
           async (payload) => {
             const row = payload.new as { id: string; sender_id: string };
-            if (!row?.sender_id) return;
+            if (!row?.sender_id || blockedIds.has(row.sender_id)) return;
             const [{ data: mine }, actor] = await Promise.all([
               supabase.from('sparks').select('id').eq('sender_id', uid).eq('receiver_id', row.sender_id).maybeSingle(),
               fetchActor(row.sender_id),
@@ -227,7 +262,7 @@ export function RealtimeNotifier() {
           async (payload) => {
             if (!visitorAccess) return;
             const row = payload.new as { id: string; viewer_id: string };
-            if (!row?.viewer_id || row.viewer_id === uid) return;
+            if (!row?.viewer_id || row.viewer_id === uid || blockedIds.has(row.viewer_id)) return;
             if (!pathRef.current?.startsWith('/favorites')) {
               setNotificationCounts({ unseenSparks: getNotificationCounts().unseenSparks + 1 });
             }
@@ -244,8 +279,19 @@ export function RealtimeNotifier() {
             });
           }
         )
-        .subscribe();
+        // Events sent while the socket was down (tab suspended, network drop) are not replayed, so
+        // every (re)subscribe re-reads the badges from the database.
+        .subscribe((status) => {
+          if (status === 'SUBSCRIBED' && !cancelled && subscribedUid === uid) refreshAll(uid);
+        });
     };
+
+    // Back from the background or back online: badges may be stale.
+    const onResume = () => {
+      if (document.visibilityState === 'visible' && subscribedUid && !cancelled) refreshAll(subscribedUid);
+    };
+    document.addEventListener('visibilitychange', onResume);
+    window.addEventListener('online', onResume);
 
     supabase.auth.getSession().then(({ data: { session } }) => {
       if (!cancelled && session?.user) subscribe(session.user.id);
@@ -257,6 +303,7 @@ export function RealtimeNotifier() {
         if (channel) supabase.removeChannel(channel);
         channel = null;
         subscribedUid = null;
+        blockedIds = new Set();
         setToast(null);
         setNotificationCounts({ unreadMessages: 0, unseenSparks: 0 });
       }
@@ -265,7 +312,10 @@ export function RealtimeNotifier() {
     return () => {
       cancelled = true;
       subscription.unsubscribe();
+      document.removeEventListener('visibilitychange', onResume);
+      window.removeEventListener('online', onResume);
       if (channel) supabase.removeChannel(channel);
+      channel = null;
     };
   }, [router]);
 

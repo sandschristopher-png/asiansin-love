@@ -1,4 +1,5 @@
 import { createClient } from '@/lib/supabase/server'
+import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { sendPushToUser } from '@/lib/pushSender'
 import { FREE_DAILY_SPARKS } from '@/lib/plusPlans'
@@ -28,12 +29,27 @@ export async function POST(req: Request) {
     // Every read this request needs, in one parallel round trip: my existing Spark, theirs (mutual),
     // the daily allowance and my username for the notification. Each is an indexed single-row
     // lookup (sparks: sender_id, created_at; get_spark_allowance exits early for exempt members).
-    const [{ data: existing }, { data: reverseSpark }, allowanceResult, { data: senderProfile }] = await Promise.all([
+    // Blocks are checked with the service role: a member's own session cannot see who blocked them.
+    const service = createServiceClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, {
+      auth: { persistSession: false },
+    })
+    const [{ data: existing }, { data: reverseSpark }, allowanceResult, { data: senderProfile }, { data: block }] = await Promise.all([
       supabase.from('sparks').select('id').eq('sender_id', user.id).eq('receiver_id', targetUserId).maybeSingle(),
       supabase.from('sparks').select('id').eq('sender_id', targetUserId).eq('receiver_id', user.id).maybeSingle(),
       supabase.rpc('get_spark_allowance', { p_user_id: user.id }),
       supabase.from('profiles').select('username').eq('id', user.id).maybeSingle(),
+      service
+        .from('user_blocks')
+        .select('id')
+        .or(`and(blocker_id.eq.${user.id},blocked_id.eq.${targetUserId}),and(blocker_id.eq.${targetUserId},blocked_id.eq.${user.id})`)
+        .limit(1)
+        .maybeSingle(),
     ])
+
+    // Un-sparking is always allowed; a new Spark to or from a blocked member is not.
+    if (block && !(existing && action === 'toggle')) {
+      return NextResponse.json({ error: 'You cannot Spark this member.', code: 'BLOCKED' }, { status: 403 })
+    }
 
     if (existing) {
       if (action === 'toggle') {

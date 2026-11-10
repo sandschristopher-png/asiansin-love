@@ -10,7 +10,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { createClient as createSessionClient } from '@/lib/supabase/server';
-import { verifyToken, TOKEN_TTL_MS } from '@/lib/verify/token';
+import { verifyToken, tokenFingerprint, TOKEN_TTL_MS } from '@/lib/verify/token';
 import { reviewVerificationSelfie, isFastTrack, type SelfieReviewResult } from '@/lib/aiVision';
 import { getPoseById } from '@/lib/poses';
 
@@ -24,6 +24,9 @@ const AI_TIMEOUT_MS = 15000;
 const AVATAR_FETCH_TIMEOUT_MS = 5000;
 const MIN_FACE_CONFIDENCE = 0.8;
 const NO_FACE_ERROR = 'Biometric validation failed: No valid face detected';
+/** Submissions per member per rolling hour (each one costs an AI review). */
+const MAX_ATTEMPTS_PER_HOUR = 10;
+const USED_PREFIX = '_used-attempts';
 
 /** Client face-gate metadata (lib/faceGate.ts): exactly one face at >= 0.8 confidence. */
 function validFaceCheck(raw: FormDataEntryValue | null, issuedAt: number): boolean {
@@ -155,6 +158,39 @@ export async function POST(req: Request) {
       { error: 'Add a clear main profile photo first - verification matches your face against it.' },
       { status: 400 }
     );
+  }
+
+  // Single use + rate limit, before the AI call. Claiming the token is an upload with upsert off:
+  // storage refuses a second object at the same path, so a replay (or a parallel duplicate)
+  // within the 5-minute TTL loses atomically. Markers live outside the member's review folder.
+  const { data: recentClaims } = await service.storage
+    .from('verifications')
+    .list(`${USED_PREFIX}/${userId}`, { limit: 100, sortBy: { column: 'created_at', order: 'desc' } });
+  const claimsLastHour = (recentClaims || []).filter(
+    (f) => f.created_at && Date.now() - new Date(f.created_at).getTime() < 60 * 60 * 1000
+  ).length;
+  if (claimsLastHour >= MAX_ATTEMPTS_PER_HOUR) {
+    return NextResponse.json(
+      { error: 'Too many verification attempts. Please try again in an hour.' },
+      { status: 429 }
+    );
+  }
+  const { error: claimError } = await service.storage
+    .from('verifications')
+    .upload(`${USED_PREFIX}/${userId}/${tokenFingerprint(attemptId)}`, Buffer.from(String(Date.now())), {
+      contentType: 'text/plain',
+      upsert: false,
+    });
+  if (claimError) {
+    const status = String((claimError as { statusCode?: string | number }).statusCode ?? '');
+    if (status === '409' || /exist|duplicate/i.test(claimError.message)) {
+      return NextResponse.json(
+        { error: 'That pose was already submitted. Here is a new one to copy.' },
+        { status: 410 }
+      );
+    }
+    console.error('[verify/submit] attempt claim failed:', claimError.message);
+    return NextResponse.json({ error: 'Could not start verification. Please try again.' }, { status: 500 });
   }
 
   // Fail safe: an AI error or timeout leaves ai = null and the submission still goes to an admin.

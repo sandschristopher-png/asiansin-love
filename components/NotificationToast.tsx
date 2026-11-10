@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { Eye, Heart, MessageCircle } from 'lucide-react';
 import { AVATAR_IMAGE, supabaseImage } from '@/lib/images/supabaseImage';
 
@@ -18,6 +18,8 @@ export interface NotificationToastData {
 }
 
 const AUTO_DISMISS_MS = 4500;
+/** Exit animation length (.ail-toast-out in globals.css). */
+const EXIT_MS = 180;
 
 const KIND_ICON = {
   message: MessageCircle,
@@ -40,25 +42,41 @@ export function NotificationToast({
   onOpen: (toast: NotificationToastData) => void;
   onClose: () => void;
 }) {
-  useEffect(() => {
+  // Which toast is playing its exit animation; a newer toast is never caught by an older exit.
+  const [leavingKey, setLeavingKey] = useState<string | null>(null);
+  const exitTimer = useRef<number | null>(null);
+
+  const dismiss = useCallback(() => {
     if (!toast) return;
-    const t = window.setTimeout(onClose, AUTO_DISMISS_MS);
-    return () => window.clearTimeout(t);
+    setLeavingKey(toast.key);
+    exitTimer.current = window.setTimeout(onClose, EXIT_MS);
   }, [toast, onClose]);
 
+  useEffect(() => {
+    if (!toast) return;
+    const t = window.setTimeout(dismiss, AUTO_DISMISS_MS);
+    return () => {
+      window.clearTimeout(t);
+      if (exitTimer.current !== null) window.clearTimeout(exitTimer.current);
+      exitTimer.current = null;
+    };
+  }, [toast, dismiss]);
+
   if (!toast) return null;
+  const leaving = leavingKey === toast.key;
   const Icon = KIND_ICON[toast.kind];
   const mutual = toast.kind === 'mutual';
 
   return (
     // Centering lives on this wrapper so the slide-in transform on the card can't fight it.
-    <div className="fixed top-3 inset-x-0 z-[100] flex justify-center pointer-events-none">
+    // Below the status bar / notch in Home Screen mode (viewport-fit=cover); never over the bottom nav.
+    <div className="fixed top-[calc(env(safe-area-inset-top,0px)+0.75rem)] inset-x-0 z-[100] flex justify-center pointer-events-none">
       <div
         key={toast.key}
         role="status"
         aria-live="polite"
         onClick={() => onOpen(toast)}
-        className={`ail-toast-in pointer-events-auto w-[94%] max-w-sm backdrop-blur-md shadow-xl rounded-2xl p-3 border flex items-center gap-3 cursor-pointer active:scale-[0.98] transition-all ${
+        className={`${leaving ? 'ail-toast-out pointer-events-none' : 'ail-toast-in pointer-events-auto'} w-[94%] max-w-sm backdrop-blur-md shadow-xl rounded-2xl p-3 border flex items-center gap-3 cursor-pointer active:scale-[0.98] transition-all ${
           mutual ? 'bg-[#8574B7] border-[#8574B7]' : 'bg-white/95 border-[#D0CDE1]/60'
         }`}
       >

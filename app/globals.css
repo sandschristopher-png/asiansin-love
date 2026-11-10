@@ -321,6 +321,21 @@ nextjs-portal,
 .ail-toast-in {
   animation: ailToastIn 320ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
+/* Exits stay under 200 ms; the toast stops taking taps the moment it starts leaving. */
+@keyframes ailToastOut {
+  from { transform: translateY(12px); opacity: 1; }
+  to { transform: translateY(-8px); opacity: 0; }
+}
+.ail-toast-out {
+  animation: ailToastOut 180ms cubic-bezier(0.4, 0, 1, 1) both;
+}
+@keyframes ailFadeOut {
+  from { opacity: 1; transform: translateY(0); }
+  to { opacity: 0; transform: translateY(-6px); }
+}
+.ail-fade-out {
+  animation: ailFadeOut 180ms cubic-bezier(0.4, 0, 1, 1) both;
+}
 
 /* Soft action confirmation capsule (components/ActionToast.tsx) */
 @keyframes ailActionToastIn {

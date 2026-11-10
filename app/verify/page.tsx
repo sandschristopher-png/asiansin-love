@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { ArrowLeft, Camera, ShieldCheck, Loader2, AlertCircle, X, RotateCcw, ScanFace, RefreshCw } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { getPoseById, type VerificationPose } from '@/lib/poses';
-import type { FaceGateResult } from '@/lib/faceGate';
+import type { FaceGateResult, PoseState } from '@/lib/faceGate';
 import { FACE_GATE_MESSAGES, FACE_MIN_CONFIDENCE, type FaceGateStatus } from '@/lib/faceGateMessages';
 import { hapticError, hapticPhotoSnap } from '@/lib/utils/haptics';
 
@@ -19,6 +19,10 @@ interface FaceCheck {
 }
 
 const GATE_TICK_MS = 150;
+/** Auto-capture timing. There is no shutter: the photo is taken once the pose is held. */
+const POSE_HOLD_MS = 500; // pose recognised and held this long
+const HAND_FALLBACK_MS = 6000; // a hand in view this long counts, in case recognition struggles
+const FACE_ONLY_HOLD_MS = 2000; // devices where the hand model cannot load
 
 const MAX_DIM = 1200; // longest edge of the uploaded selfie
 const JPEG_QUALITY = 0.85;
@@ -84,6 +88,25 @@ function ErrorNote({ message }: { message: string | null }) {
   );
 }
 
+/** Friendly guidance for each getUserMedia failure. */
+function cameraErrorMessage(err: unknown): string {
+  switch ((err as DOMException)?.name) {
+    case 'NotAllowedError':
+    case 'SecurityError':
+      return 'Camera access is blocked. Allow camera access for asiansin.love in your browser settings, then try again.';
+    case 'NotFoundError':
+    case 'OverconstrainedError':
+      return 'No front camera was found on this device.';
+    case 'NotReadableError':
+    case 'AbortError':
+      return 'Your camera is in use by another app. Close it, then try again.';
+    case 'NotSupportedError':
+      return 'This browser cannot open the camera. Try Chrome or Safari.';
+    default:
+      return 'Live camera is required for verification. Please allow camera access and try again.';
+  }
+}
+
 export default function VerifyPage() {
   const router = useRouter();
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -108,6 +131,9 @@ export default function VerifyPage() {
   const [faceStatus, setFaceStatus] = useState<FaceGateStatus>('no_face');
   const lastResultRef = useRef<FaceGateResult | null>(null);
   const okSinceRef = useRef(0);
+  const poseSinceRef = useRef(0);
+  const handSinceRef = useRef(0);
+  const [poseState, setPoseState] = useState<PoseState>('no_hand');
   const autoCapturedRef = useRef(false);
   const takeSnapshotRef = useRef<() => void>(() => {});
 
@@ -173,24 +199,66 @@ export default function VerifyPage() {
     setCameraOn(false);
   }, []);
 
-  // Always release the camera on unmount
-  useEffect(() => stopCamera, [stopCamera]);
+  // A camera prompt answered after the member left this page must not leave the camera running.
+  const mountedRef = useRef(true);
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+      stopCamera(); // always release the camera on unmount
+    };
+  }, [stopCamera]);
+
+  // Backgrounded (app switch, lock screen): release the camera; the member taps to turn it back on.
+  useEffect(() => {
+    const onHide = () => {
+      if (document.visibilityState === 'hidden' && streamRef.current) stopCamera();
+    };
+    document.addEventListener('visibilitychange', onHide);
+    window.addEventListener('pagehide', onHide);
+    return () => {
+      document.removeEventListener('visibilitychange', onHide);
+      window.removeEventListener('pagehide', onHide);
+    };
+  }, [stopCamera]);
 
   const startCamera = useCallback(async () => {
     setErrorMsg(null);
     setFaceStatus('no_face');
     lastResultRef.current = null;
+    let stream: MediaStream;
     try {
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: 'user', width: { ideal: 960 }, height: { ideal: 1280 } },
-        audio: false,
-      });
-      streamRef.current = stream;
-      setCameraOn(true);
-    } catch {
-      setErrorMsg('Live camera is required for verification. Please allow camera access and try again.');
+      if (!navigator.mediaDevices?.getUserMedia) throw new DOMException('No camera API', 'NotSupportedError');
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: 'user', width: { ideal: 960 }, height: { ideal: 1280 } },
+          audio: false,
+        });
+      } catch (err) {
+        // Some front cameras reject the preferred size: retry with any front camera.
+        if ((err as DOMException)?.name !== 'OverconstrainedError') throw err;
+        stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+      }
+    } catch (err) {
+      setErrorMsg(cameraErrorMessage(err));
       return;
     }
+    if (!mountedRef.current) {
+      stream.getTracks().forEach((t) => t.stop());
+      return;
+    }
+    // A second start (double tap, retry) replaces the first stream instead of leaking it.
+    streamRef.current?.getTracks().forEach((t) => t.stop());
+    streamRef.current = stream;
+    // Unplugged, revoked in settings or taken by another app mid-session.
+    stream.getVideoTracks().forEach((track) => {
+      track.onended = () => {
+        if (streamRef.current !== stream) return;
+        stopCamera();
+        setErrorMsg('The camera stopped. Tap Turn on camera to try again.');
+      };
+    });
+    setCameraOn(true);
     setGateState('loading');
     try {
       gateRef.current = gateRef.current ?? (await import('@/lib/faceGate'));
@@ -199,7 +267,7 @@ export default function VerifyPage() {
     } catch {
       setGateState('error');
     }
-  }, []);
+  }, [stopCamera]);
 
   /** Stuck? Release the stream and start over without reloading the page. */
   const restartCamera = useCallback(() => {
@@ -209,7 +277,9 @@ export default function VerifyPage() {
     startCamera();
   }, [startCamera]);
 
-  // Gate loop: re-evaluates the live frame; only status changes re-render.
+  // Gate loop: re-evaluates the live frame; only status changes re-render. The photo is taken
+  // automatically once the face is aligned AND the requested hand pose is held.
+  const poseId = pose?.id;
   useEffect(() => {
     if (!cameraOn || gateState !== 'ready') return;
     const timer = window.setInterval(() => {
@@ -217,25 +287,35 @@ export default function VerifyPage() {
       const gate = gateRef.current;
       if (!video || !gate) return;
       try {
-        const result = gate.evaluateFaceFrame(video, video.clientWidth, video.clientHeight);
+        const result = gate.evaluateFaceFrame(video, video.clientWidth, video.clientHeight, poseId);
         lastResultRef.current = result;
         setFaceStatus((prev) => (prev === result.status ? prev : result.status));
-            if (result.status === 'ok') {
-              if (okSinceRef.current === 0) okSinceRef.current = Date.now();
-              else if (Date.now() - okSinceRef.current >= 600 && !autoCapturedRef.current) {
-                autoCapturedRef.current = true;
-                takeSnapshotRef.current();
-              }
-            } else {
-              okSinceRef.current = 0;
-            }
+        setPoseState((prev) => (prev === result.pose ? prev : result.pose));
+        const now = Date.now();
+        if (result.status !== 'ok') {
+          okSinceRef.current = 0;
+          poseSinceRef.current = 0;
+          handSinceRef.current = 0;
+          return;
+        }
+        if (okSinceRef.current === 0) okSinceRef.current = now;
+        poseSinceRef.current = result.pose === 'match' ? poseSinceRef.current || now : 0;
+        handSinceRef.current = result.pose === 'match' || result.pose === 'hand' ? handSinceRef.current || now : 0;
+        const ready =
+          (poseSinceRef.current > 0 && now - poseSinceRef.current >= POSE_HOLD_MS) ||
+          (handSinceRef.current > 0 && now - handSinceRef.current >= HAND_FALLBACK_MS) ||
+          (result.pose === 'unavailable' && now - okSinceRef.current >= FACE_ONLY_HOLD_MS);
+        if (ready && !autoCapturedRef.current) {
+          autoCapturedRef.current = true;
+          takeSnapshotRef.current();
+        }
       } catch {
         lastResultRef.current = null;
         setFaceStatus('no_face');
       }
     }, GATE_TICK_MS);
     return () => window.clearInterval(timer);
-  }, [cameraOn, gateState]);
+  }, [cameraOn, gateState, poseId]);
 
   // Attach the stream once the video element is mounted
   useEffect(() => {
@@ -254,6 +334,10 @@ export default function VerifyPage() {
     const check = gate && gateState === 'ready' ? gate.evaluateFaceFrame(video, video.clientWidth, video.clientHeight) : null;
     if (!check || check.status !== 'ok') {
       if (check) setFaceStatus(check.status);
+      autoCapturedRef.current = false;
+      okSinceRef.current = 0;
+      poseSinceRef.current = 0;
+      handSinceRef.current = 0;
       hapticError();
       setErrorMsg('Face not verified. Please align your face in the oval.');
       return;
@@ -261,6 +345,7 @@ export default function VerifyPage() {
     hapticPhotoSnap();
     const { snap, error } = await snapshotFromVideo(video);
     if (!snap) {
+      autoCapturedRef.current = false;
       setErrorMsg(error || 'Could not capture photo. Please try again.');
       return;
     }
@@ -277,10 +362,14 @@ export default function VerifyPage() {
     });
     stopCamera();
   }, [stopCamera, gateState]);
-  takeSnapshotRef.current = takeSnapshot;
+  useEffect(() => {
+    takeSnapshotRef.current = takeSnapshot;
+  }, [takeSnapshot]);
 
   const retake = useCallback(() => {
     okSinceRef.current = 0;
+    poseSinceRef.current = 0;
+    handSinceRef.current = 0;
     autoCapturedRef.current = false;
     if (snapshot) URL.revokeObjectURL(snapshot.previewUrl);
     setSnapshot(null);
@@ -297,7 +386,8 @@ export default function VerifyPage() {
       form.append('selfie', snapshot.blob, 'selfie.jpg');
       form.set('faceCheck', JSON.stringify(snapshot.faceCheck));
       const res = await fetch('/api/verify/submit', { method: 'POST', body: form });
-      const data = await res.json();
+      // A proxy error page (413, 504) is not JSON: show a friendly message, not a parse error.
+      const data = await res.json().catch(() => ({}));
       if (res.status === 410) {
         // Token expired: issue a fresh pose rather than leaving the member stuck.
         setSnapshot(null);
@@ -401,7 +491,11 @@ export default function VerifyPage() {
                   ? 'Starting face check...'
                   : gateState === 'error'
                     ? "Couldn't start the face check. Tap Restart."
-                    : FACE_GATE_MESSAGES[faceStatus]}
+                    : faceStatus !== 'ok' || poseState === 'unavailable'
+                      ? FACE_GATE_MESSAGES[faceStatus]
+                      : poseState === 'match'
+                        ? 'Pose detected. Hold still...'
+                        : `Now copy the pose: ${pose.label}`}
               </div>
             </div>
           </div>
@@ -441,7 +535,9 @@ export default function VerifyPage() {
 
           <div className="absolute bottom-8 left-0 right-0 flex flex-col items-center gap-2 z-50">
             <span className="text-[11px] text-white/85 font-medium">
-              {gateState === 'ready' && faceStatus === 'ok' ? 'Hold pose steady to capture' : 'Face in the oval, pose clearly visible'}
+              {gateState === 'ready' && faceStatus === 'ok' && poseState === 'match'
+                ? 'Taking your photo...'
+                : 'Face in the oval, then copy the pose. The photo takes itself.'}
             </span>
           </div>
         </div>
