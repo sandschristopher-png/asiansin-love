@@ -21,7 +21,7 @@ const STEPS = [
 
 const FEATURES = [
   {
-    title: 'Zero Bots. Real People.',
+    title: 'Proactive Scam & Bot Screening',
     body: 'Every profile goes through photo screening before it earns a verified badge. Public reputation scores keep conversations genuine.',
     src: '/secured.webp',
     alt: 'Illustrated member holding a verification shield',
@@ -48,7 +48,7 @@ const FEATURES = [
 
 export function HeroLanding() {
   return (
-    <div className="w-full bg-white min-h-screen overflow-x-hidden text-[#413B5E] selection:bg-[#9A93BC]/15 selection:text-[#9A93BC]">
+    <div className="w-full bg-white min-h-screen overflow-x-hidden text-[#413B5E] selection:bg-[#8574B7]/15 selection:text-[#8574B7]">
       {/* Header */}
       <header className="sticky top-0 z-40 w-full bg-white/90 backdrop-blur-md border-b border-[#D0CDE1]">
         <div className={`${CONTAINER} h-14 sm:h-16 flex items-center justify-between`}>
@@ -69,16 +69,16 @@ export function HeroLanding() {
         <div className={CONTAINER}>
           <div className="text-center max-w-xl mx-auto">
             <h2 className="font-brand text-xl sm:text-2xl md:text-3xl font-extrabold tracking-tight text-[#413B5E]">How connections happen</h2>
-            <p className="mt-3 text-sm sm:text-base text-[#655E72]">Match on intention, not luck. Three steps to meeting someone real.</p>
+            <p className="mt-3 text-sm sm:text-base text-[#413B5E]/75">Match on intention, not luck. Three steps to meeting someone real.</p>
           </div>
           <div className="mt-8 sm:mt-12 grid grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6">
             {STEPS.map(({ step, title, desc }) => (
               <div key={step} className="bg-white rounded-3xl p-5 sm:p-8 border border-[#D0CDE1] shadow-xs flex flex-col items-start">
-                <span className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-[#E8E6F1] text-[#9A93BC] font-brand font-bold text-sm flex items-center justify-center">
+                <span className="w-9 h-9 sm:w-10 sm:h-10 rounded-2xl bg-[#E8E6F1] text-[#8574B7] font-brand font-bold text-sm flex items-center justify-center">
                   {step}
                 </span>
                 <p className="mt-4 sm:mt-5 text-base sm:text-lg font-bold text-[#413B5E] leading-snug">{title}</p>
-                <p className="mt-2 text-sm text-[#655E72] leading-relaxed">{desc}</p>
+                <p className="mt-2 text-sm text-[#413B5E]/75 leading-relaxed">{desc}</p>
               </div>
             ))}
           </div>
@@ -94,7 +94,7 @@ export function HeroLanding() {
               {/* Copy Column */}
               <div className={`lg:col-span-6 text-center lg:text-left ${imageRight ? 'lg:order-1' : 'lg:order-2'}`}>
                 <h2 className="font-brand text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-[#413B5E] leading-tight">{title}</h2>
-                <p className="mt-3 sm:mt-4 text-sm sm:text-base md:text-lg leading-relaxed text-[#655E72] max-w-lg mx-auto lg:mx-0">{body}</p>
+                <p className="mt-3 sm:mt-4 text-sm sm:text-base md:text-lg leading-relaxed text-[#413B5E]/75 max-w-lg mx-auto lg:mx-0">{body}</p>
               </div>
 
               {/* Illustration Column with Ambient Halo */}
@@ -124,7 +124,7 @@ export function HeroLanding() {
       <section className="py-14 sm:py-24 md:py-32 bg-white border-t border-[#D0CDE1]/50">
         <div className={`${CONTAINER} text-center max-w-2xl mx-auto`}>
           <h2 className="font-brand text-2xl sm:text-3xl md:text-4xl font-extrabold tracking-tight text-[#413B5E]">Be one of our first members.</h2>
-          <p className="mt-3 sm:mt-4 text-sm sm:text-base md:text-lg text-[#655E72]">
+          <p className="mt-3 sm:mt-4 text-sm sm:text-base md:text-lg text-[#413B5E]/75">
             Join free and start meeting genuine singles across Southeast Asia today.
           </p>
           <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row items-center justify-center gap-3 sm:gap-4">
@@ -143,7 +143,7 @@ export function HeroLanding() {
       <footer className="bg-[#E8E6F1]/20 py-8 sm:py-12 border-t border-[#D0CDE1]">
         <div className={`${CONTAINER} text-center space-y-3`}>
           <BrandLogo href="/" size="md" className="justify-center" />
-          <p className="text-xs font-medium text-[#655E72]">Real connection for genuine singles across Southeast Asia.</p>
+          <p className="text-xs font-medium text-[#413B5E]/75">Real connection for genuine singles across Southeast Asia.</p>
         </div>
       </footer>
     </div>

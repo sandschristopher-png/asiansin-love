@@ -48,24 +48,23 @@ export default function Hero() {
 
           {/* Main Content Column */}
           <div className="w-full lg:max-w-xl">
-            {/* Founder Pill */}
-            <div className="inline-flex items-center gap-2 rounded-full border border-[#D0CDE1] bg-[#E8E6F1]/60 px-3 py-1 text-xs font-semibold text-[#413B5E] sm:text-sm">
-              <span className="h-2 w-2 rounded-full bg-[#8574B7] animate-pulse" />
-              Built by an Expat in the Philippines
+            {/* Trust badge */}
+            <div className="inline-flex items-center gap-2 rounded-full border border-[#D0CDE1] bg-[#E8E6F1]/40 px-3.5 py-1.5 text-xs font-semibold text-[#8574B7]">
+              Photo Verified &bull; Real Connections
             </div>
 
             {/* Headline */}
-            <h1 className="mt-4 text-2xl font-black tracking-tight text-[#413B5E] sm:text-4xl lg:text-5xl leading-tight sm:leading-tight">
+            <h1 className="mt-4 text-2xl font-black tracking-tight text-[#413B5E] sm:text-4xl lg:text-[44px] leading-tight sm:leading-tight">
               Real connections.{' '}
-              <span className="block sm:inline text-[#8574B7]">
-                Zero scam bots.
+              <span className="block sm:whitespace-nowrap text-[#8574B7]">
+                Selfie-Verified Profiles.
               </span>{' '}
-              No paywalls to chat.
+              Free to Match &amp; Connect.
             </h1>
 
             {/* Supporting Copy */}
             <p className="mt-3 text-sm leading-relaxed text-[#413B5E]/75 sm:mt-4 sm:text-base lg:text-lg">
-              Tired of dating apps overrun by catfishes, GCash begging, and $30 monthly fees just to read a simple message? Asians in Love is a lightweight, verified platform built for genuine cross-border relationships.
+              Tired of dating apps overrun by catfishes, GCash begging, and $30 monthly fees just to read a simple message? Asians in Love is a lightweight, verified platform built for genuine cross-border relationships. Free members get 30 daily Sparks and 5 new chats a day; Plus offers expanded access.
             </p>
 
             {/* Mobile-First Action Buttons (Stacked on mobile, row on tablet/desktop) */}
@@ -95,7 +94,7 @@ export default function Hero() {
             <div className="mt-7 grid grid-cols-3 gap-2 border-t border-[#E8E6F1] pt-5 text-center sm:text-left">
               <div>
                 <p className="text-xs font-bold text-[#413B5E] sm:text-sm">Free to Match &amp; Connect</p>
-                <p className="text-[11px] text-[#413B5E]/65">No chat paywalls</p>
+                <p className="text-[11px] text-[#413B5E]/65">Plus for expanded access</p>
               </div>
               <div className="border-x border-[#E8E6F1] px-1 sm:px-2">
                 <p className="text-xs font-bold text-[#413B5E] sm:text-sm">Verified</p>
@@ -165,9 +164,9 @@ $hero = ($hero -replace "`r`n", "`n").Replace('__HERO_SRC__', $photoSrc).TrimEnd
 # ---------- Phase 2: preserved copy ----------
 Write-Host '== Phase 2: preserved copy'
 $copy = @(
-  'Built by an Expat in the Philippines', 'Real connections.', 'Zero scam bots.', 'No paywalls to chat.',
-  'Tired of dating apps overrun by catfishes, GCash begging, and $30 monthly fees just to read a simple message? Asians in Love is a lightweight, verified platform built for genuine cross-border relationships.',
-  'Join Free in 30 Seconds', 'Explore Profiles', 'By joining you agree to our Terms', 'Free to Match &amp; Connect', 'No chat paywalls', 'Verified', 'Anti-scam checks', 'Mobile Web', 'No app install'
+  'Photo Verified &bull; Real Connections', 'Real connections.', 'Selfie-Verified Profiles.', 'Free to Match &amp; Connect.',
+  'Tired of dating apps overrun by catfishes, GCash begging, and $30 monthly fees just to read a simple message? Asians in Love is a lightweight, verified platform built for genuine cross-border relationships. Free members get 30 daily Sparks and 5 new chats a day; Plus offers expanded access.',
+  'Join Free in 30 Seconds', 'Explore Profiles', 'By joining you agree to our Terms', 'Free to Match &amp; Connect', 'Plus for expanded access', 'Verified', 'Anti-scam checks', 'Mobile Web', 'No app install'
 )
 foreach ($c in $copy) {
   if (-not $hero.Contains($c)) { Write-Host "MISS: copy changed: $c. Nothing written."; exit 1 }
