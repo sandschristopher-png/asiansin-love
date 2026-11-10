@@ -10,14 +10,12 @@ import { supabase } from '@/lib/supabase/client';
 import { INTENT_OPTIONS, normalizeIntent } from '@/lib/intents';
 import { CHILDREN_FILTERS, ENGLISH_LEVEL_OPTIONS, RELATIONSHIP_INTENT_FILTERS, discoverQuery } from '@/lib/discoverFilters';
 import { ActionType, getLocalCardActions, persistCardAction } from '@/lib/interactions';
-import { AudioPill } from '@/components/AudioPill';
 import { isTrustedVoiceIntroUrl } from '@/lib/audio';
 import { usePresentUserIds } from '@/lib/realtimePresence';
 import { sharedTraits } from '@/lib/rhythm';
 import { InCommonCard, RhythmPill } from '@/components/profile/RhythmBadges';
 import { SparkHeartButton } from '@/components/SparkHeartButton';
 import { PhotoCarousel } from '@/components/cards/PhotoCarousel';
-import { MutualSparkModal } from '@/components/MutualSparkModal';
 import { useActionToast } from '@/components/ActionToast';
 import { VisitingBadge, type TravelNotice } from '@/components/VisitingBadge';
 import { NewMemberPill } from '@/components/profile/TrustBadges';
@@ -39,6 +37,9 @@ import dynamic from 'next/dynamic';
 /** Loaded on first open (keeps the Plus checkout sheet out of the Discover bundle). */
 const AILPlusModal = dynamic(() => import('@/components/AILPlusModal').then((m) => m.AILPlusModal), { ssr: false });
 const SparkLimitModal = dynamic(() => import('@/components/SparkLimitModal').then((m) => m.SparkLimitModal), { ssr: false });
+/** Voice pill (pulls in framer-motion) and the match modal load after the feed paints. */
+const AudioPill = dynamic(() => import('@/components/AudioPill').then((m) => m.AudioPill), { ssr: false });
+const MutualSparkModal = dynamic(() => import('@/components/MutualSparkModal').then((m) => m.MutualSparkModal), { ssr: false });
 
 /** "Near Me" radius only when the viewer has no country on their profile. */
 const NEAR_ME_FALLBACK_KM = 150;
@@ -612,12 +613,22 @@ function DiscoverContent() {
 
   const [sparkLimitNotice, setSparkLimitNotice] = useState<string | null>(null);
   const [sparkLimitOpen, setSparkLimitOpen] = useState(false);
+  /** Sparks waiting on /api/spark: a second tap on the same card never sends a second request. */
+  const sparkInFlight = useRef<Set<string>>(new Set());
+  /** Set by a QUOTA_EXCEEDED answer: later taps open the limit sheet without calling the API. */
+  const sparkQuotaHit = useRef(false);
 
   const triggerAction = async (id: string, action: ActionType, name?: string, avatarUrl?: string) => {
     const currentAction = cardActions[id];
     const isCurrentlyActive = currentAction === action;
     // A Spark is one-way from the card (Pairs / with.is): no un-spark, no double send.
     if (action === 'like' && isCurrentlyActive) return;
+    if (action === 'like' && sparkInFlight.current.has(id)) return;
+    if (action === 'like' && sparkQuotaHit.current) {
+      hapticWarning();
+      setSparkLimitOpen(true);
+      return;
+    }
     if (action === 'like') {
       setSparkLimitNotice(`Spark sent to ${name || 'this member'}`);
       setTimeout(() => setSparkLimitNotice((cur) => (cur?.startsWith('Spark sent') ? null : cur)), 2200);
@@ -654,6 +665,7 @@ function DiscoverContent() {
         setSparkLimitNotice(message);
         setTimeout(() => setSparkLimitNotice((cur) => (cur === message ? null : cur)), 4000);
       };
+      sparkInFlight.current.add(id);
       try {
         const res = await fetch('/api/spark', {
           method: 'POST',
@@ -664,6 +676,7 @@ function DiscoverContent() {
         if (!res.ok) {
           undoOptimisticSpark();
           if (res.status === 429 && data?.code === 'QUOTA_EXCEEDED') {
+            sparkQuotaHit.current = true;
             hapticWarning();
             setSparkLimitNotice(null);
             setSparkLimitOpen(true);
@@ -687,6 +700,8 @@ function DiscoverContent() {
       } catch {
         undoOptimisticSpark();
         showSparkNotice('Could not send your Spark. Check your connection and try again.');
+      } finally {
+        sparkInFlight.current.delete(id);
       }
     }
   };
@@ -1046,7 +1061,7 @@ function DiscoverContent() {
                     recentlyActive={profile.recentlyActive}
                     createdAt={profile.created_at}
                     placeholders={profile.photoPlaceholders}
-                    priority={cardIdx < 4}
+                    priority={cardIdx < 2}
                   />
                   <SparkHeartButton
                     sparked={isLiked}

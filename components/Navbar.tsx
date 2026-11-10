@@ -13,6 +13,10 @@ import { adminRoleOf, isStaff } from '@/lib/adminRoles';
 import { supabase } from '@/lib/supabase/client';
 import { hardSignOut } from '@/lib/hardSignOut';
 import { PlusBadge } from '@/components/ui/PlusBadge';
+
+/** Own-profile fields the header reads: username, Plus status (isPlusProfile) and staff role. */
+const NAV_PROFILE_COLUMNS =
+  'id, username, is_plus, is_premium, subscription_status, current_period_end, plus_expires_at, admin_role, role, is_admin';
 /** Signed-in areas: the header never offers "Sign In" here (middleware already requires a session). */
 const IN_APP_PREFIXES = ['/discover', '/messages', '/favorites', '/profile', '/notifications', '/announcements', '/chat', '/settings', '/plus', '/verify'];
 
@@ -50,7 +54,7 @@ export function Navbar() {
           .eq('is_read', false)
           .not('type', 'in', NON_ANNOUNCEMENT_FILTER),
         supabase.from('announcements').select('published_at').order('published_at', { ascending: false }).limit(1).maybeSingle(),
-        supabase.from('profiles').select('*').eq('id', user.id).maybeSingle(),
+        supabase.from('profiles').select('last_read_announcements_at').eq('id', user.id).maybeSingle(),
       ]);
       const broadcastUnread = hasUnreadBroadcast(latest?.published_at, me?.last_read_announcements_at);
       if (!cancelled) setHasUnreadAnnouncements((count ?? 0) > 0 || broadcastUnread);
@@ -72,7 +76,7 @@ export function Navbar() {
       if (user) {
         const { data } = await supabase
           .from('profiles')
-          .select('*')
+          .select(NAV_PROFILE_COLUMNS)
           .eq('id', user.id)
           .single();
         if (data) {
@@ -89,7 +93,7 @@ export function Navbar() {
       if (currentUser) {
         const { data } = await supabase
           .from('profiles')
-          .select('*')
+          .select(NAV_PROFILE_COLUMNS)
           .eq('id', currentUser.id)
           .single();
         if (data) {

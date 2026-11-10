@@ -25,13 +25,15 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Invalid target user' }, { status: 400 })
     }
 
-    // Check if spark exists
-    const { data: existing } = await supabase
-      .from('sparks')
-      .select('id')
-      .eq('sender_id', user.id)
-      .eq('receiver_id', targetUserId)
-      .maybeSingle()
+    // Every read this request needs, in one parallel round trip: my existing Spark, theirs (mutual),
+    // the daily allowance and my username for the notification. Each is an indexed single-row
+    // lookup (sparks: sender_id, created_at; get_spark_allowance exits early for exempt members).
+    const [{ data: existing }, { data: reverseSpark }, allowanceResult, { data: senderProfile }] = await Promise.all([
+      supabase.from('sparks').select('id').eq('sender_id', user.id).eq('receiver_id', targetUserId).maybeSingle(),
+      supabase.from('sparks').select('id').eq('sender_id', targetUserId).eq('receiver_id', user.id).maybeSingle(),
+      supabase.rpc('get_spark_allowance', { p_user_id: user.id }),
+      supabase.from('profiles').select('username').eq('id', user.id).maybeSingle(),
+    ])
 
     if (existing) {
       if (action === 'toggle') {
@@ -43,18 +45,12 @@ export async function POST(req: Request) {
         return NextResponse.json({ success: true, sparked: false, is_mutual: false, mutual: false })
       }
       // Already sparked: keep it and report the current mutual state.
-      const { data: mutualExisting } = await supabase
-        .from('sparks')
-        .select('id')
-        .eq('sender_id', targetUserId)
-        .eq('receiver_id', user.id)
-        .maybeSingle()
-      return NextResponse.json({ success: true, sparked: true, is_mutual: !!mutualExisting, mutual: !!mutualExisting })
+      return NextResponse.json({ success: true, sparked: true, is_mutual: !!reverseSpark, mutual: !!reverseSpark })
     }
 
     // The rolling 24h allowance lives in one place: public.get_spark_allowance (free: 30; Plus
     // members and women are exempt). If the check itself fails, the Spark still goes through.
-    const { data: allowance, error: allowanceError } = await supabase.rpc('get_spark_allowance', { p_user_id: user.id })
+    const { data: allowance, error: allowanceError } = allowanceResult
     if (allowanceError) console.error('[api/spark] allowance check failed:', allowanceError.message)
     if (!allowanceError && allowance?.allowed === false) {
       return NextResponse.json(
@@ -72,25 +68,16 @@ export async function POST(req: Request) {
       receiver_id: targetUserId,
     })
 
+    // 23505: a second tap raced this one and its insert won; the Spark exists, so report success.
+    if (insertError?.code === '23505') {
+      return NextResponse.json({ success: true, sparked: true, is_mutual: !!reverseSpark, mutual: !!reverseSpark })
+    }
     if (insertError) {
       console.error('[api/spark] insert into sparks failed:', insertError.code, insertError.message, insertError.details)
       return NextResponse.json({ error: 'Could not send your Spark. Please try again.' }, { status: 500 })
     }
 
-    // Check if mutual spark exists
-    const { data: mutual } = await supabase
-      .from('sparks')
-      .select('id')
-      .eq('sender_id', targetUserId)
-      .eq('receiver_id', user.id)
-      .maybeSingle()
-
-    // Hydrate sender identity for the notification copy
-    const { data: senderProfile } = await supabase
-      .from('profiles')
-      .select('username, avatar_url')
-      .eq('id', user.id)
-      .maybeSingle()
+    const mutual = reverseSpark
     const senderName = senderProfile?.username || 'Someone'
 
     if (mutual) {

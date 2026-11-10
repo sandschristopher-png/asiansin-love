@@ -47,6 +47,8 @@ interface CachedSparksState {
 }
 
 const CACHE_KEY = 'ail_sparks_fast_cache_v2';
+/** Only what a Sparks card renders (name, age, place, photos, badges). */
+const SPARK_CARD_COLUMNS = 'id, username, age, birthdate, city, country, avatar_url, photos, reputation_score, is_verified, is_plus';
 
 function getPublicName(p: ProfileCardData): string {
   return publicName(p); // username only, never the Google sign-in name
@@ -339,7 +341,7 @@ for (const [label, res] of [['outgoing', outSparksRes], ['incoming', inSparksRes
         const allIds = Array.from(new Set<string>([...mergedOutIds, ...inIds]));
         const profileMap = new Map<string, ProfileCardData>();
         if (allIds.length > 0) {
-          const { data: profilesData } = await supabaseClient.from('profiles').select('*').in('id', allIds);
+          const { data: profilesData } = await supabaseClient.from('profiles').select(SPARK_CARD_COLUMNS).in('id', allIds);
           for (const pr of ((profilesData || []) as ProfileCardData[])) {
             profileMap.set(pr.id, pr);
           }
