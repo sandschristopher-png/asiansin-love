@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { Heart } from 'lucide-react';
+import { hapticMedium } from '@/lib/haptics';
 
 const POP_MS = 380; // a little longer than the 360 ms .animate-heart-pop so it always finishes
 
@@ -9,7 +10,7 @@ const POP_MS = 380; // a little longer than the 360 ms .animate-heart-pop so it 
  * Discover-card Spark button (Pairs / with.is model): a symmetric heart that only ever sends a
  * Spark. It never turns into a message button; chat opens only after a mutual Spark.
  *   unsparked: bare white outline heart floating on the photo (soft drop shadow, no circle, no label)
- *   tap:       360 ms spring pop + 12 ms haptic, heart fills purple (no particles / sparkles)
+ *   tap:       360 ms spring pop + 25 ms haptic, heart fills purple (no particles / sparkles)
  *   sparked:   solid purple heart, disabled (no un-spark from the card)
  *
  * Position it with `className` (e.g. "absolute top-3 right-3 z-20"). The component sets no
@@ -53,13 +54,7 @@ export function SparkHeartButton({
         setIsPopping(true);
         if (popTimer.current !== null) window.clearTimeout(popTimer.current);
         popTimer.current = window.setTimeout(() => setIsPopping(false), POP_MS);
-        if (typeof window !== 'undefined' && 'vibrate' in navigator) {
-          try {
-            navigator.vibrate(12);
-          } catch {
-            // vibration is best-effort
-          }
-        }
+        hapticMedium();
         onSpark();
       }}
       className={`p-1 cursor-pointer transition-transform active:scale-90 hover:scale-110 disabled:cursor-default ${className}`}

@@ -51,7 +51,5 @@ export const isPlusPlanId = (v: unknown): v is PlusPlanId => v === '1m' || v ===
 
 export const plusPlan = (id: PlusPlanId): PlusPlan => PLUS_PLANS.find((p) => p.id === id) ?? PLUS_PLANS[0];
 
-/** Free vs Plus daily Spark allowance (enforced in /api/spark). */
-export const FREE_DAILY_SPARKS = 20;
-/** Fair-use ceiling for Plus (anti-bot only; no real member sends this many in a day). */
-export const PLUS_DAILY_SPARK_FAIR_USE = 500;
+/** Free daily Sparks, for display. Enforced by public.get_spark_allowance: keep the two in sync. */
+export const FREE_DAILY_SPARKS = 30;

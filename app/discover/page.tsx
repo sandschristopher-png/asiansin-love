@@ -1,6 +1,6 @@
 'use client';
 import { useRef } from 'react';
-import React, { useState, useEffect, useMemo, Suspense } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useMemo, Suspense } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import VerifiedBadge from '@/components/VerifiedBadge';
@@ -33,10 +33,12 @@ import { HEIGHT_MAX_CM, HEIGHT_MIN_CM } from '@/lib/lifestyle';
 import { readLanguages } from '@/lib/constants/languages';
 import { ReputationBadge } from '@/components/ReputationBadge';
 import { PlusBadge } from '@/components/ui/PlusBadge';
+import { hapticWarning } from '@/lib/haptics';
 import dynamic from 'next/dynamic';
 
 /** Loaded on first open (keeps the Plus checkout sheet out of the Discover bundle). */
 const AILPlusModal = dynamic(() => import('@/components/AILPlusModal').then((m) => m.AILPlusModal), { ssr: false });
+const SparkLimitModal = dynamic(() => import('@/components/SparkLimitModal').then((m) => m.SparkLimitModal), { ssr: false });
 
 /** "Near Me" radius only when the viewer has no country on their profile. */
 const NEAR_ME_FALLBACK_KM = 150;
@@ -259,11 +261,31 @@ function normalizeGenderValue(raw?: string | null): 'female' | 'male' | 'male' {
 // server already filtered (opposite gender, not sparked, not blocked). The old localStorage copy
 // survived reloads and painted stale, unfiltered cards before the real feed arrived.
 let memoryDiscoverCache: { profiles: ProfileItem[] } | null = null;
+// Same server-filtered feed, surviving a reload in this tab: paints at once, then revalidates.
+// Default feed only, capped so it stays well inside the sessionStorage quota.
+const DISCOVER_CACHE_KEY = 'ail_discover_fast_cache_v1';
+const DISCOVER_CACHE_MAX = 48;
+function readDiscoverSessionCache(): ProfileItem[] {
+  try {
+    const parsed = JSON.parse(sessionStorage.getItem(DISCOVER_CACHE_KEY) || 'null');
+    return Array.isArray(parsed?.profiles) ? parsed.profiles : [];
+  } catch {
+    return [];
+  }
+}
+function writeDiscoverSessionCache(profiles: ProfileItem[]) {
+  try {
+    if (profiles.length === 0) sessionStorage.removeItem(DISCOVER_CACHE_KEY);
+    else sessionStorage.setItem(DISCOVER_CACHE_KEY, JSON.stringify({ profiles: profiles.slice(0, DISCOVER_CACHE_MAX), timestamp: Date.now() }));
+  } catch {}
+}
 function clearDiscoverCache() {
   memoryDiscoverCache = null;
+  try { sessionStorage.removeItem(DISCOVER_CACHE_KEY); } catch {}
 }
 function getInitialDiscoverFeed(): ProfileItem[] {
-  return memoryDiscoverCache?.profiles?.length ? memoryDiscoverCache.profiles.slice() : [];
+  if (memoryDiscoverCache?.profiles?.length) return memoryDiscoverCache.profiles.slice();
+  return typeof window === 'undefined' ? [] : readDiscoverSessionCache();
 }
 
 function DiscoverContent() {
@@ -279,10 +301,9 @@ function DiscoverContent() {
     interests: [],
     languages: null,
   });
-  const initialFeed = getInitialDiscoverFeed();
-  const [profiles, setProfiles] = useState<ProfileItem[]>(() => initialFeed);
+  const [profiles, setProfiles] = useState<ProfileItem[]>(getInitialDiscoverFeed);
   const presentIds = usePresentUserIds();
-  const [isLoading, setIsLoading] = useState(() => initialFeed.length === 0);
+  const [isLoading, setIsLoading] = useState(() => profiles.length === 0);
   const [pullDistance, setPullDistance] = useState(0);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const pullStartY = useRef<number | null>(null);
@@ -496,6 +517,7 @@ function DiscoverContent() {
           if (Array.isArray(payload.profiles)) {
             setCardActions((prev) => reconcileSparks(prev, payload.profiles));
             setProfiles(payload.profiles);
+            writeDiscoverSessionCache(payload.profiles);
           }
         }
       } catch (err) {
@@ -518,6 +540,7 @@ function DiscoverContent() {
         if (Array.isArray(payload.profiles)) {
           setCardActions((prev) => reconcileSparks(prev, payload.profiles));
           setProfiles(payload.profiles);
+          if (feedUrlRef.current === '/api/discover') writeDiscoverSessionCache(payload.profiles);
         }
       }
     } catch {
@@ -588,6 +611,7 @@ function DiscoverContent() {
   };
 
   const [sparkLimitNotice, setSparkLimitNotice] = useState<string | null>(null);
+  const [sparkLimitOpen, setSparkLimitOpen] = useState(false);
 
   const triggerAction = async (id: string, action: ActionType, name?: string, avatarUrl?: string) => {
     const currentAction = cardActions[id];
@@ -632,6 +656,12 @@ function DiscoverContent() {
             return next;
           });
           persistCardAction(supabase, id, 'like', true);
+          if (res.status === 429 && data?.code === 'QUOTA_EXCEEDED') {
+            hapticWarning();
+            setSparkLimitNotice(null);
+            setSparkLimitOpen(true);
+            return;
+          }
           setSparkLimitNotice(data?.error || 'Spark limit reached - try again later.');
           setTimeout(() => setSparkLimitNotice(null), 4000);
           return;
@@ -1002,7 +1032,7 @@ function DiscoverContent() {
                     recentlyActive={profile.recentlyActive}
                     createdAt={profile.created_at}
                     placeholders={profile.photoPlaceholders}
-                    priority={cardIdx < 2}
+                    priority={cardIdx < 4}
                   />
                   <SparkHeartButton
                     sparked={isLiked}
@@ -1043,12 +1073,12 @@ function DiscoverContent() {
                       <p className="text-[11px] text-white/90 font-medium mt-0.5 truncate pr-7">
                         {formattedLocation}
                       </p>
+                      {/* Always rendered at one height, so names line up across both columns. */}
                       {(() => {
                         const common = sharedTraits(viewerTraits, profile);
-                        if (!profile.replyPace && common.length === 0) return null;
                         return (
-                          <div className="mt-1 flex flex-col items-start gap-1 min-w-0">
-                            <RhythmPill field="reply_pace" value={profile.replyPace} variant="glass" />
+                          <div className="mt-1 h-6 pr-7 flex items-center gap-1.5 overflow-hidden whitespace-nowrap min-w-0">
+                            <RhythmPill field="reply_pace" value={profile.replyPace} variant="glass" className="min-w-0" />
                             <InCommonCard items={common} compact />
                           </div>
                         );
@@ -1485,6 +1515,7 @@ function DiscoverContent() {
             document.body
           )}
 
+      {sparkLimitOpen && <SparkLimitModal open onClose={() => setSparkLimitOpen(false)} />}
       {plusModalOpen && (
         <AILPlusModal open onClose={() => setPlusModalOpen(false)} title="See who Sparked you with Plus" returnPath="/discover" />
       )}
@@ -1514,6 +1545,10 @@ function DiscoverFeed() {
 export default function AuthGate() {
   const router = useRouter();
   const [authState, setAuthState] = useState<'loading' | 'member'>('loading');
+  // A cached feed paints before the network check; the getUser check below still redirects.
+  useLayoutEffect(() => {
+    if (memoryDiscoverCache?.profiles?.length || readDiscoverSessionCache().length > 0) setAuthState('member');
+  }, []);
   useEffect(() => {
     let mounted = true;
     supabase.auth.getUser().then(({ data, error }) => {

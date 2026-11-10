@@ -1,8 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { NextResponse } from 'next/server'
 import { sendPushToUser } from '@/lib/pushSender'
-import { isPlusProfile } from '@/lib/plus'
-import { FREE_DAILY_SPARKS, PLUS_DAILY_SPARK_FAIR_USE } from '@/lib/plusPlans'
+import { FREE_DAILY_SPARKS } from '@/lib/plusPlans'
 
 // POST { targetUserId, action?: 'spark' | 'toggle' }
 //   Writes public.sparks (sender_id = me, receiver_id = target); /favorites "You Sparked" reads
@@ -53,25 +52,15 @@ export async function POST(req: Request) {
       return NextResponse.json({ success: true, sparked: true, is_mutual: !!mutualExisting, mutual: !!mutualExisting })
     }
 
-    // Anti-spam barrier: cap outbound sparks per rolling 24h window
-    const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString()
-    const { count: sparksLast24h } = await supabase
-      .from('sparks')
-      .select('id', { count: 'exact', head: true })
-      .eq('sender_id', user.id)
-      .gte('created_at', twentyFourHoursAgo)
-
-    // Free: 20 Sparks / 24h. Plus: unlimited (a fair-use ceiling only stops scripted abuse).
-    const { data: me } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle()
-    const plus = isPlusProfile(me)
-    const DAILY_SPARK_CAP = plus ? PLUS_DAILY_SPARK_FAIR_USE : FREE_DAILY_SPARKS
-    if ((sparksLast24h ?? 0) >= DAILY_SPARK_CAP) {
+    // The rolling 24h allowance lives in one place: public.get_spark_allowance (free: 30; Plus
+    // members and women are exempt). If the check itself fails, the Spark still goes through.
+    const { data: allowance, error: allowanceError } = await supabase.rpc('get_spark_allowance', { p_user_id: user.id })
+    if (allowanceError) console.error('[api/spark] allowance check failed:', allowanceError.message)
+    if (!allowanceError && allowance?.allowed === false) {
       return NextResponse.json(
         {
-          error: plus
-            ? 'You have sent a lot of Sparks today. Take a break and try again later.'
-            : `You've used your ${FREE_DAILY_SPARKS} Sparks for today. Plus members get unlimited Sparks.`,
-          code: plus ? 'SPARK_FAIR_USE' : 'SPARK_LIMIT_FREE',
+          error: `You've used your ${FREE_DAILY_SPARKS} Sparks for today. Plus members get unlimited Sparks.`,
+          code: 'QUOTA_EXCEEDED',
         },
         { status: 429 }
       )

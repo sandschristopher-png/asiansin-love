@@ -45,7 +45,7 @@ export function RhythmPill({
       className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] font-semibold whitespace-nowrap ${tone} ${className}`}
     >
       <opt.icon className="w-3 h-3 shrink-0" aria-hidden />
-      <span>{opt.label}</span>
+      <span className="truncate">{opt.label}</span>
     </span>
   );
 }
@@ -59,7 +59,7 @@ export function InCommonCard({ items, compact = false }: { items: string[]; comp
   if (items.length === 0) return null;
   if (compact) {
     return (
-      <span className="inline-flex items-center whitespace-nowrap bg-black/40 backdrop-blur-md border border-white/20 text-white text-[11px] font-medium px-2.5 py-0.5 rounded-full">
+      <span className="block min-w-0 truncate whitespace-nowrap bg-black/40 backdrop-blur-md border border-white/20 text-white text-[11px] font-medium px-2.5 py-0.5 rounded-full">
         {items.length === 1 ? '1 thing in common' : `${items.length} things in common`}
       </span>
     );

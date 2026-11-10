@@ -22,9 +22,9 @@ const PERKS = [
   { Icon: EyeOff, title: 'Private Mode', text: 'Browse stealthily and only be visible to profiles you spark.' },
   { Icon: Eye, title: 'Visitor History', text: 'Unblur everyone who viewed your profile.' },
   { Icon: Plane, title: 'Passport Roaming', text: 'Browse and spark singles across Manila, Cebu, Bangkok, and Phnom Penh.' },
-  // Accurate to the app: free members start 5 new conversations and send 20 Sparks a day.
+  // Accurate to the app: free members start 5 new conversations and send 30 Sparks a day.
   { Icon: Zap, title: 'Unlimited introductions', text: 'Start as many new conversations a day as you like (free: 5).' },
-  { Icon: Heart, title: 'Unlimited Sparks', text: 'Spark everyone you like (free: 20 a day).' },
+  { Icon: Heart, title: 'Unlimited Sparks', text: 'Spark everyone you like (free: 30 a day).' },
 ];
 
 /**
