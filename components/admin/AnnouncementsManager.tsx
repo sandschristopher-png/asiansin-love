@@ -155,6 +155,7 @@ export function AnnouncementsManager() {
             type="button"
             role="switch"
             aria-checked={pinned}
+            disabled={confirming || sending}
             aria-label="Pin to top"
             onClick={() => setPinned((v) => !v)}
             className={`w-11 h-6 rounded-full relative transition-colors ${pinned ? 'bg-[#8574B7]' : 'bg-[#E8E6F1]'}`}
@@ -165,7 +166,7 @@ export function AnnouncementsManager() {
 
         <button
           type="submit"
-          disabled={!canSend}
+          disabled={!canSend || confirming || sending}
           className="w-full bg-[#8574B7] hover:bg-[#534377] text-white font-medium h-11 px-6 rounded-full shadow-[0_2px_10px_rgba(102,93,150,0.25)] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Send className="w-4 h-4" aria-hidden />

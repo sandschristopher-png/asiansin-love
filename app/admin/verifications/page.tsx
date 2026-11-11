@@ -14,6 +14,7 @@ import {
   Zap,
 } from 'lucide-react';
 import { getPoseById } from '@/lib/poses';
+import { AdminButton } from '@/components/admin/ui';
 import { REPUTATION_RULES } from '@/lib/reputation';
 
 /** Pre-screen shape from older multi-pose submissions. */
@@ -170,22 +171,15 @@ export default function AdminVerificationsPage() {
     const isBusy = busy === `${kind}:${userId}`;
     return (
       <div className="grid grid-cols-2 gap-2 pt-1">
-        <button
-          onClick={() => decide(kind, userId, 'approve')}
-          disabled={isBusy}
-          className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#8574B7] hover:bg-[#8574B7] text-white text-xs font-medium disabled:opacity-50 min-h-[42px]"
-        >
-          {isBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
+        {/* Same AdminButton tones and size as the photo queue. */}
+        <AdminButton size="lg" tone="primary" busy={isBusy} disabled={!!busy} onClick={() => decide(kind, userId, 'approve')}>
+          {!isBusy && <CheckCircle2 className="w-4 h-4" aria-hidden />}
           {labels[0]}
-        </button>
-        <button
-          onClick={() => decide(kind, userId, 'reject')}
-          disabled={isBusy}
-          className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-red-50 border border-red-200 text-red-600 hover:bg-red-100 text-xs font-medium disabled:opacity-50 min-h-[42px]"
-        >
-          {isBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <XCircle className="w-4 h-4" />}
+        </AdminButton>
+        <AdminButton size="lg" tone="danger" disabled={!!busy} onClick={() => decide(kind, userId, 'reject')}>
+          <XCircle className="w-4 h-4" aria-hidden />
           {labels[1]}
-        </button>
+        </AdminButton>
       </div>
     );
   };

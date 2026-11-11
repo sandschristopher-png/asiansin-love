@@ -1,6 +1,7 @@
 'use client';
 
 import React from 'react';
+import { createPortal } from 'react-dom';
 import { Loader2, UserRound, X } from 'lucide-react';
 
 /** JSON fetch for /api/admin/*: resolves the body or throws the route's error message. */
@@ -97,9 +98,12 @@ export function BottomSheet({
     return () => window.removeEventListener('keydown', onKey);
   }, [onClose]);
 
-  return (
+  if (typeof document === 'undefined') return null;
+  // Portalled to <body>: <main> keeps a transform from its page-in animation, which would otherwise
+  // trap this fixed overlay inside <main> and leave the form behind it uncovered and clickable.
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-end justify-center" role="dialog" aria-modal="true" aria-label={title}>
-      <button type="button" className="absolute inset-0 bg-[#413B5E]/35" aria-label="Close" onClick={onClose} />
+      <button type="button" className="absolute inset-0 bg-black/40 backdrop-blur-sm" aria-label="Close" onClick={onClose} />
       <div className="relative w-full max-w-[430px] mx-auto max-h-[85dvh] rounded-t-3xl bg-white shadow-xl flex flex-col">
         <div className="pt-2.5 pb-1 flex justify-center" aria-hidden>
           <span className="w-10 h-1 rounded-full bg-[#E8E6F1]/60" />
@@ -115,7 +119,8 @@ export function BottomSheet({
         </header>
         <div className="flex-1 overflow-y-auto overscroll-contain">{children}</div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
 
