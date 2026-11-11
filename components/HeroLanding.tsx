@@ -3,36 +3,36 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { BrandLogo } from '@/components/BrandLogo';
-import Hero, { LANDING_SHELL } from '@/components/Hero';
+import Hero, { LANDING_SHELL, SignInPrompt } from '@/components/Hero';
 
 const STEPS = [
-  { step: '01', title: 'Share what you want', desc: 'Set your intentions and communication rhythm up front.' },
-  { step: '02', title: 'Browse verified members', desc: 'Genuine profiles screened with photo verification and reputation scores.' },
-  { step: '03', title: 'Connect with confidence', desc: 'Sparks, voice notes, and contact-reveal safety guards that protect your privacy.' },
+  { step: '01', title: 'Share what you want', desc: 'Set your relationship goals, timeline, and travel plans upfront.' },
+  { step: '02', title: 'Browse verified members', desc: 'Browse intentional members confirmed through live selfie verification.' },
+  { step: '03', title: 'Connect with confidence', desc: 'Exchange Sparks, hear authentic voice intros, and connect safely on your own terms.' },
 ];
 
 const FEATURES = [
   {
     title: 'Proactive Scam & Bot Screening',
-    body: 'Every profile goes through photo screening before it earns a verified badge. Public reputation scores keep conversations genuine.',
+    body: 'Every profile undergoes live selfie verification before matching. Duplicate accounts, catfish profiles, and bots are removed immediately.',
     src: '/secured.webp',
     alt: 'Illustrated member holding a verification shield',
   },
   {
     title: 'Clear Relationship Intent',
-    body: 'Meet singles who share your life milestones and cross-border future. No endless casual guessing.',
-    src: '/intention.webp',
-    alt: 'Illustrated member with a hand on her heart',
-  },
-  {
-    title: 'Real Voices, Real Sparks.',
-    body: "Hear a member's real voice before you connect, then send a thoughtful Spark that starts a real conversation.",
+    body: 'Connect with singles who share your values and cross-border future. No endless casual games or hidden motives.',
     src: '/hero-couple.webp',
     alt: 'Illustrated couple smiling together',
   },
   {
-    title: 'Red Flags, Handled.',
-    body: "Scam scripts, catfish behavior, and early asks for money or off-app chats get flagged by message screening and one-tap reports. Bad actors don't last long here.",
+    title: 'Real Voices, Real Sparks.',
+    body: "Hear a member's real voice before you connect, then send a thoughtful Spark that starts a real conversation.",
+    src: '/intention.webp',
+    alt: 'Illustrated member with a hand on her heart',
+  },
+  {
+    title: 'Built-In Scam Protection',
+    body: 'Scam scripts, catfish tactics, and early requests for money are intercepted automatically. One-tap reporting protects you from financial deception.',
     src: '/red-flags.webp',
     alt: 'Illustrated member spotting red flags on his phone',
   },
@@ -100,9 +100,7 @@ export function HeroLanding() {
             >
               Join for Free
             </Link>
-            <Link href="/login" className="text-sm font-medium text-[#8574B7] hover:text-[#534377] transition-colors">
-              Sign In
-            </Link>
+            <SignInPrompt />
           </div>
         </section>
 
