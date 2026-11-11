@@ -3,7 +3,8 @@ import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import { Check } from 'lucide-react';
 import { createClient } from '@/lib/supabase/server';
-import { FREE_DAILY_SPARKS, PLUS_PLANS } from '@/lib/plusPlans';
+import { FREE_DAILY_SPARKS, PLUS_PLANS, plusPlan } from '@/lib/plusPlans';
+import { PlusBadge } from '@/components/ui/PlusBadge';
 
 export const metadata: Metadata = { title: 'Upgrade to Plus' };
 
@@ -13,20 +14,16 @@ export const metadata: Metadata = { title: 'Upgrade to Plus' };
  */
 const UPGRADE_BENEFITS = [
   {
-    title: 'Visiting Soon itinerary',
-    description: 'Share confirmed travel dates up to 6 months ahead on your profile.',
-  },
-  {
-    title: 'Multi-city trips',
-    description: 'Add up to 10 upcoming stops across Asia, each with its own dates.',
+    title: 'Visiting Soon travel itineraries',
+    description: 'Share confirmed travel dates up to 6 months ahead, with up to 10 stops across Asia.',
   },
   {
     title: 'Unlimited daily Sparks',
     description: `Start conversations without the ${FREE_DAILY_SPARKS}-per-day limit (fair use applies).`,
   },
   {
-    title: 'Country filters',
-    description: 'Browse members in the countries you are visiting or planning to move to.',
+    title: 'Arrival country filters',
+    description: 'Browse members in the country you are arriving in or planning to move to.',
   },
   {
     title: 'Read receipts',
@@ -56,33 +53,33 @@ export default async function UpgradePage() {
     redirect('/profile');
   }
 
+  const monthly = plusPlan('1m');
+
   return (
     <div className="w-full min-h-full bg-white px-4 pt-6 pb-36">
       <div className="mx-auto max-w-md">
         <div className="text-center mb-7">
-          <h1 className="text-2xl font-semibold tracking-tight text-[#413B5E]">
-            Meet in <span className="text-[#8574B7]">Asia</span> Plus
+          <h1 className="inline-flex items-center gap-2 font-brand text-2xl font-semibold tracking-tight">
+            <span>
+              <span className="text-[#413B5E]">Meet in </span>
+              <span className="text-[#8574B7]">Asia</span>
+            </span>
+            <PlusBadge />
           </h1>
           <p className="text-sm text-slate-600 mt-2 leading-relaxed">
-            Plan your trips, meet verified members before you land, and connect without daily limits.
+            Plan your trips, meet members before you land, and connect without daily limits.
           </p>
         </div>
 
-        <div className="rounded-2xl border-2 border-[#8574B7] bg-white p-5 shadow-brand-sm">
-          <div className="flex items-center justify-between mb-4">
-            <span className="text-[10px] font-semibold uppercase tracking-wider px-2.5 py-1 bg-[#8574B7] text-white rounded-full">
-              Recommended
-            </span>
-            <span className="text-xs font-medium text-slate-600">1, 3 or 6 months</span>
-          </div>
-
+        <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-brand-sm">
           <div className="mb-5">
             <div className="flex items-baseline gap-1.5">
-              <span className="text-xs font-medium text-slate-600">From</span>
-              <span className="text-3xl font-semibold text-[#413B5E]">{lowestMonthly()}</span>
+              <span className="text-3xl font-semibold text-[#413B5E]">{monthly.total}</span>
               <span className="text-sm font-medium text-slate-600">/ month</span>
             </div>
-            <p className="text-xs text-slate-600 mt-1">Choose your plan on the next step. Cancel anytime in Settings.</p>
+            <p className="text-xs text-slate-600 mt-1 leading-relaxed">
+              Billed monthly. 3- and 6-month plans bring it down to {lowestMonthly()} a month. Cancel anytime in Settings.
+            </p>
           </div>
 
           <ul className="border-t border-slate-200 pt-4 space-y-3.5 mb-6">
@@ -90,7 +87,7 @@ export default async function UpgradePage() {
               <li key={b.title} className="flex items-start gap-3">
                 <Check className="w-5 h-5 text-[#8574B7] shrink-0 mt-0.5" strokeWidth={2.5} aria-hidden />
                 <div>
-                  <p className="text-sm font-semibold text-[#8574B7]">{b.title}</p>
+                  <p className="text-sm font-semibold text-[#413B5E]">{b.title}</p>
                   <p className="text-xs text-slate-600 mt-0.5 leading-relaxed">{b.description}</p>
                 </div>
               </li>
@@ -100,7 +97,7 @@ export default async function UpgradePage() {
           {/* Plan choice and Stripe checkout live on /plus (POST /api/plus/checkout). */}
           <Link
             href="/plus"
-            className="w-full h-12 inline-flex items-center justify-center rounded-full bg-[#8574B7] hover:bg-[#534377] text-white text-sm font-medium transition-colors active:scale-95"
+            className="w-full py-3.5 inline-flex items-center justify-center rounded-full bg-[#8574B7] hover:bg-[#534377] text-white text-sm font-semibold transition-colors active:scale-95"
           >
             Upgrade to Plus
           </Link>
