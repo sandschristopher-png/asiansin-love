@@ -188,7 +188,7 @@ export const CITY_SEO_DATA: Record<string, CitySEOData> = {
     primaryKeywords: ['Thai dating', 'Thai singles', 'Bangkok dating', 'serious dating Thailand', 'meet Thai singles', 'verified singles Bangkok'],
     secondaryKeywords: ['Thailand international dating', 'Bangkok singles', 'long-term relationships Thailand', 'cross-cultural dating Thailand'],
     heroBadge: 'Authentic Thailand Dating',
-    heroHeadline: 'Find Real Connection with',
+    heroHeadline: 'Meet',
     heroHighlight: 'Thai Singles in Bangkok',
     heroSubhead: 'Start a genuine connection with family-oriented singles in Bangkok who are looking for serious dating and lasting partnerships.',
     searchThemes: {
@@ -253,7 +253,7 @@ export const CITY_SEO_DATA: Record<string, CitySEOData> = {
       'Discover the warmth, family devotion, and sincere relationship intent of singles in Cambodia’s bustling capital.',
     searchThemes: {
       heading: 'Serious Dating and Genuine Partnerships in Phnom Penh',
-      description: 'Meet sincere, family-minded singles who value honesty and respect. Find meaningful connection in the Kingdom of Wonder.',
+      description: 'Meet sincere, family-minded singles who value honesty and respect. Build a meaningful connection in the Kingdom of Wonder.',
       searchTags: ['Cambodian Singles', 'Khmer Dating', 'Phnom Penh Singles', 'Serious Relationships', 'Verified Singles'],
     },
     culturalInsights: [
