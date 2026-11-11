@@ -62,14 +62,19 @@ export function ThemedSelect<T extends string | number>({
   const listId = `${buttonId}-list`;
   const rootRef = useRef<HTMLDivElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
   const [open, setOpen] = useState(false);
   const [up, setUp] = useState(false);
+  // Measured on open so the menu fits any screen: maxH caps it to the room on its side, dx nudges
+  // it back inside the viewport edges.
+  const [fit, setFit] = useState<{ maxH?: number; dx: number }>({ dx: 0 });
   const selectedIndex = options.findIndex((o) => o.value === value);
   const [active, setActive] = useState(selectedIndex);
   const selected = selectedIndex >= 0 ? options[selectedIndex] : undefined;
 
   const close = useCallback((refocus = true) => {
     setOpen(false);
+    setFit({ dx: 0 });
     if (refocus) rootRef.current?.querySelector('button')?.focus();
   }, []);
 
@@ -91,15 +96,53 @@ export function ThemedSelect<T extends string | number>({
     close();
   };
 
-  // Close on outside pointer.
+  // Outside tap closes the menu and is swallowed, so it does not also press the link or button
+  // underneath. A screen resize or rotation closes it too (its measured fit would be stale).
   useEffect(() => {
     if (!open) return;
-    const onDown = (e: PointerEvent) => {
-      if (!rootRef.current?.contains(e.target as Node)) close(false);
+    const swallow = (ev: MouseEvent) => {
+      ev.preventDefault();
+      ev.stopPropagation();
     };
+    const onDown = (e: PointerEvent) => {
+      if (rootRef.current?.contains(e.target as Node)) return;
+      close(false);
+      document.addEventListener('click', swallow, { capture: true, once: true });
+      // A drag or scroll produces no click: drop the guard so it cannot eat a later tap.
+      window.setTimeout(() => document.removeEventListener('click', swallow, { capture: true }), 600);
+    };
+    const onResize = () => close(false);
     document.addEventListener('pointerdown', onDown);
-    return () => document.removeEventListener('pointerdown', onDown);
+    window.addEventListener('resize', onResize);
+    return () => {
+      document.removeEventListener('pointerdown', onDown);
+      window.removeEventListener('resize', onResize);
+    };
   }, [open, close]);
+
+  // Fit the menu to the screen before it paints: open toward the side with more room when it does
+  // not fit below, cap its height to that room (it scrolls only then), and keep it 8px inside both
+  // viewport edges. Works for any phone width, height or system font size.
+  useLayoutEffect(() => {
+    if (!open) return;
+    const root = rootRef.current;
+    const menu = menuRef.current;
+    const list = listRef.current;
+    if (!root || !menu || !list) return;
+    const EDGE = 8;
+    const GAP = 6;
+    const t = root.getBoundingClientRect();
+    const natural = list.scrollHeight + 12; // + menu py-1.5
+    const below = window.innerHeight - t.bottom - EDGE - GAP;
+    const above = t.top - EDGE - GAP;
+    const goUp = natural > below && above > below;
+    const room = Math.max(120, goUp ? above : below);
+    const r = menu.getBoundingClientRect();
+    const vw = document.documentElement.clientWidth;
+    const dx = r.left < EDGE ? EDGE - r.left : r.right > vw - EDGE ? vw - EDGE - r.right : 0;
+    setUp(goUp);
+    setFit({ maxH: Math.min(room, grid ? Infinity : 240), dx });
+  }, [open, grid]);
 
   // Keep the active option in view (long lists: ages, countries).
   useLayoutEffect(() => {
@@ -159,6 +202,8 @@ export function ThemedSelect<T extends string | number>({
 
       {open && (
         <div
+          ref={menuRef}
+          style={align === 'right' ? { marginRight: -fit.dx } : { marginLeft: fit.dx }}
           className={`${MENU} ${up ? 'bottom-full mb-1.5' : 'top-full mt-1.5'} ${
             align === 'right' ? 'right-0' : align === 'center' ? 'left-1/2 -translate-x-1/2' : 'left-0'
           } ${menuClassName || 'w-max min-w-[10rem]'}`}
@@ -172,7 +217,8 @@ export function ThemedSelect<T extends string | number>({
             aria-label={ariaLabel}
             aria-activedescendant={`${listId}-${active}`}
             onKeyDown={onListKey}
-            className={`${grid ? 'grid grid-cols-2 gap-0.5 px-1.5' : 'max-h-60 overflow-y-auto overscroll-contain'} focus:outline-none`}
+            style={fit.maxH ? { maxHeight: fit.maxH } : undefined}
+            className={`${grid ? 'grid grid-cols-2 gap-0.5 px-1.5' : 'max-h-60'} overflow-y-auto overscroll-contain focus:outline-none`}
           >
             {options.map((o, i) => {
               const isSelected = i === selectedIndex;
@@ -188,7 +234,8 @@ export function ThemedSelect<T extends string | number>({
                   onClick={() => pick(i)}
                   className={`${ITEM} ${grid ? 'px-3 rounded-lg text-[13px]' : ''} ${isSelected ? ITEM_SELECTED : i === active ? ITEM_ACTIVE : ''}`}
                 >
-                  <span className="truncate">{o.label}</span>
+                  {/* Grid cells wrap long names onto a second line instead of cutting them off. */}
+                  <span className={grid ? 'min-w-0 break-words leading-snug' : 'truncate'}>{o.label}</span>
                   {isSelected && !grid && <Check className="w-4 h-4 shrink-0" aria-hidden />}
                 </li>
               );

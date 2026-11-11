@@ -25,7 +25,7 @@ export function LanguageSelect({ compact = false }: { compact?: boolean }) {
       onChange={(next) => void setLocale(next)}
       align={compact ? 'right' : 'center'}
       columns={2}
-      menuClassName="w-[20rem] max-w-[calc(100vw-2rem)]"
+      menuClassName="w-[20rem] max-w-[calc(100vw-1rem)]"
       className={`inline-flex h-9 items-center gap-1.5 rounded-full px-2 text-xs font-medium text-slate-600 hover:text-[#413B5E] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8574B7] ${
         switching ? 'opacity-60' : ''
       }`}
