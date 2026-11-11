@@ -18,7 +18,7 @@ import { PlusBadge } from '@/components/ui/PlusBadge';
 const NAV_PROFILE_COLUMNS =
   'id, username, is_plus, is_premium, subscription_status, current_period_end, plus_expires_at, admin_role, role, is_admin';
 /** Signed-in areas: the header never offers "Sign In" here (middleware already requires a session). */
-const IN_APP_PREFIXES = ['/discover', '/messages', '/favorites', '/profile', '/notifications', '/announcements', '/chat', '/settings', '/plus', '/verify'];
+const IN_APP_PREFIXES = ['/discover', '/messages', '/favorites', '/profile', '/notifications', '/announcements', '/chat', '/settings', '/plus', '/upgrade', '/verify'];
 
 export function Navbar() {
   const [user, setUser] = useState<any>(null);
@@ -203,6 +203,16 @@ export function Navbar() {
         <div className="flex items-center gap-1">
           {user ? (
             <>
+            {/* Upgrade: signed-in members without Plus only (is_plus is the webhook-written flag);
+                hidden until the profile has loaded so Plus members never see it flash. */}
+            {profile && profile.is_plus !== true && pathname !== '/upgrade' && pathname !== '/plus' && (
+              <Link
+                href="/upgrade"
+                className="mr-1 inline-flex h-7 items-center rounded-full border border-[#8574B7] px-3 text-xs font-semibold text-[#8574B7] hover:bg-[#8574B7]/10 transition-colors"
+              >
+                Upgrade
+              </Link>
+            )}
             {pathname === '/profile' && (
               <Link
                 href="/settings"
@@ -232,7 +242,7 @@ export function Navbar() {
                       {isPlusProfile(profile) && <PlusBadge size="profile" />}
                     </div>
                     <div className="py-1">
-                      <Link href="/plus" role="menuitem" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 h-11 text-sm text-[#413B5E] hover:bg-[#E8E6F1]/40 transition-colors justify-between">
+                      <Link href={profile && profile.is_plus !== true ? '/upgrade' : '/plus'} role="menuitem" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 h-11 text-sm text-[#413B5E] hover:bg-[#E8E6F1]/40 transition-colors justify-between">
                         {/* The header row above already shows the PLUS badge: this row says "Membership". */}
                         <span className="flex items-center gap-3">
                           <CreditCard className="w-4 h-4 text-slate-600" aria-hidden />

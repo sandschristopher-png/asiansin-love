@@ -36,6 +36,7 @@ import RepScoreCard from '@/components/RepScoreCard';
 import { ProfileHighlightsEditorRow } from '@/components/ProfileHighlightsEditorRow';
 import { VoicePlayer } from '@/components/VoicePlayer';
 import { VisitingBadge, type TravelNotice } from '@/components/VisitingBadge';
+import { MyTrips } from '@/components/trips/ProfileTrips';
 import { DayOneBadge, NewMemberPill, VerifiedLocationBadge } from '@/components/profile/TrustBadges';
 import { isTrustedVoiceIntroUrl } from '@/lib/audio';
 import { BIO_REJECTION_MESSAGE } from '@/lib/moderation/textFilter';
@@ -166,6 +167,9 @@ export default function MyProfilePage() {
   const [dayOneNumber, setDayOneNumber] = useState<number | null>(() => initialProfile?.dayOneNumber ?? null);
   const [createdAt, setCreatedAt] = useState<string | null>(() => initialProfile?.createdAt ?? null);
   const [travel, setTravel] = useState<TravelNotice | null>(() => initialProfile?.travel ?? null);
+  // Trip planner: own id and the raw is_plus flag (what actions/trips.ts and RLS check).
+  const [myId, setMyId] = useState<string | null>(null);
+  const [hasPlusFlag, setHasPlusFlag] = useState(false);
   const [lifestyle, setLifestyle] = useState<LifestyleValues>(() => initialProfile?.lifestyle ?? {});
 
   useEffect(() => {
@@ -211,6 +215,8 @@ export default function MyProfilePage() {
         if (data.relocation) setRelocation(data.relocation);
         if (data.languages) setUserLanguages(readLanguages(data.languages).join(', '));
         setIsPlus(isPlusProfile(data));
+        setMyId(data.id ?? null);
+        setHasPlusFlag(data.is_plus === true);
         setCachedSubscription(isPlusProfile(data));
         setPhotoPending(
           adminRoleOf(data) !== 'super_admin' &&
@@ -638,6 +644,8 @@ export default function MyProfilePage() {
 
           {/* Upcoming travel notice (Plus) */}
           <VisitingBadge travel={travel} />
+          {/* Visiting Soon itinerary (Plus): pill + planner */}
+          <MyTrips userId={myId} isPlus={hasPlusFlag} />
           </div>
         )}
 

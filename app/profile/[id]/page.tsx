@@ -23,6 +23,7 @@ import { supabase } from '@/lib/supabase/client';
 import { VoicePlayer } from '@/components/VoicePlayer';
 import { ageOf } from '@/lib/age';
 import { VisitingBadge } from '@/components/VisitingBadge';
+import { MemberTrips } from '@/components/trips/ProfileTrips';
 import { CardPhoto, DETAIL_PHOTO_SIZES } from '@/components/CardPhoto';
 import { PhotoCarousel } from '@/components/cards/PhotoCarousel';
 import { DETAIL_IMAGE, supabaseImage } from '@/lib/images/supabaseImage';
@@ -512,6 +513,7 @@ export default function PublicProfilePage() {
             </div>
           )}
           <VisitingBadge travel={travel} />
+          <MemberTrips userId={profile.id} />
         </section>
 
         {/* 2. VOICE INTRO (hidden when none recorded; plays only on tap) */}
