@@ -75,7 +75,7 @@ interface ChatMessage {
 
 /** Inline notice under an early incoming message that tries to move the chat off the app. */
 const EARLY_CONTACT_NOTICE =
-  'Safety Notice: Off-platform contact shared early. Keep conversations on asiansin.love until mutual trust is established.';
+  'Safety Notice: Off-platform contact shared early. Keep conversations on Meet in Asia until mutual trust is established.';
 /** Messages at or past this position in a thread no longer get the early-contact notice. */
 const EARLY_THREAD_MESSAGES = 5;
 const TYPING_PING_MS = 3000;

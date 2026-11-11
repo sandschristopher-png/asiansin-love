@@ -71,9 +71,9 @@ export async function POST(req: NextRequest) {
   const stripe = new Stripe(secret);
   // Only return to our own site (production, Vercel previews or local dev).
   const requestOrigin = req.headers.get('origin') || '';
-  const origin = /^https:\/\/([a-z0-9-]+\.)*(asiansin\.love|vercel\.app)$|^http:\/\/localhost(:\d+)?$/i.test(requestOrigin)
+  const origin = /^https:\/\/([a-z0-9-]+\.)*(meetin\.asia|vercel\.app)$|^http:\/\/localhost(:\d+)?$/i.test(requestOrigin)
     ? requestOrigin
-    : 'https://asiansin.love';
+    : 'https://meetin.asia';
 
   try {
     const customerId = await findCustomerId(stripe, user.id, user.email ?? undefined);

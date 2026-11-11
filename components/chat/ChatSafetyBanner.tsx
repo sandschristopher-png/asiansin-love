@@ -6,7 +6,7 @@ import { ShieldCheck, X } from 'lucide-react';
 const STORAGE_PREFIX = 'ail_chat_safety_dismissed:';
 
 const TIPS = [
-  'Keep chatting on asiansin.love until you trust each other.',
+  'Keep chatting on Meet in Asia until you trust each other.',
   'Meet first in a public place, in the daytime.',
   'Never send money, gift cards or bank or card details to someone you met here.',
 ];

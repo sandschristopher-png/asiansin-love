@@ -79,10 +79,10 @@ self.addEventListener('push', (event) => {
   try {
     payload = event.data.json();
   } catch (err) {
-    payload = { title: 'asiansin.love', body: event.data.text() };
+    payload = { title: 'Meet in Asia', body: event.data.text() };
   }
 
-  const title = payload.title || 'asiansin.love';
+  const title = payload.title || 'Meet in Asia';
   // Lock-screen buttons (Android / desktop Chrome, Edge; iOS shows the notification without them).
   const actions =
     payload.type === 'message'

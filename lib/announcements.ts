@@ -47,6 +47,6 @@ export function describeAnnouncement(n: Announcement): { Icon: ComponentType<{ c
     case 'moderation_warning':
       return { Icon: ShieldAlert, title: n.title || String(n.payload?.reason ?? 'Community guidelines notice'), href: n.link_url || '/standards' };
     default:
-      return { Icon: Megaphone, title: n.title || 'Notice from asiansin.love', href: n.link_url || null };
+      return { Icon: Megaphone, title: n.title || 'Notice from Meet in Asia', href: n.link_url || null };
   }
 }

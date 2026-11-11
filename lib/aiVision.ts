@@ -19,7 +19,7 @@ export async function evaluateImageWithAI(
     const base64Data = imageBuffer.toString('base64');
 
     const promptText = `
-Analyze this image for a dating platform called asiansin.love.
+Analyze this image for a dating platform called Meet in Asia.
 Evaluate two things strictly:
 1. Is this photo sexually suggestive, explicit, showing nudity, underwear, lingerie, or inappropriate sexual content? (Answer true/false for isSexuallySuggestive).
 2. ${
@@ -114,7 +114,7 @@ export async function reviewVerificationSelfie(opts: {
   try {
     const parts: Array<{ text: string } | { inlineData: { data: string; mimeType: string } }> = [
       {
-        text: `You are pre-screening an identity verification for the dating platform asiansin.love.
+        text: `You are pre-screening an identity verification for the dating platform Meet in Asia.
 IMAGE 1 is a live selfie taken just now. ${opts.avatar ? 'IMAGE 2 is the member\'s main profile photo.' : 'No profile photo is available; set same_person to false.'}
 The member was asked to copy this pose in the selfie: ${opts.poseDescription}.
 

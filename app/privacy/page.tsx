@@ -4,7 +4,7 @@ import { LegalPage, type LegalSection } from '@/components/LegalPage';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy',
-  description: 'What Asians in Love collects, how verification selfies and voice notes are protected, and how to delete your data.',
+  description: 'What Meet in Asia collects, how verification selfies and voice notes are protected, and how to delete your data.',
 };
 
 const sections: LegalSection[] = [
@@ -74,7 +74,7 @@ const sections: LegalSection[] = [
     title: 'Who we share data with',
     body: (
       <>
-        <p>We do not sell your personal data. We share it only with service providers that help us run Asians in Love:</p>
+        <p>We do not sell your personal data. We share it only with service providers that help us run Meet in Asia:</p>
         <ul>
           <li>Supabase: database, authentication and file storage.</li>
           <li>Vercel: hosting.</li>
@@ -141,7 +141,7 @@ export default function PrivacyPolicyPage() {
       updated="November 2026"
       intro={
         <p>
-          Your privacy matters on a dating app. This policy explains what Asians in Love collects, why, and the control you
+          Your privacy matters on a dating app. This policy explains what Meet in Asia collects, why, and the control you
           have over it.
         </p>
       }

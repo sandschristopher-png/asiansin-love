@@ -11,10 +11,11 @@ interface BrandLogoProps {
   size?: BrandLogoSize;
   /** Overrides `size` with any text-* class. */
   textSize?: string;
-  /** White "asiansin" for dark surfaces. */
+  /** White "Meet in" for dark surfaces. */
   onDark?: boolean;
 }
 
+// "Meet in Asia" is about as long as the old wordmark, so the sizes carry over unchanged.
 const SIZE_CLASS: Record<BrandLogoSize, string> = {
   header: 'text-[22px] font-bold tracking-[-0.03em]',
   sm: 'text-lg font-bold tracking-tight',
@@ -43,21 +44,24 @@ function BrandMark() {
   );
 }
 
-/** Spark Heart mark + wordmark: "asiansin" in solid #413B5E, ".love" in the #8574B7 to #534377 gradient. */
+/**
+ * Spark Heart mark + flat wordmark "Meet in Asia" (Plus Jakarta Sans, Title Case): "Meet in" in
+ * solid #413B5E, "Asia" in solid brand purple #8574B7. No gradient, shadow or 3D on the type.
+ */
 export function BrandLogo({ className = '', href = '/discover', size = 'md', textSize = '', onDark = false }: BrandLogoProps) {
   const wordmark = (
     <span
       className={[
-        'font-brand leading-none lowercase select-none inline-flex items-center gap-[0.3em] whitespace-nowrap',
+        'font-brand leading-none select-none inline-flex items-center gap-[0.3em] whitespace-nowrap',
         textSize ? `${textSize} font-bold tracking-tight` : SIZE_CLASS[size],
         className,
       ].filter(Boolean).join(' ')}
-      aria-label="asiansin.love"
+      aria-label="Meet in Asia"
     >
       <BrandMark />
       <span className="inline-flex items-baseline">
-        <span className={`font-bold ${onDark ? 'text-white' : 'text-[#413B5E]'}`}>asiansin</span>
-        <span className="bg-gradient-to-r from-[#8574B7] to-[#534377] bg-clip-text text-transparent font-extrabold">.love</span>
+        <span className={`font-bold ${onDark ? 'text-white' : 'text-[#413B5E]'}`}>Meet in</span>
+        <span className="font-extrabold text-[#8574B7]">&nbsp;Asia</span>
       </span>
     </span>
   );
@@ -70,7 +74,7 @@ export function BrandLogo({ className = '', href = '/discover', size = 'md', tex
       <Link
         href={href}
         prefetch={href === '/' ? false : undefined}
-        aria-label="asiansin.love home"
+        aria-label="Meet in Asia home"
         className="inline-flex items-center focus:outline-none"
       >
         {wordmark}

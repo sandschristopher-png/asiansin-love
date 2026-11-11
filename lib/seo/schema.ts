@@ -11,7 +11,7 @@ export function organizationSchema(): JsonLd {
   return {
     '@type': 'Organization',
     '@id': `${SITE_URL}/#organization`,
-    name: 'asiansin.love',
+    name: 'Meet in Asia',
     url: SITE_URL,
     logo: `${SITE_URL}/icon-192.png`,
   };
@@ -25,7 +25,7 @@ export function webPageSchema(city: CitySEOData): JsonLd {
     name: city.metaTitle,
     description: city.metaDescription,
     inLanguage: 'en',
-    isPartOf: { '@type': 'WebSite', '@id': `${SITE_URL}/#website`, name: 'asiansin.love', url: SITE_URL },
+    isPartOf: { '@type': 'WebSite', '@id': `${SITE_URL}/#website`, name: 'Meet in Asia', url: SITE_URL },
     publisher: { '@id': `${SITE_URL}/#organization` },
     about: {
       '@type': 'City',
@@ -40,7 +40,7 @@ export function breadcrumbSchema(city: CitySEOData): JsonLd {
   return {
     '@type': 'BreadcrumbList',
     itemListElement: [
-      { '@type': 'ListItem', position: 1, name: 'asiansin.love', item: SITE_URL },
+      { '@type': 'ListItem', position: 1, name: 'Meet in Asia', item: SITE_URL },
       { '@type': 'ListItem', position: 2, name: `${city.cityName} Dating`, item: city.canonicalUrl },
     ],
   };

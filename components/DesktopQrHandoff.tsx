@@ -25,7 +25,7 @@ const isDismissed = () => {
 
 /**
  * Wide desktop screens only (xl): a small corner card outside the 480px column with a QR code to
- * open asiansin.love on a phone. Hidden until the client reads the dismissal (no flash), and gone
+ * open Meet in Asia on a phone. Hidden until the client reads the dismissal (no flash), and gone
  * for good once dismissed.
  */
 export function DesktopQrHandoff() {
@@ -41,9 +41,9 @@ export function DesktopQrHandoff() {
 
   return (
     <aside className="fixed bottom-5 right-5 z-30 hidden xl:flex items-center gap-3 rounded-2xl border border-[#D0CDE1] bg-white p-3 shadow-sm max-w-[240px]">
-      <QrCode value="https://asiansin.love" size={72} label="QR code to open asiansin.love on your phone" className="shrink-0 rounded-lg" />
+      <QrCode value="https://meetin.asia" size={72} label="QR code to open Meet in Asia on your phone" className="shrink-0 rounded-lg" />
       <p className="text-[11px] font-semibold leading-snug text-[#413B5E] pr-4">
-        Take Asians in Love on the go — Scan to open on your phone
+        Take Meet in Asia on the go — Scan to open on your phone
       </p>
       <button
         type="button"

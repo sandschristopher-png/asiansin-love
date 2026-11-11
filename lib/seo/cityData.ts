@@ -47,7 +47,7 @@ export interface CitySEOData {
   }[];
 }
 
-export const SITE_URL = 'https://asiansin.love';
+export const SITE_URL = 'https://meetin.asia';
 
 export const CITY_SEO_DATA: Record<string, CitySEOData> = {
   cebu: {
@@ -55,7 +55,7 @@ export const CITY_SEO_DATA: Record<string, CitySEOData> = {
     cityName: 'Cebu City',
     countryName: 'Philippines',
     countryCode: 'PH',
-    metaTitle: 'Cebu Dating & Filipina Singles | Serious International Dating | asiansin.love',
+    metaTitle: 'Cebu Dating & Filipina Singles | Serious International Dating | Meet in Asia',
     metaDescription:
       'Connect with Filipina singles in Cebu City looking for meaningful, long-term international relationships. Public reputation scores, free selfie verification, and messages screened for scams.',
     canonicalUrl: `${SITE_URL}/cebu`,
@@ -100,12 +100,12 @@ export const CITY_SEO_DATA: Record<string, CitySEOData> = {
       {
         question: 'How do I meet serious Filipina singles in Cebu?',
         answer:
-          'asiansin.love offers free selfie verification, optional voice intros, and public community reputation scores, so you can focus on genuine singles looking for long-term relationships.',
+          'Meet in Asia offers free selfie verification, optional voice intros, and public community reputation scores, so you can focus on genuine singles looking for long-term relationships.',
       },
       {
-        question: 'Is asiansin.love a matchmaking or introduction service?',
+        question: 'Is Meet in Asia a matchmaking or introduction service?',
         answer:
-          'No. asiansin.love is an open dating community: members create their own profiles, browse, and decide for themselves who to talk to. We never arrange introductions or matches on anyone’s behalf.',
+          'No. Meet in Asia is an open dating community: members create their own profiles, browse, and decide for themselves who to talk to. We never arrange introductions or matches on anyone’s behalf.',
       },
       {
         question: 'Can I date safely without encountering romance scams?',
@@ -119,7 +119,7 @@ export const CITY_SEO_DATA: Record<string, CitySEOData> = {
     cityName: 'Manila',
     countryName: 'Philippines',
     countryCode: 'PH',
-    metaTitle: 'Manila Dating & Filipina Singles | Serious International Dating | asiansin.love',
+    metaTitle: 'Manila Dating & Filipina Singles | Serious International Dating | Meet in Asia',
     metaDescription:
       'Connect with Filipina singles in Metro Manila looking for meaningful, long-term international relationships. Public reputation scores, free selfie verification, and messages screened for scams.',
     canonicalUrl: `${SITE_URL}/manila`,
@@ -160,17 +160,17 @@ export const CITY_SEO_DATA: Record<string, CitySEOData> = {
     ],
     faq: [
       {
-        question: 'What makes asiansin.love different for dating in Manila?',
+        question: 'What makes Meet in Asia different for dating in Manila?',
         answer:
-          'Unlike swipe apps filled with inactive profiles, asiansin.love offers free selfie verification, voice intros, and public reputation scores, and puts relationship intent front and center.',
+          'Unlike swipe apps filled with inactive profiles, Meet in Asia offers free selfie verification, voice intros, and public reputation scores, and puts relationship intent front and center.',
       },
       {
-        question: 'Is asiansin.love a matchmaking or introduction service?',
+        question: 'Is Meet in Asia a matchmaking or introduction service?',
         answer:
-          'No. asiansin.love is an open dating community: members create their own profiles, browse, and decide for themselves who to talk to. We never arrange introductions or matches on anyone’s behalf.',
+          'No. Meet in Asia is an open dating community: members create their own profiles, browse, and decide for themselves who to talk to. We never arrange introductions or matches on anyone’s behalf.',
       },
       {
-        question: 'How does asiansin.love protect its members?',
+        question: 'How does Meet in Asia protect its members?',
         answer:
           'Every member has a public reputation score. Asking for money or other breaches of trust can be reported in one tap, and our team reviews reports and removes offending accounts.',
       },
@@ -181,9 +181,9 @@ export const CITY_SEO_DATA: Record<string, CitySEOData> = {
     cityName: 'Bangkok',
     countryName: 'Thailand',
     countryCode: 'TH',
-    metaTitle: 'Bangkok Dating & Thai Singles | Serious International Dating | asiansin.love',
+    metaTitle: 'Bangkok Dating & Thai Singles | Serious International Dating | Meet in Asia',
     metaDescription:
-      'Meet Thai singles in Bangkok looking for serious, long-term relationships. Verified singles, public reputation scores, and genuine partnerships on asiansin.love.',
+      'Meet Thai singles in Bangkok looking for serious, long-term relationships. Verified singles, public reputation scores, and genuine partnerships on Meet in Asia.',
     canonicalUrl: `${SITE_URL}/bangkok`,
     primaryKeywords: ['Thai dating', 'Thai singles', 'Bangkok dating', 'serious dating Thailand', 'meet Thai singles', 'verified singles Bangkok'],
     secondaryKeywords: ['Thailand international dating', 'Bangkok singles', 'long-term relationships Thailand', 'cross-cultural dating Thailand'],
@@ -215,14 +215,14 @@ export const CITY_SEO_DATA: Record<string, CitySEOData> = {
       {
         question: 'How do I find a serious relationship in Bangkok?',
         answer:
-          'Filter members by English proficiency, relationship goals, and verified badges on asiansin.love. Listen to voice intros to gauge real chemistry before you travel.',
+          'Filter members by English proficiency, relationship goals, and verified badges on Meet in Asia. Listen to voice intros to gauge real chemistry before you travel.',
       },
       {
         question: 'Are Bangkok singles open to cross-cultural relationships?',
         answer: 'Many singles in Bangkok are open to dating across cultures and value emotional maturity, respect, and shared long-term goals.',
       },
       {
-        question: 'How does asiansin.love keep fake profiles out?',
+        question: 'How does Meet in Asia keep fake profiles out?',
         answer:
           'Members can complete a free selfie verification that adds a Verified badge, you can limit Discover to verified profiles only, and our team reviews every report.',
       },
@@ -233,9 +233,9 @@ export const CITY_SEO_DATA: Record<string, CitySEOData> = {
     cityName: 'Phnom Penh',
     countryName: 'Cambodia',
     countryCode: 'KH',
-    metaTitle: 'Phnom Penh Dating & Cambodian Singles | Serious Khmer Dating | asiansin.love',
+    metaTitle: 'Phnom Penh Dating & Cambodian Singles | Serious Khmer Dating | Meet in Asia',
     metaDescription:
-      'Meet Cambodian singles in Phnom Penh looking for serious, long-term relationships. Verified singles and genuine partnerships on asiansin.love.',
+      'Meet Cambodian singles in Phnom Penh looking for serious, long-term relationships. Verified singles and genuine partnerships on Meet in Asia.',
     canonicalUrl: `${SITE_URL}/phnom-penh`,
     primaryKeywords: [
       'Cambodian singles',
@@ -282,7 +282,7 @@ export const CITY_SEO_DATA: Record<string, CitySEOData> = {
       },
       {
         question: 'How do I start dating in Phnom Penh before visiting?',
-        answer: 'Use asiansin.love to browse profiles, exchange voice notes, and build genuine rapport before booking your trip to Cambodia.',
+        answer: 'Use Meet in Asia to browse profiles, exchange voice notes, and build genuine rapport before booking your trip to Cambodia.',
       },
     ],
   },
@@ -291,9 +291,9 @@ export const CITY_SEO_DATA: Record<string, CitySEOData> = {
     cityName: 'Kuala Lumpur',
     countryName: 'Malaysia',
     countryCode: 'MY',
-    metaTitle: 'Kuala Lumpur Dating | Meet Asian Singles in KL | asiansin.love',
+    metaTitle: 'Kuala Lumpur Dating | Meet Asian Singles in KL | Meet in Asia',
     metaDescription:
-      'Meet singles in Kuala Lumpur, Malaysia looking for serious, long-term international relationships. Verified singles and genuine partnerships on asiansin.love.',
+      'Meet singles in Kuala Lumpur, Malaysia looking for serious, long-term international relationships. Verified singles and genuine partnerships on Meet in Asia.',
     canonicalUrl: `${SITE_URL}/kuala-lumpur`,
     primaryKeywords: [
       'Kuala Lumpur dating',
@@ -334,7 +334,7 @@ export const CITY_SEO_DATA: Record<string, CitySEOData> = {
     ],
     faq: [
       {
-        question: 'Why choose asiansin.love for dating in Kuala Lumpur?',
+        question: 'Why choose Meet in Asia for dating in Kuala Lumpur?',
         answer:
           'Selfie verification, public reputation scores, and voice intros make it easy to spot real professionals across Malaysia who want something serious.',
       },

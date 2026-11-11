@@ -332,7 +332,7 @@ export function Navbar() {
                   setProfileMenuOpen(false);
                   if (typeof navigator !== "undefined" && navigator.share) {
                     navigator.share({
-                      title: 'Profile on asiansin.love',
+                      title: 'Profile on Meet in Asia',
                       url: typeof window !== "undefined" ? window.location.href : "",
                     }).catch(() => {});
                   }

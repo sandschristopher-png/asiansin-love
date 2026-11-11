@@ -94,7 +94,7 @@ function cameraErrorMessage(err: unknown): string {
   switch ((err as DOMException)?.name) {
     case 'NotAllowedError':
     case 'SecurityError':
-      return 'Camera access is blocked. Allow camera access for asiansin.love in your browser settings, then try again.';
+      return 'Camera access is blocked. Allow camera access for Meet in Asia in your browser settings, then try again.';
     case 'NotFoundError':
     case 'OverconstrainedError':
       return 'No front camera was found on this device.';
@@ -600,7 +600,7 @@ export default function VerifyPage() {
           {/* Desktop: hand off to the phone camera (front cameras on laptops make poor selfies). */}
           <div className="hidden md:flex items-center gap-4 p-4 rounded-3xl bg-white border border-[#D0CDE1]">
             <QrCode
-              value="https://asiansin.love/verify"
+              value="https://meetin.asia/verify"
               size={112}
               label="QR code to open verification on your phone"
               className="shrink-0 rounded-xl"

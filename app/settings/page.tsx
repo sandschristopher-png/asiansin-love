@@ -421,7 +421,7 @@ export default function SettingsHubPage() {
               </div>
               <div>
                 <p className="text-xs font-bold text-[#413B5E]">Community Guidelines &amp; Anti-Scam</p>
-                <p className="text-[11px] text-[#413B5E]/75">How we keep asiansin.love secure</p>
+                <p className="text-[11px] text-[#413B5E]/75">How we keep Meet in Asia secure</p>
               </div>
             </div>
             <ChevronRight className="w-4 h-4 text-[#413B5E]/55" />

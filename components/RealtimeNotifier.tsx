@@ -58,13 +58,13 @@ export function RealtimeNotifier() {
     }
   }, [pathname]);
 
-  // "(3) Asians in Love" while anything is unread; re-applied after every route change.
+  // "(3) Meet in Asia" while anything is unread; re-applied after every route change.
   useEffect(() => {
     const apply = () => {
       const { unreadMessages, unseenSparks } = getNotificationCounts();
       const total = unreadMessages + unseenSparks;
       const base = document.title.replace(/^\(\d+\)\s*/, '');
-      document.title = total > 0 ? `(${total}) ${base || 'Asians in Love'}` : base;
+      document.title = total > 0 ? `(${total}) ${base || 'Meet in Asia'}` : base;
     };
     apply();
     const t = window.setTimeout(apply, 300); // after Next applies the new page's metadata title

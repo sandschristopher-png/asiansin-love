@@ -30,7 +30,7 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
   // Admin Console renders its own header / tabs inside the same mobile frame.
   const isAdmin = pathname === '/admin' || pathname?.startsWith('/admin/');
 
-  // The marketing landing page spans the full viewport (responsive desktop layout). Every other
+  // The landing page is a single phone-width column on every screen (no desktop corner cards). Every other
   // route keeps the 430px app frame. <body> is overflow-hidden, so this wrapper is the page's
   // scroll container (its sticky header sticks within it).
   if (pathname === '/') {
@@ -39,7 +39,6 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
         <div className="w-full h-[100dvh] overflow-y-auto overflow-x-hidden overscroll-y-contain bg-white">
           {children}
         </div>
-        <DesktopQrHandoff />
       </ActionToastProvider>
     );
   }

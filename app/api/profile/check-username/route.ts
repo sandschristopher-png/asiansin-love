@@ -12,7 +12,7 @@ export const runtime = 'nodejs';
 const HANDLE_RE = /^[a-zA-Z0-9_]{3,20}$/;
 const RESERVED = new Set([
   'admin', 'administrator', 'support', 'help', 'moderator', 'mod', 'staff', 'team', 'official',
-  'asiansinlove', 'asiansin', 'ail', 'ailplus', 'system', 'root', 'null', 'undefined', 'me',
+  'meetinasia', 'meetin', 'ail', 'ailplus', 'system', 'root', 'null', 'undefined', 'me',
 ]);
 
 const escapeLike = (s: string) => s.replace(/[\\%_]/g, (c) => `\\${c}`);

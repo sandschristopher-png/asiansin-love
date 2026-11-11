@@ -12,8 +12,8 @@ import {
 } from 'lucide-react'
 
 export const metadata = {
-  title: "Why asiansin.love | Platform Standards",
-  description: "How asiansin.love protects you from scams, eliminates fake accounts, and connects genuine singles across Southeast Asia.",
+  title: "Why Meet in Asia | Platform Standards",
+  description: "How Meet in Asia protects you from scams, eliminates fake accounts, and connects genuine singles across Southeast Asia.",
 }
 
 const features = [
@@ -92,7 +92,7 @@ export default function FeaturesPage() {
             </span>
           </h1>
           <p className="text-sm text-[#413B5E] leading-relaxed">
-            Legacy dating sites are cluttered with spammers, money solicitations, and abandoned profiles. Here is how asiansin.love protects your journey.
+            Legacy dating sites are cluttered with spammers, money solicitations, and abandoned profiles. Here is how Meet in Asia protects your journey.
           </p>
         </div>
 

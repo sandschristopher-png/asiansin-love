@@ -1,5 +1,5 @@
 ﻿/**
- * Moderation engine for asiansin.love.
+ * Moderation engine for Meet in Asia.
  *
  * Every check runs on several forms of the same text so simple evasion does not get through:
  *   plain      lowercase raw text
@@ -343,7 +343,7 @@ export function evaluateBioModeration(bio: string): { ok: boolean; reason?: stri
   }
   const mod = evaluateMessageModeration(text);
   if (mod.highestSeverity === 'high') {
-    return { ok: false, reason: 'Your bio contains wording that is not allowed on asiansin.love. Please revise it.' };
+    return { ok: false, reason: 'Your bio contains wording that is not allowed on Meet in Asia. Please revise it.' };
   }
   if (mod.violations.some((v) => v.category === 'harassment_insult')) {
     return { ok: false, reason: 'Please keep your bio friendly and respectful.' };

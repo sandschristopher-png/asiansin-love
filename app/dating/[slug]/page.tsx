@@ -30,7 +30,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   const t = TITLES[slug] || 'Asian Dating';
   return {
     title: t.replace(/\b\w/g, (c) => c.toUpperCase()),
-    description: 'Meet verified singles across Southeast Asia. Real reputation scores, free messaging, and genuine profiles on Asians in Love.'
+    description: 'Meet verified singles across Southeast Asia. Real reputation scores, free messaging, and genuine profiles on Meet in Asia.'
   };
 }
 
@@ -60,7 +60,7 @@ export default async function SeoLandingPage({ params }: { params: Promise<{ slu
             <span>Reputation &amp; Pose Verification</span>
           </div>
           <p className="text-xs text-[#413B5E]/75 leading-relaxed">
-            Unlike legacy dating sites plagued by bots and hidden paywalls, Asians in Love features verified community reputation scores so you can chat with confidence.
+            Unlike legacy dating sites plagued by bots and hidden paywalls, Meet in Asia features verified community reputation scores so you can chat with confidence.
           </p>
         </div>
 

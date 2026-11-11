@@ -340,7 +340,7 @@ export function AuthScreen({ mode, cities }: { mode: 'login' | 'signup'; cities?
         <p className="mt-6 text-center">
           {mode === 'login' ? (
             <>
-              <span className="text-xs font-medium text-[#413B5E]/70">New to asiansin.love?</span>{' '}
+              <span className="text-xs font-medium text-[#413B5E]/70">New to Meet in Asia?</span>{' '}
               <Link href={authHref('/signup', returnTo)} className="text-xs font-bold text-[#8574B7] hover:text-[#9A93BC] transition-colors">
                 Create an account
               </Link>

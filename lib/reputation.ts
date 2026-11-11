@@ -1,5 +1,5 @@
 /**
- * Reputation rules for asiansin.love. Pure functions only: the routes apply the results through
+ * Reputation rules for Meet in Asia. Pure functions only: the routes apply the results through
  * the service-role RPCs (apply_moderation_penalty, admin_confirm_quarantine,
  * apply_reputation_recovery) so members can never write their own score.
  * Regression cases: scripts/test-reputation.mjs.

@@ -98,7 +98,7 @@ export function InstallAppCard({ variant }: { variant: 'hero' | 'settings' }) {
         <Download className="w-4 h-4" aria-hidden />
       </div>
       <div className="flex-1 min-w-0 text-left">
-        <p className="text-[12.5px] font-bold text-[#413B5E]">Install asiansin.love</p>
+        <p className="text-[12.5px] font-bold text-[#413B5E]">Install Meet in Asia</p>
         <p className="text-[11px] text-[#413B5E]/65">Full screen, one tap from your home screen.</p>
       </div>
       <button

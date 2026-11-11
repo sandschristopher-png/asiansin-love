@@ -1,15 +1,81 @@
-$root = "C:\Users\sands\asiansin-love"
-Set-Location -LiteralPath $root
-$utf8NoBom = New-Object System.Text.UTF8Encoding($false)
-
-$html = Get-Clipboard -Raw
-if (-not $html -or $html.Trim() -notmatch '<!DOCTYPE html>') {
-  Write-Host "ABORTED: clipboard doesn't look like the offline page HTML - copy it from the canvas first" -ForegroundColor Yellow
-} else {
-  [System.IO.File]::WriteAllText((Join-Path $PWD "public\offline.html"), ($html -replace "`r`n", "`n"), $utf8NoBom)
-  Write-Host "WROTE: public\offline.html" -ForegroundColor Green
-  git add public/offline.html
-  git commit -m "feat(pwa): redesign offline page on brand - hero headline, feature cards, pill button, auto-reconnect"
-  git push
-  Write-Host "PUSHED - live in ~1-2 min" -ForegroundColor Green
-}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#FFFFFF" />
+  <title>Offline | Meet in Asia</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background-color: #FFFFFF;
+      color: #413B5E;
+      font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      min-height: 100vh;
+      min-height: 100dvh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      padding: 24px;
+      -webkit-font-smoothing: antialiased;
+    }
+    header { width: 100%; max-width: 420px; display: flex; justify-content: center; padding-top: 16px; }
+    .brand-wordmark { font-size: 24px; font-weight: 700; letter-spacing: -0.02em; text-decoration: none; display: inline-flex; align-items: baseline; user-select: none; }
+    .brand-lead { color: #413B5E; }
+    .brand-accent { color: #8574B7; font-weight: 800; }
+    main { width: 100%; max-width: 380px; margin: auto 0; }
+    .offline-card { background: #F4F3F9; border-radius: 24px; padding: 36px 28px; text-align: center; }
+    .icon-container { width: 56px; height: 56px; background: #FFFFFF; border-radius: 18px; display: flex; align-items: center; justify-content: center; margin: 0 auto 20px; color: #8574B7; }
+    .offline-card h1 { font-size: 22px; font-weight: 800; color: #413B5E; letter-spacing: -0.02em; margin-bottom: 8px; }
+    .offline-card p { font-size: 13.5px; line-height: 1.55; color: #655E72; margin-bottom: 24px; }
+    .btn-retry {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      width: 100%; height: 48px; border-radius: 9999px;
+      background-color: #8574B7; color: #FFFFFF; font-size: 14px; font-weight: 700;
+      letter-spacing: -0.01em; border: none; cursor: pointer; text-decoration: none;
+      transition: background-color 0.15s ease, transform 0.1s ease;
+    }
+    .btn-retry:hover { background-color: #534377; }
+    .btn-retry:active { transform: scale(0.97); }
+    footer { padding-bottom: 8px; text-align: center; }
+    footer span { font-size: 11px; color: #655E72; font-weight: 500; }
+  </style>
+</head>
+<body>
+  <header>
+    <a href="/" class="brand-wordmark">
+      <span class="brand-lead">Meet in</span>&nbsp;<span class="brand-accent">Asia</span>
+    </a>
+  </header>
+  <main>
+    <div class="offline-card">
+      <div class="icon-container">
+        <svg xmlns="http://www.w3.org/2000/svg" width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="2" x2="22" y1="2" y2="22"/>
+          <path d="M12 20h.01"/>
+          <path d="M8.5 16.429a5 5 0 0 1 7 0"/>
+          <path d="M5 12.859a10 10 0 0 1 5.17-2.69"/>
+          <path d="M19 12.859a10 10 0 0 0-2.007-1.523"/>
+          <path d="M2 8.82a15 15 0 0 1 4.177-2.643"/>
+          <path d="M22 8.82a15 15 0 0 0-11.288-3.764"/>
+        </svg>
+      </div>
+      <h1>You're offline</h1>
+      <p>Check your internet connection. Your messages, sparks, and matches will be waiting when you're back online.</p>
+      <button class="btn-retry" onclick="window.location.reload()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
+          <path d="M3 3v5h5"/>
+          <path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/>
+          <path d="M16 21h5v-5"/>
+        </svg>
+        Try again
+      </button>
+    </div>
+  </main>
+  <footer>
+    <span>meetin.asia</span>
+  </footer>
+</body>
+</html>

@@ -438,7 +438,7 @@ export default function PublicProfilePage() {
                         setShowMenu(false);
                         if (typeof navigator !== 'undefined' && navigator.share) {
                           navigator.share({
-                            title: `${displayName} on Asians in Love`,
+                            title: `${displayName} on Meet in Asia`,
                             url: window.location.href,
                           }).catch(() => {});
                         } else {

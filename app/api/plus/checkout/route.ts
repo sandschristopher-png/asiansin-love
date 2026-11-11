@@ -12,12 +12,12 @@ export const runtime = 'nodejs';
  */
 const PLAN_PRICES: Record<PlusPlanId, string> = PLUS_PRICE_IDS;
 
-const SITE_ORIGIN = (process.env.NEXT_PUBLIC_SITE_URL || 'https://asiansin.love').replace(/\/$/, '');
+const SITE_ORIGIN = (process.env.NEXT_PUBLIC_SITE_URL || 'https://meetin.asia').replace(/\/$/, '');
 // Only these origins may be used for Stripe's success/cancel redirects.
 const ALLOWED_ORIGINS = new Set([
   SITE_ORIGIN,
-  'https://asiansin.love',
-  'https://www.asiansin.love',
+  'https://meetin.asia',
+  'https://www.meetin.asia',
   ...(process.env.NODE_ENV === 'production' ? [] : ['http://localhost:3000']),
 ]);
 

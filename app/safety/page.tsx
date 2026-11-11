@@ -4,7 +4,7 @@ import { ShieldCheck, Globe2, Home, MapPin } from 'lucide-react';
 import SafetyAccordion from '@/components/SafetyAccordion';
 
 export const metadata = {
-  title: 'Safety Blueprint — asiansin.love',
+  title: 'Safety Blueprint — Meet in Asia',
   description: 'Practical, comprehensive safety guide for cross-border dating in Southeast Asia: scam prevention, legal protections, meeting protocols, and cultural realities for both local and foreign members.',
 };
 
@@ -265,7 +265,7 @@ export default function SafetyBlueprintPage() {
             Spot a suspicious profile or a request for funds?
           </h2>
           <p className="text-sm text-[#655E72] max-w-lg mx-auto">
-            asiansin.love strictly prohibits solicitations for cash, commercial matchmaking, and identity misrepresentation. Tap the report button on any profile or direct message to notify moderation immediately.
+            Meet in Asia strictly prohibits solicitations for cash, commercial matchmaking, and identity misrepresentation. Tap the report button on any profile or direct message to notify moderation immediately.
           </p>
           <div className="pt-2">
             <Link
@@ -280,7 +280,7 @@ export default function SafetyBlueprintPage() {
 
       {/* Footer */}
       <footer className="py-8 text-center text-xs text-[#655E72]/60">
-        asiansin.love &mdash; Community Trust &amp; Safety Guidelines
+        Meet in Asia &mdash; Community Trust &amp; Safety Guidelines
       </footer>
     </div>
   );

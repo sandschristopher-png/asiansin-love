@@ -1,5 +1,5 @@
 /**
- * Moderation wordlists for asiansin.love, grouped by category and severity.
+ * Moderation wordlists for Meet in Asia, grouped by category and severity.
  *
  * Text patterns run against the NORMALIZED forms produced by lib/moderation.ts: lowercase,
  * invisible characters stripped, whitespace collapsed, leetspeak mapped to letters (so they must

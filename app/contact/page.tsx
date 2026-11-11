@@ -4,10 +4,10 @@ import { LegalPage, type LegalSection } from '@/components/LegalPage';
 
 export const metadata: Metadata = {
   title: 'Contact',
-  description: 'How to reach the Asians in Love team for support, safety reports and privacy requests.',
+  description: 'How to reach the Meet in Asia team for support, safety reports and privacy requests.',
 };
 
-const SUPPORT_EMAIL = 'support@asiansin.love';
+const SUPPORT_EMAIL = 'support@meetin.asia';
 
 const sections: LegalSection[] = [
   {

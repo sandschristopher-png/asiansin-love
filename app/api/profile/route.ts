@@ -185,7 +185,7 @@ export async function PATCH(req: Request) {
   }
 
   // Height in cm (the legacy free-text `height` column is kept in sync for older readers).
-  // Weight is intentionally not accepted: no numeric weight on asiansin.love.
+  // Weight is intentionally not accepted: no numeric weight on Meet in Asia.
   if ('height_cm' in body) {
     const raw = body.height_cm;
     const cm = raw === null || raw === '' ? null : Math.round(Number(raw));

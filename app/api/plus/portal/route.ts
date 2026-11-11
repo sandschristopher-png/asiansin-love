@@ -22,7 +22,7 @@ export async function POST(req: NextRequest) {
   }
 
   const stripe = new Stripe(secret);
-  const origin = req.headers.get('origin') || 'https://asiansin.love';
+  const origin = req.headers.get('origin') || 'https://meetin.asia';
 
   try {
     let customerId: string | null = null;

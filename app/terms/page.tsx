@@ -4,12 +4,12 @@ import { LegalPage, type LegalSection } from '@/components/LegalPage';
 
 export const metadata: Metadata = {
   title: 'Terms of Service',
-  description: 'The rules for using Asians in Love (asiansin.love): eligibility, conduct, content, Plus billing and cancellation.',
+  description: 'The rules for using Meet in Asia (Meet in Asia): eligibility, conduct, content, Plus billing and cancellation.',
 };
 
 const sections: LegalSection[] = [
   {
-    title: 'Who can use Asians in Love',
+    title: 'Who can use Meet in Asia',
     body: (
       <>
         <p>
@@ -25,7 +25,7 @@ const sections: LegalSection[] = [
     title: 'What is not allowed',
     body: (
       <>
-        <p>Asians in Love is for people looking for genuine relationships. The following are banned and lead to removal:</p>
+        <p>Meet in Asia is for people looking for genuine relationships. The following are banned and lead to removal:</p>
         <ul>
           <li>Commercial solicitation of any kind, including advertising, selling content or recruiting.</li>
           <li>Sex work, escort services, &quot;bar fine&quot; or pay-per-meet arrangements, and requests for explicit photos.</li>
@@ -49,7 +49,7 @@ const sections: LegalSection[] = [
     body: (
       <>
         <p>
-          You keep ownership of the photos, text and voice recordings you post. You give Asians in Love a worldwide,
+          You keep ownership of the photos, text and voice recordings you post. You give Meet in Asia a worldwide,
           non-exclusive, royalty-free license to host, store, display and process that content only to run, secure and
           improve the service (for example, showing your profile to other members or screening messages for scams). This
           license ends when you delete the content or your account, except where we must keep records for legal or safety
@@ -111,7 +111,7 @@ const sections: LegalSection[] = [
           error-free.
         </p>
         <p>
-          To the fullest extent permitted by law, Asians in Love is not liable for indirect, incidental or consequential
+          To the fullest extent permitted by law, Meet in Asia is not liable for indirect, incidental or consequential
           damages, or for the conduct of any member on or off the service. Our total liability for any claim is limited to
           the amount you paid us in the 12 months before the claim. Nothing in these terms limits rights you have under
           consumer laws that cannot be waived.
@@ -148,7 +148,7 @@ export default function TermsPage() {
       updated="November 2026"
       intro={
         <p>
-          These terms are an agreement between you and Asians in Love (asiansin.love). By creating an account or using the
+          These terms are an agreement between you and Meet in Asia (Meet in Asia). By creating an account or using the
           service, you agree to them.
         </p>
       }
