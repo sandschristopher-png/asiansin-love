@@ -22,6 +22,7 @@ import { readLanguages } from '@/lib/constants/languages';
 import { LIFESTYLE_KEYS, readHeightCm, readLifestyle, type LifestyleValues } from '@/lib/lifestyle';
 import { PlusBadge } from '@/components/ui/PlusBadge';
 import { ThemedSelect } from '@/components/ui/ThemedSelect';
+import { validateProfileContent } from '@/lib/moderation';
 
 /** Loaded on first open (keeps the upgrade sheet out of the page bundle). */
 const UpgradeModal = dynamic(() => import('@/components/UpgradeModal'), { ssr: false });
@@ -319,11 +320,18 @@ export default function EditProfilePage() {
     }
   };
 
+  // Live contact-detail checks (same rule the server applies): links, handles and numbers are
+  // refused on public fields, and Save stays disabled until they are removed.
+  const handleCheck = validateProfileContent(initialHasUsername ? '' : username, 'username');
+  const nameCheck = validateProfileContent(formData.full_name);
+  const bioCheck = validateProfileContent(formData.bio);
+  const contactInvalid = !handleCheck.isValid || !nameCheck.isValid || !bioCheck.isValid;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setStatusMsg(null);
 
-    // PATCH /api/profile masks contact details and refuses only payment / commercial terms.
+    // PATCH /api/profile refuses contact details (same check as the live warnings) and payment / commercial terms.
     setBioRejected(false);
     setSaving(true);
 
@@ -551,6 +559,7 @@ export default function EditProfilePage() {
                   {usernameStatus === 'taken' && <span className="text-red-400">Handle is already taken.</span>}
                   {usernameStatus === 'idle' && 'Claim your unique username.'}
                 </p>
+                {!handleCheck.isValid && <p className="text-xs text-red-600 font-medium mt-1" role="alert">{handleCheck.errorMessage}</p>}
               </div>
             )}
           </div>
@@ -565,8 +574,10 @@ export default function EditProfilePage() {
               required
               value={formData.full_name}
               onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
-              className="w-full px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#B8B3D1]/35 text-[#413B5E] text-sm focus:outline-none focus:border-[#B8B3D1]"
+              aria-invalid={!nameCheck.isValid}
+              className={`w-full px-4 py-2.5 rounded-xl bg-[#FFFFFF] border text-[#413B5E] text-sm focus:outline-none ${nameCheck.isValid ? 'border-[#B8B3D1]/35 focus:border-[#B8B3D1]' : 'border-red-400 focus:border-red-500'}`}
             />
+            {!nameCheck.isValid && <p className="text-xs text-red-600 font-medium mt-1" role="alert">{nameCheck.errorMessage}</p>}
           </div>
 
           {/* Age & Location */}
@@ -832,11 +843,15 @@ export default function EditProfilePage() {
                 setFormData({ ...formData, bio: e.target.value });
                 if (bioRejected) setBioRejected(false);
               }}
-              aria-invalid={bioRejected}
+              aria-invalid={bioRejected || !bioCheck.isValid}
               aria-describedby="bio-helper"
               placeholder="Tell members about your values, your days and what kind of connection you want..."
               className={`w-full px-4 py-2.5 rounded-xl bg-[#FFFFFF] border text-[#413B5E] text-base sm:text-sm focus:outline-none ${
-                bioRejected ? 'border-amber-500 ring-2 ring-amber-500/20 focus:border-amber-500' : 'border-[#B8B3D1]/35 focus:border-[#B8B3D1]'
+                !bioCheck.isValid
+                  ? 'border-red-400 focus:border-red-500'
+                  : bioRejected
+                    ? 'border-amber-500 ring-2 ring-amber-500/20 focus:border-amber-500'
+                    : 'border-[#B8B3D1]/35 focus:border-[#B8B3D1]'
               }`}
             />
             <p id="bio-helper" className={`text-[11px] ${bioRejected ? 'text-amber-700 font-medium' : 'text-slate-600'}`}>
@@ -844,6 +859,7 @@ export default function EditProfilePage() {
                 ? 'Remove links, social handles, phone numbers, emails and payment apps. You can trade contact details in chat once you have matched.'
                 : 'No links, social handles or contact info. Keep it about you.'}
             </p>
+            {!bioCheck.isValid && <p className="text-xs text-red-600 font-medium mt-1" role="alert">{bioCheck.errorMessage}</p>}
           </div>
 
           {/* Upcoming travel notice (Plus) */}
@@ -904,7 +920,7 @@ export default function EditProfilePage() {
 
           <button
             type="submit"
-            disabled={saving}
+            disabled={saving || contactInvalid}
             className="w-full py-3.5 rounded-2xl bg-[#8574B7] hover:bg-[#9A93BC] text-white font-medium text-sm shadow-lg shadow-[#8574B7]/40 transition active:scale-[0.99] disabled:opacity-50 flex items-center justify-center gap-2"
           >
             <Save className="w-4 h-4" />

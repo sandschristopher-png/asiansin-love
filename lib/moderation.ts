@@ -332,6 +332,57 @@ export function evaluateMessageModeration(text: string): ModerationResult {
   };
 }
 
+// ---------------------------------------------------------------------------
+// Public profile fields (bio, username, display name): contact details blocked
+// ---------------------------------------------------------------------------
+
+export interface ProfileContentResult {
+  isValid: boolean;
+  reason?: 'URL_DETECTED' | 'SOCIAL_HANDLE_DETECTED' | 'PHONE_DETECTED';
+  errorMessage?: string;
+}
+
+const PROFILE_DOMAIN_RE = /\b[a-z0-9][a-z0-9-]*\.(?:com|net|org|asia|io|app|xyz|site|online|info|biz|link|live|ly|me|co|ph|gg|ru|cn)\b/i;
+const USERNAME_HANDLE_RE = /^(?:tg|ig|fb|wa|sc|snap|line|kik)(?:_|$)|_(?:tg|ig|fb|wa|sc)$/;
+
+export const PROFILE_CONTENT_MESSAGES = {
+  URL_DETECTED: 'External links, emails and web domains are not permitted. Keep conversations on Meet in Asia for your safety.',
+  SOCIAL_HANDLE_DETECTED: 'Social media handles and chat IDs are not allowed on public profiles.',
+  PHONE_DETECTED: 'Phone numbers and direct contact details cannot be displayed on profiles.',
+} as const;
+
+/**
+ * Live (client) and server check for public profile text, built on detectContactSharing (leetspeak,
+ * split letters, spelled digits, "[dot]" obfuscation; years and round numbers are not phones).
+ * `kind: 'username'` reads underscores as spaces, so "tg_john123" is checked like "tg john123".
+ */
+export function validateProfileContent(
+  text: string | null | undefined,
+  kind: 'text' | 'username' = 'text'
+): ProfileContentResult {
+  const raw = String(text ?? '');
+  if (!raw.trim()) return { isValid: true };
+  // Bare domains ("janelove.com"): a real dot with no spaces, so sentences like "family. My ..." pass.
+  if (PROFILE_DOMAIN_RE.test(raw)) {
+    return { isValid: false, reason: 'URL_DETECTED', errorMessage: PROFILE_CONTENT_MESSAGES.URL_DETECTED };
+  }
+  // Handle-style usernames ("tg_jane", "jane_ig").
+  if (kind === 'username' && USERNAME_HANDLE_RE.test(raw.toLowerCase())) {
+    return { isValid: false, reason: 'SOCIAL_HANDLE_DETECTED', errorMessage: PROFILE_CONTENT_MESSAGES.SOCIAL_HANDLE_DETECTED };
+  }
+  const input = kind === 'username' ? raw.replace(/_/g, ' ') : raw;
+  const check = detectContactSharing(input);
+  if (!check.detected) return { isValid: true };
+
+  const found = check.matches.join(' ').toLowerCase();
+  const reason: NonNullable<ProfileContentResult['reason']> = /phone number|\d{5,}|\b(call|text|ring|number|digits|cell|mobile)\b/.test(found)
+    ? 'PHONE_DETECTED'
+    : /https?:|www|@\S|\.[a-z]{2,}|\bdot\b/.test(found)
+      ? 'URL_DETECTED'
+      : 'SOCIAL_HANDLE_DETECTED';
+  return { isValid: false, reason, errorMessage: PROFILE_CONTENT_MESSAGES[reason] };
+}
+
 /** Bios are public: any high-severity hit or contact detail is rejected outright. */
 export function evaluateBioModeration(bio: string): { ok: boolean; reason?: string } {
   const text = String(bio || '');

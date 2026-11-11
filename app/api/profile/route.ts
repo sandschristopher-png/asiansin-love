@@ -12,7 +12,7 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { createClient as createSessionClient } from '@/lib/supabase/server';
-import { evaluateBioModeration } from '@/lib/moderation';
+import { evaluateBioModeration, validateProfileContent } from '@/lib/moderation';
 import { BIO_REJECTION_MESSAGE, validateBio } from '@/lib/moderation/textFilter';
 import { PROFILE_BLOCK_MESSAGE } from '@/lib/moderation/profileModerator';
 import {
@@ -101,6 +101,9 @@ export async function PATCH(req: Request) {
 
   /** Mask contact details, block payment / commercial terms, then the conduct (slur) check. */
   const screen = (key: string, label: string, text: string): NextResponse | string => {
+    // Contact details are refused with a clear reason (the edit form shows the same check live).
+    const contact = validateProfileContent(text);
+    if (!contact.isValid) return bad(`${label}: ${contact.errorMessage}`, key, 422);
     const item = screenText(key, text, typeof stored[key] === 'string' ? (stored[key] as string) : null);
     if (item.result.violations.length) screened.push(item);
     if (isBlocked(item)) return bad(`${label}: ${PROFILE_BLOCK_MESSAGE}`, key, 422);
@@ -140,6 +143,11 @@ export async function PATCH(req: Request) {
       if (out instanceof NextResponse) return reject(out);
       updates[key] = out;
       continue;
+    }
+    // Names are public too: no handles, links or numbers.
+    if (key === 'display_name' || key === 'full_name') {
+      const contact = validateProfileContent(text);
+      if (!contact.isValid) return bad(`${spec.label}: ${contact.errorMessage}`, key, 422);
     }
     updates[key] = text;
   }
