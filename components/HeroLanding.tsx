@@ -121,13 +121,21 @@ export function HeroLanding() {
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-[#E8E6F1]/20 py-8 border-t border-[#D0CDE1]">
-        <div className={`${LANDING_SHELL} text-center space-y-3`}>
-          <BrandLogo href="/" size="md" className="justify-center" />
-          <p className="text-xs font-medium text-[#413B5E]/75">Real connection for genuine singles across Southeast Asia.</p>
-        </div>
-      </footer>
+      {/* Footer: rendered by the public landing page only, never inside the signed-in app. */}
+      <div className={LANDING_SHELL}>
+        <footer className="mt-10 pb-8 pt-6 border-t border-[#D0CDE1]/50 text-center text-xs text-[#655E72]">
+          <nav className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 font-medium text-[#413B5E]">
+            <Link className="hover:text-[#8574B7] transition-colors" href="/safety">Safety</Link>
+            <span className="text-[#D0CDE1]" aria-hidden="true">•</span>
+            <Link className="hover:text-[#8574B7] transition-colors" href="/terms">Terms</Link>
+            <span className="text-[#D0CDE1]" aria-hidden="true">•</span>
+            <Link className="hover:text-[#8574B7] transition-colors" href="/privacy">Privacy</Link>
+            <span className="text-[#D0CDE1]" aria-hidden="true">•</span>
+            <Link className="hover:text-[#8574B7] transition-colors" href="/contact">Contact</Link>
+          </nav>
+          <p className="mt-2 text-[11px] text-[#655E72]/80">© {new Date().getFullYear()} asiansin.love</p>
+        </footer>
+      </div>
     </div>
   );
 }

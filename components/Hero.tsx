@@ -26,15 +26,15 @@ export default function Hero() {
         {/* Photo card: overflow-visible so the badges can overlap its edges */}
         <div className="relative w-full max-w-[380px] sm:max-w-[420px] mx-auto">
           <div className="relative aspect-[16/11] w-full overflow-hidden rounded-3xl border border-[#D0CDE1] bg-[#E8E6F1] shadow-sm">
-            {/* 1024 x 572 source shown at or below native size; unoptimized serves the original
-                pixels instead of a re-compressed WebP. */}
+            {/* 1024 x 572 source shown at or below native size (no upscaling, so no blur), served as
+                WebP at quality 95 (allowed in next.config.ts images.qualities). */}
             <Image
               src="/images/hero-pinay.png"
               alt="Woman smiling while using her phone on a sofa"
               fill
               priority
-              unoptimized
-              sizes="(max-width: 480px) 100vw, 420px"
+              quality={95}
+              sizes="(max-width: 480px) 100vw, 440px"
               className="object-cover object-center"
             />
           </div>
@@ -94,7 +94,8 @@ export default function Hero() {
         <p className="mt-3 text-xs text-[#413B5E]/65">
           Free to join. By joining you agree to our Terms &amp; Privacy Policy.
         </p>
-        <div className="flex justify-center">
+        {/* Phone install instructions mean nothing on a desktop browser. */}
+        <div className="flex justify-center md:hidden">
           <InstallAppCard variant="hero" />
         </div>
       </div>

@@ -8,6 +8,7 @@ import { BottomNav } from '@/components/BottomNav';
 import { isCityPagePath } from '@/lib/seo/citySlugs';
 import { RealtimeNotifier } from '@/components/RealtimeNotifier';
 import { ActionToastProvider } from '@/components/ActionToast';
+import { DesktopQrHandoff } from '@/components/DesktopQrHandoff';
 
 export function LayoutShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -38,6 +39,7 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
         <div className="w-full h-[100dvh] overflow-y-auto overflow-x-hidden overscroll-y-contain bg-white">
           {children}
         </div>
+        <DesktopQrHandoff />
       </ActionToastProvider>
     );
   }
@@ -63,6 +65,8 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
       </div>
       {!isMarketingOrAuth && !isChat && !isAdmin && <BottomNav />}
     </div>
+    {/* Outside the 430px frame (fixed, xl screens only); /verify shows its own QR card. */}
+    {!isMarketingOrAuth && !isAdmin && <DesktopQrHandoff />}
     </ActionToastProvider>
   );
 }

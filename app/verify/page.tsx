@@ -8,6 +8,7 @@ import { getPoseById, type VerificationPose } from '@/lib/poses';
 import type { FaceGateResult, PoseState } from '@/lib/faceGate';
 import { FACE_GATE_MESSAGES, FACE_MIN_CONFIDENCE, type FaceGateStatus } from '@/lib/faceGateMessages';
 import { hapticError, hapticPhotoSnap } from '@/lib/utils/haptics';
+import { QrCode } from '@/components/QrCode';
 
 /** Sent with the selfie; the server rejects anything that isn't exactly one confident face. */
 interface FaceCheck {
@@ -594,6 +595,22 @@ export default function VerifyPage() {
               Take one live selfie copying this pose. We compare it with your main photo, then a member of
               our team approves your badge.
             </p>
+          </div>
+
+          {/* Desktop: hand off to the phone camera (front cameras on laptops make poor selfies). */}
+          <div className="hidden md:flex items-center gap-4 p-4 rounded-3xl bg-white border border-[#D0CDE1]">
+            <QrCode
+              value="https://asiansin.love/verify"
+              size={112}
+              label="QR code to open verification on your phone"
+              className="shrink-0 rounded-xl"
+            />
+            <div className="min-w-0">
+              <p className="text-sm font-semibold text-[#413B5E]">Verify with your phone</p>
+              <p className="mt-1 text-xs text-[#413B5E]/75 leading-relaxed">
+                Using a laptop? Scan with your phone camera to complete selfie verification in 15 seconds.
+              </p>
+            </div>
           </div>
 
           <ErrorNote message={errorMsg} />
