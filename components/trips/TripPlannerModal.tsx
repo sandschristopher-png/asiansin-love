@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { Loader2, Trash2 } from 'lucide-react';
 import { createTrip, deleteTrip } from '@/actions/trips';
-import { TripSheet } from '@/components/trips/TripSheet';
+import { BottomSheet as TripSheet } from '@/components/ui/BottomSheet';
 import { MAX_DAYS_AHEAD, formatTripRange, localIsoDate, type Trip } from '@/lib/trips';
 
 const FIELD =

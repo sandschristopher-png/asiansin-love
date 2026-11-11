@@ -13,6 +13,7 @@ import { adminRoleOf, isStaff } from '@/lib/adminRoles';
 import { supabase } from '@/lib/supabase/client';
 import { hardSignOut } from '@/lib/hardSignOut';
 import { PlusBadge } from '@/components/ui/PlusBadge';
+import { useShare } from '@/components/share/useShare';
 
 /** Own-profile fields the header reads: username, Plus status (isPlusProfile) and staff role. */
 const NAV_PROFILE_COLUMNS =
@@ -27,6 +28,7 @@ export function Navbar() {
   const [profile, setProfile] = useState<any>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
+  const { share, shareSheet } = useShare();
   const [hasUnreadAnnouncements, setHasUnreadAnnouncements] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
@@ -315,6 +317,7 @@ export function Navbar() {
       `}</style>
     
       {/* Profile Options Bottom Sheet */}
+      {shareSheet}
       {profileMenuOpen && (
         <div
           className="fixed inset-0 z-[100] flex items-end justify-center bg-black/40 backdrop-blur-sm"
@@ -341,12 +344,8 @@ export function Navbar() {
               <button
                 onClick={() => {
                   setProfileMenuOpen(false);
-                  if (typeof navigator !== "undefined" && navigator.share) {
-                    navigator.share({
-                      title: 'Profile on Meet in Asia',
-                      url: typeof window !== "undefined" ? window.location.href : "",
-                    }).catch(() => {});
-                  }
+                  // Native share sheet on phones, share drawer on desktop (previously did nothing there).
+                  void share({ title: 'Profile on Meet in Asia', text: 'Have a look at this profile on Meet in Asia.' });
                 }}
                 className="w-full text-left px-4 py-3 rounded-xl hover:bg-[#E8E6F1]/40 transition-colors text-[#413B5E]"
               >

@@ -5,10 +5,10 @@ import { createPortal } from 'react-dom';
 import { X } from 'lucide-react';
 
 /**
- * Bottom sheet shell shared by the trip drawer and planner (same look as the app's other sheets).
+ * Bottom sheet shell (trip drawer and planner, share sheet): same look as the app's other sheets.
  * Portalled to <body> so it covers the BottomNav, closes on backdrop tap or Escape.
  */
-export function TripSheet({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
+export function BottomSheet({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -41,4 +41,4 @@ export function TripSheet({ title, onClose, children }: { title: string; onClose
   );
 }
 
-export default TripSheet;
+export default BottomSheet;

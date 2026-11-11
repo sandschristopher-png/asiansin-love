@@ -23,6 +23,7 @@ import { supabase } from '@/lib/supabase/client';
 import { VoicePlayer } from '@/components/VoicePlayer';
 import { ageOf } from '@/lib/age';
 import { VisitingBadge } from '@/components/VisitingBadge';
+import { useShare } from '@/components/share/useShare';
 import { MemberTrips } from '@/components/trips/ProfileTrips';
 import { CardPhoto, DETAIL_PHOTO_SIZES } from '@/components/CardPhoto';
 import { PhotoCarousel } from '@/components/cards/PhotoCarousel';
@@ -84,6 +85,8 @@ export default function PublicProfilePage() {
   const [isSparked, setIsSparked] = useState(false);
   const [sparkLoading, setSparkLoading] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
+  // Native share sheet on phones, share drawer on desktop; the sheet outlives the menu.
+  const { share, shareSheet } = useShare();
   const [toastMsg, setToastMsg] = useState<string | null>(null);
   const [reportOpen, setReportOpen] = useState(false);
   const showActionToast = useActionToast();
@@ -429,6 +432,7 @@ export default function PublicProfilePage() {
                 <MoreHorizontal className="h-5 w-5" />
               </button>
 
+              {shareSheet}
               {showMenu && (
                 <>
                   <div className="fixed inset-0 z-40" onClick={() => setShowMenu(false)} />
@@ -437,17 +441,10 @@ export default function PublicProfilePage() {
                       type="button"
                       onClick={() => {
                         setShowMenu(false);
-                        if (typeof navigator !== 'undefined' && navigator.share) {
-                          navigator.share({
-                            title: `${displayName} on Meet in Asia`,
-                            url: window.location.href,
-                          }).catch(() => {});
-                        } else {
-                          navigator.clipboard
-                            ?.writeText(window.location.href)
-                            .then(() => showActionToast('Profile link copied to clipboard', 'copy'))
-                            .catch(() => {});
-                        }
+                        void share({
+                          title: `${displayName} on Meet in Asia`,
+                          text: `Meet ${displayName} on Meet in Asia.`,
+                        });
                       }}
                       className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs font-medium text-[#413B5E] transition hover:bg-[#E8E6F1]/40"
                     >

@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { MapPin } from 'lucide-react';
-import { TripSheet } from '@/components/trips/TripSheet';
+import { BottomSheet as TripSheet } from '@/components/ui/BottomSheet';
 import { formatTripRange, type Trip } from '@/lib/trips';
 
 /** Read-only list of a member's upcoming stops, opened from TripPill. */
