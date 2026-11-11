@@ -7,6 +7,7 @@ import { getPresenceStatus } from '@/lib/presence';
 import { canonicalCountry, countryMatches } from '@/lib/constants/countries';
 import { readLanguages } from '@/lib/constants/languages';
 import { LIFESTYLE_KEYS, readHeightCm, readLifestyle } from '@/lib/lifestyle';
+import { sharedTraits } from '@/lib/rhythm';
 import {
   CHILDREN_CLAUSES,
   CHILDREN_FILTERS,
@@ -324,6 +325,8 @@ export async function GET(req: Request) {
           voiceIntroUrl: row.voice_intro_url || null,
           // Viewer already sparked / favourited this member: the card shows a filled heart.
           hasSparked: alreadyLikedIds.has(row.id),
+          // Shared interests / languages with the viewer, so the card tag renders final on first paint.
+          sharedCount: viewerProfile ? sharedTraits(viewerProfile, { interests: row.interests, languages: row.languages }).length : 0,
           replyPace: row.reply_pace || null,
           travel:
             row.is_travel_mode_active === true && row.is_plus && row.visiting_city

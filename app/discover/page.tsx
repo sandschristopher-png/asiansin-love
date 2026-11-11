@@ -131,6 +131,8 @@ function scrollTopOf(el: HTMLElement | null): number {
 
 export interface ProfileItem {
   id: string;
+  /** Interests and languages shared with the viewer, counted by /api/discover (no client pop-in). */
+  sharedCount?: number;
   username?: string;
   name: string;
   age: number;
@@ -267,31 +269,50 @@ function normalizeGenderValue(raw?: string | null): 'female' | 'male' | 'male' {
 // In-memory cache for instant tab switching within this session. It only ever holds feeds the
 // server already filtered (opposite gender, not sparked, not blocked). The old localStorage copy
 // survived reloads and painted stale, unfiltered cards before the real feed arrived.
-let memoryDiscoverCache: { profiles: ProfileItem[] } | null = null;
+// Both caches belong to one member: discoverOwner is set from the local session before any cached
+// card paints, so on a shared phone the next account never sees the previous account's feed.
+let discoverOwner: string | null = null;
+function setDiscoverOwner(id: string | null) {
+  discoverOwner = id;
+}
+let memoryDiscoverCache: { owner: string; profiles: ProfileItem[] } | null = null;
 // Same server-filtered feed, surviving a reload in this tab: paints at once, then revalidates.
 // Default feed only, capped so it stays well inside the sessionStorage quota.
-const DISCOVER_CACHE_KEY = 'ail_discover_fast_cache_v1';
+const DISCOVER_CACHE_PREFIX = 'ail_discover_cache_v2_';
+const LEGACY_DISCOVER_CACHE_KEY = 'ail_discover_fast_cache_v1';
 const DISCOVER_CACHE_MAX = 48;
+const discoverCacheKey = () => (discoverOwner ? DISCOVER_CACHE_PREFIX + discoverOwner : null);
 function readDiscoverSessionCache(): ProfileItem[] {
+  const key = discoverCacheKey();
+  if (!key) return [];
   try {
-    const parsed = JSON.parse(sessionStorage.getItem(DISCOVER_CACHE_KEY) || 'null');
+    const parsed = JSON.parse(sessionStorage.getItem(key) || 'null');
     return Array.isArray(parsed?.profiles) ? parsed.profiles : [];
   } catch {
     return [];
   }
 }
 function writeDiscoverSessionCache(profiles: ProfileItem[]) {
+  const key = discoverCacheKey();
+  if (!key) return;
   try {
-    if (profiles.length === 0) sessionStorage.removeItem(DISCOVER_CACHE_KEY);
-    else sessionStorage.setItem(DISCOVER_CACHE_KEY, JSON.stringify({ profiles: profiles.slice(0, DISCOVER_CACHE_MAX), timestamp: Date.now() }));
+    sessionStorage.removeItem(LEGACY_DISCOVER_CACHE_KEY);
+    if (profiles.length === 0) sessionStorage.removeItem(key);
+    else sessionStorage.setItem(key, JSON.stringify({ profiles: profiles.slice(0, DISCOVER_CACHE_MAX), timestamp: Date.now() }));
   } catch {}
 }
 function clearDiscoverCache() {
   memoryDiscoverCache = null;
-  try { sessionStorage.removeItem(DISCOVER_CACHE_KEY); } catch {}
+  const key = discoverCacheKey();
+  try {
+    sessionStorage.removeItem(LEGACY_DISCOVER_CACHE_KEY);
+    if (key) sessionStorage.removeItem(key);
+  } catch {}
 }
 function getInitialDiscoverFeed(): ProfileItem[] {
-  if (memoryDiscoverCache?.profiles?.length) return memoryDiscoverCache.profiles.slice();
+  if (memoryDiscoverCache && memoryDiscoverCache.owner === discoverOwner && memoryDiscoverCache.profiles.length) {
+    return memoryDiscoverCache.profiles.slice();
+  }
   return typeof window === 'undefined' ? [] : readDiscoverSessionCache();
 }
 
@@ -340,7 +361,7 @@ function DiscoverContent() {
   const [searchClosing, setSearchClosing] = useState(false);
 
   useEffect(() => {
-    if (profiles.length > 0) memoryDiscoverCache = { profiles };
+    if (profiles.length > 0 && discoverOwner) memoryDiscoverCache = { owner: discoverOwner, profiles };
   }, [profiles]);
 
   // One-time cleanup of keys from the old client-side feed / gender filter.
@@ -434,7 +455,8 @@ function DiscoverContent() {
       setSheetDragY(0); // snaps back with the 250 ms deceleration curve
     }
   };
-  const [cardActions, setCardActions] = useState<Record<string, ActionType>>({});
+  // Seeded from the cached feed's hasSparked, so cached hearts never flip from empty to filled.
+  const [cardActions, setCardActions] = useState<Record<string, ActionType>>(() => reconcileSparks({}, getInitialDiscoverFeed()));
   const [lastPassed, setLastPassed] = useState<{ id: string; name: string } | null>(null);
 
   const BATCH_SIZE = 12;
@@ -482,8 +504,7 @@ function DiscoverContent() {
   }, [profiles]);
 
   useEffect(() => {
-    const local = getLocalCardActions();
-    setCardActions(local);
+    setCardActions(reconcileSparks(getLocalCardActions(), getInitialDiscoverFeed()));
 
     async function loadFeed() {
       // Keep the loading state until the server's filtered feed arrives (no stale cards first).
@@ -1111,10 +1132,10 @@ function DiscoverContent() {
                       </p>
                       {/* Always rendered at one height, so names line up across both columns. */}
                       {(() => {
-                        const common = sharedTraits(viewerTraits, profile);
+                        const common = profile.sharedCount === undefined ? sharedTraits(viewerTraits, profile) : [];
                         return (
                           <div className="mt-1 h-6 pr-7 flex items-center min-w-0">
-                            <CardPrimaryTag sharedCount={common.length} replyPace={profile.replyPace} />
+                            <CardPrimaryTag sharedCount={profile.sharedCount ?? common.length} replyPace={profile.replyPace} />
                           </div>
                         );
                       })()}
@@ -1574,14 +1595,24 @@ export default function AuthGate() {
   const router = useRouter();
   const [authState, setAuthState] = useState<'loading' | 'member'>('loading');
   // A cached feed paints before the network check; the getUser check below still redirects.
+  // The local session (no network) names the owner first; only that member's cache may paint early.
   useLayoutEffect(() => {
-    if (memoryDiscoverCache?.profiles?.length || readDiscoverSessionCache().length > 0) setAuthState('member');
+    let alive = true;
+    supabase.auth.getSession().then(({ data }) => {
+      if (!alive) return;
+      setDiscoverOwner(data.session?.user?.id ?? null);
+      if (getInitialDiscoverFeed().length > 0) setAuthState('member');
+    });
+    return () => {
+      alive = false;
+    };
   }, []);
   useEffect(() => {
     let mounted = true;
     supabase.auth.getUser().then(({ data, error }) => {
       if (!mounted) return;
       if (data?.user && !error) {
+        setDiscoverOwner(data.user.id);
         setAuthState('member');
       } else {
         const hasVisited =
