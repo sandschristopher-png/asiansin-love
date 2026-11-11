@@ -1,0 +1,58 @@
+{
+  "hero": {
+    "imageAlt": "Perempuan berbaju hijau tersenyum sambil memegang ponsel merah muda",
+    "line1": "Koneksi nyata.",
+    "line2": "Profil Terverifikasi Selfie.",
+    "line3": "Gratis untuk Match & Terhubung.",
+    "subtitle": "Meet in Asia adalah platform kencan terverifikasi untuk hubungan lintas negara yang tulus. Tanpa bot, tanpa jebakan finansial, dan tanpa permainan berbayar.",
+    "join": "Gabung Gratis",
+    "factVerified": "Terverifikasi Selfie Langsung",
+    "factSparks": "30 Sparks Gratis per Hari"
+  },
+  "auth": {
+    "memberPrompt": "Sudah jadi anggota?",
+    "signIn": "Masuk"
+  },
+  "steps": {
+    "heading": "Bagaimana koneksi terjadi",
+    "sub": "Match berdasarkan niat, bukan keberuntungan. Tiga langkah untuk bertemu orang yang nyata.",
+    "one": { "title": "Bagikan keinginanmu", "desc": "Tetapkan tujuan hubungan, rencana waktu, dan rencana perjalananmu sejak awal." },
+    "two": { "title": "Jelajahi anggota terverifikasi", "desc": "Temukan anggota yang serius dan sudah dikonfirmasi lewat verifikasi selfie langsung." },
+    "three": { "title": "Terhubung dengan percaya diri", "desc": "Kirim Sparks, dengarkan perkenalan suara yang autentik, dan terhubung dengan aman sesuai caramu." }
+  },
+  "features": {
+    "screening": {
+      "title": "Penyaringan Penipuan & Bot Proaktif",
+      "body": "Setiap profil menjalani verifikasi selfie langsung sebelum bisa match. Akun ganda, profil palsu, dan bot langsung dihapus.",
+      "alt": "Ilustrasi anggota memegang perisai verifikasi"
+    },
+    "intent": {
+      "title": "Niat Hubungan yang Jelas",
+      "body": "Terhubung dengan para lajang yang memiliki nilai dan impian masa depan lintas negara yang sama. Tanpa permainan tanpa akhir atau motif tersembunyi.",
+      "alt": "Ilustrasi pasangan yang tersenyum"
+    },
+    "voices": {
+      "title": "Suara Asli, Sparks Asli.",
+      "body": "Dengarkan suara asli anggota sebelum terhubung, lalu kirim Spark yang tulus untuk memulai percakapan yang nyata.",
+      "alt": "Ilustrasi anggota dengan tangan di dada"
+    },
+    "protection": {
+      "title": "Perlindungan Penipuan Bawaan",
+      "body": "Skrip penipuan, taktik catfish, dan permintaan uang sejak awal dicegat secara otomatis. Laporan sekali ketuk melindungimu dari penipuan finansial.",
+      "alt": "Ilustrasi anggota melihat tanda bahaya di ponselnya"
+    }
+  },
+  "cta": {
+    "heading": "Jadilah salah satu anggota pertama kami.",
+    "sub": "Gabung gratis dan mulai bertemu lajang yang tulus di seluruh Asia Tenggara hari ini."
+  },
+  "footer": {
+    "safety": "Keamanan",
+    "terms": "Ketentuan",
+    "privacy": "Privasi",
+    "contact": "Kontak"
+  },
+  "language": {
+    "label": "Bahasa"
+  }
+}

@@ -1,0 +1,58 @@
+{
+  "hero": {
+    "imageAlt": "Smiling woman in a green top holding a pink smartphone",
+    "line1": "Real connections.",
+    "line2": "Selfie-Verified Profiles.",
+    "line3": "Free to Match & Connect.",
+    "subtitle": "Meet in Asia is a verified dating platform built for genuine cross-border relationships. No bots, no financial traps, and no paywalled games.",
+    "join": "Join for Free",
+    "factVerified": "Live Selfie Verified",
+    "factSparks": "30 Free Daily Sparks"
+  },
+  "auth": {
+    "memberPrompt": "Already a member?",
+    "signIn": "Sign in"
+  },
+  "steps": {
+    "heading": "How connections happen",
+    "sub": "Match on intention, not luck. Three steps to meeting someone real.",
+    "one": { "title": "Share what you want", "desc": "Set your relationship goals, timeline, and travel plans upfront." },
+    "two": { "title": "Browse verified members", "desc": "Browse intentional members confirmed through live selfie verification." },
+    "three": { "title": "Connect with confidence", "desc": "Exchange Sparks, hear authentic voice intros, and connect safely on your own terms." }
+  },
+  "features": {
+    "screening": {
+      "title": "Proactive Scam & Bot Screening",
+      "body": "Every profile undergoes live selfie verification before matching. Duplicate accounts, catfish profiles, and bots are removed immediately.",
+      "alt": "Illustrated member holding a verification shield"
+    },
+    "intent": {
+      "title": "Clear Relationship Intent",
+      "body": "Connect with singles who share your values and cross-border future. No endless casual games or hidden motives.",
+      "alt": "Illustrated couple smiling together"
+    },
+    "voices": {
+      "title": "Real Voices, Real Sparks.",
+      "body": "Hear a member's real voice before you connect, then send a thoughtful Spark that starts a real conversation.",
+      "alt": "Illustrated member with a hand on her heart"
+    },
+    "protection": {
+      "title": "Built-In Scam Protection",
+      "body": "Scam scripts, catfish tactics, and early requests for money are intercepted automatically. One-tap reporting protects you from financial deception.",
+      "alt": "Illustrated member spotting red flags on his phone"
+    }
+  },
+  "cta": {
+    "heading": "Be one of our first members.",
+    "sub": "Join free and start meeting genuine singles across Southeast Asia today."
+  },
+  "footer": {
+    "safety": "Safety",
+    "terms": "Terms",
+    "privacy": "Privacy",
+    "contact": "Contact"
+  },
+  "language": {
+    "label": "Language"
+  }
+}

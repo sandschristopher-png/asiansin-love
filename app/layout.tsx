@@ -2,25 +2,36 @@ import type { Metadata, Viewport } from 'next';
 
 import PwaRegister from "@/components/PwaRegister";
 
-import { Inter, Plus_Jakarta_Sans } from 'next/font/google';
+import { Inter, Noto_Sans_Thai, Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 import { LayoutShell } from '@/components/LayoutShell';
 
-// Two typefaces, two roles:
-//   Inter (--font-sans, Tailwind font-sans): body copy, inputs, buttons and all UI text, 400-600.
-//   Plus Jakarta Sans (--font-jakarta -> --font-brand, font-brand): headings and the logo, 500-600.
+// Two typefaces, two roles, plus a Thai fallback (full chains live in globals.css):
+//   Inter (--font-inter -> Tailwind font-sans): body copy, inputs, buttons and all UI text, 400-600.
+//   Plus Jakarta Sans (--font-jakarta -> font-brand and h1-h6): headings and the logo, 500-600.
+//   Noto Sans Thai (--font-thai): Thai glyphs only. Not preloaded: its unicode-range means the
+//   browser downloads it only when a page actually shows Thai text.
 // Weights above 600 are not loaded: nothing in the UI uses them (globals.css caps <strong> at 600).
+// Only 'latin' is preloaded; the Vietnamese and Latin Extended faces are still declared and
+// download on demand for vi pages.
 const inter = Inter({
   subsets: ['latin'],
   weight: ['400', '500', '600'],
   display: 'swap',
-  variable: '--font-sans',
+  variable: '--font-inter',
 });
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ['latin'],
   weight: ['500', '600'],
   display: 'swap',
   variable: '--font-jakarta',
+});
+const notoThai = Noto_Sans_Thai({
+  subsets: ['thai'],
+  weight: ['400', '500', '600'],
+  display: 'swap',
+  preload: false,
+  variable: '--font-thai',
 });
 
 const SITE_TITLE = 'Meet in Asia | Real Connections, Selfie-Verified Profiles';
@@ -76,7 +87,7 @@ export default function RootLayout({
 }) {
 
   return (
-    <html lang="en" className={`h-full ${inter.variable} ${plusJakarta.variable}`}>
+    <html lang="en" className={`h-full ${inter.variable} ${plusJakarta.variable} ${notoThai.variable}`}>
       <head>
         {/* Keep Chrome's install event if it fires before React hydrates (lib/pwaInstall.ts). */}
         <script
@@ -86,7 +97,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="font-sans bg-[#E8E6F1]/60 text-[#413B5E] h-full selection:bg-[#8574B7] selection:text-white antialiased overflow-hidden">
+      <body className="font-sans bg-slate-100 text-[#413B5E] h-full selection:bg-[#8574B7] selection:text-white antialiased overflow-hidden">
         <LayoutShell>{children}</LayoutShell>
         <PwaRegister />
       </body>

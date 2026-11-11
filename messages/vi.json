@@ -1,0 +1,58 @@
+{
+  "hero": {
+    "imageAlt": "Người phụ nữ mặc áo xanh lá đang mỉm cười, cầm điện thoại màu hồng",
+    "line1": "Kết nối thật.",
+    "line2": "Hồ sơ xác minh bằng selfie.",
+    "line3": "Ghép đôi và kết nối miễn phí.",
+    "subtitle": "Meet in Asia là nền tảng hẹn hò đã xác minh, dành cho những mối quan hệ chân thành vượt biên giới. Không bot, không bẫy tài chính, không trò chơi trả phí.",
+    "join": "Tham gia miễn phí",
+    "factVerified": "Xác minh selfie trực tiếp",
+    "factSparks": "30 Sparks miễn phí mỗi ngày"
+  },
+  "auth": {
+    "memberPrompt": "Đã là thành viên?",
+    "signIn": "Đăng nhập"
+  },
+  "steps": {
+    "heading": "Kết nối diễn ra như thế nào",
+    "sub": "Ghép đôi theo ý định, không phải may rủi. Ba bước để gặp một người thật.",
+    "one": { "title": "Chia sẻ điều bạn muốn", "desc": "Đặt ra mục tiêu tình cảm, thời gian và kế hoạch du lịch ngay từ đầu." },
+    "two": { "title": "Xem thành viên đã xác minh", "desc": "Khám phá những thành viên nghiêm túc đã được xác nhận qua xác minh selfie trực tiếp." },
+    "three": { "title": "Kết nối tự tin", "desc": "Gửi Sparks, nghe lời giới thiệu bằng giọng nói thật và kết nối an toàn theo cách của bạn." }
+  },
+  "features": {
+    "screening": {
+      "title": "Chủ động sàng lọc lừa đảo và bot",
+      "body": "Mỗi hồ sơ đều trải qua xác minh selfie trực tiếp trước khi ghép đôi. Tài khoản trùng lặp, hồ sơ giả mạo và bot bị xóa ngay lập tức.",
+      "alt": "Hình minh họa thành viên cầm khiên xác minh"
+    },
+    "intent": {
+      "title": "Ý định rõ ràng trong tình cảm",
+      "body": "Kết nối với những người độc thân có cùng giá trị và cùng hướng tới tương lai vượt biên giới. Không trò chơi tình cảm bất tận hay động cơ che giấu.",
+      "alt": "Hình minh họa cặp đôi đang mỉm cười"
+    },
+    "voices": {
+      "title": "Giọng nói thật, Sparks thật.",
+      "body": "Nghe giọng nói thật của thành viên trước khi kết nối, rồi gửi một Spark chu đáo để bắt đầu cuộc trò chuyện thật sự.",
+      "alt": "Hình minh họa thành viên đặt tay lên ngực"
+    },
+    "protection": {
+      "title": "Bảo vệ chống lừa đảo tích hợp",
+      "body": "Kịch bản lừa đảo, chiêu trò giả mạo và yêu cầu tiền sớm đều bị chặn tự động. Báo cáo một chạm bảo vệ bạn khỏi lừa đảo tài chính.",
+      "alt": "Hình minh họa thành viên phát hiện dấu hiệu cảnh báo trên điện thoại"
+    }
+  },
+  "cta": {
+    "heading": "Hãy là một trong những thành viên đầu tiên.",
+    "sub": "Tham gia miễn phí và bắt đầu gặp gỡ những người độc thân chân thành khắp Đông Nam Á ngay hôm nay."
+  },
+  "footer": {
+    "safety": "An toàn",
+    "terms": "Điều khoản",
+    "privacy": "Quyền riêng tư",
+    "contact": "Liên hệ"
+  },
+  "language": {
+    "label": "Ngôn ngữ"
+  }
+}

@@ -5,6 +5,7 @@ import { Ban, BadgeCheck, ChevronRight, Search, ShieldPlus, Undo2, Users } from 
 import { ReputationBadge } from '@/components/ReputationBadge';
 import { ADMIN_ROLE_LABEL, type AdminRole } from '@/lib/adminRoles';
 import { AdminAvatar, AdminButton, BottomSheet, EmptyState, Loading, Notice, PageTitle, adminFetch } from '@/components/admin/ui';
+import { ThemedSelect } from '@/components/ui/ThemedSelect';
 
 type Member = {
   id: string;
@@ -225,15 +226,17 @@ export function MembersManager({ selfId, ownerId, isOwner }: { selfId: string; o
           enterKeyHint="go"
           className="w-full h-10 rounded-xl border border-[#D0CDE1] px-3 text-sm outline-none focus:border-[#8574B7]"
         />
-        <select
-          aria-label="Role to grant"
+        <ThemedSelect<'moderator' | 'member'>
+          ariaLabel="Role to grant"
           value={grantRole}
-          onChange={(e) => setGrantRole(e.target.value as 'moderator' | 'member')}
-          className="w-full h-10 rounded-xl border border-[#D0CDE1] bg-white px-3 text-sm"
-        >
-          <option value="moderator">Mod</option>
-          <option value="member">Member (revoke access)</option>
-        </select>
+          onChange={setGrantRole}
+          options={[
+            { value: 'moderator', label: 'Mod' },
+            { value: 'member', label: 'Member (revoke access)' },
+          ]}
+          menuClassName="w-full"
+          className="h-10 rounded-xl border border-[#D0CDE1] bg-white px-3 text-sm"
+        />
         <AdminButton type="submit" size="lg" tone="primary" busy={granting} disabled={!grantName.trim()} className="w-full">
           <ShieldPlus className="w-4 h-4" aria-hidden />
           Grant Access

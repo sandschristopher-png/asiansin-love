@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import VerifiedBadge from '@/components/VerifiedBadge';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Camera, ChevronDown, Compass, Search, X as XIcon, SlidersHorizontal, RotateCcw, MapPin } from 'lucide-react';
+import { Camera, Compass, Search, X as XIcon, SlidersHorizontal, RotateCcw, MapPin } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { INTENT_OPTIONS, normalizeIntent } from '@/lib/intents';
 import { CHILDREN_FILTERS, ENGLISH_LEVEL_OPTIONS, RELATIONSHIP_INTENT_FILTERS, discoverQuery } from '@/lib/discoverFilters';
@@ -13,7 +13,7 @@ import { ActionType, getLocalCardActions, persistCardAction } from '@/lib/intera
 import { isTrustedVoiceIntroUrl } from '@/lib/audio';
 import { usePresentUserIds } from '@/lib/realtimePresence';
 import { sharedTraits } from '@/lib/rhythm';
-import { InCommonCard, RhythmPill } from '@/components/profile/RhythmBadges';
+import { CardPrimaryTag } from '@/components/profile/RhythmBadges';
 import { SparkHeartButton } from '@/components/SparkHeartButton';
 import { PhotoCarousel } from '@/components/cards/PhotoCarousel';
 import { useActionToast } from '@/components/ActionToast';
@@ -32,6 +32,7 @@ import { readLanguages } from '@/lib/constants/languages';
 import { ReputationBadge } from '@/components/ReputationBadge';
 import { PlusBadge } from '@/components/ui/PlusBadge';
 import { hapticWarning } from '@/lib/haptics';
+import { ThemedSelect } from '@/components/ui/ThemedSelect';
 import dynamic from 'next/dynamic';
 
 /** Loaded on first open (keeps the Plus checkout sheet out of the Discover bundle). */
@@ -57,6 +58,10 @@ function distanceKm(lat1: number, lon1: number, lat2: number, lon2: number): num
 const DEFAULT_MIN_AGE = 18;
 const DEFAULT_MAX_AGE = 99;
 const AGE_OPTIONS = Array.from({ length: DEFAULT_MAX_AGE - DEFAULT_MIN_AGE + 1 }, (_, i) => i + DEFAULT_MIN_AGE);
+const AGE_SELECT_OPTIONS = AGE_OPTIONS.map((a) => ({ value: a, label: String(a) }));
+/** Trigger look for the filter sheet's themed dropdowns. */
+const FILTER_SELECT =
+  'bg-white border border-[#D0CDE1] text-[#413B5E] font-medium rounded-xl px-3 py-2 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8574B7]/30';
 
 /** Grey rounded placeholder cards (feed loading and category switches). */
 function FeedSkeleton({ count = 8 }: { count?: number }) {
@@ -232,8 +237,9 @@ function DiscoverCardPhotoCarousel({
           {displayPhotos.length}
         </span>
       )}
-      {/* Below the photo dots when there are several photos. */}
-      <div className={`absolute ${hasMultiple ? 'top-5' : 'top-2.5'} left-2.5 flex items-center gap-1.5 z-20 pointer-events-none`}>
+      {/* Below the photo dots when there are several photos. right-12 keeps the top-right corner
+          free for the Spark heart: badges wrap to a second row instead of sliding under it. */}
+      <div className={`absolute ${hasMultiple ? 'top-5' : 'top-2.5'} left-2.5 right-12 flex flex-wrap items-center gap-1.5 z-20 pointer-events-none`}>
         <ReputationBadge score={repScore} variant="frosted" size="xs" />
         <NewMemberPill createdAt={createdAt} />
         {online ? (
@@ -934,7 +940,7 @@ function DiscoverContent() {
       </div>
       <main className="w-full max-w-md mx-auto px-4 pt-1 pb-36 relative">
         {/* Static Pinned Search & Filter Controls on Left + Horizontally Scrolling Categories on Right */}
-        <section aria-label="Search and Filters" className="sticky top-0 z-30 w-[calc(100%+2rem)] -mx-4 px-4 py-2 flex items-center gap-3 bg-white/80 backdrop-blur-md">
+        <section aria-label="Search and Filters" className="sticky top-14 z-30 w-[calc(100%+2rem)] -mx-4 px-4 py-2 flex items-center gap-3 bg-white/75 backdrop-blur-md supports-[backdrop-filter]:bg-white/75 border-b border-slate-200/60">
           <div className={`flex items-center gap-1.5 ${searchOpen || searchQuery ? 'flex-1 min-w-0' : 'hidden'}`}>
             {searchOpen || searchQuery ? (
               <div className={`flex-1 min-w-0 h-9 flex items-center gap-1 bg-white border border-[#D0CDE1] focus-within:border-[#8574B7] rounded-full pl-3 pr-2 shadow-2xs transition-all ${searchAnimating ? 'animate-[slideIn_200ms_cubic-bezier(0.16,1,0.3,1)]' : ''} ${searchClosing ? 'animate-[slideOut_180ms_ease-in_forwards]' : ''}`}>
@@ -1032,7 +1038,8 @@ function DiscoverContent() {
 
         {/* 2-Column Feed Grid */}
         {/* Uniform 2-column directory grid (same rhythm and 3:4 cards as Sparks) */}
-        <div className="grid grid-cols-2 gap-3 sm:gap-4 w-full animate-fade-in-up pt-3">
+        {/* min-h holds the page height while tabs swap results; content-start stops rows stretching to fill it. */}
+        <div className="grid grid-cols-2 content-start gap-3 sm:gap-4 w-full min-h-[60vh] animate-fade-in-up pt-3">
           {isLoading || categorySwitching ? (
             <FeedSkeleton count={isLoading ? 8 : Math.min(8, Math.max(2, visibleProfiles.length))} />
           ) : (
@@ -1106,9 +1113,8 @@ function DiscoverContent() {
                       {(() => {
                         const common = sharedTraits(viewerTraits, profile);
                         return (
-                          <div className="mt-1 h-6 pr-7 flex items-center gap-1.5 overflow-hidden whitespace-nowrap min-w-0">
-                            <RhythmPill field="reply_pace" value={profile.replyPace} variant="glass" className="min-w-0" />
-                            <InCommonCard items={common} compact />
+                          <div className="mt-1 h-6 pr-7 flex items-center min-w-0">
+                            <CardPrimaryTag sharedCount={common.length} replyPace={profile.replyPace} />
                           </div>
                         );
                       })()}
@@ -1311,31 +1317,25 @@ function DiscoverContent() {
                       </label>
                       <div className="flex items-center gap-2.5">
                         <div className="relative flex-1">
-                          <select
-                            aria-label="Minimum age"
+                          <ThemedSelect<number>
+                            ariaLabel="Minimum age"
                             value={draftMinAge}
-                            onChange={(e) => setDraftMinAge(Math.min(Number(e.target.value), draftMaxAge))}
-                            className="w-full appearance-none bg-white border border-[#D0CDE1] text-[#413B5E] font-medium rounded-xl pl-3 pr-9 py-2 text-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#8574B7]/30"
-                          >
-                            {AGE_OPTIONS.map((age) => (
-                              <option key={age} value={age} className="bg-white text-[#413B5E]">{age}</option>
-                            ))}
-                          </select>
-                          <ChevronDown aria-hidden className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-600" />
+                            onChange={(v) => setDraftMinAge(Math.min(v, draftMaxAge))}
+                            options={AGE_SELECT_OPTIONS}
+                            menuClassName="w-full"
+                            className={FILTER_SELECT}
+                          />
                         </div>
                         <span className="text-xs text-[#413B5E]/75 font-medium">to</span>
                         <div className="relative flex-1">
-                          <select
-                            aria-label="Maximum age"
+                          <ThemedSelect<number>
+                            ariaLabel="Maximum age"
                             value={draftMaxAge}
-                            onChange={(e) => setDraftMaxAge(Math.max(Number(e.target.value), draftMinAge))}
-                            className="w-full appearance-none bg-white border border-[#D0CDE1] text-[#413B5E] font-medium rounded-xl pl-3 pr-9 py-2 text-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#8574B7]/30"
-                          >
-                            {AGE_OPTIONS.map((age) => (
-                              <option key={age} value={age} className="bg-white text-[#413B5E]">{age}</option>
-                            ))}
-                          </select>
-                          <ChevronDown aria-hidden className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-600" />
+                            onChange={(v) => setDraftMaxAge(Math.max(v, draftMinAge))}
+                            options={AGE_SELECT_OPTIONS}
+                            menuClassName="w-full"
+                            className={FILTER_SELECT}
+                          />
                         </div>
                       </div>
                     </div>
@@ -1350,20 +1350,19 @@ function DiscoverContent() {
                         )}
                       </label>
                       <div className="relative">
-                        <select
-                          aria-label="Country"
+                        <ThemedSelect<string>
+                          ariaLabel="Country"
                           disabled={countryLocked}
                           value={countryLocked ? ALL_COUNTRIES_VALUE : draftCountry}
-                          onChange={(e) => setDraftCountry(e.target.value)}
-                          className="w-full appearance-none bg-white border border-[#D0CDE1] text-[#413B5E] font-medium rounded-xl pl-3 pr-9 py-2 text-sm cursor-pointer focus:outline-none focus:ring-2 focus:ring-[#8574B7]/30 disabled:opacity-60 disabled:cursor-not-allowed"
-                        >
-                          <option value={ALL_COUNTRIES_VALUE} className="bg-white text-[#413B5E]">All Countries</option>
-                          {countryOptions.map((c) => (
-                            <option key={c.code} value={c.name} className="bg-white text-[#413B5E]">{c.name}</option>
-                          ))}
-                          <option value={OTHER_COUNTRY_VALUE} className="bg-white text-[#413B5E]">Other</option>
-                        </select>
-                        <ChevronDown aria-hidden className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-600" />
+                          onChange={setDraftCountry}
+                          options={[
+                            { value: ALL_COUNTRIES_VALUE, label: 'All Countries' },
+                            ...countryOptions.map((c) => ({ value: c.name, label: c.name })),
+                            { value: OTHER_COUNTRY_VALUE, label: 'Other' },
+                          ]}
+                          menuClassName="w-full"
+                          className={FILTER_SELECT}
+                        />
                       </div>
                     </div>
 

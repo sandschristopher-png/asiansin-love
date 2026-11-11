@@ -1,0 +1,58 @@
+{
+  "hero": {
+    "imageAlt": "Nakangiting babae na naka-berdeng pang-itaas at may hawak na pink na smartphone",
+    "line1": "Totoong koneksyon.",
+    "line2": "Selfie-Verified na mga Profile.",
+    "line3": "Libreng Mag-match at Kumonekta.",
+    "subtitle": "Ang Meet in Asia ay isang verified na dating platform para sa tapat na relasyon sa iba't ibang bansa. Walang bot, walang pinansyal na bitag, at walang laro sa likod ng paywall.",
+    "join": "Sumali nang Libre",
+    "factVerified": "Live Selfie Verified",
+    "factSparks": "30 Libreng Sparks Araw-araw"
+  },
+  "auth": {
+    "memberPrompt": "Miyembro ka na ba?",
+    "signIn": "Mag-sign in"
+  },
+  "steps": {
+    "heading": "Paano nangyayari ang koneksyon",
+    "sub": "Mag-match ayon sa intensyon, hindi sa swerte. Tatlong hakbang para makakilala ng totoong tao.",
+    "one": { "title": "Ibahagi ang gusto mo", "desc": "Itakda ang iyong mga layunin sa relasyon, timeline, at mga plano sa paglalakbay mula sa simula." },
+    "two": { "title": "Mag-browse ng verified na miyembro", "desc": "Mag-browse ng mga seryosong miyembro na kumpirmado sa pamamagitan ng live selfie verification." },
+    "three": { "title": "Kumonekta nang may kumpiyansa", "desc": "Magpadala ng Sparks, pakinggan ang totoong voice intro, at kumonekta nang ligtas sa sarili mong paraan." }
+  },
+  "features": {
+    "screening": {
+      "title": "Maagap na Pagsala sa Scam at Bot",
+      "body": "Bawat profile ay dumadaan sa live selfie verification bago makapag-match. Agad na tinatanggal ang mga duplicate na account, catfish na profile, at bot.",
+      "alt": "Iginuhit na miyembrong may hawak na verification shield"
+    },
+    "intent": {
+      "title": "Malinaw na Intensyon sa Relasyon",
+      "body": "Kumonekta sa mga single na kapareho mo ng pinahahalagahan at ng pangarap na hinaharap sa ibang bansa. Walang paikot-ikot na laro o nakatagong motibo.",
+      "alt": "Iginuhit na magkasintahang nakangiti"
+    },
+    "voices": {
+      "title": "Totoong Boses, Totoong Sparks.",
+      "body": "Pakinggan ang totoong boses ng isang miyembro bago kumonekta, saka magpadala ng maalalahaning Spark na magsisimula ng totoong usapan.",
+      "alt": "Iginuhit na miyembrong nakalagay ang kamay sa dibdib"
+    },
+    "protection": {
+      "title": "Built-In na Proteksyon Laban sa Scam",
+      "body": "Awtomatikong hinaharang ang mga scam script, taktika ng catfish, at maagang paghingi ng pera. Pinoprotektahan ka ng one-tap reporting laban sa panlolokong pinansyal.",
+      "alt": "Iginuhit na miyembrong nakakita ng red flag sa kanyang telepono"
+    }
+  },
+  "cta": {
+    "heading": "Maging isa sa aming mga unang miyembro.",
+    "sub": "Sumali nang libre at magsimulang makakilala ng mga tapat na single sa buong Southeast Asia ngayon."
+  },
+  "footer": {
+    "safety": "Kaligtasan",
+    "terms": "Mga Tuntunin",
+    "privacy": "Privacy",
+    "contact": "Makipag-ugnayan"
+  },
+  "language": {
+    "label": "Wika"
+  }
+}

@@ -16,6 +16,7 @@ import {
 } from 'lucide-react';
 import { REPUTATION_RULES } from '@/lib/reputation';
 import { ReputationBadge } from '@/components/ReputationBadge';
+import { ThemedSelect } from '@/components/ui/ThemedSelect';
 
 interface ModeratedMessage {
   id: string;
@@ -330,17 +331,20 @@ export default function AdminModerationPage() {
                 <label className="text-xs font-semibold text-[#413B5E] block mb-1">
                   Penalty Points (if confirming violation)
                 </label>
-                <select
+                <ThemedSelect<number>
+                  ariaLabel="Penalty points"
                   value={penaltyPoints}
-                  onChange={(e) => setPenaltyPoints(Number(e.target.value))}
-                  className="w-full bg-white border border-[#D0CDE1] rounded-xl px-3 py-2.5 text-xs text-[#413B5E] focus:outline-none focus:border-[#8574B7]"
-                >
-                  <option value={0}>0 pts (No deduction)</option>
-                  <option value={10}>-10 pts (Minor caution)</option>
-                  <option value={25}>-25 pts (Off-platform contact/solicitation)</option>
-                  <option value={50}>-50 pts (Severe scam/wire request)</option>
-                  <option value={100}>-100 pts (Immediate account freeze)</option>
-                </select>
+                  onChange={setPenaltyPoints}
+                  options={[
+                    { value: 0, label: '0 pts (No deduction)' },
+                    { value: 10, label: '-10 pts (Minor caution)' },
+                    { value: 25, label: '-25 pts (Off-platform contact/solicitation)' },
+                    { value: 50, label: '-50 pts (Severe scam/wire request)' },
+                    { value: 100, label: '-100 pts (Immediate account freeze)' },
+                  ]}
+                  menuClassName="w-full"
+                  className="bg-white border border-[#D0CDE1] rounded-xl px-3 py-2.5 text-xs text-[#413B5E] focus:outline-none focus-visible:border-[#8574B7]"
+                />
               </div>
 
               <div>

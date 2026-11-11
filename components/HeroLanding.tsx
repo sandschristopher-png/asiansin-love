@@ -2,70 +2,76 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
+import { AudioLines } from 'lucide-react';
 import { BrandLogo } from '@/components/BrandLogo';
 import Hero, { LANDING_SHELL, SignInPrompt } from '@/components/Hero';
+import { LocaleProvider, useLocale } from '@/components/i18n/LocaleProvider';
+import { LanguageSelect } from '@/components/i18n/LanguageSelect';
+import { HTML_LANG, type Locale } from '@/lib/i18n/config';
+import type { Messages } from '@/lib/i18n/messages';
 
-const STEPS = [
-  { step: '01', title: 'Share what you want', desc: 'Set your relationship goals, timeline, and travel plans upfront.' },
-  { step: '02', title: 'Browse verified members', desc: 'Browse intentional members confirmed through live selfie verification.' },
-  { step: '03', title: 'Connect with confidence', desc: 'Exchange Sparks, hear authentic voice intros, and connect safely on your own terms.' },
-];
+const STEP_KEYS = [
+  { step: '01', key: 'one' },
+  { step: '02', key: 'two' },
+  { step: '03', key: 'three' },
+] as const;
 
+// Card art: illustrations fill their tile edge to edge; "voices" uses an audio-wave graphic.
 const FEATURES = [
-  {
-    title: 'Proactive Scam & Bot Screening',
-    body: 'Every profile undergoes live selfie verification before matching. Duplicate accounts, catfish profiles, and bots are removed immediately.',
-    src: '/secured.webp',
-    alt: 'Illustrated member holding a verification shield',
-  },
-  {
-    title: 'Clear Relationship Intent',
-    body: 'Connect with singles who share your values and cross-border future. No endless casual games or hidden motives.',
-    src: '/hero-couple.webp',
-    alt: 'Illustrated couple smiling together',
-  },
-  {
-    title: 'Real Voices, Real Sparks.',
-    body: "Hear a member's real voice before you connect, then send a thoughtful Spark that starts a real conversation.",
-    src: '/intention.webp',
-    alt: 'Illustrated member with a hand on her heart',
-  },
-  {
-    title: 'Built-In Scam Protection',
-    body: 'Scam scripts, catfish tactics, and early requests for money are intercepted automatically. One-tap reporting protects you from financial deception.',
-    src: '/red-flags.webp',
-    alt: 'Illustrated member spotting red flags on his phone',
-  },
-];
+  { key: 'screening', src: '/secured.webp' },
+  { key: 'intent', src: '/hero-couple.webp' },
+  { key: 'voices', src: null },
+  { key: 'protection', src: '/red-flags.webp' },
+] as const;
 
 /**
- * Signed-out landing page (app/page.tsx renders it only without a session). One centred
- * max-w-md column on every screen, white canvas, no borders or shadows on page surfaces, and no
- * breakpoints that change the layout.
+ * Signed-out landing page (app/page.tsx renders it only without a session, with the locale from
+ * the NEXT_LOCALE cookie and that locale's dictionary). One centred max-w-md column on every
+ * screen and no breakpoints that change the layout. The root carries the lang attribute, so
+ * screen readers and the CJK font order in globals.css follow the chosen language from the
+ * server render.
  */
-export function HeroLanding() {
+export function HeroLanding({ locale, messages }: { locale: Locale; messages: Messages }) {
   return (
-    <div className="w-full min-h-screen bg-white overflow-x-hidden text-[#413B5E] selection:bg-[#8574B7]/15 selection:text-[#8574B7]">
-      <div className={LANDING_SHELL}>
-        <header className="h-16 flex items-center justify-center">
-          <BrandLogo href="/" size="header" />
-        </header>
+    <LocaleProvider locale={locale} messages={messages}>
+      <LandingBody />
+    </LocaleProvider>
+  );
+}
 
-        <Hero />
+function LandingBody() {
+  const { locale, m } = useLocale();
+  return (
+    <div
+      lang={HTML_LANG[locale]}
+      className="font-sans w-full min-h-screen bg-white overflow-x-clip text-[#413B5E] selection:bg-[#8574B7]/15 selection:text-[#8574B7]"
+    >
+      {/* Frosted header, same treatment as Discover: content scrolls under the blurred glass. */}
+      <header className="sticky top-0 z-50 w-full bg-white/75 backdrop-blur-md supports-[backdrop-filter]:bg-white/75 border-b border-slate-200/60">
+        <div className={`${LANDING_SHELL} h-16 flex items-center justify-between`}>
+          <BrandLogo href="/" size="header" />
+          <LanguageSelect compact />
+        </div>
+      </header>
+
+      <div className={LANDING_SHELL}>
+        <div className="pt-4">
+          <Hero />
+        </div>
 
         {/* How connections happen */}
         <section className="py-8">
           <div className="text-center">
-            <h2 className="font-brand text-xl font-semibold tracking-tight text-[#413B5E]">How connections happen</h2>
-            <p className="mt-2 text-sm text-slate-600">Match on intention, not luck. Three steps to meeting someone real.</p>
+            <h2 className="font-brand text-xl font-semibold tracking-tight text-[#413B5E]">{m.steps.heading}</h2>
+            <p className="mt-2 text-sm text-slate-600">{m.steps.sub}</p>
           </div>
           <div className="mt-6 space-y-3">
-            {STEPS.map(({ step, title, desc }) => (
+            {STEP_KEYS.map(({ step, key }) => (
               <div key={step} className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white p-4">
                 <span className="w-6 shrink-0 pt-px font-brand text-sm font-semibold tabular-nums text-[#8574B7]">{step}</span>
                 <div className="min-w-0 text-left">
-                  <h3 className="text-[15px] font-semibold text-[#413B5E] leading-snug">{title}</h3>
-                  <p className="mt-1 text-[13px] text-slate-600 leading-relaxed">{desc}</p>
+                  <h3 className="text-[15px] font-semibold text-[#413B5E] leading-snug">{m.steps[key].title}</h3>
+                  <p className="mt-1 text-[13px] text-slate-600 leading-relaxed">{m.steps[key].desc}</p>
                 </div>
               </div>
             ))}
@@ -74,14 +80,20 @@ export function HeroLanding() {
 
         {/* Feature stories: illustration left, copy right */}
         <section className="py-8 space-y-3">
-          {FEATURES.map(({ title, body, src, alt }) => (
-            <div key={title} className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-3.5">
-              <div className="relative w-24 h-24 shrink-0 overflow-hidden rounded-xl bg-slate-50">
-                <Image src={src} alt={alt} fill sizes="96px" className="object-contain object-bottom select-none pointer-events-none" />
+          {FEATURES.map(({ key, src }) => (
+            <div key={key} className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-3.5">
+              <div className="relative w-24 h-24 sm:w-28 sm:h-28 shrink-0 overflow-hidden rounded-xl">
+                {src ? (
+                  <Image src={src} alt={m.features[key].alt} fill sizes="112px" className="w-full h-full object-cover object-center select-none pointer-events-none" />
+                ) : (
+                  <div className="w-full h-full bg-[#E8E6F1] flex items-center justify-center" role="img" aria-label={m.features[key].alt}>
+                    <AudioLines className="w-11 h-11 text-[#8574B7]" strokeWidth={1.75} aria-hidden />
+                  </div>
+                )}
               </div>
               <div className="min-w-0 text-left">
-                <h3 className="text-[15px] font-semibold text-[#413B5E] leading-snug">{title}</h3>
-                <p className="mt-1 text-[13px] text-slate-600 leading-relaxed">{body}</p>
+                <h3 className="text-[15px] font-semibold text-[#413B5E] leading-snug">{m.features[key].title}</h3>
+                <p className="mt-1 text-[13px] text-slate-600 leading-relaxed">{m.features[key].body}</p>
               </div>
             </div>
           ))}
@@ -89,16 +101,14 @@ export function HeroLanding() {
 
         {/* Final call to action */}
         <section className="py-10 text-center">
-          <h2 className="font-brand text-xl font-semibold tracking-tight text-[#413B5E]">Be one of our first members.</h2>
-          <p className="mt-2 text-sm text-slate-600">
-            Join free and start meeting genuine singles across Southeast Asia today.
-          </p>
+          <h2 className="font-brand text-xl font-semibold tracking-tight text-[#413B5E]">{m.cta.heading}</h2>
+          <p className="mt-2 text-sm text-slate-600">{m.cta.sub}</p>
           <div className="mt-6 flex flex-col items-center gap-4">
             <Link
               href="/signup"
               className="w-full h-12 inline-flex items-center justify-center rounded-full bg-[#8574B7] hover:bg-[#534377] text-white font-medium text-sm active:scale-95 transition-all"
             >
-              Join for Free
+              {m.hero.join}
             </Link>
             <SignInPrompt />
           </div>
@@ -107,14 +117,17 @@ export function HeroLanding() {
         {/* Footer: rendered by the public landing page only, never inside the signed-in app. */}
         <footer className="pb-8 pt-4 text-center text-xs text-slate-600">
           <nav className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 font-medium text-[#413B5E]">
-            <Link className="hover:text-[#8574B7] transition-colors" href="/safety">Safety</Link>
+            <Link className="hover:text-[#8574B7] transition-colors" href="/safety">{m.footer.safety}</Link>
             <span className="text-[#D0CDE1]" aria-hidden="true">•</span>
-            <Link className="hover:text-[#8574B7] transition-colors" href="/terms">Terms</Link>
+            <Link className="hover:text-[#8574B7] transition-colors" href="/terms">{m.footer.terms}</Link>
             <span className="text-[#D0CDE1]" aria-hidden="true">•</span>
-            <Link className="hover:text-[#8574B7] transition-colors" href="/privacy">Privacy</Link>
+            <Link className="hover:text-[#8574B7] transition-colors" href="/privacy">{m.footer.privacy}</Link>
             <span className="text-[#D0CDE1]" aria-hidden="true">•</span>
-            <Link className="hover:text-[#8574B7] transition-colors" href="/contact">Contact</Link>
+            <Link className="hover:text-[#8574B7] transition-colors" href="/contact">{m.footer.contact}</Link>
           </nav>
+          <div className="mt-3 flex justify-center">
+            <LanguageSelect />
+          </div>
           <p className="mt-2 text-[11px] text-slate-600">© {new Date().getFullYear()} Meet in Asia</p>
         </footer>
       </div>

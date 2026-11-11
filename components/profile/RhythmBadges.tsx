@@ -51,6 +51,24 @@ export function RhythmPill({
 }
 
 /**
+ * The one static tag on a Discover card: "N Shared Interest(s)" when the viewer shares traits with
+ * the member, otherwise their reply-pace label (e.g. "Slow & Thoughtful"), otherwise nothing.
+ * One tag only, so nothing competes for the narrow card column or gets cut off mid-word.
+ */
+export function CardPrimaryTag({ sharedCount, replyPace }: { sharedCount: number; replyPace: unknown }) {
+  const rhythm = sharedCount > 0 ? null : rhythmOption('reply_pace', replyPace);
+  if (sharedCount === 0 && !rhythm) return null;
+  const label = sharedCount > 0 ? `${sharedCount} Shared Interest${sharedCount === 1 ? '' : 's'}` : rhythm!.label;
+  const Icon = rhythm?.icon;
+  return (
+    <span className="inline-flex max-w-full items-center gap-1 whitespace-nowrap rounded-full border border-slate-200/50 bg-white/90 px-2 py-1 text-[11px] font-medium leading-none text-slate-700 backdrop-blur-sm">
+      {Icon && <Icon className="w-3 h-3 shrink-0 text-[#8574B7]" aria-hidden />}
+      <span className="truncate">{label}</span>
+    </span>
+  );
+}
+
+/**
  * "N in common" card (full, with the shared items) or a count-only chip (compact) for Discover
  * cards: "1 thing in common" / "3 things in common". No item names and no emoji, so it never
  * truncates in the ~170px card column.

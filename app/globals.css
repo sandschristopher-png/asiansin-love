@@ -97,8 +97,9 @@ html, body {
   -webkit-overflow-scrolling: touch;
 }
 
+/* Slate backdrop around the 430px phone frame (LayoutShell); on phones the white frame covers it. */
 body {
-  background-color: #FFFFFF !important;
+  background-color: #F1F5F9 !important;
   color: #413B5E;
 }
 
@@ -178,18 +179,50 @@ a:active,
 
 
 /* Typography (fonts loaded in app/layout.tsx):
-   - Inter (--font-sans): body copy, inputs, buttons and UI text, through <body class="font-sans">.
-   - Plus Jakarta Sans (--font-brand): headings and the logo. Every h1-h6 uses it by default, and
-     font-brand / style={{ fontFamily: 'var(--font-brand)' }} opt other elements in. */
+   - Inter (--font-inter): body copy, inputs, buttons and UI text, through <body class="font-sans">.
+   - Plus Jakarta Sans (--font-jakarta): headings and the logo. Every h1-h6 uses it by default, and
+     font-brand / style={{ fontFamily: 'var(--font-brand)' }} opt other elements in.
+   Both chains continue with Noto Sans Thai, then system fonts that cover Japanese, Korean and
+   Chinese, so no script falls through to empty boxes. Latin languages (fil, vi, id, es) stay in
+   Inter / Jakarta.
+   --font-system is redefined per language (:lang below) so Korean and Chinese pages prefer their
+   own system fonts over Japanese ones for shared Han characters. The chains are written out
+   wherever font-family is declared (not stored in one variable) so the per-language order takes
+   effect on the element that carries the lang attribute. */
 :root {
-  --font-brand: var(--font-jakarta);
+  --font-system: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo,
+    "Apple SD Gothic Neo", "Malgun Gothic", "PingFang SC", "Microsoft YaHei", sans-serif;
+  --font-brand: var(--font-jakarta), var(--font-thai), var(--font-system);
   color-scheme: light;
+}
+:lang(ko) {
+  --font-system: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Apple SD Gothic Neo", "Malgun Gothic",
+    "Hiragino Sans", "PingFang SC", "Microsoft YaHei", sans-serif;
+}
+:lang(zh) {
+  --font-system: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "PingFang SC", "Microsoft YaHei",
+    "Hiragino Sans", "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+}
+
+/* Tailwind font-sans = Inter + Thai + system CJK chain. `inline` writes the chain into the utility,
+   so it is resolved on each element that uses font-sans. */
+@theme inline {
+  --font-sans: var(--font-inter), var(--font-thai), var(--font-system);
 }
 
 @layer base {
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-brand), sans-serif;
+    font-family: var(--font-jakarta), var(--font-thai), var(--font-system);
   }
+}
+
+/* Thai stacks vowels and tone marks above and below the line, and CJK glyphs fill the full em
+   box: give body copy more room in those languages (other text keeps the 1.5 base line height). */
+:is(:lang(th), :lang(ja), :lang(ko), :lang(zh)) p {
+  line-height: 1.7;
+}
+:lang(th) :is(h1, h2, h3) {
+  line-height: 1.45;
 }
 
 /* Liquid purple brand gradient (wordmark "love") */
@@ -201,7 +234,7 @@ a:active,
 }
 
 .font-brand {
-  font-family: var(--font-brand), sans-serif;
+  font-family: var(--font-jakarta), var(--font-thai), var(--font-system);
 }
 
 /* Hide Next.js bottom-left N / Issue dev indicator badge */

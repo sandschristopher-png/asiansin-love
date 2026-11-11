@@ -21,6 +21,7 @@ import { ENGLISH_LEVEL_OPTIONS, isEnglishLevel } from '@/lib/discoverFilters';
 import { readLanguages } from '@/lib/constants/languages';
 import { LIFESTYLE_KEYS, readHeightCm, readLifestyle, type LifestyleValues } from '@/lib/lifestyle';
 import { PlusBadge } from '@/components/ui/PlusBadge';
+import { ThemedSelect } from '@/components/ui/ThemedSelect';
 
 /** Loaded on first open (keeps the upgrade sheet out of the page bundle). */
 const UpgradeModal = dynamic(() => import('@/components/UpgradeModal'), { ssr: false });
@@ -624,16 +625,14 @@ export default function EditProfilePage() {
               <label className="block text-xs font-medium uppercase tracking-wider text-slate-600">
                 Relationship Goal
               </label>
-              <select
+              <ThemedSelect<string>
+                ariaLabel="Relationship Goal"
                 value={formData.relationship_goal}
-                onChange={(e) => setFormData({ ...formData, relationship_goal: e.target.value })}
-                className="w-full px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#B8B3D1]/35 text-[#413B5E] text-sm focus:outline-none focus:border-[#B8B3D1]"
-              >
-                <option value="Marriage">Marriage</option>
-                <option value="Serious Relationship">Serious Relationship</option>
-                <option value="Long-Term Dating">Long-Term Dating</option>
-                <option value="Casual Dating">Casual Dating</option>
-              </select>
+                onChange={(v) => setFormData({ ...formData, relationship_goal: v })}
+                options={['Marriage', 'Serious Relationship', 'Long-Term Dating', 'Casual Dating'].map((v) => ({ value: v, label: v }))}
+                menuClassName="w-full"
+                className="px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#B8B3D1]/35 text-[#413B5E] text-sm focus:outline-none focus-visible:border-[#8574B7]"
+              />
             </div>
           </div>
 
@@ -649,16 +648,14 @@ export default function EditProfilePage() {
                 <label className="block text-xs font-medium uppercase tracking-wider text-slate-600">
                   Marital Status
                 </label>
-                <select
+                <ThemedSelect<string>
+                  ariaLabel="Marital Status"
                   value={formData.marital_status}
-                  onChange={(e) => setFormData({ ...formData, marital_status: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#B8B3D1]/35 text-[#413B5E] text-sm focus:outline-none focus:border-[#B8B3D1]"
-                >
-                  <option value="Never Married">Never Married</option>
-                  <option value="Divorced">Divorced</option>
-                  <option value="Widowed">Widowed</option>
-                  <option value="Separated">Separated</option>
-                </select>
+                  onChange={(v) => setFormData({ ...formData, marital_status: v })}
+                  options={['Never Married', 'Divorced', 'Widowed', 'Separated'].map((v) => ({ value: v, label: v }))}
+                  menuClassName="w-full"
+                  className="px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#B8B3D1]/35 text-[#413B5E] text-sm focus:outline-none focus-visible:border-[#8574B7]"
+                />
               </div>
             </div>
           </div>
@@ -739,46 +736,42 @@ export default function EditProfilePage() {
                 <label className="block text-xs font-medium uppercase tracking-wider text-slate-600">
                   Desires Children
                 </label>
-                <select
+                <ThemedSelect<string>
+                  ariaLabel="Desires Children"
                   value={formData.wants_kids}
-                  onChange={(e) => setFormData({ ...formData, wants_kids: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#B8B3D1]/35 text-[#413B5E] text-sm focus:outline-none focus:border-[#B8B3D1]"
-                >
-                  <option value="Wants children">Wants children</option>
-                  <option value="Open to children">Open to children</option>
-                  <option value="Does not want children">Does not want children</option>
-                  <option value="Not sure yet">Not sure yet</option>
-                </select>
+                  onChange={(v) => setFormData({ ...formData, wants_kids: v })}
+                  options={['Wants children', 'Open to children', 'Does not want children', 'Not sure yet'].map((v) => ({ value: v, label: v }))}
+                  menuClassName="w-full"
+                  className="px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#B8B3D1]/35 text-[#413B5E] text-sm focus:outline-none focus-visible:border-[#8574B7]"
+                />
               </div>
 
               <div className="space-y-1.5">
                 <label className="block text-xs font-medium uppercase tracking-wider text-slate-600">
                   Has Children
                 </label>
-                <select
+                <ThemedSelect<string>
+                  ariaLabel="Has Children"
                   value={formData.has_kids}
-                  onChange={(e) => setFormData({ ...formData, has_kids: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#B8B3D1]/35 text-[#413B5E] text-sm focus:outline-none focus:border-[#B8B3D1]"
-                >
-                  <option value="No">No</option>
-                  <option value="Yes, living with me">Yes, living with me</option>
-                  <option value="Yes, not living with me">Yes, not living with me</option>
-                </select>
+                  onChange={(v) => setFormData({ ...formData, has_kids: v })}
+                  options={['No', 'Yes, living with me', 'Yes, not living with me'].map((v) => ({ value: v, label: v }))}
+                  menuClassName="w-full"
+                  className="px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#B8B3D1]/35 text-[#413B5E] text-sm focus:outline-none focus-visible:border-[#8574B7]"
+                />
               </div>
 
               <div className="space-y-1.5">
                 <label className="block text-xs font-medium uppercase tracking-wider text-slate-600">
                   Living Situation
                 </label>
-                <select
+                <ThemedSelect<string>
+                  ariaLabel="Living Situation"
                   value={formData.living_situation}
-                  onChange={(e) => setFormData({ ...formData, living_situation: e.target.value })}
-                  className="w-full px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#B8B3D1]/35 text-[#413B5E] text-sm focus:outline-none focus:border-[#B8B3D1]"
-                >
-                  <option value="Lives independently">Lives independently</option>
-                  <option value="Lives with family">Lives with family</option>
-                  <option value="Lives with roommates">Lives with roommates</option>
-                </select>
+                  onChange={(v) => setFormData({ ...formData, living_situation: v })}
+                  options={['Lives independently', 'Lives with family', 'Lives with roommates'].map((v) => ({ value: v, label: v }))}
+                  menuClassName="w-full"
+                  className="px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#B8B3D1]/35 text-[#413B5E] text-sm focus:outline-none focus-visible:border-[#8574B7]"
+                />
               </div>
 
               <div className="space-y-1.5">
@@ -809,16 +802,14 @@ export default function EditProfilePage() {
 
             <div className="space-y-1.5">
               <label className="block text-xs font-medium uppercase tracking-wider text-slate-600">English</label>
-              <select
+              <ThemedSelect<string>
+                ariaLabel="English"
                 value={englishLevel}
-                onChange={(e) => setEnglishLevel(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#B8B3D1]/35 text-[#413B5E] text-sm focus:outline-none focus:border-[#B8B3D1]"
-              >
-                <option value="">Prefer not to say</option>
-                {ENGLISH_LEVEL_OPTIONS.map((o) => (
-                  <option key={o.value} value={o.value}>{o.label}</option>
-                ))}
-              </select>
+                onChange={setEnglishLevel}
+                options={[{ value: '', label: 'Prefer not to say' }, ...ENGLISH_LEVEL_OPTIONS.map((o) => ({ value: o.value, label: o.label }))]}
+                menuClassName="w-full"
+                className="px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#B8B3D1]/35 text-[#413B5E] text-sm focus:outline-none focus-visible:border-[#8574B7]"
+              />
             </div>
 
             <div className="flex items-center justify-between gap-3">

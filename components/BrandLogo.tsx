@@ -16,28 +16,29 @@ interface BrandLogoProps {
 }
 
 const SIZE_CLASS: Record<BrandLogoSize, string> = {
-  header: 'text-[22px] font-semibold tracking-tight',
+  header: 'text-lg sm:text-xl font-semibold tracking-tight',
   sm: 'text-lg font-semibold tracking-tight',
   md: 'text-2xl font-semibold tracking-tight',
   lg: 'text-3xl font-semibold tracking-tight',
 };
 
 /**
- * Typographic logo only: "Meet in Asia" in Plus Jakarta Sans (font-brand), solid brand purple
- * #8574B7. No icon, container box, gradient, shadow or 3D effect.
+ * Typographic logo only, two-tone: "Meet in" in ink #413B5E, "Asia" in brand purple #8574B7,
+ * Plus Jakarta Sans (font-brand) 600. White on dark surfaces. No icon, box, gradient or shadow.
  */
 export function BrandLogo({ className = '', href = '/discover', size = 'md', textSize = '', onDark = false }: BrandLogoProps) {
   const wordmark = (
     <span
       className={[
         'font-brand leading-none select-none inline-flex items-baseline whitespace-nowrap',
-        onDark ? 'text-white' : 'text-[#8574B7]',
+        onDark ? 'text-white' : 'text-[#413B5E]',
         textSize ? `${textSize} font-semibold tracking-tight` : SIZE_CLASS[size],
         className,
       ].filter(Boolean).join(' ')}
       aria-label="Meet in Asia"
     >
-      Meet in Asia
+      <span>Meet in&nbsp;</span>
+      <span className={onDark ? undefined : 'text-[#8574B7]'}>Asia</span>
     </span>
   );
 

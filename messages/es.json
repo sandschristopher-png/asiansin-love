@@ -1,0 +1,58 @@
+{
+  "hero": {
+    "imageAlt": "Mujer sonriente con blusa verde sosteniendo un smartphone rosa",
+    "line1": "Conexiones reales.",
+    "line2": "Perfiles verificados con selfie.",
+    "line3": "Haz match y conecta gratis.",
+    "subtitle": "Meet in Asia es una plataforma de citas verificada, creada para relaciones genuinas entre países. Sin bots, sin trampas financieras y sin juegos de pago.",
+    "join": "Únete gratis",
+    "factVerified": "Selfie verificada en vivo",
+    "factSparks": "30 Sparks gratis al día"
+  },
+  "auth": {
+    "memberPrompt": "¿Ya eres miembro?",
+    "signIn": "Inicia sesión"
+  },
+  "steps": {
+    "heading": "Cómo surgen las conexiones",
+    "sub": "Conecta por intención, no por suerte. Tres pasos para conocer a alguien real.",
+    "one": { "title": "Comparte lo que buscas", "desc": "Define desde el principio tus metas de pareja, tus plazos y tus planes de viaje." },
+    "two": { "title": "Explora miembros verificados", "desc": "Descubre miembros con intenciones serias, confirmados mediante verificación con selfie en vivo." },
+    "three": { "title": "Conecta con confianza", "desc": "Envía Sparks, escucha presentaciones de voz auténticas y conecta de forma segura, a tu manera." }
+  },
+  "features": {
+    "screening": {
+      "title": "Detección proactiva de estafas y bots",
+      "body": "Cada perfil pasa por una verificación con selfie en vivo antes de hacer match. Las cuentas duplicadas, los perfiles falsos y los bots se eliminan de inmediato.",
+      "alt": "Ilustración de un miembro sosteniendo un escudo de verificación"
+    },
+    "intent": {
+      "title": "Intenciones claras",
+      "body": "Conecta con solteros que comparten tus valores y un futuro entre países. Sin juegos interminables ni motivos ocultos.",
+      "alt": "Ilustración de una pareja sonriendo"
+    },
+    "voices": {
+      "title": "Voces reales, Sparks reales.",
+      "body": "Escucha la voz real de un miembro antes de conectar y luego envía un Spark sincero que inicie una conversación de verdad.",
+      "alt": "Ilustración de una persona con la mano en el pecho"
+    },
+    "protection": {
+      "title": "Protección integrada contra estafas",
+      "body": "Los guiones de estafa, las tácticas de perfiles falsos y las peticiones tempranas de dinero se interceptan automáticamente. Los reportes con un toque te protegen del fraude financiero.",
+      "alt": "Ilustración de un miembro detectando señales de alerta en su teléfono"
+    }
+  },
+  "cta": {
+    "heading": "Sé uno de nuestros primeros miembros.",
+    "sub": "Únete gratis y empieza hoy a conocer solteros genuinos en todo el Sudeste Asiático."
+  },
+  "footer": {
+    "safety": "Seguridad",
+    "terms": "Términos",
+    "privacy": "Privacidad",
+    "contact": "Contacto"
+  },
+  "language": {
+    "label": "Idioma"
+  }
+}

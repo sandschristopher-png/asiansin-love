@@ -25,6 +25,7 @@ import { saveBioAndRhythm } from '@/lib/profileApi';
 import { compressPhoto } from '@/lib/utils/imageCompressor';
 import { EMPTY_RHYTHM, RhythmSelectors, type RhythmValues } from '@/components/profile/RhythmBadges';
 import { readHeightCm } from '@/lib/lifestyle';
+import { ThemedSelect } from '@/components/ui/ThemedSelect';
 
 /** In-progress answers survive a refresh or accidental navigation (cleared on completion). */
 const DRAFT_KEY = 'ail_onboarding_draft_v1';
@@ -796,15 +797,14 @@ export default function OnboardingPage() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2 border-t border-[#D0CDE1]">
                 <div>
                   <label className="text-[11px] font-semibold text-[#413B5E]/85 block mb-1">Country</label>
-                  <select
+                  <ThemedSelect<string>
+                    ariaLabel="Country"
                     value={country}
-                    onChange={(e) => setCountry(e.target.value)}
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#D0CDE1] text-xs font-medium text-[#413B5E] focus:outline-none focus:border-[#8574B7]"
-                  >
-                    {COUNTRIES.map((c) => (
-                      <option key={c} value={c}>{c}</option>
-                    ))}
-                  </select>
+                    onChange={setCountry}
+                    options={COUNTRIES.map((c) => ({ value: c, label: c }))}
+                    menuClassName="w-full"
+                    className="px-3.5 py-2.5 rounded-xl bg-white border border-[#D0CDE1] text-xs font-medium text-[#413B5E] focus:outline-none focus-visible:border-[#8574B7]"
+                  />
                 </div>
 
                 <div>
@@ -847,16 +847,14 @@ export default function OnboardingPage() {
                 <label className="text-xs font-semibold text-[#413B5E] block mb-1.5">
                   Height
                 </label>
-                <select
+                <ThemedSelect<string>
+                  ariaLabel="Height"
                   value={height}
-                  onChange={(e) => setHeight(e.target.value)}
-                  className="w-full px-4 py-3 rounded-2xl bg-white border border-[#D0CDE1] text-xs sm:text-sm text-[#413B5E] focus:outline-none focus:border-[#8574B7]"
-                >
-                  <option value="">Select height</option>
-                  {HEIGHT_OPTIONS.map((h) => (
-                    <option key={h} value={h}>{h}</option>
-                  ))}
-                </select>
+                  onChange={setHeight}
+                  options={[{ value: '', label: 'Select height' }, ...HEIGHT_OPTIONS.map((h) => ({ value: h, label: h }))]}
+                  menuClassName="w-full"
+                  className="px-4 py-3 rounded-2xl bg-white border border-[#D0CDE1] text-xs text-[#413B5E] focus:outline-none focus-visible:border-[#8574B7]"
+                />
               </div>
 
             </div>

@@ -4,6 +4,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { BadgeCheck, CheckCircle2, ImageOff, MapPin, RefreshCw, X, XCircle } from 'lucide-react';
 import { ReputationBadge } from '@/components/ReputationBadge';
 import { AdminAvatar, AdminButton, EmptyState, Loading, Notice, PageTitle, adminFetch, timeAgo } from '@/components/admin/ui';
+import { ThemedSelect } from '@/components/ui/ThemedSelect';
 
 type PendingMember = {
   id: string;
@@ -123,17 +124,18 @@ function PhotoCard({ member, onDone }: { member: PendingMember; onDone: (id: str
             <label className="text-xs text-[#413B5E]/75" htmlFor={`pen-${member.id}`}>
               Penalty
             </label>
-            <select
+            <ThemedSelect<number>
               id={`pen-${member.id}`}
               value={points}
-              onChange={(e) => setPoints(Number(e.target.value))}
-              className="h-9 rounded-lg border border-[#D0CDE1] bg-white px-2 text-sm"
-            >
-              <option value={0}>None</option>
-              <option value={5}>-5%</option>
-              <option value={10}>-10%</option>
-              <option value={20}>-20%</option>
-            </select>
+              onChange={setPoints}
+              options={[
+                { value: 0, label: 'None' },
+                { value: 5, label: '-5%' },
+                { value: 10, label: '-10%' },
+                { value: 20, label: '-20%' },
+              ]}
+              className="h-9 inline-flex items-center gap-2 rounded-lg border border-[#D0CDE1] bg-white px-2 text-sm"
+            />
           </div>
           <div className="grid grid-cols-2 gap-2">
             <AdminButton size="lg" onClick={() => setRejecting(false)} disabled={!!busy}>
