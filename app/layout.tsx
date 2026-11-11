@@ -16,7 +16,7 @@ const plusJakarta = Plus_Jakarta_Sans({
   variable: '--font-sans',
 });
 
-const SITE_TITLE = 'asiansin.love | Real Connections, Zero Paywalls';
+const SITE_TITLE = 'asiansin.love | Real Connections, Selfie-Verified Profiles';
 // Product claims must hold in the live app: verification is a free selfie check, reputation is
 // public, messages are screened for scams.
 const SITE_DESCRIPTION =
