@@ -7,7 +7,8 @@
  *   - localStorage preferred_locale: a backup; if the cookie is cleared or expires, LocaleProvider
  *     restores it from here.
  */
-export const LOCALES = ['en', 'fil', 'vi', 'th', 'id', 'es', 'ja', 'ko', 'zh'] as const;
+// Southeast Asian languages first, then the languages of the main foreign member groups.
+export const LOCALES = ['en', 'fil', 'vi', 'th', 'id', 'ms', 'km', 'es', 'ja', 'ko', 'zh'] as const;
 export type Locale = (typeof LOCALES)[number];
 
 export const DEFAULT_LOCALE: Locale = 'en';
@@ -23,6 +24,8 @@ export const LOCALE_LABELS: Record<Locale, string> = {
   vi: 'Tiếng Việt',
   th: 'ภาษาไทย',
   id: 'Bahasa Indonesia',
+  ms: 'Bahasa Melayu',
+  km: 'ភាសាខ្មែរ',
   es: 'Español',
   ja: '日本語',
   ko: '한국어',
@@ -36,6 +39,8 @@ export const HTML_LANG: Record<Locale, string> = {
   vi: 'vi',
   th: 'th',
   id: 'id',
+  ms: 'ms',
+  km: 'km',
   es: 'es',
   ja: 'ja',
   ko: 'ko',

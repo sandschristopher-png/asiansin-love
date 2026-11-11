@@ -9,9 +9,9 @@ import { ThemedSelect, type ThemedOption } from '@/components/ui/ThemedSelect';
 const OPTIONS: ThemedOption<Locale>[] = LOCALES.map((l) => ({ value: l, label: LOCALE_LABELS[l], lang: HTML_LANG[l] }));
 
 /**
- * Language picker listing all nine languages in their own scripts (themed dropdown, no OS-blue
- * native popup). `compact` shows the language code (header, menu aligned right); otherwise the
- * native name (footer). Choosing saves the NEXT_LOCALE cookie + localStorage preferred_locale and
+ * Language picker listing every language in its own script, as a two-column themed menu so all
+ * eleven fit without scrolling (no OS-blue native popup). `compact` shows the language code (header,
+ * menu aligned right); otherwise the native name (footer, menu centred). Choosing saves the NEXT_LOCALE cookie + localStorage preferred_locale and
  * swaps the text in place.
  */
 export function LanguageSelect({ compact = false }: { compact?: boolean }) {
@@ -23,8 +23,9 @@ export function LanguageSelect({ compact = false }: { compact?: boolean }) {
       options={OPTIONS}
       ariaLabel={m.language.label}
       onChange={(next) => void setLocale(next)}
-      align={compact ? 'right' : 'left'}
-      menuClassName="w-48"
+      align={compact ? 'right' : 'center'}
+      columns={2}
+      menuClassName="w-[20rem] max-w-[calc(100vw-2rem)]"
       className={`inline-flex h-9 items-center gap-1.5 rounded-full px-2 text-xs font-medium text-slate-600 hover:text-[#413B5E] transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8574B7] ${
         switching ? 'opacity-60' : ''
       }`}

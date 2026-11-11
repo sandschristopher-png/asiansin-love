@@ -11,6 +11,8 @@ const LOADERS: Record<Locale, () => Promise<{ default: Messages }>> = {
   vi: () => import('@/messages/vi.json'),
   th: () => import('@/messages/th.json'),
   id: () => import('@/messages/id.json'),
+  ms: () => import('@/messages/ms.json'),
+  km: () => import('@/messages/km.json'),
   es: () => import('@/messages/es.json'),
   ja: () => import('@/messages/ja.json'),
   ko: () => import('@/messages/ko.json'),

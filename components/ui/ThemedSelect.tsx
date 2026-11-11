@@ -22,10 +22,12 @@ type Props<T extends string | number> = {
   className?: string;
   /** Replaces the default trigger content (selected label + chevron). */
   renderTrigger?: (selected: ThemedOption<T> | undefined, open: boolean) => React.ReactNode;
-  /** Which trigger edge the menu lines up with. */
-  align?: 'left' | 'right';
+  /** Which trigger edge the menu lines up with ('center' centres it under the trigger). */
+  align?: 'left' | 'right' | 'center';
   /** Menu width; defaults to the trigger width (min 10rem). */
   menuClassName?: string;
+  /** 2 lays short options out in a two-column grid that fits without scrolling (no check icon). */
+  columns?: 1 | 2;
 };
 
 const MENU =
@@ -52,7 +54,9 @@ export function ThemedSelect<T extends string | number>({
   renderTrigger,
   align = 'left',
   menuClassName = '',
+  columns = 1,
 }: Props<T>) {
+  const grid = columns === 2;
   const autoId = useId();
   const buttonId = id ?? `ts-${autoId}`;
   const listId = `${buttonId}-list`;
@@ -109,8 +113,10 @@ export function ThemedSelect<T extends string | number>({
 
   const onListKey = (e: React.KeyboardEvent) => {
     const last = options.length - 1;
-    if (e.key === 'ArrowDown') { e.preventDefault(); setActive((a) => Math.min(last, a + 1)); }
-    else if (e.key === 'ArrowUp') { e.preventDefault(); setActive((a) => Math.max(0, a - 1)); }
+    if (e.key === 'ArrowDown') { e.preventDefault(); setActive((a) => Math.min(last, a + (grid ? 2 : 1))); }
+    else if (e.key === 'ArrowUp') { e.preventDefault(); setActive((a) => Math.max(0, a - (grid ? 2 : 1))); }
+    else if (grid && e.key === 'ArrowRight') { e.preventDefault(); setActive((a) => Math.min(last, a + 1)); }
+    else if (grid && e.key === 'ArrowLeft') { e.preventDefault(); setActive((a) => Math.max(0, a - 1)); }
     else if (e.key === 'Home') { e.preventDefault(); setActive(0); }
     else if (e.key === 'End') { e.preventDefault(); setActive(last); }
     else if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); pick(active); }
@@ -153,7 +159,9 @@ export function ThemedSelect<T extends string | number>({
 
       {open && (
         <div
-          className={`${MENU} ${up ? 'bottom-full mb-1.5' : 'top-full mt-1.5'} ${align === 'right' ? 'right-0' : 'left-0'} ${menuClassName || 'w-max min-w-[10rem]'}`}
+          className={`${MENU} ${up ? 'bottom-full mb-1.5' : 'top-full mt-1.5'} ${
+            align === 'right' ? 'right-0' : align === 'center' ? 'left-1/2 -translate-x-1/2' : 'left-0'
+          } ${menuClassName || 'w-max min-w-[10rem]'}`}
         >
           <ul
             ref={listRef}
@@ -164,7 +172,7 @@ export function ThemedSelect<T extends string | number>({
             aria-label={ariaLabel}
             aria-activedescendant={`${listId}-${active}`}
             onKeyDown={onListKey}
-            className="max-h-60 overflow-y-auto overscroll-contain focus:outline-none"
+            className={`${grid ? 'grid grid-cols-2 gap-0.5 px-1.5' : 'max-h-60 overflow-y-auto overscroll-contain'} focus:outline-none`}
           >
             {options.map((o, i) => {
               const isSelected = i === selectedIndex;
@@ -178,10 +186,10 @@ export function ThemedSelect<T extends string | number>({
                   lang={o.lang}
                   onPointerEnter={() => setActive(i)}
                   onClick={() => pick(i)}
-                  className={`${ITEM} ${isSelected ? ITEM_SELECTED : i === active ? ITEM_ACTIVE : ''}`}
+                  className={`${ITEM} ${grid ? 'px-3 rounded-lg text-[13px]' : ''} ${isSelected ? ITEM_SELECTED : i === active ? ITEM_ACTIVE : ''}`}
                 >
                   <span className="truncate">{o.label}</span>
-                  {isSelected && <Check className="w-4 h-4 shrink-0" aria-hidden />}
+                  {isSelected && !grid && <Check className="w-4 h-4 shrink-0" aria-hidden />}
                 </li>
               );
             })}

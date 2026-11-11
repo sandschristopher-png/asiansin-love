@@ -182,8 +182,8 @@ a:active,
    - Inter (--font-inter): body copy, inputs, buttons and UI text, through <body class="font-sans">.
    - Plus Jakarta Sans (--font-jakarta): headings and the logo. Every h1-h6 uses it by default, and
      font-brand / style={{ fontFamily: 'var(--font-brand)' }} opt other elements in.
-   Both chains continue with Noto Sans Thai, then system fonts that cover Japanese, Korean and
-   Chinese, so no script falls through to empty boxes. Latin languages (fil, vi, id, es) stay in
+   Both chains continue with Noto Sans Thai and Noto Sans Khmer, then system fonts that cover Japanese, Korean and
+   Chinese, so no script falls through to empty boxes. Latin languages (fil, vi, id, ms, es) stay in
    Inter / Jakarta.
    --font-system is redefined per language (:lang below) so Korean and Chinese pages prefer their
    own system fonts over Japanese ones for shared Han characters. The chains are written out
@@ -192,7 +192,7 @@ a:active,
 :root {
   --font-system: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Hiragino Sans", "Hiragino Kaku Gothic ProN", Meiryo,
     "Apple SD Gothic Neo", "Malgun Gothic", "PingFang SC", "Microsoft YaHei", sans-serif;
-  --font-brand: var(--font-jakarta), var(--font-thai), var(--font-system);
+  --font-brand: var(--font-jakarta), var(--font-thai), var(--font-khmer), var(--font-system);
   color-scheme: light;
 }
 :lang(ko) {
@@ -207,21 +207,21 @@ a:active,
 /* Tailwind font-sans = Inter + Thai + system CJK chain. `inline` writes the chain into the utility,
    so it is resolved on each element that uses font-sans. */
 @theme inline {
-  --font-sans: var(--font-inter), var(--font-thai), var(--font-system);
+  --font-sans: var(--font-inter), var(--font-thai), var(--font-khmer), var(--font-system);
 }
 
 @layer base {
   h1, h2, h3, h4, h5, h6 {
-    font-family: var(--font-jakarta), var(--font-thai), var(--font-system);
+    font-family: var(--font-jakarta), var(--font-thai), var(--font-khmer), var(--font-system);
   }
 }
 
-/* Thai stacks vowels and tone marks above and below the line, and CJK glyphs fill the full em
+/* Thai and Khmer stack vowels and tone marks above and below the line, and CJK glyphs fill the full em
    box: give body copy more room in those languages (other text keeps the 1.5 base line height). */
-:is(:lang(th), :lang(ja), :lang(ko), :lang(zh)) p {
+:is(:lang(th), :lang(km), :lang(ja), :lang(ko), :lang(zh)) p {
   line-height: 1.7;
 }
-:lang(th) :is(h1, h2, h3) {
+:is(:lang(th), :lang(km)) :is(h1, h2, h3) {
   line-height: 1.45;
 }
 
@@ -234,7 +234,7 @@ a:active,
 }
 
 .font-brand {
-  font-family: var(--font-jakarta), var(--font-thai), var(--font-system);
+  font-family: var(--font-jakarta), var(--font-thai), var(--font-khmer), var(--font-system);
 }
 
 /* Hide Next.js bottom-left N / Issue dev indicator badge */

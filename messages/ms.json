@@ -1,0 +1,58 @@
+{
+  "hero": {
+    "imageAlt": "Wanita berbaju hijau tersenyum sambil memegang telefon pintar merah jambu",
+    "line1": "Hubungan yang tulen.",
+    "line2": "Profil Disahkan Swafoto.",
+    "line3": "Percuma untuk Padan & Berhubung.",
+    "subtitle": "Meet in Asia ialah platform temu janji yang disahkan untuk hubungan rentas sempadan yang ikhlas. Tiada bot, tiada perangkap kewangan dan tiada permainan berbayar.",
+    "join": "Sertai Secara Percuma",
+    "factVerified": "Swafoto Langsung Disahkan",
+    "factSparks": "30 Sparks Percuma Sehari"
+  },
+  "auth": {
+    "memberPrompt": "Sudah menjadi ahli?",
+    "signIn": "Log masuk"
+  },
+  "steps": {
+    "heading": "Bagaimana hubungan bermula",
+    "sub": "Padankan berdasarkan niat, bukan nasib. Tiga langkah untuk bertemu seseorang yang tulen.",
+    "one": { "title": "Kongsi apa yang anda mahu", "desc": "Tetapkan matlamat hubungan, garis masa dan rancangan perjalanan anda dari awal." },
+    "two": { "title": "Layari ahli yang disahkan", "desc": "Layari ahli yang serius dan disahkan melalui pengesahan swafoto langsung." },
+    "three": { "title": "Berhubung dengan yakin", "desc": "Hantar Sparks, dengar pengenalan suara yang asli dan berhubung dengan selamat mengikut cara anda." }
+  },
+  "features": {
+    "screening": {
+      "title": "Saringan Penipuan & Bot Proaktif",
+      "body": "Setiap profil melalui pengesahan swafoto langsung sebelum dipadankan. Akaun pendua, profil palsu dan bot dibuang serta-merta.",
+      "alt": "Ilustrasi ahli memegang perisai pengesahan"
+    },
+    "intent": {
+      "title": "Niat Hubungan yang Jelas",
+      "body": "Berhubung dengan bujang yang berkongsi nilai dan masa depan rentas sempadan yang sama. Tiada permainan tanpa henti atau motif tersembunyi.",
+      "alt": "Ilustrasi pasangan sedang tersenyum"
+    },
+    "voices": {
+      "title": "Suara Sebenar, Sparks Sebenar.",
+      "body": "Dengar suara sebenar ahli sebelum berhubung, kemudian hantar Spark yang ikhlas untuk memulakan perbualan yang sebenar.",
+      "alt": "Grafik gelombang bunyi"
+    },
+    "protection": {
+      "title": "Perlindungan Penipuan Terbina Dalam",
+      "body": "Skrip penipuan, taktik profil palsu dan permintaan wang awal dipintas secara automatik. Laporan sekali ketik melindungi anda daripada penipuan kewangan.",
+      "alt": "Ilustrasi ahli melihat tanda amaran pada telefonnya"
+    }
+  },
+  "cta": {
+    "heading": "Jadilah antara ahli pertama kami.",
+    "sub": "Sertai secara percuma dan mula bertemu bujang yang ikhlas di seluruh Asia Tenggara hari ini."
+  },
+  "footer": {
+    "safety": "Keselamatan",
+    "terms": "Terma",
+    "privacy": "Privasi",
+    "contact": "Hubungi"
+  },
+  "language": {
+    "label": "Bahasa"
+  }
+}
