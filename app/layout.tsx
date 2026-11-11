@@ -2,18 +2,25 @@ import type { Metadata, Viewport } from 'next';
 
 import PwaRegister from "@/components/PwaRegister";
 
-import { Plus_Jakarta_Sans } from 'next/font/google';
+import { Inter, Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 import { LayoutShell } from '@/components/LayoutShell';
 
-// Plus Jakarta Sans: the only typeface - headings, labels, badges, buttons, body.
-// var(--font-sans) is Tailwind's font-sans; var(--font-brand) / font-brand (wordmark, headlines)
-// is aliased to the same font in globals.css, so the family is downloaded once.
-const plusJakarta = Plus_Jakarta_Sans({
+// Two typefaces, two roles:
+//   Inter (--font-sans, Tailwind font-sans): body copy, inputs, buttons and all UI text, 400-600.
+//   Plus Jakarta Sans (--font-jakarta -> --font-brand, font-brand): headings and the logo, 500-600.
+// Weights above 600 are not loaded: nothing in the UI uses them (globals.css caps <strong> at 600).
+const inter = Inter({
   subsets: ['latin'],
-  weight: ['400','500','600','700','800'],
+  weight: ['400', '500', '600'],
   display: 'swap',
   variable: '--font-sans',
+});
+const plusJakarta = Plus_Jakarta_Sans({
+  subsets: ['latin'],
+  weight: ['500', '600'],
+  display: 'swap',
+  variable: '--font-jakarta',
 });
 
 const SITE_TITLE = 'Meet in Asia | Real Connections, Selfie-Verified Profiles';
@@ -69,7 +76,7 @@ export default function RootLayout({
 }) {
 
   return (
-    <html lang="en" className={`h-full ${plusJakarta.variable}`}>
+    <html lang="en" className={`h-full ${inter.variable} ${plusJakarta.variable}`}>
       <head>
         {/* Keep Chrome's install event if it fires before React hydrates (lib/pwaInstall.ts). */}
         <script

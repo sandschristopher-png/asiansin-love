@@ -60,7 +60,7 @@ const BILLING_TERMS: string[] = [
 function Mark({ cell, plus }: { cell: Cell; plus: boolean }) {
   if (cell.included === true) return <Check className="w-3.5 h-3.5 mt-px shrink-0 text-[#8574B7]" strokeWidth={2.5} aria-label="Included" />;
   if (cell.included === false) return <X className="w-3.5 h-3.5 mt-px shrink-0 text-[#413B5E]/25" strokeWidth={2.5} aria-label="Not included" />;
-  return <Check className={`w-3.5 h-3.5 mt-px shrink-0 ${plus ? 'text-[#8574B7]' : 'text-[#413B5E]/50'}`} strokeWidth={2.5} aria-hidden />;
+  return <Check className={`w-3.5 h-3.5 mt-px shrink-0 ${plus ? 'text-[#8574B7]' : 'text-slate-600'}`} strokeWidth={2.5} aria-hidden />;
 }
 
 function Drawer({ title, children }: { title: string; children: React.ReactNode }) {
@@ -68,7 +68,7 @@ function Drawer({ title, children }: { title: string; children: React.ReactNode 
     <details className="group rounded-2xl bg-white border border-[#D0CDE1] shadow-sm px-4 py-3">
       <summary className="cursor-pointer list-none flex items-center justify-between gap-2 text-sm font-semibold text-[#413B5E]">
         {title}
-        <ChevronDown className="w-4 h-4 text-[#413B5E]/40 transition-transform group-open:rotate-180" />
+        <ChevronDown className="w-4 h-4 text-slate-600 transition-transform group-open:rotate-180" />
       </summary>
       <div className="mt-3 space-y-3">{children}</div>
     </details>
@@ -216,7 +216,7 @@ function PlusHubContent() {
             type="button"
             onClick={() => (window.history.length > 1 ? router.back() : router.push('/discover'))}
             aria-label="Back"
-            className="w-9 h-9 -ml-1 rounded-full flex items-center justify-center text-xs font-semibold tracking-wider text-[#413B5E]/60 hover:text-[#413B5E] transition-colors"
+            className="w-9 h-9 -ml-1 rounded-full flex items-center justify-center text-xs font-medium tracking-wider text-slate-600 hover:text-[#413B5E] transition-colors"
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
@@ -228,13 +228,13 @@ function PlusHubContent() {
             <div className="w-10 h-10 rounded-full bg-[#8574B7]/10 text-[#8574B7] flex items-center justify-center mb-2">
               {isVerifyingPlus && !isPlus ? <Loader2 className="w-5 h-5 animate-spin" /> : <CheckCircle2 className="w-6 h-6" />}
             </div>
-            <h2 className="text-base font-bold text-[#413B5E]">{isPlus ? 'Welcome to Plus' : 'Confirming your membership...'}</h2>
-            <p className="text-xs text-[#413B5E]/60 mt-0.5 mb-3">{isPlus ? 'Everything below is now unlocked.' : 'Finishing up with Stripe.'}</p>
+            <h2 className="text-base font-semibold text-[#413B5E]">{isPlus ? 'Welcome to Plus' : 'Confirming your membership...'}</h2>
+            <p className="text-xs text-slate-600 mt-0.5 mb-3">{isPlus ? 'Everything below is now unlocked.' : 'Finishing up with Stripe.'}</p>
             <div className="flex items-center gap-2 w-full">
               <Link href="/messages" className="flex-1 h-10 rounded-full bg-[#8574B7] hover:bg-[#413B5E] text-white text-xs font-medium transition-colors flex items-center justify-center gap-1.5">
                 <MessageSquare className="w-3.5 h-3.5" /> Messages
               </Link>
-              <Link href="/discover" className="flex-1 h-10 rounded-full border border-[#D0CDE1] bg-white text-[#413B5E] text-xs font-semibold flex items-center justify-center gap-1.5 hover:bg-[#E8E6F1]/40 transition-colors">
+              <Link href="/discover" className="flex-1 h-10 rounded-full border border-[#D0CDE1] bg-white text-[#413B5E] text-xs font-medium flex items-center justify-center gap-1.5 hover:bg-[#E8E6F1]/40 transition-colors">
                 <Compass className="w-3.5 h-3.5" /> Discover
               </Link>
             </div>
@@ -243,8 +243,8 @@ function PlusHubContent() {
 
         {/* Hero */}
         <header className="text-center space-y-2.5 pt-2">
-          <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight text-[#413B5E]">Date across borders.</h1>
-          <p className="text-sm leading-relaxed text-[#413B5E]/70 max-w-md mx-auto">
+          <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight text-[#413B5E]">Date across borders.</h1>
+          <p className="text-sm leading-relaxed text-slate-600 max-w-md mx-auto">
             Plan the trip, filter by country and see everyone who sparked you. Verification and matched messaging stay free for everyone.
           </p>
         </header>
@@ -272,16 +272,16 @@ function PlusHubContent() {
                   }`}
                 >
                   {p.badge && (
-                    <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap uppercase text-[10px] font-bold tracking-wider text-white bg-[#8574B7] px-2.5 py-0.5 rounded-full shadow-brand-sm">
+                    <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap uppercase text-[10px] font-semibold tracking-wider text-white bg-[#8574B7] px-2.5 py-0.5 rounded-full shadow-brand-sm">
                       {p.badge}
                     </span>
                   )}
-                  <span className="text-[11px] font-bold text-[#413B5E]/80">{p.label}</span>
-                  <span className="text-lg font-extrabold leading-none text-[#413B5E]">
+                  <span className="text-[11px] font-semibold text-[#413B5E]/80">{p.label}</span>
+                  <span className="text-lg font-semibold leading-none text-[#413B5E]">
                     {p.total}
-                    <span className="ml-1 text-[10px] font-medium text-[#413B5E]/50">{p.totalSuffix}</span>
+                    <span className="ml-1 text-[10px] font-medium text-slate-600">{p.totalSuffix}</span>
                   </span>
-                  <span className="text-[10px] text-[#413B5E]/55">{p.months > 1 ? `${p.perMonth} / mo` : p.billingNote}</span>
+                  <span className="text-[10px] text-slate-600">{p.months > 1 ? `${p.perMonth} / mo` : p.billingNote}</span>
                   {p.savings && <span className="text-[11px] font-semibold text-[#8574B7]">{p.savings}</span>}
                 </button>
               );
@@ -291,7 +291,7 @@ function PlusHubContent() {
 
         {/* Free vs Plus */}
         <section aria-label="Free and Plus compared" className="rounded-2xl bg-white border border-[#D0CDE1] shadow-sm px-3.5 pt-3.5">
-          <div className="grid grid-cols-[1.1fr_1fr_1fr] gap-x-2 text-[11px] font-semibold tracking-wider text-[#413B5E]/60 uppercase border-b border-[#D0CDE1] pb-2">
+          <div className="grid grid-cols-[1.1fr_1fr_1fr] gap-x-2 text-[11px] font-semibold tracking-wider text-slate-600 uppercase border-b border-[#D0CDE1] pb-2">
             <span>Feature</span>
             <span>Free</span>
             <span>Plus</span>
@@ -302,7 +302,7 @@ function PlusHubContent() {
               className={`grid grid-cols-[1.1fr_1fr_1fr] gap-x-2 py-3 text-sm text-[#413B5E] ${i < MATRIX.length - 1 ? 'border-b border-[#D0CDE1]/40' : ''}`}
             >
               <span className="text-[12px] font-semibold leading-snug">{row.feature}</span>
-              <span className="text-[11.5px] text-[#413B5E]/60 flex items-start gap-1.5 leading-snug">
+              <span className="text-[11.5px] text-slate-600 flex items-start gap-1.5 leading-snug">
                 <Mark cell={row.free} plus={false} />
                 <span>{row.free.text}</span>
               </span>
@@ -320,19 +320,19 @@ function PlusHubContent() {
             {FAQ.map((f) => (
               <div key={f.q}>
                 <p className="text-xs font-semibold text-[#413B5E]">{f.q}</p>
-                <p className="mt-1 text-xs text-[#413B5E]/65 leading-relaxed">{f.a}</p>
+                <p className="mt-1 text-xs text-slate-600 leading-relaxed">{f.a}</p>
               </div>
             ))}
           </Drawer>
           <Drawer title="Billing Terms">
-            <ul className="space-y-2 list-disc pl-4 text-xs text-[#413B5E]/65 leading-relaxed">
+            <ul className="space-y-2 list-disc pl-4 text-xs text-slate-600 leading-relaxed">
               {BILLING_TERMS.map((t) => (
                 <li key={t}>{t}</li>
               ))}
             </ul>
-            <p className="text-xs text-[#413B5E]/65">
+            <p className="text-xs text-slate-600">
               Full details in our{' '}
-              <Link href="/terms" className="font-semibold text-[#8574B7] underline underline-offset-4">
+              <Link href="/terms" className="font-medium text-[#8574B7] underline underline-offset-4">
                 Terms of Service
               </Link>
               .
@@ -340,7 +340,7 @@ function PlusHubContent() {
           </Drawer>
         </section>
 
-        <p className="flex items-center justify-center gap-1 text-[10px] text-[#413B5E]/45">
+        <p className="flex items-center justify-center gap-1 text-[10px] text-slate-600">
           <Lock className="w-3 h-3" /> Encrypted checkout by Stripe
         </p>
       </div>
@@ -355,7 +355,7 @@ function PlusHubContent() {
             type="button"
             disabled={openingPortal}
             onClick={handlePortal}
-            className="w-full h-12 rounded-full border border-[#D0CDE1] bg-white text-sm font-semibold text-[#413B5E] hover:bg-[#E8E6F1]/40 transition-colors flex items-center justify-center gap-2 disabled:opacity-60"
+            className="w-full h-12 rounded-full border border-[#D0CDE1] bg-white text-sm font-medium text-[#413B5E] hover:bg-[#E8E6F1]/40 transition-colors flex items-center justify-center gap-2 disabled:opacity-60"
           >
             {openingPortal ? <Loader2 className="w-4 h-4 animate-spin" /> : <Settings className="w-4 h-4 text-[#8574B7]" />}
             Manage Subscription
@@ -372,7 +372,7 @@ function PlusHubContent() {
               type="button"
               disabled={starting || loading}
               onClick={handleSubscribe}
-              className="flex-1 min-w-0 h-12 px-8 rounded-full bg-[#8574B7] hover:bg-[#534377] text-white font-semibold text-sm shadow-brand-glow transition-colors flex items-center justify-center gap-2 whitespace-nowrap disabled:opacity-70"
+              className="flex-1 min-w-0 h-12 px-8 rounded-full bg-[#8574B7] hover:bg-[#534377] text-white font-medium text-sm shadow-brand-glow transition-colors flex items-center justify-center gap-2 whitespace-nowrap disabled:opacity-70"
             >
               {starting ? (
                 <>
@@ -389,7 +389,7 @@ function PlusHubContent() {
             type="button"
             disabled={openingPortal}
             onClick={handlePortal}
-            className="mt-2.5 w-full text-xs text-[#413B5E]/50 hover:text-[#413B5E] underline-offset-4 hover:underline disabled:opacity-50"
+            className="mt-2.5 w-full text-xs text-slate-600 hover:text-[#413B5E] underline-offset-4 hover:underline disabled:opacity-50"
           >
             Already subscribed? Manage billing
           </button>

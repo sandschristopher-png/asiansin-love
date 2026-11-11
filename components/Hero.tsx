@@ -11,12 +11,10 @@ import { Heart, ShieldCheck } from 'lucide-react';
  */
 export const LANDING_SHELL = 'mx-auto w-full max-w-md px-5';
 
-/** Badge / stat pill family used under the main button. */
-const PILL = 'inline-flex items-center gap-1.5 rounded-full bg-[#E8E6F1] px-3 py-1 text-xs font-semibold text-[#8574B7]';
-
 /**
  * Hero stack, top to bottom: illustration, headline and one line of copy, then the CTA block
- * (Join for Free, Selfie-Verified badge, Spark pill, Sign In link). Rendered inside LANDING_SHELL.
+ * (Join for Free, a bordered verification / Sparks metadata strip, Sign In link).
+ * Rendered inside LANDING_SHELL.
  */
 export default function Hero() {
   return (
@@ -37,13 +35,13 @@ export default function Hero() {
           </div>
         </div>
 
-        <h1 className="mt-8 text-[28px] font-black tracking-tight leading-tight text-[#413B5E]">
+        <h1 className="mt-8 text-[28px] font-semibold tracking-tight leading-tight text-[#413B5E]">
           <span className="block">Real connections.</span>
           <span className="block text-[#8574B7]">Selfie-Verified Profiles.</span>
           <span className="block">Free to Match &amp; Connect.</span>
         </h1>
 
-        <p className="mt-3 text-[15px] leading-relaxed text-[#413B5E]/75">
+        <p className="mt-3 text-[15px] leading-relaxed text-slate-600">
           Meet in Asia is a lightweight, verified platform built for genuine cross-border relationships.
         </p>
 
@@ -51,25 +49,30 @@ export default function Hero() {
         <div className="mt-7 w-full flex flex-col items-center gap-4">
           <Link
             href="/signup"
-            className="w-full h-12 inline-flex items-center justify-center rounded-full bg-[#8574B7] hover:bg-[#534377] text-white font-bold text-sm active:scale-95 transition-all"
+            className="w-full h-12 inline-flex items-center justify-center rounded-full bg-[#8574B7] hover:bg-[#534377] text-white font-medium text-sm active:scale-95 transition-all"
           >
             Join for Free
           </Link>
 
-          <div className="flex flex-col items-center gap-1.5">
-            <span className={PILL}>
-              <ShieldCheck className="w-3.5 h-3.5" aria-hidden />
-              Selfie-Verified
-            </span>
-            <p className="text-xs text-[#413B5E]/70">Every verified badge is a live selfie our team reviews.</p>
-          </div>
+          {/* Plain metadata, not badges: two labelled facts in one bordered strip. */}
+          <dl className="w-full grid grid-cols-2 divide-x divide-slate-200 rounded-xl border border-slate-200 text-left">
+            <div className="px-4 py-3">
+              <dt className="flex items-center gap-1.5 text-xs font-medium text-slate-600">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#8574B7]" aria-hidden />
+                Verification
+              </dt>
+              <dd className="mt-0.5 text-sm font-medium text-[#413B5E]">Live selfie, team-reviewed</dd>
+            </div>
+            <div className="px-4 py-3">
+              <dt className="flex items-center gap-1.5 text-xs font-medium text-slate-600">
+                <Heart className="w-3.5 h-3.5 text-[#8574B7]" aria-hidden />
+                Sparks
+              </dt>
+              <dd className="mt-0.5 text-sm font-medium text-[#413B5E]">30 free per day</dd>
+            </div>
+          </dl>
 
-          <span className={PILL}>
-            <Heart className="w-3.5 h-3.5 fill-[#8574B7]" aria-hidden />
-            30 free Sparks a day
-          </span>
-
-          <Link href="/login" className="text-sm font-semibold text-[#8574B7] hover:text-[#534377] transition-colors">
+          <Link href="/login" className="text-sm font-medium text-[#8574B7] hover:text-[#534377] transition-colors">
             Sign In
           </Link>
         </div>

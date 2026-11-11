@@ -50,7 +50,7 @@ export function ChatSafetyBanner({ conversationKey }: { conversationKey: string 
     >
       <div className="flex items-center gap-2">
         <ShieldCheck className="w-4 h-4 shrink-0 text-[#8574B7]" aria-hidden />
-        <p className="text-[12.5px] font-bold text-[#413B5E]">Safety &amp; Trust Guidelines</p>
+        <p className="text-[12.5px] font-semibold text-[#413B5E]">Safety &amp; Trust Guidelines</p>
       </div>
       <ul className="mt-1.5 space-y-1 pl-6 list-disc marker:text-[#B8B3D1]">
         {TIPS.map((tip) => (

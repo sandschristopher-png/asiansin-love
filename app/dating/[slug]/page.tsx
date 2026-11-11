@@ -41,12 +41,12 @@ export default async function SeoLandingPage({ params }: { params: Promise<{ slu
   return (
     <main className="min-h-dvh bg-white text-[#413B5E] pb-28">
       <div className="max-w-xl mx-auto px-5 pt-8 pb-12 space-y-6">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E8E6F1]/60 text-[#8574B7] text-xs font-bold">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#E8E6F1]/60 text-[#8574B7] text-xs font-semibold">
           <Globe className="w-3.5 h-3.5" />
           <span>Southeast Asia Verified Community</span>
         </div>
 
-        <h1 className="text-3xl sm:text-4xl font-extrabold tracking-tight" style={{ fontFamily: 'var(--font-sans)' }}>
+        <h1 className="text-3xl sm:text-4xl font-semibold tracking-tight" style={{ fontFamily: 'var(--font-sans)' }}>
           {titleFormatted}
         </h1>
 
@@ -55,7 +55,7 @@ export default async function SeoLandingPage({ params }: { params: Promise<{ slu
         </p>
 
         <div className="p-5 rounded-3xl bg-white border border-[#D0CDE1] space-y-3">
-          <div className="flex items-center gap-2 text-xs font-bold text-[#8574B7]">
+          <div className="flex items-center gap-2 text-xs font-semibold text-[#8574B7]">
             <ShieldCheck className="w-4 h-4 text-emerald-600" />
             <span>Reputation &amp; Pose Verification</span>
           </div>
@@ -65,10 +65,10 @@ export default async function SeoLandingPage({ params }: { params: Promise<{ slu
         </div>
 
         <div className="pt-2 flex flex-col sm:flex-row gap-3">
-          <Link href="/login" className="flex-1 py-3.5 px-6 rounded-full bg-[#8574B7] text-white text-center text-xs font-bold shadow-md hover:bg-[#413B5E] transition">
+          <Link href="/login" className="flex-1 py-3.5 px-6 rounded-full bg-[#8574B7] text-white text-center text-xs font-medium shadow-md hover:bg-[#413B5E] transition">
             Join Free &amp; Browse Profiles
           </Link>
-          <Link href="/discover" className="py-3.5 px-6 rounded-full bg-white border border-[#D0CDE1] text-[#413B5E] text-center text-xs font-semibold hover:border-[#8574B7] transition">
+          <Link href="/discover" className="py-3.5 px-6 rounded-full bg-white border border-[#D0CDE1] text-[#413B5E] text-center text-xs font-medium hover:border-[#8574B7] transition">
             Explore Discover Feed
           </Link>
         </div>

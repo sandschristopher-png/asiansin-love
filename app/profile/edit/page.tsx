@@ -390,7 +390,7 @@ export default function EditProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-white flex items-center justify-center text-sm font-semibold text-[#413B5E]/55">
+      <div className="min-h-screen bg-white flex items-center justify-center text-sm font-semibold text-slate-600">
 
         Loading profile settings...
       </div>
@@ -407,12 +407,12 @@ export default function EditProfilePage() {
             <BackButton />
             <div>
               <h1 className="text-xl font-medium text-[#413B5E] ">Edit Profile</h1>
-              <p className="text-xs text-[#413B5E]/55 mt-0.5">Manage your public information and identity handle</p>
+              <p className="text-xs text-slate-600 mt-0.5">Manage your public information and identity handle</p>
             </div>
           </div>
           <Link
             href="/profile"
-            className="text-xs font-semibold text-[#413B5E]/55 hover:text-[#413B5E] px-3.5 py-2 rounded-xl bg-[#FFFFFF] border border-[#B8B3D1]/35 transition"
+            className="text-xs font-medium text-slate-600 hover:text-[#413B5E] px-3.5 py-2 rounded-xl bg-[#FFFFFF] border border-[#B8B3D1]/35 transition"
           >
             View Bio
           </Link>
@@ -470,7 +470,7 @@ export default function EditProfilePage() {
                       <button
                         type="button"
                         onClick={() => handleSetPrimary(slotIdx)}
-                        className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full bg-black/60 text-white hover:bg-[#8574B7] text-[9px] font-semibold transition"
+                        className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full bg-black/60 text-white hover:bg-[#8574B7] text-[9px] font-medium transition"
                       >
                         Make Primary
                       </button>
@@ -524,7 +524,7 @@ export default function EditProfilePage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Handle Claim */}
           <div className="p-4 rounded-2xl bg-[#FFFFFF] border border-[#B8B3D1]/35 space-y-2">
-            <label className="block text-xs font-medium uppercase tracking-wider text-[#413B5E]/55">
+            <label className="block text-xs font-medium uppercase tracking-wider text-slate-600">
               Username
             </label>
             {initialHasUsername ? (
@@ -535,7 +535,7 @@ export default function EditProfilePage() {
             ) : (
               <div>
                 <div className="relative">
-                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#413B5E]/55 font-mono"></span>
+                  <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-600 font-mono"></span>
                   <input
                     type="text"
                     value={username}
@@ -544,7 +544,7 @@ export default function EditProfilePage() {
                     className="w-full pl-8 pr-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#B8B3D1]/40 text-[#413B5E] font-mono text-sm focus:outline-none focus:border-[#B8B3D1]"
                   />
                 </div>
-                <p className="text-[11px] text-[#413B5E]/55 mt-1.5">
+                <p className="text-[11px] text-slate-600 mt-1.5">
                   {usernameStatus === 'checking' && 'Checking availability...'}
                   {usernameStatus === 'available' && <span className="text-emerald-400">Handle is available.</span>}
                   {usernameStatus === 'taken' && <span className="text-red-400">Handle is already taken.</span>}
@@ -556,7 +556,7 @@ export default function EditProfilePage() {
 
           {/* Full Name */}
           <div className="space-y-1.5">
-            <label className="block text-xs font-medium uppercase tracking-wider text-[#413B5E]/55">
+            <label className="block text-xs font-medium uppercase tracking-wider text-slate-600">
               Username
             </label>
             <input
@@ -571,7 +571,7 @@ export default function EditProfilePage() {
           {/* Age & Location */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <label className="block text-xs font-medium uppercase tracking-wider text-[#413B5E]/55">
+              <label className="block text-xs font-medium uppercase tracking-wider text-slate-600">
                 Age
               </label>
               <input
@@ -584,7 +584,7 @@ export default function EditProfilePage() {
               />
             </div>
             <div className="space-y-1.5">
-              <label className="block text-xs font-medium uppercase tracking-wider text-[#413B5E]/55">
+              <label className="block text-xs font-medium uppercase tracking-wider text-slate-600">
                 City
               </label>
               <input
@@ -595,7 +595,7 @@ export default function EditProfilePage() {
               />
             </div>
             <div className="space-y-1.5">
-              <label className="block text-xs font-medium uppercase tracking-wider text-[#413B5E]/55">
+              <label className="block text-xs font-medium uppercase tracking-wider text-slate-600">
                 Country
               </label>
               <input
@@ -610,7 +610,7 @@ export default function EditProfilePage() {
           {/* Profession & Relationship Intent */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div className="space-y-1.5">
-              <label className="block text-xs font-medium uppercase tracking-wider text-[#413B5E]/55">
+              <label className="block text-xs font-medium uppercase tracking-wider text-slate-600">
                 Profession / Occupation
               </label>
               <input
@@ -621,7 +621,7 @@ export default function EditProfilePage() {
               />
             </div>
             <div className="space-y-1.5">
-              <label className="block text-xs font-medium uppercase tracking-wider text-[#413B5E]/55">
+              <label className="block text-xs font-medium uppercase tracking-wider text-slate-600">
                 Relationship Goal
               </label>
               <select
@@ -639,14 +639,14 @@ export default function EditProfilePage() {
 
           {/* Relationship Timeline */}
           <div className="pt-2 border-t border-[#B8B3D1]/20 space-y-3">
-            <h3 className="text-xs font-bold text-[#8574B7] uppercase tracking-wider flex items-center gap-1.5">
+            <h3 className="text-xs font-semibold text-[#8574B7] uppercase tracking-wider flex items-center gap-1.5">
               Relationship Timeline
             </h3>
             <RhythmSelectors value={rhythm} onChange={setRhythm} />
             
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <label className="block text-xs font-medium uppercase tracking-wider text-[#413B5E]/55">
+                <label className="block text-xs font-medium uppercase tracking-wider text-slate-600">
                   Marital Status
                 </label>
                 <select
@@ -672,11 +672,11 @@ export default function EditProfilePage() {
                     <ShieldCheck className="w-4 h-4" />
                   </div>
                   <div>
-                    <span className="text-xs font-bold text-emerald-700 flex items-center gap-1">
+                    <span className="text-xs font-semibold text-emerald-700 flex items-center gap-1">
                       <span>Location Confirmed</span>
                       <span className="text-[10px] px-1.5 py-0.2 rounded-full bg-emerald-100 text-emerald-800 font-semibold">GPS Edge</span>
                     </span>
-                    <p className="text-[11px] text-[#413B5E]/55">
+                    <p className="text-[11px] text-slate-600">
                       Your connection matches your declared location. Qualifies for the Verified filter.
                     </p>
                   </div>
@@ -685,7 +685,7 @@ export default function EditProfilePage() {
                   type="button"
                   onClick={handleVerifyLocation}
                   disabled={verifyingLocation}
-                  className="text-[11px] font-semibold text-[#8574B7] hover:underline shrink-0"
+                  className="text-[11px] font-medium text-[#8574B7] hover:underline shrink-0"
                 >
                   {verifyingLocation ? 'Checking...' : 'Re-verify'}
                 </button>
@@ -697,10 +697,10 @@ export default function EditProfilePage() {
                     <MapPin className="w-4 h-4" />
                   </div>
                   <div>
-                    <span className="text-xs font-bold text-[#413B5E]">
+                    <span className="text-xs font-semibold text-[#413B5E]">
                       Confirm Your Physical Location
                     </span>
-                    <p className="text-[11px] text-[#413B5E]/55">
+                    <p className="text-[11px] text-slate-600">
                       1-click check against your network edge. Awards the Verified badge and +3 Rep.
                     </p>
                   </div>
@@ -710,7 +710,7 @@ export default function EditProfilePage() {
                   type="button"
                   onClick={handleVerifyLocation}
                   disabled={verifyingLocation}
-                  className="px-4 py-2 rounded-xl bg-[#8574B7] hover:bg-[#8574B7] text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition active:scale-95 disabled:opacity-50 shrink-0 shadow-xs"
+                  className="px-4 py-2 rounded-xl bg-[#8574B7] hover:bg-[#8574B7] text-white text-xs font-medium flex items-center justify-center gap-1.5 transition active:scale-95 disabled:opacity-50 shrink-0 shadow-xs"
                 >
                   {verifyingLocation ? (
                     <>
@@ -730,13 +730,13 @@ export default function EditProfilePage() {
 
           {/* Family & Values */}
           <div className="pt-2 border-t border-[#B8B3D1]/20 space-y-3">
-            <h3 className="text-xs font-bold text-[#9A93BC] uppercase tracking-wider flex items-center gap-1.5">
+            <h3 className="text-xs font-semibold text-[#9A93BC] uppercase tracking-wider flex items-center gap-1.5">
               Family & Values
             </h3>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <div className="space-y-1.5">
-                <label className="block text-xs font-medium uppercase tracking-wider text-[#413B5E]/55">
+                <label className="block text-xs font-medium uppercase tracking-wider text-slate-600">
                   Desires Children
                 </label>
                 <select
@@ -752,7 +752,7 @@ export default function EditProfilePage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="block text-xs font-medium uppercase tracking-wider text-[#413B5E]/55">
+                <label className="block text-xs font-medium uppercase tracking-wider text-slate-600">
                   Has Children
                 </label>
                 <select
@@ -767,7 +767,7 @@ export default function EditProfilePage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="block text-xs font-medium uppercase tracking-wider text-[#413B5E]/55">
+                <label className="block text-xs font-medium uppercase tracking-wider text-slate-600">
                   Living Situation
                 </label>
                 <select
@@ -782,7 +782,7 @@ export default function EditProfilePage() {
               </div>
 
               <div className="space-y-1.5">
-                <label className="block text-xs font-medium uppercase tracking-wider text-[#413B5E]/55">
+                <label className="block text-xs font-medium uppercase tracking-wider text-slate-600">
                   Faith & Beliefs
                 </label>
                 <input
@@ -798,17 +798,17 @@ export default function EditProfilePage() {
 
           {/* Lifestyle & Background */}
           <div className="pt-2 border-t border-[#B8B3D1]/20 space-y-3">
-            <h3 className="text-xs font-bold text-[#8574B7] uppercase tracking-wider flex items-center gap-1.5">
+            <h3 className="text-xs font-semibold text-[#8574B7] uppercase tracking-wider flex items-center gap-1.5">
               Lifestyle & Background
             </h3>
 
             <div className="space-y-1.5">
-              <label className="block text-xs font-medium uppercase tracking-wider text-[#413B5E]/55">Languages</label>
+              <label className="block text-xs font-medium uppercase tracking-wider text-slate-600">Languages</label>
               <LanguagePicker value={languages} onChange={setLanguages} />
             </div>
 
             <div className="space-y-1.5">
-              <label className="block text-xs font-medium uppercase tracking-wider text-[#413B5E]/55">English</label>
+              <label className="block text-xs font-medium uppercase tracking-wider text-slate-600">English</label>
               <select
                 value={englishLevel}
                 onChange={(e) => setEnglishLevel(e.target.value)}
@@ -822,7 +822,7 @@ export default function EditProfilePage() {
             </div>
 
             <div className="flex items-center justify-between gap-3">
-              <label className="text-xs font-medium uppercase tracking-wider text-[#413B5E]/55">Height</label>
+              <label className="text-xs font-medium uppercase tracking-wider text-slate-600">Height</label>
               <HeightInput valueCm={heightCm} onChange={setHeightCm} />
             </div>
 
@@ -831,7 +831,7 @@ export default function EditProfilePage() {
 
           {/* Bio */}
           <div className="space-y-1.5">
-            <label className="block text-xs font-medium uppercase tracking-wider text-[#413B5E]/55">
+            <label className="block text-xs font-medium uppercase tracking-wider text-slate-600">
               About You
             </label>
             <textarea
@@ -848,7 +848,7 @@ export default function EditProfilePage() {
                 bioRejected ? 'border-amber-500 ring-2 ring-amber-500/20 focus:border-amber-500' : 'border-[#B8B3D1]/35 focus:border-[#B8B3D1]'
               }`}
             />
-            <p id="bio-helper" className={`text-[11px] ${bioRejected ? 'text-amber-700 font-medium' : 'text-[#413B5E]/55'}`}>
+            <p id="bio-helper" className={`text-[11px] ${bioRejected ? 'text-amber-700 font-medium' : 'text-slate-600'}`}>
               {bioRejected
                 ? 'Remove links, social handles, phone numbers, emails and payment apps. You can trade contact details in chat once you have matched.'
                 : 'No links, social handles or contact info. Keep it about you.'}
@@ -859,8 +859,8 @@ export default function EditProfilePage() {
           <div className="p-4 rounded-2xl bg-white border border-[#B8B3D1]/35 space-y-3">
             <div className="flex items-start justify-between gap-3">
               <div>
-                <h3 className="text-xs font-bold text-[#8574B7] uppercase tracking-wider">Upcoming Travel Notice</h3>
-                <p className="text-[11px] text-[#413B5E]/55 mt-0.5">
+                <h3 className="text-xs font-semibold text-[#8574B7] uppercase tracking-wider">Upcoming Travel Notice</h3>
+                <p className="text-[11px] text-slate-600 mt-0.5">
                   Show a &ldquo;Visiting:&rdquo; badge on Discover and your profile before your trip.
                 </p>
               </div>

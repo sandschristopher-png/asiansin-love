@@ -16,10 +16,10 @@ interface BrandLogoProps {
 }
 
 const SIZE_CLASS: Record<BrandLogoSize, string> = {
-  header: 'text-[22px] font-bold tracking-[-0.03em]',
-  sm: 'text-lg font-bold tracking-tight',
-  md: 'text-2xl font-bold tracking-tight',
-  lg: 'text-3xl font-extrabold tracking-tight',
+  header: 'text-[22px] font-semibold tracking-tight',
+  sm: 'text-lg font-semibold tracking-tight',
+  md: 'text-2xl font-semibold tracking-tight',
+  lg: 'text-3xl font-semibold tracking-tight',
 };
 
 /**
@@ -32,7 +32,7 @@ export function BrandLogo({ className = '', href = '/discover', size = 'md', tex
       className={[
         'font-brand leading-none select-none inline-flex items-baseline whitespace-nowrap',
         onDark ? 'text-white' : 'text-[#8574B7]',
-        textSize ? `${textSize} font-bold tracking-tight` : SIZE_CLASS[size],
+        textSize ? `${textSize} font-semibold tracking-tight` : SIZE_CLASS[size],
         className,
       ].filter(Boolean).join(' ')}
       aria-label="Meet in Asia"

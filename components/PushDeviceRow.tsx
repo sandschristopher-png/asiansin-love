@@ -38,7 +38,7 @@ export function PushDeviceRow() {
           <BellRing className="w-4 h-4" />
         </div>
         <div>
-          <p className="text-xs font-bold text-[#413B5E]">Push on this device</p>
+          <p className="text-xs font-semibold text-[#413B5E]">Push on this device</p>
           <p className="text-[11px] text-[#413B5E]/75">
             {/* iPhone web push needs iOS 16.4+ and the Home Screen app; older iOS has no PushManager. */}
             {state === 'unsupported' && isIosDevice() ? 'Alerts need iOS 16.4 or later. Update iOS to turn them on.' : COPY[state]}
@@ -50,7 +50,7 @@ export function PushDeviceRow() {
           type="button"
           disabled={busy}
           onClick={() => setExplaining(true)}
-          className="h-8 px-3.5 rounded-full bg-[#8574B7] hover:bg-[#8574B7] text-white text-[11px] font-semibold shrink-0 inline-flex items-center gap-1.5 disabled:opacity-60"
+          className="h-8 px-3.5 rounded-full bg-[#8574B7] hover:bg-[#8574B7] text-white text-[11px] font-medium shrink-0 inline-flex items-center gap-1.5 disabled:opacity-60"
         >
           {busy && <Loader2 className="w-3 h-3 animate-spin" />}
           Turn on
@@ -64,7 +64,7 @@ export function PushDeviceRow() {
             await syncPushSubscription();
             setBusy(false);
           }}
-          className="text-[11px] font-semibold text-[#F59E0B] hover:underline shrink-0 disabled:opacity-60"
+          className="text-[11px] font-medium text-[#F59E0B] hover:underline shrink-0 disabled:opacity-60"
           title="Alerts are on, but this device hasn't finished connecting. We'll retry automatically."
         >
           {busy ? 'Connecting...' : 'Reconnecting'}

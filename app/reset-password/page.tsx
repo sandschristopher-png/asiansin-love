@@ -85,13 +85,13 @@ export default function ResetPasswordPage() {
           <div className="flex justify-center mb-3">
             <BrandLogo size="md" />
           </div>
-          <h1 className="text-2xl font-black text-[#413B5E] tracking-tight">Choose a new password</h1>
+          <h1 className="text-2xl font-semibold text-[#413B5E] tracking-tight">Choose a new password</h1>
           <p className="text-xs text-[#413B5E]/75">At least {MIN_PASSWORD_LENGTH} characters.</p>
         </div>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-1.5 text-left">
-            <label htmlFor="new-password" className="text-xs font-bold text-[#413B5E] block">
+            <label htmlFor="new-password" className="text-xs font-semibold text-[#413B5E] block">
               New Password
             </label>
             <div className="relative">
@@ -109,7 +109,7 @@ export default function ResetPasswordPage() {
                 type="button"
                 onClick={() => setShowPassword((v) => !v)}
                 aria-label={showPassword ? 'Hide password' : 'Show password'}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#413B5E]/55 hover:text-[#413B5E]/85 transition cursor-pointer"
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-600 hover:text-[#413B5E]/85 transition cursor-pointer"
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
@@ -117,7 +117,7 @@ export default function ResetPasswordPage() {
           </div>
 
           <div className="space-y-1.5 text-left">
-            <label htmlFor="confirm-password" className="text-xs font-bold text-[#413B5E] block">
+            <label htmlFor="confirm-password" className="text-xs font-semibold text-[#413B5E] block">
               Confirm New Password
             </label>
             <input
@@ -141,7 +141,7 @@ export default function ResetPasswordPage() {
           <button
             type="submit"
             disabled={saving || Boolean(toast)}
-            className="w-full py-3.5 px-6 rounded-2xl bg-[#8574B7] text-white text-xs font-bold flex items-center justify-center gap-2 shadow-md shadow-[#8574B7]/20 hover:bg-[#413B5E] active:scale-[0.99] transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+            className="w-full py-3.5 px-6 rounded-2xl bg-[#8574B7] text-white text-xs font-medium flex items-center justify-center gap-2 shadow-md shadow-[#8574B7]/20 hover:bg-[#413B5E] active:scale-[0.99] transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
           >
             {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <KeyRound className="w-4 h-4" />}
             <span>{saving ? 'Updating...' : 'Update Password'}</span>

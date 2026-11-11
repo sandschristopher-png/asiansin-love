@@ -65,7 +65,7 @@ export default function FeaturesPage() {
         <div className="flex items-center gap-3">
           <Link
             href="/discover"
-            className="text-xs font-semibold text-[#413B5E] hover:text-[#413B5E] transition hidden sm:inline"
+            className="text-xs font-medium text-[#413B5E] hover:text-[#413B5E] transition hidden sm:inline"
           >
             Explore Profiles
           </Link>
@@ -82,7 +82,7 @@ export default function FeaturesPage() {
         
         {/* Hero Header */}
         <div className="text-center max-w-xl mx-auto space-y-3 mb-12">
-          <span className="text-xs font-medium uppercase tracking-wider text-[#413B5E]/55">
+          <span className="text-xs font-medium uppercase tracking-wider text-slate-600">
             Platform Standards
           </span>
           <h1 className="text-3xl sm:text-4xl md:text-5xl font-medium text-[#413B5E]  leading-tight">
@@ -106,7 +106,7 @@ export default function FeaturesPage() {
                 className="rounded-3xl border border-[#B8B3D1]/35 bg-[#FFFFFF] p-6 hover:border-[#B8B3D1]/70 hover:shadow-xl transition flex flex-col justify-start space-y-3 shadow-lg"
               >
                 <div className="flex items-center gap-3">
-                  <div className="p-2.5 rounded-2xl bg-[#FFFFFF] border border-[#B8B3D1]/40 text-[#413B5E]/55 shrink-0">
+                  <div className="p-2.5 rounded-2xl bg-[#FFFFFF] border border-[#B8B3D1]/40 text-slate-600 shrink-0">
                     <Icon className="h-5 w-5 text-[#D0CDE1]" />
                   </div>
                   <h2 className="text-sm font-medium text-[#413B5E] ">{item.title}</h2>

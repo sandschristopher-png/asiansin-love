@@ -66,7 +66,7 @@ export function InCommonCard({ items, compact = false }: { items: string[]; comp
   }
   return (
     <div className="p-3 rounded-2xl bg-[#E8E6F1]/60 border border-[#8574B7]/30 space-y-2">
-      <p className="text-xs font-bold text-[#8574B7]">
+      <p className="text-xs font-semibold text-[#8574B7]">
         {items.length} in common
       </p>
       <div className="flex flex-wrap gap-1.5">
@@ -108,7 +108,7 @@ export function RhythmSelector({
               type="button"
               onClick={() => onChange(active ? null : o.value)}
               aria-pressed={active}
-              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition active:scale-95 ${
+              className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium transition active:scale-95 ${
                 active
                   ? 'bg-[#8574B7] border-[#8574B7] text-white'
                   : 'bg-white border-[#D0CDE1] text-[#413B5E] hover:bg-[#E8E6F1]/70'

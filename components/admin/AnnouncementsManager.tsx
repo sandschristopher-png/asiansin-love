@@ -95,7 +95,7 @@ export function AnnouncementsManager() {
         className="mb-6 p-4 rounded-2xl border border-[#D0CDE1] bg-white shadow-2xs space-y-3"
       >
         <div>
-          <label htmlFor="ann-title" className="block text-[11px] font-semibold uppercase tracking-wider text-[#413B5E]/55 mb-1.5">
+          <label htmlFor="ann-title" className="block text-[11px] font-semibold uppercase tracking-wider text-slate-600 mb-1.5">
             Title
           </label>
           <input
@@ -109,7 +109,7 @@ export function AnnouncementsManager() {
         </div>
 
         <div>
-          <p className="block text-[11px] font-semibold uppercase tracking-wider text-[#413B5E]/55 mb-1.5">Category</p>
+          <p className="block text-[11px] font-semibold uppercase tracking-wider text-slate-600 mb-1.5">Category</p>
           <div className="flex flex-wrap gap-1.5" role="radiogroup" aria-label="Category">
             {BROADCAST_TAGS.map((t) => (
               <button
@@ -118,7 +118,7 @@ export function AnnouncementsManager() {
                 role="radio"
                 aria-checked={tag === t}
                 onClick={() => setTag(t)}
-                className={`h-8 px-3 rounded-full border text-xs font-semibold transition-colors ${
+                className={`h-8 px-3 rounded-full border text-xs font-medium transition-colors ${
                   tag === t ? 'bg-[#413B5E] text-white border-[#413B5E]' : 'bg-white text-[#413B5E] border-[#D0CDE1] hover:border-[#8574B7]/40'
                 }`}
               >
@@ -129,7 +129,7 @@ export function AnnouncementsManager() {
         </div>
 
         <div>
-          <label htmlFor="ann-body" className="block text-[11px] font-semibold uppercase tracking-wider text-[#413B5E]/55 mb-1.5">
+          <label htmlFor="ann-body" className="block text-[11px] font-semibold uppercase tracking-wider text-slate-600 mb-1.5">
             Message
           </label>
           <textarea
@@ -141,7 +141,7 @@ export function AnnouncementsManager() {
             placeholder={'Write the announcement. Blank lines start new paragraphs; https:// links become tappable.'}
             className="w-full px-3 py-2.5 border border-[#D0CDE1] focus:border-[#8574B7] rounded-xl text-sm leading-relaxed text-[#413B5E] outline-none resize-y"
           />
-          <p className="mt-1 text-right text-[11px] text-[#413B5E]/55 tabular-nums">
+          <p className="mt-1 text-right text-[11px] text-slate-600 tabular-nums">
             {body.length}/{BROADCAST_BODY_MAX}
           </p>
         </div>
@@ -166,14 +166,14 @@ export function AnnouncementsManager() {
         <button
           type="submit"
           disabled={!canSend}
-          className="w-full bg-[#8574B7] hover:bg-[#534377] text-white font-bold h-11 px-6 rounded-full shadow-[0_2px_10px_rgba(102,93,150,0.25)] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full bg-[#8574B7] hover:bg-[#534377] text-white font-medium h-11 px-6 rounded-full shadow-[0_2px_10px_rgba(102,93,150,0.25)] transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <Send className="w-4 h-4" aria-hidden />
           Broadcast to All Members
         </button>
       </form>
 
-      <p className="text-[11px] font-semibold uppercase tracking-wider text-[#413B5E]/55 mb-2">Past broadcasts</p>
+      <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-600 mb-2">Past broadcasts</p>
       {!items ? (
         <Loading />
       ) : items.length === 0 ? (
@@ -184,7 +184,7 @@ export function AnnouncementsManager() {
             <li key={a.id} className="px-3 py-3">
               <div className="flex items-center gap-2 text-[11px]">
                 <span className="text-[#413B5E]/75 tabular-nums">{formatDate(a.published_at)}</span>
-                <span className="bg-[#8574B7]/10 text-[#8574B7] font-bold px-2 py-0.5 rounded-full uppercase tracking-wider text-[10px]">{a.tag}</span>
+                <span className="bg-[#8574B7]/10 text-[#8574B7] font-semibold px-2 py-0.5 rounded-full uppercase tracking-wider text-[10px]">{a.tag}</span>
                 {a.is_pinned && (
                   <span className="inline-flex items-center gap-0.5 font-semibold text-[#413B5E]">
                     <Pin className="w-3 h-3" aria-hidden />

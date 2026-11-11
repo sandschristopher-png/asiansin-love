@@ -91,7 +91,7 @@ export function ReportModal({
         </div>
         <div className="flex items-start justify-between gap-3 px-5 pb-3 border-b border-[#D0CDE1] shrink-0">
           <div className="min-w-0">
-            <h2 className="font-brand text-base font-bold text-[#413B5E]">{messageId ? 'Report Message' : 'Report Member'}</h2>
+            <h2 className="font-brand text-base font-semibold text-[#413B5E]">{messageId ? 'Report Message' : 'Report Member'}</h2>
             <p className="text-xs text-[#413B5E]/75 leading-relaxed mt-0.5">
               Reports are confidential. We review every report to protect community safety.
             </p>
@@ -99,7 +99,7 @@ export function ReportModal({
           <button
             type="button"
             onClick={onClose}
-            className="w-8 h-8 rounded-full flex items-center justify-center text-[#413B5E]/55 hover:bg-[#E8E6F1]/70 shrink-0"
+            className="w-8 h-8 rounded-full flex items-center justify-center text-slate-600 hover:bg-[#E8E6F1]/70 shrink-0"
             aria-label="Close"
           >
             <X className="w-4 h-4" />
@@ -118,7 +118,7 @@ export function ReportModal({
                   aria-checked={selected}
                   onClick={() => setCategory(c.id)}
                   className={`w-full flex items-center gap-3 rounded-2xl border px-3.5 py-3 text-left text-[13px] transition ${
-                    selected ? 'border-[#8574B7] bg-[#8574B7]/5 text-[#413B5E] font-semibold' : 'border-[#D0CDE1] text-[#413B5E] hover:bg-[#E8E6F1]/40'
+                    selected ? 'border-[#8574B7] bg-[#8574B7]/5 text-[#413B5E] font-medium' : 'border-[#D0CDE1] text-[#413B5E] hover:bg-[#E8E6F1]/40'
                   }`}
                 >
                   <span
@@ -156,12 +156,12 @@ export function ReportModal({
             type="button"
             onClick={submit}
             disabled={!category || submitting}
-            className="w-full inline-flex items-center justify-center gap-2 bg-[#413B5E] text-white rounded-xl py-2.5 font-semibold text-sm hover:bg-[#413B5E] transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full inline-flex items-center justify-center gap-2 bg-[#413B5E] text-white rounded-xl py-2.5 font-medium text-sm hover:bg-[#413B5E] transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
             Submit Report
           </button>
-          <button type="button" onClick={onClose} className="w-full py-2 text-[#413B5E]/55 hover:text-[#413B5E]/85 text-sm">
+          <button type="button" onClick={onClose} className="w-full py-2 text-slate-600 hover:text-[#413B5E]/85 text-sm">
             Cancel
           </button>
         </div>

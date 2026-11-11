@@ -23,7 +23,7 @@ const PILL_LABEL = 'text-sm font-medium text-[#413B5E] tracking-tight';
 const INPUT =
   'h-12 w-full rounded-full border border-[#D0CDE1] bg-white px-4 text-base sm:text-sm text-[#413B5E] focus:border-[#8574B7] focus:ring-2 focus:ring-[#B8B3D1]/30 focus:outline-none placeholder:text-[#413B5E]/40 transition';
 const PRIMARY =
-  'h-12 w-full rounded-full bg-[#8574B7] hover:bg-[#534377] text-white font-semibold text-sm shadow-brand-glow transition-colors flex items-center justify-center gap-2 active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed';
+  'h-12 w-full rounded-full bg-[#8574B7] hover:bg-[#534377] text-white font-medium text-sm shadow-brand-glow transition-colors flex items-center justify-center gap-2 active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed';
 
 const GoogleIcon = () => (
   <svg className="w-4 h-4" viewBox="0 0 24 24" aria-hidden="true">
@@ -203,7 +203,7 @@ export function AuthScreen({ mode, cities }: { mode: 'login' | 'signup'; cities?
           >
             <AlertCircle className="w-4 h-4 shrink-0 text-[#8574B7] mt-px" aria-hidden />
             <span className="flex-1 leading-relaxed">{error}</span>
-            <button type="button" onClick={() => setError(null)} aria-label="Dismiss" className="shrink-0 -m-1 p-1 text-[#413B5E]/50 hover:text-[#413B5E]">
+            <button type="button" onClick={() => setError(null)} aria-label="Dismiss" className="shrink-0 -m-1 p-1 text-slate-600 hover:text-[#413B5E]">
               <X className="w-3.5 h-3.5" />
             </button>
           </div>
@@ -259,7 +259,7 @@ export function AuthScreen({ mode, cities }: { mode: 'login' | 'signup'; cities?
                   setError(null);
                   setPassword('');
                 }}
-                className="inline-flex items-center gap-1 text-xs font-semibold text-[#413B5E]/55 hover:text-[#413B5E]"
+                className="inline-flex items-center gap-1 text-xs font-medium text-slate-600 hover:text-[#413B5E]"
               >
                 <ArrowLeft className="w-3.5 h-3.5" aria-hidden />
                 All sign-in options
@@ -273,7 +273,7 @@ export function AuthScreen({ mode, cities }: { mode: 'login' | 'signup'; cities?
                     Send sign-in link
                   </button>
                   {mode === 'login' && (
-                    <button type="button" onClick={() => setStep('password')} className="block mx-auto text-xs font-semibold text-[#8574B7] hover:underline">
+                    <button type="button" onClick={() => setStep('password')} className="block mx-auto text-xs font-medium text-[#8574B7] hover:underline">
                       Use a password instead
                     </button>
                   )}
@@ -285,11 +285,11 @@ export function AuthScreen({ mode, cities }: { mode: 'login' | 'signup'; cities?
                   <div className="rounded-2xl bg-white border border-[#D0CDE1] p-4 text-center">
                     <MailCheck className="w-6 h-6 mx-auto text-[#8574B7]" aria-hidden />
                     <p className="mt-2 text-sm font-semibold text-[#413B5E]">Check your inbox</p>
-                    <p className="mt-1 text-xs text-[#413B5E]/55 leading-relaxed">
+                    <p className="mt-1 text-xs text-slate-600 leading-relaxed">
                       We sent a sign-in link to <span className="font-semibold text-[#413B5E] break-all">{cleanEmail}</span>. Tap it on this device to sign in.
                     </p>
                   </div>
-                  <button type="button" onClick={() => sendLink()} disabled={!!busy} className="block mx-auto text-xs font-semibold text-[#8574B7] hover:underline disabled:opacity-50">
+                  <button type="button" onClick={() => sendLink()} disabled={!!busy} className="block mx-auto text-xs font-medium text-[#8574B7] hover:underline disabled:opacity-50">
                     Resend email
                   </button>
                 </div>
@@ -313,7 +313,7 @@ export function AuthScreen({ mode, cities }: { mode: 'login' | 'signup'; cities?
                       type="button"
                       onClick={() => setShowPassword((v) => !v)}
                       aria-label={showPassword ? 'Hide password' : 'Show password'}
-                      className="absolute right-4 top-1/2 -translate-y-1/2 text-[#413B5E]/55 hover:text-[#413B5E]/80"
+                      className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-600 hover:text-[#413B5E]/80"
                     >
                       {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
                     </button>
@@ -326,7 +326,7 @@ export function AuthScreen({ mode, cities }: { mode: 'login' | 'signup'; cities?
                     <button type="button" onClick={() => setStep('email')} className="text-[#8574B7] hover:underline">
                       Email me a link instead
                     </button>
-                    <Link href="/forgot-password" className="text-[#413B5E]/55 hover:text-[#413B5E]">
+                    <Link href="/forgot-password" className="text-slate-600 hover:text-[#413B5E]">
                       Forgot password
                     </Link>
                   </div>
@@ -340,28 +340,28 @@ export function AuthScreen({ mode, cities }: { mode: 'login' | 'signup'; cities?
         <p className="mt-6 text-center">
           {mode === 'login' ? (
             <>
-              <span className="text-xs font-medium text-[#413B5E]/70">New to Meet in Asia?</span>{' '}
-              <Link href={authHref('/signup', returnTo)} className="text-xs font-bold text-[#8574B7] hover:text-[#9A93BC] transition-colors">
+              <span className="text-xs font-medium text-slate-600">New to Meet in Asia?</span>{' '}
+              <Link href={authHref('/signup', returnTo)} className="text-xs font-medium text-[#8574B7] hover:text-[#534377] transition-colors">
                 Create an account
               </Link>
             </>
           ) : (
             <>
-              <span className="text-xs font-medium text-[#413B5E]/70">Already a member?</span>{' '}
-              <Link href={authHref('/login', returnTo)} className="text-xs font-bold text-[#8574B7] hover:text-[#9A93BC] transition-colors">
+              <span className="text-xs font-medium text-slate-600">Already a member?</span>{' '}
+              <Link href={authHref('/login', returnTo)} className="text-xs font-medium text-[#8574B7] hover:text-[#534377] transition-colors">
                 Sign in
               </Link>
             </>
           )}
         </p>
 
-        <p className="mt-auto pt-10 text-[10px] leading-relaxed text-[#413B5E]/55 max-w-[340px] mx-auto text-center">
+        <p className="mt-auto pt-10 text-[10px] leading-relaxed text-slate-600 max-w-[340px] mx-auto text-center">
           Registration is strictly permitted for individuals 18 years of age and older. By continuing, you agree to our{' '}
-          <Link href="/terms" className="text-[#413B5E]/70 underline hover:text-[#8574B7] transition-colors">
+          <Link href="/terms" className="text-slate-600 underline hover:text-[#8574B7] transition-colors">
             Terms of Service
           </Link>{' '}
           and{' '}
-          <Link href="/privacy" className="text-[#413B5E]/70 underline hover:text-[#8574B7] transition-colors">
+          <Link href="/privacy" className="text-slate-600 underline hover:text-[#8574B7] transition-colors">
             Privacy Policy
           </Link>
           .

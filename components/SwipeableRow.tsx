@@ -216,7 +216,7 @@ export function SwipeableRow({
                 type="button"
                 tabIndex={open ? 0 : -1}
                 onClick={() => run(a)}
-                className={`h-full flex flex-col items-center justify-center gap-1 text-[11px] font-semibold ${
+                className={`h-full flex flex-col items-center justify-center gap-1 text-[11px] font-medium ${
                   a.tone === 'danger' ? 'bg-[#DC2626] text-white' : 'bg-[#E8E6F1] text-[#8574B7]'
                 }`}
                 style={{ width: ACTION_WIDTH }}
@@ -274,7 +274,7 @@ export function SwipeableRow({
               className="w-full max-w-[430px] rounded-t-3xl bg-white shadow-xl ail-sheet-up px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] [transform:translate3d(0,0,0)]"
             >
               <div className="mx-auto mb-3 h-1.5 w-10 rounded-full bg-[#D0CDE1]" aria-hidden />
-              <p className="px-1 pb-2 text-xs font-semibold text-[#413B5E]/60 truncate">{label}</p>
+              <p className="px-1 pb-2 text-xs font-semibold text-slate-600 truncate">{label}</p>
               <div className="space-y-1">
                 {actions.map((a, i) => (
                   <button
@@ -282,7 +282,7 @@ export function SwipeableRow({
                     type="button"
                     autoFocus={i === 0}
                     onClick={() => run(a)}
-                    className={`w-full h-12 px-3 rounded-2xl flex items-center gap-3 text-sm font-semibold text-left hover:bg-black/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8574B7]/40 ${
+                    className={`w-full h-12 px-3 rounded-2xl flex items-center gap-3 text-sm font-medium text-left hover:bg-black/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8574B7]/40 ${
                       a.tone === 'danger' ? 'text-[#DC2626]' : 'text-[#413B5E]'
                     }`}
                   >

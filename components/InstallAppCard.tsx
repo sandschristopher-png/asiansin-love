@@ -49,7 +49,7 @@ export function InstallAppCard({ variant }: { variant: 'hero' | 'settings' }) {
           <Download className="w-4 h-4" aria-hidden />
         </div>
         <div>
-          <p className="text-xs font-bold text-[#413B5E]">Install the app</p>
+          <p className="text-xs font-semibold text-[#413B5E]">Install the app</p>
           <p className="text-[11px] text-[#413B5E]/75">{hint}</p>
         </div>
       </div>
@@ -77,14 +77,14 @@ export function InstallAppCard({ variant }: { variant: 'hero' | 'settings' }) {
             <Download className="w-4 h-4" aria-hidden />
           </div>
           <div>
-            <p className="text-xs font-bold text-[#413B5E]">Install the app</p>
+            <p className="text-xs font-semibold text-[#413B5E]">Install the app</p>
             <p className="text-[11px] text-[#413B5E]/75">Opens full screen from your home screen</p>
           </div>
         </div>
         <button
           type="button"
           onClick={() => void promptInstall()}
-          className="h-8 px-3.5 rounded-full bg-[#8574B7] hover:bg-[#413B5E] text-white text-[11px] font-semibold shrink-0 transition-colors"
+          className="h-8 px-3.5 rounded-full bg-[#8574B7] hover:bg-[#413B5E] text-white text-[11px] font-medium shrink-0 transition-colors"
         >
           Install
         </button>
@@ -98,13 +98,13 @@ export function InstallAppCard({ variant }: { variant: 'hero' | 'settings' }) {
         <Download className="w-4 h-4" aria-hidden />
       </div>
       <div className="flex-1 min-w-0 text-left">
-        <p className="text-[12.5px] font-bold text-[#413B5E]">Install Meet in Asia</p>
-        <p className="text-[11px] text-[#413B5E]/65">Full screen, one tap from your home screen.</p>
+        <p className="text-[12.5px] font-semibold text-[#413B5E]">Install Meet in Asia</p>
+        <p className="text-[11px] text-slate-600">Full screen, one tap from your home screen.</p>
       </div>
       <button
         type="button"
         onClick={() => void promptInstall()}
-        className="h-8 px-3.5 rounded-full bg-[#8574B7] hover:bg-[#413B5E] text-white text-[11px] font-semibold shrink-0 transition-colors"
+        className="h-8 px-3.5 rounded-full bg-[#8574B7] hover:bg-[#413B5E] text-white text-[11px] font-medium shrink-0 transition-colors"
       >
         Install
       </button>

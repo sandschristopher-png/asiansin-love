@@ -48,7 +48,7 @@ function MemberSheet({ member, onClose, onChange }: { member: Member; onClose: (
         {error && <Notice kind="error">{error}</Notice>}
 
         <section>
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-[#413B5E]/55 mb-1.5">Role</p>
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-600 mb-1.5">Role</p>
           <div className="grid grid-cols-2 gap-2">
             {(['member', 'moderator'] as const).map((r) => (
               <button
@@ -59,7 +59,7 @@ function MemberSheet({ member, onClose, onChange }: { member: Member; onClose: (
                 onClick={() =>
                   call('role', '/api/admin/roles', { role: r }, { role: r }, r === 'moderator' ? `${member.name} is now a moderator.` : `${member.name}'s admin access was revoked.`)
                 }
-                className={`h-10 rounded-xl text-sm font-semibold border transition disabled:cursor-not-allowed ${
+                className={`h-10 rounded-xl text-sm font-medium border transition disabled:cursor-not-allowed ${
                   member.role === r ? 'bg-[#413B5E] text-white border-transparent' : 'bg-white text-[#413B5E] border-[#D0CDE1] disabled:opacity-50'
                 }`}
               >
@@ -70,7 +70,7 @@ function MemberSheet({ member, onClose, onChange }: { member: Member; onClose: (
         </section>
 
         <section>
-          <p className="text-[11px] font-semibold uppercase tracking-wider text-[#413B5E]/55 mb-1.5 flex items-center gap-2">
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-600 mb-1.5 flex items-center gap-2">
             Reputation <ReputationBadge score={member.reputation} size="xs" />
           </p>
           <form
@@ -211,7 +211,7 @@ export function MembersManager({ selfId, ownerId, isOwner }: { selfId: string; o
       <PageTitle title="Members & Roles" subtitle="Delegate moderator access and manage standing." />
 
       <form onSubmit={grant} className="mb-4 p-4 rounded-2xl border border-[#D0CDE1] bg-white shadow-2xs space-y-2">
-        <label htmlFor="grant-name" className="block text-[11px] font-semibold uppercase tracking-wider text-[#413B5E]/55">
+        <label htmlFor="grant-name" className="block text-[11px] font-semibold uppercase tracking-wider text-slate-600">
           Grant access by username
         </label>
         <input
@@ -244,7 +244,7 @@ export function MembersManager({ selfId, ownerId, isOwner }: { selfId: string; o
       {error && <Notice kind="error">{error}</Notice>}
 
       <div className="relative mb-2">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#413B5E]/55" aria-hidden />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-600" aria-hidden />
         <input
           type="search"
           value={query}
@@ -292,7 +292,7 @@ export function MembersManager({ selfId, ownerId, isOwner }: { selfId: string; o
                 {locked ? (
                   <div className="flex items-center gap-3 px-3 py-3">
                     {body}
-                    {isSelf && <span className="text-[10px] text-[#413B5E]/55 shrink-0">You</span>}
+                    {isSelf && <span className="text-[10px] text-slate-600 shrink-0">You</span>}
                   </div>
                 ) : (
                   <button type="button" onClick={() => setEditing(m)} className="w-full flex items-center gap-3 px-3 py-3 text-left active:bg-[#E8E6F1]/40">

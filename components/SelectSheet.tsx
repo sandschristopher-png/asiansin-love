@@ -42,7 +42,7 @@ export function SelectSheet({
         onClick={() => setOpen(true)}
         aria-haspopup="dialog"
         aria-label={`${label}: ${value || placeholder}`}
-        className="inline-flex max-w-[60vw] items-center gap-1.5 pl-3 pr-2.5 py-1.5 rounded-xl bg-[#E8E6F1]/60 border border-[#8574B7]/20 text-xs font-semibold text-[#8574B7] cursor-pointer active:scale-95 transition"
+        className="inline-flex max-w-[60vw] items-center gap-1.5 pl-3 pr-2.5 py-1.5 rounded-xl bg-[#E8E6F1]/60 border border-[#8574B7]/20 text-xs font-medium text-[#8574B7] cursor-pointer active:scale-95 transition"
       >
         <span className="truncate">{value || placeholder}</span>
         <ChevronDown className="w-3.5 h-3.5 shrink-0" />
@@ -64,11 +64,11 @@ export function SelectSheet({
               <div className="w-10 h-1 rounded-full bg-[#E8E6F1] mx-auto mb-3" />
             </div>
             <div className="flex items-center justify-between px-5 pb-3 border-b border-[#D0CDE1] shrink-0">
-              <h3 className="text-sm font-bold text-[#413B5E]">{label}</h3>
+              <h3 className="text-sm font-semibold text-[#413B5E]">{label}</h3>
               <button
                 type="button"
                 onClick={() => setOpen(false)}
-                className="w-8 h-8 rounded-full flex items-center justify-center text-[#413B5E]/55 hover:bg-[#E8E6F1]/70"
+                className="w-8 h-8 rounded-full flex items-center justify-center text-slate-600 hover:bg-[#E8E6F1]/70"
                 aria-label="Close"
               >
                 <X className="w-4 h-4" />
@@ -86,7 +86,7 @@ export function SelectSheet({
                         setOpen(false);
                       }}
                       className={`w-full flex items-center justify-between px-3 py-3 rounded-2xl text-left text-sm transition ${
-                        selected ? 'bg-[#E8E6F1]/60 font-semibold text-[#8574B7]' : 'text-[#413B5E] hover:bg-[#E8E6F1]/40'
+                        selected ? 'bg-[#E8E6F1]/60 font-medium text-[#8574B7]' : 'text-[#413B5E] hover:bg-[#E8E6F1]/40'
                       }`}
                     >
                       <span>{opt}</span>

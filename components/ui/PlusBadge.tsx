@@ -12,7 +12,7 @@ export function PlusBadge({ className = '' }: { size?: 'header' | 'profile'; cla
     <span
       role="img"
       aria-label="Plus member"
-      className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wide uppercase bg-[#E8E6F1] text-[#8574B7] border border-[#D0CDE1] leading-none whitespace-nowrap shrink-0 self-center ${className}`}
+      className={`inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-semibold tracking-wide uppercase bg-[#E8E6F1] text-[#8574B7] border border-[#D0CDE1] leading-none whitespace-nowrap shrink-0 self-center ${className}`}
     >
       PLUS
     </span>

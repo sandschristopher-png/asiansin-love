@@ -56,7 +56,7 @@ export function MutualSparkModal({
           />
         </div>
 
-        <h3 className="text-xl font-bold text-[#413B5E]">It&apos;s a Mutual Spark!</h3>
+        <h3 className="text-xl font-semibold text-[#413B5E]">It&apos;s a Mutual Spark!</h3>
         <p className="text-xs text-[#413B5E]/75 mt-1.5">
           You and <span className="font-semibold text-[#413B5E]">{name}</span> sparked each other.
         </p>
@@ -64,14 +64,14 @@ export function MutualSparkModal({
         <div className="w-full flex flex-col gap-2 mt-5">
           <Link
             href={chatHref}
-            className="w-full py-3 px-4 rounded-full bg-[#8574B7] hover:bg-[#413B5E] text-white text-xs font-semibold shadow-md transition flex items-center justify-center"
+            className="w-full py-3 px-4 rounded-full bg-[#8574B7] hover:bg-[#413B5E] text-white text-xs font-medium shadow-md transition flex items-center justify-center"
           >
             Send First Message
           </Link>
           <button
             type="button"
             onClick={onClose}
-            className="w-full py-2.5 px-4 rounded-full text-xs font-semibold text-[#413B5E]/75 hover:text-[#413B5E] hover:bg-[#E8E6F1]/70 transition cursor-pointer"
+            className="w-full py-2.5 px-4 rounded-full text-xs font-medium text-[#413B5E]/75 hover:text-[#413B5E] hover:bg-[#E8E6F1]/70 transition cursor-pointer"
           >
             Keep Browsing
           </button>

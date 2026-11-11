@@ -57,14 +57,14 @@ export default function ReputationModal({
               <ShieldCheck className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-[#413B5E] leading-tight">Community Trust & Reputation</h3>
-              <p className="text-[11px] text-[#413B5E]/55">Transparent standards for intentional dating</p>
+              <h3 className="text-sm font-semibold text-[#413B5E] leading-tight">Community Trust & Reputation</h3>
+              <p className="text-[11px] text-slate-600">Transparent standards for intentional dating</p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-1 rounded-full text-[#413B5E]/55 hover:text-[#413B5E]/85 hover:bg-[#E8E6F1]/60 transition cursor-pointer"
+            className="p-1 rounded-full text-slate-600 hover:text-[#413B5E]/85 hover:bg-[#E8E6F1]/60 transition cursor-pointer"
             aria-label="Close"
           >
             <X className="w-4 h-4" />
@@ -74,7 +74,7 @@ export default function ReputationModal({
         {/* Current Standing Card */}
         <div className="p-3 rounded-xl bg-white border border-[#D0CDE1] flex items-center justify-between">
           <div className="space-y-0.5">
-            <span className="text-[9px] font-bold uppercase tracking-wider text-[#8574B7]">Current Standing</span>
+            <span className="text-[9px] font-semibold uppercase tracking-wider text-[#8574B7]">Current Standing</span>
             <p className="text-xs text-[#413B5E]/85 font-medium">
               {score >= 90 ? 'Unblemished: Exemplary standing' : 'Good standing: Active member'}
             </p>
@@ -89,7 +89,7 @@ export default function ReputationModal({
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
               Starting with 100 Baseline Trust
             </h4>
-            <p className="text-[11px] leading-relaxed text-[#413B5E]/55">
+            <p className="text-[11px] leading-relaxed text-slate-600">
               Every verified member starts with full standing. Trust is maintained through sincere intent, courtesy, and authentic interactions.
             </p>
           </div>
@@ -107,7 +107,7 @@ export default function ReputationModal({
             </ul>
           </div>
 
-          <p className="text-[10px] text-[#413B5E]/55 leading-tight">
+          <p className="text-[10px] text-slate-600 leading-tight">
             Severe violations result in automated shadowbanning or permanent platform ejection.
           </p>
         </div>
@@ -117,7 +117,7 @@ export default function ReputationModal({
           <button
             type="button"
             onClick={onClose}
-            className="w-full py-2.5 rounded-full bg-[#8574B7] hover:bg-[#413B5E] text-white text-xs font-semibold transition text-center cursor-pointer shadow-xs active:scale-[0.98]"
+            className="w-full py-2.5 rounded-full bg-[#8574B7] hover:bg-[#413B5E] text-white text-xs font-medium transition text-center cursor-pointer shadow-xs active:scale-[0.98]"
           >
             Understood
           </button>

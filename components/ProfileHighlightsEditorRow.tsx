@@ -14,13 +14,13 @@ export function ProfileHighlightsEditorRow() {
   return (
     <div className="rounded-3xl bg-white border border-[#D0CDE1] shadow-xs p-4 space-y-3">
       <div className="flex items-center justify-between">
-        <span className="text-xs font-bold uppercase tracking-wider text-[#413B5E]/85">
+        <span className="text-xs font-semibold uppercase tracking-wider text-[#413B5E]/85">
           Profile Highlights
         </span>
         <button
           type="button"
           onClick={() => setIsModalOpen(true)}
-          className="inline-flex items-center gap-1 text-xs font-semibold text-[#8574B7] hover:underline"
+          className="inline-flex items-center gap-1 text-xs font-medium text-[#8574B7] hover:underline"
         >
           {activeHighlights.length > 0 ? `Manage (${activeHighlights.length}/3)` : 'Add Highlights'}
           <ChevronRight className="h-3.5 w-3.5" />

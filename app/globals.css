@@ -1,5 +1,8 @@
 @import "tailwindcss";
 
+/* Weight ceiling: headings, buttons and emphasis use semibold (600) at most. */
+strong, b { font-weight: 600; }
+
 /* Brand palette (Tailwind v4 reads tokens from @theme): bg-brand-500, text-brand-900, ...
    Pure white canvas, soft lilac-lavender. 50-500 are the four palette shades; 700 and 900 are
    darker shades of the same hue so text and white button labels stay readable (WCAG AA). */
@@ -174,13 +177,19 @@ a:active,
 }
 
 
-/* Typography: the Meet in Asia wordmark and headlines use font-brand (Plus Jakarta Sans 600-800).
-   Every heading, label and body text uses Plus Jakarta Sans (--font-sans).
-   --font-sans is set by next/font in app/layout.tsx; --font-brand is kept as an alias
-   so existing style={{ fontFamily: 'var(--font-brand)' }} headings render in Plus Jakarta Sans. */
+/* Typography (fonts loaded in app/layout.tsx):
+   - Inter (--font-sans): body copy, inputs, buttons and UI text, through <body class="font-sans">.
+   - Plus Jakarta Sans (--font-brand): headings and the logo. Every h1-h6 uses it by default, and
+     font-brand / style={{ fontFamily: 'var(--font-brand)' }} opt other elements in. */
 :root {
-  --font-brand: var(--font-sans);
+  --font-brand: var(--font-jakarta);
   color-scheme: light;
+}
+
+@layer base {
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-brand), sans-serif;
+  }
 }
 
 /* Liquid purple brand gradient (wordmark "love") */
@@ -192,7 +201,7 @@ a:active,
 }
 
 .font-brand {
-  font-family: var(--font-sans), sans-serif;
+  font-family: var(--font-brand), sans-serif;
 }
 
 /* Hide Next.js bottom-left N / Issue dev indicator badge */

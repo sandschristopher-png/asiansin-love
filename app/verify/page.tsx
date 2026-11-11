@@ -453,7 +453,7 @@ export default function VerifyPage() {
           <button
             type="button"
             onClick={() => router.push(startError?.includes('profile photo') ? '/profile/edit' : '/discover')}
-            className="text-xs font-semibold text-[#8574B7] hover:text-[#413B5E] transition"
+            className="text-xs font-medium text-[#8574B7] hover:text-[#413B5E] transition"
           >
             {startError?.includes('profile photo') ? 'Add a main photo' : 'Back to Discover'}
           </button>
@@ -504,7 +504,7 @@ export default function VerifyPage() {
           <button
             type="button"
             onClick={restartCamera}
-            className="absolute top-20 right-4 h-10 px-3 rounded-full bg-black/40 backdrop-blur border border-white/30 inline-flex items-center gap-1.5 text-white text-xs font-semibold active:scale-95 transition z-50"
+            className="absolute top-20 right-4 h-10 px-3 rounded-full bg-black/40 backdrop-blur border border-white/30 inline-flex items-center gap-1.5 text-white text-xs font-medium active:scale-95 transition z-50"
             aria-label="Restart camera"
           >
             <RefreshCw className="w-4 h-4" />
@@ -554,7 +554,7 @@ export default function VerifyPage() {
               />
               <figure className="space-y-1">
                 <PoseImage pose={pose} className="w-full aspect-square rounded-2xl" />
-                <figcaption className="text-[10px] text-center text-[#413B5E]/55 leading-tight">{pose.label}</figcaption>
+                <figcaption className="text-[10px] text-center text-slate-600 leading-tight">{pose.label}</figcaption>
               </figure>
             </div>
             <p className="text-xs text-[#413B5E]/75">
@@ -569,7 +569,7 @@ export default function VerifyPage() {
               type="button"
               disabled={submitting}
               onClick={retake}
-              className="py-3.5 rounded-2xl bg-white border border-[#D0CDE1] text-[#413B5E] text-xs font-semibold flex items-center justify-center gap-1.5 active:scale-95 transition disabled:opacity-50"
+              className="py-3.5 rounded-2xl bg-white border border-[#D0CDE1] text-[#413B5E] text-xs font-medium flex items-center justify-center gap-1.5 active:scale-95 transition disabled:opacity-50"
             >
               <RotateCcw className="w-4 h-4" />
               Retake
@@ -578,7 +578,7 @@ export default function VerifyPage() {
               type="button"
               disabled={submitting}
               onClick={handleSubmit}
-              className="py-3.5 rounded-2xl bg-[#8574B7] hover:bg-[#413B5E] text-white text-xs font-semibold flex items-center justify-center gap-1.5 shadow-md shadow-[#8574B7]/30 active:scale-95 transition disabled:opacity-60"
+              className="py-3.5 rounded-2xl bg-[#8574B7] hover:bg-[#413B5E] text-white text-xs font-medium flex items-center justify-center gap-1.5 shadow-md shadow-[#8574B7]/30 active:scale-95 transition disabled:opacity-60"
             >
               {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <ScanFace className="w-4 h-4" />}
               {submitting ? 'Checking...' : 'Verify with AI'}
@@ -618,7 +618,7 @@ export default function VerifyPage() {
           <button
             type="button"
             onClick={startCamera}
-            className="w-full py-3.5 rounded-2xl bg-[#8574B7] hover:bg-[#413B5E] text-white text-xs font-semibold uppercase tracking-wider flex items-center justify-center gap-2 shadow-md shadow-[#8574B7]/30 active:scale-95 transition"
+            className="w-full py-3.5 rounded-2xl bg-[#8574B7] hover:bg-[#413B5E] text-white text-xs font-medium uppercase tracking-wider flex items-center justify-center gap-2 shadow-md shadow-[#8574B7]/30 active:scale-95 transition"
           >
             <Camera className="w-4 h-4" />
             Open camera

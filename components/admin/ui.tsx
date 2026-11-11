@@ -40,7 +40,7 @@ export function PageTitle({ title, subtitle, right }: { title: string; subtitle?
   return (
     <div className="flex items-center justify-between gap-3 mb-4">
       <div>
-        <h1 className="text-lg font-bold text-[#413B5E]">{title}</h1>
+        <h1 className="text-lg font-semibold text-[#413B5E]">{title}</h1>
         {subtitle && <p className="text-xs text-[#413B5E]/75 mt-0.5">{subtitle}</p>}
       </div>
       {right}
@@ -106,7 +106,7 @@ export function BottomSheet({
         </div>
         <header className="flex items-start justify-between gap-3 px-4 pb-3 border-b border-[#D0CDE1]">
           <div className="min-w-0">
-            <p className="text-sm font-bold text-[#413B5E]">{title}</p>
+            <p className="text-sm font-semibold text-[#413B5E]">{title}</p>
             {subtitle && <p className="text-[11px] text-[#413B5E]/75 truncate">{subtitle}</p>}
           </div>
           <button type="button" onClick={onClose} className="p-1.5 -mr-1.5 rounded-lg hover:bg-[#E8E6F1]/40" aria-label="Close">
@@ -140,7 +140,7 @@ export function AdminButton({
       type="button"
       {...rest}
       disabled={busy || rest.disabled}
-      className={`inline-flex items-center justify-center gap-1.5 rounded-xl border font-semibold transition ${size === 'lg' ? 'h-10 px-4 text-sm' : 'px-3 py-1.5 text-xs'} disabled:opacity-50 disabled:cursor-not-allowed ${TONES[tone]} ${className}`}
+      className={`inline-flex items-center justify-center gap-1.5 rounded-xl border font-medium transition ${size === 'lg' ? 'h-10 px-4 text-sm' : 'px-3 py-1.5 text-xs'} disabled:opacity-50 disabled:cursor-not-allowed ${TONES[tone]} ${className}`}
     >
       {busy && <Loader2 className="w-3.5 h-3.5 animate-spin" aria-hidden />}
       {children}

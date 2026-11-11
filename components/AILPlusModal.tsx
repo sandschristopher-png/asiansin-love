@@ -93,12 +93,12 @@ export function AILPlusModal({
           <div className="flex items-start justify-between gap-3">
             <div>
               <PlusBadge />
-              <h2 className="mt-1.5 text-lg font-bold text-[#413B5E] leading-snug">{title}</h2>
+              <h2 className="mt-1.5 text-lg font-semibold text-[#413B5E] leading-snug">{title}</h2>
             </div>
             <button
               type="button"
               onClick={onClose}
-              className="w-8 h-8 rounded-full flex items-center justify-center text-[#413B5E]/55 hover:bg-[#E8E6F1]/70"
+              className="w-8 h-8 rounded-full flex items-center justify-center text-slate-600 hover:bg-[#E8E6F1]/70"
               aria-label="Close"
             >
               <X className="w-4 h-4" />
@@ -131,13 +131,13 @@ export function AILPlusModal({
                   }`}
                 >
                   {p.badge && (
-                    <span className="absolute -top-2 left-1/2 -translate-x-1/2 whitespace-nowrap px-1.5 py-0.5 rounded-full bg-[#8574B7] text-[8.5px] font-bold text-white">
+                    <span className="absolute -top-2 left-1/2 -translate-x-1/2 whitespace-nowrap px-1.5 py-0.5 rounded-full bg-[#8574B7] text-[8.5px] font-semibold text-white">
                       {p.badge}
                     </span>
                   )}
-                  <span className="block text-[11px] font-bold text-[#413B5E]">{p.label}</span>
-                  <span className="block mt-1 text-sm font-bold text-[#413B5E]">{p.perMonth}</span>
-                  <span className="block text-[9px] text-[#413B5E]/55">{p.note}</span>
+                  <span className="block text-[11px] font-semibold text-[#413B5E]">{p.label}</span>
+                  <span className="block mt-1 text-sm font-semibold text-[#413B5E]">{p.perMonth}</span>
+                  <span className="block text-[9px] text-slate-600">{p.note}</span>
                 </button>
               );
             })}
@@ -153,12 +153,12 @@ export function AILPlusModal({
             type="button"
             onClick={checkout}
             disabled={busy}
-            className="w-full py-3.5 rounded-2xl bg-[#8574B7] hover:bg-[#413B5E] text-white text-sm font-semibold shadow-md shadow-[#8574B7]/25 flex items-center justify-center gap-2 disabled:opacity-60"
+            className="w-full py-3.5 rounded-2xl bg-[#8574B7] hover:bg-[#413B5E] text-white text-sm font-medium shadow-md shadow-[#8574B7]/25 flex items-center justify-center gap-2 disabled:opacity-60"
           >
             {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4 fill-current" />}
             Upgrade to Plus
           </button>
-          <Link href="/plus" onClick={onClose} className="block text-center text-xs font-semibold text-[#8574B7] hover:underline">
+          <Link href="/plus" onClick={onClose} className="block text-center text-xs font-medium text-[#8574B7] hover:underline">
             View all member perks
           </Link>
         </div>

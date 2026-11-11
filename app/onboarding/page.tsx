@@ -580,7 +580,7 @@ export default function OnboardingPage() {
         {/* STEP 1: USERNAME SELECTION */}
         {vpnBlocked && (
           <div role="alert" className="rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3.5 space-y-1">
-            <p className="text-sm font-bold text-amber-900">VPN or Proxy Detected</p>
+            <p className="text-sm font-semibold text-amber-900">VPN or Proxy Detected</p>
             <p className="text-xs text-amber-900/90 leading-relaxed">
               Please turn off your VPN/Private Relay connection to verify your location and continue.
             </p>
@@ -592,7 +592,7 @@ export default function OnboardingPage() {
                   .then((d) => setVpnBlocked(Boolean(d?.blocked)))
                   .catch(() => {});
               }}
-              className="text-xs font-semibold text-amber-900 underline"
+              className="text-xs font-medium text-amber-900 underline"
             >
               I turned it off, check again
             </button>
@@ -609,7 +609,7 @@ export default function OnboardingPage() {
                 3 to 20 characters, alphanumeric and underscores only.
               </p>
               <div className="relative flex items-center">
-                <span className="absolute left-3.5 text-sm font-medium text-[#413B5E]/55"></span>
+                <span className="absolute left-3.5 text-sm font-medium text-slate-600"></span>
                 <input
                   type="text"
                   value={username}
@@ -663,7 +663,7 @@ export default function OnboardingPage() {
             <button
               type="submit"
               disabled={isCheckingUsername || !usernameStatus?.available}
-              className="w-full py-3.5 rounded-2xl bg-[#8574B7] hover:bg-[#413B5E] text-white text-sm font-semibold shadow-md transition active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
+              className="w-full py-3.5 rounded-2xl bg-[#8574B7] hover:bg-[#413B5E] text-white text-sm font-medium shadow-md transition active:scale-95 disabled:opacity-40 disabled:cursor-not-allowed"
             >
               Continue
             </button>
@@ -684,7 +684,7 @@ export default function OnboardingPage() {
                     type="button"
                     onClick={() => selectGender(g.val)}
                     className={
-                      'py-2.5 px-3 rounded-2xl text-xs font-semibold border transition active:scale-95 flex items-center justify-center gap-1.5 ' +
+                      'py-2.5 px-3 rounded-2xl text-xs font-medium border transition active:scale-95 flex items-center justify-center gap-1.5 ' +
                       (gender === g.val
                         ? 'bg-[#8574B7] border-[#8574B7] text-white shadow-xs'
                         : 'bg-white border-[#D0CDE1] text-[#413B5E]/85 hover:border-[#8574B7]/40 hover:bg-[#E8E6F1]/70')
@@ -713,7 +713,7 @@ export default function OnboardingPage() {
                     type="button"
                     onClick={() => setIntent(opt.value)}
                     className={
-                      'py-2.5 px-4 rounded-full text-xs font-semibold border transition active:scale-95 ' +
+                      'py-2.5 px-4 rounded-full text-xs font-medium border transition active:scale-95 ' +
                       (intent === opt.value
                         ? 'bg-[#8574B7] border-[#8574B7] text-white shadow-xs'
                         : 'bg-white border-[#D0CDE1] text-[#413B5E]/85 hover:border-[#8574B7]/40')
@@ -742,14 +742,14 @@ export default function OnboardingPage() {
               <button
                 type="button"
                 onClick={() => setStep(1)}
-                className="w-1/3 py-3 rounded-2xl bg-white border border-[#D0CDE1] text-xs font-semibold text-[#413B5E]/85 hover:bg-[#E8E6F1]/40 transition"
+                className="w-1/3 py-3 rounded-2xl bg-white border border-[#D0CDE1] text-xs font-medium text-[#413B5E]/85 hover:bg-[#E8E6F1]/40 transition"
               >
                 Back
               </button>
               <button
                 type="submit"
                 disabled={!gender || interestedIn.length === 0 || !intent || !birthdate}
-                className="w-2/3 py-3 rounded-2xl bg-[#8574B7] hover:bg-[#413B5E] text-white text-xs font-semibold shadow-md transition disabled:opacity-40"
+                className="w-2/3 py-3 rounded-2xl bg-[#8574B7] hover:bg-[#413B5E] text-white text-xs font-medium shadow-md transition disabled:opacity-40"
               >
                 Continue to Location
               </button>
@@ -783,7 +783,7 @@ export default function OnboardingPage() {
                 type="button"
                 disabled={isLocating}
                 onClick={triggerLocationDetection}
-                className="w-full py-2.5 px-3 rounded-xl bg-white hover:bg-[#E8E6F1]/70 border border-[#D0CDE1] hover:border-[#8574B7]/50 text-xs font-semibold text-[#413B5E] inline-flex items-center justify-center gap-2 transition shadow-xs disabled:opacity-50"
+                className="w-full py-2.5 px-3 rounded-xl bg-white hover:bg-[#E8E6F1]/70 border border-[#D0CDE1] hover:border-[#8574B7]/50 text-xs font-medium text-[#413B5E] inline-flex items-center justify-center gap-2 transition shadow-xs disabled:opacity-50"
               >
                 {isLocating ? (
                   <Loader2 className="w-3.5 h-3.5 animate-spin text-[#8574B7]" />
@@ -824,14 +824,14 @@ export default function OnboardingPage() {
               <button
                 type="button"
                 onClick={() => setStep(2)}
-                className="w-1/3 py-3 rounded-2xl bg-white border border-[#D0CDE1] text-xs font-semibold text-[#413B5E]/85 hover:bg-[#E8E6F1]/40 transition"
+                className="w-1/3 py-3 rounded-2xl bg-white border border-[#D0CDE1] text-xs font-medium text-[#413B5E]/85 hover:bg-[#E8E6F1]/40 transition"
               >
                 Back
               </button>
               <button
                 type="submit"
                 disabled={!city.trim() || !country.trim()}
-                className="w-2/3 py-3 rounded-2xl bg-[#8574B7] hover:bg-[#413B5E] text-white text-xs font-semibold shadow-md transition disabled:opacity-40"
+                className="w-2/3 py-3 rounded-2xl bg-[#8574B7] hover:bg-[#413B5E] text-white text-xs font-medium shadow-md transition disabled:opacity-40"
               >
                 Continue to Details
               </button>
@@ -864,7 +864,7 @@ export default function OnboardingPage() {
             <div>
               <div className="flex items-center justify-between mb-1">
                 <label className="text-xs font-semibold text-[#413B5E]">About Me (Bio)</label>
-                <span className={"text-[11px] " + (bio.trim().length < 20 ? "text-red-600 font-semibold" : "text-[#413B5E]/55")}>{bio.trim().length}/500</span>
+                <span className={"text-[11px] " + (bio.trim().length < 20 ? "text-red-600 font-semibold" : "text-slate-600")}>{bio.trim().length}/500</span>
               </div>
               <textarea
                 rows={3}
@@ -917,13 +917,13 @@ export default function OnboardingPage() {
               <button
                 type="button"
                 onClick={() => setStep(3)}
-                className="w-1/3 py-3 rounded-2xl bg-white border border-[#D0CDE1] text-xs font-semibold text-[#413B5E]/85 hover:bg-[#E8E6F1]/40 transition"
+                className="w-1/3 py-3 rounded-2xl bg-white border border-[#D0CDE1] text-xs font-medium text-[#413B5E]/85 hover:bg-[#E8E6F1]/40 transition"
               >
                 Back
               </button>
               <button
                 type="submit"
-                className="w-2/3 py-3 rounded-2xl bg-[#8574B7] hover:bg-[#413B5E] text-white text-xs font-semibold shadow-md transition disabled:opacity-40"
+                className="w-2/3 py-3 rounded-2xl bg-[#8574B7] hover:bg-[#413B5E] text-white text-xs font-medium shadow-md transition disabled:opacity-40"
                 disabled={!height || bio.trim().length < 20 || interests.length === 0}
               >
                 Continue to Photos
@@ -964,7 +964,7 @@ export default function OnboardingPage() {
                         <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/30 to-transparent p-2 flex items-center justify-between">
                           <span
                             className={
-                              'px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ' +
+                              'px-2 py-0.5 rounded-full text-[9px] font-semibold uppercase tracking-wider ' +
                               (isPrimary ? 'bg-[#8574B7] text-white' : 'bg-white/80 text-[#413B5E]')
                             }
                           >
@@ -1028,17 +1028,17 @@ export default function OnboardingPage() {
               </p>
             </div>
 
-            <p className="text-[11px] leading-relaxed text-[#413B5E]/55 text-center">
+            <p className="text-[11px] leading-relaxed text-slate-600 text-center">
               By finishing you agree to our{' '}
-              <Link href="/terms" className="font-semibold text-[#8574B7] hover:underline">Terms</Link>,{' '}
-              <Link href="/privacy" className="font-semibold text-[#8574B7] hover:underline">Privacy Policy</Link> and{' '}
-              <Link href="/safety" className="font-semibold text-[#8574B7] hover:underline">Safety Guide</Link>.
+              <Link href="/terms" className="font-medium text-[#8574B7] hover:underline">Terms</Link>,{' '}
+              <Link href="/privacy" className="font-medium text-[#8574B7] hover:underline">Privacy Policy</Link> and{' '}
+              <Link href="/safety" className="font-medium text-[#8574B7] hover:underline">Safety Guide</Link>.
             </p>
             <div className="flex items-center gap-3 pt-2">
               <button
                 type="button"
                 onClick={() => setStep(4)}
-                className="w-1/3 py-3.5 rounded-2xl bg-white border border-[#D0CDE1] text-xs font-semibold text-[#413B5E]/85 hover:bg-[#E8E6F1]/40 transition"
+                className="w-1/3 py-3.5 rounded-2xl bg-white border border-[#D0CDE1] text-xs font-medium text-[#413B5E]/85 hover:bg-[#E8E6F1]/40 transition"
               >
                 Back
               </button>
@@ -1046,7 +1046,7 @@ export default function OnboardingPage() {
                 type="button"
                 onClick={handleCompleteOnboarding}
                 disabled={loading || uploadingSlot !== null || photos.length === 0}
-                className="w-2/3 py-3.5 rounded-2xl bg-[#8574B7] hover:bg-[#413B5E] text-white text-xs font-semibold shadow-md transition disabled:opacity-40 inline-flex items-center justify-center gap-2"
+                className="w-2/3 py-3.5 rounded-2xl bg-[#8574B7] hover:bg-[#413B5E] text-white text-xs font-medium shadow-md transition disabled:opacity-40 inline-flex items-center justify-center gap-2"
               >
                 {loading ? (
                   <>

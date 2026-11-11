@@ -227,42 +227,42 @@ export function Navbar() {
                   // Account utilities + announcements; dating activity lives on the BottomNav tabs.
                   <div role="menu" className="absolute right-0 mt-2 w-64 rounded-2xl bg-white border border-[#D0CDE1] shadow-xl overflow-hidden z-[200] animate-[notifDropdownIn_0.2s_cubic-bezier(0.16,1,0.3,1)_both]">
                     <div className="px-4 py-3 border-b border-[#D0CDE1] flex items-center gap-1.5 min-w-0">
-                      <span className="text-sm font-bold text-[#413B5E] truncate">{displayName.replace(/^@/, '')}</span>
+                      <span className="text-sm font-semibold text-[#413B5E] truncate">{displayName.replace(/^@/, '')}</span>
                       {isPlusProfile(profile) && <PlusBadge size="profile" />}
                     </div>
                     <div className="py-1">
                       <Link href="/plus" role="menuitem" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 h-11 text-sm text-[#413B5E] hover:bg-[#E8E6F1]/40 transition-colors justify-between">
                         {/* The header row above already shows the PLUS badge: this row says "Membership". */}
                         <span className="flex items-center gap-3">
-                          <CreditCard className="w-4 h-4 text-[#413B5E]/55" aria-hidden />
+                          <CreditCard className="w-4 h-4 text-slate-600" aria-hidden />
                           {/* Profile not loaded yet: neutral placeholder, never "Upgrade" to a Plus member. */}
                           {!profile ? (
                             <span aria-hidden className="h-3 w-24 rounded-full bg-[#E8E6F1]/70 animate-pulse" />
                           ) : isPlusProfile(profile) ? 'Membership' : 'Upgrade to Plus'}
                         </span>
                         {!profile ? null : isPlusProfile(profile) ? (
-                          <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#8574B7]/10 border border-[#8574B7]/20 text-[#8574B7]">Active</span>
+                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#8574B7]/10 border border-[#8574B7]/20 text-[#8574B7]">Active</span>
                         ) : (
-                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-white border border-[#D0CDE1] text-[#413B5E]/55">Upgrade</span>
+                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-white border border-[#D0CDE1] text-slate-600">Upgrade</span>
                         )}
                       </Link>
                       <Link href="/profile" role="menuitem" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 h-11 text-sm text-[#413B5E] hover:bg-[#E8E6F1]/40 transition-colors">
-                        <User className="w-4 h-4 text-[#413B5E]/55" />
+                        <User className="w-4 h-4 text-slate-600" />
                         My Profile
                       </Link>
                       <Link href="/settings" role="menuitem" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 h-11 text-sm text-[#413B5E] hover:bg-[#E8E6F1]/40 transition-colors">
-                        <Settings className="w-4 h-4 text-[#413B5E]/55" />
+                        <Settings className="w-4 h-4 text-slate-600" />
                         Settings
                       </Link>
                       <Link href="/announcements" role="menuitem" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 h-11 text-sm text-[#413B5E] hover:bg-[#E8E6F1]/40 transition-colors">
-                        <Megaphone className="w-4 h-4 text-[#413B5E]/55" />
+                        <Megaphone className="w-4 h-4 text-slate-600" />
                         <span>Announcements</span>
                         {hasUnreadAnnouncements && <span aria-label="New announcements" className="w-2 h-2 rounded-full bg-[#9A93BC]" />}
                       </Link>
                       {isStaff(adminRoleOf(profile)) && (
                         // Staff only: never rendered for members.
                         <Link href="/admin" role="menuitem" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 h-11 text-sm text-[#413B5E] hover:bg-[#E8E6F1]/40 transition-colors">
-                          <ShieldAlert className="w-4 h-4 text-[#413B5E]/55" />
+                          <ShieldAlert className="w-4 h-4 text-slate-600" />
                           Admin Console
                         </Link>
                       )}
@@ -280,7 +280,7 @@ export function Navbar() {
           ) : !authLoading && !IN_APP_PREFIXES.some((p) => pathname === p || pathname?.startsWith(p + '/')) ? (
             <Link
               href="/login"
-              className="px-4 py-1.5 rounded-full bg-[#8574B7] hover:bg-[#534377] text-white text-xs font-semibold tracking-wide transition shadow-sm"
+              className="px-4 py-1.5 rounded-full bg-[#8574B7] hover:bg-[#534377] text-white text-xs font-medium tracking-wide transition shadow-sm"
             >
               Sign In
             </Link>

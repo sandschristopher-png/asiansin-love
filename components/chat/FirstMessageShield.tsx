@@ -11,12 +11,12 @@ export function FirstMessageShield({ senderName }: { senderName: string }) {
       <div className="flex items-start gap-2">
         <ShieldAlert className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" aria-hidden />
         <div className="min-w-0">
-          <p className="text-xs font-bold text-amber-900">Safety Reminder: Off-Platform Contact</p>
+          <p className="text-xs font-semibold text-amber-900">Safety Reminder: Off-Platform Contact</p>
           <p className="mt-0.5 text-[11px] leading-snug text-amber-800">
             {senderName} mentioned an external app or number. Commercial accounts and scammers often rush to move
             conversations off-platform. For your safety, we recommend getting to know each other on Meet in Asia first.
           </p>
-          <Link href="/safety" className="mt-1 inline-block text-[11px] font-semibold text-[#8574B7] hover:underline">
+          <Link href="/safety" className="mt-1 inline-block text-[11px] font-medium text-[#8574B7] hover:underline">
             Read Safety Blueprint &rarr;
           </Link>
         </div>

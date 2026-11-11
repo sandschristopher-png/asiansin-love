@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import React, { useState, useEffect, useCallback } from 'react';
 import {
@@ -140,7 +140,7 @@ export default function AdminModerationPage() {
                 <ShieldAlert className="w-4 h-4" />
               </div>
               <div>
-                <h1 className="text-lg font-bold text-[#413B5E]">Messages</h1>
+                <h1 className="text-lg font-semibold text-[#413B5E]">Messages</h1>
                 <p className="text-xs text-[#413B5E]/75">Review quarantined safety incidents</p>
               </div>
             </div>
@@ -158,7 +158,7 @@ export default function AdminModerationPage() {
 
           {/* Search Bar */}
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-[#413B5E]/55" />
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-600" />
             <input
               type="text"
               placeholder="Filter by keyword or username..."
@@ -216,7 +216,7 @@ export default function AdminModerationPage() {
           <div className="p-12 text-center text-[#413B5E]/75 bg-white rounded-2xl border border-[#D0CDE1] space-y-2">
             <CheckCircle2 className="w-9 h-9 text-emerald-500/80 mx-auto" />
             <p className="text-sm font-semibold text-[#413B5E]">All Clean</p>
-            <p className="text-xs text-[#413B5E]/55">No quarantined messages need review right now.</p>
+            <p className="text-xs text-slate-600">No quarantined messages need review right now.</p>
           </div>
         ) : (
           <div className="space-y-3">
@@ -242,7 +242,7 @@ export default function AdminModerationPage() {
                       </span>
                       {getReputationBadge(msg.sender?.reputation_score)}
                     </div>
-                    <span className="text-[11px] text-[#413B5E]/55 flex items-center gap-1">
+                    <span className="text-[11px] text-slate-600 flex items-center gap-1">
                       <Clock className="w-3 h-3" />
                       {new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                     </span>
@@ -362,7 +362,7 @@ export default function AdminModerationPage() {
               <button
                 onClick={() => handleAction('release')}
                 disabled={actionLoading}
-                className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold transition disabled:opacity-50 min-h-[46px]"
+                className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-medium transition disabled:opacity-50 min-h-[46px]"
               >
                 {actionLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
                 Release
@@ -371,7 +371,7 @@ export default function AdminModerationPage() {
               <button
                 onClick={() => handleAction('confirm')}
                 disabled={actionLoading}
-                className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-semibold transition disabled:opacity-50 min-h-[46px]"
+                className="flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-red-600 hover:bg-red-500 text-white text-xs font-medium transition disabled:opacity-50 min-h-[46px]"
               >
                 {actionLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <XCircle className="w-4 h-4" />}
                 Confirm

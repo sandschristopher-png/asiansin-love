@@ -225,10 +225,10 @@ export default function SafetyBlueprintPage() {
       <main className="max-w-4xl mx-auto px-6 py-12 md:py-16 space-y-14">
         {/* Title Area */}
         <div className="space-y-4 text-center md:text-left">
-          <h1 className="font-brand text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-[#413B5E] leading-tight">
+          <h1 className="font-brand text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-[#413B5E] leading-tight">
             International Dating &amp; Safety Protocol
           </h1>
-          <p className="text-base sm:text-lg text-[#655E72] leading-relaxed max-w-2xl">
+          <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl">
             A comprehensive, practical guide to building genuine cross-border relationships while safeguarding your personal safety, legal standing, and finances. Every member benefits from gesture verification, GPS location checks, and messaging that stays on-platform until you meet in person. Tap any topic to read the full breakdown.
           </p>
         </div>
@@ -242,12 +242,12 @@ export default function SafetyBlueprintPage() {
               </div>
               <div>
                 <div className="flex items-center gap-2.5">
-                  <h2 className="font-brand text-xl font-bold text-[#413B5E]">{label}</h2>
-                  <span className="text-[11px] font-bold px-2 py-0.5 rounded-full bg-[#8574B7]/10 text-[#8574B7] whitespace-nowrap shrink-0">
+                  <h2 className="font-brand text-xl font-semibold text-[#413B5E]">{label}</h2>
+                  <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-[#8574B7]/10 text-[#8574B7] whitespace-nowrap shrink-0">
                     {topics.length} topics
                   </span>
                 </div>
-                <p className="text-sm text-[#655E72]/80 mt-0.5">{blurb}</p>
+                <p className="text-sm text-slate-600 mt-0.5">{blurb}</p>
               </div>
             </div>
 
@@ -261,16 +261,16 @@ export default function SafetyBlueprintPage() {
 
         {/* Action Card */}
         <div className="rounded-3xl bg-[#8574B7]/[0.06] p-8 text-center space-y-4">
-          <h2 className="font-brand text-2xl font-extrabold text-[#413B5E]">
+          <h2 className="font-brand text-2xl font-semibold text-[#413B5E]">
             Spot a suspicious profile or a request for funds?
           </h2>
-          <p className="text-sm text-[#655E72] max-w-lg mx-auto">
+          <p className="text-sm text-slate-600 max-w-lg mx-auto">
             Meet in Asia strictly prohibits solicitations for cash, commercial matchmaking, and identity misrepresentation. Tap the report button on any profile or direct message to notify moderation immediately.
           </p>
           <div className="pt-2">
             <Link
               href="/discover"
-              className="inline-flex items-center justify-center h-12 px-8 rounded-full bg-[#8574B7] hover:bg-[#534377] text-white text-sm font-bold tracking-tight transition-all active:scale-95 shadow-sm"
+              className="inline-flex items-center justify-center h-12 px-8 rounded-full bg-[#8574B7] hover:bg-[#534377] text-white text-sm font-medium tracking-tight transition-all active:scale-95 shadow-sm"
             >
               Return to Community
             </Link>
@@ -279,7 +279,7 @@ export default function SafetyBlueprintPage() {
       </main>
 
       {/* Footer */}
-      <footer className="py-8 text-center text-xs text-[#655E72]/60">
+      <footer className="py-8 text-center text-xs text-slate-600">
         Meet in Asia &mdash; Community Trust &amp; Safety Guidelines
       </footer>
     </div>

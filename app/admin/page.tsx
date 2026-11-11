@@ -27,7 +27,7 @@ function PersonRow({ person, label }: { person: Person; label: string }) {
       <AdminAvatar url={person?.avatarUrl ?? null} name={person?.name || 'Member'} size={32} />
       <div className="min-w-0 flex-1">
         <p className="text-sm font-semibold text-[#413B5E] truncate">{person?.name || 'Deleted member'}</p>
-        <p className="text-[10px] uppercase tracking-wider font-semibold text-[#413B5E]/55">{label}</p>
+        <p className="text-[10px] uppercase tracking-wider font-semibold text-slate-600">{label}</p>
       </div>
       {person && (
         <div className="flex items-center gap-1 shrink-0">
@@ -68,7 +68,7 @@ function ContextSheet({ report, onClose }: { report: Report; onClose: () => void
               } ${m.quarantined ? 'ring-2 ring-red-300' : ''}`}
             >
               <p className="whitespace-pre-wrap break-words">{m.content}</p>
-              <p className={`mt-1 text-[10px] ${m.fromReported ? 'text-[#413B5E]/55' : 'text-white/60'}`}>
+              <p className={`mt-1 text-[10px] ${m.fromReported ? 'text-slate-600' : 'text-white/60'}`}>
                 {m.fromReported ? report.reported?.name : report.reporter?.name} · {timeAgo(m.createdAt)}
                 {m.quarantined && ' · quarantined'}
               </p>
@@ -112,7 +112,7 @@ function ReportCard({
             {report.source === 'chat' ? 'Chat' : 'Profile'}
           </span>
         )}
-        <span className="ml-auto text-[11px] text-[#413B5E]/55">{timeAgo(report.createdAt)}</span>
+        <span className="ml-auto text-[11px] text-slate-600">{timeAgo(report.createdAt)}</span>
       </div>
 
       <div className="space-y-2.5 rounded-xl border border-[#D0CDE1] p-3">

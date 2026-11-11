@@ -15,7 +15,7 @@ export function NewMemberPill({ createdAt, className = '' }: { createdAt: string
   if (!isNewMember(createdAt)) return null;
   return (
     <span
-      className={`inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-500/90 text-white text-[10px] font-bold tracking-wider uppercase shadow-sm ${className}`}
+      className={`inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-500/90 text-white text-[10px] font-semibold tracking-wider uppercase shadow-sm ${className}`}
     >
       New
     </span>

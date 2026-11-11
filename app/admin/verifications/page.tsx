@@ -173,7 +173,7 @@ export default function AdminVerificationsPage() {
         <button
           onClick={() => decide(kind, userId, 'approve')}
           disabled={isBusy}
-          className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#8574B7] hover:bg-[#8574B7] text-white text-xs font-semibold disabled:opacity-50 min-h-[42px]"
+          className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-[#8574B7] hover:bg-[#8574B7] text-white text-xs font-medium disabled:opacity-50 min-h-[42px]"
         >
           {isBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <CheckCircle2 className="w-4 h-4" />}
           {labels[0]}
@@ -181,7 +181,7 @@ export default function AdminVerificationsPage() {
         <button
           onClick={() => decide(kind, userId, 'reject')}
           disabled={isBusy}
-          className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-red-50 border border-red-200 text-red-600 hover:bg-red-100 text-xs font-semibold disabled:opacity-50 min-h-[42px]"
+          className="flex items-center justify-center gap-1.5 px-4 py-2.5 rounded-xl bg-red-50 border border-red-200 text-red-600 hover:bg-red-100 text-xs font-medium disabled:opacity-50 min-h-[42px]"
         >
           {isBusy ? <Loader2 className="w-4 h-4 animate-spin" /> : <XCircle className="w-4 h-4" />}
           {labels[1]}
@@ -192,7 +192,7 @@ export default function AdminVerificationsPage() {
 
   const SectionTitle = ({ icon, title, count }: { icon: React.ReactNode; title: string; count: number }) => (
     <div className="flex items-center justify-between">
-      <h2 className="flex items-center gap-2 text-sm font-bold text-[#413B5E]" style={{ fontFamily: 'var(--font-brand)' }}>
+      <h2 className="flex items-center gap-2 text-sm font-semibold text-[#413B5E]" style={{ fontFamily: 'var(--font-brand)' }}>
         {icon}
         {title}
       </h2>
@@ -201,7 +201,7 @@ export default function AdminVerificationsPage() {
   );
 
   const Empty = ({ text }: { text: string }) => (
-    <p className="p-5 text-center text-xs text-[#413B5E]/55 bg-white rounded-2xl border border-[#D0CDE1]">{text}</p>
+    <p className="p-5 text-center text-xs text-slate-600 bg-white rounded-2xl border border-[#D0CDE1]">{text}</p>
   );
 
   return (
@@ -214,7 +214,7 @@ export default function AdminVerificationsPage() {
                 <BadgeCheck className="w-4 h-4" />
               </div>
               <div>
-                <h1 className="text-lg font-bold text-[#413B5E]">ID Checks</h1>
+                <h1 className="text-lg font-semibold text-[#413B5E]">ID Checks</h1>
                 <p className="text-xs text-[#413B5E]/75">
                   {loading ? 'Loading...' : `${identity.length} pending identity check${identity.length === 1 ? '' : 's'}`} · main photos · reports
                 </p>
@@ -287,7 +287,7 @@ export default function AdminVerificationsPage() {
                             return age ? <span className="font-normal text-[#413B5E]/75">, {age}</span> : null;
                           })()}
                         </p>
-                        <p className="text-[11px] text-[#413B5E]/55 truncate">
+                        <p className="text-[11px] text-slate-600 truncate">
                           {[item.city, item.country].filter(Boolean).join(', ') || 'No location'}
                           {item.submission.submittedAt && ` · ${new Date(item.submission.submittedAt).toLocaleString()}`}
                         </p>
@@ -308,20 +308,20 @@ export default function AdminVerificationsPage() {
                                 ) : (
                                   <div className="w-full aspect-[3/4] rounded-xl bg-[#E8E6F1]/60" />
                                 )}
-                                <figcaption className="text-[10px] text-center text-[#413B5E]/55">Main photo</figcaption>
+                                <figcaption className="text-[10px] text-center text-slate-600">Main photo</figcaption>
                               </figure>
                               {sub.photos.map((url, i) => (
                                 <figure key={url} className="space-y-1">
                                   <a href={url} target="_blank" rel="noreferrer">
                                     <img src={url} alt={pose ? 'Selfie' : `Pose ${i + 1}`} className="w-full aspect-[3/4] object-cover rounded-xl border border-[#D0CDE1]" />
                                   </a>
-                                  <figcaption className="text-[10px] text-center text-[#413B5E]/55">{pose ? 'Captured selfie' : `Pose ${i + 1}`}</figcaption>
+                                  <figcaption className="text-[10px] text-center text-slate-600">{pose ? 'Captured selfie' : `Pose ${i + 1}`}</figcaption>
                                 </figure>
                               ))}
                               {pose && (
                                 <figure className="space-y-1">
                                   <img src={pose.image} alt={pose.label} className="w-full aspect-[3/4] object-contain rounded-xl border border-[#D0CDE1] bg-[#E8E6F1]/60" />
-                                  <figcaption className="text-[10px] text-center text-[#413B5E]/55 leading-tight">{pose.label}</figcaption>
+                                  <figcaption className="text-[10px] text-center text-slate-600 leading-tight">{pose.label}</figcaption>
                                 </figure>
                               )}
                             </div>
@@ -432,7 +432,7 @@ export default function AdminVerificationsPage() {
                         {r.reason.replace(/_/g, ' ')}
                       </span>
                       {r.created_at && (
-                        <span className="text-[11px] text-[#413B5E]/55">{new Date(r.created_at).toLocaleString()}</span>
+                        <span className="text-[11px] text-slate-600">{new Date(r.created_at).toLocaleString()}</span>
                       )}
                     </div>
                     <p className="text-[#413B5E]">

@@ -56,18 +56,16 @@ export function HeroLanding() {
         {/* How connections happen */}
         <section className="py-8">
           <div className="text-center">
-            <h2 className="font-brand text-xl font-extrabold tracking-tight text-[#413B5E]">How connections happen</h2>
-            <p className="mt-2 text-sm text-[#413B5E]/75">Match on intention, not luck. Three steps to meeting someone real.</p>
+            <h2 className="font-brand text-xl font-semibold tracking-tight text-[#413B5E]">How connections happen</h2>
+            <p className="mt-2 text-sm text-slate-600">Match on intention, not luck. Three steps to meeting someone real.</p>
           </div>
           <div className="mt-6 space-y-3">
             {STEPS.map(({ step, title, desc }) => (
-              <div key={step} className="flex items-start gap-3.5 rounded-3xl bg-[#E8E6F1]/40 p-4">
-                <span className="w-10 h-10 shrink-0 rounded-2xl bg-white text-[#8574B7] font-brand font-bold text-sm flex items-center justify-center">
-                  {step}
-                </span>
+              <div key={step} className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white p-4">
+                <span className="w-6 shrink-0 pt-px font-brand text-sm font-semibold tabular-nums text-[#8574B7]">{step}</span>
                 <div className="min-w-0 text-left">
-                  <h3 className="text-[15px] font-bold text-[#413B5E] leading-snug">{title}</h3>
-                  <p className="mt-1 text-[13px] text-[#413B5E]/75 leading-relaxed">{desc}</p>
+                  <h3 className="text-[15px] font-semibold text-[#413B5E] leading-snug">{title}</h3>
+                  <p className="mt-1 text-[13px] text-slate-600 leading-relaxed">{desc}</p>
                 </div>
               </div>
             ))}
@@ -77,13 +75,13 @@ export function HeroLanding() {
         {/* Feature stories: illustration left, copy right */}
         <section className="py-8 space-y-3">
           {FEATURES.map(({ title, body, src, alt }) => (
-            <div key={title} className="flex items-center gap-4 rounded-3xl bg-[#E8E6F1]/40 p-3.5">
-              <div className="relative w-24 h-24 shrink-0 overflow-hidden rounded-2xl bg-white">
+            <div key={title} className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-3.5">
+              <div className="relative w-24 h-24 shrink-0 overflow-hidden rounded-xl bg-slate-50">
                 <Image src={src} alt={alt} fill sizes="96px" className="object-contain object-bottom select-none pointer-events-none" />
               </div>
               <div className="min-w-0 text-left">
-                <h3 className="text-[15px] font-bold text-[#413B5E] leading-snug">{title}</h3>
-                <p className="mt-1 text-[13px] text-[#413B5E]/75 leading-relaxed">{body}</p>
+                <h3 className="text-[15px] font-semibold text-[#413B5E] leading-snug">{title}</h3>
+                <p className="mt-1 text-[13px] text-slate-600 leading-relaxed">{body}</p>
               </div>
             </div>
           ))}
@@ -91,25 +89,25 @@ export function HeroLanding() {
 
         {/* Final call to action */}
         <section className="py-10 text-center">
-          <h2 className="font-brand text-xl font-extrabold tracking-tight text-[#413B5E]">Be one of our first members.</h2>
-          <p className="mt-2 text-sm text-[#413B5E]/75">
+          <h2 className="font-brand text-xl font-semibold tracking-tight text-[#413B5E]">Be one of our first members.</h2>
+          <p className="mt-2 text-sm text-slate-600">
             Join free and start meeting genuine singles across Southeast Asia today.
           </p>
           <div className="mt-6 flex flex-col items-center gap-4">
             <Link
               href="/signup"
-              className="w-full h-12 inline-flex items-center justify-center rounded-full bg-[#8574B7] hover:bg-[#534377] text-white font-bold text-sm active:scale-95 transition-all"
+              className="w-full h-12 inline-flex items-center justify-center rounded-full bg-[#8574B7] hover:bg-[#534377] text-white font-medium text-sm active:scale-95 transition-all"
             >
               Join for Free
             </Link>
-            <Link href="/login" className="text-sm font-semibold text-[#8574B7] hover:text-[#534377] transition-colors">
+            <Link href="/login" className="text-sm font-medium text-[#8574B7] hover:text-[#534377] transition-colors">
               Sign In
             </Link>
           </div>
         </section>
 
         {/* Footer: rendered by the public landing page only, never inside the signed-in app. */}
-        <footer className="pb-8 pt-4 text-center text-xs text-[#655E72]">
+        <footer className="pb-8 pt-4 text-center text-xs text-slate-600">
           <nav className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 font-medium text-[#413B5E]">
             <Link className="hover:text-[#8574B7] transition-colors" href="/safety">Safety</Link>
             <span className="text-[#D0CDE1]" aria-hidden="true">•</span>
@@ -119,7 +117,7 @@ export function HeroLanding() {
             <span className="text-[#D0CDE1]" aria-hidden="true">•</span>
             <Link className="hover:text-[#8574B7] transition-colors" href="/contact">Contact</Link>
           </nav>
-          <p className="mt-2 text-[11px] text-[#655E72]/80">© {new Date().getFullYear()} Meet in Asia</p>
+          <p className="mt-2 text-[11px] text-slate-600">© {new Date().getFullYear()} Meet in Asia</p>
         </footer>
       </div>
     </div>

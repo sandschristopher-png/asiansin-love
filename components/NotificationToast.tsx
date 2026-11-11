@@ -93,7 +93,7 @@ export function NotificationToast({
             />
             <span className="truncate">{toast.name}</span>
           </p>
-          <p className={`text-xs truncate max-w-[210px] mt-0.5 ${mutual ? 'text-white/85' : 'text-[#413B5E]/55'}`}>{toast.preview}</p>
+          <p className={`text-xs truncate max-w-[210px] mt-0.5 ${mutual ? 'text-white/85' : 'text-slate-600'}`}>{toast.preview}</p>
         </div>
         <span aria-hidden className={`w-2 h-2 rounded-full shrink-0 ${mutual ? 'bg-white' : 'bg-[#8574B7]'}`} />
       </div>

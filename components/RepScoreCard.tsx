@@ -26,10 +26,10 @@ export function RepScoreCard({
       <div className="flex items-center justify-between">
         <div className="flex-1 min-w-0 pr-3">
           <h3 className="text-sm font-semibold tracking-tight text-[#413B5E]">Reputation</h3>
-          <p className="text-xs text-[#413B5E]/55">Community trust & conduct health</p>
+          <p className="text-xs text-slate-600">Community trust & conduct health</p>
         </div>
 
-        <div className={`shrink-0 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full font-bold text-xs whitespace-nowrap ${t.light.container} ${t.light.text}`}>
+        <div className={`shrink-0 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full font-semibold text-xs whitespace-nowrap ${t.light.container} ${t.light.text}`}>
           <ShieldCheck className={`w-3.5 h-3.5 ${t.light.icon}`} aria-hidden />
           <span className="leading-none tabular-nums">{t.percent}</span>
         </div>

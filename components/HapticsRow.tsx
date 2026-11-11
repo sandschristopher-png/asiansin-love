@@ -29,7 +29,7 @@ export function HapticsRow() {
           <Vibrate className="w-4 h-4" />
         </div>
         <div>
-          <p className="text-xs font-bold text-[#413B5E]">Haptic feedback</p>
+          <p className="text-xs font-semibold text-[#413B5E]">Haptic feedback</p>
           <p className="text-[11px] text-[#413B5E]/75">
             {supported ? 'Gentle vibrations on taps, sends and photos' : 'Not supported on this device'}
           </p>

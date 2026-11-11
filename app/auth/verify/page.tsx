@@ -91,8 +91,8 @@ function VerifyContent() {
             <div className="w-14 h-14 mx-auto rounded-2xl bg-emerald-50 border border-emerald-200 text-[#10B981] flex items-center justify-center">
               <CheckCircle2 className="w-7 h-7" aria-hidden />
             </div>
-            <h1 className="text-xl font-extrabold text-[#413B5E] tracking-tight">You&apos;re verified</h1>
-            <p className="text-xs text-[#655E72]">Taking you in...</p>
+            <h1 className="text-xl font-semibold text-[#413B5E] tracking-tight">You&apos;re verified</h1>
+            <p className="text-xs text-slate-600">Taking you in...</p>
           </div>
         ) : tokenHash && status === 'verifying' ? (
           <div className="text-center space-y-3" role="status">
@@ -105,15 +105,15 @@ function VerifyContent() {
               <div className="w-12 h-12 mx-auto rounded-2xl bg-[#E8E6F1] border border-[#D0CDE1] text-[#9A93BC] flex items-center justify-center">
                 <MailCheck className="w-6 h-6" aria-hidden />
               </div>
-              <h1 className="text-2xl font-extrabold text-[#413B5E] tracking-tight">Verify Your Email</h1>
-              <p className="text-xs text-[#655E72] leading-relaxed">
+              <h1 className="text-2xl font-semibold text-[#413B5E] tracking-tight">Verify Your Email</h1>
+              <p className="text-xs text-slate-600 leading-relaxed">
                 Click the secure link in your email to sign in instantly.
               </p>
             </div>
 
             {!params.get('email') && (
               <div className="space-y-1.5">
-                <label htmlFor="verify-email" className="text-xs font-bold text-[#413B5E] block">
+                <label htmlFor="verify-email" className="text-xs font-semibold text-[#413B5E] block">
                   Email address
                 </label>
                 <input
@@ -141,17 +141,17 @@ function VerifyContent() {
               type="button"
               onClick={() => void resend()}
               disabled={!emailValid || cooldown > 0 || busy}
-              className="h-12 w-full rounded-full bg-[#9A93BC] hover:bg-[#8881AA] text-white font-semibold text-sm shadow-sm transition-colors flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+              className="h-12 w-full rounded-full bg-[#9A93BC] hover:bg-[#8881AA] text-white font-medium text-sm shadow-sm transition-colors flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {cooldown > 0 ? `Resend link in ${cooldown}s` : 'Resend sign-in link'}
             </button>
           </div>
         )}
 
-        <div className="pt-2 text-center text-xs text-[#655E72] border-t border-[#D0CDE1]">
+        <div className="pt-2 text-center text-xs text-slate-600 border-t border-[#D0CDE1]">
           <span className="inline-block pt-3">
             Wrong account?{' '}
-            <Link href="/login" className="font-bold text-[#9A93BC] hover:underline">
+            <Link href="/login" className="font-medium text-[#9A93BC] hover:underline">
               Back to sign in
             </Link>
           </span>

@@ -62,7 +62,7 @@ export function AlertPrefsRows() {
             <BellRing className="w-4 h-4" />
           </span>
           <span className="min-w-0">
-            <span className="block text-xs font-bold text-[#413B5E]">Enable Notifications</span>
+            <span className="block text-xs font-semibold text-[#413B5E]">Enable Notifications</span>
             <span className="block text-[11px] text-[#413B5E]/75">Browser alerts when this tab is in the background</span>
           </span>
         </span>

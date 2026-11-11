@@ -98,7 +98,7 @@ export function EditHighlightsModal({
           <div className="w-10 h-1 rounded-full bg-[#E8E6F1] mx-auto mb-1" />
         </div>
         <div className="flex items-center justify-between px-5 pt-4 pb-3 border-b border-[#D0CDE1] shrink-0">
-          <h3 className="text-sm font-bold text-[#413B5E]">
+          <h3 className="text-sm font-semibold text-[#413B5E]">
             Curate Your Top 3 Highlights
           </h3>
           <button
@@ -163,7 +163,7 @@ export function EditHighlightsModal({
                       className="rounded-xl border border-[#D0CDE1] bg-white p-3"
                     >
                       <div className="flex justify-between items-center mb-1.5">
-                        <span className="text-xs font-bold text-[#413B5E]">
+                        <span className="text-xs font-semibold text-[#413B5E]">
                           {item.label}
                         </span>
                         <span className="text-[10px] text-[#413B5E]/75">
@@ -189,7 +189,7 @@ export function EditHighlightsModal({
             <button
               type="submit"
               disabled={isSaving}
-              className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-[#8574B7] py-2.5 text-xs font-semibold text-white shadow-xs transition hover:bg-[#8574B7] disabled:opacity-50"
+              className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-[#8574B7] py-2.5 text-xs font-medium text-white shadow-xs transition hover:bg-[#8574B7] disabled:opacity-50"
             >
               {isSaving ? (
                 <>

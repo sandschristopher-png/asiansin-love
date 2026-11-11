@@ -63,12 +63,12 @@ export default function ForgotPasswordPage() {
             <div className="w-14 h-14 mx-auto rounded-2xl bg-[#E8E6F1]/60 border border-[#D0CDE1] text-[#8574B7] flex items-center justify-center">
               <CheckCircle2 className="w-7 h-7" />
             </div>
-            <h1 className="text-xl font-extrabold text-[#413B5E] tracking-tight">Check your inbox</h1>
+            <h1 className="text-xl font-semibold text-[#413B5E] tracking-tight">Check your inbox</h1>
             <p className="text-xs text-[#413B5E]/75 leading-relaxed">
               We&apos;ve sent a password reset link to{' '}
               <span className="font-semibold text-[#413B5E] break-all">{sentTo}</span>.
             </p>
-            <p className="text-[11px] text-[#413B5E]/55 leading-relaxed bg-white border border-[#D0CDE1] rounded-xl px-3.5 py-2.5 text-left">
+            <p className="text-[11px] text-slate-600 leading-relaxed bg-white border border-[#D0CDE1] rounded-xl px-3.5 py-2.5 text-left">
               Nothing after a couple of minutes? Check your spam or promotions folder.
             </p>
             {error && (
@@ -91,7 +91,7 @@ export default function ForgotPasswordPage() {
                 setSentTo(null);
                 setError(null);
               }}
-              className="text-xs font-semibold text-[#8574B7] hover:underline"
+              className="text-xs font-medium text-[#8574B7] hover:underline"
             >
               Use a different email
             </button>
@@ -99,18 +99,18 @@ export default function ForgotPasswordPage() {
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="text-center space-y-2">
-              <h1 className="text-2xl font-extrabold text-[#413B5E] tracking-tight">Reset your password</h1>
+              <h1 className="text-2xl font-semibold text-[#413B5E] tracking-tight">Reset your password</h1>
               <p className="text-xs text-[#413B5E]/75 leading-relaxed">
                 Enter your registered email address and we&apos;ll send you a recovery link.
               </p>
             </div>
 
             <div className="space-y-1.5 text-left">
-              <label htmlFor="email" className="text-xs font-bold text-[#413B5E] block">
+              <label htmlFor="email" className="text-xs font-semibold text-[#413B5E] block">
                 Email address
               </label>
               <div className="relative">
-                <Mail className="w-4 h-4 text-[#413B5E]/55 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <Mail className="w-4 h-4 text-slate-600 absolute left-3.5 top-1/2 -translate-y-1/2" />
                 <input
                   id="email"
                   type="email"
@@ -133,7 +133,7 @@ export default function ForgotPasswordPage() {
             <button
               type="submit"
               disabled={isLoading || !email.trim() || cooldown > 0}
-              className="w-full h-12 rounded-full bg-[#8574B7] hover:bg-[#534377] text-white text-sm font-semibold flex items-center justify-center gap-2 shadow-brand-glow active:scale-[0.99] transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+              className="w-full h-12 rounded-full bg-[#8574B7] hover:bg-[#534377] text-white text-sm font-medium flex items-center justify-center gap-2 shadow-brand-glow active:scale-[0.99] transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
               <span>{isLoading ? 'Sending...' : 'Send Reset Link'}</span>
@@ -144,7 +144,7 @@ export default function ForgotPasswordPage() {
         <div className="pt-2 text-center text-xs text-[#413B5E]/75 border-t border-[#D0CDE1]">
           <span className="inline-block pt-3">
             Remembered your password?{' '}
-            <Link href="/login" className="font-bold text-[#8574B7] hover:underline">
+            <Link href="/login" className="font-medium text-[#8574B7] hover:underline">
               Sign in
             </Link>
           </span>

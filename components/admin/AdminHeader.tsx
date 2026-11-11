@@ -41,11 +41,11 @@ export function AdminHeader({ name }: { name: string }) {
       <header className="h-14 bg-white/95 backdrop-blur-md border-b border-[#D0CDE1] px-4 flex items-center justify-between gap-2">
         <div className="flex items-center gap-1.5 min-w-0">
           <BrandLogo size="header" href="/admin" />
-          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md bg-[#8574B7]/10 text-[#8574B7]">ADMIN</span>
+          <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-[#8574B7]/10 text-[#8574B7]">ADMIN</span>
         </div>
         <div className="flex items-center gap-3 min-w-0">
           <span className="text-xs font-semibold text-[#413B5E] truncate max-w-[120px]">{name}</span>
-          <Link href="/discover" className="shrink-0 text-xs text-[#413B5E]/55 hover:text-[#413B5E]/85 transition-colors flex items-center gap-1">
+          <Link href="/discover" className="shrink-0 text-xs text-slate-600 hover:text-[#413B5E]/85 transition-colors flex items-center gap-1">
             <LogOut className="w-3.5 h-3.5" aria-hidden />
             Exit
           </Link>
@@ -63,7 +63,7 @@ export function AdminHeader({ name }: { name: string }) {
               key={href}
               href={href}
               aria-current={active ? 'page' : undefined}
-              className={`shrink-0 whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-semibold border transition-colors ${
+              className={`shrink-0 whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-medium border transition-colors ${
                 active ? 'bg-[#413B5E] text-white border-[#413B5E] shadow-2xs' : 'bg-white text-[#413B5E]/80 border-[#D0CDE1] hover:bg-[#E8E6F1]/40'
               }`}
             >

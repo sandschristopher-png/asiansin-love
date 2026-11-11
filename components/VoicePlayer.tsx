@@ -177,14 +177,14 @@ function VoicePlayerCard({
           </div>
         </div>
 
-        <span className="shrink-0 whitespace-nowrap font-mono text-[11px] tabular-nums text-[#413B5E]/60">
+        <span className="shrink-0 whitespace-nowrap font-mono text-[11px] tabular-nums text-slate-600">
           {/* WebM from MediaRecorder reports no length until played: show elapsed only then */}
           {totalMs > 0 ? `${formatSeconds(positionMs)} / ${formatSeconds(totalMs)}` : formatSeconds(positionMs)}
         </span>
 
         {children ? <div className="shrink-0 flex items-center">{children}</div> : null}
       </section>
-      <p className={`text-[11px] mt-1.5 px-1 ${failed ? 'text-red-600' : 'text-[#413B5E]/55'}`}>
+      <p className={`text-[11px] mt-1.5 px-1 ${failed ? 'text-red-600' : 'text-slate-600'}`}>
         {failed ? 'Could not play this clip.' : (
           <>
             <span className="font-semibold text-[#413B5E]/75">{title}</span>

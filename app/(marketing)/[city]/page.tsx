@@ -63,7 +63,7 @@ export default async function CityLandingPage({ params }: { params: Promise<{ ci
 
       <header className="px-5 pt-6 flex items-center justify-between max-w-xl mx-auto">
         <BrandLogo href="/" size="sm" />
-        <Link href="/login" className="text-xs font-semibold text-[#8574B7] hover:text-[#413B5E] transition-colors">
+        <Link href="/login" className="text-xs font-medium text-[#8574B7] hover:text-[#413B5E] transition-colors">
           Sign in
         </Link>
       </header>
@@ -75,7 +75,7 @@ export default async function CityLandingPage({ params }: { params: Promise<{ ci
             <ShieldCheck className="w-3.5 h-3.5" aria-hidden />
             {city.heroBadge}
           </span>
-          <h1 className="mt-5 text-3xl sm:text-4xl font-extrabold tracking-tight leading-[1.15]">
+          <h1 className="mt-5 text-3xl sm:text-4xl font-semibold tracking-tight leading-[1.15]">
             {city.heroHeadline}{' '}
             <span className="bg-gradient-to-r from-[#8574B7] via-[#9A93BC] to-[#B8B3D1] bg-clip-text text-transparent">
               {city.heroHighlight}
@@ -85,7 +85,7 @@ export default async function CityLandingPage({ params }: { params: Promise<{ ci
           <div className="mt-7 flex flex-col sm:flex-row gap-3 justify-center">
             <Link
               href="/signup"
-              className="h-12 px-8 rounded-full bg-[#8574B7] hover:bg-[#534377] text-white text-sm font-semibold shadow-brand-glow transition-colors flex items-center justify-center"
+              className="h-12 px-8 rounded-full bg-[#8574B7] hover:bg-[#534377] text-white text-sm font-medium shadow-brand-glow transition-colors flex items-center justify-center"
             >
               Create your free profile
             </Link>
@@ -104,8 +104,8 @@ export default async function CityLandingPage({ params }: { params: Promise<{ ci
                 ['Verified', city.localStats.verifiedRate],
               ].map(([label, value]) => (
                 <div key={label} className="rounded-2xl border border-[#D0CDE1]/60 bg-white px-2 py-3 shadow-brand-sm">
-                  <dt className="text-[10px] font-semibold uppercase tracking-wider text-[#413B5E]/55">{label}</dt>
-                  <dd className="mt-1 text-sm font-bold text-[#413B5E]">{value}</dd>
+                  <dt className="text-[10px] font-semibold uppercase tracking-wider text-slate-600">{label}</dt>
+                  <dd className="mt-1 text-sm font-semibold text-[#413B5E]">{value}</dd>
                 </div>
               ))}
             </dl>
@@ -114,7 +114,7 @@ export default async function CityLandingPage({ params }: { params: Promise<{ ci
 
         {/* Search themes */}
         <section className="py-8 border-t border-[#D0CDE1]/60" aria-labelledby="themes-heading">
-          <h2 id="themes-heading" className="text-xl font-bold tracking-tight">
+          <h2 id="themes-heading" className="text-xl font-semibold tracking-tight">
             {city.searchThemes.heading}
           </h2>
           <p className="mt-2 text-sm leading-relaxed text-[#413B5E]/75">{city.searchThemes.description}</p>
@@ -129,7 +129,7 @@ export default async function CityLandingPage({ params }: { params: Promise<{ ci
 
         {/* Cultural insights */}
         <section className="py-8 border-t border-[#D0CDE1]/60" aria-labelledby="insights-heading">
-          <h2 id="insights-heading" className="text-xl font-bold tracking-tight">
+          <h2 id="insights-heading" className="text-xl font-semibold tracking-tight">
             Dating in {city.cityName}, {city.countryName}
           </h2>
           <div className="mt-4 space-y-3">
@@ -141,7 +141,7 @@ export default async function CityLandingPage({ params }: { params: Promise<{ ci
                     <Icon className="w-4 h-4" aria-hidden />
                   </span>
                   <div>
-                    <h3 className="text-sm font-bold">{insight.title}</h3>
+                    <h3 className="text-sm font-semibold">{insight.title}</h3>
                     <p className="mt-1 text-[13px] leading-relaxed text-[#413B5E]/75">{insight.description}</p>
                   </div>
                 </article>
@@ -152,7 +152,7 @@ export default async function CityLandingPage({ params }: { params: Promise<{ ci
 
         {/* FAQ (also in the FAQPage JSON-LD) */}
         <section className="py-8 border-t border-[#D0CDE1]/60" aria-labelledby="faq-heading">
-          <h2 id="faq-heading" className="text-xl font-bold tracking-tight">
+          <h2 id="faq-heading" className="text-xl font-semibold tracking-tight">
             {city.cityName} dating questions
           </h2>
           <div className="mt-4 space-y-2.5">
@@ -170,15 +170,15 @@ export default async function CityLandingPage({ params }: { params: Promise<{ ci
 
         {/* Closing CTA */}
         <section className="pt-8 pb-4 border-t border-[#D0CDE1]/60 text-center">
-          <h2 className="text-xl font-bold tracking-tight">Start meeting singles in {city.cityName}</h2>
+          <h2 className="text-xl font-semibold tracking-tight">Start meeting singles in {city.cityName}</h2>
           <p className="mt-2 text-sm text-[#413B5E]/75">Free to join. Selfie verification is free for every member.</p>
           <Link
             href="/signup"
-            className="mt-5 inline-flex h-12 px-8 rounded-full bg-[#8574B7] hover:bg-[#534377] text-white text-sm font-semibold shadow-brand-glow transition-colors items-center justify-center"
+            className="mt-5 inline-flex h-12 px-8 rounded-full bg-[#8574B7] hover:bg-[#534377] text-white text-sm font-medium shadow-brand-glow transition-colors items-center justify-center"
           >
             Create your free profile
           </Link>
-          <p className="mt-6 text-[11px] text-[#413B5E]/55">
+          <p className="mt-6 text-[11px] text-slate-600">
             Members must be 18 or older. <Link href="/terms" className="underline underline-offset-4">Terms</Link> ·{' '}
             <Link href="/privacy" className="underline underline-offset-4">Privacy</Link> ·{' '}
             <Link href="/safety" className="underline underline-offset-4">Safety</Link>

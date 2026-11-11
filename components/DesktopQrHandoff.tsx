@@ -49,7 +49,7 @@ export function DesktopQrHandoff() {
         type="button"
         onClick={dismiss}
         aria-label="Dismiss"
-        className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full flex items-center justify-center text-[#413B5E]/55 hover:text-[#413B5E] hover:bg-[#E8E6F1]/60 transition-colors"
+        className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full flex items-center justify-center text-slate-600 hover:text-[#413B5E] hover:bg-[#E8E6F1]/60 transition-colors"
       >
         <X className="w-3.5 h-3.5" />
       </button>

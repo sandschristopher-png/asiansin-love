@@ -27,7 +27,7 @@ export function PushPermissionCard({ onAllow, onClose }: { onAllow: () => void; 
         <div className="w-11 h-11 rounded-2xl bg-[#E8E6F1]/70 text-[#8574B7] flex items-center justify-center">
           <BellRing className="w-5 h-5" aria-hidden />
         </div>
-        <h2 id="push-card-title" className="mt-3 text-base font-bold text-[#413B5E]">
+        <h2 id="push-card-title" className="mt-3 text-base font-semibold text-[#413B5E]">
           Turn on message alerts
         </h2>
         <ul className="mt-3 space-y-2.5">
@@ -49,7 +49,7 @@ export function PushPermissionCard({ onAllow, onClose }: { onAllow: () => void; 
           <button
             type="button"
             onClick={onAllow}
-            className="flex-1 h-11 rounded-full bg-[#8574B7] hover:bg-[#413B5E] text-sm font-semibold text-white transition-colors"
+            className="flex-1 h-11 rounded-full bg-[#8574B7] hover:bg-[#413B5E] text-sm font-medium text-white transition-colors"
           >
             Allow
           </button>

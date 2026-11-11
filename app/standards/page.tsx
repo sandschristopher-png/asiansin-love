@@ -51,7 +51,7 @@ export default function CommunityStandardsPage() {
           <button
             type="button"
             onClick={goBack}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#413B5E]/55 hover:text-[#413B5E] transition cursor-pointer"
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-600 hover:text-[#413B5E] transition cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Back</span>
@@ -61,7 +61,7 @@ export default function CommunityStandardsPage() {
         {/* Editorial Card */}
         <div className="rounded-3xl bg-[#FFFFFF] border border-[#B8B3D1]/35 p-6 sm:p-9 shadow-2xl space-y-6">
           <div>
-            <span className="text-[11px] font-medium uppercase tracking-wider text-[#413B5E]/55">
+            <span className="text-[11px] font-medium uppercase tracking-wider text-slate-600">
               Platform Guidelines
             </span>
             <h1 className="text-2xl sm:text-3xl font-medium text-[#413B5E] mt-1 mb-2 ">

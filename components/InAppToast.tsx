@@ -62,12 +62,12 @@ export function InAppToast({
               action.onClick();
               onClose();
             }}
-            className="shrink-0 self-center px-3 py-1 rounded-full bg-[#413B5E] text-white text-[11px] font-semibold hover:bg-[#413B5E]"
+            className="shrink-0 self-center px-3 py-1 rounded-full bg-[#413B5E] text-white text-[11px] font-medium hover:bg-[#413B5E]"
           >
             {action.label}
           </button>
         )}
-        <button type="button" onClick={dismiss} aria-label="Dismiss" className="shrink-0 text-[#413B5E]/55 hover:text-[#413B5E]">
+        <button type="button" onClick={dismiss} aria-label="Dismiss" className="shrink-0 text-slate-600 hover:text-[#413B5E]">
           <X className="w-3.5 h-3.5" />
         </button>
       </div>

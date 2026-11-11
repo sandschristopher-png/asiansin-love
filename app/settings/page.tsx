@@ -62,7 +62,7 @@ const SettingRow = ({
         {icon}
       </div>
       <div>
-        <div className="text-xs font-bold text-[#413B5E]">{title}</div>
+        <div className="text-xs font-semibold text-[#413B5E]">{title}</div>
         <p className="text-[11px] text-[#413B5E]/75">{subtitle}</p>
       </div>
     </div>
@@ -293,7 +293,7 @@ export default function SettingsHubPage() {
         {/* CARD 1: ACCOUNT & TRUST */}
         <div className="rounded-3xl bg-white border border-[#D0CDE1] p-2 shadow-2xs space-y-1">
           <div className="px-3 pt-2 pb-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-[#8574B7]">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-[#8574B7]">
               Account &amp; Trust
             </span>
           </div>
@@ -307,11 +307,11 @@ export default function SettingsHubPage() {
                 <ShieldCheck className="w-4 h-4" />
               </div>
               <div>
-                <p className="text-xs font-bold text-[#413B5E]">Identity Verification</p>
+                <p className="text-xs font-semibold text-[#413B5E]">Identity Verification</p>
                 <p className="text-[11px] text-[#413B5E]/75">GPS &amp; selfie trust badge status</p>
               </div>
             </div>
-            <ChevronRight className="w-4 h-4 text-[#413B5E]/55" />
+            <ChevronRight className="w-4 h-4 text-slate-600" />
           </Link>
 
           <Link
@@ -323,18 +323,18 @@ export default function SettingsHubPage() {
                 <Lock className="w-4 h-4" />
               </div>
               <div>
-                <p className="text-xs font-bold text-[#413B5E]">Reputation &amp; Conduct Standing</p>
+                <p className="text-xs font-semibold text-[#413B5E]">Reputation &amp; Conduct Standing</p>
                 <p className="text-[11px] text-[#413B5E]/75">Community trust and conduct</p>
               </div>
             </div>
-            <ChevronRight className="w-4 h-4 text-[#413B5E]/55" />
+            <ChevronRight className="w-4 h-4 text-slate-600" />
           </Link>
         </div>
 
         {/* CARD 2: PRIVACY & DISCRETION */}
         <div className="rounded-3xl bg-white border border-[#D0CDE1] p-2 shadow-2xs space-y-1">
           <div className="px-3 pt-2 pb-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-[#8574B7]">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-[#8574B7]">
               Privacy &amp; Discretion
             </span>
           </div>
@@ -376,7 +376,7 @@ export default function SettingsHubPage() {
         {/* CARD 3: NOTIFICATIONS */}
         <div className="rounded-3xl bg-white border border-[#D0CDE1] p-2 shadow-2xs space-y-1">
           <div className="px-3 pt-2 pb-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-[#8574B7]">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-[#8574B7]">
               Notifications
             </span>
           </div>
@@ -406,7 +406,7 @@ export default function SettingsHubPage() {
         {/* CARD 4: SAFETY & SUPPORT */}
         <div className="rounded-3xl bg-white border border-[#D0CDE1] p-2 shadow-2xs space-y-1">
           <div className="px-3 pt-2 pb-1">
-            <span className="text-[10px] font-bold uppercase tracking-wider text-[#8574B7]">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-[#8574B7]">
               Safety &amp; Support
             </span>
           </div>
@@ -420,11 +420,11 @@ export default function SettingsHubPage() {
                 <HelpCircle className="w-4 h-4" />
               </div>
               <div>
-                <p className="text-xs font-bold text-[#413B5E]">Community Guidelines &amp; Anti-Scam</p>
+                <p className="text-xs font-semibold text-[#413B5E]">Community Guidelines &amp; Anti-Scam</p>
                 <p className="text-[11px] text-[#413B5E]/75">How we keep Meet in Asia secure</p>
               </div>
             </div>
-            <ChevronRight className="w-4 h-4 text-[#413B5E]/55" />
+            <ChevronRight className="w-4 h-4 text-slate-600" />
           </Link>
 
           {[
@@ -442,11 +442,11 @@ export default function SettingsHubPage() {
                   <FileText className="w-4 h-4" />
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-[#413B5E]">{row.title}</p>
+                  <p className="text-xs font-semibold text-[#413B5E]">{row.title}</p>
                   <p className="text-[11px] text-[#413B5E]/75">{row.subtitle}</p>
                 </div>
               </div>
-              <ChevronRight className="w-4 h-4 text-[#413B5E]/55" />
+              <ChevronRight className="w-4 h-4 text-slate-600" />
             </Link>
           ))}
         </div>
@@ -470,14 +470,14 @@ export default function SettingsHubPage() {
                   <CreditCard className="w-4 h-4" />
                 </div>
                 <div>
-                  <p className="text-xs font-bold text-[#413B5E]">Manage Subscription</p>
+                  <p className="text-xs font-semibold text-[#413B5E]">Manage Subscription</p>
                   <p className="text-[11px] text-[#413B5E]/75">Cancel Plus or update your payment method</p>
                 </div>
               </div>
               {openingPortal ? (
                 <Loader2 className="w-4 h-4 animate-spin text-[#8574B7]" />
               ) : (
-                <ChevronRight className="w-4 h-4 text-[#413B5E]/55" />
+                <ChevronRight className="w-4 h-4 text-slate-600" />
               )}
             </button>
             {portalError && (
@@ -501,7 +501,7 @@ export default function SettingsHubPage() {
                 <LogOut className="w-4 h-4" />
               </div>
               <div>
-                <p className="text-xs font-bold text-[#413B5E]">Log Out</p>
+                <p className="text-xs font-semibold text-[#413B5E]">Log Out</p>
                 <p className="text-[11px] text-[#413B5E]/75">Sign out of this browser session</p>
               </div>
             </div>
@@ -524,7 +524,7 @@ export default function SettingsHubPage() {
                 <Trash2 className="w-4 h-4" />
               </div>
               <div>
-                <p className="text-xs font-bold text-red-600">Delete Account</p>
+                <p className="text-xs font-semibold text-red-600">Delete Account</p>
                 <p className="text-[11px] text-[#413B5E]/75">Permanently remove profile and data</p>
               </div>
             </div>
@@ -545,7 +545,7 @@ export default function SettingsHubPage() {
                 <AlertTriangle className="w-5 h-5" />
               </div>
 
-              <h2 className="text-base font-bold text-[#413B5E]">Delete Account?</h2>
+              <h2 className="text-base font-semibold text-[#413B5E]">Delete Account?</h2>
               <p className="text-xs text-[#413B5E]/75 mt-1.5 leading-relaxed">
                 This will permanently delete your profile, photos, chat history, and active matches. This action is immediate and cannot be undone.
               </p>
@@ -572,7 +572,7 @@ export default function SettingsHubPage() {
                   type="button"
                   disabled={deletingAccount || deleteConfirmText !== 'DELETE'}
                   onClick={handleDeleteAccount}
-                  className="w-full py-2.5 rounded-xl bg-red-600 hover:bg-red-700 active:bg-red-800 disabled:opacity-40 disabled:cursor-not-allowed text-white font-semibold text-xs tracking-wide shadow-sm transition active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer"
+                  className="w-full py-2.5 rounded-xl bg-red-600 hover:bg-red-700 active:bg-red-800 disabled:opacity-40 disabled:cursor-not-allowed text-white font-medium text-xs tracking-wide shadow-sm transition active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer"
                 >
                   {deletingAccount ? (
                     <>

@@ -57,7 +57,7 @@ export function LanguagePicker({
         </div>
       )}
       <div className="relative">
-        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#413B5E]/55" aria-hidden />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-600" aria-hidden />
         <input
           type="search"
           value={query}
@@ -70,7 +70,7 @@ export function LanguagePicker({
       {!full && (
         <div className="max-h-40 overflow-y-auto rounded-2xl border border-[#D0CDE1] divide-y divide-[#D0CDE1] bg-white">
           {matches.length === 0 ? (
-            <p className="px-3 py-2 text-xs text-[#413B5E]/55">No matching languages</p>
+            <p className="px-3 py-2 text-xs text-slate-600">No matching languages</p>
           ) : (
             matches.map((l) => (
               <button
@@ -141,16 +141,16 @@ export function HeightInput({ valueCm, onChange }: { valueCm: number | null; onC
         onClick={() => setOpen((v) => !v)}
         aria-haspopup="listbox"
         aria-expanded={open}
-        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-[#D0CDE1] text-base sm:text-xs font-semibold text-[#413B5E] hover:bg-[#E8E6F1]/40 transition-colors cursor-pointer"
+        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-[#D0CDE1] text-base sm:text-xs font-medium text-[#413B5E] hover:bg-[#E8E6F1]/40 transition-colors cursor-pointer"
       >
-        <Ruler className="w-3.5 h-3.5 text-[#413B5E]/40" aria-hidden />
+        <Ruler className="w-3.5 h-3.5 text-slate-600" aria-hidden />
         {current ?? 'Select height'}
-        <ChevronDown className={`w-3.5 h-3.5 text-[#413B5E]/40 transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden />
+        <ChevronDown className={`w-3.5 h-3.5 text-slate-600 transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden />
       </button>
       <button
         type="button"
         onClick={() => setUnit(unit === 'ft' ? 'cm' : 'ft')}
-        className="px-2 py-1.5 rounded-xl text-[11px] font-semibold text-[#8574B7] hover:bg-[#E8E6F1]/70"
+        className="px-2 py-1.5 rounded-xl text-[11px] font-medium text-[#8574B7] hover:bg-[#E8E6F1]/70"
         aria-label={`Switch to ${unit === 'ft' ? 'centimeters' : 'feet and inches'}`}
       >
         {unit === 'ft' ? 'cm' : 'ft/in'}
@@ -170,7 +170,7 @@ export function HeightInput({ valueCm, onChange }: { valueCm: number | null; onC
               setOpen(false);
             }}
             className={`px-3.5 py-2 text-sm cursor-pointer transition-colors flex items-center justify-between hover:bg-[#E8E6F1]/40 border-l-2 ${
-              !valueCm ? 'bg-[#E8E6F1]/70 text-[#413B5E] font-semibold border-[#8574B7]' : 'text-[#413B5E]/50 border-transparent'
+              !valueCm ? 'bg-[#E8E6F1]/70 text-[#413B5E] font-semibold border-[#8574B7]' : 'text-slate-600 border-transparent'
             }`}
           >
             Prefer not to say
@@ -191,13 +191,13 @@ export function HeightInput({ valueCm, onChange }: { valueCm: number | null; onC
                 }`}
               >
                 <span>{o.label}</span>
-                {unit === 'ft' && <span className="text-[11px] text-[#413B5E]/40">{o.cm} cm</span>}
+                {unit === 'ft' && <span className="text-[11px] text-slate-600">{o.cm} cm</span>}
               </div>
             );
           })}
         </div>
       )}
-      {valueCm && <span className="w-full text-right text-[11px] text-[#413B5E]/55">{formatHeight(valueCm)}</span>}
+      {valueCm && <span className="w-full text-right text-[11px] text-slate-600">{formatHeight(valueCm)}</span>}
     </div>
   );
 }
@@ -218,7 +218,7 @@ export function LifestylePills({
     <div className="space-y-4">
       {fields.map((field) => (
         <div key={field} className="space-y-2">
-          <p className="text-[11px] font-bold uppercase tracking-wider text-[#413B5E]/55">{LIFESTYLE_FIELDS[field].label}</p>
+          <p className="text-[11px] font-semibold uppercase tracking-wider text-slate-600">{LIFESTYLE_FIELDS[field].label}</p>
           <div className="flex flex-wrap gap-1.5">
             {(LIFESTYLE_FIELDS[field].options as readonly LifestyleOption[]).map((o) => {
               const on = values[field] === o.value;

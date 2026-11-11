@@ -526,7 +526,7 @@ export default function MyProfilePage() {
               ))}
             </div>
             {photoList.length <= 1 && (
-              <p className="text-[11px] text-[#413B5E]/55">Profiles require at least one photo. Add another to replace this one.</p>
+              <p className="text-[11px] text-slate-600">Profiles require at least one photo. Add another to replace this one.</p>
             )}
             {photoNotice && <p role="alert" className="text-[11px] font-semibold text-red-600">{photoNotice}</p>}
           </div>
@@ -587,7 +587,7 @@ export default function MyProfilePage() {
                   setLocError(res.error);
                 }
               }}
-              className="w-full py-2.5 px-3 rounded-2xl bg-[#E8E6F1]/60 border border-[#8574B7]/25 hover:bg-[#E8E6F1]/60 text-xs font-semibold text-[#8574B7] flex items-center justify-center gap-1.5 transition"
+              className="w-full py-2.5 px-3 rounded-2xl bg-[#E8E6F1]/60 border border-[#8574B7]/25 hover:bg-[#E8E6F1]/60 text-xs font-medium text-[#8574B7] flex items-center justify-center gap-1.5 transition"
             >
               {isLocating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Navigation className="w-3.5 h-3.5" />}
               <span>{isLocating ? 'Detecting GPS...' : 'Auto-Detect City with GPS'}</span>
@@ -600,7 +600,7 @@ export default function MyProfilePage() {
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <h2
-                  className="text-2xl font-black text-[#413B5E] tracking-tight truncate"
+                  className="text-2xl font-semibold text-[#413B5E] tracking-tight truncate"
                   style={{ fontFamily: 'var(--font-brand)' }}
                 >
                   {username.replace(/^@/, '')}{age ? ', ' + age : ''}
@@ -617,7 +617,7 @@ export default function MyProfilePage() {
             </div>
 
             {photoPending && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white border border-[#D0CDE1] text-[10px] font-semibold text-[#413B5E]/55 shrink-0">
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-white border border-[#D0CDE1] text-[10px] font-semibold text-slate-600 shrink-0">
                 <Clock className="w-3 h-3" aria-hidden />
                 Photo Pending
               </span>
@@ -685,14 +685,14 @@ export default function MyProfilePage() {
             <div className="w-11 h-11 mx-auto rounded-2xl bg-[#8574B7]/10 text-[#8574B7] flex items-center justify-center">
               <Mic className="w-5 h-5" />
             </div>
-            <h3 className="text-sm font-bold text-[#413B5E]">Add a 20-Second Voice Intro</h3>
+            <h3 className="text-sm font-semibold text-[#413B5E]">Add a 20-Second Voice Intro</h3>
             <p className="text-xs text-[#413B5E]/75 leading-relaxed">
               Profiles with a voice intro receive 3x more sparks. Say hello and introduce yourself.
             </p>
             <button
               type="button"
               onClick={() => setVoiceModalOpen(true)}
-              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-[#8574B7] text-white text-xs font-semibold shadow-sm active:scale-95 transition"
+              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-[#8574B7] text-white text-xs font-medium shadow-sm active:scale-95 transition"
             >
               <Mic className="w-3.5 h-3.5" /> Record Voice Intro
             </button>
@@ -712,7 +712,7 @@ export default function MyProfilePage() {
                 <button
                   type="button"
                   onClick={() => setIsEditing(false)}
-                  className="h-full flex-1 rounded-2xl bg-white border border-[#D0CDE1] text-xs font-semibold text-[#413B5E]/85 hover:bg-[#E8E6F1]/40 transition flex items-center justify-center shadow-xs cursor-pointer active:scale-[0.99]"
+                  className="h-full flex-1 rounded-2xl bg-white border border-[#D0CDE1] text-xs font-medium text-[#413B5E]/85 hover:bg-[#E8E6F1]/40 transition flex items-center justify-center shadow-xs cursor-pointer active:scale-[0.99]"
                 >
                   Cancel
                 </button>
@@ -720,7 +720,7 @@ export default function MyProfilePage() {
                   type="button"
                   onClick={handleSave}
                   disabled={saving}
-                  className="h-full flex-1 rounded-2xl bg-[#8574B7] hover:bg-[#534377] text-white text-xs font-semibold shadow-sm transition flex items-center justify-center gap-1.5 disabled:opacity-50 cursor-pointer active:scale-[0.99]"
+                  className="h-full flex-1 rounded-2xl bg-[#8574B7] hover:bg-[#534377] text-white text-xs font-medium shadow-sm transition flex items-center justify-center gap-1.5 disabled:opacity-50 cursor-pointer active:scale-[0.99]"
                 >
                   {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
                   <span>{saving ? 'Saving...' : 'Save Profile'}</span>
@@ -732,7 +732,7 @@ export default function MyProfilePage() {
               <button
                 type="button"
                 onClick={() => setIsEditing(true)}
-                className="h-full w-full rounded-2xl bg-white border border-[#D0CDE1] text-xs font-semibold text-[#413B5E] hover:bg-[#E8E6F1]/40 transition flex items-center justify-center gap-2 shadow-xs cursor-pointer active:scale-[0.99]"
+                className="h-full w-full rounded-2xl bg-white border border-[#D0CDE1] text-xs font-medium text-[#413B5E] hover:bg-[#E8E6F1]/40 transition flex items-center justify-center gap-2 shadow-xs cursor-pointer active:scale-[0.99]"
               >
                 <Edit3 className="w-3.5 h-3.5 text-[#8574B7]" />
                 <span>Edit Profile Details</span>
@@ -745,13 +745,13 @@ export default function MyProfilePage() {
         <div className="p-5 rounded-3xl bg-white border border-[#D0CDE1] shadow-xs space-y-2.5">
           <div className="flex items-center justify-between">
             <span
-              className="text-xs font-bold text-[#8574B7] uppercase tracking-wider"
+              className="text-xs font-semibold text-[#8574B7] uppercase tracking-wider"
               style={{ fontFamily: 'var(--font-brand)' }}
             >
               About Me
             </span>
             {isEditing && (
-              <span className="text-[11px] font-medium text-[#413B5E]/55">{bio.length}/500</span>
+              <span className="text-[11px] font-medium text-slate-600">{bio.length}/500</span>
             )}
           </div>
           {isEditing ? (
@@ -777,7 +777,7 @@ export default function MyProfilePage() {
             </>
           ) : (
             <p className="text-xs sm:text-sm text-[#413B5E] leading-relaxed">
-              {bio || <span className="text-[#413B5E]/55 italic">No bio written yet.</span>}
+              {bio || <span className="text-slate-600 italic">No bio written yet.</span>}
             </p>
           )}
         </div>
@@ -789,7 +789,7 @@ export default function MyProfilePage() {
         <div className="p-5 rounded-3xl bg-white border border-[#D0CDE1] shadow-xs space-y-3">
           <div className="flex items-center justify-between">
             <span
-              className="text-xs font-bold text-[#8574B7] uppercase tracking-wider"
+              className="text-xs font-semibold text-[#8574B7] uppercase tracking-wider"
               style={{ fontFamily: 'var(--font-brand)' }}
             >
               Interests &amp; Hobbies
@@ -829,7 +829,7 @@ export default function MyProfilePage() {
                   </span>
                 ))
               ) : (
-                <span className="text-xs text-[#413B5E]/55 italic">Tap Edit Profile Details to add your hobbies.</span>
+                <span className="text-xs text-slate-600 italic">Tap Edit Profile Details to add your hobbies.</span>
               )}
             </div>
           )}
@@ -839,7 +839,7 @@ export default function MyProfilePage() {
         <div className="p-5 rounded-3xl bg-white border border-[#D0CDE1] shadow-xs space-y-2.5">
           <div className="flex items-center justify-between">
             <span
-              className="text-xs font-bold text-[#8574B7] uppercase tracking-wider"
+              className="text-xs font-semibold text-[#8574B7] uppercase tracking-wider"
               style={{ fontFamily: 'var(--font-brand)' }}
             >
               What They&apos;re Looking For
@@ -859,20 +859,20 @@ export default function MyProfilePage() {
                 placeholder="Describe the partner and relationship you are looking for..."
                 className="w-full px-4 pt-3 pb-7 rounded-2xl bg-white border border-[#D0CDE1] text-xs sm:text-sm text-[#413B5E] leading-relaxed placeholder-[#413B5E]/55 focus:outline-none focus:bg-white focus:border-[#8574B7] resize-none"
               />
-              <span className="absolute right-3 bottom-2 text-xs text-[#413B5E]/55 pointer-events-none">
+              <span className="absolute right-3 bottom-2 text-xs text-slate-600 pointer-events-none">
                 {lookingFor.length}/200
               </span>
             </div>
           ) : (
             <p className="text-xs sm:text-sm text-[#413B5E] leading-relaxed">
-              {lookingFor ? toIntentLabel(lookingFor) : <span className="text-[#413B5E]/55 italic">No preferences added yet.</span>}
+              {lookingFor ? toIntentLabel(lookingFor) : <span className="text-slate-600 italic">No preferences added yet.</span>}
             </p>
           )}
         </div>
 
         {/* MY RHYTHM (reply pace, relocation, timeline) */}
         <div className="p-5 rounded-3xl bg-white border border-[#D0CDE1] shadow-xs space-y-2.5">
-          <h3 className="block text-xs font-bold text-[#8574B7] uppercase tracking-wider leading-normal">
+          <h3 className="block text-xs font-semibold text-[#8574B7] uppercase tracking-wider leading-normal">
             My Rhythm
           </h3>
           {isEditing ? (
@@ -884,7 +884,7 @@ export default function MyProfilePage() {
               <RhythmPill field="timeline_intent" value={rhythm.timeline_intent} className="text-[11px] px-2.5 py-1" />
             </div>
           ) : (
-            <p className="text-xs text-[#413B5E]/55 italic">
+            <p className="text-xs text-slate-600 italic">
               Tap Edit Profile Details to show how you message, relocation plans and your timeline.
             </p>
           )}
@@ -893,7 +893,7 @@ export default function MyProfilePage() {
         {/* VITALS & LIFESTYLE */}
         <div className="p-5 rounded-3xl bg-white border border-[#D0CDE1] shadow-xs space-y-4">
           <h3
-            className="text-xs font-bold text-[#8574B7] uppercase tracking-wider"
+            className="text-xs font-semibold text-[#8574B7] uppercase tracking-wider"
             style={{ fontFamily: 'var(--font-brand)' }}
           >
             Vitals &amp; Lifestyle
@@ -913,7 +913,7 @@ export default function MyProfilePage() {
                         type="button"
                         onClick={() => setIntent(chip.value)}
                         className={
-                          'px-3 py-1.5 rounded-xl border text-xs font-semibold transition cursor-pointer ' +
+                          'px-3 py-1.5 rounded-xl border text-xs font-medium transition cursor-pointer ' +
                           (selected
                             ? 'bg-[#8574B7] text-white border-[#8574B7]'
                             : 'bg-white text-[#413B5E]/85 border-[#D0CDE1]')
@@ -1005,7 +1005,7 @@ export default function MyProfilePage() {
         {/* LANGUAGES SPOKEN */}
         <div className="p-5 rounded-3xl bg-white border border-[#D0CDE1] shadow-xs space-y-3">
           <h3
-            className="text-xs font-bold text-[#8574B7] uppercase tracking-wider flex items-center gap-1.5"
+            className="text-xs font-semibold text-[#8574B7] uppercase tracking-wider flex items-center gap-1.5"
             style={{ fontFamily: 'var(--font-brand)' }}
           >
             <Languages className="w-4 h-4 text-[#8574B7]" />
@@ -1029,7 +1029,7 @@ export default function MyProfilePage() {
                   </span>
                 ))
               ) : (
-                <span className="text-xs text-[#413B5E]/55">English</span>
+                <span className="text-xs text-slate-600">English</span>
               )}
             </div>
           )}
@@ -1037,7 +1037,7 @@ export default function MyProfilePage() {
 
         {/* LIFESTYLE */}
         <div className="p-5 rounded-3xl bg-white border border-[#D0CDE1] shadow-xs space-y-3">
-          <h3 className="text-xs font-bold text-[#8574B7] uppercase tracking-wider" style={{ fontFamily: 'var(--font-brand)' }}>
+          <h3 className="text-xs font-semibold text-[#8574B7] uppercase tracking-wider" style={{ fontFamily: 'var(--font-brand)' }}>
             Lifestyle
           </h3>
           {isEditing ? (
@@ -1046,7 +1046,7 @@ export default function MyProfilePage() {
             <LifestyleBadges values={lifestyle} />
           )}
           {!isEditing && !LIFESTYLE_KEYS.some((k) => lifestyle[k]) && (
-            <p className="text-xs text-[#413B5E]/55">Add your lifestyle in Edit to help matches get to know you.</p>
+            <p className="text-xs text-slate-600">Add your lifestyle in Edit to help matches get to know you.</p>
           )}
         </div>
 

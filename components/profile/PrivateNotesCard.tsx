@@ -113,7 +113,7 @@ export function PrivateNotesCard({ targetId }: { targetId: string }) {
   return (
     <section className="rounded-2xl border border-[#D0CDE1]/60 bg-white p-4 shadow-brand-sm" aria-labelledby="private-notes-title">
       <div className="flex items-center justify-between gap-3">
-        <h3 id="private-notes-title" className="text-sm font-bold text-[#413B5E]">
+        <h3 id="private-notes-title" className="text-sm font-semibold text-[#413B5E]">
           Private Notes
         </h3>
         <span className="inline-flex items-center gap-1 rounded-full border border-[#D0CDE1] bg-[#E8E6F1]/50 px-2 py-0.5 text-[10.5px] font-medium text-[#8574B7]">
@@ -140,7 +140,7 @@ export function PrivateNotesCard({ targetId }: { targetId: string }) {
         aria-label="Private note about this member"
         className="mt-3 w-full min-h-[84px] resize-y rounded-xl border border-[#D0CDE1] bg-[#E8E6F1]/20 px-3 py-2 text-base sm:text-[13px] leading-relaxed text-[#413B5E] placeholder:text-[#413B5E]/40 focus:outline-none focus:border-[#8574B7] focus:ring-2 focus:ring-[#8574B7]/30"
       />
-      <p className="mt-1 h-4 text-right text-[10.5px] font-medium text-[#413B5E]/50" aria-live="polite">
+      <p className="mt-1 h-4 text-right text-[10.5px] font-medium text-slate-600" aria-live="polite">
         {status === 'saving' ? 'Saving...' : status === 'saved' ? 'Saved' : status === 'error' ? 'Kept on this device. Will retry.' : ''}
       </p>
     </section>
