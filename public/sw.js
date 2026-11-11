@@ -3,7 +3,8 @@
 // v4: precached offline fallback + app shell assets.
 // v5: pushsubscriptionchange re-subscribe.
 // v6: cache-first for content-hashed /_next/static files.
-const CACHE_NAME = 'ail-cache-v6';
+// v7: redesigned offline fallback (re-precache offline.html).
+const CACHE_NAME = 'ail-cache-v7';
 const OFFLINE_URL = '/offline.html';
 // App shell that must work with no network. Next.js JS / CSS chunks are content-hashed and are
 // cached at runtime on first use (fetch handler below).
