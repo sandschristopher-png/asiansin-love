@@ -243,7 +243,7 @@ export function Navbar() {
                     </div>
                     <div className="py-1">
                       <Link href={profile && profile.is_plus !== true ? '/upgrade' : '/plus'} role="menuitem" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 h-11 text-sm text-[#413B5E] hover:bg-[#E8E6F1]/40 transition-colors justify-between">
-                        {/* The header row above already shows the PLUS badge: this row says "Membership". */}
+                        {/* The header row above already shows the Plus badge: this row says "Membership". */}
                         <span className="flex items-center gap-3">
                           <CreditCard className="w-4 h-4 text-slate-600" aria-hidden />
                           {/* Profile not loaded yet: neutral placeholder, never "Upgrade" to a Plus member. */}
