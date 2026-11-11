@@ -6,7 +6,8 @@ import { MotionConfig, motion } from 'framer-motion';
 import { AlertCircle, ArrowLeft, Eye, EyeOff, Loader2, Mail, MailCheck, X } from 'lucide-react';
 import { BrandLogo } from '@/components/BrandLogo';
 import { InAppToast } from '@/components/InAppToast';
-import { CityRotator } from '@/components/auth/CityRotator';
+import { KineticCityTicker } from '@/components/auth/KineticCityTicker';
+import type { HeroAudience } from '@/lib/geoCities';
 import { supabase } from '@/lib/supabase/client';
 import { authHref, describeAuthError, safeReturnTo } from '@/lib/authRedirect';
 import { routeAfterSignIn } from '@/lib/routeAfterSignIn';
@@ -52,7 +53,7 @@ type EmailStep = 'closed' | 'email' | 'sent' | 'password';
  * any provider land on /onboarding, where Step 1 asks for a handle (provider names are never shown).
  * No Apple, no Facebook, no SMS. Password sign-in stays reachable from the email panel for existing accounts.
  */
-export function AuthScreen({ mode, cities }: { mode: 'login' | 'signup'; cities?: readonly string[] }) {
+export function AuthScreen({ mode, audience = 'western' }: { mode: 'login' | 'signup'; audience?: HeroAudience }) {
   const [busy, setBusy] = useState<null | 'google' | 'line' | 'email' | 'password'>(null);
   const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
@@ -217,7 +218,7 @@ export function AuthScreen({ mode, cities }: { mode: 'login' | 'signup'; cities?
           <div className="flex justify-center">
             <BrandLogo size="lg" href="/" />
           </div>
-          <CityRotator cities={cities} />
+          <KineticCityTicker audience={audience} />
         </div>
 
         <div className="w-full max-w-[340px] mx-auto space-y-3">
