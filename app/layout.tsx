@@ -47,11 +47,13 @@ const SITE_TITLE = 'Meet in Asia | Real Connections, Selfie-Verified Profiles';
 const SITE_DESCRIPTION =
   'Connect with verified singles across Asia for meaningful, long-term relationships. Built-in safety features, public reputation scores, and free selfie verification.';
 
-// Social share cards (Open Graph / Twitter). The image is app/opengraph-image.tsx (generated at
-// build, 1200x630 JPEG under 300 KB); Next adds og:image from that file automatically.
-const SHARE_TITLE = SITE_TITLE;
-const SHARE_DESCRIPTION =
-  'Dating across Southeast Asia with free live selfie verification, Visiting Soon travel plans, and scam screening on every conversation.';
+// Social share cards (Open Graph / Twitter). The image is the static public/og-card.png (1200x630,
+// about 126 KB, built with sharp from public/images/hero-pinay.png). It is set explicitly here:
+// an app/opengraph-image file would override these settings, so there is none. No middleware
+// matcher covers /og-card.png and robots.txt allows it, so every social crawler can fetch it.
+const SHARE_TITLE = 'Meet in Asia | Meaningful Connections';
+const SHARE_DESCRIPTION = 'Connect with selfie-verified singles and real travel plans across Southeast Asia.';
+const SHARE_IMAGE = { url: '/og-card.png', width: 1200, height: 630, alt: 'Meet in Asia' };
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://meetin.asia'),
@@ -81,12 +83,13 @@ export const metadata: Metadata = {
     siteName: 'Meet in Asia',
     type: 'website',
     locale: 'en_US',
+    images: [SHARE_IMAGE],
   },
   twitter: {
     card: 'summary_large_image',
     title: SHARE_TITLE,
     description: SHARE_DESCRIPTION,
-    images: ['/opengraph-image'],
+    images: [SHARE_IMAGE.url],
   },
 };
 
