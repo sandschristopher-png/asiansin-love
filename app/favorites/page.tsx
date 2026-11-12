@@ -11,6 +11,7 @@ import { PlusBadge } from '@/components/ui/PlusBadge';
 import { PhotoCarousel } from '@/components/cards/PhotoCarousel';
 import { supabaseImage } from '@/lib/images/supabaseImage';
 import { publicName } from '@/lib/publicName';
+import { useLocale } from '@/components/i18n/LocaleProvider';
 
 type SparkTab = 'sparked' | 'sparked_you' | 'mutual' | 'visited';
 
@@ -117,7 +118,7 @@ function visitedLabel(iso?: string | null): string {
 
 /**
  * Visitors (footprints): avatar, handle, city and visit time. Locked rows (free members, past
- * the newest 3) are frosted placeholders with the PLUS badge; tapping one opens Plus.
+ * every row for a free member) are frosted placeholders with the Plus badge; tapping one opens /plus.
  */
 function VisitorsList({ visitors, onOpen }: { visitors: ProfileCardData[]; onOpen: (p: ProfileCardData) => void }) {
   return (
@@ -223,6 +224,7 @@ const TAB_ICONS: Record<string, LucideIcon> = {
 
 export default function SparksPage() {
   const router = useRouter();
+  const { t: tr } = useLocale();
   const initialSparks = getInitialSparksState();
   const [activeTab, setActiveTab] = useState<SparkTab>('sparked');
   // Deep links (notice center, emails): ?tab=sent | sparks | mutual | views, or the internal tab ids.
@@ -469,6 +471,20 @@ for (const [label, res] of [['outgoing', outSparksRes], ['incoming', inSparksRes
           </div>
         </div>
 
+        {/* Free members: one tap from the locked lists to the comparison. */}
+        {!loading && !isPlus && (activeTab === 'visited' || activeTab === 'sparked_you') && currentList.length > 0 && (
+          <Link
+            href={`/plus?feature=${activeTab === 'visited' ? 'viewers' : 'sparked'}`}
+            className="mb-3 flex items-center justify-between gap-3 rounded-2xl bg-[#FAF9FC] border border-[#8574B7]/25 px-3.5 py-3"
+          >
+            <span className="flex min-w-0 items-center gap-2">
+              <PlusBadge />
+              <span className="text-xs font-medium leading-snug text-[#413B5E]">{tr('plus.page.banner1')}</span>
+            </span>
+            <span className="inline-flex h-8 shrink-0 items-center rounded-full bg-[#8574B7] px-3.5 text-[11px] font-medium text-white">{tr('plus.upgrade')}</span>
+          </Link>
+        )}
+
         {loading ? (
           <div className="grid grid-cols-2 gap-3 sm:gap-4">
             {[0, 1, 2, 3].map((i) => (
@@ -489,7 +505,7 @@ for (const [label, res] of [['outgoing', outSparksRes], ['incoming', inSparksRes
         ) : activeTab === 'visited' ? (
           <VisitorsList
             visitors={currentList}
-            onOpen={(v) => router.push(v.locked ? '/plus' : `/profile/${v.id}`)}
+            onOpen={(v) => router.push(v.locked ? '/plus?feature=viewers' : `/profile/${v.id}`)}
           />
         ) : (
           <>
@@ -508,7 +524,7 @@ for (const [label, res] of [['outgoing', outSparksRes], ['incoming', inSparksRes
               return (
                 <div
                   key={person.id}
-                  onClick={() => { if (shouldBlur) { router.push('/plus'); } else { router.push(`/profile/${person.id}`); } }}
+                  onClick={() => { if (shouldBlur) { router.push('/plus?feature=sparked'); } else { router.push(`/profile/${person.id}`); } }}
                   className="group relative isolate aspect-[3/4] rounded-2xl overflow-hidden bg-white border border-[#D0CDE1]/60 shadow-xs hover:shadow-md cursor-pointer active:scale-[0.98] transition-all duration-300"
                 >
                   {gallery.length > 0 ? (

@@ -17,7 +17,7 @@ import {
   EyeOff,
   Ghost,
   Loader2,
-  MessageCircle, Trash2, AlertTriangle, CreditCard, FileText } from 'lucide-react';
+  MessageCircle, Trash2, AlertTriangle, CreditCard, FileText, Check, CheckCircle2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { hardSignOut } from '@/lib/hardSignOut';
 import { PushDeviceRow } from '@/components/PushDeviceRow';
@@ -281,6 +281,50 @@ export default function SettingsHubPage() {
       </header>
 
       <main className="max-w-md mx-auto px-4 pt-5 space-y-4 pb-[calc(8rem+env(safe-area-inset-bottom,0px))]">
+
+        {/* Plus entry point, first thing in Settings. Nothing renders until the status is known, so a
+            Plus member never sees the upsell flash by. */}
+        {isSubscribed === false && (
+          <section className="rounded-3xl bg-[#FAF9FC] border border-[#8574B7]/25 p-4 shadow-2xs">
+            <PlusBadge />
+            <p className="mt-2 text-lg font-semibold leading-[1.2] text-[#413B5E]">{t('plus.page.headline')}</p>
+            <ul className="mt-3 space-y-2">
+              {(['plus.page.banner1', 'plus.page.banner2', 'plus.page.banner3', 'plus.page.banner4'] as const).map((key) => (
+                <li key={key} className="flex items-start gap-2.5 text-xs font-medium leading-snug text-[#413B5E]">
+                  <span className="mt-px w-4 h-4 shrink-0 rounded-full bg-[#8574B7]/15 text-[#8574B7] flex items-center justify-center">
+                    <Check className="w-3 h-3" strokeWidth={3} aria-hidden />
+                  </span>
+                  {t(key)}
+                </li>
+              ))}
+            </ul>
+            <Link
+              href="/plus"
+              className="mt-4 w-full h-11 rounded-full bg-[#8574B7] hover:bg-[#534377] text-white text-sm font-medium transition-colors active:scale-[0.99] flex items-center justify-center"
+            >
+              {t('plus.upgrade')}
+            </Link>
+          </section>
+        )}
+        {isSubscribed === true && (
+          <Link
+            href="/plus"
+            className="flex items-center justify-between gap-3 rounded-3xl bg-[#FAF9FC] border border-[#8574B7]/25 p-4 shadow-2xs hover:bg-[#E8E6F1]/40 transition-colors"
+          >
+            <div className="flex min-w-0 items-center gap-3">
+              <span className="w-9 h-9 shrink-0 rounded-full bg-[#8574B7]/15 text-[#8574B7] flex items-center justify-center">
+                <CheckCircle2 className="w-5 h-5" aria-hidden />
+              </span>
+              <div className="min-w-0">
+                <p className="flex items-center gap-2 text-sm font-semibold leading-snug text-[#413B5E]">
+                  {t('settings.plusActiveTitle')}
+                </p>
+                <p className="text-[11px] leading-snug text-[#413B5E]/75">{t('settings.plusActiveSub')}</p>
+              </div>
+            </div>
+            <ChevronRight className="w-4 h-4 shrink-0 text-slate-600" />
+          </Link>
+        )}
 
         {errorMsg && (
           <div className="rounded-2xl bg-red-50 border border-red-200 px-4 py-3 text-xs font-semibold text-red-700">

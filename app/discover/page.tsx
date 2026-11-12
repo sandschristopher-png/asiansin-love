@@ -40,9 +40,6 @@ import { hapticWarning } from '@/lib/haptics';
 import { ThemedSelect } from '@/components/ui/ThemedSelect';
 import dynamic from 'next/dynamic';
 
-/** Loaded on first open (keeps the Plus checkout sheet out of the Discover bundle). */
-const AILPlusModal = dynamic(() => import('@/components/AILPlusModal').then((m) => m.AILPlusModal), { ssr: false });
-const SparkLimitModal = dynamic(() => import('@/components/SparkLimitModal').then((m) => m.SparkLimitModal), { ssr: false });
 /** Voice pill (pulls in framer-motion) and the match modal load after the feed paints. */
 const AudioPill = dynamic(() => import('@/components/AudioPill').then((m) => m.AudioPill), { ssr: false });
 const MutualSparkModal = dynamic(() => import('@/components/MutualSparkModal').then((m) => m.MutualSparkModal), { ssr: false });
@@ -436,7 +433,6 @@ function DiscoverContent() {
   });
   // Read by fetchProfiles (the first load uses the defaults, i.e. plain /api/discover).
   const feedUrlRef = useRef('/api/discover');
-  const [plusModalOpen, setPlusModalOpen] = useState(false);
 
   const [matchedModalProfile, setMatchedModalProfile] = useState<{ id: string; name: string; avatarUrl?: string } | null>(null);
   const [isModalClosing, setIsModalClosing] = useState(false);
@@ -661,7 +657,6 @@ function DiscoverContent() {
   };
 
   const [sparkLimitNotice, setSparkLimitNotice] = useState<string | null>(null);
-  const [sparkLimitOpen, setSparkLimitOpen] = useState(false);
   /** Sparks waiting on /api/spark: a second tap on the same card never sends a second request. */
   const sparkInFlight = useRef<Set<string>>(new Set());
   /** Set by a QUOTA_EXCEEDED answer: later taps open the limit sheet without calling the API. */
@@ -675,7 +670,7 @@ function DiscoverContent() {
     if (action === 'like' && sparkInFlight.current.has(id)) return;
     if (action === 'like' && sparkQuotaHit.current) {
       hapticWarning();
-      setSparkLimitOpen(true);
+      router.push('/plus?feature=sparks');
       return;
     }
     if (action === 'like') {
@@ -728,7 +723,7 @@ function DiscoverContent() {
             sparkQuotaHit.current = true;
             hapticWarning();
             setSparkLimitNotice(null);
-            setSparkLimitOpen(true);
+            router.push('/plus?feature=sparks');
             return;
           }
           if (res.status === 401) {
@@ -1392,12 +1387,15 @@ function DiscoverContent() {
                       <label className="text-[11px] font-semibold text-[#413B5E]/75 uppercase tracking-wider mb-2 flex items-center justify-between">
                         <span>Country</span>
                         {countryLocked && (
-                          <Link href="/plus" aria-label="Unlock with Plus">
+                          <Link href="/plus?feature=country" aria-label="Plus">
                             <PlusBadge size="profile" />
                           </Link>
                         )}
                       </label>
                       <div className="relative">
+                        {countryLocked && (
+                          <Link href="/plus?feature=country" aria-label="Plus" className="absolute inset-0 z-10 rounded-xl" />
+                        )}
                         <ThemedSelect<string>
                           ariaLabel="Country"
                           disabled={countryLocked}
@@ -1474,17 +1472,28 @@ function DiscoverContent() {
                     </div>
 
                     <div>
-                      <label className="text-[11px] font-semibold text-[#413B5E]/75 uppercase tracking-wider block mb-2">
-                        {t('discover.visitingHub')}
+                      <label className="text-[11px] font-semibold text-[#413B5E]/75 uppercase tracking-wider mb-2 flex items-center justify-between">
+                        <span>{t('discover.visitingHub')}</span>
+                        {countryLocked && (
+                          <Link href="/plus?feature=hub" aria-label="Plus">
+                            <PlusBadge size="profile" />
+                          </Link>
+                        )}
                       </label>
-                      <ThemedSelect<string>
-                        ariaLabel={t('discover.visitingHub')}
-                        value={draftHub}
-                        onChange={setDraftHub}
-                        options={[{ value: '', label: t('discover.anyCity') }, ...HUB_FILTER_OPTIONS.slice(1)]}
-                        menuClassName="w-full"
-                        className={FILTER_SELECT}
-                      />
+                      <div className="relative">
+                        {countryLocked && (
+                          <Link href="/plus?feature=hub" aria-label="Plus" className="absolute inset-0 z-10 rounded-xl" />
+                        )}
+                        <ThemedSelect<string>
+                          ariaLabel={t('discover.visitingHub')}
+                          disabled={countryLocked}
+                          value={countryLocked ? '' : draftHub}
+                          onChange={setDraftHub}
+                          options={[{ value: '', label: t('discover.anyCity') }, ...HUB_FILTER_OPTIONS.slice(1)]}
+                          menuClassName="w-full"
+                          className={FILTER_SELECT}
+                        />
+                      </div>
                       <p className="mt-1.5 text-[11px] text-slate-600">{t('discover.visitingHubHint')}</p>
                     </div>
 
@@ -1559,9 +1568,9 @@ function DiscoverContent() {
                           key={row.label}
                           type="button"
                           onClick={() => {
-                            // Free members: the upgrade sheet opens and the switch stays off.
+                            // Free members: the tap opens /plus and the switch stays off.
                             if (row.plus && !sparkedMeAccess) {
-                              setPlusModalOpen(true);
+                              router.push('/plus?feature=sparked');
                               return;
                             }
                             row.set(!row.value);
@@ -1605,11 +1614,6 @@ function DiscoverContent() {
             </div>,
             document.body
           )}
-
-      {sparkLimitOpen && <SparkLimitModal open onClose={() => setSparkLimitOpen(false)} />}
-      {plusModalOpen && (
-        <AILPlusModal open onClose={() => setPlusModalOpen(false)} title="See who Sparked you with Plus" returnPath="/discover" />
-      )}
 
       {matchedModalProfile && (
         <MutualSparkModal
