@@ -1,7 +1,5 @@
 'use client';
 
-import dynamic from 'next/dynamic';
-
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -31,9 +29,6 @@ import { PlusBadge } from '@/components/ui/PlusBadge';
 import { Switch } from '@/components/ui/Switch';
 import { isPlusProfile } from '@/lib/plus';
 import { getCachedSubscription, setCachedSubscription } from '@/lib/subscriptionStatus';
-
-/** Loaded on first open (keeps the Plus checkout sheet out of the settings bundle). */
-const AILPlusModal = dynamic(() => import('@/components/AILPlusModal').then((m) => m.AILPlusModal), { ssr: false });
 
 type SettingsKey = 'hide_profile' | 'show_active_status' | 'notify_sparks' | 'notify_messages';
 
@@ -92,8 +87,6 @@ export default function SettingsHubPage() {
   // A known free member has no subscription; otherwise unknown until the profile read.
   const [hasPlusBilling, setHasPlusBilling] = useState<boolean | null>(() => (getCachedSubscription() === false ? false : null));
   const [gender, setGender] = useState<string | null>(null);
-  const [plusModalOpen, setPlusModalOpen] = useState(false);
-  const [plusModalKey, setPlusModalKey] = useState<'settings.unlockPrivate' | 'settings.unlockGhost'>('settings.unlockPrivate');
   // Ghost Mode (Plus): browse without leaving a footprint. Read on its own so a database without
   // the ghost_mode column (20261114_privacy_features.sql) still loads the other settings.
   const [ghostMode, setGhostMode] = useState(false);
@@ -157,8 +150,7 @@ export default function SettingsHubPage() {
     const nextVal = !settings[key];
     // Private Mode is free for women; men need Plus (also enforced in the database).
     if (key === 'hide_profile' && nextVal && gender === 'male' && !isPlus) {
-      setPlusModalKey('settings.unlockPrivate');
-      setPlusModalOpen(true);
+      router.push('/plus?feature=private');
       return;
     }
     setSettings((prev) => ({ ...prev, [key]: nextVal }));
@@ -186,8 +178,7 @@ export default function SettingsHubPage() {
   const toggleGhostMode = async () => {
     if (isSubscribed === null) return; // status still loading: no upsell to a Plus member
     if (!isPlus) {
-      setPlusModalKey('settings.unlockGhost');
-      setPlusModalOpen(true);
+      router.push('/plus?feature=ghost');
       return;
     }
     const nextVal = !ghostMode;
@@ -643,14 +634,6 @@ export default function SettingsHubPage() {
             </div>
           </div>
         )}
-      {plusModalOpen && (
-      <AILPlusModal
-        open
-        onClose={() => setPlusModalOpen(false)}
-        title={t(plusModalKey)}
-        returnPath="/settings"
-      />
-      )}
       </main>
     </div>
   );

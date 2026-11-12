@@ -185,8 +185,6 @@
     "reputationSub": "Confianza y conducta en la comunidad",
     "title": "Ajustes y privacidad",
     "back": "Volver al perfil",
-    "unlockPrivate": "Desbloquea el Modo privado con Plus",
-    "unlockGhost": "Desbloquea el Modo fantasma con Plus",
     "portalFailed": "No se pudo abrir el portal de facturación.",
     "portalTimeout": "El portal de facturación tardó demasiado en responder. Inténtalo de nuevo.",
     "deleteFailed": "No se pudo eliminar la cuenta. Inténtalo de nuevo.",
@@ -285,22 +283,9 @@
     "providerNamedDown": "El acceso con {provider} no está disponible ahora. Usa otra opción."
   },
   "plus": {
-    "unlockMore": "Desbloquea más con Plus",
-    "sparkLimitTitle": "Has usado tus {n} Sparks de hoy",
     "upgrade": "Pasar a Plus",
-    "viewPerks": "Ver todas las ventajas de miembro",
     "choosePlan": "Elige un plan",
     "checkoutFailed": "No se pudo iniciar el pago. Inténtalo de nuevo.",
-    "perkPrivateTitle": "Modo privado",
-    "perkPrivateText": "Navega con discreción y sé visible solo para los perfiles a los que das Spark.",
-    "perkVisitorsTitle": "Historial de visitantes",
-    "perkVisitorsText": "Quita el desenfoque a todos los que vieron tu perfil.",
-    "perkPassportTitle": "Passport Roaming",
-    "perkPassportText": "Explora y da Spark a solteros en Manila, Cebu, Bangkok y Phnom Penh.",
-    "perkIntrosTitle": "Presentaciones ilimitadas",
-    "perkIntrosText": "Empieza tantas conversaciones nuevas al día como quieras (gratis: {n}).",
-    "perkSparksTitle": "Sparks ilimitados",
-    "perkSparksText": "Da Spark a todos los que te gusten (gratis: {n} al día).",
     "plan1m": "1 mes",
     "plan3m": "3 meses",
     "plan6m": "6 meses",
@@ -377,11 +362,22 @@
       "activeTitle": "Plus está activo",
       "activeBody": "Gracias por apoyar Meet in Asia. Gestiona la facturación o cancela cuando quieras.",
       "receiptsPrompt": "Confirmación de lectura con Plus",
-      "savePct": "Ahorra {pct}%"
+      "savePct": "Ahorra {pct}%",
+      "rowPrivate": "Modo privado",
+      "rowGhost": "Modo fantasma",
+      "cellPrivateFree": "Gratis para mujeres",
+      "cellPrivatePlus": "Oculta tu perfil en Descubrir sin perder tus chats",
+      "cellGhost": "Navega sin dejar rastro"
     }
   },
   "messages": {
     "deleteFailed": "No se pudo eliminar la conversación. Inténtalo de nuevo.",
     "conversationDeleted": "Conversación eliminada"
+  },
+  "chat": {
+    "cooldownTitle": "Has enviado {n} mensajes de presentación",
+    "cooldownBody": "Los mensajes ilimitados se abren en cuanto responda. Podrás enviar tu próximo mensaje en {time}.",
+    "cooldownCta": "Sigue conversando con Plus",
+    "outreachLimit": "Has llegado a las {n} presentaciones nuevas de hoy. Los mensajes ilimitados se abren cuando responda."
   }
 }

@@ -51,7 +51,6 @@ import { hapticError, hapticSuccess, hapticTap } from '@/lib/utils/haptics';
 import { BackButton } from '@/components/BackButton';
 
 /** Loaded on first open (keeps the upgrade sheet out of the page bundle). */
-const UpgradeModal = dynamic(() => import('@/components/UpgradeModal'), { ssr: false });
 /** Loaded on first open (keeps the report sheet out of the page bundle). */
 const ReportModal = dynamic(() => import('@/components/ReportModal').then((m) => m.ReportModal), { ssr: false });
 
@@ -243,7 +242,6 @@ export default function ChatConversationPage() {
   const [isVerifiedWoman, setIsVerifiedWoman] = useState(false);
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
   const [showSafetyNotice, setShowSafetyNotice] = useState(false);
-  const [showUpgradeModal, setShowUpgradeModal] = useState(false);
   const [showRepModal, setShowRepModal] = useState(false);
   const [showReportModal, setShowReportModal] = useState(false);
   const [reportThanks, setReportThanks] = useState(false);
@@ -744,10 +742,13 @@ export default function ChatConversationPage() {
         setMessages((prev) => prev.filter((m) => m.id !== tempId));
         setInputText((current) => current || clean); // give the draft back so it can be edited
         if (resData.courtshipLocked) setShowSafetyNotice(true);
-        setErrorBanner(resData.error || 'Message could not be delivered.');
         if (resData.code === 'OUTREACH_LIMIT_REACHED') {
-          setShowUpgradeModal(true);
+          // A calm explanation, then the comparison screen; the draft is kept above.
+          setErrorBanner(t('chat.outreachLimit', { n: 5 }));
+          router.push('/plus?feature=intro');
+          return;
         }
+        setErrorBanner(resData.error || 'Message could not be delivered.');
         return;
       }
 
@@ -1411,22 +1412,20 @@ export default function ChatConversationPage() {
           </p>
         )}
         {cooldownSeconds > 0 ? (
-          <div className="p-3 rounded-2xl bg-white border border-[#D0CDE1] flex flex-col items-center gap-2 shadow-xs text-center">
-            <div className="flex items-center gap-1.5 text-xs text-[#413B5E]/85">
-              <Clock className="w-4 h-4 text-amber-500" />
-              <span>Next free message unlocks in</span>
+          // A calm nudge, not an error: what happened, how it opens up, when the next message can go.
+          <div role="status" className="p-3.5 rounded-2xl bg-[#FAF9FC] border border-[#8574B7]/25 flex flex-col gap-2.5 text-center">
+            <div className="flex items-center justify-center gap-1.5 text-[13px] font-semibold leading-snug text-[#413B5E]">
+              <Clock className="w-4 h-4 shrink-0 text-[#8574B7]" aria-hidden />
+              <span>{t('chat.cooldownTitle', { n: 5 })}</span>
             </div>
-            <span className="text-lg font-semibold tracking-wider text-[#413B5E]">
-              {formatTimer(cooldownSeconds)}
-            </span>
-            <button
-              type="button"
-              onClick={() => setShowUpgradeModal(true)}
-              className="w-full flex items-center justify-center gap-2 py-2 rounded-full bg-[#8574B7] hover:bg-[#413B5E] text-white font-medium text-xs shadow-sm transition cursor-pointer"
+            <p className="text-xs leading-relaxed text-slate-600">{t('chat.cooldownBody', { time: formatTimer(cooldownSeconds) })}</p>
+            <Link
+              href="/plus?feature=intro"
+              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-full bg-[#8574B7] hover:bg-[#534377] text-white font-medium text-xs shadow-sm transition"
             >
-              <Zap className="w-3.5 h-3.5 fill-current" />
-              Skip the Wait with Plus
-            </button>
+              <Zap className="w-3.5 h-3.5 fill-current" aria-hidden />
+              {t('chat.cooldownCta')}
+            </Link>
           </div>
         ) : voice.state !== 'idle' ? (
           <div className="flex items-center gap-2">
@@ -1542,9 +1541,6 @@ export default function ChatConversationPage() {
         icon={toast === VOICE_LOCKED_MESSAGE || toast === VOICE_REP_LOCKED_MESSAGE ? <Lock className="w-3.5 h-3.5" /> : <Mic className="w-3.5 h-3.5" />}
       />
 
-      {showUpgradeModal && (
-        <UpgradeModal isOpen onClose={() => setShowUpgradeModal(false)} triggerContext="chat" />
-      )}
       <ReputationModal
         isOpen={showRepModal}
         onClose={() => setShowRepModal(false)}

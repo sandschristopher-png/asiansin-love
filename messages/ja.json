@@ -185,8 +185,6 @@
     "reputationSub": "コミュニティでの信頼とマナー",
     "title": "設定とプライバシー",
     "back": "プロフィールに戻る",
-    "unlockPrivate": "Plusでプライベートモードを解除",
-    "unlockGhost": "Plusでゴーストモードを解除",
     "portalFailed": "請求ポータルを開けませんでした。",
     "portalTimeout": "請求ポータルの応答に時間がかかっています。もう一度お試しください。",
     "deleteFailed": "アカウントを削除できませんでした。もう一度お試しください。",
@@ -285,22 +283,9 @@
     "providerNamedDown": "{provider}でのログインは現在ご利用いただけません。ほかの方法をお試しください。"
   },
   "plus": {
-    "unlockMore": "Plusでもっと楽しむ",
-    "sparkLimitTitle": "本日の{n}回分のSparksを使い切りました",
     "upgrade": "Plusにアップグレード",
-    "viewPerks": "会員特典をすべて見る",
     "choosePlan": "プランを選択",
     "checkoutFailed": "お支払いを開始できませんでした。もう一度お試しください。",
-    "perkPrivateTitle": "プライベートモード",
-    "perkPrivateText": "こっそり閲覧でき、あなたがSparkを送ったプロフィールにだけ表示されます。",
-    "perkVisitorsTitle": "訪問履歴",
-    "perkVisitorsText": "プロフィールを見た全員のぼかしを解除します。",
-    "perkPassportTitle": "Passport Roaming",
-    "perkPassportText": "Manila、Cebu、Bangkok、Phnom Penhのシングルを閲覧してSparkを送れます。",
-    "perkIntrosTitle": "自己紹介が無制限",
-    "perkIntrosText": "1日に好きなだけ新しい会話を始められます(無料: {n}件)。",
-    "perkSparksTitle": "Sparksが無制限",
-    "perkSparksText": "気になる人全員にSparkを送れます(無料: 1日{n}回)。",
     "plan1m": "1か月",
     "plan3m": "3か月",
     "plan6m": "6か月",
@@ -377,11 +362,22 @@
       "activeTitle": "Plusは有効です",
       "activeBody": "Meet in Asiaをご支援いただきありがとうございます。請求の管理や解約はいつでもできます。",
       "receiptsPrompt": "Plusで既読表示",
-      "savePct": "{pct}%お得"
+      "savePct": "{pct}%お得",
+      "rowPrivate": "プライベートモード",
+      "rowGhost": "ゴーストモード",
+      "cellPrivateFree": "女性は無料",
+      "cellPrivatePlus": "探すから非表示、チャットはそのまま",
+      "cellGhost": "足跡を残さずに閲覧"
     }
   },
   "messages": {
     "deleteFailed": "会話を削除できませんでした。もう一度お試しください。",
     "conversationDeleted": "会話を削除しました"
+  },
+  "chat": {
+    "cooldownTitle": "最初のメッセージを{n}通送りました",
+    "cooldownBody": "相手が返信すると、メッセージは無制限になります。次のメッセージは{time}後に送れます。",
+    "cooldownCta": "Plusでそのまま会話を続ける",
+    "outreachLimit": "本日の新しい自己紹介{n}件に達しました。相手が返信すると、メッセージは無制限になります。"
   }
 }

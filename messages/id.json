@@ -185,8 +185,6 @@
     "reputationSub": "Kepercayaan dan perilaku komunitas",
     "title": "Pengaturan & Privasi",
     "back": "Kembali ke profil",
-    "unlockPrivate": "Buka Mode Privat dengan Plus",
-    "unlockGhost": "Buka Mode Hantu dengan Plus",
     "portalFailed": "Tidak dapat membuka portal penagihan.",
     "portalTimeout": "Portal penagihan terlalu lama merespons. Silakan coba lagi.",
     "deleteFailed": "Gagal menghapus akun. Silakan coba lagi.",
@@ -285,22 +283,9 @@
     "providerNamedDown": "Masuk dengan {provider} belum tersedia saat ini. Silakan gunakan opsi lain."
   },
   "plus": {
-    "unlockMore": "Buka lebih banyak dengan Plus",
-    "sparkLimitTitle": "Kamu sudah memakai {n} Sparks hari ini",
     "upgrade": "Tingkatkan ke Plus",
-    "viewPerks": "Lihat semua keuntungan anggota",
     "choosePlan": "Pilih paket",
     "checkoutFailed": "Tidak dapat memulai pembayaran. Silakan coba lagi.",
-    "perkPrivateTitle": "Mode Privat",
-    "perkPrivateText": "Menjelajah diam-diam dan hanya terlihat oleh profil yang kamu Spark.",
-    "perkVisitorsTitle": "Riwayat Pengunjung",
-    "perkVisitorsText": "Lihat jelas semua yang melihat profilmu.",
-    "perkPassportTitle": "Passport Roaming",
-    "perkPassportText": "Jelajahi dan Spark orang lajang di Manila, Cebu, Bangkok, dan Phnom Penh.",
-    "perkIntrosTitle": "Perkenalan tanpa batas",
-    "perkIntrosText": "Mulai percakapan baru sebanyak yang kamu mau setiap hari (gratis: {n}).",
-    "perkSparksTitle": "Sparks tanpa batas",
-    "perkSparksText": "Spark semua orang yang kamu suka (gratis: {n} per hari).",
     "plan1m": "1 Bulan",
     "plan3m": "3 Bulan",
     "plan6m": "6 Bulan",
@@ -377,11 +362,22 @@
       "activeTitle": "Plus aktif",
       "activeBody": "Terima kasih telah mendukung Meet in Asia. Kelola penagihan atau batalkan kapan saja.",
       "receiptsPrompt": "Tanda baca dengan Plus",
-      "savePct": "Hemat {pct}%"
+      "savePct": "Hemat {pct}%",
+      "rowPrivate": "Mode Privat",
+      "rowGhost": "Mode Hantu",
+      "cellPrivateFree": "Gratis untuk perempuan",
+      "cellPrivatePlus": "Sembunyi dari Jelajahi, obrolan tetap ada",
+      "cellGhost": "Jelajahi tanpa meninggalkan jejak"
     }
   },
   "messages": {
     "deleteFailed": "Tidak dapat menghapus percakapan. Silakan coba lagi.",
     "conversationDeleted": "Percakapan dihapus"
+  },
+  "chat": {
+    "cooldownTitle": "Kamu sudah mengirim {n} pesan perkenalan",
+    "cooldownBody": "Pesan tanpa batas terbuka begitu mereka membalas. Pesan berikutnya bisa dikirim dalam {time}.",
+    "cooldownCta": "Lanjut mengobrol dengan Plus",
+    "outreachLimit": "Kamu sudah memakai {n} perkenalan baru hari ini. Pesan tanpa batas terbuka setelah mereka membalas."
   }
 }

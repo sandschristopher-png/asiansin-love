@@ -185,8 +185,6 @@
     "reputationSub": "Tiwala at pag-uugali sa komunidad",
     "title": "Mga Setting at Privacy",
     "back": "Bumalik sa profile",
-    "unlockPrivate": "I-unlock ang Private Mode gamit ang Plus",
-    "unlockGhost": "I-unlock ang Ghost Mode gamit ang Plus",
     "portalFailed": "Hindi mabuksan ang billing portal.",
     "portalTimeout": "Natagalan ang pagsagot ng billing portal. Pakisubukan ulit.",
     "deleteFailed": "Hindi na-delete ang account. Pakisubukan ulit.",
@@ -285,22 +283,9 @@
     "providerNamedDown": "Hindi available ngayon ang pag-sign in gamit ang {provider}. Gumamit ng ibang opsyon."
   },
   "plus": {
-    "unlockMore": "Mag-unlock ng higit pa gamit ang Plus",
-    "sparkLimitTitle": "Nagamit mo na ang {n} Sparks ngayong araw",
     "upgrade": "Mag-upgrade sa Plus",
-    "viewPerks": "Tingnan ang lahat ng perks ng miyembro",
     "choosePlan": "Pumili ng plano",
     "checkoutFailed": "Hindi masimulan ang checkout. Pakisubukan ulit.",
-    "perkPrivateTitle": "Private Mode",
-    "perkPrivateText": "Mag-browse nang palihim at makita lang ng mga profile na ini-Spark mo.",
-    "perkVisitorsTitle": "Kasaysayan ng Bisita",
-    "perkVisitorsText": "Alisin ang blur sa lahat ng tumingin sa profile mo.",
-    "perkPassportTitle": "Passport Roaming",
-    "perkPassportText": "Mag-browse at mag-Spark ng mga single sa Manila, Cebu, Bangkok, at Phnom Penh.",
-    "perkIntrosTitle": "Walang limitasyong pagpapakilala",
-    "perkIntrosText": "Magsimula ng kasing-daming bagong usapan kada araw (libre: {n}).",
-    "perkSparksTitle": "Walang limitasyong Sparks",
-    "perkSparksText": "I-Spark ang lahat ng gusto mo (libre: {n} kada araw).",
     "plan1m": "1 Buwan",
     "plan3m": "3 Buwan",
     "plan6m": "6 na Buwan",
@@ -377,11 +362,22 @@
       "activeTitle": "Aktibo ang Plus",
       "activeBody": "Salamat sa pagsuporta sa Meet in Asia. Pamahalaan ang billing o magkansela anumang oras.",
       "receiptsPrompt": "Read receipt gamit ang Plus",
-      "savePct": "Makatipid ng {pct}%"
+      "savePct": "Makatipid ng {pct}%",
+      "rowPrivate": "Private Mode",
+      "rowGhost": "Ghost Mode",
+      "cellPrivateFree": "Libre para sa mga babae",
+      "cellPrivatePlus": "Magtago sa Tuklasin, panatilihin ang mga chat",
+      "cellGhost": "Mag-browse nang walang iniiwang bakas"
     }
   },
   "messages": {
     "deleteFailed": "Hindi nabura ang usapan. Pakisubukan ulit.",
     "conversationDeleted": "Nabura ang usapan"
+  },
+  "chat": {
+    "cooldownTitle": "Nakapagpadala ka na ng {n} panimulang mensahe",
+    "cooldownBody": "Magiging walang limitasyon ang pagmemensahe sa sandaling sumagot sila. Maipapadala mo ang susunod mong mensahe sa loob ng {time}.",
+    "cooldownCta": "Magpatuloy sa pag-chat gamit ang Plus",
+    "outreachLimit": "Naabot mo na ang {n} bagong pagpapakilala ngayong araw. Magiging walang limitasyon ang pagmemensahe kapag sumagot sila."
   }
 }

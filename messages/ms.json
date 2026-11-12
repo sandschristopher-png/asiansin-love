@@ -185,8 +185,6 @@
     "reputationSub": "Kepercayaan dan tingkah laku komuniti",
     "title": "Tetapan & Privasi",
     "back": "Kembali ke profil",
-    "unlockPrivate": "Buka kunci Mod Peribadi dengan Plus",
-    "unlockGhost": "Buka kunci Mod Hantu dengan Plus",
     "portalFailed": "Tidak dapat membuka portal pengebilan.",
     "portalTimeout": "Portal pengebilan mengambil masa terlalu lama untuk bertindak balas. Sila cuba lagi.",
     "deleteFailed": "Gagal memadam akaun. Sila cuba lagi.",
@@ -285,22 +283,9 @@
     "providerNamedDown": "Log masuk dengan {provider} tidak tersedia buat masa ini. Sila gunakan pilihan lain."
   },
   "plus": {
-    "unlockMore": "Buka lebih banyak dengan Plus",
-    "sparkLimitTitle": "Anda telah menggunakan {n} Sparks hari ini",
     "upgrade": "Naik taraf ke Plus",
-    "viewPerks": "Lihat semua kelebihan ahli",
     "choosePlan": "Pilih pelan",
     "checkoutFailed": "Tidak dapat memulakan pembayaran. Sila cuba lagi.",
-    "perkPrivateTitle": "Mod Peribadi",
-    "perkPrivateText": "Layari secara senyap dan hanya kelihatan kepada profil yang anda Spark.",
-    "perkVisitorsTitle": "Sejarah Pelawat",
-    "perkVisitorsText": "Nyahkaburkan semua yang melihat profil anda.",
-    "perkPassportTitle": "Passport Roaming",
-    "perkPassportText": "Layari dan Spark orang bujang di Manila, Cebu, Bangkok dan Phnom Penh.",
-    "perkIntrosTitle": "Perkenalan tanpa had",
-    "perkIntrosText": "Mulakan seberapa banyak perbualan baharu sehari yang anda mahu (percuma: {n}).",
-    "perkSparksTitle": "Sparks tanpa had",
-    "perkSparksText": "Spark semua yang anda suka (percuma: {n} sehari).",
     "plan1m": "1 Bulan",
     "plan3m": "3 Bulan",
     "plan6m": "6 Bulan",
@@ -377,11 +362,22 @@
       "activeTitle": "Plus aktif",
       "activeBody": "Terima kasih kerana menyokong Meet in Asia. Urus pengebilan atau batalkan pada bila-bila masa.",
       "receiptsPrompt": "Resit baca dengan Plus",
-      "savePct": "Jimat {pct}%"
+      "savePct": "Jimat {pct}%",
+      "rowPrivate": "Mod Peribadi",
+      "rowGhost": "Mod Hantu",
+      "cellPrivateFree": "Percuma untuk wanita",
+      "cellPrivatePlus": "Sembunyi daripada Teroka, sembang kekal",
+      "cellGhost": "Layari tanpa meninggalkan kesan"
     }
   },
   "messages": {
     "deleteFailed": "Tidak dapat memadam perbualan. Sila cuba lagi.",
     "conversationDeleted": "Perbualan dipadam"
+  },
+  "chat": {
+    "cooldownTitle": "Anda telah menghantar {n} mesej perkenalan",
+    "cooldownBody": "Mesej tanpa had dibuka sebaik sahaja mereka membalas. Mesej seterusnya boleh dihantar dalam {time}.",
+    "cooldownCta": "Teruskan bersembang dengan Plus",
+    "outreachLimit": "Anda telah menggunakan {n} perkenalan baharu hari ini. Mesej tanpa had dibuka selepas mereka membalas."
   }
 }

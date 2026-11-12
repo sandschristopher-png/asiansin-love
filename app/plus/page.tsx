@@ -41,6 +41,8 @@ const ROWS: Row[] = [
   { id: 'travel', label: 'plus.page.rowTravel', free: { key: 'plus.page.cellNotIncluded' }, freeMark: 'no', plus: { key: 'plus.page.cellTravel' }, exclusive: true },
   { id: 'country', label: 'plus.page.rowCountry', free: { key: 'plus.page.cellFreeCountry' }, freeMark: 'partial', plus: { key: 'plus.page.cellPlusCountry' }, exclusive: true },
   { id: 'hub', label: 'plus.page.rowHub', free: { key: 'plus.page.cellNotIncluded' }, freeMark: 'no', plus: { key: 'plus.page.cellPlusHubs', vars: { n: TRIP_HUBS.length } }, exclusive: true },
+  { id: 'private', label: 'plus.page.rowPrivate', free: { key: 'plus.page.cellPrivateFree' }, freeMark: 'partial', plus: { key: 'plus.page.cellPrivatePlus' }, exclusive: true },
+  { id: 'ghost', label: 'plus.page.rowGhost', free: { key: 'plus.page.cellNotIncluded' }, freeMark: 'no', plus: { key: 'plus.page.cellGhost' }, exclusive: true },
   { id: 'sparks', label: 'plus.page.rowSparks', free: { key: 'plus.page.cellPerDay', vars: { n: FREE_DAILY_SPARKS } }, freeMark: 'partial', plus: { key: 'plus.page.cellUnlimited' }, exclusive: true },
   { id: 'viewed', label: 'plus.page.rowViewed', free: { key: 'plus.page.cellBlurred' }, freeMark: 'partial', plus: { key: 'plus.page.cellFullGrid' }, exclusive: true },
   { id: 'sparked', label: 'plus.page.rowSparked', free: { key: 'plus.page.cellOnePreview' }, freeMark: 'partial', plus: { key: 'plus.page.cellFullGrid' }, exclusive: true },
@@ -59,6 +61,8 @@ const FEATURE_ROW: Record<string, string> = {
   sparks: 'sparks',
   receipts: 'receipts',
   intro: 'intro',
+  private: 'private',
+  ghost: 'ghost',
   badge: 'badge',
 };
 

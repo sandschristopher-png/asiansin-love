@@ -185,8 +185,6 @@
     "reputationSub": "Community trust and conduct",
     "title": "Settings & Privacy",
     "back": "Back to profile",
-    "unlockPrivate": "Unlock Private Mode with Plus",
-    "unlockGhost": "Unlock Ghost Mode with Plus",
     "portalFailed": "Could not open the billing portal.",
     "portalTimeout": "The billing portal took too long to respond. Please try again.",
     "deleteFailed": "Failed to delete account. Please try again.",
@@ -285,22 +283,9 @@
     "providerNamedDown": "{provider} sign-in is not available right now. Please use another option."
   },
   "plus": {
-    "unlockMore": "Unlock more with Plus",
-    "sparkLimitTitle": "You've used today's {n} Sparks",
     "upgrade": "Upgrade to Plus",
-    "viewPerks": "View all member perks",
     "choosePlan": "Choose a plan",
     "checkoutFailed": "Could not start checkout. Please try again.",
-    "perkPrivateTitle": "Private Mode",
-    "perkPrivateText": "Browse stealthily and only be visible to profiles you spark.",
-    "perkVisitorsTitle": "Visitor History",
-    "perkVisitorsText": "Unblur everyone who viewed your profile.",
-    "perkPassportTitle": "Passport Roaming",
-    "perkPassportText": "Browse and spark singles across Manila, Cebu, Bangkok, and Phnom Penh.",
-    "perkIntrosTitle": "Unlimited introductions",
-    "perkIntrosText": "Start as many new conversations a day as you like (free: {n}).",
-    "perkSparksTitle": "Unlimited Sparks",
-    "perkSparksText": "Spark everyone you like (free: {n} a day).",
     "plan1m": "1 Month",
     "plan3m": "3 Months",
     "plan6m": "6 Months",
@@ -377,11 +362,22 @@
       "activeTitle": "Plus is active",
       "activeBody": "Thank you for supporting Meet in Asia. Manage billing or cancel any time.",
       "receiptsPrompt": "Read receipts with Plus",
-      "savePct": "Save {pct}%"
+      "savePct": "Save {pct}%",
+      "rowPrivate": "Private Mode",
+      "rowGhost": "Ghost Mode",
+      "cellPrivateFree": "Free for women",
+      "cellPrivatePlus": "Hide from Discover, keep your chats",
+      "cellGhost": "Browse without leaving a footprint"
     }
   },
   "messages": {
     "deleteFailed": "Could not delete the conversation. Please try again.",
     "conversationDeleted": "Conversation deleted"
+  },
+  "chat": {
+    "cooldownTitle": "You've sent {n} intro messages",
+    "cooldownBody": "Unlimited messaging opens as soon as they reply. Your next message can go out in {time}.",
+    "cooldownCta": "Keep chatting with Plus",
+    "outreachLimit": "You've reached today's {n} new introductions. Unlimited messaging opens once they reply."
   }
 }

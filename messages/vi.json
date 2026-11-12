@@ -185,8 +185,6 @@
     "reputationSub": "Độ tin cậy và hành vi trong cộng đồng",
     "title": "Cài đặt và quyền riêng tư",
     "back": "Quay lại hồ sơ",
-    "unlockPrivate": "Mở khóa Chế độ riêng tư với Plus",
-    "unlockGhost": "Mở khóa Chế độ ẩn danh với Plus",
     "portalFailed": "Không thể mở cổng thanh toán.",
     "portalTimeout": "Cổng thanh toán phản hồi quá lâu. Vui lòng thử lại.",
     "deleteFailed": "Không thể xóa tài khoản. Vui lòng thử lại.",
@@ -285,22 +283,9 @@
     "providerNamedDown": "Đăng nhập bằng {provider} hiện không khả dụng. Vui lòng dùng cách khác."
   },
   "plus": {
-    "unlockMore": "Mở khóa thêm với Plus",
-    "sparkLimitTitle": "Bạn đã dùng hết {n} Sparks hôm nay",
     "upgrade": "Nâng cấp lên Plus",
-    "viewPerks": "Xem tất cả quyền lợi thành viên",
     "choosePlan": "Chọn gói",
     "checkoutFailed": "Không thể bắt đầu thanh toán. Vui lòng thử lại.",
-    "perkPrivateTitle": "Chế độ riêng tư",
-    "perkPrivateText": "Xem kín đáo và chỉ hiện với những hồ sơ bạn Spark.",
-    "perkVisitorsTitle": "Lịch sử người xem",
-    "perkVisitorsText": "Bỏ làm mờ tất cả người đã xem hồ sơ của bạn.",
-    "perkPassportTitle": "Passport Roaming",
-    "perkPassportText": "Xem và Spark những người độc thân ở Manila, Cebu, Bangkok và Phnom Penh.",
-    "perkIntrosTitle": "Làm quen không giới hạn",
-    "perkIntrosText": "Bắt đầu bao nhiêu cuộc trò chuyện mới mỗi ngày tùy thích (miễn phí: {n}).",
-    "perkSparksTitle": "Sparks không giới hạn",
-    "perkSparksText": "Spark mọi người bạn thích (miễn phí: {n} mỗi ngày).",
     "plan1m": "1 tháng",
     "plan3m": "3 tháng",
     "plan6m": "6 tháng",
@@ -377,11 +362,22 @@
       "activeTitle": "Plus đang hoạt động",
       "activeBody": "Cảm ơn bạn đã ủng hộ Meet in Asia. Quản lý thanh toán hoặc hủy bất cứ lúc nào.",
       "receiptsPrompt": "Xác nhận đã đọc với Plus",
-      "savePct": "Tiết kiệm {pct}%"
+      "savePct": "Tiết kiệm {pct}%",
+      "rowPrivate": "Chế độ riêng tư",
+      "rowGhost": "Chế độ ẩn danh",
+      "cellPrivateFree": "Miễn phí cho phụ nữ",
+      "cellPrivatePlus": "Ẩn khỏi Khám phá, giữ các cuộc trò chuyện",
+      "cellGhost": "Xem hồ sơ mà không để lại dấu vết"
     }
   },
   "messages": {
     "deleteFailed": "Không thể xóa cuộc trò chuyện. Vui lòng thử lại.",
     "conversationDeleted": "Đã xóa cuộc trò chuyện"
+  },
+  "chat": {
+    "cooldownTitle": "Bạn đã gửi {n} tin nhắn làm quen",
+    "cooldownBody": "Nhắn tin không giới hạn sẽ mở ngay khi họ trả lời. Bạn có thể gửi tin tiếp theo sau {time}.",
+    "cooldownCta": "Tiếp tục trò chuyện với Plus",
+    "outreachLimit": "Bạn đã dùng hết {n} lượt làm quen mới hôm nay. Nhắn tin không giới hạn sẽ mở khi họ trả lời."
   }
 }

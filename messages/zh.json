@@ -185,8 +185,6 @@
     "reputationSub": "社区信任与行为",
     "title": "设置与隐私",
     "back": "返回资料",
-    "unlockPrivate": "用 Plus 解锁隐私模式",
-    "unlockGhost": "用 Plus 解锁幽灵模式",
     "portalFailed": "无法打开账单页面。",
     "portalTimeout": "账单页面响应时间过长，请重试。",
     "deleteFailed": "删除账号失败，请重试。",
@@ -285,22 +283,9 @@
     "providerNamedDown": "暂时无法使用 {provider} 登录，请使用其他方式。"
   },
   "plus": {
-    "unlockMore": "用 Plus 解锁更多",
-    "sparkLimitTitle": "您今天的 {n} 次 Sparks 已用完",
     "upgrade": "升级到 Plus",
-    "viewPerks": "查看全部会员权益",
     "choosePlan": "选择套餐",
     "checkoutFailed": "无法开始结账，请重试。",
-    "perkPrivateTitle": "隐私模式",
-    "perkPrivateText": "静默浏览，仅对您发送过 Spark 的资料可见。",
-    "perkVisitorsTitle": "访客记录",
-    "perkVisitorsText": "解除模糊，看清每一位浏览过您资料的人。",
-    "perkPassportTitle": "Passport Roaming",
-    "perkPassportText": "浏览并向 Manila、Cebu、Bangkok 和 Phnom Penh 的单身人士发送 Spark。",
-    "perkIntrosTitle": "无限自我介绍",
-    "perkIntrosText": "每天可开启任意数量的新对话（免费：{n} 个）。",
-    "perkSparksTitle": "无限 Sparks",
-    "perkSparksText": "向每一位心仪的人发送 Spark（免费：每天 {n} 次）。",
     "plan1m": "1 个月",
     "plan3m": "3 个月",
     "plan6m": "6 个月",
@@ -377,11 +362,22 @@
       "activeTitle": "Plus 已生效",
       "activeBody": "感谢您支持 Meet in Asia。您可随时管理账单或取消订阅。",
       "receiptsPrompt": "用 Plus 查看已读回执",
-      "savePct": "立省 {pct}%"
+      "savePct": "立省 {pct}%",
+      "rowPrivate": "隐私模式",
+      "rowGhost": "幽灵模式",
+      "cellPrivateFree": "女性免费",
+      "cellPrivatePlus": "在发现页隐藏，保留聊天",
+      "cellGhost": "浏览不留痕迹"
     }
   },
   "messages": {
     "deleteFailed": "无法删除对话，请重试。",
     "conversationDeleted": "对话已删除"
+  },
+  "chat": {
+    "cooldownTitle": "您已发送 {n} 条开场消息",
+    "cooldownBody": "对方一回复，就可以无限畅聊。您可在 {time} 后发送下一条消息。",
+    "cooldownCta": "用 Plus 继续聊天",
+    "outreachLimit": "您今天的 {n} 次新开场已用完。对方回复后即可无限畅聊。"
   }
 }
