@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Check, Mail, MessageCircle, Search, ShieldCheck, Trash2 } from 'lucide-react';
@@ -90,9 +90,25 @@ export default function MessagesPage() {
   const [loading, setLoading] = useState(() => initialConversations.length === 0);
   const [activeTab, setActiveTab] = useState<'all' | 'unread'>('all');
   const [searchQuery, setSearchQuery] = useState('');
+  /**
+   * Bumped when a delete starts and again when it settles. A list load that began before the bump
+   * may have read the conversation while it still existed (the page paints from cache and loads in
+   * the background, and Realtime can fire a load mid-delete), so its result is dropped instead of
+   * putting the deleted row back; a fresh load runs once the delete has settled.
+   */
+  const deleteEpoch = useRef(0);
+  const mountedRef = useRef(true);
+  useEffect(() => {
+    mountedRef.current = true;
+    return () => {
+      mountedRef.current = false;
+    };
+  }, []);
 
   const loadConversations = useCallback(
     async (userId: string, isMountedRef: { current: boolean }) => {
+      const epoch = deleteEpoch.current;
+      const stale = () => epoch !== deleteEpoch.current;
       try {
         const [{ data: msgs, error }, statesRes] = await Promise.all([
           supabase
@@ -108,7 +124,7 @@ export default function MessagesPage() {
         const states = new Map<string, ConvState>(((statesRes.data || []) as ConvState[]).map((s) => [s.partner_id, s]));
 
         if (error || !msgs || msgs.length === 0) {
-          if (isMountedRef.current) {
+          if (isMountedRef.current && !stale()) {
             setConversations([]);
             setLoading(false);
           }
@@ -144,7 +160,7 @@ export default function MessagesPage() {
 
         const partnerIds = Array.from(partnerMap.keys());
         if (partnerIds.length === 0) {
-          if (isMountedRef.current) {
+          if (isMountedRef.current && !stale()) {
             setConversations([]);
             setLoading(false);
           }
@@ -178,15 +194,11 @@ export default function MessagesPage() {
             };
           });
 
-        memoryConversationsCache = formatted;
-          if (typeof window !== 'undefined') {
-            try {
-              sessionStorage.setItem('ail_messages_fast_cache', JSON.stringify(formatted));
-            } catch {}
-          }
-          if (isMountedRef.current) {
-            setConversations(formatted);
-          }
+        if (stale()) return;
+        writeConversationsCache(formatted);
+        if (isMountedRef.current) {
+          setConversations(formatted);
+        }
       } catch (err) {
         console.error('Error loading conversations:', err);
       } finally {
@@ -289,20 +301,25 @@ export default function MessagesPage() {
     const { data: { session } } = await supabase.auth.getSession();
     const uid = session?.user?.id;
     if (!uid) return;
+    deleteEpoch.current += 1;
     const previous = conversations;
     const remaining = previous.filter((c) => c.recipientId !== conv.recipientId);
     setConversations(remaining);
     writeConversationsCache(remaining);
     // SECURITY DEFINER RPC: members cannot update rows they sent, so the hide goes through the database.
     const { error } = await supabase.rpc('delete_conversation', { p_other_user_id: conv.recipientId });
+    // Drop any load that started while the RPC was in flight, then reconcile with the database.
+    deleteEpoch.current += 1;
     if (error) {
       setConversations(previous);
       writeConversationsCache(previous);
       setActionError(localizeError({ code: error.code, message: error.message }, t, 'messages.deleteFailed'));
+      void loadConversations(uid, mountedRef);
       return;
     }
     // A leftover "Mark unread" for this partner would resurface on a new message; clear it (best effort).
     void supabase.from('conversation_states').delete().eq('user_id', uid).eq('partner_id', conv.recipientId);
+    void loadConversations(uid, mountedRef);
     showActionToast(t('messages.conversationDeleted'), 'check');
   };
 

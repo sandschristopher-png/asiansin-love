@@ -45,6 +45,11 @@ create policy "Participants can view deliverable messages"
     )
   );
 
+-- An older SELECT policy created outside the migrations (found with pg_policies) lets a member read
+-- every row they sent or received. Policies are OR-combined, so while it exists it overrides the hide
+-- above and a deleted conversation reappears on refresh. It is fully covered by the policy above.
+drop policy if exists "Users can read non-quarantined messages or their own messages" on public.messages;
+
 -- 3. Guard: deleted_by is writable only by the RPC below and the service role ----------------------
 -- Inside the SECURITY DEFINER RPC current_user is the function owner; a direct PostgREST update runs
 -- as authenticated/anon, whose attempt to change deleted_by is silently reverted.
@@ -112,8 +117,9 @@ commit;
 --          has_function_privilege('authenticated', p.oid, 'execute') as member_can_run
 --     from pg_proc p where p.proname = 'delete_conversation';
 --
+--   -- Exactly one SELECT policy should remain, "Participants can view deliverable messages":
 --   select policyname, cmd, qual from pg_policies
---    where schemaname = 'public' and tablename = 'messages';
+--    where schemaname = 'public' and tablename = 'messages' and cmd = 'SELECT';
 --
 -- Undo (only if needed; deleted conversations reappear):
 --   drop trigger if exists trg_guard_message_deleted_by on public.messages;
