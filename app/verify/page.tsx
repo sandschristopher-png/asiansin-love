@@ -10,6 +10,7 @@ import { FACE_GATE_MESSAGES, FACE_MIN_CONFIDENCE, type FaceGateStatus } from '@/
 import { hapticError, hapticPhotoSnap } from '@/lib/utils/haptics';
 import { QrCode } from '@/components/QrCode';
 import { useActionToast } from '@/components/ActionToast';
+import { useLocale } from '@/components/i18n/LocaleProvider';
 
 /**
  * Sent with the pose photo. Automatic captures carry the live gate's result (exactly one confident
@@ -130,6 +131,7 @@ function cameraErrorMessage(err: unknown): string {
 
 export default function VerifyPage() {
   const router = useRouter();
+  const { t } = useLocale();
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
@@ -651,10 +653,10 @@ export default function VerifyPage() {
             {step === 'pose' && <PoseImage pose={pose} className="w-12 h-12 rounded-xl shrink-0" />}
             <div className="min-w-0">
               <p className="text-[10px] uppercase tracking-wider text-white/70 font-semibold">
-                Step {step === 'face' ? '1' : '2'} of 2
+                {t('verify.step', { n: step === 'face' ? 1 : 2 })}
               </p>
               <p className="text-xs font-semibold leading-snug">
-                {step === 'face' ? 'Center your face in the frame' : 'Hold this pose beside your face'}
+                {step === 'face' ? t('verify.centerFace') : t('verify.holdPose')}
               </p>
               {step === 'pose' && <p className="text-[11px] text-white/80 leading-snug">{pose.label}</p>}
             </div>
@@ -667,11 +669,11 @@ export default function VerifyPage() {
             <span className="text-[11px] text-white/85 font-medium text-center">
               {step === 'face'
                 ? gateState === 'ready' && faceStatus === 'ok'
-                  ? 'Taking your portrait...'
-                  : 'Your portrait is taken automatically once your face is steady.'
+                  ? t('verify.takingPortrait')
+                  : t('verify.portraitHint')
                 : gateState === 'ready' && faceStatus === 'ok' && poseState === 'match'
-                  ? 'Taking your photo...'
-                  : 'The photo takes itself when you hold the pose, or tap the button.'}
+                  ? t('verify.takingPhoto')
+                  : t('verify.poseHint')}
             </span>
 
             {step === 'face' && (manualFaceReady || gateState === 'error') && (
@@ -680,7 +682,7 @@ export default function VerifyPage() {
                 onClick={() => takeFace(true)}
                 className="w-full max-w-[480px] py-3.5 px-6 rounded-full font-semibold text-sm bg-[#8574B7] hover:bg-[#534377] text-white shadow-lg transition-transform active:scale-95"
               >
-                Capture Photo
+                {t('verify.capturePhoto')}
               </button>
             )}
 
@@ -691,10 +693,10 @@ export default function VerifyPage() {
                   onClick={() => takeSnapshot(true)}
                   className="w-full max-w-[480px] py-3.5 px-6 rounded-full font-semibold text-sm bg-[#8574B7] hover:bg-[#534377] text-white shadow-lg transition-transform active:scale-95"
                 >
-                  Capture Verification Photo
+                  {t('verify.captureVerification')}
                 </button>
                 <button type="button" onClick={retakeFace} className="text-xs font-medium text-white/85 underline underline-offset-4">
-                  Retake portrait
+                  {t('verify.retakePortrait')}
                 </button>
               </>
             )}
@@ -703,7 +705,7 @@ export default function VerifyPage() {
       ) : snapshot && face ? (
         <div className="mx-4 mt-4 space-y-4 pb-28">
           <div className="p-4 rounded-3xl bg-white border border-[#D0CDE1] shadow-sm space-y-3">
-            <span className="text-[11px] font-medium uppercase tracking-wider text-[#8574B7]">Check your photos</span>
+            <span className="text-[11px] font-medium uppercase tracking-wider text-[#8574B7]">{t('verify.checkPhotos')}</span>
             <div className="grid grid-cols-2 gap-3">
               <figure className="space-y-1">
                 <img
@@ -711,7 +713,7 @@ export default function VerifyPage() {
                   alt="Your portrait"
                   className="w-full aspect-[3/4] object-cover rounded-2xl border border-[#D0CDE1] scale-x-[-1]"
                 />
-                <figcaption className="text-[10px] text-center text-slate-600">Step 1: Portrait</figcaption>
+                <figcaption className="text-[10px] text-center text-slate-600">{t('verify.portrait')}</figcaption>
               </figure>
               <figure className="space-y-1">
                 <img
@@ -719,13 +721,13 @@ export default function VerifyPage() {
                   alt="Your pose photo"
                   className="w-full aspect-[3/4] object-cover rounded-2xl border border-[#D0CDE1] scale-x-[-1]"
                 />
-                <figcaption className="text-[10px] text-center text-slate-600">Step 2: Pose</figcaption>
+                <figcaption className="text-[10px] text-center text-slate-600">{t('verify.pose')}</figcaption>
               </figure>
             </div>
             <div className="flex items-center gap-3 p-2 rounded-2xl bg-[#E8E6F1]/40">
               <PoseImage pose={pose} className="w-12 h-12 rounded-xl shrink-0" />
               <p className="text-xs text-[#413B5E]/75 leading-snug">
-                Requested pose: <span className="font-semibold text-[#413B5E]">{pose.label}</span>
+                {t('verify.requestedPose')}: <span className="font-semibold text-[#413B5E]">{pose.label}</span>
               </p>
             </div>
             <p className="text-xs text-[#413B5E]/75">Make sure your whole face and the pose are clearly visible.</p>
@@ -741,7 +743,7 @@ export default function VerifyPage() {
               className="py-3.5 rounded-2xl bg-white border border-[#D0CDE1] text-[#413B5E] text-xs font-medium flex items-center justify-center gap-1.5 active:scale-95 transition disabled:opacity-50"
             >
               <RotateCcw className="w-4 h-4" />
-              Retake pose
+              {t('verify.retakePose')}
             </button>
             <button
               type="button"
@@ -750,23 +752,23 @@ export default function VerifyPage() {
               className="py-3.5 rounded-2xl bg-[#8574B7] hover:bg-[#534377] text-white text-xs font-medium flex items-center justify-center gap-1.5 shadow-md shadow-[#8574B7]/30 active:scale-95 transition disabled:opacity-60"
             >
               {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <ScanFace className="w-4 h-4" />}
-              {submitting ? 'Submitting...' : 'Submit for review'}
+              {submitting ? t('verify.submitting') : t('verify.submit')}
             </button>
           </div>
           <button type="button" disabled={submitting} onClick={retakeFace} className="w-full text-xs font-medium text-[#8574B7] hover:text-[#534377] disabled:opacity-50">
-            Retake portrait
+            {t('verify.retakePortrait')}
           </button>
         </div>
       ) : (
         <div className="mx-4 mt-4 space-y-4 pb-28">
           <div className="p-5 rounded-3xl bg-white border border-[#D0CDE1] space-y-3 shadow-sm">
-            <span className="text-[11px] font-medium uppercase tracking-wider text-[#8574B7]">Two quick photos</span>
+            <span className="text-[11px] font-medium uppercase tracking-wider text-[#8574B7]">{t('verify.twoQuick')}</span>
             <ol className="space-y-1.5 text-xs text-[#413B5E]/85 leading-relaxed">
               <li className={face ? 'line-through text-slate-500' : ''}>
-                <span className="font-semibold text-[#413B5E]">1. Portrait.</span> Center your face in the frame.
+                <span className="font-semibold text-[#413B5E]">1. {t('verify.portrait')}.</span> {t('verify.centerFace')}.
               </li>
               <li>
-                <span className="font-semibold text-[#413B5E]">2. Pose.</span> Hold this pose beside your face:
+                <span className="font-semibold text-[#413B5E]">2. {t('verify.pose')}.</span> {t('verify.holdPose')}:
               </li>
             </ol>
             <PoseImage pose={pose} className="w-36 h-36 mx-auto rounded-3xl" />
@@ -800,7 +802,7 @@ export default function VerifyPage() {
             className="w-full py-3.5 rounded-full bg-[#8574B7] hover:bg-[#534377] text-white text-sm font-semibold flex items-center justify-center gap-2 shadow-md shadow-[#8574B7]/30 active:scale-95 transition"
           >
             <Camera className="w-4 h-4" />
-            {face ? 'Continue to pose photo' : 'Open camera'}
+            {face ? t('verify.continuePose') : t('verify.openCamera')}
           </button>
         </div>
       )}

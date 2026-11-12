@@ -12,6 +12,7 @@ import {
 import { supabase } from '@/lib/supabase/client';
 import { useNotificationCounts } from '@/lib/notificationStore';
 import { useBottomNavHidden } from '@/lib/bottomNavStore';
+import { useLocale } from '@/components/i18n/LocaleProvider';
 
 const PUBLIC_ROUTES = [
   '/',
@@ -28,6 +29,7 @@ const PUBLIC_ROUTES = [
 ];
 
 export function BottomNav() {
+  const { t } = useLocale();
   const { unreadMessages: unreadCount, unseenSparks } = useNotificationCounts();
   // A screen (e.g. My Profile while editing) can ask the dock to step aside.
   const hiddenByScreen = useBottomNavHidden();
@@ -79,10 +81,10 @@ export function BottomNav() {
   }
 
   const navItems = [
-    { href: '/discover', label: 'Discover', icon: Compass },
-    { href: '/favorites', label: 'Sparks', icon: Heart, badge: unseenSparks },
-    { href: '/messages', label: 'Messages', icon: MessageCircle, badge: unreadCount },
-    { href: '/profile', label: 'Profile', icon: User },
+    { href: '/discover', label: t('nav.discover'), icon: Compass },
+    { href: '/favorites', label: t('nav.sparks'), icon: Heart, badge: unseenSparks },
+    { href: '/messages', label: t('nav.messages'), icon: MessageCircle, badge: unreadCount },
+    { href: '/profile', label: t('nav.profile'), icon: User },
   ];
 
   return (

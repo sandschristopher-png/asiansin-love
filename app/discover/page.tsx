@@ -19,6 +19,8 @@ import { PhotoCarousel } from '@/components/cards/PhotoCarousel';
 import { useActionToast } from '@/components/ActionToast';
 import { VisitingBadge, type TravelNotice } from '@/components/VisitingBadge';
 import { TripBadge } from '@/components/trips/TripBadge';
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import type { TKey } from '@/lib/i18n';
 import { TRIP_HUBS, type TripBrief } from '@/lib/tripHubs';
 import { NewMemberPill } from '@/components/profile/TrustBadges';
 import {
@@ -118,6 +120,12 @@ const DISCOVERY_MODES = [
   { id: 'new', label: 'New' },
 ] as const;
 type DiscoveryModeId = (typeof DISCOVERY_MODES)[number]['id'];
+const MODE_KEY = {
+  all: 'discover.modeAll',
+  online: 'discover.modeOnline',
+  near_me: 'discover.modeNearMe',
+  new: 'discover.modeNew',
+} as const satisfies Record<DiscoveryModeId, TKey>;
 
 const GENDER_LABELS: Record<string, string> = {
   woman: 'Women',
@@ -326,6 +334,7 @@ function getInitialDiscoverFeed(): ProfileItem[] {
 
 function DiscoverContent() {
   const router = useRouter();
+  const { t } = useLocale();
   const searchParams = useSearchParams();
 
   const [discoveryMode, setDiscoveryMode] = useState<DiscoveryModeId>('all');
@@ -806,7 +815,7 @@ function DiscoverContent() {
       sessionStorage.removeItem('ail_discover_filters');
     } catch {}
     void fetchProfiles();
-    showActionToast('Filters reset to default', 'info');
+    showActionToast(t('discover.resetToast'), 'info');
   };
 
   const [resettingSparks, setResettingSparks] = useState(false);
@@ -1040,7 +1049,7 @@ function DiscoverContent() {
                     }`}
                     
                   >
-                    {mode.label}
+                    {t(MODE_KEY[mode.id])}
                   </button>
                 );
               })}
@@ -1175,7 +1184,7 @@ function DiscoverContent() {
             <div className="w-12 h-12 mx-auto rounded-2xl bg-[#E8E6F1]/60 flex items-center justify-center text-[#8574B7]">
               <MapPin className="w-5 h-5" aria-hidden />
             </div>
-            <p className="font-brand text-base font-semibold text-[#413B5E]">No members near your location yet.</p>
+            <p className="font-brand text-base font-semibold text-[#413B5E]">{t('discover.noMembers')}</p>
             <p className="text-xs text-[#413B5E]/75 leading-relaxed max-w-[280px] mx-auto">
               Explore the All or Online tabs to meet genuine singles across Southeast Asia.
             </p>
@@ -1212,7 +1221,7 @@ function DiscoverContent() {
                 onClick={() => setFiltersOpen(true)}
                 className="h-11 px-6 rounded-full border border-[#D0CDE1] bg-white text-sm font-medium text-[#413B5E] hover:bg-[#E8E6F1]/40 transition-colors cursor-pointer"
               >
-                Adjust Filters
+                {t('discover.adjustFilters')}
               </button>
             </div>
             {process.env.NODE_ENV === 'development' && (
@@ -1245,7 +1254,7 @@ function DiscoverContent() {
               className="inline-flex items-center gap-1.5 px-5 py-2.5 text-xs font-medium rounded-full bg-[#8574B7] text-white hover:bg-[#413B5E] transition shadow-sm cursor-pointer"
             >
               <RotateCcw className="w-3.5 h-3.5" />
-              <span>Reset Filters</span>
+              <span>{t('discover.resetFilters')}</span>
             </button>
           </div>
         )}
@@ -1465,17 +1474,17 @@ function DiscoverContent() {
 
                     <div>
                       <label className="text-[11px] font-semibold text-[#413B5E]/75 uppercase tracking-wider block mb-2">
-                        Visiting hub
+                        {t('discover.visitingHub')}
                       </label>
                       <ThemedSelect<string>
-                        ariaLabel="Visiting hub"
+                        ariaLabel={t('discover.visitingHub')}
                         value={draftHub}
                         onChange={setDraftHub}
-                        options={HUB_FILTER_OPTIONS}
+                        options={[{ value: '', label: t('discover.anyCity') }, ...HUB_FILTER_OPTIONS.slice(1)]}
                         menuClassName="w-full"
                         className={FILTER_SELECT}
                       />
-                      <p className="mt-1.5 text-[11px] text-slate-600">Members in or arriving soon in this city.</p>
+                      <p className="mt-1.5 text-[11px] text-slate-600">{t('discover.visitingHubHint')}</p>
                     </div>
 
                     {[
@@ -1527,7 +1536,7 @@ function DiscoverContent() {
                                 : 'bg-white text-[#413B5E] border-[#D0CDE1] hover:border-[#8574B7]/40')
                             }
                           >
-                            {mode.label}
+                            {t(MODE_KEY[mode.id])}
                           </button>
                         ))}
                       </div>
@@ -1535,7 +1544,7 @@ function DiscoverContent() {
 
                     <div className="space-y-3 pt-1">
                       {[
-                        { label: 'Verified profiles only', value: draftVerifiedOnly, set: setDraftVerifiedOnly },
+                        { label: t('discover.selfieVerifiedOnly'), value: draftVerifiedOnly, set: setDraftVerifiedOnly },
                         { label: 'Active now only', value: draftActiveNowOnly, set: setDraftActiveNowOnly },
                         { label: 'Hide profiles I already Sparked or messaged', value: draftHideContacted, set: setDraftHideContacted },
                         {
@@ -1580,14 +1589,14 @@ function DiscoverContent() {
                       }}
                       className="py-2.5 px-4 rounded-full text-xs font-medium text-[#413B5E]/75 hover:text-[#413B5E] hover:bg-[#E8E6F1]/40 transition cursor-pointer"
                     >
-                      Reset
+                      {t('discover.reset')}
                     </button>
                     <button
                       type="button"
                       onClick={applyFilters}
                       className="flex-1 py-2.5 rounded-full bg-[#8574B7] hover:bg-[#534377] text-white text-xs font-medium shadow-xs active:scale-[0.98] transition-all cursor-pointer"
                     >
-                      Apply Filters
+                      {t('discover.apply')}
                     </button>
                   </div>
                 </div>

@@ -23,6 +23,8 @@ import { LIFESTYLE_KEYS, readHeightCm, readLifestyle, type LifestyleValues } fro
 import { PlusBadge } from '@/components/ui/PlusBadge';
 import { ThemedSelect } from '@/components/ui/ThemedSelect';
 import { validateProfileContent } from '@/lib/moderation';
+import { profileContentMessage } from '@/lib/i18n/moderationMessages';
+import { useLocale } from '@/components/i18n/LocaleProvider';
 
 /** Loaded on first open (keeps the upgrade sheet out of the page bundle). */
 const UpgradeModal = dynamic(() => import('@/components/UpgradeModal'), { ssr: false });
@@ -60,6 +62,7 @@ function cleanHeightForDb(input: string): string | null {
 
 export default function EditProfilePage() {
   const router = useRouter();
+  const { t } = useLocale();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -559,7 +562,7 @@ export default function EditProfilePage() {
                   {usernameStatus === 'taken' && <span className="text-red-400">Handle is already taken.</span>}
                   {usernameStatus === 'idle' && 'Claim your unique username.'}
                 </p>
-                {!handleCheck.isValid && <p className="text-xs text-red-600 font-medium mt-1" role="alert">{handleCheck.errorMessage}</p>}
+                {!handleCheck.isValid && <p className="text-xs text-red-600 font-medium mt-1" role="alert">{profileContentMessage(handleCheck, t)}</p>}
               </div>
             )}
           </div>
@@ -577,7 +580,7 @@ export default function EditProfilePage() {
               aria-invalid={!nameCheck.isValid}
               className={`w-full px-4 py-2.5 rounded-xl bg-[#FFFFFF] border text-[#413B5E] text-sm focus:outline-none ${nameCheck.isValid ? 'border-[#B8B3D1]/35 focus:border-[#B8B3D1]' : 'border-red-400 focus:border-red-500'}`}
             />
-            {!nameCheck.isValid && <p className="text-xs text-red-600 font-medium mt-1" role="alert">{nameCheck.errorMessage}</p>}
+            {!nameCheck.isValid && <p className="text-xs text-red-600 font-medium mt-1" role="alert">{profileContentMessage(nameCheck, t)}</p>}
           </div>
 
           {/* Age & Location */}
@@ -856,10 +859,10 @@ export default function EditProfilePage() {
             />
             <p id="bio-helper" className={`text-[11px] ${bioRejected ? 'text-amber-700 font-medium' : 'text-slate-600'}`}>
               {bioRejected
-                ? 'Remove links, social handles, phone numbers, emails and payment apps. You can trade contact details in chat once you have matched.'
-                : 'No links, social handles or contact info. Keep it about you.'}
+                ? t('moderation.bioHelperRejected')
+                : t('moderation.bioHelper')}
             </p>
-            {!bioCheck.isValid && <p className="text-xs text-red-600 font-medium mt-1" role="alert">{bioCheck.errorMessage}</p>}
+            {!bioCheck.isValid && <p className="text-xs text-red-600 font-medium mt-1" role="alert">{profileContentMessage(bioCheck, t)}</p>}
           </div>
 
           {/* Upcoming travel notice (Plus) */}

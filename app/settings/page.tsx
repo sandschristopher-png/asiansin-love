@@ -21,6 +21,8 @@ import {
 import { supabase } from '@/lib/supabase/client';
 import { hardSignOut } from '@/lib/hardSignOut';
 import { PushDeviceRow } from '@/components/PushDeviceRow';
+import { AppLanguageRow } from '@/components/i18n/AppLanguageRow';
+import { useLocale } from '@/components/i18n/LocaleProvider';
 import { InstallAppCard } from '@/components/InstallAppCard';
 import { HapticsRow } from '@/components/HapticsRow';
 import { AlertPrefsRows } from '@/components/AlertPrefsRows';
@@ -73,6 +75,7 @@ const SettingRow = ({
 
 export default function SettingsHubPage() {
   const router = useRouter();
+  const { t } = useLocale();
   const [loading, setLoading] = useState(() => !cachedSettingsData);
   const [loggingOut, setLoggingOut] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -290,11 +293,16 @@ export default function SettingsHubPage() {
           </div>
         )}
 
+        {/* App language: menus and buttons (not the languages spoken on the profile) */}
+        <div className="rounded-3xl bg-white border border-[#D0CDE1] p-2 shadow-2xs">
+          <AppLanguageRow />
+        </div>
+
         {/* CARD 1: ACCOUNT & TRUST */}
         <div className="rounded-3xl bg-white border border-[#D0CDE1] p-2 shadow-2xs space-y-1">
           <div className="px-3 pt-2 pb-1">
             <span className="text-[10px] font-semibold uppercase tracking-wider text-[#8574B7]">
-              Account &amp; Trust
+              {t('settings.accountTrust')}
             </span>
           </div>
 
@@ -307,8 +315,8 @@ export default function SettingsHubPage() {
                 <ShieldCheck className="w-4 h-4" />
               </div>
               <div>
-                <p className="text-xs font-semibold text-[#413B5E]">Identity Verification</p>
-                <p className="text-[11px] text-[#413B5E]/75">GPS &amp; selfie trust badge status</p>
+                <p className="text-xs font-semibold text-[#413B5E]">{t('settings.identityVerification')}</p>
+                <p className="text-[11px] text-[#413B5E]/75">{t('settings.identityVerificationSub')}</p>
               </div>
             </div>
             <ChevronRight className="w-4 h-4 text-slate-600" />
@@ -323,8 +331,8 @@ export default function SettingsHubPage() {
                 <Lock className="w-4 h-4" />
               </div>
               <div>
-                <p className="text-xs font-semibold text-[#413B5E]">Reputation &amp; Conduct Standing</p>
-                <p className="text-[11px] text-[#413B5E]/75">Community trust and conduct</p>
+                <p className="text-xs font-semibold text-[#413B5E]">{t('settings.reputation')}</p>
+                <p className="text-[11px] text-[#413B5E]/75">{t('settings.reputationSub')}</p>
               </div>
             </div>
             <ChevronRight className="w-4 h-4 text-slate-600" />
@@ -335,7 +343,7 @@ export default function SettingsHubPage() {
         <div className="rounded-3xl bg-white border border-[#D0CDE1] p-2 shadow-2xs space-y-1">
           <div className="px-3 pt-2 pb-1">
             <span className="text-[10px] font-semibold uppercase tracking-wider text-[#8574B7]">
-              Privacy &amp; Discretion
+              {t('settings.privacyDiscretion')}
             </span>
           </div>
 
