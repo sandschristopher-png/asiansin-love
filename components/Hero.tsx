@@ -34,10 +34,10 @@ export default function Hero() {
   return (
     <section className="w-full bg-white pt-2 pb-10">
       <div className="flex flex-col items-center text-center">
-        {/* Full-bleed photo in a rounded mask (source is 1024x572). */}
-        <div className="relative w-full aspect-[1024/572] overflow-hidden rounded-[2rem] bg-[#E8E6F1]/50">
+        {/* Full-bleed photo in a rounded mask, 3:2 landscape (source is 1024x687). */}
+        <div className="relative w-full aspect-[3/2] overflow-hidden rounded-2xl bg-[#E8E6F1]/50">
           <Image
-            src="/images/hero-pinay.png"
+            src="/Landing-Woman.png"
             alt={m.hero.imageAlt}
             fill
             priority
