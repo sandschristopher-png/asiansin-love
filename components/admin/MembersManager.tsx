@@ -191,11 +191,9 @@ export function MembersManager({ selfId, ownerId, isOwner }: { selfId: string; o
     try {
       const r = await adminFetch<{ members: Member[] }>(`/api/admin/members?q=${encodeURIComponent(name)}`);
       const lower = name.toLowerCase();
-      const match =
-        r.members.find((m) => m.name.toLowerCase() === lower) ||
-        r.members.find((m) => (m.displayName || '').toLowerCase() === lower) ||
-        (r.members.length === 1 ? r.members[0] : undefined);
-      if (!match) throw new Error(r.members.length ? `"${name}" matches several members. Use the exact username.` : `No member named "${name}".`);
+      // Exact username only: a partial name must never grant (or revoke) admin access.
+      const match = r.members.find((m) => m.name.toLowerCase() === lower);
+      if (!match) throw new Error(r.members.length ? `No member has the exact username "${name}". Use the full username.` : `No member named "${name}".`);
       await adminFetch('/api/admin/roles', { userId: match.id, role: grantRole });
       setFlash(grantRole === 'moderator' ? `${match.name} is now a moderator.` : `${match.name}'s admin access was revoked.`);
       setGrantName('');

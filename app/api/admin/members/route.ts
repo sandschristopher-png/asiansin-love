@@ -20,7 +20,7 @@ function ageOf(p: any): number | null {
 
 const memberRow = (p: any) => ({
   id: p.id,
-  name: String(p.username || p.display_name || p.full_name || 'Member').replace(/^@/, ''),
+  name: String(p.username || `Member ${String(p.id).slice(0, 8)}`).replace(/^@/, ''),
   displayName: p.display_name || p.full_name || null,
   age: ageOf(p),
   location: [p.city, p.country].filter(Boolean).join(', ') || null,
@@ -40,7 +40,7 @@ export async function GET(req: NextRequest) {
   const q = (req.nextUrl.searchParams.get('q') || '').replace(/[^\p{L}\p{N} _.-]/gu, '').trim().slice(0, 40);
   let query = admin.from('profiles').select('*').limit(40);
   if (q) {
-    query = query.or(`username.ilike.%${q}%,display_name.ilike.%${q}%,full_name.ilike.%${q}%`);
+    query = query.ilike('username', `%${q}%`);
   } else {
     // No search: show current staff (admin_role, or the legacy role / is_admin flags).
     query = query.or('admin_role.in.(moderator,super_admin),role.eq.admin,is_admin.eq.true');

@@ -42,7 +42,7 @@ const profileCard = (p: any) =>
   p
     ? {
         id: p.id,
-        name: String(p.username || p.display_name || p.full_name || 'Member').replace(/^@/, ''),
+        name: String(p.username || `Member ${String(p.id).slice(0, 8)}`).replace(/^@/, ''),
         avatarUrl: p.avatar_url || null,
         reputation: typeof p.reputation_score === 'number' ? p.reputation_score : 100,
         isBanned: p.is_banned === true,

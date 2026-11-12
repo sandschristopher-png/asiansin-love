@@ -26,7 +26,7 @@ export async function GET() {
     // Attach sender / receiver profiles in one lookup (no reliance on FK constraint names).
     const ids = [...new Set((rows || []).flatMap((m) => [m.sender_id, m.receiver_id]).filter(Boolean))];
     const { data: profiles } = ids.length
-      ? await supabase.from('profiles').select('id, username, full_name, reputation_score').in('id', ids)
+      ? await supabase.from('profiles').select('id, username, reputation_score').in('id', ids)
       : { data: [] };
     const byId = new Map((profiles || []).map((p) => [p.id, p]));
 

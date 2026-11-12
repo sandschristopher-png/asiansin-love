@@ -28,13 +28,11 @@ interface ModeratedMessage {
   sender?: {
     id?: string;
     username?: string;
-    full_name?: string;
     reputation_score?: number;
   };
   receiver?: {
     id?: string;
     username?: string;
-    full_name?: string;
   };
 }
 
@@ -120,7 +118,7 @@ export default function AdminModerationPage() {
 
   const filteredMessages = messages.filter((m) => {
     const q = searchQuery.toLowerCase();
-    const senderName = m.sender?.username || m.sender?.full_name || m.sender_id;
+    const senderName = m.sender?.username || m.sender_id;
     return (
       m.content.toLowerCase().includes(q) ||
       senderName.toLowerCase().includes(q) ||
@@ -222,7 +220,7 @@ export default function AdminModerationPage() {
         ) : (
           <div className="space-y-3">
             {filteredMessages.map((msg) => {
-              const senderLabel = msg.sender?.username || msg.sender?.full_name || `User ${msg.sender_id.slice(0, 8)}`;
+              const senderLabel = msg.sender?.username || `Member ${msg.sender_id.slice(0, 8)}`;
               
               return (
                 <div
@@ -279,7 +277,7 @@ export default function AdminModerationPage() {
           />
 
           {/* Drawer Body */}
-          <div className="relative w-full max-w-[430px] mx-auto bg-white border-t border-[#D0CDE1] rounded-t-3xl max-h-[85dvh] overflow-y-auto p-5 space-y-5 shadow-2xl z-10 animate-in slide-in-from-bottom duration-200">
+          <div className="relative w-full max-w-[480px] mx-auto bg-white border-t border-[#D0CDE1] rounded-t-3xl max-h-[85dvh] overflow-y-auto p-5 space-y-5 shadow-2xl z-10 animate-in slide-in-from-bottom duration-200">
             {/* Sheet Grab Handle on Mobile */}
             <div className="w-10 h-1 bg-[#E8E6F1]/60 rounded-full mx-auto" />
 

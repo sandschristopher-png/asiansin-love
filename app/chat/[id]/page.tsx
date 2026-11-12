@@ -411,7 +411,9 @@ export default function ChatConversationPage() {
           : supabase
               .from('profiles')
               .select('id, username, display_name, full_name, avatar_url, reputation_score, city, country, interests, languages, last_active, show_active_status, is_verified, verification_status')
-              .or(`username.ilike.%${handleParam}%,display_name.ilike.%${handleParam}%`)
+              // Exact username only: matching display_name (the Google real name) would let anyone look up
+              // which username belongs to a real name, and the raw URL text must never reach a filter string.
+              .eq('username', String(handleParam).toLowerCase().replace(/[^a-z0-9_]/g, ''))
               .limit(1)
               .maybeSingle(),
       ]);

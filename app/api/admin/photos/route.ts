@@ -49,7 +49,7 @@ export async function GET() {
       if (p.avatar_url && !photos.includes(p.avatar_url)) photos.unshift(p.avatar_url);
       return {
         id: p.id,
-        name: String(p.username || p.display_name || p.full_name || 'Member').replace(/^@/, ''),
+        name: String(p.username || `Member ${String(p.id).slice(0, 8)}`).replace(/^@/, ''),
         age: ageOf(p),
         location: [p.city, p.country].filter(Boolean).join(', ') || null,
         avatarUrl: p.avatar_url || null,
