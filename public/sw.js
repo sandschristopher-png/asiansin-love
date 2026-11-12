@@ -7,7 +7,8 @@
 // v8: offline.html embeds the Plus Jakarta Sans wordmark font.
 // v9: offline.html shows the 404 monkey, precached with the page.
 // v10: the monkey is now a 42 KB WebP (was a 750 KB PNG), so it is precached with the app shell.
-const CACHE_NAME = 'ail-cache-v10';
+// v11: new Plus Jakarta Sans "M" monogram icons (PWA + favicon); the shell is re-fetched past the HTTP cache.
+const CACHE_NAME = 'ail-cache-v11';
 const OFFLINE_URL = '/offline.html';
 // App shell that must work with no network. Next.js JS / CSS chunks are content-hashed and are
 // cached at runtime on first use (fetch handler below).
@@ -15,7 +16,8 @@ const PRECACHE = [OFFLINE_URL, '/404-Monkey.webp', '/manifest.webmanifest', '/ic
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((c) => c.addAll(PRECACHE)).then(() => self.skipWaiting())
+    // cache: 'reload' skips the browser's HTTP cache so a changed icon is never precached stale.
+    caches.open(CACHE_NAME).then((c) => c.addAll(PRECACHE.map((u) => new Request(u, { cache: 'reload' })))).then(() => self.skipWaiting())
   );
 });
 

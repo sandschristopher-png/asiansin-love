@@ -1,3 +1,5 @@
+// LEGACY: the old "a" mark. App icons (favicon, PWA, Apple touch, Google OAuth logo) now come from
+// scripts/export-icons.mjs; do not run this script for them or it would overwrite the "M" icons.
 // Exports every brand asset from the real Plus Jakarta Sans glyph outlines.
 //   node scripts/export-brand-assets.mjs
 //
