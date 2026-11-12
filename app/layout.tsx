@@ -48,13 +48,19 @@ const SITE_TITLE = 'Meet in Asia | Real Connections, Selfie-Verified Profiles';
 const SITE_DESCRIPTION =
   'Connect with verified singles across Asia for meaningful, long-term relationships. Built-in safety features, public reputation scores, and free selfie verification.';
 
-// Social share cards (Open Graph / Twitter). The image is the static public/og-card.png (1200x630,
-// about 126 KB, built with sharp from public/images/hero-pinay.png). It is set explicitly here:
-// an app/opengraph-image file would override these settings, so there is none. No middleware
-// matcher covers /og-card.png and robots.txt allows it, so every social crawler can fetch it.
-const SHARE_TITLE = 'Meet in Asia | Meaningful Connections';
+// Social share cards (Open Graph / Twitter). The image is the landing hero photo,
+// public/Landing-Woman.png (1024x687, about 810 KB); metadataBase makes it absolute. It is set
+// explicitly here: an app/opengraph-image file would override these settings, so there is none.
+// No middleware matcher covers static .png files and robots.txt allows them, so every social
+// crawler can fetch it.
+const SHARE_TITLE = 'Meet in Asia | Serious International Dating — Selfie-Verified Profiles';
 const SHARE_DESCRIPTION = 'Connect with selfie-verified singles and real travel plans across Southeast Asia.';
-const SHARE_IMAGE = { url: '/og-card.png', width: 1200, height: 630, alt: 'Meet in Asia' };
+const SHARE_IMAGE = {
+  url: '/Landing-Woman.png',
+  width: 1024,
+  height: 687,
+  alt: 'Smiling woman sitting on a stone bench in a sunlit courtyard',
+};
 
 export const metadata: Metadata = {
   metadataBase: new URL('https://meetin.asia'),
