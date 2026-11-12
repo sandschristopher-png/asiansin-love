@@ -224,6 +224,18 @@ a:active,
 :is(:lang(th), :lang(km)) :is(h1, h2, h3) {
   line-height: 1.45;
 }
+/* Tight line heights (leading-none / -tight / -snug, buttons, tabs, pills) clip Thai tone marks and Khmer
+   subscripts, most of all inside truncate and overflow-hidden boxes. Unlayered, so it wins over the
+   utilities layer; fixed-height controls stay centred because their content is flex-centred. */
+:is(:lang(th), :lang(km)) :is(.leading-none, .leading-tight, .leading-snug, [class*='leading-['], button, [role='tab'], [role='radio'], [role='switch'], [role='button'], label) {
+  line-height: 1.5;
+}
+:lang(km) :is(.leading-none, .leading-tight, .leading-snug, [class*='leading-['], button, [role='tab'], [role='radio'], [role='switch'], [role='button'], label) {
+  line-height: 1.6;
+}
+:is(:lang(th), :lang(km)) :is(.truncate, [class*='line-clamp-']) {
+  padding-block: 0.1em;
+}
 
 /* Liquid purple brand gradient (wordmark "love") */
 .text-brand-gradient {
