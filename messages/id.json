@@ -189,9 +189,9 @@
     "portalTimeout": "Portal penagihan terlalu lama merespons. Silakan coba lagi.",
     "deleteFailed": "Gagal menghapus akun. Silakan coba lagi.",
     "privateMode": "Mode Privat (Jeda Profil)",
-    "privateModeSub": "Sembunyi dari Jelajahi tanpa kehilangan obrolanmu",
+    "privateModeSub": "Sembunyikan profilmu dari Jelajahi sementara obrolan yang sedang berjalan tetap aktif.",
     "ghostMode": "Mode Hantu (Menjelajah Diam-diam)",
-    "ghostModeSub": "Lihat profil tanpa meninggalkan jejak di riwayat pengunjung mereka.",
+    "ghostModeSub": "Lihat profil tanpa muncul di daftar pengunjung mereka.",
     "activeStatus": "Tampilkan Status Aktif",
     "activeStatusSub": "Tampilkan indikator hijau saat online di profilmu",
     "notifications": "Notifikasi",
@@ -254,7 +254,9 @@
     "pushCardSettings": "Matikan kapan saja di Pengaturan.",
     "allow": "Izinkan",
     "plusActiveTitle": "Meet in Asia Plus Aktif",
-    "plusActiveSub": "Kelola langganan dan penagihanmu"
+    "plusActiveSub": "Kelola langganan dan penagihanmu",
+    "privateOn": "Profil dijeda. Kamu tersembunyi dari Jelajahi.",
+    "privateOff": "Profilmu tampil lagi di Jelajahi."
   },
   "errors": {
     "generic": "Terjadi kesalahan. Silakan coba lagi.",
@@ -365,8 +367,6 @@
       "savePct": "Hemat {pct}%",
       "rowPrivate": "Mode Privat",
       "rowGhost": "Mode Hantu",
-      "cellPrivateFree": "Gratis untuk perempuan",
-      "cellPrivatePlus": "Sembunyi dari Jelajahi, obrolan tetap ada",
       "cellGhost": "Jelajahi tanpa meninggalkan jejak"
     }
   },
@@ -377,7 +377,7 @@
   "chat": {
     "cooldownTitle": "Kamu sudah mengirim {n} pesan perkenalan",
     "cooldownBody": "Pesan tanpa batas terbuka begitu mereka membalas. Pesan berikutnya bisa dikirim dalam {time}.",
-    "cooldownCta": "Lanjut mengobrol dengan Plus",
+    "cooldownCta": "Mulai obrolan baru tanpa batas dengan Plus",
     "outreachLimit": "Kamu sudah memakai {n} perkenalan baru hari ini. Pesan tanpa batas terbuka setelah mereka membalas."
   }
 }

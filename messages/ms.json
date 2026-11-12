@@ -189,9 +189,9 @@
     "portalTimeout": "Portal pengebilan mengambil masa terlalu lama untuk bertindak balas. Sila cuba lagi.",
     "deleteFailed": "Gagal memadam akaun. Sila cuba lagi.",
     "privateMode": "Mod Peribadi (Jeda Profil)",
-    "privateModeSub": "Sembunyi daripada Teroka sambil mengekalkan sembang anda",
+    "privateModeSub": "Sembunyikan profil anda daripada Teroka sementara sembang semasa kekal aktif.",
     "ghostMode": "Mod Hantu (Semak Senyap-senyap)",
-    "ghostModeSub": "Lihat profil tanpa meninggalkan kesan dalam sejarah pelawat mereka.",
+    "ghostModeSub": "Layari profil tanpa muncul dalam senarai pelawat mereka.",
     "activeStatus": "Tunjukkan Status Aktif",
     "activeStatusSub": "Paparkan penunjuk hijau dalam talian pada profil anda",
     "notifications": "Pemberitahuan",
@@ -254,7 +254,9 @@
     "pushCardSettings": "Matikan pada bila-bila masa dalam Tetapan.",
     "allow": "Benarkan",
     "plusActiveTitle": "Meet in Asia Plus Aktif",
-    "plusActiveSub": "Urus langganan dan pengebilan anda"
+    "plusActiveSub": "Urus langganan dan pengebilan anda",
+    "privateOn": "Profil dijeda. Anda tersembunyi daripada Teroka.",
+    "privateOff": "Profil anda kelihatan semula dalam Teroka."
   },
   "errors": {
     "generic": "Sesuatu tidak kena. Sila cuba lagi.",
@@ -365,8 +367,6 @@
       "savePct": "Jimat {pct}%",
       "rowPrivate": "Mod Peribadi",
       "rowGhost": "Mod Hantu",
-      "cellPrivateFree": "Percuma untuk wanita",
-      "cellPrivatePlus": "Sembunyi daripada Teroka, sembang kekal",
       "cellGhost": "Layari tanpa meninggalkan kesan"
     }
   },
@@ -377,7 +377,7 @@
   "chat": {
     "cooldownTitle": "Anda telah menghantar {n} mesej perkenalan",
     "cooldownBody": "Mesej tanpa had dibuka sebaik sahaja mereka membalas. Mesej seterusnya boleh dihantar dalam {time}.",
-    "cooldownCta": "Teruskan bersembang dengan Plus",
+    "cooldownCta": "Mulakan sembang baharu tanpa had dengan Plus",
     "outreachLimit": "Anda telah menggunakan {n} perkenalan baharu hari ini. Mesej tanpa had dibuka selepas mereka membalas."
   }
 }

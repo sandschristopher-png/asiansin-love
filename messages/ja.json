@@ -189,9 +189,9 @@
     "portalTimeout": "請求ポータルの応答に時間がかかっています。もう一度お試しください。",
     "deleteFailed": "アカウントを削除できませんでした。もう一度お試しください。",
     "privateMode": "プライベートモード(プロフィールを一時停止)",
-    "privateModeSub": "チャットはそのままに、探すから非表示にします",
+    "privateModeSub": "プロフィールを「探す」から非表示にしても、現在のチャットはそのまま利用できます。",
     "ghostMode": "ゴーストモード(こっそり閲覧)",
-    "ghostModeSub": "相手の訪問履歴に足跡を残さずにプロフィールを見られます。",
+    "ghostModeSub": "相手の訪問者リストに表示されずにプロフィールを閲覧できます。",
     "activeStatus": "アクティブ状態を表示",
     "activeStatusSub": "プロフィールにオンラインを示す緑の表示を出します",
     "notifications": "通知",
@@ -254,7 +254,9 @@
     "pushCardSettings": "設定からいつでもオフにできます。",
     "allow": "許可",
     "plusActiveTitle": "Meet in Asia Plus有効",
-    "plusActiveSub": "サブスクリプションと請求を管理"
+    "plusActiveSub": "サブスクリプションと請求を管理",
+    "privateOn": "プロフィールを一時停止しました。探すには表示されません。",
+    "privateOff": "プロフィールが再び「探す」に表示されます。"
   },
   "errors": {
     "generic": "問題が発生しました。もう一度お試しください。",
@@ -365,8 +367,6 @@
       "savePct": "{pct}%お得",
       "rowPrivate": "プライベートモード",
       "rowGhost": "ゴーストモード",
-      "cellPrivateFree": "女性は無料",
-      "cellPrivatePlus": "探すから非表示、チャットはそのまま",
       "cellGhost": "足跡を残さずに閲覧"
     }
   },
@@ -377,7 +377,7 @@
   "chat": {
     "cooldownTitle": "最初のメッセージを{n}通送りました",
     "cooldownBody": "相手が返信すると、メッセージは無制限になります。次のメッセージは{time}後に送れます。",
-    "cooldownCta": "Plusでそのまま会話を続ける",
+    "cooldownCta": "Plusで新しい会話を無制限に始める",
     "outreachLimit": "本日の新しい自己紹介{n}件に達しました。相手が返信すると、メッセージは無制限になります。"
   }
 }

@@ -189,9 +189,9 @@
     "portalTimeout": "결제 포털의 응답이 너무 오래 걸립니다. 다시 시도해 주세요.",
     "deleteFailed": "계정을 삭제하지 못했습니다. 다시 시도해 주세요.",
     "privateMode": "비공개 모드(프로필 일시중지)",
-    "privateModeSub": "채팅은 유지한 채 탐색에서 숨깁니다",
+    "privateModeSub": "프로필을 탐색에서 숨기더라도 현재 진행 중인 채팅은 그대로 유지됩니다.",
     "ghostMode": "고스트 모드(조용히 둘러보기)",
-    "ghostModeSub": "상대의 방문 기록에 흔적을 남기지 않고 프로필을 둘러봅니다.",
+    "ghostModeSub": "상대의 방문자 목록에 나타나지 않고 프로필을 둘러봅니다.",
     "activeStatus": "활동 상태 표시",
     "activeStatusSub": "프로필에 접속 중임을 나타내는 초록색 표시를 보여줍니다",
     "notifications": "알림",
@@ -254,7 +254,9 @@
     "pushCardSettings": "설정에서 언제든지 끌 수 있습니다.",
     "allow": "허용",
     "plusActiveTitle": "Meet in Asia Plus 이용 중",
-    "plusActiveSub": "구독과 결제를 관리합니다"
+    "plusActiveSub": "구독과 결제를 관리합니다",
+    "privateOn": "프로필을 일시중지했습니다. 탐색에서 숨겨집니다.",
+    "privateOff": "프로필이 다시 탐색에 표시됩니다."
   },
   "errors": {
     "generic": "문제가 발생했습니다. 다시 시도해 주세요.",
@@ -365,8 +367,6 @@
       "savePct": "{pct}% 절약",
       "rowPrivate": "비공개 모드",
       "rowGhost": "고스트 모드",
-      "cellPrivateFree": "여성은 무료",
-      "cellPrivatePlus": "탐색에서 숨기고 채팅은 유지",
       "cellGhost": "흔적을 남기지 않고 둘러보기"
     }
   },
@@ -377,7 +377,7 @@
   "chat": {
     "cooldownTitle": "첫 인사 메시지를 {n}개 보냈습니다",
     "cooldownBody": "상대가 답장하면 바로 무제한으로 메시지를 보낼 수 있습니다. 다음 메시지는 {time} 후에 보낼 수 있어요.",
-    "cooldownCta": "Plus로 계속 대화하기",
+    "cooldownCta": "Plus로 새 채팅을 무제한으로 시작",
     "outreachLimit": "오늘의 새 첫인사 {n}건을 모두 사용했습니다. 상대가 답장하면 메시지가 무제한이 됩니다."
   }
 }

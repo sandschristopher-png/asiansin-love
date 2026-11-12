@@ -189,9 +189,9 @@
     "portalTimeout": "Natagalan ang pagsagot ng billing portal. Pakisubukan ulit.",
     "deleteFailed": "Hindi na-delete ang account. Pakisubukan ulit.",
     "privateMode": "Private Mode (I-pause ang Profile)",
-    "privateModeSub": "Magtago sa Tuklasin habang nananatili ang mga chat mo",
+    "privateModeSub": "Itago ang profile mo sa Tuklasin habang nananatiling aktibo ang kasalukuyan mong mga chat.",
     "ghostMode": "Ghost Mode (Tahimik na Pag-browse)",
-    "ghostModeSub": "Mag-browse ng mga profile nang hindi nag-iiwan ng bakas sa kasaysayan ng bisita nila.",
+    "ghostModeSub": "Mag-browse ng mga profile nang hindi lumalabas sa listahan ng mga bisita nila.",
     "activeStatus": "Ipakita ang Active Status",
     "activeStatusSub": "Magpakita ng berdeng tanda ng presensya sa profile mo",
     "notifications": "Mga Abiso",
@@ -254,7 +254,9 @@
     "pushCardSettings": "I-off ang mga ito anumang oras sa Mga Setting.",
     "allow": "Payagan",
     "plusActiveTitle": "Aktibo ang Meet in Asia Plus",
-    "plusActiveSub": "Pamahalaan ang subscription at billing mo"
+    "plusActiveSub": "Pamahalaan ang subscription at billing mo",
+    "privateOn": "Naka-pause ang profile. Nakatago ka sa Tuklasin.",
+    "privateOff": "Nakikita ka na ulit sa Tuklasin."
   },
   "errors": {
     "generic": "May nangyaring mali. Pakisubukan ulit.",
@@ -365,8 +367,6 @@
       "savePct": "Makatipid ng {pct}%",
       "rowPrivate": "Private Mode",
       "rowGhost": "Ghost Mode",
-      "cellPrivateFree": "Libre para sa mga babae",
-      "cellPrivatePlus": "Magtago sa Tuklasin, panatilihin ang mga chat",
       "cellGhost": "Mag-browse nang walang iniiwang bakas"
     }
   },
@@ -377,7 +377,7 @@
   "chat": {
     "cooldownTitle": "Nakapagpadala ka na ng {n} panimulang mensahe",
     "cooldownBody": "Magiging walang limitasyon ang pagmemensahe sa sandaling sumagot sila. Maipapadala mo ang susunod mong mensahe sa loob ng {time}.",
-    "cooldownCta": "Magpatuloy sa pag-chat gamit ang Plus",
+    "cooldownCta": "Magsimula ng walang limitasyong bagong chat gamit ang Plus",
     "outreachLimit": "Naabot mo na ang {n} bagong pagpapakilala ngayong araw. Magiging walang limitasyon ang pagmemensahe kapag sumagot sila."
   }
 }

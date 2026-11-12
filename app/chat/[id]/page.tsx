@@ -745,7 +745,7 @@ export default function ChatConversationPage() {
         if (resData.code === 'OUTREACH_LIMIT_REACHED') {
           // A calm explanation, then the comparison screen; the draft is kept above.
           setErrorBanner(t('chat.outreachLimit', { n: 5 }));
-          router.push('/plus?feature=intro');
+          router.push('/plus?feature=conversations');
           return;
         }
         setErrorBanner(resData.error || 'Message could not be delivered.');
@@ -1420,7 +1420,7 @@ export default function ChatConversationPage() {
             </div>
             <p className="text-xs leading-relaxed text-slate-600">{t('chat.cooldownBody', { time: formatTimer(cooldownSeconds) })}</p>
             <Link
-              href="/plus?feature=intro"
+              href="/plus?feature=conversations"
               className="w-full flex items-center justify-center gap-2 py-2.5 rounded-full bg-[#8574B7] hover:bg-[#534377] text-white font-medium text-xs shadow-sm transition"
             >
               <Zap className="w-3.5 h-3.5 fill-current" aria-hidden />

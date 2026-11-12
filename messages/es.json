@@ -189,9 +189,9 @@
     "portalTimeout": "El portal de facturación tardó demasiado en responder. Inténtalo de nuevo.",
     "deleteFailed": "No se pudo eliminar la cuenta. Inténtalo de nuevo.",
     "privateMode": "Modo privado (pausar perfil)",
-    "privateModeSub": "Oculta tu perfil en Descubrir sin perder tus chats",
+    "privateModeSub": "Oculta tu perfil en Descubrir mientras tus chats actuales siguen activos.",
     "ghostMode": "Modo fantasma (navegación silenciosa)",
-    "ghostModeSub": "Mira perfiles sin dejar rastro en su historial de visitantes.",
+    "ghostModeSub": "Mira perfiles sin aparecer en su lista de visitantes.",
     "activeStatus": "Mostrar estado activo",
     "activeStatusSub": "Muestra un indicador verde de presencia en tu perfil",
     "notifications": "Notificaciones",
@@ -254,7 +254,9 @@
     "pushCardSettings": "Desactívalos cuando quieras en Ajustes.",
     "allow": "Permitir",
     "plusActiveTitle": "Meet in Asia Plus activo",
-    "plusActiveSub": "Gestiona tu suscripción y facturación"
+    "plusActiveSub": "Gestiona tu suscripción y facturación",
+    "privateOn": "Perfil en pausa. Estás oculto en Descubrir.",
+    "privateOff": "Tu perfil vuelve a ser visible en Descubrir."
   },
   "errors": {
     "generic": "Algo salió mal. Inténtalo de nuevo.",
@@ -365,8 +367,6 @@
       "savePct": "Ahorra {pct}%",
       "rowPrivate": "Modo privado",
       "rowGhost": "Modo fantasma",
-      "cellPrivateFree": "Gratis para mujeres",
-      "cellPrivatePlus": "Oculta tu perfil en Descubrir sin perder tus chats",
       "cellGhost": "Navega sin dejar rastro"
     }
   },
@@ -377,7 +377,7 @@
   "chat": {
     "cooldownTitle": "Has enviado {n} mensajes de presentación",
     "cooldownBody": "Los mensajes ilimitados se abren en cuanto responda. Podrás enviar tu próximo mensaje en {time}.",
-    "cooldownCta": "Sigue conversando con Plus",
+    "cooldownCta": "Empieza chats nuevos ilimitados con Plus",
     "outreachLimit": "Has llegado a las {n} presentaciones nuevas de hoy. Los mensajes ilimitados se abren cuando responda."
   }
 }

@@ -189,9 +189,9 @@
     "portalTimeout": "The billing portal took too long to respond. Please try again.",
     "deleteFailed": "Failed to delete account. Please try again.",
     "privateMode": "Private Mode (Pause Profile)",
-    "privateModeSub": "Hide from Discover while keeping your chats",
+    "privateModeSub": "Hide your profile from Discover while keeping your current chats active.",
     "ghostMode": "Ghost Mode (Silent Browsing)",
-    "ghostModeSub": "Browse profiles without leaving a footprint in their visitor history.",
+    "ghostModeSub": "Browse profiles without appearing in their visitors list.",
     "activeStatus": "Show Active Status",
     "activeStatusSub": "Display green presence indicator on your profile",
     "notifications": "Notifications",
@@ -254,7 +254,9 @@
     "pushCardSettings": "Turn them off any time in Settings.",
     "allow": "Allow",
     "plusActiveTitle": "Meet in Asia Plus Active",
-    "plusActiveSub": "Manage your subscription and billing"
+    "plusActiveSub": "Manage your subscription and billing",
+    "privateOn": "Profile paused. You are hidden from Discover.",
+    "privateOff": "Profile visible in Discover again."
   },
   "errors": {
     "generic": "Something went wrong. Please try again.",
@@ -323,7 +325,7 @@
       "rowSparked": "See Who Sparked You",
       "rowReceipts": "Message Read Receipts",
       "rowBadge": "Plus Member Badge",
-      "cellFreeAll": "Free for everyone",
+      "cellFreeAll": "Free for Everyone",
       "cellUnlimited": "Unlimited",
       "cellActiveAll": "Active for everyone",
       "cellPerDay": "{n} / day",
@@ -365,8 +367,6 @@
       "savePct": "Save {pct}%",
       "rowPrivate": "Private Mode",
       "rowGhost": "Ghost Mode",
-      "cellPrivateFree": "Free for women",
-      "cellPrivatePlus": "Hide from Discover, keep your chats",
       "cellGhost": "Browse without leaving a footprint"
     }
   },
@@ -377,7 +377,7 @@
   "chat": {
     "cooldownTitle": "You've sent {n} intro messages",
     "cooldownBody": "Unlimited messaging opens as soon as they reply. Your next message can go out in {time}.",
-    "cooldownCta": "Keep chatting with Plus",
+    "cooldownCta": "Start unlimited new chats with Plus",
     "outreachLimit": "You've reached today's {n} new introductions. Unlimited messaging opens once they reply."
   }
 }

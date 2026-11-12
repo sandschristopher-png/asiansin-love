@@ -189,9 +189,9 @@
     "portalTimeout": "账单页面响应时间过长，请重试。",
     "deleteFailed": "删除账号失败，请重试。",
     "privateMode": "隐私模式（暂停资料）",
-    "privateModeSub": "在发现页隐藏自己，同时保留聊天",
+    "privateModeSub": "在发现页隐藏您的资料，同时保持当前聊天正常进行。",
     "ghostMode": "幽灵模式（静默浏览）",
-    "ghostModeSub": "浏览资料时不在对方的访客记录中留下痕迹。",
+    "ghostModeSub": "浏览资料时不会出现在对方的访客列表中。",
     "activeStatus": "显示在线状态",
     "activeStatusSub": "在您的资料上显示绿色在线标识",
     "notifications": "通知",
@@ -254,7 +254,9 @@
     "pushCardSettings": "您可随时在设置中关闭。",
     "allow": "允许",
     "plusActiveTitle": "Meet in Asia Plus 已生效",
-    "plusActiveSub": "管理您的订阅和账单"
+    "plusActiveSub": "管理您的订阅和账单",
+    "privateOn": "资料已暂停，您已在发现页隐藏。",
+    "privateOff": "您的资料已重新显示在发现页。"
   },
   "errors": {
     "generic": "出了点问题，请重试。",
@@ -365,8 +367,6 @@
       "savePct": "立省 {pct}%",
       "rowPrivate": "隐私模式",
       "rowGhost": "幽灵模式",
-      "cellPrivateFree": "女性免费",
-      "cellPrivatePlus": "在发现页隐藏，保留聊天",
       "cellGhost": "浏览不留痕迹"
     }
   },
@@ -377,7 +377,7 @@
   "chat": {
     "cooldownTitle": "您已发送 {n} 条开场消息",
     "cooldownBody": "对方一回复，就可以无限畅聊。您可在 {time} 后发送下一条消息。",
-    "cooldownCta": "用 Plus 继续聊天",
+    "cooldownCta": "用 Plus 无限开启新聊天",
     "outreachLimit": "您今天的 {n} 次新开场已用完。对方回复后即可无限畅聊。"
   }
 }

@@ -189,9 +189,9 @@
     "portalTimeout": "Cổng thanh toán phản hồi quá lâu. Vui lòng thử lại.",
     "deleteFailed": "Không thể xóa tài khoản. Vui lòng thử lại.",
     "privateMode": "Chế độ riêng tư (Tạm ẩn hồ sơ)",
-    "privateModeSub": "Ẩn khỏi Khám phá nhưng vẫn giữ các cuộc trò chuyện",
+    "privateModeSub": "Ẩn hồ sơ của bạn khỏi Khám phá trong khi các cuộc trò chuyện hiện tại vẫn hoạt động.",
     "ghostMode": "Chế độ ẩn danh (Xem lặng lẽ)",
-    "ghostModeSub": "Xem hồ sơ mà không để lại dấu vết trong lịch sử người xem của họ.",
+    "ghostModeSub": "Xem hồ sơ mà không xuất hiện trong danh sách người xem của họ.",
     "activeStatus": "Hiện trạng thái hoạt động",
     "activeStatusSub": "Hiển thị chấm xanh đang trực tuyến trên hồ sơ của bạn",
     "notifications": "Thông báo",
@@ -254,7 +254,9 @@
     "pushCardSettings": "Bạn có thể tắt bất cứ lúc nào trong Cài đặt.",
     "allow": "Cho phép",
     "plusActiveTitle": "Meet in Asia Plus đang hoạt động",
-    "plusActiveSub": "Quản lý gói đăng ký và thanh toán"
+    "plusActiveSub": "Quản lý gói đăng ký và thanh toán",
+    "privateOn": "Đã tạm ẩn hồ sơ. Bạn không hiển thị trong Khám phá.",
+    "privateOff": "Hồ sơ của bạn đã hiển thị lại trong Khám phá."
   },
   "errors": {
     "generic": "Đã xảy ra lỗi. Vui lòng thử lại.",
@@ -365,8 +367,6 @@
       "savePct": "Tiết kiệm {pct}%",
       "rowPrivate": "Chế độ riêng tư",
       "rowGhost": "Chế độ ẩn danh",
-      "cellPrivateFree": "Miễn phí cho phụ nữ",
-      "cellPrivatePlus": "Ẩn khỏi Khám phá, giữ các cuộc trò chuyện",
       "cellGhost": "Xem hồ sơ mà không để lại dấu vết"
     }
   },
@@ -377,7 +377,7 @@
   "chat": {
     "cooldownTitle": "Bạn đã gửi {n} tin nhắn làm quen",
     "cooldownBody": "Nhắn tin không giới hạn sẽ mở ngay khi họ trả lời. Bạn có thể gửi tin tiếp theo sau {time}.",
-    "cooldownCta": "Tiếp tục trò chuyện với Plus",
+    "cooldownCta": "Bắt đầu không giới hạn cuộc trò chuyện mới với Plus",
     "outreachLimit": "Bạn đã dùng hết {n} lượt làm quen mới hôm nay. Nhắn tin không giới hạn sẽ mở khi họ trả lời."
   }
 }

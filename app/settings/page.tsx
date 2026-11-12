@@ -22,6 +22,7 @@ import { PushDeviceRow } from '@/components/PushDeviceRow';
 import { AppLanguageRow } from '@/components/i18n/AppLanguageRow';
 import { useLocale } from '@/components/i18n/LocaleProvider';
 import { localizeError } from '@/lib/i18n/errors';
+import { useActionToast } from '@/components/ActionToast';
 import { InstallAppCard } from '@/components/InstallAppCard';
 import { HapticsRow } from '@/components/HapticsRow';
 import { AlertPrefsRows } from '@/components/AlertPrefsRows';
@@ -72,6 +73,7 @@ const SettingRow = ({
 export default function SettingsHubPage() {
   const router = useRouter();
   const { t } = useLocale();
+  const showActionToast = useActionToast();
   const [loading, setLoading] = useState(() => !cachedSettingsData);
   const [loggingOut, setLoggingOut] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -86,7 +88,6 @@ export default function SettingsHubPage() {
   // Stripe subscriber (the billing row); complimentary Plus has features but nothing to manage.
   // A known free member has no subscription; otherwise unknown until the profile read.
   const [hasPlusBilling, setHasPlusBilling] = useState<boolean | null>(() => (getCachedSubscription() === false ? false : null));
-  const [gender, setGender] = useState<string | null>(null);
   // Ghost Mode (Plus): browse without leaving a footprint. Read on its own so a database without
   // the ghost_mode column (20261114_privacy_features.sql) still loads the other settings.
   const [ghostMode, setGhostMode] = useState(false);
@@ -124,7 +125,6 @@ export default function SettingsHubPage() {
           setIsSubscribed(hasPlus);
           setCachedSubscription(hasPlus);
           setHasPlusBilling(Boolean(plus?.is_plus));
-          setGender(plus?.gender ?? null);
           setGhostMode(plus?.ghost_mode === true);
         });
 
@@ -148,11 +148,7 @@ export default function SettingsHubPage() {
 
   const handleToggle = async (key: SettingsKey) => {
     const nextVal = !settings[key];
-    // Private Mode is free for women; men need Plus (also enforced in the database).
-    if (key === 'hide_profile' && nextVal && gender === 'male' && !isPlus) {
-      router.push('/plus?feature=private');
-      return;
-    }
+    // Private Mode is free for every member: no gender or Plus check here or in the database.
     setSettings((prev) => ({ ...prev, [key]: nextVal }));
     setErrorMsg(null);
 
@@ -162,15 +158,23 @@ export default function SettingsHubPage() {
       return;
     }
 
-    const { error } = await supabase
+    // Read the saved value back: a database rule that quietly keeps the old value must not read as saved.
+    const { data: saved, error } = await supabase
       .from('profiles')
       .update({ [key]: nextVal })
-      .eq('id', user.id);
+      .eq('id', user.id)
+      .select(key)
+      .maybeSingle();
+    const savedValue = (saved as Record<string, unknown> | null)?.[key];
 
-    if (error) {
+    if (error || (saved && savedValue !== nextVal)) {
       // Roll back the optimistic flip so UI matches reality
       setSettings((prev) => ({ ...prev, [key]: !nextVal }));
       setErrorMsg(t('errors.saveFailed'));
+      return;
+    }
+    if (key === 'hide_profile') {
+      showActionToast(t(nextVal ? 'settings.privateOn' : 'settings.privateOff'), 'check');
     }
   };
 
@@ -380,11 +384,7 @@ export default function SettingsHubPage() {
           <SettingRow
             icon={<EyeOff className="w-4 h-4" />}
             title={t('settings.privateMode')}
-            subtitle={
-              gender === 'male' && isSubscribed === false
-                ? `Plus · ${t('settings.privateModeSub')}`
-                : t('settings.privateModeSub')
-            }
+            subtitle={t('settings.privateModeSub')}
             on={settings.hide_profile}
             onClick={() => handleToggle('hide_profile')}
           />
