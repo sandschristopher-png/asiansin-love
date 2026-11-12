@@ -5,26 +5,24 @@ import Link from 'next/link';
 import { Eye, EyeOff, Heart, Loader2, Plane, X, Zap } from 'lucide-react';
 import { AmbientAurora } from '@/components/ui/AmbientAurora';
 import { PlusBadge } from '@/components/ui/PlusBadge';
-import { PLUS_PLANS, type PlusPlanId } from '@/lib/plusPlans';
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import type { TKey } from '@/lib/i18n';
+import { localizeError } from '@/lib/i18n/errors';
+import { FREE_DAILY_INTROS, FREE_DAILY_SPARKS, PLUS_PLANS, type PlusPlanId } from '@/lib/plusPlans';
 
 type PlanId = PlusPlanId;
 
 /** Mirrors the Stripe prices used by /api/plus/checkout and the /plus page (lib/plusPlans.ts). */
-const PLANS: { id: PlanId; label: string; perMonth: string; note: string; badge?: string }[] = PLUS_PLANS.map((p) => ({
-  id: p.id,
-  label: p.label,
-  perMonth: `${p.perMonth}/mo`,
-  note: p.billingNote,
-  badge: p.badge,
-}));
+const PLAN_LABEL: Record<PlanId, TKey> = { '1m': 'plus.plan1m', '3m': 'plus.plan3m', '6m': 'plus.plan6m' };
+const BADGE_LABEL = { 'Most Popular': 'plus.mostPopular', 'Best Value': 'plus.bestValue' } as const;
 
-const PERKS = [
-  { Icon: EyeOff, title: 'Private Mode', text: 'Browse stealthily and only be visible to profiles you spark.' },
-  { Icon: Eye, title: 'Visitor History', text: 'Unblur everyone who viewed your profile.' },
-  { Icon: Plane, title: 'Passport Roaming', text: 'Browse and spark singles across Manila, Cebu, Bangkok, and Phnom Penh.' },
-  // Accurate to the app: free members start 5 new conversations and send 30 Sparks a day.
-  { Icon: Zap, title: 'Unlimited introductions', text: 'Start as many new conversations a day as you like (free: 5).' },
-  { Icon: Heart, title: 'Unlimited Sparks', text: 'Spark everyone you like (free: 30 a day).' },
+// Accurate to the app: free members start FREE_DAILY_INTROS new conversations and send FREE_DAILY_SPARKS Sparks a day.
+const PERKS: { Icon: typeof Eye; title: TKey; text: TKey; n?: number }[] = [
+  { Icon: EyeOff, title: 'plus.perkPrivateTitle', text: 'plus.perkPrivateText' },
+  { Icon: Eye, title: 'plus.perkVisitorsTitle', text: 'plus.perkVisitorsText' },
+  { Icon: Plane, title: 'plus.perkPassportTitle', text: 'plus.perkPassportText' },
+  { Icon: Zap, title: 'plus.perkIntrosTitle', text: 'plus.perkIntrosText', n: FREE_DAILY_INTROS },
+  { Icon: Heart, title: 'plus.perkSparksTitle', text: 'plus.perkSparksText', n: FREE_DAILY_SPARKS },
 ];
 
 /**
@@ -34,7 +32,7 @@ const PERKS = [
 export function AILPlusModal({
   open,
   onClose,
-  title = 'Unlock more with Plus',
+  title,
   returnPath = '/settings',
 }: {
   open: boolean;
@@ -42,6 +40,8 @@ export function AILPlusModal({
   title?: string;
   returnPath?: string;
 }) {
+  const { t } = useLocale();
+  const heading = title ?? t('plus.unlockMore');
   const [plan, setPlan] = useState<PlanId>('3m');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -65,10 +65,10 @@ export function AILPlusModal({
         body: JSON.stringify({ planId: plan, returnPath }),
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok || !data.url) throw new Error(data.error || 'Could not start checkout. Please try again.');
+      if (!res.ok || !data.url) throw Object.assign(new Error(data.error || 'checkout'), { status: res.status, code: data.code });
       window.location.href = data.url;
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Could not start checkout. Please try again.');
+      setError(localizeError(err instanceof Error ? err : null, t, 'plus.checkoutFailed'));
       setBusy(false);
     }
   };
@@ -79,7 +79,7 @@ export function AILPlusModal({
       onClick={onClose}
       role="dialog"
       aria-modal="true"
-      aria-label={title}
+      aria-label={heading}
     >
       <div
         className="relative isolate w-full max-w-[480px] max-h-[90dvh] overflow-y-auto rounded-t-3xl bg-white shadow-xl ail-sheet-up"
@@ -93,13 +93,13 @@ export function AILPlusModal({
           <div className="flex items-start justify-between gap-3">
             <div>
               <PlusBadge />
-              <h2 className="mt-1.5 text-lg font-semibold text-[#413B5E] leading-snug">{title}</h2>
+              <h2 className="mt-1.5 text-lg font-semibold text-[#413B5E] leading-snug">{heading}</h2>
             </div>
             <button
               type="button"
               onClick={onClose}
               className="w-8 h-8 rounded-full flex items-center justify-center text-slate-600 hover:bg-[#E8E6F1]/70"
-              aria-label="Close"
+              aria-label={t('common.close')}
             >
               <X className="w-4 h-4" />
             </button>
@@ -110,14 +110,14 @@ export function AILPlusModal({
               <li key={p.title} className="flex items-start gap-2.5 text-xs text-[#413B5E]/85 leading-relaxed">
                 <p.Icon className="w-4 h-4 text-[#8574B7] shrink-0" aria-hidden />
                 <span>
-                  <span className="font-semibold text-[#413B5E]">{p.title}:</span> {p.text}
+                  <span className="font-semibold text-[#413B5E]">{t(p.title)}:</span> {t(p.text, p.n === undefined ? undefined : { n: p.n })}
                 </span>
               </li>
             ))}
           </ul>
 
-          <div className="grid grid-cols-3 gap-2" role="radiogroup" aria-label="Choose a plan">
-            {PLANS.map((p) => {
+          <div className="grid grid-cols-3 gap-2" role="radiogroup" aria-label={t('plus.choosePlan')}>
+            {PLUS_PLANS.map((p) => {
               const active = plan === p.id;
               return (
                 <button
@@ -132,12 +132,12 @@ export function AILPlusModal({
                 >
                   {p.badge && (
                     <span className="absolute -top-2 left-1/2 -translate-x-1/2 whitespace-nowrap px-1.5 py-0.5 rounded-full bg-[#8574B7] text-[8.5px] font-semibold text-white">
-                      {p.badge}
+                      {t(BADGE_LABEL[p.badge])}
                     </span>
                   )}
-                  <span className="block text-[11px] font-semibold text-[#413B5E]">{p.label}</span>
-                  <span className="block mt-1 text-sm font-semibold text-[#413B5E]">{p.perMonth}</span>
-                  <span className="block text-[9px] text-slate-600">{p.note}</span>
+                  <span className="block text-[11px] font-semibold text-[#413B5E]">{t(PLAN_LABEL[p.id])}</span>
+                  <span className="block mt-1 text-sm font-semibold text-[#413B5E]">{t('plus.perMonth', { price: p.perMonth })}</span>
+                  <span className="block text-[9px] text-slate-600">{p.months === 1 ? t('plus.billedMonthly') : t('plus.billedEvery', { total: p.total, n: p.months })}</span>
                 </button>
               );
             })}
@@ -156,10 +156,10 @@ export function AILPlusModal({
             className="w-full py-3.5 rounded-2xl bg-[#8574B7] hover:bg-[#413B5E] text-white text-sm font-medium shadow-md shadow-[#8574B7]/25 flex items-center justify-center gap-2 disabled:opacity-60"
           >
             {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Zap className="w-4 h-4 fill-current" />}
-            Upgrade to Plus
+            {t('plus.upgrade')}
           </button>
           <Link href="/plus" onClick={onClose} className="block text-center text-xs font-medium text-[#8574B7] hover:underline">
-            View all member perks
+            {t('plus.viewPerks')}
           </Link>
         </div>
       </div>

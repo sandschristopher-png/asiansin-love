@@ -4,9 +4,11 @@ import React, { useEffect, useState } from 'react';
 import { Vibrate } from 'lucide-react';
 import { hapticTap, hapticsEnabled, hapticsSupported, setHapticsEnabled } from '@/lib/utils/haptics';
 import { Switch } from '@/components/ui/Switch';
+import { useLocale } from '@/components/i18n/LocaleProvider';
 
 /** Settings row: device-local haptic feedback toggle (lib/utils/haptics.ts). */
 export function HapticsRow() {
+  const { t } = useLocale();
   const [on, setOn] = useState(true);
   const [supported, setSupported] = useState(true);
 
@@ -29,13 +31,13 @@ export function HapticsRow() {
           <Vibrate className="w-4 h-4" />
         </div>
         <div>
-          <p className="text-xs font-semibold text-[#413B5E]">Haptic feedback</p>
+          <p className="text-xs font-semibold text-[#413B5E]">{t('settings.hapticsTitle')}</p>
           <p className="text-[11px] text-[#413B5E]/75">
-            {supported ? 'Gentle vibrations on taps, sends and photos' : 'Not supported on this device'}
+            {supported ? t('settings.hapticsSub') : t('settings.hapticsUnsupported')}
           </p>
         </div>
       </div>
-      <Switch on={on} onClick={toggle} label="Haptic feedback" disabled={!supported} />
+      <Switch on={on} onClick={toggle} label={t('settings.hapticsTitle')} disabled={!supported} />
     </div>
   );
 }

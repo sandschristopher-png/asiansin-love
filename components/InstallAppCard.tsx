@@ -2,6 +2,8 @@
 
 import { useSyncExternalStore } from 'react';
 import { Download, X } from 'lucide-react';
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import type { TKey } from '@/lib/i18n';
 import {
   canPromptInstall,
   dismissInstall,
@@ -16,9 +18,9 @@ import {
 const noopSubscribe = () => () => {};
 
 /** One sentence per platform when the browser has no install prompt to offer. */
-function manualInstallHint(): string | null {
-  if (isIosDevice()) return 'On iPhone, tap Share, then Add to Home Screen.';
-  if (/android/i.test(navigator.userAgent)) return 'On Android, open the browser menu and tap Install app or Add to Home screen.';
+function manualInstallHint(): TKey | null {
+  if (isIosDevice()) return 'settings.installIos';
+  if (/android/i.test(navigator.userAgent)) return 'settings.installAndroid';
   return null;
 }
 
@@ -29,6 +31,7 @@ function manualInstallHint(): string | null {
  * Renders nothing when the browser can't install the site or it is already installed.
  */
 export function InstallAppCard({ variant }: { variant: 'hero' | 'settings' }) {
+  const { t } = useLocale();
   // Re-render whenever the install state changes; read the live values below.
   useSyncExternalStore(subscribeInstall, installVersion, () => 0);
   // Client-only (platform and storage checks): the server render is always empty.
@@ -49,18 +52,18 @@ export function InstallAppCard({ variant }: { variant: 'hero' | 'settings' }) {
           <Download className="w-4 h-4" aria-hidden />
         </div>
         <div>
-          <p className="text-xs font-semibold text-[#413B5E]">Install the app</p>
-          <p className="text-[11px] text-[#413B5E]/75">{hint}</p>
+          <p className="text-xs font-semibold text-[#413B5E]">{t('settings.installTitle')}</p>
+          <p className="text-[11px] text-[#413B5E]/75">{t(hint)}</p>
         </div>
       </div>
     ) : (
       <div className="mt-4 w-full max-w-[300px] md:max-w-[360px] flex items-start gap-2.5 rounded-2xl border border-[#D0CDE1] bg-white p-3 shadow-brand-sm text-left">
         <Download className="w-4 h-4 mt-0.5 shrink-0 text-[#8574B7]" aria-hidden />
-        <p className="flex-1 text-[11.5px] leading-snug text-[#413B5E]/75">{hint}</p>
+        <p className="flex-1 text-[11.5px] leading-snug text-[#413B5E]/75">{t(hint)}</p>
         <button
           type="button"
           onClick={dismissInstall}
-          aria-label="Dismiss"
+          aria-label={t('settings.dismiss')}
           className="w-6 h-6 -mr-1 -mt-0.5 rounded-full flex items-center justify-center text-[#B8B3D1] hover:text-[#413B5E] shrink-0"
         >
           <X className="w-3.5 h-3.5" aria-hidden />
@@ -77,8 +80,8 @@ export function InstallAppCard({ variant }: { variant: 'hero' | 'settings' }) {
             <Download className="w-4 h-4" aria-hidden />
           </div>
           <div>
-            <p className="text-xs font-semibold text-[#413B5E]">Install the app</p>
-            <p className="text-[11px] text-[#413B5E]/75">Opens full screen from your home screen</p>
+            <p className="text-xs font-semibold text-[#413B5E]">{t('settings.installTitle')}</p>
+            <p className="text-[11px] text-[#413B5E]/75">{t('settings.installSub')}</p>
           </div>
         </div>
         <button
@@ -86,7 +89,7 @@ export function InstallAppCard({ variant }: { variant: 'hero' | 'settings' }) {
           onClick={() => void promptInstall()}
           className="h-8 px-3.5 rounded-full bg-[#8574B7] hover:bg-[#413B5E] text-white text-[11px] font-medium shrink-0 transition-colors"
         >
-          Install
+          {t('settings.install')}
         </button>
       </div>
     );
@@ -98,20 +101,20 @@ export function InstallAppCard({ variant }: { variant: 'hero' | 'settings' }) {
         <Download className="w-4 h-4" aria-hidden />
       </div>
       <div className="flex-1 min-w-0 text-left">
-        <p className="text-[12.5px] font-semibold text-[#413B5E]">Install Meet in Asia</p>
-        <p className="text-[11px] text-slate-600">Full screen, one tap from your home screen.</p>
+        <p className="text-[12.5px] font-semibold text-[#413B5E]">{t('settings.installHeroTitle')}</p>
+        <p className="text-[11px] text-slate-600">{t('settings.installHeroSub')}</p>
       </div>
       <button
         type="button"
         onClick={() => void promptInstall()}
         className="h-8 px-3.5 rounded-full bg-[#8574B7] hover:bg-[#413B5E] text-white text-[11px] font-medium shrink-0 transition-colors"
       >
-        Install
+        {t('settings.install')}
       </button>
       <button
         type="button"
         onClick={dismissInstall}
-        aria-label="Not now"
+        aria-label={t('settings.notNow')}
         className="w-7 h-7 -mr-1 rounded-full flex items-center justify-center text-[#B8B3D1] hover:text-[#413B5E] shrink-0"
       >
         <X className="w-3.5 h-3.5" aria-hidden />

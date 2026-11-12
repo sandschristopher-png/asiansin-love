@@ -53,3 +53,6 @@ export const plusPlan = (id: PlusPlanId): PlusPlan => PLUS_PLANS.find((p) => p.i
 
 /** Free daily Sparks, for display. Enforced by public.get_spark_allowance: keep the two in sync. */
 export const FREE_DAILY_SPARKS = 30;
+
+/** Free new conversations a day, for display. */
+export const FREE_DAILY_INTROS = 5;

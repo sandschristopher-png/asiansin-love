@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { BellRing } from 'lucide-react';
 import { alertPrefs } from '@/lib/notificationStore';
+import { useLocale } from '@/components/i18n/LocaleProvider';
 
 /** Visual twin of components/ui/Switch (the whole row is the switch here): opacity + transform only. */
 function Toggle({ on }: { on: boolean }) {
@@ -20,6 +21,7 @@ function Toggle({ on }: { on: boolean }) {
  * In-app alerts are silent: toast + haptic only. Web push has its own row (PushDeviceRow).
  */
 export function AlertPrefsRows() {
+  const { t } = useLocale();
   const [browser, setBrowser] = useState(() =>
     typeof window === 'undefined' || typeof Notification === 'undefined'
       ? false
@@ -35,12 +37,12 @@ export function AlertPrefsRows() {
       return;
     }
     if (typeof Notification === 'undefined') {
-      setNote('This browser does not support notifications.');
+      setNote(t('settings.alertsUnsupported'));
       return;
     }
     const permission = Notification.permission === 'default' ? await Notification.requestPermission() : Notification.permission;
     if (permission !== 'granted') {
-      setNote('Notifications are blocked for this site. Allow them in your browser settings.');
+      setNote(t('settings.alertsBlocked'));
       return;
     }
     alertPrefs.setBrowserAlertsEnabled(true);
@@ -62,8 +64,8 @@ export function AlertPrefsRows() {
             <BellRing className="w-4 h-4" />
           </span>
           <span className="min-w-0">
-            <span className="block text-xs font-semibold text-[#413B5E]">Enable Notifications</span>
-            <span className="block text-[11px] text-[#413B5E]/75">Browser alerts when this tab is in the background</span>
+            <span className="block text-xs font-semibold text-[#413B5E]">{t('settings.alertsTitle')}</span>
+            <span className="block text-[11px] text-[#413B5E]/75">{t('settings.alertsSub')}</span>
           </span>
         </span>
         <Toggle on={browser} />

@@ -2,11 +2,13 @@
 
 import React from 'react';
 import { BellRing, MailX, MessageCircle, SlidersHorizontal } from 'lucide-react';
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import type { TKey } from '@/lib/i18n';
 
-const POINTS = [
-  { Icon: MessageCircle, text: 'Know the moment someone replies or you match, even with the app closed.' },
-  { Icon: MailX, text: 'No email for likes or profile views. Those stay in the app and in these alerts.' },
-  { Icon: SlidersHorizontal, text: 'Turn them off any time in Settings.' },
+const POINTS: { Icon: typeof BellRing; text: TKey }[] = [
+  { Icon: MessageCircle, text: 'settings.pushCardReply' },
+  { Icon: MailX, text: 'settings.pushCardNoEmail' },
+  { Icon: SlidersHorizontal, text: 'settings.pushCardSettings' },
 ];
 
 /**
@@ -15,6 +17,7 @@ const POINTS = [
  * be undone from the page, so it should never come as a surprise.)
  */
 export function PushPermissionCard({ onAllow, onClose }: { onAllow: () => void; onClose: () => void }) {
+  const { t } = useLocale();
   return (
     <div className="fixed inset-0 z-[80] flex items-end sm:items-center justify-center bg-black/40 px-4 pb-[max(1rem,env(safe-area-inset-bottom))]" onClick={onClose}>
       <div
@@ -28,13 +31,13 @@ export function PushPermissionCard({ onAllow, onClose }: { onAllow: () => void; 
           <BellRing className="w-5 h-5" aria-hidden />
         </div>
         <h2 id="push-card-title" className="mt-3 text-base font-semibold text-[#413B5E]">
-          Turn on message alerts
+          {t('settings.pushCardTitle')}
         </h2>
         <ul className="mt-3 space-y-2.5">
           {POINTS.map(({ Icon, text }) => (
             <li key={text} className="flex gap-2.5 text-[12.5px] leading-snug text-[#413B5E]/80">
               <Icon className="w-4 h-4 shrink-0 text-[#B8B3D1] mt-0.5" aria-hidden />
-              {text}
+              {t(text)}
             </li>
           ))}
         </ul>
@@ -44,14 +47,14 @@ export function PushPermissionCard({ onAllow, onClose }: { onAllow: () => void; 
             onClick={onClose}
             className="flex-1 h-11 rounded-full border border-[#D0CDE1] bg-white text-sm font-medium text-[#413B5E] hover:bg-[#E8E6F1]/30 transition-colors"
           >
-            Not now
+            {t('settings.notNow')}
           </button>
           <button
             type="button"
             onClick={onAllow}
             className="flex-1 h-11 rounded-full bg-[#8574B7] hover:bg-[#413B5E] text-sm font-medium text-white transition-colors"
           >
-            Allow
+            {t('settings.allow')}
           </button>
         </div>
       </div>

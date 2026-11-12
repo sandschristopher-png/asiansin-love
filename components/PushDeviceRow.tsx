@@ -5,18 +5,21 @@ import { BellRing, Loader2 } from 'lucide-react';
 import { enablePushNotifications, getPushSupport, isPushSyncPending, onPushSyncChange, syncPushSubscription, type PushSupport } from '@/lib/push';
 import { PushPermissionCard } from '@/components/PushPermissionCard';
 import { isIosDevice } from '@/lib/pwaInstall';
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import type { TKey } from '@/lib/i18n';
 
-const COPY: Record<PushSupport | 'error', string> = {
-  granted: 'On for this device',
-  default: 'Get alerts for messages and matches',
-  denied: 'Blocked - allow notifications in your browser settings',
-  'needs-install': 'On iPhone, tap Share, then Add to Home Screen, and open the app from there.',
-  unsupported: 'Not supported in this browser',
-  error: 'Could not turn on - please try again',
+const COPY: Record<PushSupport | 'error', TKey> = {
+  granted: 'settings.pushGranted',
+  default: 'settings.pushDefault',
+  denied: 'settings.pushDenied',
+  'needs-install': 'settings.pushNeedsInstall',
+  unsupported: 'settings.pushUnsupported',
+  error: 'settings.pushError',
 };
 
 /** Settings row: turns on web push notifications for the current device (needs a tap). */
 export function PushDeviceRow() {
+  const { t } = useLocale();
   const [state, setState] = useState<PushSupport | 'error'>('default');
   const [busy, setBusy] = useState(false);
   const [explaining, setExplaining] = useState(false);
@@ -38,10 +41,10 @@ export function PushDeviceRow() {
           <BellRing className="w-4 h-4" />
         </div>
         <div>
-          <p className="text-xs font-semibold text-[#413B5E]">Push on this device</p>
+          <p className="text-xs font-semibold text-[#413B5E]">{t('settings.pushTitle')}</p>
           <p className="text-[11px] text-[#413B5E]/75">
             {/* iPhone web push needs iOS 16.4+ and the Home Screen app; older iOS has no PushManager. */}
-            {state === 'unsupported' && isIosDevice() ? 'Alerts need iOS 16.4 or later. Update iOS to turn them on.' : COPY[state]}
+            {state === 'unsupported' && isIosDevice() ? t('settings.pushIosOld') : t(COPY[state])}
           </p>
         </div>
       </div>
@@ -53,7 +56,7 @@ export function PushDeviceRow() {
           className="h-8 px-3.5 rounded-full bg-[#8574B7] hover:bg-[#8574B7] text-white text-[11px] font-medium shrink-0 inline-flex items-center gap-1.5 disabled:opacity-60"
         >
           {busy && <Loader2 className="w-3 h-3 animate-spin" />}
-          Turn on
+          {t('settings.turnOn')}
         </button>
       ) : state === 'granted' && syncPending ? (
         <button
@@ -65,12 +68,12 @@ export function PushDeviceRow() {
             setBusy(false);
           }}
           className="text-[11px] font-medium text-[#F59E0B] hover:underline shrink-0 disabled:opacity-60"
-          title="Alerts are on, but this device hasn't finished connecting. We'll retry automatically."
+          title={t('settings.pushPendingHint')}
         >
-          {busy ? 'Connecting...' : 'Reconnecting'}
+          {busy ? t('settings.connecting') : t('settings.reconnecting')}
         </button>
       ) : state === 'granted' ? (
-        <span className="text-[11px] font-semibold text-emerald-600 shrink-0">Enabled</span>
+        <span className="text-[11px] font-semibold text-emerald-600 shrink-0">{t('settings.enabled')}</span>
       ) : null}
       {explaining && (
         <PushPermissionCard

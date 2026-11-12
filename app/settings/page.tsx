@@ -23,6 +23,7 @@ import { hardSignOut } from '@/lib/hardSignOut';
 import { PushDeviceRow } from '@/components/PushDeviceRow';
 import { AppLanguageRow } from '@/components/i18n/AppLanguageRow';
 import { useLocale } from '@/components/i18n/LocaleProvider';
+import { localizeError } from '@/lib/i18n/errors';
 import { InstallAppCard } from '@/components/InstallAppCard';
 import { HapticsRow } from '@/components/HapticsRow';
 import { AlertPrefsRows } from '@/components/AlertPrefsRows';
@@ -92,7 +93,7 @@ export default function SettingsHubPage() {
   const [hasPlusBilling, setHasPlusBilling] = useState<boolean | null>(() => (getCachedSubscription() === false ? false : null));
   const [gender, setGender] = useState<string | null>(null);
   const [plusModalOpen, setPlusModalOpen] = useState(false);
-  const [plusModalTitle, setPlusModalTitle] = useState('Unlock Private Mode with Plus');
+  const [plusModalKey, setPlusModalKey] = useState<'settings.unlockPrivate' | 'settings.unlockGhost'>('settings.unlockPrivate');
   // Ghost Mode (Plus): browse without leaving a footprint. Read on its own so a database without
   // the ghost_mode column (20261114_privacy_features.sql) still loads the other settings.
   const [ghostMode, setGhostMode] = useState(false);
@@ -136,7 +137,7 @@ export default function SettingsHubPage() {
 
       if (error) {
         // Column(s) missing — remind to run the migration
-        setErrorMsg('Settings storage not initialized. Run the profiles migration.');
+        setErrorMsg(t('errors.loadFailed'));
       } else if (data) {
         const loadedSettings = {
             hide_profile: Boolean(data.hide_profile),
@@ -156,7 +157,7 @@ export default function SettingsHubPage() {
     const nextVal = !settings[key];
     // Private Mode is free for women; men need Plus (also enforced in the database).
     if (key === 'hide_profile' && nextVal && gender === 'male' && !isPlus) {
-      setPlusModalTitle('Unlock Private Mode with Plus');
+      setPlusModalKey('settings.unlockPrivate');
       setPlusModalOpen(true);
       return;
     }
@@ -177,7 +178,7 @@ export default function SettingsHubPage() {
     if (error) {
       // Roll back the optimistic flip so UI matches reality
       setSettings((prev) => ({ ...prev, [key]: !nextVal }));
-      setErrorMsg('Could not save setting. Check your connection and try again.');
+      setErrorMsg(t('errors.saveFailed'));
     }
   };
 
@@ -185,7 +186,7 @@ export default function SettingsHubPage() {
   const toggleGhostMode = async () => {
     if (isSubscribed === null) return; // status still loading: no upsell to a Plus member
     if (!isPlus) {
-      setPlusModalTitle('Unlock Ghost Mode with Plus');
+      setPlusModalKey('settings.unlockGhost');
       setPlusModalOpen(true);
       return;
     }
@@ -200,7 +201,7 @@ export default function SettingsHubPage() {
     const { error } = await supabase.from('profiles').update({ ghost_mode: nextVal }).eq('id', user.id);
     if (error) {
       setGhostMode(!nextVal);
-      setErrorMsg('Could not save Ghost Mode. Check your connection and try again.');
+      setErrorMsg(t('errors.saveFailed'));
     }
   };
 
@@ -218,17 +219,11 @@ export default function SettingsHubPage() {
         signal: controller.signal,
       });
       const data = await res.json().catch(() => ({}));
-      if (!res.ok || !data.url) throw new Error(data.error || 'Could not open the billing portal.');
+      if (!res.ok || !data.url) throw Object.assign(new Error(data.error || 'portal'), { status: res.status, code: data.code });
       window.location.href = data.url;
     } catch (err) {
       const aborted = err instanceof DOMException && err.name === 'AbortError';
-      setPortalError(
-        aborted
-          ? 'The billing portal took too long to respond. Please try again.'
-          : err instanceof Error
-            ? err.message
-            : 'Could not open the billing portal.'
-      );
+      setPortalError(aborted ? t('settings.portalTimeout') : localizeError(err instanceof Error ? err : null, t, 'settings.portalFailed'));
       setOpeningPortal(false);
     } finally {
       window.clearTimeout(timer);
@@ -248,14 +243,14 @@ export default function SettingsHubPage() {
       const res = await fetch('/api/account/delete', { method: 'POST' });
       const data = await res.json();
       if (!res.ok || data.error) {
-        setDeleteError(data.error || 'Failed to delete account. Please try again.');
+        setDeleteError(localizeError({ status: res.status, code: data.code, message: data.error }, t, 'settings.deleteFailed'));
         setDeletingAccount(false);
         return;
       }
       await hardSignOut();
       window.location.href = '/';
     } catch {
-      setDeleteError('Network error. Please try again.');
+      setDeleteError(t('errors.network'));
       setDeletingAccount(false);
     }
   };
@@ -276,12 +271,12 @@ export default function SettingsHubPage() {
           type="button"
           onClick={() => router.push('/profile')}
           className="w-8 h-8 rounded-full flex items-center justify-center text-[#413B5E]/85 hover:text-[#413B5E] hover:bg-[#E8E6F1]/70 transition cursor-pointer"
-          aria-label="Back to profile"
+          aria-label={t('settings.back')}
         >
           <ArrowLeft className="w-4 h-4" />
         </button>
         <h1 className="text-sm font-semibold text-[#413B5E] tracking-tight">
-          Settings &amp; Privacy
+          {t('settings.title')}
         </h1>
       </header>
 
@@ -349,11 +344,11 @@ export default function SettingsHubPage() {
 
           <SettingRow
             icon={<EyeOff className="w-4 h-4" />}
-            title="Private Mode (Pause Profile)"
+            title={t('settings.privateMode')}
             subtitle={
               gender === 'male' && isSubscribed === false
-                ? 'Plus · Hide from Discover while keeping your chats'
-                : 'Hide from Discover while keeping your chats'
+                ? `Plus · ${t('settings.privateModeSub')}`
+                : t('settings.privateModeSub')
             }
             on={settings.hide_profile}
             onClick={() => handleToggle('hide_profile')}
@@ -363,19 +358,19 @@ export default function SettingsHubPage() {
             icon={<Ghost className="w-4 h-4" />}
             title={
               <span className="inline-flex items-center gap-1.5">
-                Ghost Mode (Silent Browsing)
+                {t('settings.ghostMode')}
                 <PlusBadge />
               </span>
             }
-            subtitle="Browse profiles without leaving a footprint in their visitor history."
+            subtitle={t('settings.ghostModeSub')}
             on={isPlus && ghostMode}
             onClick={toggleGhostMode}
           />
 
           <SettingRow
             icon={<Smartphone className="w-4 h-4" />}
-            title="Show Active Status"
-            subtitle="Display green presence indicator on your profile"
+            title={t('settings.activeStatus')}
+            subtitle={t('settings.activeStatusSub')}
             on={settings.show_active_status}
             onClick={() => handleToggle('show_active_status')}
           />
@@ -385,22 +380,22 @@ export default function SettingsHubPage() {
         <div className="rounded-3xl bg-white border border-[#D0CDE1] p-2 shadow-2xs space-y-1">
           <div className="px-3 pt-2 pb-1">
             <span className="text-[10px] font-semibold uppercase tracking-wider text-[#8574B7]">
-              Notifications
+              {t('settings.notifications')}
             </span>
           </div>
 
           <SettingRow
             icon={<Bell className="w-4 h-4" />}
-            title="New Sparks &amp; Matches"
-            subtitle="Alerts when someone sparks your profile"
+            title={t('settings.newSparks')}
+            subtitle={t('settings.newSparksSub')}
             on={settings.notify_sparks}
             onClick={() => handleToggle('notify_sparks')}
           />
 
           <SettingRow
             icon={<MessageCircle className="w-4 h-4" />}
-            title="Chat Messages"
-            subtitle="Alerts for new direct messages"
+            title={t('settings.chatMessages')}
+            subtitle={t('settings.chatMessagesSub')}
             on={settings.notify_messages}
             onClick={() => handleToggle('notify_messages')}
           />
@@ -415,7 +410,7 @@ export default function SettingsHubPage() {
         <div className="rounded-3xl bg-white border border-[#D0CDE1] p-2 shadow-2xs space-y-1">
           <div className="px-3 pt-2 pb-1">
             <span className="text-[10px] font-semibold uppercase tracking-wider text-[#8574B7]">
-              Safety &amp; Support
+              {t('settings.safetySupport')}
             </span>
           </div>
 
@@ -428,17 +423,17 @@ export default function SettingsHubPage() {
                 <HelpCircle className="w-4 h-4" />
               </div>
               <div>
-                <p className="text-xs font-semibold text-[#413B5E]">Community Guidelines &amp; Anti-Scam</p>
-                <p className="text-[11px] text-[#413B5E]/75">How we keep Meet in Asia secure</p>
+                <p className="text-xs font-semibold text-[#413B5E]">{t('settings.guidelines')}</p>
+                <p className="text-[11px] text-[#413B5E]/75">{t('settings.guidelinesSub')}</p>
               </div>
             </div>
             <ChevronRight className="w-4 h-4 text-slate-600" />
           </Link>
 
           {[
-            { href: '/safety', title: 'Safety & Anti-Scam Guide', subtitle: 'Spotting scams, contact gate, reporting' },
-            { href: '/terms', title: 'Terms of Service', subtitle: 'Rules, Plus billing and cancellation' },
-            { href: '/privacy', title: 'Privacy Policy', subtitle: 'Your data, selfies and account deletion' },
+            { href: '/safety', title: t('settings.safetyGuide'), subtitle: t('settings.safetyGuideSub') },
+            { href: '/terms', title: t('settings.terms'), subtitle: t('settings.termsSub') },
+            { href: '/privacy', title: t('settings.privacyPolicy'), subtitle: t('settings.privacyPolicySub') },
           ].map((row) => (
             <Link
               key={row.href}
@@ -478,8 +473,8 @@ export default function SettingsHubPage() {
                   <CreditCard className="w-4 h-4" />
                 </div>
                 <div>
-                  <p className="text-xs font-semibold text-[#413B5E]">Manage Subscription</p>
-                  <p className="text-[11px] text-[#413B5E]/75">Cancel Plus or update your payment method</p>
+                  <p className="text-xs font-semibold text-[#413B5E]">{t('settings.manageSub')}</p>
+                  <p className="text-[11px] text-[#413B5E]/75">{t('settings.manageSubSub')}</p>
                 </div>
               </div>
               {openingPortal ? (
@@ -509,8 +504,8 @@ export default function SettingsHubPage() {
                 <LogOut className="w-4 h-4" />
               </div>
               <div>
-                <p className="text-xs font-semibold text-[#413B5E]">Log Out</p>
-                <p className="text-[11px] text-[#413B5E]/75">Sign out of this browser session</p>
+                <p className="text-xs font-semibold text-[#413B5E]">{t('settings.logOut')}</p>
+                <p className="text-[11px] text-[#413B5E]/75">{t('settings.logOutSub')}</p>
               </div>
             </div>
             {loggingOut && <Loader2 className="w-4 h-4 animate-spin text-[#8574B7]" />}
@@ -532,8 +527,8 @@ export default function SettingsHubPage() {
                 <Trash2 className="w-4 h-4" />
               </div>
               <div>
-                <p className="text-xs font-semibold text-red-600">Delete Account</p>
-                <p className="text-[11px] text-[#413B5E]/75">Permanently remove profile and data</p>
+                <p className="text-xs font-semibold text-red-600">{t('settings.deleteAccount')}</p>
+                <p className="text-[11px] text-[#413B5E]/75">{t('settings.deleteAccountSub')}</p>
               </div>
             </div>
           </button>
@@ -553,9 +548,9 @@ export default function SettingsHubPage() {
                 <AlertTriangle className="w-5 h-5" />
               </div>
 
-              <h2 className="text-base font-semibold text-[#413B5E]">Delete Account?</h2>
+              <h2 className="text-base font-semibold text-[#413B5E]">{t('settings.deleteTitle')}</h2>
               <p className="text-xs text-[#413B5E]/75 mt-1.5 leading-relaxed">
-                This will permanently delete your profile, photos, chat history, and active matches. This action is immediate and cannot be undone.
+                {t('settings.deleteBody')}
               </p>
 
               {deleteError && (
@@ -568,7 +563,7 @@ export default function SettingsHubPage() {
                 type="text"
                 value={deleteConfirmText}
                 onChange={(e) => setDeleteConfirmText(e.target.value)}
-                placeholder="Type DELETE to confirm"
+                placeholder={t('settings.deleteType', { word: 'DELETE' })}
                 disabled={deletingAccount}
                 autoComplete="off"
                 spellCheck={false}
@@ -585,10 +580,10 @@ export default function SettingsHubPage() {
                   {deletingAccount ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>Deleting Account...</span>
+                      <span>{t('settings.deleting')}</span>
                     </>
                   ) : (
-                    <span>Permanently Delete</span>
+                    <span>{t('settings.deleteConfirm')}</span>
                   )}
                 </button>
 
@@ -598,7 +593,7 @@ export default function SettingsHubPage() {
                   onClick={() => setShowDeleteModal(false)}
                   className="w-full py-2.5 rounded-xl bg-white hover:bg-[#E8E6F1]/60 text-[#413B5E]/75 hover:text-[#413B5E] font-medium text-xs transition cursor-pointer"
                 >
-                  Cancel
+                  {t('common.cancel')}
                 </button>
               </div>
             </div>
@@ -608,7 +603,7 @@ export default function SettingsHubPage() {
       <AILPlusModal
         open
         onClose={() => setPlusModalOpen(false)}
-        title={plusModalTitle}
+        title={t(plusModalKey)}
         returnPath="/settings"
       />
       )}
