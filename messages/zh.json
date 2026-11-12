@@ -307,5 +307,9 @@
     "mostPopular": "最受欢迎",
     "bestValue": "最超值",
     "perMonth": "每月 {price}"
+  },
+  "messages": {
+    "deleteFailed": "无法删除对话，请重试。",
+    "conversationDeleted": "对话已删除"
   }
 }

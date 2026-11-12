@@ -307,5 +307,9 @@
     "mostPopular": "ยอดนิยม",
     "bestValue": "คุ้มที่สุด",
     "perMonth": "{price}/เดือน"
+  },
+  "messages": {
+    "deleteFailed": "ลบการสนทนาไม่สำเร็จ โปรดลองอีกครั้ง",
+    "conversationDeleted": "ลบการสนทนาแล้ว"
   }
 }

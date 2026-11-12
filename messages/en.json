@@ -307,5 +307,9 @@
     "mostPopular": "Most Popular",
     "bestValue": "Best Value",
     "perMonth": "{price}/mo"
+  },
+  "messages": {
+    "deleteFailed": "Could not delete the conversation. Please try again.",
+    "conversationDeleted": "Conversation deleted"
   }
 }

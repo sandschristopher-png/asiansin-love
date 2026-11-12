@@ -307,5 +307,9 @@
     "mostPopular": "Terpopuler",
     "bestValue": "Paling Hemat",
     "perMonth": "{price}/bln"
+  },
+  "messages": {
+    "deleteFailed": "Tidak dapat menghapus percakapan. Silakan coba lagi.",
+    "conversationDeleted": "Percakapan dihapus"
   }
 }

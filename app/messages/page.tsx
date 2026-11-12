@@ -10,6 +10,8 @@ import { SwipeableRow } from '@/components/SwipeableRow';
 import { AVATAR_IMAGE, supabaseImage } from '@/lib/images/supabaseImage';
 import { useActionToast } from '@/components/ActionToast';
 import { publicName } from '@/lib/publicName';
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { localizeError } from '@/lib/i18n/errors';
 
 interface ConversationItem {
   id: string;
@@ -26,7 +28,7 @@ interface ConversationItem {
 
 const isUnread = (c: ConversationItem) => c.unreadCount > 0 || Boolean(c.markedUnread);
 
-type ConvState = { partner_id: string; marked_unread: boolean; hidden_before: string | null };
+type ConvState = { partner_id: string; marked_unread: boolean };
 
 function formatConversationTimestamp(iso?: string): string {
   if (!iso) return '';
@@ -53,6 +55,16 @@ function formatConversationTimestamp(iso?: string): string {
 
 
 let memoryConversationsCache: ConversationItem[] | null = null;
+
+/** Keeps the in-memory and session caches in step with the list, so a removed row never flashes back. */
+function writeConversationsCache(list: ConversationItem[]) {
+  memoryConversationsCache = list;
+  if (typeof window !== 'undefined') {
+    try {
+      sessionStorage.setItem('ail_messages_fast_cache', JSON.stringify(list));
+    } catch {}
+  }
+}
 function getInitialConversations(): ConversationItem[] {
   if (memoryConversationsCache) return memoryConversationsCache.slice();
   if (typeof window !== 'undefined') {
@@ -72,6 +84,7 @@ function getInitialConversations(): ConversationItem[] {
 
 export default function MessagesPage() {
   const router = useRouter();
+  const { t } = useLocale();
   const initialConversations = getInitialConversations();
   const [conversations, setConversations] = useState<ConversationItem[]>(() => initialConversations);
   const [loading, setLoading] = useState(() => initialConversations.length === 0);
@@ -90,7 +103,7 @@ export default function MessagesPage() {
             // Newest 500 are plenty to build the conversation list; never scan the full history.
             .limit(500),
           // Per-member swipe state (20261115_conversation_states.sql); an error just means none.
-          supabase.from('conversation_states').select('partner_id, marked_unread, hidden_before').eq('user_id', userId),
+          supabase.from('conversation_states').select('partner_id, marked_unread').eq('user_id', userId),
         ]);
         const states = new Map<string, ConvState>(((statesRes.data || []) as ConvState[]).map((s) => [s.partner_id, s]));
 
@@ -111,9 +124,8 @@ export default function MessagesPage() {
           if (m.is_quarantined && m.sender_id !== userId) continue;
           const partnerId = m.sender_id === userId ? m.receiver_id : m.sender_id;
           if (!partnerId || String(partnerId).startsWith('00000000')) continue;
-          // Deleted (swiped away): only messages after that point bring the conversation back.
-          const hiddenBefore = states.get(partnerId)?.hidden_before;
-          if (hiddenBefore && m.created_at <= hiddenBefore) continue;
+          // Conversations the member deleted never arrive here: messages.deleted_by hides those rows
+          // from them (20261112_fix_delete_conversation.sql), and a newer message is a fresh row.
 
           const isUnreadIncoming = m.receiver_id === userId && !m.is_read;
 
@@ -269,7 +281,8 @@ export default function MessagesPage() {
 
   /**
    * Swipe / sheet Delete (runs after the row has collapsed): hidden for this member only, the
-   * other member keeps the thread. Restored with an error if saving fails.
+   * other member keeps the thread and nothing is erased. The row leaves the list at once and is
+   * restored with an error if the RPC fails.
    */
   const deleteConversation = async (conv: ConversationItem) => {
     setActionError(null);
@@ -277,20 +290,20 @@ export default function MessagesPage() {
     const uid = session?.user?.id;
     if (!uid) return;
     const previous = conversations;
-    setConversations((prev) => prev.filter((c) => c.recipientId !== conv.recipientId));
-    const now = new Date().toISOString();
-    const { error } = await supabase
-      .from('conversation_states')
-      .upsert(
-        { user_id: uid, partner_id: conv.recipientId, hidden_before: now, marked_unread: false, updated_at: now },
-        { onConflict: 'user_id,partner_id' }
-      );
+    const remaining = previous.filter((c) => c.recipientId !== conv.recipientId);
+    setConversations(remaining);
+    writeConversationsCache(remaining);
+    // SECURITY DEFINER RPC: members cannot update rows they sent, so the hide goes through the database.
+    const { error } = await supabase.rpc('delete_conversation', { p_other_user_id: conv.recipientId });
     if (error) {
       setConversations(previous);
-      setActionError('Could not delete the conversation. Please try again.');
+      writeConversationsCache(previous);
+      setActionError(localizeError({ code: error.code, message: error.message }, t, 'messages.deleteFailed'));
       return;
     }
-    showActionToast('Conversation deleted', 'check');
+    // A leftover "Mark unread" for this partner would resurface on a new message; clear it (best effort).
+    void supabase.from('conversation_states').delete().eq('user_id', uid).eq('partner_id', conv.recipientId);
+    showActionToast(t('messages.conversationDeleted'), 'check');
   };
 
   // Unread conversations first (chat alerts live here and on the Messages tab badge), newest first within each group.

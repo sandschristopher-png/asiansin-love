@@ -446,12 +446,11 @@ export default function ChatConversationPage() {
         // yet) just mean no state.
         supabase
           .from('conversation_states')
-          .select('hidden_before, marked_unread')
+          .select('marked_unread')
           .eq('user_id', user.id)
           .eq('partner_id', targetUuid)
           .maybeSingle(),
       ]);
-      const hiddenBefore: string | null = convStateRes.data?.hidden_before ?? null;
       // Opening the chat clears a manual "Mark unread".
       if (convStateRes.data?.marked_unread) {
         supabase
@@ -544,7 +543,6 @@ export default function ChatConversationPage() {
         setMessages(
           remoteMsgsRes.messages
             // Deleted from the Messages list: only what came after stays visible (for this member).
-            .filter((m: { createdAt?: string }) => !hiddenBefore || String(m.createdAt) > hiddenBefore)
             .map((m: any) => ({
             id: m.id,
             sender: m.sender,

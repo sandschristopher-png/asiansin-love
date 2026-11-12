@@ -16,6 +16,8 @@ eq('LIMIT_REACHED', errorKey({ code: 'LIMIT_REACHED' }), 'errors.limitReached');
 eq('DB_ERROR', errorKey({ code: 'DB_ERROR' }), 'errors.generic');
 eq('pg unique', errorKey({ code: '23505' }), 'errors.duplicate');
 eq('pg rls', errorKey({ code: 42501 }), 'errors.permission');
+eq('rpc not authenticated', errorKey({ code: '28000' }), 'errors.session');
+eq('rpc missing stays unknown', errorKey({ code: 'PGRST202', message: 'Could not find the function' }), null);
 eq('supabase invalid_credentials', errorKey({ code: 'invalid_credentials' }), 'errors.badCredentials');
 eq('supabase email rate', errorKey({ code: 'over_email_send_rate_limit' }), 'errors.rateLimit');
 

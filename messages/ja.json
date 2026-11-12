@@ -307,5 +307,9 @@
     "mostPopular": "人気No.1",
     "bestValue": "最もお得",
     "perMonth": "月額{price}"
+  },
+  "messages": {
+    "deleteFailed": "会話を削除できませんでした。もう一度お試しください。",
+    "conversationDeleted": "会話を削除しました"
   }
 }

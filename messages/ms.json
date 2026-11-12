@@ -307,5 +307,9 @@
     "mostPopular": "Paling Popular",
     "bestValue": "Nilai Terbaik",
     "perMonth": "{price}/bln"
+  },
+  "messages": {
+    "deleteFailed": "Tidak dapat memadam perbualan. Sila cuba lagi.",
+    "conversationDeleted": "Perbualan dipadam"
   }
 }

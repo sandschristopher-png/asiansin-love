@@ -307,5 +307,9 @@
     "mostPopular": "Phổ biến nhất",
     "bestValue": "Giá trị nhất",
     "perMonth": "{price}/tháng"
+  },
+  "messages": {
+    "deleteFailed": "Không thể xóa cuộc trò chuyện. Vui lòng thử lại.",
+    "conversationDeleted": "Đã xóa cuộc trò chuyện"
   }
 }

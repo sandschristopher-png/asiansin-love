@@ -307,5 +307,9 @@
     "mostPopular": "Pinakasikat",
     "bestValue": "Pinakamura",
     "perMonth": "{price}/buwan"
+  },
+  "messages": {
+    "deleteFailed": "Hindi nabura ang usapan. Pakisubukan ulit.",
+    "conversationDeleted": "Nabura ang usapan"
   }
 }

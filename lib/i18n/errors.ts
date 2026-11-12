@@ -56,6 +56,8 @@ const BY_CODE: Record<string, ErrorKey> = {
   // Postgres / PostgREST
   '23505': 'errors.duplicate',
   '42501': 'errors.permission',
+  '28000': 'errors.session',
+  '22023': 'errors.invalidInput',
   PGRST301: 'errors.session',
   PGRST303: 'errors.session',
 };

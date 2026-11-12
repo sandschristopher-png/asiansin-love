@@ -41,7 +41,8 @@ export async function GET(req: Request) {
     const pairFilter = [user.id, targetUserId];
 
     // Single consolidated query: fetch latest 60 messages descending. Voice-note columns come
-    // from 20261105_voice_features.sql; until that migration runs, fall back to text-only.
+    // from 20261105_voice_features.sql and deleted_by from 20261112_fix_delete_conversation.sql;
+    // a column that is not migrated yet is dropped from the select and the query retried.
     const BASE_COLS = 'id, sender_id, receiver_id, content, created_at, is_quarantined, is_read';
     const fetchThread = (cols: string) =>
       serviceClient
@@ -52,17 +53,23 @@ export async function GET(req: Request) {
         .eq('is_quarantined', false)
         .order('created_at', { ascending: false })
         .limit(60);
-    let { data: rawMessages, error: fetchError } = await fetchThread(BASE_COLS + ', audio_path, audio_duration_ms');
-    if (fetchError && /audio_path|audio_duration_ms/.test(fetchError.message)) {
-      ({ data: rawMessages, error: fetchError } = await fetchThread(BASE_COLS));
+    let optionalCols = ['audio_path', 'audio_duration_ms', 'deleted_by'];
+    let { data: rawMessages, error: fetchError } = await fetchThread([BASE_COLS, ...optionalCols].join(', '));
+    for (let attempt = 0; fetchError && attempt < optionalCols.length; attempt++) {
+      const missing = optionalCols.find((c) => fetchError!.message.includes(c));
+      if (!missing) break;
+      optionalCols = optionalCols.filter((c) => c !== missing);
+      ({ data: rawMessages, error: fetchError } = await fetchThread([BASE_COLS, ...optionalCols].join(', ')));
     }
 
     if (fetchError) {
       return NextResponse.json({ error: fetchError.message }, { status: 500 });
     }
 
-    // Chronological order for the UI
+    // Chronological order for the UI. The contact-unlock gate below reads the whole thread, deleted
+    // messages included, so deleting a conversation never resets the safety gate.
     const messages = ((rawMessages || []) as any[]).reverse();
+    const visibleMessages = messages.filter((m) => !(Array.isArray(m.deleted_by) && m.deleted_by.includes(user.id)));
 
     // Same unlock rule as the POST send gate: both members sent 3 distinct substantive (15+ char)
     // messages within the latest 40.
@@ -70,7 +77,7 @@ export async function GET(req: Request) {
     const mutualCount = Math.min(gate.senderSubstantiveCount, gate.receiverSubstantiveCount);
 
     // Mask contact info and retain is_read status
-    const maskedMessages = messages.map((msg) => {
+    const maskedMessages = visibleMessages.map((msg) => {
       const maskResult = applyContactRevealMask(msg.content || '', mutualCount);
       return {
         id: msg.id,

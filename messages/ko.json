@@ -307,5 +307,9 @@
     "mostPopular": "가장 인기",
     "bestValue": "최고 가성비",
     "perMonth": "월 {price}"
+  },
+  "messages": {
+    "deleteFailed": "대화를 삭제하지 못했습니다. 다시 시도해 주세요.",
+    "conversationDeleted": "대화를 삭제했습니다"
   }
 }

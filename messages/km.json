@@ -307,5 +307,9 @@
     "mostPopular": "ពេញនិយមបំផុត",
     "bestValue": "តម្លៃល្អបំផុត",
     "perMonth": "{price}/ខែ"
+  },
+  "messages": {
+    "deleteFailed": "មិនអាចលុបការសន្ទនាបានទេ។ សូមព្យាយាមម្តងទៀត។",
+    "conversationDeleted": "បានលុបការសន្ទនា"
   }
 }
