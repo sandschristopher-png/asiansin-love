@@ -18,6 +18,8 @@ import { SparkHeartButton } from '@/components/SparkHeartButton';
 import { PhotoCarousel } from '@/components/cards/PhotoCarousel';
 import { useActionToast } from '@/components/ActionToast';
 import { VisitingBadge, type TravelNotice } from '@/components/VisitingBadge';
+import { TripBadge } from '@/components/trips/TripBadge';
+import { TRIP_HUBS, type TripBrief } from '@/lib/tripHubs';
 import { NewMemberPill } from '@/components/profile/TrustBadges';
 import {
   ALL_COUNTRIES_VALUE,
@@ -59,6 +61,7 @@ const DEFAULT_MIN_AGE = 18;
 const DEFAULT_MAX_AGE = 99;
 const AGE_OPTIONS = Array.from({ length: DEFAULT_MAX_AGE - DEFAULT_MIN_AGE + 1 }, (_, i) => i + DEFAULT_MIN_AGE);
 const AGE_SELECT_OPTIONS = AGE_OPTIONS.map((a) => ({ value: a, label: String(a) }));
+const HUB_FILTER_OPTIONS = [{ value: '', label: 'Any city' }, ...TRIP_HUBS.map((h) => ({ value: h.city as string, label: `${h.city}, ${h.country}` }))];
 /** Trigger look for the filter sheet's themed dropdowns. */
 const FILTER_SELECT =
   'bg-white border border-[#D0CDE1] text-[#413B5E] font-medium rounded-xl px-3 py-2 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8574B7]/30';
@@ -133,6 +136,8 @@ export interface ProfileItem {
   id: string;
   /** Interests and languages shared with the viewer, counted by /api/discover (no client pop-in). */
   sharedCount?: number;
+  /** Nearest active or upcoming trip ("Visiting Soon"), Plus members only. */
+  trip?: TripBrief | null;
   username?: string;
   name: string;
   age: number;
@@ -278,7 +283,8 @@ function setDiscoverOwner(id: string | null) {
 let memoryDiscoverCache: { owner: string; profiles: ProfileItem[] } | null = null;
 // Same server-filtered feed, surviving a reload in this tab: paints at once, then revalidates.
 // Default feed only, capped so it stays well inside the sessionStorage quota.
-const DISCOVER_CACHE_PREFIX = 'ail_discover_cache_v2_';
+const DISCOVER_CACHE_PREFIX = 'ail_discover_cache_v3_';
+const LEGACY_V2_PREFIX = 'ail_discover_cache_v2_'; // before trips were part of the payload
 const LEGACY_DISCOVER_CACHE_KEY = 'ail_discover_fast_cache_v1';
 const DISCOVER_CACHE_MAX = 48;
 const discoverCacheKey = () => (discoverOwner ? DISCOVER_CACHE_PREFIX + discoverOwner : null);
@@ -297,6 +303,7 @@ function writeDiscoverSessionCache(profiles: ProfileItem[]) {
   if (!key) return;
   try {
     sessionStorage.removeItem(LEGACY_DISCOVER_CACHE_KEY);
+    if (discoverOwner) sessionStorage.removeItem(LEGACY_V2_PREFIX + discoverOwner);
     if (profiles.length === 0) sessionStorage.removeItem(key);
     else sessionStorage.setItem(key, JSON.stringify({ profiles: profiles.slice(0, DISCOVER_CACHE_MAX), timestamp: Date.now() }));
   } catch {}
@@ -306,6 +313,7 @@ function clearDiscoverCache() {
   const key = discoverCacheKey();
   try {
     sessionStorage.removeItem(LEGACY_DISCOVER_CACHE_KEY);
+    if (discoverOwner) sessionStorage.removeItem(LEGACY_V2_PREFIX + discoverOwner);
     if (key) sessionStorage.removeItem(key);
   } catch {}
 }
@@ -391,6 +399,7 @@ function DiscoverContent() {
   const [draftTimeline, setDraftTimeline] = useState<string[]>([]);
   const [draftChildren, setDraftChildren] = useState<string[]>([]);
   const [draftEnglish, setDraftEnglish] = useState<string[]>([]);
+  const [draftHub, setDraftHub] = useState<string>('');
   const [draftMode, setDraftMode] = useState<DiscoveryModeId>('all');
   const [selectedIntents, setSelectedIntents] = useState<string[]>([]);
   const [heightRange, setHeightRange] = useState<[number, number]>([HEIGHT_MIN_CM, HEIGHT_MAX_CM]);
@@ -405,6 +414,7 @@ function DiscoverContent() {
   const [selectedTimeline, setSelectedTimeline] = useState<string[]>([]);
   const [selectedChildren, setSelectedChildren] = useState<string[]>([]);
   const [selectedEnglish, setSelectedEnglish] = useState<string[]>([]);
+  const [selectedHub, setSelectedHub] = useState<string>('');
   const feedUrl = discoverQuery({
     verifiedOnly,
     hideContacted,
@@ -412,6 +422,7 @@ function DiscoverContent() {
     intents: selectedTimeline,
     children: selectedChildren,
     english: selectedEnglish,
+    visiting: selectedHub,
   });
   // Read by fetchProfiles (the first load uses the defaults, i.e. plain /api/discover).
   const feedUrlRef = useRef('/api/discover');
@@ -478,6 +489,7 @@ function DiscoverContent() {
       setDraftTimeline(selectedTimeline);
       setDraftChildren(selectedChildren);
       setDraftEnglish(selectedEnglish);
+      setDraftHub(selectedHub);
       setDraftMode(discoveryMode);
       document.body.style.overflow = 'hidden';
     } else {
@@ -486,7 +498,7 @@ function DiscoverContent() {
     return () => {
       document.body.style.overflow = '';
     };
-  }, [filtersOpen, minAge, maxAge, selectedCountry, selectedIntents, heightRange, selectedLanguages, selectedHabits, verifiedOnly, activeNowOnly, hideContacted, sparkedMeOnly, selectedTimeline, selectedChildren, selectedEnglish, discoveryMode]);
+  }, [filtersOpen, minAge, maxAge, selectedCountry, selectedIntents, heightRange, selectedLanguages, selectedHabits, verifiedOnly, activeNowOnly, hideContacted, sparkedMeOnly, selectedTimeline, selectedChildren, selectedEnglish, selectedHub, discoveryMode]);
 
   useEffect(() => {
     const handleMutualMatch = (e: CustomEvent<{ targetId: string }>) => {
@@ -760,9 +772,10 @@ function DiscoverContent() {
     if (selectedTimeline.length) count++;
     if (selectedChildren.length) count++;
     if (selectedEnglish.length) count++;
+    if (selectedHub) count++;
     if (discoveryMode !== 'all') count++;
     return count;
-  }, [selectedCountry, minAge, maxAge, selectedIntents, heightNarrowed, selectedLanguages, selectedHabits, verifiedOnly, activeNowOnly, hideContacted, sparkedMeOnly, selectedTimeline, selectedChildren, selectedEnglish, discoveryMode]);
+  }, [selectedCountry, minAge, maxAge, selectedIntents, heightNarrowed, selectedLanguages, selectedHabits, verifiedOnly, activeNowOnly, hideContacted, sparkedMeOnly, selectedTimeline, selectedChildren, selectedEnglish, selectedHub, discoveryMode]);
 
   const hasActiveFilters = activeFiltersCount > 0;
 
@@ -783,6 +796,7 @@ function DiscoverContent() {
     setSelectedTimeline([]);
     setSelectedChildren([]);
     setSelectedEnglish([]);
+    setSelectedHub('');
     setDiscoveryMode('all');
     setSearchQuery('');
     setVisibleLimit(BATCH_SIZE);
@@ -832,6 +846,7 @@ function DiscoverContent() {
     setSelectedTimeline(draftTimeline);
     setSelectedChildren(draftChildren);
     setSelectedEnglish(draftEnglish);
+    setSelectedHub(draftHub);
     setDiscoveryMode(draftMode);
     flashSkeleton();
     closeFiltersWithAnimation();
@@ -852,6 +867,7 @@ function DiscoverContent() {
     setDraftTimeline([]);
     setDraftChildren([]);
     setDraftEnglish([]);
+    setDraftHub('');
     setDraftMode('all');
   };
 
@@ -1100,13 +1116,14 @@ function DiscoverContent() {
                   {/* Soft scrim at the base of the photo so the white name / city text stays legible. */}
                   <div aria-hidden className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/80 via-black/35 to-transparent pointer-events-none z-20" />
                   <div className="absolute bottom-0 inset-x-0 pt-10 pb-3 px-3 z-[25] pointer-events-none">
-                    {(profile.travel || isTrustedVoiceIntroUrl(profile.voiceIntroUrl)) && (
+                    {(profile.trip || profile.travel || isTrustedVoiceIntroUrl(profile.voiceIntroUrl)) && (
                       <div className="mb-1.5 flex flex-col items-start gap-1 pr-7 pointer-events-auto">
                         {/* Tap-to-play only; never autoplays */}
                         {isTrustedVoiceIntroUrl(profile.voiceIntroUrl) && (
                           <AudioPill src={profile.voiceIntroUrl} label="Voice" size="sm" />
                         )}
-                        <VisitingBadge travel={profile.travel} variant="glass" />
+                        {/* A Visiting Soon trip replaces the older single travel notice. */}
+                        {profile.trip ? <TripBadge trip={profile.trip} variant="glass" /> : <VisitingBadge travel={profile.travel} variant="glass" />}
                       </div>
                     )}
                     <Link href={'/profile/' + profile.id} className="block min-w-0 pointer-events-auto">
@@ -1444,6 +1461,21 @@ function DiscoverContent() {
                           </button>
                         ))}
                       </div>
+                    </div>
+
+                    <div>
+                      <label className="text-[11px] font-semibold text-[#413B5E]/75 uppercase tracking-wider block mb-2">
+                        Visiting hub
+                      </label>
+                      <ThemedSelect<string>
+                        ariaLabel="Visiting hub"
+                        value={draftHub}
+                        onChange={setDraftHub}
+                        options={HUB_FILTER_OPTIONS}
+                        menuClassName="w-full"
+                        className={FILTER_SELECT}
+                      />
+                      <p className="mt-1.5 text-[11px] text-slate-600">Members in or arriving soon in this city.</p>
                     </div>
 
                     {[

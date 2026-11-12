@@ -8,6 +8,7 @@ import { canonicalCountry, countryMatches } from '@/lib/constants/countries';
 import { readLanguages } from '@/lib/constants/languages';
 import { LIFESTYLE_KEYS, readHeightCm, readLifestyle } from '@/lib/lifestyle';
 import { sharedTraits } from '@/lib/rhythm';
+import { hubCountry, type TripBrief } from '@/lib/tripHubs';
 import {
   CHILDREN_CLAUSES,
   CHILDREN_FILTERS,
@@ -183,6 +184,11 @@ export async function GET(req: Request) {
     const intentFilter = readFilterList(params.get('intent'), RELATIONSHIP_INTENT_FILTERS);
     const childrenFilter = readFilterList(params.get('children'), CHILDREN_FILTERS);
     const englishFilter = readFilterList(params.get('english'), ENGLISH_LEVEL_OPTIONS);
+    // "Visiting hub": only a curated hub city is accepted (the raw value never reaches a filter string).
+    const visitingParam = (params.get('visiting') || '').trim();
+    const visitingHub = hubCountry(visitingParam) ? visitingParam : '';
+    // Trips that have not ended (one day of slack for time zones; the card decides "now" vs "soon").
+    const tripsFrom = new Date(Date.now() - 86_400_000).toISOString().slice(0, 10);
 
     const [messagedRes, sparkedMeRes] = await Promise.all([
       hideContacted
@@ -204,6 +210,22 @@ export async function GET(req: Request) {
     // drops every contacted member.
     const sqlExcluded = [...excludedIds, ...Array.from(contactedIds).filter((id) => UUID_RE.test(id)).slice(0, 300)];
 
+    // Hub filter: members with an active trip in that city. Plus is checked per profile below (only
+    // Plus members' trips are public, and a lapsed Plus hides them at once).
+    let visitingIds: string[] | null = null;
+    if (visitingHub) {
+      const { data: hubTrips } = await serviceClient
+        .from('user_trips')
+        .select('user_id')
+        .eq('is_active', true)
+        .eq('destination_city', visitingHub)
+        .gte('end_date', tripsFrom)
+        .limit(1000);
+      visitingIds = Array.from(
+        new Set(((hubTrips as { user_id: string | null }[] | null) || []).map((r) => r.user_id).filter((id): id is string => typeof id === 'string' && UUID_RE.test(id)))
+      ).slice(0, 300);
+    }
+
     const fetchFeed = (cols: string) => {
       let q = serviceClient.from('profiles').select(cols).not('id', 'in', `(${sqlExcluded.join(',')})`);
       if (targetGender) q = q.or(GENDER_SPELLINGS[targetGender]);
@@ -212,6 +234,7 @@ export async function GET(req: Request) {
       if (intentFilter.length) q = q.in('timeline_intent', intentFilter);
       if (childrenFilter.length) q = q.or(childrenFilter.map((c) => CHILDREN_CLAUSES[c]).join(','));
       if (englishFilter.length) q = q.in('english_level', englishFilter);
+      if (visitingIds) q = q.in('id', visitingIds.length ? visitingIds : ['00000000-0000-0000-0000-000000000000']);
       return q.order('created_at', { ascending: false }).limit(200);
     };
     // Newest optional columns first, then progressively older schemas.
@@ -241,8 +264,29 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
+    // Each member's nearest active or upcoming trip, attached below so cards render final on the
+    // first frame. One query for every upcoming trip (Plus members hold at most 3 each); a failure
+    // (for example before the user_trips migration) just means no trip badges.
+    const tripByUser = new Map<string, TripBrief>();
+    {
+      const { data: tripRows } = await serviceClient
+        .from('user_trips')
+        .select('user_id, destination_city, destination_country, start_date, end_date')
+        .eq('is_active', true)
+        .gte('end_date', tripsFrom)
+        .order('start_date', { ascending: true })
+        .limit(2000);
+      for (const r of (tripRows as { user_id: string; destination_city: string; destination_country: string; start_date: string; end_date: string }[] | null) || []) {
+        if (visitingHub && r.destination_city !== visitingHub) continue;
+        if (!tripByUser.has(r.user_id)) {
+          tripByUser.set(r.user_id, { city: r.destination_city, country: r.destination_country || null, arrival: r.start_date, departure: r.end_date });
+        }
+      }
+    }
+
     const profiles = (allRows || [])
       .filter((row: any) => {
+        if (visitingHub && (!row.is_plus || !tripByUser.has(row.id))) return false;
         if (user && row.id === user.id) return false;
         if (blockedUserIds.has(row.id)) return false;
         if (contactedIds.has(row.id)) return false; // "Hide profiles I already Sparked or messaged"
@@ -328,6 +372,8 @@ export async function GET(req: Request) {
           // Shared interests / languages with the viewer, so the card tag renders final on first paint.
           sharedCount: viewerProfile ? sharedTraits(viewerProfile, { interests: row.interests, languages: row.languages }).length : 0,
           replyPace: row.reply_pace || null,
+          // Nearest active / upcoming trip (Plus members only): "In Manila now" or "Visiting Manila: Nov 18 - Dec 2".
+          trip: row.is_plus ? tripByUser.get(row.id) ?? null : null,
           travel:
             row.is_travel_mode_active === true && row.is_plus && row.visiting_city
               ? {

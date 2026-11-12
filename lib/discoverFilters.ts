@@ -52,6 +52,8 @@ export interface DiscoverServerFilters {
   intents: string[];
   children: string[];
   english: string[];
+  /** "Visiting hub": a city from lib/tripHubs.ts; only members visiting or arriving there soon. */
+  visiting?: string;
 }
 
 /** Query string for /api/discover (hide_contacted is off by default, so only "on" is sent). */
@@ -63,6 +65,7 @@ export function discoverQuery(f: DiscoverServerFilters): string {
   if (f.intents.length) p.set('intent', f.intents.join(','));
   if (f.children.length) p.set('children', f.children.join(','));
   if (f.english.length) p.set('english', f.english.join(','));
+  if (f.visiting) p.set('visiting', f.visiting);
   const qs = p.toString();
   return qs ? `/api/discover?${qs}` : '/api/discover';
 }
