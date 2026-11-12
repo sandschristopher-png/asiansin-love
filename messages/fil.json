@@ -11,14 +11,38 @@
   },
   "auth": {
     "memberPrompt": "Miyembro ka na ba?",
-    "signIn": "Mag-sign in"
+    "signIn": "Mag-sign in",
+    "welcomeBack": "Maligayang pagbabalik",
+    "welcome": "Maligayang pagdating",
+    "prefixIn": "Makilala ang isang tao sa",
+    "prefixFrom": "Makilala ang isang tao mula sa",
+    "continueGoogle": "Magpatuloy gamit ang Google",
+    "continueLine": "Magpatuloy gamit ang LINE",
+    "continueEmail": "Magpatuloy gamit ang Email",
+    "newTo": "Bago sa Meet in Asia?",
+    "createAccount": "Gumawa ng account",
+    "ageNotice": "Mahigpit na pinapayagan ang pagpaparehistro sa mga may edad 18 pataas.",
+    "legalLead": "Sa pagpapatuloy, sumasang-ayon ka sa aming",
+    "legalAnd": "at",
+    "legalTail": ".",
+    "terms": "Mga Tuntunin ng Serbisyo",
+    "privacy": "Patakaran sa Privacy"
   },
   "steps": {
     "heading": "Paano nangyayari ang koneksyon",
     "sub": "Mag-match ayon sa intensyon, hindi sa swerte. Tatlong hakbang para makakilala ng totoong tao.",
-    "one": { "title": "Ibahagi ang gusto mo", "desc": "Itakda ang iyong mga layunin sa relasyon, timeline, at mga plano sa paglalakbay mula sa simula." },
-    "two": { "title": "Mag-browse ng verified na miyembro", "desc": "Mag-browse ng mga seryosong miyembro na kumpirmado sa pamamagitan ng live selfie verification." },
-    "three": { "title": "Kumonekta nang may kumpiyansa", "desc": "Magpadala ng Sparks, pakinggan ang totoong voice intro, at kumonekta nang ligtas sa sarili mong paraan." }
+    "one": {
+      "title": "Ibahagi ang gusto mo",
+      "desc": "Itakda ang iyong mga layunin sa relasyon, timeline, at mga plano sa paglalakbay mula sa simula."
+    },
+    "two": {
+      "title": "Mag-browse ng verified na miyembro",
+      "desc": "Mag-browse ng mga seryosong miyembro na kumpirmado sa pamamagitan ng live selfie verification."
+    },
+    "three": {
+      "title": "Kumonekta nang may kumpiyansa",
+      "desc": "Magpadala ng Sparks, pakinggan ang totoong voice intro, at kumonekta nang ligtas sa sarili mong paraan."
+    }
   },
   "features": {
     "screening": {
@@ -52,7 +76,111 @@
     "privacy": "Privacy",
     "contact": "Makipag-ugnayan"
   },
-  "language": {
-    "label": "Wika"
+  "common": {
+    "language": "Wika",
+    "cancel": "Kanselahin",
+    "close": "Isara"
+  },
+  "nav": {
+    "discover": "Tuklasin",
+    "sparks": "Sparks",
+    "messages": "Mensahe",
+    "profile": "Profile"
+  },
+  "discover": {
+    "modeAll": "Lahat",
+    "modeOnline": "Online",
+    "modeNearMe": "Malapit sa Akin",
+    "modeNew": "Bago",
+    "visitingHub": "Lungsod na bibisitahin",
+    "anyCity": "Anumang lungsod",
+    "visitingHubHint": "Mga miyembrong nasa o malapit nang dumating sa lungsod na ito.",
+    "selfieVerifiedOnly": "Selfie-Verified lang",
+    "apply": "I-apply ang mga Filter",
+    "reset": "I-reset",
+    "resetToast": "Na-reset ang mga filter",
+    "noMembers": "Wala pang miyembro malapit sa iyong lokasyon.",
+    "adjustFilters": "Ayusin ang mga Filter",
+    "resetFilters": "I-reset ang mga Filter"
+  },
+  "travel": {
+    "inNow": "Nasa {city} ngayon",
+    "visiting": "Bibisita sa {city} · {dates}",
+    "arrivingTomorrow": "Darating bukas",
+    "arrivingIn": "Darating sa loob ng {n} araw",
+    "ended": "Tapos na",
+    "upcomingTrips": "{n} paparating na biyahe",
+    "card": {
+      "title": "Visiting Soon",
+      "subtitle": "Ipaalam sa mga miyembro sa iyong destinasyon kung kailan ka darating.",
+      "add": "Magdagdag ng biyahe",
+      "edit": "I-edit",
+      "delete": "Burahin",
+      "confirmDelete": "Kumpirmahin ang pagbura",
+      "none": "Walang paparating na biyahe. Magdagdag ng isa para lumabas bilang Visiting Soon sa iyong destinasyon.",
+      "count": "{n} sa {max} paparating na biyahe",
+      "example": "Halimbawa sa Discover",
+      "exampleBody": "Ipinapakita ito ng mga Plus member sa kanilang card sa mga miyembro sa kanilang destinasyon, bago pa sila lumapag.",
+      "upgradeTo": "Mag-upgrade sa"
+    },
+    "planner": {
+      "addTitle": "Magdagdag ng paparating na biyahe",
+      "editTitle": "I-edit ang biyahe",
+      "destination": "Destinasyon",
+      "choose": "Pumili ng destinasyon",
+      "arrival": "Pagdating",
+      "departure": "Pag-alis",
+      "note": "Tala (opsyonal)",
+      "notePlaceholder": "Dalawang linggo ako rito at gusto kong makipagkape",
+      "tooLong": "Hanggang {n} araw ang isang biyahe.",
+      "saveChanges": "I-save ang mga pagbabago",
+      "addButton": "Magdagdag ng biyahe",
+      "saving": "Sine-save...",
+      "plusHeading": "Magplano ng biyahe",
+      "plusTitle": "Ang Visiting Soon ay Plus feature",
+      "plusBody": "Idagdag ang iyong mga biyahe para makita ka ng mga miyembro sa iyong destinasyon bago ka lumapag, at makapag-usap kayo bago ka dumating.",
+      "upgrade": "Mag-upgrade sa Plus",
+      "later": "Mamaya na lang"
+    }
+  },
+  "moderation": {
+    "url": "Hindi pinapayagan ang mga external na link, email, at web domain. Panatilihin ang usapan sa Meet in Asia para sa iyong kaligtasan.",
+    "handle": "Hindi pinapayagan ang mga social media handle at chat ID sa mga pampublikong profile.",
+    "phone": "Hindi maaaring ipakita sa mga profile ang mga numero ng telepono at direktang contact details.",
+    "bioHelper": "Walang link, social handle, o contact info. Tungkol sa iyo lang.",
+    "bioHelperRejected": "Alisin ang mga link, social handle, numero ng telepono, email, at payment app. Maaari kayong magpalitan ng contact details sa chat kapag kayo ay na-match na."
+  },
+  "verify": {
+    "step": "Hakbang {n} ng 2",
+    "centerFace": "Ilagay ang mukha mo sa gitna ng frame",
+    "holdPose": "Hawakan ang pose na ito sa tabi ng mukha mo",
+    "takingPortrait": "Kinukuha ang portrait mo...",
+    "portraitHint": "Kusang kukunin ang portrait mo kapag steady na ang mukha mo.",
+    "takingPhoto": "Kinukuha ang litrato mo...",
+    "poseHint": "Kusang kukunin ang litrato kapag hawak mo ang pose, o pindutin ang button.",
+    "capturePhoto": "Kumuha ng Litrato",
+    "captureVerification": "Kumuha ng Litrato para sa Verification",
+    "retakePortrait": "Ulitin ang portrait",
+    "retakePose": "Ulitin ang pose",
+    "submit": "Ipadala para sa review",
+    "submitting": "Ipinapadala...",
+    "openCamera": "Buksan ang camera",
+    "continuePose": "Magpatuloy sa litrato ng pose",
+    "twoQuick": "Dalawang mabilis na litrato",
+    "checkPhotos": "Suriin ang iyong mga litrato",
+    "portrait": "Portrait",
+    "pose": "Pose",
+    "requestedPose": "Hiniling na pose"
+  },
+  "settings": {
+    "appLanguage": "Wika ng App",
+    "appLanguageHint": "Mga menu at button. Hiwalay sa mga wikang sinasalita mo sa profile mo.",
+    "languageUpdated": "Na-update ang wika",
+    "accountTrust": "Account at Tiwala",
+    "privacyDiscretion": "Privacy at Pagiging Pribado",
+    "identityVerification": "Pag-verify ng Pagkakakilanlan",
+    "identityVerificationSub": "Status ng trust badge mula sa GPS at selfie",
+    "reputation": "Reputasyon at Pag-uugali",
+    "reputationSub": "Tiwala at pag-uugali sa komunidad"
   }
 }

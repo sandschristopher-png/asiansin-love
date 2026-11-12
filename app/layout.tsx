@@ -5,6 +5,7 @@ import PwaRegister from "@/components/PwaRegister";
 import { Inter, Noto_Sans_Khmer, Noto_Sans_Thai, Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
 import { LayoutShell } from '@/components/LayoutShell';
+import { LocaleProvider } from '@/components/i18n/LocaleProvider';
 
 // Two typefaces, two roles, plus a Thai fallback (full chains live in globals.css):
 //   Inter (--font-inter -> Tailwind font-sans): body copy, inputs, buttons and all UI text, 400-600.
@@ -118,8 +119,11 @@ export default function RootLayout({
         />
       </head>
       <body className="font-sans bg-slate-100 text-[#413B5E] h-full selection:bg-[#8574B7] selection:text-white antialiased overflow-hidden">
-        <LayoutShell>{children}</LayoutShell>
-        <PwaRegister />
+        {/* App language for every route: starts in English, then adopts the member's saved language. */}
+        <LocaleProvider>
+          <LayoutShell>{children}</LayoutShell>
+          <PwaRegister />
+        </LocaleProvider>
       </body>
     </html>
   );

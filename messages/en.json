@@ -1,4 +1,15 @@
 {
+  "common": {
+    "language": "Language",
+    "cancel": "Cancel",
+    "close": "Close"
+  },
+  "nav": {
+    "discover": "Discover",
+    "sparks": "Sparks",
+    "messages": "Messages",
+    "profile": "Profile"
+  },
   "hero": {
     "imageAlt": "Smiling woman in a green top holding a pink smartphone",
     "line1": "Real connections.",
@@ -11,7 +22,22 @@
   },
   "auth": {
     "memberPrompt": "Already a member?",
-    "signIn": "Sign in"
+    "signIn": "Sign in",
+    "welcomeBack": "Welcome Back",
+    "welcome": "Welcome",
+    "prefixIn": "Meet someone in",
+    "prefixFrom": "Meet someone from",
+    "continueGoogle": "Continue with Google",
+    "continueLine": "Continue with LINE",
+    "continueEmail": "Continue with Email",
+    "newTo": "New to Meet in Asia?",
+    "createAccount": "Create an account",
+    "ageNotice": "Registration is strictly permitted for individuals 18 years of age and older.",
+    "legalLead": "By continuing, you agree to our",
+    "legalAnd": "and",
+    "legalTail": ".",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy"
   },
   "steps": {
     "heading": "How connections happen",
@@ -52,7 +78,100 @@
     "privacy": "Privacy",
     "contact": "Contact"
   },
-  "language": {
-    "label": "Language"
+  "discover": {
+    "modeAll": "All",
+    "modeOnline": "Online",
+    "modeNearMe": "Near Me",
+    "modeNew": "New",
+    "visitingHub": "Visiting hub",
+    "anyCity": "Any city",
+    "visitingHubHint": "Members in or arriving soon in this city.",
+    "selfieVerifiedOnly": "Selfie-Verified only",
+    "apply": "Apply Filters",
+    "reset": "Reset",
+    "resetToast": "Filters reset to default",
+    "noMembers": "No members near your location yet.",
+    "adjustFilters": "Adjust Filters",
+    "resetFilters": "Reset Filters"
+  },
+  "travel": {
+    "inNow": "In {city} now",
+    "visiting": "Visiting {city} · {dates}",
+    "arrivingTomorrow": "Arriving tomorrow",
+    "arrivingIn": "Arriving in {n} days",
+    "ended": "Ended",
+    "upcomingTrips": "{n} upcoming trips",
+    "card": {
+      "title": "Visiting Soon",
+      "subtitle": "Let members in your destination see when you arrive.",
+      "add": "Add trip",
+      "edit": "Edit",
+      "delete": "Delete",
+      "confirmDelete": "Confirm delete",
+      "none": "No upcoming trips. Add one to appear as Visiting Soon in your destination.",
+      "count": "{n} of {max} upcoming trips",
+      "example": "Example on Discover",
+      "exampleBody": "Plus members show this on their card to members in their destination, before they land.",
+      "upgradeTo": "Upgrade to"
+    },
+    "planner": {
+      "addTitle": "Add upcoming trip",
+      "editTitle": "Edit trip",
+      "destination": "Destination",
+      "choose": "Choose a destination",
+      "arrival": "Arrival",
+      "departure": "Departure",
+      "note": "Note (optional)",
+      "notePlaceholder": "Here for two weeks, hoping to meet for coffee",
+      "tooLong": "A single trip can last up to {n} days.",
+      "saveChanges": "Save changes",
+      "addButton": "Add trip",
+      "saving": "Saving...",
+      "plusHeading": "Plan a trip",
+      "plusTitle": "Visiting Soon is a Plus feature",
+      "plusBody": "Add your trips so members in your destination see you before you land, and start talking before you arrive.",
+      "upgrade": "Upgrade to Plus",
+      "later": "Maybe later"
+    }
+  },
+  "moderation": {
+    "url": "External links, emails and web domains are not permitted. Keep conversations on Meet in Asia for your safety.",
+    "handle": "Social media handles and chat IDs are not allowed on public profiles.",
+    "phone": "Phone numbers and direct contact details cannot be displayed on profiles.",
+    "bioHelper": "No links, social handles or contact info. Keep it about you.",
+    "bioHelperRejected": "Remove links, social handles, phone numbers, emails and payment apps. You can trade contact details in chat once you have matched."
+  },
+  "verify": {
+    "step": "Step {n} of 2",
+    "centerFace": "Center your face in the frame",
+    "holdPose": "Hold this pose beside your face",
+    "takingPortrait": "Taking your portrait...",
+    "portraitHint": "Your portrait is taken automatically once your face is steady.",
+    "takingPhoto": "Taking your photo...",
+    "poseHint": "The photo takes itself when you hold the pose, or tap the button.",
+    "capturePhoto": "Capture Photo",
+    "captureVerification": "Capture Verification Photo",
+    "retakePortrait": "Retake portrait",
+    "retakePose": "Retake pose",
+    "submit": "Submit for review",
+    "submitting": "Submitting...",
+    "openCamera": "Open camera",
+    "continuePose": "Continue to pose photo",
+    "twoQuick": "Two quick photos",
+    "checkPhotos": "Check your photos",
+    "portrait": "Portrait",
+    "pose": "Pose",
+    "requestedPose": "Requested pose"
+  },
+  "settings": {
+    "appLanguage": "App Language",
+    "appLanguageHint": "Menus and buttons. Separate from the languages you speak on your profile.",
+    "languageUpdated": "Language updated",
+    "accountTrust": "Account & Trust",
+    "privacyDiscretion": "Privacy & Discretion",
+    "identityVerification": "Identity Verification",
+    "identityVerificationSub": "GPS & selfie trust badge status",
+    "reputation": "Reputation & Conduct Standing",
+    "reputationSub": "Community trust and conduct"
   }
 }

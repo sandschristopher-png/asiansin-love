@@ -11,14 +11,38 @@
   },
   "auth": {
     "memberPrompt": "¿Ya eres miembro?",
-    "signIn": "Inicia sesión"
+    "signIn": "Inicia sesión",
+    "welcomeBack": "Te damos la bienvenida de nuevo",
+    "welcome": "Te damos la bienvenida",
+    "prefixIn": "Conoce a alguien en",
+    "prefixFrom": "Conoce a alguien de",
+    "continueGoogle": "Continuar con Google",
+    "continueLine": "Continuar con LINE",
+    "continueEmail": "Continuar con correo electrónico",
+    "newTo": "¿Nuevo en Meet in Asia?",
+    "createAccount": "Crear una cuenta",
+    "ageNotice": "El registro está permitido estrictamente solo para personas de 18 años o más.",
+    "legalLead": "Al continuar, aceptas nuestros",
+    "legalAnd": "y",
+    "legalTail": ".",
+    "terms": "Términos del servicio",
+    "privacy": "Política de privacidad"
   },
   "steps": {
     "heading": "Cómo surgen las conexiones",
     "sub": "Conecta por intención, no por suerte. Tres pasos para conocer a alguien real.",
-    "one": { "title": "Comparte lo que buscas", "desc": "Define desde el principio tus metas de pareja, tus plazos y tus planes de viaje." },
-    "two": { "title": "Explora miembros verificados", "desc": "Descubre miembros con intenciones serias, confirmados mediante verificación con selfie en vivo." },
-    "three": { "title": "Conecta con confianza", "desc": "Envía Sparks, escucha presentaciones de voz auténticas y conecta de forma segura, a tu manera." }
+    "one": {
+      "title": "Comparte lo que buscas",
+      "desc": "Define desde el principio tus metas de pareja, tus plazos y tus planes de viaje."
+    },
+    "two": {
+      "title": "Explora miembros verificados",
+      "desc": "Descubre miembros con intenciones serias, confirmados mediante verificación con selfie en vivo."
+    },
+    "three": {
+      "title": "Conecta con confianza",
+      "desc": "Envía Sparks, escucha presentaciones de voz auténticas y conecta de forma segura, a tu manera."
+    }
   },
   "features": {
     "screening": {
@@ -52,7 +76,111 @@
     "privacy": "Privacidad",
     "contact": "Contacto"
   },
-  "language": {
-    "label": "Idioma"
+  "common": {
+    "language": "Idioma",
+    "cancel": "Cancelar",
+    "close": "Cerrar"
+  },
+  "nav": {
+    "discover": "Descubrir",
+    "sparks": "Sparks",
+    "messages": "Mensajes",
+    "profile": "Perfil"
+  },
+  "discover": {
+    "modeAll": "Todos",
+    "modeOnline": "En línea",
+    "modeNearMe": "Cerca de mí",
+    "modeNew": "Nuevos",
+    "visitingHub": "Ciudad de visita",
+    "anyCity": "Cualquier ciudad",
+    "visitingHubHint": "Miembros que están o llegarán pronto a esta ciudad.",
+    "selfieVerifiedOnly": "Solo verificados con selfie",
+    "apply": "Aplicar filtros",
+    "reset": "Restablecer",
+    "resetToast": "Filtros restablecidos",
+    "noMembers": "Aún no hay miembros cerca de tu ubicación.",
+    "adjustFilters": "Ajustar filtros",
+    "resetFilters": "Restablecer filtros"
+  },
+  "travel": {
+    "inNow": "En {city} ahora",
+    "visiting": "De visita en {city} · {dates}",
+    "arrivingTomorrow": "Llega mañana",
+    "arrivingIn": "Llega en {n} días",
+    "ended": "Terminado",
+    "upcomingTrips": "{n} viajes próximos",
+    "card": {
+      "title": "De visita pronto",
+      "subtitle": "Deja que los miembros de tu destino vean cuándo llegas.",
+      "add": "Añadir viaje",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "confirmDelete": "Confirmar eliminación",
+      "none": "No hay viajes próximos. Añade uno para aparecer como De visita pronto en tu destino.",
+      "count": "{n} de {max} viajes próximos",
+      "example": "Ejemplo en Descubrir",
+      "exampleBody": "Los miembros Plus muestran esto en su tarjeta a los miembros de su destino, antes de aterrizar.",
+      "upgradeTo": "Pasar a"
+    },
+    "planner": {
+      "addTitle": "Añadir viaje próximo",
+      "editTitle": "Editar viaje",
+      "destination": "Destino",
+      "choose": "Elige un destino",
+      "arrival": "Llegada",
+      "departure": "Salida",
+      "note": "Nota (opcional)",
+      "notePlaceholder": "Estaré dos semanas y me gustaría quedar a tomar un café",
+      "tooLong": "Un viaje puede durar hasta {n} días.",
+      "saveChanges": "Guardar cambios",
+      "addButton": "Añadir viaje",
+      "saving": "Guardando...",
+      "plusHeading": "Planifica un viaje",
+      "plusTitle": "De visita pronto es una función Plus",
+      "plusBody": "Añade tus viajes para que los miembros de tu destino te vean antes de aterrizar y empiecen a hablar contigo antes de llegar.",
+      "upgrade": "Pasar a Plus",
+      "later": "Quizá más tarde"
+    }
+  },
+  "moderation": {
+    "url": "No se permiten enlaces externos, correos ni dominios web. Mantén las conversaciones en Meet in Asia por tu seguridad.",
+    "handle": "No se permiten usuarios de redes sociales ni IDs de chat en los perfiles públicos.",
+    "phone": "Los números de teléfono y datos de contacto directo no pueden mostrarse en los perfiles.",
+    "bioHelper": "Sin enlaces, usuarios de redes ni datos de contacto. Habla de ti.",
+    "bioHelperRejected": "Quita enlaces, usuarios de redes, teléfonos, correos y apps de pago. Podrán intercambiar datos de contacto en el chat cuando hagan match."
+  },
+  "verify": {
+    "step": "Paso {n} de 2",
+    "centerFace": "Centra tu rostro en el marco",
+    "holdPose": "Mantén esta pose junto a tu rostro",
+    "takingPortrait": "Tomando tu retrato...",
+    "portraitHint": "Tu retrato se toma automáticamente cuando tu rostro esté firme.",
+    "takingPhoto": "Tomando tu foto...",
+    "poseHint": "La foto se toma sola cuando mantienes la pose, o toca el botón.",
+    "capturePhoto": "Tomar foto",
+    "captureVerification": "Tomar foto de verificación",
+    "retakePortrait": "Repetir retrato",
+    "retakePose": "Repetir pose",
+    "submit": "Enviar para revisión",
+    "submitting": "Enviando...",
+    "openCamera": "Abrir cámara",
+    "continuePose": "Continuar con la foto de pose",
+    "twoQuick": "Dos fotos rápidas",
+    "checkPhotos": "Revisa tus fotos",
+    "portrait": "Retrato",
+    "pose": "Pose",
+    "requestedPose": "Pose solicitada"
+  },
+  "settings": {
+    "appLanguage": "Idioma de la app",
+    "appLanguageHint": "Menús y botones. Aparte de los idiomas que hablas en tu perfil.",
+    "languageUpdated": "Idioma actualizado",
+    "accountTrust": "Cuenta y confianza",
+    "privacyDiscretion": "Privacidad y discreción",
+    "identityVerification": "Verificación de identidad",
+    "identityVerificationSub": "Estado de la insignia de confianza por GPS y selfie",
+    "reputation": "Reputación y conducta",
+    "reputationSub": "Confianza y conducta en la comunidad"
   }
 }

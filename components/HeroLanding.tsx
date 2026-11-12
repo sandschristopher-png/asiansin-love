@@ -6,7 +6,7 @@ import { AudioLines } from 'lucide-react';
 import { BrandLogo } from '@/components/BrandLogo';
 import Hero, { LANDING_SHELL, SignInPrompt } from '@/components/Hero';
 import { LocaleProvider, useLocale } from '@/components/i18n/LocaleProvider';
-import { LanguageSelect } from '@/components/i18n/LanguageSelect';
+import { LanguagePill } from '@/components/i18n/LanguageSheet';
 import { HTML_LANG, type Locale } from '@/lib/i18n/config';
 import type { Messages } from '@/lib/i18n/messages';
 
@@ -26,7 +26,7 @@ const FEATURES = [
 
 /**
  * Signed-out landing page (app/page.tsx renders it only without a session, with the locale from
- * the NEXT_LOCALE cookie and that locale's dictionary). One centred max-w-md column on every
+ * the mia_lang cookie or Accept-Language, and that locale's dictionary). One centred max-w-md column on every
  * screen and no breakpoints that change the layout. The root carries the lang attribute, so
  * screen readers and the CJK font order in globals.css follow the chosen language from the
  * server render.
@@ -50,7 +50,7 @@ function LandingBody() {
       <header className="sticky top-0 z-50 w-full bg-white/75 backdrop-blur-md supports-[backdrop-filter]:bg-white/75 border-b border-slate-200/60">
         <div className={`${LANDING_SHELL} h-16 flex items-center justify-between`}>
           <BrandLogo href="/" size="header" />
-          <LanguageSelect compact />
+          <LanguagePill />
         </div>
       </header>
 
@@ -126,7 +126,7 @@ function LandingBody() {
             <Link className="hover:text-[#8574B7] transition-colors" href="/contact">{m.footer.contact}</Link>
           </nav>
           <div className="mt-3 flex justify-center">
-            <LanguageSelect />
+            <LanguagePill full />
           </div>
           <p className="mt-2 text-[11px] text-slate-600">© {new Date().getFullYear()} Meet in Asia</p>
         </footer>

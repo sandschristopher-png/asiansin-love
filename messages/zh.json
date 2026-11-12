@@ -11,14 +11,38 @@
   },
   "auth": {
     "memberPrompt": "已经是会员？",
-    "signIn": "登录"
+    "signIn": "登录",
+    "welcomeBack": "欢迎回来",
+    "welcome": "欢迎",
+    "prefixIn": "在以下城市遇见某人",
+    "prefixFrom": "遇见来自以下国家的人",
+    "continueGoogle": "使用 Google 继续",
+    "continueLine": "使用 LINE 继续",
+    "continueEmail": "使用邮箱继续",
+    "newTo": "初次使用 Meet in Asia？",
+    "createAccount": "创建账号",
+    "ageNotice": "仅限年满 18 周岁的人士注册。",
+    "legalLead": "继续即表示您同意我们的",
+    "legalAnd": "和",
+    "legalTail": "。",
+    "terms": "服务条款",
+    "privacy": "隐私政策"
   },
   "steps": {
     "heading": "缘分如何发生",
     "sub": "靠诚意配对，而非运气。三步遇见真实的人。",
-    "one": { "title": "说出你的期望", "desc": "提前设定你的恋爱目标、时间规划和旅行计划。" },
-    "two": { "title": "浏览已认证会员", "desc": "浏览通过实时自拍认证确认的认真会员。" },
-    "three": { "title": "放心建立联系", "desc": "发送 Sparks，聆听真实的语音介绍，按你自己的方式安全地建立联系。" }
+    "one": {
+      "title": "说出你的期望",
+      "desc": "提前设定你的恋爱目标、时间规划和旅行计划。"
+    },
+    "two": {
+      "title": "浏览已认证会员",
+      "desc": "浏览通过实时自拍认证确认的认真会员。"
+    },
+    "three": {
+      "title": "放心建立联系",
+      "desc": "发送 Sparks，聆听真实的语音介绍，按你自己的方式安全地建立联系。"
+    }
   },
   "features": {
     "screening": {
@@ -52,7 +76,111 @@
     "privacy": "隐私",
     "contact": "联系我们"
   },
-  "language": {
-    "label": "语言"
+  "common": {
+    "language": "语言",
+    "cancel": "取消",
+    "close": "关闭"
+  },
+  "nav": {
+    "discover": "发现",
+    "sparks": "Sparks",
+    "messages": "消息",
+    "profile": "我的"
+  },
+  "discover": {
+    "modeAll": "全部",
+    "modeOnline": "在线",
+    "modeNearMe": "附近",
+    "modeNew": "新人",
+    "visitingHub": "即将到访的城市",
+    "anyCity": "任意城市",
+    "visitingHubHint": "正在或即将抵达该城市的会员。",
+    "selfieVerifiedOnly": "仅限自拍认证",
+    "apply": "应用筛选",
+    "reset": "重置",
+    "resetToast": "筛选已重置",
+    "noMembers": "您所在位置附近暂无会员。",
+    "adjustFilters": "调整筛选",
+    "resetFilters": "重置筛选"
+  },
+  "travel": {
+    "inNow": "现在在{city}",
+    "visiting": "即将到访{city} · {dates}",
+    "arrivingTomorrow": "明天抵达",
+    "arrivingIn": "{n}天后抵达",
+    "ended": "已结束",
+    "upcomingTrips": "{n}个即将开始的行程",
+    "card": {
+      "title": "即将到访",
+      "subtitle": "让目的地的会员知道您何时抵达。",
+      "add": "添加行程",
+      "edit": "编辑",
+      "delete": "删除",
+      "confirmDelete": "确认删除",
+      "none": "暂无即将开始的行程。添加一个，即可在目的地显示“即将到访”。",
+      "count": "{n}/{max} 个即将开始的行程",
+      "example": "发现页示例",
+      "exampleBody": "Plus 会员会在抵达前，向目的地的会员这样展示在卡片上。",
+      "upgradeTo": "升级为"
+    },
+    "planner": {
+      "addTitle": "添加即将开始的行程",
+      "editTitle": "编辑行程",
+      "destination": "目的地",
+      "choose": "选择目的地",
+      "arrival": "抵达日期",
+      "departure": "离开日期",
+      "note": "备注（可选）",
+      "notePlaceholder": "会待两周，希望能约着喝杯咖啡",
+      "tooLong": "单次行程最长 {n} 天。",
+      "saveChanges": "保存更改",
+      "addButton": "添加行程",
+      "saving": "保存中...",
+      "plusHeading": "规划行程",
+      "plusTitle": "“即将到访”是 Plus 功能",
+      "plusBody": "添加行程，让目的地的会员在您抵达前就能看到您，并在您到达之前开始聊天。",
+      "upgrade": "升级为 Plus",
+      "later": "以后再说"
+    }
+  },
+  "moderation": {
+    "url": "不允许使用外部链接、邮箱和网站域名。为了您的安全，请在 Meet in Asia 内聊天。",
+    "handle": "公开资料中不允许出现社交账号和聊天 ID。",
+    "phone": "资料中不能显示电话号码等直接联系方式。",
+    "bioHelper": "不要写链接、社交账号或联系方式，只写关于你自己的内容。",
+    "bioHelperRejected": "请删除链接、社交账号、电话号码、邮箱和支付应用。配对成功后，您可以在聊天中交换联系方式。"
+  },
+  "verify": {
+    "step": "第 {n} 步，共 2 步",
+    "centerFace": "将脸对准框的中央",
+    "holdPose": "在脸旁保持这个姿势",
+    "takingPortrait": "正在拍摄人像...",
+    "portraitHint": "脸部稳定后将自动拍摄人像。",
+    "takingPhoto": "正在拍摄...",
+    "poseHint": "保持姿势会自动拍摄，也可以点按按钮。",
+    "capturePhoto": "拍照",
+    "captureVerification": "拍摄认证照片",
+    "retakePortrait": "重拍人像",
+    "retakePose": "重拍姿势",
+    "submit": "提交审核",
+    "submitting": "提交中...",
+    "openCamera": "打开相机",
+    "continuePose": "继续拍姿势照片",
+    "twoQuick": "两张快速照片",
+    "checkPhotos": "检查您的照片",
+    "portrait": "人像",
+    "pose": "姿势",
+    "requestedPose": "要求的姿势"
+  },
+  "settings": {
+    "appLanguage": "应用语言",
+    "appLanguageHint": "菜单和按钮的语言，与您在资料中填写的使用语言无关。",
+    "languageUpdated": "语言已更新",
+    "accountTrust": "账号与信任",
+    "privacyDiscretion": "隐私与保密",
+    "identityVerification": "身份认证",
+    "identityVerificationSub": "GPS 与自拍信任徽章状态",
+    "reputation": "信誉与行为",
+    "reputationSub": "社区信任与行为"
   }
 }

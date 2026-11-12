@@ -11,14 +11,38 @@
   },
   "auth": {
     "memberPrompt": "すでに会員の方は",
-    "signIn": "ログイン"
+    "signIn": "ログイン",
+    "welcomeBack": "おかえりなさい",
+    "welcome": "ようこそ",
+    "prefixIn": "出会いの街",
+    "prefixFrom": "出会いの国",
+    "continueGoogle": "Googleで続ける",
+    "continueLine": "LINEで続ける",
+    "continueEmail": "メールで続ける",
+    "newTo": "Meet in Asiaは初めてですか?",
+    "createAccount": "アカウントを作成",
+    "ageNotice": "登録は18歳以上の方に限ります。",
+    "legalLead": "続行すると、",
+    "legalAnd": "と",
+    "legalTail": "に同意したことになります。",
+    "terms": "利用規約",
+    "privacy": "プライバシーポリシー"
   },
   "steps": {
     "heading": "出会いまでの流れ",
     "sub": "運ではなく、想いでつながる。本物の相手に出会うための3ステップ。",
-    "one": { "title": "希望を伝える", "desc": "交際の目標、時期、渡航の予定を最初に設定しましょう。" },
-    "two": { "title": "認証済みの会員を探す", "desc": "ライブセルフィー認証で確認された、真剣な会員を探せます。" },
-    "three": { "title": "安心してつながる", "desc": "Sparksを送り、本人の声の自己紹介を聞いて、自分のペースで安全につながりましょう。" }
+    "one": {
+      "title": "希望を伝える",
+      "desc": "交際の目標、時期、渡航の予定を最初に設定しましょう。"
+    },
+    "two": {
+      "title": "認証済みの会員を探す",
+      "desc": "ライブセルフィー認証で確認された、真剣な会員を探せます。"
+    },
+    "three": {
+      "title": "安心してつながる",
+      "desc": "Sparksを送り、本人の声の自己紹介を聞いて、自分のペースで安全につながりましょう。"
+    }
   },
   "features": {
     "screening": {
@@ -52,7 +76,111 @@
     "privacy": "プライバシー",
     "contact": "お問い合わせ"
   },
-  "language": {
-    "label": "言語"
+  "common": {
+    "language": "言語",
+    "cancel": "キャンセル",
+    "close": "閉じる"
+  },
+  "nav": {
+    "discover": "探す",
+    "sparks": "Sparks",
+    "messages": "メッセージ",
+    "profile": "プロフィール"
+  },
+  "discover": {
+    "modeAll": "すべて",
+    "modeOnline": "オンライン",
+    "modeNearMe": "近く",
+    "modeNew": "新着",
+    "visitingHub": "訪問予定の都市",
+    "anyCity": "すべての都市",
+    "visitingHubHint": "この都市に滞在中、またはまもなく到着する会員。",
+    "selfieVerifiedOnly": "セルフィー認証済みのみ",
+    "apply": "フィルターを適用",
+    "reset": "リセット",
+    "resetToast": "フィルターをリセットしました",
+    "noMembers": "お住まいの近くにはまだ会員がいません。",
+    "adjustFilters": "フィルターを調整",
+    "resetFilters": "フィルターをリセット"
+  },
+  "travel": {
+    "inNow": "{city}に滞在中",
+    "visiting": "{city}を訪問予定 · {dates}",
+    "arrivingTomorrow": "明日到着",
+    "arrivingIn": "あと{n}日で到着",
+    "ended": "終了",
+    "upcomingTrips": "予定の旅行 {n}件",
+    "card": {
+      "title": "まもなく訪問",
+      "subtitle": "渡航先の会員に、あなたの到着時期を知らせましょう。",
+      "add": "旅行を追加",
+      "edit": "編集",
+      "delete": "削除",
+      "confirmDelete": "削除を確認",
+      "none": "予定の旅行はありません。追加すると、渡航先で「まもなく訪問」として表示されます。",
+      "count": "予定の旅行 {n}/{max}件",
+      "example": "探すでの表示例",
+      "exampleBody": "Plus会員は、到着前から渡航先の会員にこのようにカードで表示されます。",
+      "upgradeTo": "アップグレード:"
+    },
+    "planner": {
+      "addTitle": "予定の旅行を追加",
+      "editTitle": "旅行を編集",
+      "destination": "目的地",
+      "choose": "目的地を選択",
+      "arrival": "到着日",
+      "departure": "出発日",
+      "note": "メモ(任意)",
+      "notePlaceholder": "2週間滞在予定です。お茶でもご一緒できたら嬉しいです",
+      "tooLong": "1回の旅行は最長{n}日です。",
+      "saveChanges": "変更を保存",
+      "addButton": "旅行を追加",
+      "saving": "保存中...",
+      "plusHeading": "旅行を計画",
+      "plusTitle": "「まもなく訪問」はPlus機能です",
+      "plusBody": "旅行を追加すると、到着前から渡航先の会員に表示され、到着前に会話を始められます。",
+      "upgrade": "Plusにアップグレード",
+      "later": "あとで"
+    }
+  },
+  "moderation": {
+    "url": "外部リンク、メールアドレス、ウェブドメインは使用できません。安全のため、会話はMeet in Asia内で行ってください。",
+    "handle": "SNSのアカウント名やチャットIDは公開プロフィールに記載できません。",
+    "phone": "電話番号などの直接の連絡先はプロフィールに表示できません。",
+    "bioHelper": "リンク、SNSアカウント、連絡先は書かないでください。あなた自身について書きましょう。",
+    "bioHelperRejected": "リンク、SNSアカウント、電話番号、メールアドレス、決済アプリを削除してください。マッチ後はチャットで連絡先を交換できます。"
+  },
+  "verify": {
+    "step": "ステップ {n}/2",
+    "centerFace": "顔を枠の中央に合わせてください",
+    "holdPose": "顔の横でこのポーズをとってください",
+    "takingPortrait": "顔写真を撮影中...",
+    "portraitHint": "顔が安定すると自動で撮影されます。",
+    "takingPhoto": "撮影中...",
+    "poseHint": "ポーズを保つと自動で撮影されます。ボタンでも撮影できます。",
+    "capturePhoto": "撮影",
+    "captureVerification": "認証用の写真を撮影",
+    "retakePortrait": "顔写真を撮り直す",
+    "retakePose": "ポーズを撮り直す",
+    "submit": "審査に送信",
+    "submitting": "送信中...",
+    "openCamera": "カメラを開く",
+    "continuePose": "ポーズ写真へ進む",
+    "twoQuick": "2枚の写真を撮ります",
+    "checkPhotos": "写真を確認",
+    "portrait": "顔写真",
+    "pose": "ポーズ",
+    "requestedPose": "指定のポーズ"
+  },
+  "settings": {
+    "appLanguage": "アプリの言語",
+    "appLanguageHint": "メニューとボタンの言語です。プロフィールの話せる言語とは別です。",
+    "languageUpdated": "言語を更新しました",
+    "accountTrust": "アカウントと信頼",
+    "privacyDiscretion": "プライバシーと配慮",
+    "identityVerification": "本人確認",
+    "identityVerificationSub": "GPSとセルフィーの認証バッジの状況",
+    "reputation": "評価とマナー",
+    "reputationSub": "コミュニティでの信頼とマナー"
   }
 }

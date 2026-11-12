@@ -11,14 +11,38 @@
   },
   "auth": {
     "memberPrompt": "Đã là thành viên?",
-    "signIn": "Đăng nhập"
+    "signIn": "Đăng nhập",
+    "welcomeBack": "Chào mừng trở lại",
+    "welcome": "Chào mừng bạn",
+    "prefixIn": "Gặp gỡ ai đó tại",
+    "prefixFrom": "Gặp gỡ ai đó đến từ",
+    "continueGoogle": "Tiếp tục với Google",
+    "continueLine": "Tiếp tục với LINE",
+    "continueEmail": "Tiếp tục với Email",
+    "newTo": "Bạn mới biết đến Meet in Asia?",
+    "createAccount": "Tạo tài khoản",
+    "ageNotice": "Chỉ cho phép đăng ký đối với người từ 18 tuổi trở lên.",
+    "legalLead": "Khi tiếp tục, bạn đồng ý với",
+    "legalAnd": "và",
+    "legalTail": ".",
+    "terms": "Điều khoản dịch vụ",
+    "privacy": "Chính sách quyền riêng tư"
   },
   "steps": {
     "heading": "Kết nối diễn ra như thế nào",
     "sub": "Ghép đôi theo ý định, không phải may rủi. Ba bước để gặp một người thật.",
-    "one": { "title": "Chia sẻ điều bạn muốn", "desc": "Đặt ra mục tiêu tình cảm, thời gian và kế hoạch du lịch ngay từ đầu." },
-    "two": { "title": "Xem thành viên đã xác minh", "desc": "Khám phá những thành viên nghiêm túc đã được xác nhận qua xác minh selfie trực tiếp." },
-    "three": { "title": "Kết nối tự tin", "desc": "Gửi Sparks, nghe lời giới thiệu bằng giọng nói thật và kết nối an toàn theo cách của bạn." }
+    "one": {
+      "title": "Chia sẻ điều bạn muốn",
+      "desc": "Đặt ra mục tiêu tình cảm, thời gian và kế hoạch du lịch ngay từ đầu."
+    },
+    "two": {
+      "title": "Xem thành viên đã xác minh",
+      "desc": "Khám phá những thành viên nghiêm túc đã được xác nhận qua xác minh selfie trực tiếp."
+    },
+    "three": {
+      "title": "Kết nối tự tin",
+      "desc": "Gửi Sparks, nghe lời giới thiệu bằng giọng nói thật và kết nối an toàn theo cách của bạn."
+    }
   },
   "features": {
     "screening": {
@@ -52,7 +76,111 @@
     "privacy": "Quyền riêng tư",
     "contact": "Liên hệ"
   },
-  "language": {
-    "label": "Ngôn ngữ"
+  "common": {
+    "language": "Ngôn ngữ",
+    "cancel": "Hủy",
+    "close": "Đóng"
+  },
+  "nav": {
+    "discover": "Khám phá",
+    "sparks": "Sparks",
+    "messages": "Tin nhắn",
+    "profile": "Hồ sơ"
+  },
+  "discover": {
+    "modeAll": "Tất cả",
+    "modeOnline": "Trực tuyến",
+    "modeNearMe": "Gần tôi",
+    "modeNew": "Mới",
+    "visitingHub": "Thành phố sắp ghé thăm",
+    "anyCity": "Mọi thành phố",
+    "visitingHubHint": "Thành viên đang ở hoặc sắp đến thành phố này.",
+    "selfieVerifiedOnly": "Chỉ hồ sơ đã xác minh selfie",
+    "apply": "Áp dụng bộ lọc",
+    "reset": "Đặt lại",
+    "resetToast": "Đã đặt lại bộ lọc",
+    "noMembers": "Chưa có thành viên nào gần vị trí của bạn.",
+    "adjustFilters": "Điều chỉnh bộ lọc",
+    "resetFilters": "Đặt lại bộ lọc"
+  },
+  "travel": {
+    "inNow": "Đang ở {city}",
+    "visiting": "Sắp đến {city} · {dates}",
+    "arrivingTomorrow": "Đến vào ngày mai",
+    "arrivingIn": "Đến sau {n} ngày",
+    "ended": "Đã kết thúc",
+    "upcomingTrips": "{n} chuyến đi sắp tới",
+    "card": {
+      "title": "Sắp ghé thăm",
+      "subtitle": "Cho thành viên ở nơi bạn đến biết khi nào bạn tới.",
+      "add": "Thêm chuyến đi",
+      "edit": "Sửa",
+      "delete": "Xóa",
+      "confirmDelete": "Xác nhận xóa",
+      "none": "Chưa có chuyến đi sắp tới. Thêm một chuyến để hiển thị Sắp ghé thăm ở điểm đến của bạn.",
+      "count": "{n}/{max} chuyến đi sắp tới",
+      "example": "Ví dụ trên Khám phá",
+      "exampleBody": "Thành viên Plus hiển thị điều này trên thẻ của họ cho thành viên ở điểm đến, trước khi họ hạ cánh.",
+      "upgradeTo": "Nâng cấp lên"
+    },
+    "planner": {
+      "addTitle": "Thêm chuyến đi sắp tới",
+      "editTitle": "Sửa chuyến đi",
+      "destination": "Điểm đến",
+      "choose": "Chọn điểm đến",
+      "arrival": "Ngày đến",
+      "departure": "Ngày đi",
+      "note": "Ghi chú (không bắt buộc)",
+      "notePlaceholder": "Mình ở đây hai tuần, hy vọng được gặp uống cà phê",
+      "tooLong": "Một chuyến đi có thể kéo dài tối đa {n} ngày.",
+      "saveChanges": "Lưu thay đổi",
+      "addButton": "Thêm chuyến đi",
+      "saving": "Đang lưu...",
+      "plusHeading": "Lên kế hoạch chuyến đi",
+      "plusTitle": "Sắp ghé thăm là tính năng Plus",
+      "plusBody": "Thêm chuyến đi để thành viên ở điểm đến thấy bạn trước khi hạ cánh và trò chuyện trước khi bạn đến.",
+      "upgrade": "Nâng cấp lên Plus",
+      "later": "Để sau"
+    }
+  },
+  "moderation": {
+    "url": "Không cho phép liên kết bên ngoài, email và tên miền web. Hãy giữ cuộc trò chuyện trên Meet in Asia để đảm bảo an toàn cho bạn.",
+    "handle": "Không cho phép tên tài khoản mạng xã hội và ID trò chuyện trên hồ sơ công khai.",
+    "phone": "Không thể hiển thị số điện thoại và thông tin liên lạc trực tiếp trên hồ sơ.",
+    "bioHelper": "Không liên kết, tên mạng xã hội hay thông tin liên lạc. Chỉ nói về bạn.",
+    "bioHelperRejected": "Hãy xóa liên kết, tên mạng xã hội, số điện thoại, email và ứng dụng thanh toán. Bạn có thể trao đổi thông tin liên lạc trong cuộc trò chuyện sau khi ghép đôi."
+  },
+  "verify": {
+    "step": "Bước {n}/2",
+    "centerFace": "Đặt khuôn mặt vào giữa khung",
+    "holdPose": "Giữ tư thế này bên cạnh khuôn mặt",
+    "takingPortrait": "Đang chụp ảnh chân dung...",
+    "portraitHint": "Ảnh chân dung được chụp tự động khi khuôn mặt bạn đã ổn định.",
+    "takingPhoto": "Đang chụp ảnh của bạn...",
+    "poseHint": "Ảnh tự chụp khi bạn giữ đúng tư thế, hoặc nhấn nút.",
+    "capturePhoto": "Chụp ảnh",
+    "captureVerification": "Chụp ảnh xác minh",
+    "retakePortrait": "Chụp lại chân dung",
+    "retakePose": "Chụp lại tư thế",
+    "submit": "Gửi để duyệt",
+    "submitting": "Đang gửi...",
+    "openCamera": "Mở camera",
+    "continuePose": "Tiếp tục với ảnh tư thế",
+    "twoQuick": "Hai ảnh nhanh",
+    "checkPhotos": "Kiểm tra ảnh của bạn",
+    "portrait": "Chân dung",
+    "pose": "Tư thế",
+    "requestedPose": "Tư thế yêu cầu"
+  },
+  "settings": {
+    "appLanguage": "Ngôn ngữ ứng dụng",
+    "appLanguageHint": "Menu và nút bấm. Tách biệt với các ngôn ngữ bạn nói trong hồ sơ.",
+    "languageUpdated": "Đã cập nhật ngôn ngữ",
+    "accountTrust": "Tài khoản và độ tin cậy",
+    "privacyDiscretion": "Riêng tư và kín đáo",
+    "identityVerification": "Xác minh danh tính",
+    "identityVerificationSub": "Trạng thái huy hiệu tin cậy GPS và selfie",
+    "reputation": "Uy tín và hành vi",
+    "reputationSub": "Độ tin cậy và hành vi trong cộng đồng"
   }
 }

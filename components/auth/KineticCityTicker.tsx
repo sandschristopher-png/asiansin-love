@@ -1,7 +1,8 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { HERO_PREFIX, heroRoster, type HeroAudience } from '@/lib/geoCities';
+import { heroRoster, type HeroAudience } from '@/lib/geoCities';
+import { useLocale } from '@/components/i18n/LocaleProvider';
 
 const CYCLE_MS = 3200;
 /** One new letter locks in every 3 frames at 60 Hz (about 50 ms), as in the original spec. */
@@ -31,6 +32,9 @@ function scrambled(target: string, locked: number): string {
  */
 export function KineticCityTicker({ audience = 'western' }: { audience?: HeroAudience }) {
   const pool = heroRoster(audience);
+  const { t } = useLocale();
+  // Only the label is translated: city and country names stay as they are written.
+  const prefix = audience === 'asian' ? t('auth.prefixFrom') : t('auth.prefixIn');
   const [target, setTarget] = useState(pool[0]);
   const [shown, setShown] = useState(pool[0]);
   const [glitching, setGlitching] = useState(false);
@@ -86,7 +90,7 @@ export function KineticCityTicker({ audience = 'western' }: { audience?: HeroAud
 
   return (
     <div className="flex flex-col items-center justify-center text-center mt-6 mb-8 select-none">
-      <p className="text-[11px] font-semibold tracking-[0.2em] uppercase text-slate-600 mb-1.5">{HERO_PREFIX[audience]}</p>
+      <p className="text-[11px] font-semibold tracking-[0.2em] uppercase text-slate-600 mb-1.5">{prefix}</p>
       <div className="relative h-12 flex items-center justify-center max-w-full">
         <span aria-hidden="true" className={`invisible ${word}`}>
           {longest}

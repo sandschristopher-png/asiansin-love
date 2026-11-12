@@ -11,14 +11,38 @@
   },
   "auth": {
     "memberPrompt": "Sudah menjadi ahli?",
-    "signIn": "Log masuk"
+    "signIn": "Log masuk",
+    "welcomeBack": "Selamat kembali",
+    "welcome": "Selamat datang",
+    "prefixIn": "Temui seseorang di",
+    "prefixFrom": "Temui seseorang dari",
+    "continueGoogle": "Teruskan dengan Google",
+    "continueLine": "Teruskan dengan LINE",
+    "continueEmail": "Teruskan dengan E-mel",
+    "newTo": "Baru di Meet in Asia?",
+    "createAccount": "Cipta akaun",
+    "ageNotice": "Pendaftaran hanya dibenarkan untuk individu berumur 18 tahun ke atas.",
+    "legalLead": "Dengan meneruskan, anda bersetuju dengan",
+    "legalAnd": "dan",
+    "legalTail": "kami.",
+    "terms": "Terma Perkhidmatan",
+    "privacy": "Dasar Privasi"
   },
   "steps": {
     "heading": "Bagaimana hubungan bermula",
     "sub": "Padankan berdasarkan niat, bukan nasib. Tiga langkah untuk bertemu seseorang yang tulen.",
-    "one": { "title": "Kongsi apa yang anda mahu", "desc": "Tetapkan matlamat hubungan, garis masa dan rancangan perjalanan anda dari awal." },
-    "two": { "title": "Layari ahli yang disahkan", "desc": "Layari ahli yang serius dan disahkan melalui pengesahan swafoto langsung." },
-    "three": { "title": "Berhubung dengan yakin", "desc": "Hantar Sparks, dengar pengenalan suara yang asli dan berhubung dengan selamat mengikut cara anda." }
+    "one": {
+      "title": "Kongsi apa yang anda mahu",
+      "desc": "Tetapkan matlamat hubungan, garis masa dan rancangan perjalanan anda dari awal."
+    },
+    "two": {
+      "title": "Layari ahli yang disahkan",
+      "desc": "Layari ahli yang serius dan disahkan melalui pengesahan swafoto langsung."
+    },
+    "three": {
+      "title": "Berhubung dengan yakin",
+      "desc": "Hantar Sparks, dengar pengenalan suara yang asli dan berhubung dengan selamat mengikut cara anda."
+    }
   },
   "features": {
     "screening": {
@@ -52,7 +76,111 @@
     "privacy": "Privasi",
     "contact": "Hubungi"
   },
-  "language": {
-    "label": "Bahasa"
+  "common": {
+    "language": "Bahasa",
+    "cancel": "Batal",
+    "close": "Tutup"
+  },
+  "nav": {
+    "discover": "Teroka",
+    "sparks": "Sparks",
+    "messages": "Mesej",
+    "profile": "Profil"
+  },
+  "discover": {
+    "modeAll": "Semua",
+    "modeOnline": "Dalam talian",
+    "modeNearMe": "Berhampiran",
+    "modeNew": "Baharu",
+    "visitingHub": "Bandar yang dilawati",
+    "anyCity": "Mana-mana bandar",
+    "visitingHubHint": "Ahli yang berada atau akan tiba tidak lama lagi di bandar ini.",
+    "selfieVerifiedOnly": "Hanya disahkan selfie",
+    "apply": "Guna Penapis",
+    "reset": "Tetap semula",
+    "resetToast": "Penapis ditetapkan semula",
+    "noMembers": "Belum ada ahli berhampiran lokasi anda.",
+    "adjustFilters": "Laraskan Penapis",
+    "resetFilters": "Tetap Semula Penapis"
+  },
+  "travel": {
+    "inNow": "Sedang di {city}",
+    "visiting": "Melawat {city} · {dates}",
+    "arrivingTomorrow": "Tiba esok",
+    "arrivingIn": "Tiba dalam {n} hari",
+    "ended": "Tamat",
+    "upcomingTrips": "{n} perjalanan akan datang",
+    "card": {
+      "title": "Akan Melawat",
+      "subtitle": "Biar ahli di destinasi anda tahu bila anda tiba.",
+      "add": "Tambah perjalanan",
+      "edit": "Sunting",
+      "delete": "Padam",
+      "confirmDelete": "Sahkan padam",
+      "none": "Tiada perjalanan akan datang. Tambah satu untuk muncul sebagai Akan Melawat di destinasi anda.",
+      "count": "{n} daripada {max} perjalanan akan datang",
+      "example": "Contoh di Teroka",
+      "exampleBody": "Ahli Plus memaparkan ini pada kad mereka kepada ahli di destinasi mereka, sebelum mereka mendarat.",
+      "upgradeTo": "Naik taraf ke"
+    },
+    "planner": {
+      "addTitle": "Tambah perjalanan akan datang",
+      "editTitle": "Sunting perjalanan",
+      "destination": "Destinasi",
+      "choose": "Pilih destinasi",
+      "arrival": "Ketibaan",
+      "departure": "Perlepasan",
+      "note": "Nota (pilihan)",
+      "notePlaceholder": "Di sini dua minggu, harap dapat minum kopi bersama",
+      "tooLong": "Satu perjalanan boleh sehingga {n} hari.",
+      "saveChanges": "Simpan perubahan",
+      "addButton": "Tambah perjalanan",
+      "saving": "Menyimpan...",
+      "plusHeading": "Rancang perjalanan",
+      "plusTitle": "Akan Melawat ialah ciri Plus",
+      "plusBody": "Tambah perjalanan anda supaya ahli di destinasi anda melihat anda sebelum mendarat dan mula berbual sebelum anda tiba.",
+      "upgrade": "Naik taraf ke Plus",
+      "later": "Mungkin nanti"
+    }
+  },
+  "moderation": {
+    "url": "Pautan luar, e-mel dan domain web tidak dibenarkan. Teruskan perbualan di Meet in Asia demi keselamatan anda.",
+    "handle": "Nama pengguna media sosial dan ID sembang tidak dibenarkan pada profil awam.",
+    "phone": "Nombor telefon dan butiran hubungan terus tidak boleh dipaparkan pada profil.",
+    "bioHelper": "Tiada pautan, nama pengguna media sosial atau maklumat hubungan. Ceritakan tentang diri anda.",
+    "bioHelperRejected": "Buang pautan, nama pengguna media sosial, nombor telefon, e-mel dan aplikasi pembayaran. Anda boleh bertukar maklumat hubungan dalam sembang selepas padanan."
+  },
+  "verify": {
+    "step": "Langkah {n} daripada 2",
+    "centerFace": "Letakkan wajah anda di tengah bingkai",
+    "holdPose": "Tahan aksi ini di sebelah wajah anda",
+    "takingPortrait": "Mengambil potret anda...",
+    "portraitHint": "Potret anda diambil secara automatik apabila wajah anda stabil.",
+    "takingPhoto": "Mengambil foto anda...",
+    "poseHint": "Foto diambil sendiri apabila anda menahan aksi, atau ketik butang.",
+    "capturePhoto": "Ambil Foto",
+    "captureVerification": "Ambil Foto Pengesahan",
+    "retakePortrait": "Ambil semula potret",
+    "retakePose": "Ambil semula aksi",
+    "submit": "Hantar untuk semakan",
+    "submitting": "Menghantar...",
+    "openCamera": "Buka kamera",
+    "continuePose": "Teruskan ke foto aksi",
+    "twoQuick": "Dua foto pantas",
+    "checkPhotos": "Semak foto anda",
+    "portrait": "Potret",
+    "pose": "Aksi",
+    "requestedPose": "Aksi diminta"
+  },
+  "settings": {
+    "appLanguage": "Bahasa Aplikasi",
+    "appLanguageHint": "Menu dan butang. Berasingan daripada bahasa yang anda tuturkan pada profil.",
+    "languageUpdated": "Bahasa dikemas kini",
+    "accountTrust": "Akaun & Kepercayaan",
+    "privacyDiscretion": "Privasi & Kerahsiaan",
+    "identityVerification": "Pengesahan Identiti",
+    "identityVerificationSub": "Status lencana kepercayaan GPS & selfie",
+    "reputation": "Reputasi & Tingkah Laku",
+    "reputationSub": "Kepercayaan dan tingkah laku komuniti"
   }
 }

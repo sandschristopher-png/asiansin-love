@@ -11,14 +11,38 @@
   },
   "auth": {
     "memberPrompt": "이미 회원이신가요?",
-    "signIn": "로그인"
+    "signIn": "로그인",
+    "welcomeBack": "다시 오신 것을 환영합니다",
+    "welcome": "환영합니다",
+    "prefixIn": "만남의 도시",
+    "prefixFrom": "만남의 나라",
+    "continueGoogle": "Google로 계속하기",
+    "continueLine": "LINE으로 계속하기",
+    "continueEmail": "이메일로 계속하기",
+    "newTo": "Meet in Asia가 처음이신가요?",
+    "createAccount": "계정 만들기",
+    "ageNotice": "만 18세 이상만 가입할 수 있습니다.",
+    "legalLead": "계속하면",
+    "legalAnd": "및",
+    "legalTail": "에 동의하는 것으로 간주됩니다.",
+    "terms": "서비스 이용약관",
+    "privacy": "개인정보 처리방침"
   },
   "steps": {
     "heading": "인연이 만들어지는 방법",
     "sub": "운이 아닌 진심으로 매칭하세요. 진짜 사람을 만나는 세 단계.",
-    "one": { "title": "원하는 것을 공유하세요", "desc": "연애 목표, 일정, 여행 계획을 처음부터 설정하세요." },
-    "two": { "title": "인증된 회원 둘러보기", "desc": "실시간 셀피 인증으로 확인된 진지한 회원들을 만나보세요." },
-    "three": { "title": "안심하고 연결하세요", "desc": "Sparks를 보내고, 진짜 음성 소개를 듣고, 원하는 방식으로 안전하게 연결하세요." }
+    "one": {
+      "title": "원하는 것을 공유하세요",
+      "desc": "연애 목표, 일정, 여행 계획을 처음부터 설정하세요."
+    },
+    "two": {
+      "title": "인증된 회원 둘러보기",
+      "desc": "실시간 셀피 인증으로 확인된 진지한 회원들을 만나보세요."
+    },
+    "three": {
+      "title": "안심하고 연결하세요",
+      "desc": "Sparks를 보내고, 진짜 음성 소개를 듣고, 원하는 방식으로 안전하게 연결하세요."
+    }
   },
   "features": {
     "screening": {
@@ -52,7 +76,111 @@
     "privacy": "개인정보처리방침",
     "contact": "문의하기"
   },
-  "language": {
-    "label": "언어"
+  "common": {
+    "language": "언어",
+    "cancel": "취소",
+    "close": "닫기"
+  },
+  "nav": {
+    "discover": "탐색",
+    "sparks": "Sparks",
+    "messages": "메시지",
+    "profile": "프로필"
+  },
+  "discover": {
+    "modeAll": "전체",
+    "modeOnline": "온라인",
+    "modeNearMe": "내 주변",
+    "modeNew": "신규",
+    "visitingHub": "방문 예정 도시",
+    "anyCity": "모든 도시",
+    "visitingHubHint": "이 도시에 있거나 곧 도착하는 회원입니다.",
+    "selfieVerifiedOnly": "셀피 인증 회원만",
+    "apply": "필터 적용",
+    "reset": "초기화",
+    "resetToast": "필터를 초기화했습니다",
+    "noMembers": "아직 내 위치 근처에 회원이 없습니다.",
+    "adjustFilters": "필터 조정",
+    "resetFilters": "필터 초기화"
+  },
+  "travel": {
+    "inNow": "지금 {city}에 있음",
+    "visiting": "{city} 방문 예정 · {dates}",
+    "arrivingTomorrow": "내일 도착",
+    "arrivingIn": "{n}일 후 도착",
+    "ended": "종료",
+    "upcomingTrips": "예정된 여행 {n}건",
+    "card": {
+      "title": "곧 방문",
+      "subtitle": "여행지의 회원에게 도착 시기를 알려 주세요.",
+      "add": "여행 추가",
+      "edit": "수정",
+      "delete": "삭제",
+      "confirmDelete": "삭제 확인",
+      "none": "예정된 여행이 없습니다. 추가하면 여행지에서 '곧 방문'으로 표시됩니다.",
+      "count": "예정된 여행 {n}/{max}건",
+      "example": "탐색 화면 예시",
+      "exampleBody": "Plus 회원은 도착 전부터 여행지의 회원에게 이렇게 카드에 표시됩니다.",
+      "upgradeTo": "업그레이드:"
+    },
+    "planner": {
+      "addTitle": "예정된 여행 추가",
+      "editTitle": "여행 수정",
+      "destination": "목적지",
+      "choose": "목적지를 선택하세요",
+      "arrival": "도착일",
+      "departure": "출발일",
+      "note": "메모 (선택)",
+      "notePlaceholder": "2주 동안 머물 예정이에요. 커피 한잔 하면 좋겠어요",
+      "tooLong": "여행 한 건은 최대 {n}일까지 가능합니다.",
+      "saveChanges": "변경 사항 저장",
+      "addButton": "여행 추가",
+      "saving": "저장 중...",
+      "plusHeading": "여행 계획하기",
+      "plusTitle": "'곧 방문'은 Plus 기능입니다",
+      "plusBody": "여행을 추가하면 도착 전부터 여행지의 회원에게 표시되고, 도착하기 전에 대화를 시작할 수 있습니다.",
+      "upgrade": "Plus로 업그레이드",
+      "later": "나중에"
+    }
+  },
+  "moderation": {
+    "url": "외부 링크, 이메일, 웹 도메인은 사용할 수 없습니다. 안전을 위해 대화는 Meet in Asia 안에서 하세요.",
+    "handle": "SNS 계정명과 채팅 ID는 공개 프로필에 쓸 수 없습니다.",
+    "phone": "전화번호 등 직접 연락처는 프로필에 표시할 수 없습니다.",
+    "bioHelper": "링크, SNS 계정, 연락처는 쓰지 마세요. 나에 대해 써 주세요.",
+    "bioHelperRejected": "링크, SNS 계정, 전화번호, 이메일, 결제 앱을 지워 주세요. 매칭된 후 채팅에서 연락처를 주고받을 수 있습니다."
+  },
+  "verify": {
+    "step": "{n}/2단계",
+    "centerFace": "얼굴을 프레임 가운데에 맞춰 주세요",
+    "holdPose": "얼굴 옆에서 이 포즈를 취해 주세요",
+    "takingPortrait": "얼굴 사진을 촬영하는 중...",
+    "portraitHint": "얼굴이 안정되면 자동으로 촬영됩니다.",
+    "takingPhoto": "촬영하는 중...",
+    "poseHint": "포즈를 유지하면 자동으로 촬영됩니다. 버튼을 눌러도 됩니다.",
+    "capturePhoto": "사진 촬영",
+    "captureVerification": "인증 사진 촬영",
+    "retakePortrait": "얼굴 사진 다시 찍기",
+    "retakePose": "포즈 다시 찍기",
+    "submit": "검토 요청 보내기",
+    "submitting": "보내는 중...",
+    "openCamera": "카메라 열기",
+    "continuePose": "포즈 사진으로 계속",
+    "twoQuick": "사진 두 장을 찍습니다",
+    "checkPhotos": "사진 확인",
+    "portrait": "얼굴 사진",
+    "pose": "포즈",
+    "requestedPose": "요청된 포즈"
+  },
+  "settings": {
+    "appLanguage": "앱 언어",
+    "appLanguageHint": "메뉴와 버튼의 언어입니다. 프로필에서 구사하는 언어와는 별개입니다.",
+    "languageUpdated": "언어가 변경되었습니다",
+    "accountTrust": "계정 및 신뢰",
+    "privacyDiscretion": "개인정보 및 보호",
+    "identityVerification": "본인 인증",
+    "identityVerificationSub": "GPS 및 셀피 신뢰 배지 상태",
+    "reputation": "평판 및 행동 수준",
+    "reputationSub": "커뮤니티 신뢰와 행동"
   }
 }

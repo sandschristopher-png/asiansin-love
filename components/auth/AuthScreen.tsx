@@ -7,6 +7,8 @@ import { AlertCircle, ArrowLeft, Eye, EyeOff, Loader2, Mail, MailCheck, X } from
 import { BrandLogo } from '@/components/BrandLogo';
 import { InAppToast } from '@/components/InAppToast';
 import { KineticCityTicker } from '@/components/auth/KineticCityTicker';
+import { LanguagePill } from '@/components/i18n/LanguageSheet';
+import { useLocale } from '@/components/i18n/LocaleProvider';
 import type { HeroAudience } from '@/lib/geoCities';
 import { supabase } from '@/lib/supabase/client';
 import { authHref, describeAuthError, safeReturnTo } from '@/lib/authRedirect';
@@ -54,6 +56,9 @@ type EmailStep = 'closed' | 'email' | 'sent' | 'password';
  * No Apple, no Facebook, no SMS. Password sign-in stays reachable from the email panel for existing accounts.
  */
 export function AuthScreen({ mode, audience = 'western' }: { mode: 'login' | 'signup'; audience?: HeroAudience }) {
+  const { t, locale } = useLocale();
+  // Japanese and Chinese join phrases without spaces.
+  const sp = locale === 'ja' || locale === 'zh' ? '' : ' ';
   const [busy, setBusy] = useState<null | 'google' | 'line' | 'email' | 'password'>(null);
   const [error, setError] = useState<string | null>(null);
   const [toast, setToast] = useState<string | null>(null);
@@ -211,9 +216,13 @@ export function AuthScreen({ mode, audience = 'western' }: { mode: 'login' | 'si
         </div>
       )}
       <main className="relative z-10 flex-1 w-full flex flex-col px-6 pt-10">
+        {/* App language: the same bottom-sheet picker as the landing header and Settings. */}
+        <div className="absolute right-3 top-2 z-20">
+          <LanguagePill />
+        </div>
         <div className="text-center">
           <span className="block text-[11px] font-semibold tracking-[0.25em] uppercase text-[#8574B7] mb-2 text-center">
-            {mode === 'login' ? 'Welcome Back' : 'Welcome'}
+            {mode === 'login' ? t('auth.welcomeBack') : t('auth.welcome')}
           </span>
           <div className="flex justify-center">
             <BrandLogo size="lg" href="/" />
@@ -228,13 +237,13 @@ export function AuthScreen({ mode, audience = 'western' }: { mode: 'login' | 'si
                 <span className={PILL_ICON}>
                   {busy === 'google' ? <Loader2 className="w-4 h-4 animate-spin text-[#8574B7]" /> : <GoogleIcon />}
                 </span>
-                <span className={PILL_LABEL}>Continue with Google</span>
+                <span className={PILL_LABEL}>{t('auth.continueGoogle')}</span>
               </button>
               <button type="button" className={PILL_LINE} onClick={() => oauth('line')} disabled={!!busy}>
                 <span className={PILL_ICON}>
                   {busy === 'line' ? <Loader2 className="w-5 h-5 animate-spin text-[#06C755]" /> : <LineIcon />}
                 </span>
-                <span className={PILL_LABEL}>Continue with LINE</span>
+                <span className={PILL_LABEL}>{t('auth.continueLine')}</span>
               </button>
               <button
                 type="button"
@@ -248,7 +257,7 @@ export function AuthScreen({ mode, audience = 'western' }: { mode: 'login' | 'si
                 <span className={`${PILL_ICON} text-[#413B5E]`}>
                   <Mail className="w-4 h-4" aria-hidden />
                 </span>
-                <span className={PILL_LABEL}>Continue with Email</span>
+                <span className={PILL_LABEL}>{t('auth.continueEmail')}</span>
               </button>
             </div>
           ) : (
@@ -341,31 +350,36 @@ export function AuthScreen({ mode, audience = 'western' }: { mode: 'login' | 'si
         <p className="mt-6 text-center">
           {mode === 'login' ? (
             <>
-              <span className="text-xs font-medium text-slate-600">New to Meet in Asia?</span>{' '}
+              <span className="text-xs font-medium text-slate-600">{t('auth.newTo')}</span>{' '}
               <Link href={authHref('/signup', returnTo)} className="text-xs font-medium text-[#8574B7] hover:text-[#534377] transition-colors">
-                Create an account
+                {t('auth.createAccount')}
               </Link>
             </>
           ) : (
             <>
-              <span className="text-xs font-medium text-slate-600">Already a member?</span>{' '}
+              <span className="text-xs font-medium text-slate-600">{t('auth.memberPrompt')}</span>{' '}
               <Link href={authHref('/login', returnTo)} className="text-xs font-medium text-[#8574B7] hover:text-[#534377] transition-colors">
-                Sign in
+                {t('auth.signIn')}
               </Link>
             </>
           )}
         </p>
 
         <p className="mt-auto pt-10 text-[10px] leading-relaxed text-slate-600 max-w-[340px] mx-auto text-center">
-          Registration is strictly permitted for individuals 18 years of age and older. By continuing, you agree to our{' '}
+          {t('auth.ageNotice')}
+          {sp}
+          {t('auth.legalLead')}
+          {sp}
           <Link href="/terms" className="text-slate-600 underline hover:text-[#8574B7] transition-colors">
-            Terms of Service
-          </Link>{' '}
-          and{' '}
-          <Link href="/privacy" className="text-slate-600 underline hover:text-[#8574B7] transition-colors">
-            Privacy Policy
+            {t('auth.terms')}
           </Link>
-          .
+          {sp}
+          {t('auth.legalAnd')}
+          {sp}
+          <Link href="/privacy" className="text-slate-600 underline hover:text-[#8574B7] transition-colors">
+            {t('auth.privacy')}
+          </Link>
+          {t('auth.legalTail')}
         </p>
       </main>
     </div>
