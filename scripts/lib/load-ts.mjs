@@ -23,7 +23,9 @@ function build(libName, seen) {
   const rewritten = outputText.replace(IMPORT_RE, (_m, kw, q, spec) => {
     const name = spec.replace(/^@\/lib\//, '').replace(/^\.\//, '').replace(/\.ts$/, '');
     deps.push(name);
-    return `${kw}${q}./${name}.mjs${q}`;
+    // Relative to this module, so nested libs (i18n/errors) can import top-level ones.
+    const rel = path.posix.relative(path.posix.dirname(libName), name);
+    return `${kw}${q}${rel.startsWith(".") ? rel : "./" + rel}.mjs${q}`;
   });
   const outFile = path.join(OUT, `${libName}.mjs`);
   fs.mkdirSync(path.dirname(outFile), { recursive: true });

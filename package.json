@@ -6,7 +6,9 @@
     "dev": "next dev --webpack",
     "build": "next build --webpack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "i18n:check": "node scripts/check-i18n.mjs",
+    "i18n:test": "node scripts/test-i18n-errors.mjs"
   },
   "dependencies": {
     "@google/genai": "^2.24.0",
