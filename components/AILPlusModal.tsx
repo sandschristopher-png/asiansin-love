@@ -18,9 +18,10 @@ const BADGE_LABEL = { 'Most Popular': 'plus.mostPopular', 'Best Value': 'plus.be
 
 // Accurate to the app: free members start FREE_DAILY_INTROS new conversations and send FREE_DAILY_SPARKS Sparks a day.
 const PERKS: { Icon: typeof Eye; title: TKey; text: TKey; n?: number }[] = [
-  { Icon: EyeOff, title: 'plus.perkPrivateTitle', text: 'plus.perkPrivateText' },
+  { Icon: EyeOff, title: 'plus.perkPrivateTitle', text: 'settings.privateModeSub' },
   { Icon: Eye, title: 'plus.perkVisitorsTitle', text: 'plus.perkVisitorsText' },
-  { Icon: Plane, title: 'plus.perkPassportTitle', text: 'plus.perkPassportText' },
+  // Visiting Soon is the shipped travel feature (actions/trips.ts); there is no separate roaming mode.
+  { Icon: Plane, title: 'plus.page.rowTravel', text: 'plus.page.cellTravel' },
   { Icon: Zap, title: 'plus.perkIntrosTitle', text: 'plus.perkIntrosText', n: FREE_DAILY_INTROS },
   { Icon: Heart, title: 'plus.perkSparksTitle', text: 'plus.perkSparksText', n: FREE_DAILY_SPARKS },
 ];

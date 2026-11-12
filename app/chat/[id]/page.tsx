@@ -7,6 +7,7 @@ import { TraitIcebreakers } from '@/components/chat/TraitIcebreakers';
 import { FirstMessageShield } from '@/components/chat/FirstMessageShield';
 import { inspectFirstMessageSafety } from '@/lib/safety/shield';
 import { isPlusProfile } from '@/lib/plus';
+import { useLocale } from '@/components/i18n/LocaleProvider';
 import { publicName } from '@/lib/publicName';
 
 import React, { useState, useEffect, useRef, useLayoutEffect, useCallback } from 'react';
@@ -237,6 +238,9 @@ export default function ChatConversationPage() {
   const [inputText, setInputText] = useState('');
   const [sentCount, setSentCount] = useState(0);
   const [isPlus, setIsPlus] = useState(false);
+  const { t } = useLocale();
+  // Verified women message without limits (server rule in /api/messages), so no wait timer for them.
+  const [isVerifiedWoman, setIsVerifiedWoman] = useState(false);
   const [cooldownSeconds, setCooldownSeconds] = useState(0);
   const [showSafetyNotice, setShowSafetyNotice] = useState(false);
   const [showUpgradeModal, setShowUpgradeModal] = useState(false);
@@ -399,7 +403,7 @@ export default function ChatConversationPage() {
       const [myProfRes, targetProfRes] = await Promise.all([
         supabase
           .from('profiles')
-          .select('is_plus, is_premium, subscription_status, current_period_end, plus_expires_at, interests, languages, reputation_score')
+          .select('is_plus, is_premium, subscription_status, current_period_end, plus_expires_at, gender, is_verified, interests, languages, reputation_score')
           .eq('id', user.id)
           .maybeSingle(),
         isUuid
@@ -421,6 +425,9 @@ export default function ChatConversationPage() {
       const myProf = myProfRes.data;
       if (isPlusProfile(myProf)) {
         if (isMounted) setIsPlus(true);
+      }
+      if (isMounted && myProf?.is_verified === true && String(myProf?.gender || '').toLowerCase() === 'female') {
+        setIsVerifiedWoman(true);
       }
       const myInterests: string[] = Array.isArray(myProf?.interests) ? myProf.interests : [];
       if (isMounted && typeof myProf?.reputation_score === 'number') setMyRep(myProf.reputation_score);
@@ -661,6 +668,15 @@ export default function ChatConversationPage() {
     };
   }, [resolvedTargetUuid, currentUserId]);
 
+  /** The newest message I sent that is on the server: the one place free members see the read-receipt prompt. */
+  const lastOwnMessageId = (() => {
+    for (let i = messages.length - 1; i >= 0; i--) {
+      const m = messages[i];
+      if (m.sender === 'me' && !m.pending && !m.failed) return m.id;
+    }
+    return null;
+  })();
+
   const submitMessage = async () => {
     const clean = inputText.trim();
     if (!clean || cooldownSeconds > 0 || !resolvedTargetUuid) return;
@@ -737,7 +753,10 @@ export default function ChatConversationPage() {
 
       const nextCount = sentCount + 1;
       setSentCount(nextCount);
-      if (nextCount >= 5 && !isPlus) {
+      // The wait only slows cold outreach: a thread the other member has replied in is a mutual
+      // conversation, which /plus promises unlimited, and verified women are exempt server-side too.
+      const partnerHasReplied = messages.some((m) => m.sender === 'them');
+      if (nextCount >= 5 && !isPlus && !isVerifiedWoman && !partnerHasReplied) {
         setCooldownSeconds(300);
       }
 
@@ -1324,6 +1343,15 @@ export default function ChatConversationPage() {
                             ) : (
                               <Check className="w-3 h-3 text-slate-600" />
                             )
+                          )}
+                          {/* Free senders see timestamps only; one quiet prompt under the latest message. */}
+                          {isMe && !isPlus && msg.id === lastOwnMessageId && (
+                            <>
+                              <span aria-hidden>·</span>
+                              <Link href="/plus?feature=receipts" className="font-medium text-[#8574B7] hover:underline">
+                                {t('plus.page.receiptsPrompt')}
+                              </Link>
+                            </>
                           )}
                         </div>
                       )}

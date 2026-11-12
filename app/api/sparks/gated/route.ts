@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
 import { createClient as createServiceClient, type SupabaseClient } from '@supabase/supabase-js';
 import { createClient } from '@/lib/supabase/server';
+import { isPlusProfile } from '@/lib/plus';
 
-/** Free members see their newest visitors in full; older ones stay locked until Plus. */
-const FREE_VISITORS = 3;
+/** Free members see how many people visited and when, but no profile: every visitor stays locked until Plus. */
+const FREE_VISITORS = 0;
 const VISITOR_COLUMNS =
   'id, username, display_name, full_name, avatar_url, photos, city, country, is_verified, verification_status, is_plus, reputation_score';
 
@@ -51,7 +52,7 @@ export async function GET() {
   // it made this query fail, so every member, Plus included, got 403 and an empty Sparks page.)
   const { data: me, error: meError } = await supabase
     .from('profiles')
-    .select('is_plus, gender, looking_for')
+    .select('*')
     .eq('id', user.id)
     .maybeSingle();
   if (meError) {
@@ -60,7 +61,8 @@ export async function GET() {
   }
 
   // Plus unlocks Sparked You / Visitors for men; women always have full access for free.
-  const fullAccess = Boolean(me?.is_plus) || me?.gender === 'female';
+  // isPlusProfile is the same rule as everywhere else (Stripe, status and complimentary Plus).
+  const fullAccess = isPlusProfile(me) || me?.gender === 'female';
 
   const { data: sparkedYou, error: e1 } = await supabase.rpc('get_sparked_you_profiles');
   if (e1) return NextResponse.json({ error: e1.message }, { status: 500 });
@@ -76,8 +78,7 @@ export async function GET() {
   const visitedYou = visitorResult.visitors ?? [];
 
   if (!fullAccess) {
-    // Free preview: the newest Spark and the 3 newest visitors in full, then only counts and
-    // visit times. Locked rows carry no profile data, so nothing about those members ever
+    // Free preview: the newest Spark in full; every visitor stays a count and a visit time. Locked rows carry no profile data, so nothing about those members ever
     // reaches the browser.
     const sparked = (sparkedYou ?? []) as unknown[];
     return NextResponse.json({

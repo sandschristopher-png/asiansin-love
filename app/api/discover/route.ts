@@ -9,6 +9,7 @@ import { readLanguages } from '@/lib/constants/languages';
 import { LIFESTYLE_KEYS, readHeightCm, readLifestyle } from '@/lib/lifestyle';
 import { sharedTraits } from '@/lib/rhythm';
 import { hubCountry, type TripBrief } from '@/lib/tripHubs';
+import { isPlusProfile } from '@/lib/plus';
 import {
   CHILDREN_CLAUSES,
   CHILDREN_FILTERS,
@@ -114,7 +115,7 @@ export async function GET(req: Request) {
       const [profRes, blocksRes, favsRes, sparksRes] = await Promise.all([
         serviceClient
           .from('profiles')
-          .select('id, gender, interested_in, seeking_gender, latitude, longitude, city, country, interests, languages, intentions, relationship_intent, onboarding_completed, avatar_url, is_plus')
+          .select('id, gender, interested_in, seeking_gender, latitude, longitude, city, country, interests, languages, intentions, relationship_intent, onboarding_completed, avatar_url, is_plus, is_premium, subscription_status, current_period_end, plus_expires_at')
           .eq('id', user.id)
           .maybeSingle(),
         serviceClient
@@ -179,14 +180,17 @@ export async function GET(req: Request) {
     const params = new URL(req.url).searchParams;
     const verifiedOnly = params.get('verified') === '1';
     const hideContacted = params.get('hide_contacted') === '1';
-    const sparkedMeAccess = Boolean(viewerProfile?.is_plus) || viewerGender === 'female';
+    // One Plus rule for every gate below (lib/plus.ts: Stripe, status and complimentary Plus).
+    const viewerIsPlus = isPlusProfile(viewerProfile);
+    const sparkedMeAccess = viewerIsPlus || viewerGender === 'female';
     const sparkedMeOnly = params.get('sparked_me') === '1' && sparkedMeAccess;
     const intentFilter = readFilterList(params.get('intent'), RELATIONSHIP_INTENT_FILTERS);
     const childrenFilter = readFilterList(params.get('children'), CHILDREN_FILTERS);
     const englishFilter = readFilterList(params.get('english'), ENGLISH_LEVEL_OPTIONS);
     // "Visiting hub": only a curated hub city is accepted (the raw value never reaches a filter string).
     const visitingParam = (params.get('visiting') || '').trim();
-    const visitingHub = hubCountry(visitingParam) ? visitingParam : '';
+    // The hub filter is a Plus feature like the country filter: a free member's ?visiting= is ignored.
+    const visitingHub = viewerIsPlus && hubCountry(visitingParam) ? visitingParam : '';
     // Trips that have not ended (one day of slack for time zones; the card decides "now" vs "soon").
     const tripsFrom = new Date(Date.now() - 86_400_000).toISOString().slice(0, 10);
 
@@ -255,8 +259,8 @@ export async function GET(req: Request) {
     }
 
     // ?country= accepts a display name ("Myanmar") or an ISO-3166 alpha-2 code ("MM"), exact match.
-    // Cross-border country filters are an Plus feature; free members browse the full feed.
-    const countryParam = viewerProfile?.is_plus
+    // Cross-border country filters are a Plus feature; free members browse the full feed.
+    const countryParam = viewerIsPlus
       ? (new URL(req.url).searchParams.get('country') || '').trim().slice(0, 60)
       : '';
 
@@ -406,7 +410,7 @@ export async function GET(req: Request) {
             country: resolveCountry(viewerProfile.city, viewerProfile.country) || null,
             intent: viewerProfile.relationship_intent || viewerProfile.intentions || '',
             onboarding_completed: viewerProfile.onboarding_completed,
-            isPlus: Boolean(viewerProfile.is_plus),
+            isPlus: viewerIsPlus,
           }
         : null,
       favoriteIds,

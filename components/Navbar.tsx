@@ -209,7 +209,7 @@ export function Navbar() {
                 hidden until the profile has loaded so Plus members never see it flash. */}
             {profile && profile.is_plus !== true && pathname !== '/upgrade' && pathname !== '/plus' && (
               <Link
-                href="/upgrade"
+                href="/plus"
                 className="mr-1 inline-flex h-7 items-center rounded-full border border-[#8574B7] px-3 text-xs font-semibold text-[#8574B7] hover:bg-[#8574B7]/10 transition-colors"
               >
                 Upgrade
@@ -244,7 +244,7 @@ export function Navbar() {
                       {isPlusProfile(profile) && <PlusBadge size="profile" />}
                     </div>
                     <div className="py-1">
-                      <Link href={profile && profile.is_plus !== true ? '/upgrade' : '/plus'} role="menuitem" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 h-11 text-sm text-[#413B5E] hover:bg-[#E8E6F1]/40 transition-colors justify-between">
+                      <Link href="/plus" role="menuitem" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 h-11 text-sm text-[#413B5E] hover:bg-[#E8E6F1]/40 transition-colors justify-between">
                         {/* The header row above already shows the Plus badge: this row says "Membership". */}
                         <span className="flex items-center gap-3">
                           <CreditCard className="w-4 h-4 text-slate-600" aria-hidden />

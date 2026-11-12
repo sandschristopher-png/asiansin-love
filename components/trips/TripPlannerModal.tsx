@@ -70,7 +70,7 @@ export function TripPlannerModal({
         </div>
         <div className="mt-6 flex flex-col items-center gap-3">
           <Link
-            href="/upgrade"
+            href="/plus?feature=trips"
             className="w-full h-12 inline-flex items-center justify-center rounded-full bg-[#8574B7] hover:bg-[#534377] text-white text-sm font-medium transition-colors active:scale-95"
           >
             {t('travel.planner.upgrade')}

@@ -33,7 +33,7 @@ export function MemberTrips({ userId }: { userId: string | null | undefined }) {
 /**
  * Your own "Visiting Soon" card on /profile. Plus: up to 3 upcoming trips with status, edit and
  * delete, and an add button. Free: a preview of how a trip shows on Discover, and a path to
- * /upgrade. isPlus must come from profiles.is_plus, the flag the server action and RLS check.
+ * /plus. isPlus must come from profiles.is_plus, the flag the server action and RLS check.
  */
 export function MyTrips({ userId, isPlus }: { userId: string | null | undefined; isPlus: boolean }) {
   const { t, locale } = useLocale();
@@ -178,7 +178,7 @@ export function MyTrips({ userId, isPlus }: { userId: string | null | undefined;
             <p className="text-xs leading-relaxed text-slate-600">{t('travel.card.exampleBody')}</p>
           </div>
           <Link
-            href="/upgrade"
+            href="/plus?feature=trips"
             aria-label={t('travel.planner.upgrade')}
             className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-full border border-[#8574B7] bg-white text-sm font-medium text-[#8574B7] transition-colors hover:bg-[#8574B7]/10 active:scale-95"
           >
