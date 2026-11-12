@@ -8,7 +8,7 @@ export const metadata: Metadata = { title: 'Page not found' };
 /**
  * Custom 404. Rendered inside the 480px app column (LayoutShell / AppShell); the fixed panel sits
  * over the app's Navbar and BottomNav (z-50) so the page shows one wordmark and one action.
- * The monkey's map reads "404", so this illustration belongs on this route only.
+ * The monkey's map reads "404". The image is a 512px WebP (about 42 KB), sharp at 3x for the 176px display.
  */
 export default function NotFound() {
   return (
@@ -19,7 +19,7 @@ export default function NotFound() {
 
       <main className="flex flex-1 flex-col items-center justify-center px-6 pb-16 text-center">
         <Image
-          src="/404-Monkey.png"
+          src="/404-Monkey.webp"
           alt="Page not found"
           width={176}
           height={176}
