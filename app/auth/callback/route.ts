@@ -48,7 +48,12 @@ export async function GET(request: Request) {
           // Google fills full_name / name with the account's real name, and the new-user trigger
           // copies it into the profile. Never keep it as a public name: onboarding Step 1 asks for
           // the member's own handle instead.
-          const googleNames = [user.user_metadata?.full_name, user.user_metadata?.name]
+          const googleNames = [
+            user.user_metadata?.full_name,
+            user.user_metadata?.name,
+            user.user_metadata?.given_name,
+            user.user_metadata?.family_name,
+          ]
             .filter((n): n is string => typeof n === 'string' && n.trim().length > 0)
             .map((n) => n.trim().toLowerCase());
           const leaks = (v: unknown) => typeof v === 'string' && googleNames.includes(v.trim().toLowerCase());

@@ -14,6 +14,7 @@ import { supabase } from '@/lib/supabase/client';
 import { authHref, describeAuthError, safeReturnTo } from '@/lib/authRedirect';
 import { routeAfterSignIn } from '@/lib/routeAfterSignIn';
 import { localizeError } from '@/lib/i18n/errors';
+import { authOrigin } from '@/lib/siteUrl';
 import type { TKey } from '@/lib/i18n';
 
 /** Google / LINE / Email: one shared pill so the three read as a single stack. */
@@ -80,7 +81,7 @@ export function AuthScreen({ mode, audience = 'western' }: { mode: 'login' | 'si
   // Page the member was heading to before being sent here (?returnTo=, set by middleware).
   const [returnTo, setReturnTo] = useState<string | null>(null);
   /** /auth/callback URL that lands back on returnTo after OAuth or a magic link. */
-  const callbackUrl = () => `${window.location.origin}/auth/callback${returnTo ? `?next=${encodeURIComponent(returnTo)}` : ''}`;
+  const callbackUrl = () => `${authOrigin()}/auth/callback${returnTo ? `?next=${encodeURIComponent(returnTo)}` : ''}`;
 
   // /auth/callback sends members back with ?error= or ?notice=reset_expired.
   useEffect(() => {
