@@ -11,6 +11,7 @@ import { hapticError, hapticPhotoSnap } from '@/lib/utils/haptics';
 import { QrCode } from '@/components/QrCode';
 import { useActionToast } from '@/components/ActionToast';
 import { useLocale } from '@/components/i18n/LocaleProvider';
+import { localizeError } from '@/lib/i18n/errors';
 
 /**
  * Sent with the pose photo. Automatic captures carry the live gate's result (exactly one confident
@@ -132,6 +133,12 @@ function cameraErrorMessage(err: unknown): string {
 export default function VerifyPage() {
   const router = useRouter();
   const { t } = useLocale();
+  // Read inside requestChallenge and the mount effect without making them re-run (and request a new
+  // challenge) when the language is adopted after hydration.
+  const tRef = useRef(t);
+  useEffect(() => {
+    tRef.current = t;
+  }, [t]);
   const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
 
@@ -174,18 +181,18 @@ export default function VerifyPage() {
       const res = await fetch('/api/verify/start', { method: 'POST' });
       const data = await res.json();
       if (!res.ok) {
-        setStartError(data.error || 'Could not start verification. Please try again.');
+        setStartError(localizeError({ status: res.status, code: data.code, message: data.error }, tRef.current));
         return;
       }
       const issued = getPoseById(data.sequence?.[0]);
       if (!issued) {
-        setStartError('Could not start verification. Please try again.');
+        setStartError(tRef.current('errors.generic'));
         return;
       }
       setAttemptToken(data.attemptId);
       setPose(issued);
     } catch {
-      setStartError('Network error. Please check your connection.');
+      setStartError(tRef.current('errors.network'));
     } finally {
       setStarting(false);
     }
@@ -198,7 +205,7 @@ export default function VerifyPage() {
       const { data: userData } = await supabase.auth.getUser();
       if (!userData.user) {
         if (!cancelled) {
-          setStartError('Please sign in to verify your profile.');
+          setStartError(tRef.current('errors.session'));
           setStarting(false);
         }
         return;
@@ -210,7 +217,7 @@ export default function VerifyPage() {
         .maybeSingle();
       if (cancelled) return;
       if (!profile?.avatar_url) {
-        setStartError('Add a clear main profile photo first - verification matches your face against it.');
+        setStartError(tRef.current('verify.needPhoto'));
         setStarting(false);
         return;
       }

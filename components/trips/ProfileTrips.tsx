@@ -9,6 +9,7 @@ import { TripBadge } from '@/components/trips/TripBadge';
 import { TripPill } from '@/components/trips/TripPill';
 import { TripPlannerModal } from '@/components/trips/TripPlannerModal';
 import { useLocale } from '@/components/i18n/LocaleProvider';
+import { localizeError } from '@/lib/i18n/errors';
 import { MAX_UPCOMING_TRIPS, isoToday } from '@/lib/tripHubs';
 import { formatRangeLocale, tripStatusText } from '@/lib/tripLabels';
 import { fetchUpcomingTrips, type Trip } from '@/lib/trips';
@@ -64,13 +65,13 @@ export function MyTrips({ userId, isPlus }: { userId: string | null | undefined;
     setError(null);
     try {
       const res = await deleteTrip(id);
-      if (!res.success) setError(res.error || 'Could not remove this trip.');
+      if (!res.success) setError(localizeError({ code: res.code, message: res.error }, t));
       else {
         setConfirmId(null);
         load();
       }
     } catch {
-      setError('Could not reach the server. Check your connection and try again.');
+      setError(t('errors.network'));
     } finally {
       setBusyId(null);
     }

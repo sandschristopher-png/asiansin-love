@@ -13,8 +13,9 @@ import type { HeroAudience } from '@/lib/geoCities';
 import { supabase } from '@/lib/supabase/client';
 import { authHref, describeAuthError, safeReturnTo } from '@/lib/authRedirect';
 import { routeAfterSignIn } from '@/lib/routeAfterSignIn';
+import { localizeError } from '@/lib/i18n/errors';
+import type { TKey } from '@/lib/i18n';
 
-const RESET_EXPIRED_MESSAGE = 'That password reset link has expired or was already used. Request a new one from Forgot password.';
 /** Google / LINE / Email: one shared pill so the three read as a single stack. */
 const PILL =
   'relative h-12 w-full px-4 rounded-full border border-[#D0CDE1] bg-white/90 backdrop-blur-sm text-sm font-medium text-[#413B5E] shadow-brand-sm hover:border-[#B8B3D1] hover:bg-[#E8E6F1]/30 hover:shadow-brand-md transition-all flex items-center justify-center gap-3 select-none disabled:opacity-60 disabled:cursor-not-allowed';
@@ -60,9 +61,18 @@ export function AuthScreen({ mode, audience = 'western' }: { mode: 'login' | 'si
   // Japanese and Chinese join phrases without spaces.
   const sp = locale === 'ja' || locale === 'zh' ? '' : ' ';
   const [busy, setBusy] = useState<null | 'google' | 'line' | 'email' | 'password'>(null);
-  const [error, setError] = useState<string | null>(null);
-  const [toast, setToast] = useState<string | null>(null);
-  const closeToast = useCallback(() => setToast(null), []);
+  // Runtime errors are stored as text (already localised when set); errors that arrive in the URL are
+  // stored as a key and translated at render, so they follow the language once it is adopted.
+  const [errorText, setErrorText] = useState<string | null>(null);
+  const [urlErrorKey, setUrlErrorKey] = useState<TKey | null>(null);
+  const error = errorText ?? (urlErrorKey ? t(urlErrorKey) : null);
+  const setError = useCallback((value: string | null) => {
+    setErrorText(value);
+    if (value === null) setUrlErrorKey(null);
+  }, []);
+  const [resetExpiredToast, setResetExpiredToast] = useState(false);
+  const toast = resetExpiredToast ? t('errors.resetExpired') : null;
+  const closeToast = useCallback(() => setResetExpiredToast(false), []);
   const [step, setStep] = useState<EmailStep>('closed');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -80,8 +90,8 @@ export function AuthScreen({ mode, audience = 'western' }: { mode: 'login' | 'si
     /* eslint-disable react-hooks/set-state-in-effect -- one-time read of the URL on mount */
     setReturnTo(safeReturnTo(params.get('returnTo')));
     if (!notice && !err) return;
-    if (notice === 'reset_expired') setToast(RESET_EXPIRED_MESSAGE);
-    if (err) setError(err);
+    if (notice === 'reset_expired') setResetExpiredToast(true);
+    if (err) setUrlErrorKey(err);
     /* eslint-enable react-hooks/set-state-in-effect */
     params.delete('notice');
     params.delete('error');
@@ -113,8 +123,8 @@ export function AuthScreen({ mode, audience = 'western' }: { mode: 'login' | 'si
     if (error) {
       setError(
         /provider is not enabled/i.test(error.message)
-          ? `${provider === 'google' ? 'Google' : 'LINE'} sign-in is not available right now. Please use another option.`
-          : error.message
+          ? t('errors.providerNamedDown', { provider: provider === 'google' ? 'Google' : 'LINE' })
+          : localizeError(error, t)
       );
       setBusy(null);
     }
@@ -134,7 +144,7 @@ export function AuthScreen({ mode, audience = 'western' }: { mode: 'login' | 'si
     });
     setBusy(null);
     if (error) {
-      setError(/rate limit|security purposes/i.test(error.message) ? 'Too many requests. Please wait a minute and try again.' : error.message);
+      setError(localizeError(error, t));
       return;
     }
     setStep('sent');
@@ -148,7 +158,7 @@ export function AuthScreen({ mode, audience = 'western' }: { mode: 'login' | 'si
     setError(null);
     const { data, error } = await supabase.auth.signInWithPassword({ email: cleanEmail, password });
     if (error || !data.user) {
-      setError(error?.message === 'Invalid login credentials' ? 'Incorrect email or password. Please try again.' : error?.message || 'Sign-in failed.');
+      setError(localizeError(error ?? 'Sign-in failed', t, 'errors.signInFailed'));
       setBusy(null);
       return;
     }

@@ -25,18 +25,18 @@ export function authHref(page: '/login' | '/signup', returnTo: string | null | u
   return safe ? `${page}?returnTo=${encodeURIComponent(safe)}` : page;
 }
 
-/** Friendly copy for ?error= / ?error_description= values Supabase and OAuth providers send back. */
-export function describeAuthError(code: string | null, description: string | null): string | null {
+/**
+ * Which `errors.*` message to show for the ?error= / ?error_description= values Supabase and OAuth
+ * providers send back. Returns a key, not text, so the caller shows it in the member's language.
+ */
+export function describeAuthError(
+  code: string | null,
+  description: string | null
+): 'errors.signInCancelled' | 'errors.linkExpired' | 'errors.providerDown' | 'errors.signInFailed' | null {
   if (!code && !description) return null;
   const text = (description || code || '').replace(/\+/g, ' ').trim();
-  if (code === 'no_code_provided' || code === 'access_denied' || /denied|cancel/i.test(text)) {
-    return 'Sign-in was cancelled. Please try again.';
-  }
-  if (/expired|invalid.*(link|code|token)|otp/i.test(text)) {
-    return 'That sign-in link has expired or was already used. Please try again.';
-  }
-  if (/provider is not enabled|unsupported provider/i.test(text)) {
-    return 'That sign-in option is not available right now. Please use another one.';
-  }
-  return text.length > 160 ? 'Sign-in failed. Please try again.' : text || 'Sign-in failed. Please try again.';
+  if (code === 'no_code_provided' || code === 'access_denied' || /denied|cancel/i.test(text)) return 'errors.signInCancelled';
+  if (/expired|invalid.*(link|code|token)|otp/i.test(text)) return 'errors.linkExpired';
+  if (/provider is not enabled|unsupported provider/i.test(text)) return 'errors.providerDown';
+  return 'errors.signInFailed';
 }

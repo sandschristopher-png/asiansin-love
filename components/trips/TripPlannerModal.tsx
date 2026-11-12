@@ -8,6 +8,7 @@ import { BottomSheet } from '@/components/ui/BottomSheet';
 import { PlusBadge } from '@/components/ui/PlusBadge';
 import { ThemedSelect, type ThemedOption } from '@/components/ui/ThemedSelect';
 import { useLocale } from '@/components/i18n/LocaleProvider';
+import { localizeError } from '@/lib/i18n/errors';
 import { profileContentMessage } from '@/lib/i18n/moderationMessages';
 import { validateProfileContent } from '@/lib/moderation';
 import { MAX_DAYS_AHEAD, MAX_NOTE_LEN, MAX_TRIP_DAYS, TRIP_HUBS, isoToday } from '@/lib/tripHubs';
@@ -91,14 +92,14 @@ export function TripPlannerModal({
       const input = { destinationCity: city, startDate, endDate, note };
       const res = trip ? await updateTrip(trip.id, input) : await createTrip(input);
       if (!res.success) {
-        // Server messages are English; the form's own checks above are translated.
-        setError(res.error || 'Could not save your trip. Please try again.');
+        // The server reports a code; the text shown comes from the member's language.
+        setError(localizeError({ code: res.code, message: res.error }, t, 'errors.saveFailed'));
         return;
       }
       onSaved();
       onClose();
     } catch {
-      setError('Could not reach the server. Check your connection and try again.');
+      setError(t('errors.network'));
     } finally {
       setSaving(false);
     }

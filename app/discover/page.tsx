@@ -21,6 +21,7 @@ import { VisitingBadge, type TravelNotice } from '@/components/VisitingBadge';
 import { TripBadge } from '@/components/trips/TripBadge';
 import { useLocale } from '@/components/i18n/LocaleProvider';
 import type { TKey } from '@/lib/i18n';
+import { localizeError } from '@/lib/i18n/errors';
 import { TRIP_HUBS, type TripBrief } from '@/lib/tripHubs';
 import { NewMemberPill } from '@/components/profile/TrustBadges';
 import {
@@ -731,11 +732,11 @@ function DiscoverContent() {
             return;
           }
           if (res.status === 401) {
-            showSparkNotice('Your session has ended. Please sign in again.');
+            showSparkNotice(t('errors.session'));
             setTimeout(() => router.push('/login?returnTo=%2Fdiscover'), 1500);
             return;
           }
-          showSparkNotice(data?.error || 'Could not send your Spark. Please try again.');
+          showSparkNotice(localizeError({ status: res.status, code: data?.code, message: data?.error }, t));
           return;
         }
         if (data?.mutual || data?.is_mutual) {
