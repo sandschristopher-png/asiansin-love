@@ -48,11 +48,8 @@
       padding: 32px; background: #FFFFFF; border: 1px solid rgba(226, 232, 240, 0.8); border-radius: 16px;
       box-shadow: 0 1px 2px rgba(15, 23, 42, 0.05);
     }
-    .icon {
-      width: 64px; height: 64px; margin-bottom: 20px; border-radius: 16px;
-      display: flex; align-items: center; justify-content: center;
-      background: rgba(133, 116, 183, 0.1); color: #8574B7;
-    }
+    /* The 404 monkey (precached by sw.js with this page). */
+    .monkey { display: block; width: 160px; height: 160px; margin: 0 auto 16px; object-fit: contain; }
     h1 {
       margin-bottom: 8px; font-size: 20px; font-weight: 600; letter-spacing: -0.01em; color: #413B5E;
       font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
@@ -77,17 +74,7 @@
     </a>
 
     <div class="card">
-      <div class="icon" aria-hidden="true">
-        <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M12 20h.01" />
-          <path d="M8.5 16.429a5 5 0 0 1 7 0" />
-          <path d="M5 12.859a10 10 0 0 1 5.17-2.69" />
-          <path d="M19 12.859a10 10 0 0 0-2.007-1.523" />
-          <path d="M2 8.82a15 15 0 0 1 4.177-2.643" />
-          <path d="M22 8.82a15 15 0 0 0-11.288-3.764" />
-          <path d="m2 2 20 20" />
-        </svg>
-      </div>
+      <img src="/404-Monkey.png" alt="Offline" class="monkey" width="160" height="160" onerror="this.style.display='none'" />
 
       <h1>You are offline</h1>
       <p class="body">Check your internet connection. Your messages and matches will load again automatically once you reconnect.</p>

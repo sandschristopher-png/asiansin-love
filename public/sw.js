@@ -5,15 +5,22 @@
 // v6: cache-first for content-hashed /_next/static files.
 // v7: redesigned offline fallback (re-precache offline.html).
 // v8: offline.html embeds the Plus Jakarta Sans wordmark font.
-const CACHE_NAME = 'ail-cache-v8';
+// v9: offline.html shows the 404 monkey, precached with the page.
+const CACHE_NAME = 'ail-cache-v9';
 const OFFLINE_URL = '/offline.html';
 // App shell that must work with no network. Next.js JS / CSS chunks are content-hashed and are
 // cached at runtime on first use (fetch handler below).
 const PRECACHE = [OFFLINE_URL, '/manifest.webmanifest', '/icon-192.png', '/icon-512.png', '/icon.svg'];
+// Nice to have, not required: the monkey on the offline page (about 750 KB). Added on its own so a slow
+// or failed download never blocks the service worker from installing.
+const OPTIONAL_PRECACHE = ['/404-Monkey.png'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((c) => c.addAll(PRECACHE)).then(() => self.skipWaiting())
+    caches
+      .open(CACHE_NAME)
+      .then((c) => c.addAll(PRECACHE).then(() => Promise.all(OPTIONAL_PRECACHE.map((u) => c.add(u).catch(() => {})))))
+      .then(() => self.skipWaiting())
   );
 });
 
