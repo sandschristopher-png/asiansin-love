@@ -154,7 +154,7 @@ export function Navbar() {
     // Frosted glass. On Discover it overlays the scrolling feed (LayoutShell) with the frosted filter bar
     // directly below; that bar carries the divider so both read as one surface.
     <header className="sticky top-0 z-50 w-full bg-white/75 backdrop-blur-md supports-[backdrop-filter]:bg-white/75">
-      <div className="max-w-[430px] mx-auto px-4 h-14 flex items-center justify-between relative">
+      <div className="max-w-[480px] mx-auto px-4 h-14 flex items-center justify-between relative">
         <div className={`flex items-center gap-2 ${pageTitle ? 'min-w-0' : 'shrink-0'}`}>
           <div
             key={pageTitle || 'brand-home'}

@@ -1281,7 +1281,7 @@ function DiscoverContent() {
               />
 
               {/* Bottom Sheet Modal confined to mobile app shell */}
-              <div className="relative z-10 w-full max-w-[430px] flex flex-col pointer-events-none">
+              <div className="relative z-10 w-full max-w-[480px] flex flex-col pointer-events-none">
                 <div
                   role="dialog"
                   aria-modal="true"

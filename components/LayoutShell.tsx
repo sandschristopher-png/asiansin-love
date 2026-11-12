@@ -9,6 +9,7 @@ import { isCityPagePath } from '@/lib/seo/citySlugs';
 import { RealtimeNotifier } from '@/components/RealtimeNotifier';
 import { ActionToastProvider } from '@/components/ActionToast';
 import { DesktopQrHandoff } from '@/components/DesktopQrHandoff';
+import { AppShell } from '@/components/layout/AppShell';
 
 export function LayoutShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -33,22 +34,19 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
   const overlayNav = pathname === '/discover';
 
   // The landing page is a single phone-width column on every screen (no desktop corner cards). Every other
-  // route keeps the 430px app frame. <body> is overflow-hidden, so this wrapper is the page's
-  // scroll container (its sticky header sticks within it).
+  // route keeps the same 480px AppShell column. <body> is overflow-hidden, so on the landing page
+  // the shell is the scroll container (its sticky header sticks within it).
   if (pathname === '/') {
     return (
       <ActionToastProvider>
-        {/* Same phone frame as the app: centred, never wider than 430px, on a slate backdrop. */}
-        <div className="w-full max-w-[430px] h-[100dvh] mx-auto overflow-y-auto overflow-x-hidden overscroll-y-contain bg-white relative sm:shadow-2xl">
-          {children}
-        </div>
+        <AppShell scroll>{children}</AppShell>
       </ActionToastProvider>
     );
   }
 
   return (
     <ActionToastProvider>
-    <div className={`w-full max-w-[430px] h-[100dvh] min-h-[100dvh] mx-auto bg-white flex flex-col sm:shadow-2xl relative overflow-hidden`}>
+    <AppShell>
       {!isMarketingOrAuth && !isPublicProfile && !isChat && !isAdmin &&
         (overlayNav ? (
           // Discover: the frosted header floats over the feed, so cards scroll behind the glass
@@ -75,8 +73,8 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
         {!isMarketingOrAuth && <RealtimeNotifier />}
       </div>
       {!isMarketingOrAuth && !isChat && !isAdmin && <BottomNav />}
-    </div>
-    {/* Outside the 430px frame (fixed, xl screens only); /verify shows its own QR card. */}
+    </AppShell>
+    {/* Outside the 480px frame (fixed, xl screens only); /verify shows its own QR card. */}
     {!isMarketingOrAuth && !isAdmin && <DesktopQrHandoff />}
     </ActionToastProvider>
   );

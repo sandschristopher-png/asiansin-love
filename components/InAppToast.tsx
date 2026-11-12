@@ -3,9 +3,10 @@
 import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { X } from 'lucide-react';
 
-/** Classes every in-app toast uses: centered inside the 430px app shell, below the status bar. */
+/** Classes every in-app toast uses: centered inside the 480px app shell, below the status bar.
+ * z-[1100]: above bottom sheets and modals (z-[999]) and the fixed navigation (z-50). */
 export const TOAST_POSITION_CLASS =
-  'fixed top-[calc(env(safe-area-inset-top,0px)+1rem)] left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[400px] z-50';
+  'fixed top-[calc(env(safe-area-inset-top,0px)+1rem)] left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[400px] z-[1100]';
 
 /** Exit animation length (.ail-fade-out in globals.css). */
 const EXIT_MS = 180;

@@ -57,7 +57,7 @@ export function SelectSheet({
           aria-label={label}
         >
           <div
-            className="w-full max-w-[430px] max-h-[75dvh] flex flex-col rounded-t-3xl bg-white border border-[#D0CDE1] shadow-xl ail-sheet-up"
+            className="w-full max-w-[480px] max-h-[75dvh] flex flex-col rounded-t-3xl bg-white border border-[#D0CDE1] shadow-xl ail-sheet-up"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="pt-2.5 shrink-0" aria-hidden>

@@ -82,7 +82,7 @@ export function AILPlusModal({
       aria-label={title}
     >
       <div
-        className="relative isolate w-full max-w-[430px] max-h-[90dvh] overflow-y-auto rounded-t-3xl bg-white shadow-xl ail-sheet-up"
+        className="relative isolate w-full max-w-[480px] max-h-[90dvh] overflow-y-auto rounded-t-3xl bg-white shadow-xl ail-sheet-up"
         onClick={(e) => e.stopPropagation()}
       >
         <AmbientAurora layer="card" />

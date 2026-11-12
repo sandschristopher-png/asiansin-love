@@ -271,7 +271,7 @@ export function SwipeableRow({
               aria-modal="true"
               aria-label={`Actions for ${label}`}
               onClick={(e) => e.stopPropagation()}
-              className="w-full max-w-[430px] rounded-t-3xl bg-white shadow-xl ail-sheet-up px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] [transform:translate3d(0,0,0)]"
+              className="w-full max-w-[480px] rounded-t-3xl bg-white shadow-xl ail-sheet-up px-4 pt-3 pb-[max(1rem,env(safe-area-inset-bottom))] [transform:translate3d(0,0,0)]"
             >
               <div className="mx-auto mb-3 h-1.5 w-10 rounded-full bg-[#D0CDE1]" aria-hidden />
               <p className="px-1 pb-2 text-xs font-semibold text-slate-600 truncate">{label}</p>

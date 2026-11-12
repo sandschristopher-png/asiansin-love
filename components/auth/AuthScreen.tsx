@@ -169,7 +169,7 @@ export function AuthScreen({ mode, audience = 'western' }: { mode: 'login' | 'si
   );
 
   return (
-    // LayoutShell supplies the centered 430px frame on the #FFFFFF canvas.
+    // LayoutShell supplies the centered 480px frame on the #FFFFFF canvas.
     <div className="relative isolate min-h-[100dvh] w-full flex flex-col bg-white font-sans antialiased overflow-hidden pb-[max(2.5rem,env(safe-area-inset-bottom))]">
       {/* Lavender aura drifting in the mid and lower canvas only: the top 30% (wordmark, city
           ticker) stays pure white. The mid-right orb starts at 38% and only ever drifts down (to about

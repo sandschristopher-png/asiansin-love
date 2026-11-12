@@ -80,7 +80,7 @@ export function VoiceRecordModal({
   return createPortal(
     <div className="fixed inset-0 z-[999] flex items-end justify-center" role="dialog" aria-modal="true" aria-label="Record voice intro">
       <div className="fixed inset-0 bg-black/50" onClick={saving ? undefined : onClose} />
-      <div className="relative w-full max-w-[430px] bg-white rounded-t-[28px] px-5 pt-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] space-y-4 animate-[ailSheetUp_260ms_cubic-bezier(0.16,1,0.3,1)]">
+      <div className="relative w-full max-w-[480px] bg-white rounded-t-[28px] px-5 pt-4 pb-[max(1.25rem,env(safe-area-inset-bottom))] space-y-4 animate-[ailSheetUp_260ms_cubic-bezier(0.16,1,0.3,1)]">
         <div className="flex items-center justify-between">
           <h2 className="text-sm font-semibold text-[#413B5E]">Record your voice intro</h2>
           <button

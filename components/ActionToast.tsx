@@ -48,7 +48,7 @@ export function ActionToastProvider({ children }: { children: React.ReactNode })
         // Centering on the wrapper keeps the slide-up transform on the capsule from fighting it.
         // bottom-24 clears the floating BottomNav; z sits above modals (z-70 to z-999) so a toast
         // fired as a sheet closes is never hidden.
-        <div className="fixed bottom-24 inset-x-0 z-[110] flex justify-center pointer-events-none mb-[env(safe-area-inset-bottom,0px)]">
+        <div className="fixed bottom-24 inset-x-0 z-[1100] flex justify-center pointer-events-none mb-[env(safe-area-inset-bottom,0px)]">
           <div
             key={toast.id}
             role="status"

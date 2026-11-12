@@ -347,7 +347,7 @@ function PlusHubContent() {
 
       {/* Pinned checkout bar: portaled to <body> so the route transition's transform can't trap it */}
       {mounted && createPortal(
-      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[430px] z-50 bg-white/95 backdrop-blur-md border-t border-[#D0CDE1] p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+      <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] z-50 bg-white/95 backdrop-blur-md border-t border-[#D0CDE1] p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
         {isLoadingSubscription ? (
           <div aria-hidden className="h-12 w-full rounded-full bg-[#E8E6F1] animate-pulse" />
         ) : isPlus ? (

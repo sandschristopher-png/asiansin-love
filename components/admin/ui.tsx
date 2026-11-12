@@ -80,7 +80,7 @@ export function Loading() {
   );
 }
 
-/** Mobile bottom sheet pinned to the app's 430px frame; closes on backdrop tap or Escape. */
+/** Mobile bottom sheet pinned to the app's 480px frame; closes on backdrop tap or Escape. */
 export function BottomSheet({
   title,
   subtitle,
@@ -104,7 +104,7 @@ export function BottomSheet({
   return createPortal(
     <div className="fixed inset-0 z-50 flex items-end justify-center" role="dialog" aria-modal="true" aria-label={title}>
       <button type="button" className="absolute inset-0 bg-black/40 backdrop-blur-sm" aria-label="Close" onClick={onClose} />
-      <div className="relative w-full max-w-[430px] mx-auto max-h-[85dvh] rounded-t-3xl bg-white shadow-xl flex flex-col">
+      <div className="relative w-full max-w-[480px] mx-auto max-h-[85dvh] rounded-t-3xl bg-white shadow-xl flex flex-col">
         <div className="pt-2.5 pb-1 flex justify-center" aria-hidden>
           <span className="w-10 h-1 rounded-full bg-[#E8E6F1]/60" />
         </div>

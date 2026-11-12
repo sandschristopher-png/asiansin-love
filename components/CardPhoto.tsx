@@ -4,10 +4,10 @@ import { useState } from 'react';
 import Image from 'next/image';
 import { isEdgeTransformUrl } from '@/lib/images/supabaseImage';
 
-/** Grid cards render at roughly half the 430px app shell: ~640px WebP on a 3x phone. */
+/** Grid cards render at roughly half the 480px app shell: ~640px WebP on a 3x phone. */
 export const CARD_PHOTO_SIZES = '(max-width: 480px) 50vw, 240px';
 /** Profile detail hero: full shell width, ~1440px WebP on a 3x phone. */
-export const DETAIL_PHOTO_SIZES = '(max-width: 480px) 100vw, 430px';
+export const DETAIL_PHOTO_SIZES = '(max-width: 480px) 100vw, 480px';
 
 // Must stay in sync with images.remotePatterns in next.config.ts.
 function isOptimizable(src: string): boolean {

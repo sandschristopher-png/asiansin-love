@@ -13,7 +13,7 @@ const LEGAL_LINKS = [
   { href: '/safety', label: 'Safety' },
 ];
 
-/** Static legal / policy page inside the 430px app column (Terms, Privacy, Safety). */
+/** Static legal / policy page inside the 480px app column (Terms, Privacy, Safety). */
 export function LegalPage({
   eyebrow,
   title,
@@ -43,7 +43,7 @@ export function LegalPage({
         </div>
       </header>
 
-      <main className="w-full max-w-[430px] mx-auto px-4 pt-4 pb-[calc(6rem+env(safe-area-inset-bottom,24px))] space-y-3">
+      <main className="w-full max-w-[480px] mx-auto px-4 pt-4 pb-[calc(6rem+env(safe-area-inset-bottom,24px))] space-y-3">
         <div className="p-4 rounded-3xl bg-white border border-[#D0CDE1] space-y-2">
           <div className="text-xs text-[#413B5E]/85 leading-relaxed space-y-2">{intro}</div>
           <p className="text-[10px] text-slate-600">Last updated {updated}</p>

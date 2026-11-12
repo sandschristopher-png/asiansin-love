@@ -716,7 +716,7 @@ export default function MyProfilePage() {
             {isEditing ? (
               typeof document !== 'undefined' &&
               createPortal(
-              <div className="fixed bottom-0 left-1/2 -translate-x-1/2 z-50 w-full max-w-[430px] bg-white/95 backdrop-blur-md border-t border-[#D0CDE1] px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] flex items-stretch gap-2.5 h-[calc(4.5rem+env(safe-area-inset-bottom))]">
+              <div className="fixed bottom-0 left-1/2 -translate-x-1/2 z-50 w-full max-w-[480px] bg-white/95 backdrop-blur-md border-t border-[#D0CDE1] px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] flex items-stretch gap-2.5 h-[calc(4.5rem+env(safe-area-inset-bottom))]">
                 <button
                   type="button"
                   onClick={() => setIsEditing(false)}

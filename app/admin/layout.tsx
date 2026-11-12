@@ -9,7 +9,7 @@ export const dynamic = 'force-dynamic';
  * visitors - gets the ordinary 404 page, so the console's existence is never disclosed.
  * Every /api/admin/* route re-checks the role server-side.
  * The role is read from profiles on every request (force-dynamic), never from the session.
- * Renders inside LayoutShell's standard 430px mobile frame, like the rest of the app.
+ * Renders inside LayoutShell's standard 480px mobile frame, like the rest of the app.
  */
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
   const admin = await getAdminContext();

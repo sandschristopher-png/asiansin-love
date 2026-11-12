@@ -97,9 +97,9 @@ html, body {
   -webkit-overflow-scrolling: touch;
 }
 
-/* Slate backdrop around the 430px phone frame (LayoutShell); on phones the white frame covers it. */
+/* Slate backdrop (slate-100 at 80%) around the 480px AppShell column; on phones the white frame covers it. */
 body {
-  background-color: #F1F5F9 !important;
+  background-color: #F3F6FA !important;
   color: #413B5E;
 }
 
