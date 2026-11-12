@@ -644,10 +644,11 @@ export default function MyProfilePage() {
 
           {/* Upcoming travel notice (Plus) */}
           <VisitingBadge travel={travel} />
-          {/* Visiting Soon itinerary (Plus): pill + planner */}
-          <MyTrips userId={myId} isPlus={hasPlusFlag} />
           </div>
         )}
+
+        {/* Visiting Soon itinerary: manage trips (Plus) or preview (free) */}
+        <MyTrips userId={myId} isPlus={hasPlusFlag} />
 
         {/* Discreet Verification Status Card */}
         {verificationStatus !== 'verified' && verificationStatus !== 'pending' && (
