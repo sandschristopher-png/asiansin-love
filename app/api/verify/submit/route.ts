@@ -34,13 +34,15 @@ function validFaceCheck(raw: FormDataEntryValue | null, issuedAt: number): boole
   try {
     const c = JSON.parse(raw) as Record<string, unknown>;
     const checkedAt = Number(c.checked_at);
+    const fresh = Number.isFinite(checkedAt) && checkedAt >= issuedAt && checkedAt <= Date.now() + 60_000;
+    // Manual capture (the member tapped the button because live detection struggled): no client
+    // face evidence, so the AI pre-screen below and the human review are the face check.
+    if (c.detector === 'manual_fallback') return fresh;
     return (
       c.detector === 'mediapipe_face_landmarker' &&
       c.face_count === 1 &&
       Number(c.min_confidence) >= MIN_FACE_CONFIDENCE &&
-      Number.isFinite(checkedAt) &&
-      checkedAt >= issuedAt &&
-      checkedAt <= Date.now() + 60_000
+      fresh
     );
   } catch {
     return false;
@@ -53,6 +55,17 @@ function getServiceClient() {
     process.env.SUPABASE_SERVICE_ROLE_KEY!,
     { auth: { persistSession: false } }
   );
+}
+
+/** 'auto' | 'manual' from the client's faceCheck, for the reviewer. */
+function captureMode(raw: FormDataEntryValue | null, key: 'face_capture' | 'pose_capture'): 'auto' | 'manual' | null {
+  if (typeof raw !== 'string') return null;
+  try {
+    const v = (JSON.parse(raw) as Record<string, unknown>)[key];
+    return v === 'auto' || v === 'manual' ? v : null;
+  } catch {
+    return null;
+  }
 }
 
 function looksLikeJpeg(buf: Buffer): boolean {
@@ -142,6 +155,22 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Selfie is not a valid JPEG' }, { status: 400 });
   }
 
+  // Step 1 portrait (optional only so a page cached before this release can still submit).
+  let facePhoto: Buffer | null = null;
+  const faceBlob = form.get('face');
+  if (faceBlob && typeof faceBlob !== 'string') {
+    if (faceBlob.type !== 'image/jpeg') {
+      return NextResponse.json({ error: 'Portrait must be a JPEG' }, { status: 400 });
+    }
+    if (faceBlob.size > MAX_PHOTO_BYTES) {
+      return NextResponse.json({ error: 'Portrait exceeds 10MB' }, { status: 400 });
+    }
+    facePhoto = Buffer.from(await faceBlob.arrayBuffer());
+    if (!looksLikeJpeg(facePhoto)) {
+      return NextResponse.json({ error: 'Portrait is not a valid JPEG' }, { status: 400 });
+    }
+  }
+
   const service = getServiceClient();
 
   const { data: profile } = await service
@@ -226,7 +255,21 @@ export async function POST(req: Request) {
     );
   }
 
+  // Portrait: stored next to the pose photo, never publicly readable (signed URLs for admins only).
+  let facePath: string | null = null;
+  if (facePhoto) {
+    const { error: faceUploadError } = await service.storage
+      .from('verifications')
+      .upload(`${userId}/face.jpg`, facePhoto, { contentType: 'image/jpeg', upsert: true });
+    if (faceUploadError) {
+      console.error('[verify/submit] portrait upload failed:', faceUploadError.message);
+      return NextResponse.json({ error: 'Could not store your verification photo. Please try again.' }, { status: 500 });
+    }
+    facePath = `${userId}/face.jpg`;
+  }
+
   const fastTrack = isFastTrack(ai);
+  const capture = { face: captureMode(form.get('faceCheck'), 'face_capture'), pose: captureMode(form.get('faceCheck'), 'pose_capture') };
 
   // Review metadata for /admin/verifications (reads the newest `<stamp>_meta.json`).
   const stamp = Date.now();
@@ -235,11 +278,30 @@ export async function POST(req: Request) {
     .upload(
       `${userId}/${stamp}_meta.json`,
       Buffer.from(
-        JSON.stringify({ poses: pose.label, pose_id: pose.id, selfie_path: selfiePath, ai, fast_track: fastTrack })
+        JSON.stringify({ poses: pose.label, pose_id: pose.id, selfie_path: selfiePath, face_path: facePath, capture, ai, fast_track: fastTrack })
       ),
       { contentType: 'application/json', upsert: true }
     );
   if (metaError) console.warn('[verify/submit] review metadata not saved:', metaError.message);
+
+  // Audit record (supabase/migrations/20261111_fix_verifications.sql). Best effort: the review
+  // queue itself is driven by profiles.verification_status, so a missing table never blocks a member.
+  // A newer submission supersedes any still-pending one.
+  const { error: supersedeError } = await service
+    .from('verification_requests')
+    .update({ status: 'rejected', rejection_reason: 'Superseded by a newer submission', reviewed_at: new Date().toISOString() })
+    .eq('user_id', userId)
+    .eq('status', 'pending');
+  const { error: requestError } = supersedeError
+    ? { error: supersedeError }
+    : await service.from('verification_requests').insert({
+        user_id: userId,
+        face_photo_url: facePath ?? selfiePath,
+        pose_photo_url: selfiePath,
+        gesture_requested: pose.id,
+        status: 'pending',
+      });
+  if (requestError) console.warn('[verify/submit] verification_requests not recorded:', requestError.message);
 
   const { error: updateError } = await service
     .from('profiles')

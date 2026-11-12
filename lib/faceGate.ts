@@ -26,6 +26,14 @@ export type PoseState = 'match' | 'hand' | 'no_hand' | 'unavailable';
 /** Face width as a share of the visible camera width (rejects hands up close / far silhouettes). */
 export const FACE_WIDTH_MIN = 0.3;
 export const FACE_WIDTH_MAX = 0.75;
+/** Pose step ('frame' guide): the face shares the wide frame with a hand, so it may be smaller. */
+export const FRAME_WIDTH_MIN = 0.18;
+export const FRAME_WIDTH_MAX = 0.7;
+/** Pose step: every anchor must sit this far (share of the view) inside the frame edges. */
+const FRAME_MARGIN = 0.04;
+
+/** Where the face has to be: 'oval' = portrait guide (step 1), 'frame' = anywhere in the wide frame (step 2). */
+export type FaceGuide = 'oval' | 'frame';
 /** Nose tip, left eye outer, right eye outer, chin: all must sit inside the guide oval. */
 const ANCHORS = [1, 33, 263, 152] as const;
 
@@ -75,13 +83,18 @@ export async function initFaceGate(): Promise<void> {
   return initPromise;
 }
 
+/** Portrait oval size, shared with the drawing in app/verify/page.tsx (270 x 340 at full size). */
+export const OVAL_MAX_W = 270;
+export const OVAL_ASPECT = 270 / 340; // width / height
+export const OVAL_VIEW_SHARE = 0.72;
+
 /**
- * The guide oval as drawn in app/verify/page.tsx: centered, width min(68% of view, 300px),
- * aspect 3:4. Kept here so the check and the drawing can't drift apart.
+ * The portrait guide oval as drawn in app/verify/page.tsx: centered, width min(72% of view, 270px),
+ * aspect 270:340. Kept here so the check and the drawing can't drift apart.
  */
 export function guideOval(viewW: number, viewH: number) {
-  const w = Math.min(viewW * 0.68, 300);
-  return { cx: viewW / 2, cy: viewH / 2, rx: w / 2, ry: (w * 4) / 3 / 2 };
+  const w = Math.min(viewW * OVAL_VIEW_SHARE, OVAL_MAX_W);
+  return { cx: viewW / 2, cy: viewH / 2, rx: w / 2, ry: w / OVAL_ASPECT / 2 };
 }
 
 let lastTimestamp = -1;
@@ -129,9 +142,17 @@ function matchesPose(poseId: string | undefined, hand: Pt[], face: Pt[], faceWid
 
 /**
  * Evaluates the current video frame against the gate. `viewW` / `viewH` are the on-screen size
- * of the <video> (object-cover). The CSS mirror doesn't matter: the oval is horizontally centered.
+ * of the <video> (object-cover). The CSS mirror doesn't matter: the guide is horizontally centered.
+ * Hand detection only runs when a `poseId` is passed (the pose step), which keeps the portrait
+ * step light on budget phones.
  */
-export function evaluateFaceFrame(video: HTMLVideoElement, viewW: number, viewH: number, poseId?: string): FaceGateResult {
+export function evaluateFaceFrame(
+  video: HTMLVideoElement,
+  viewW: number,
+  viewH: number,
+  poseId?: string,
+  guide: FaceGuide = 'oval'
+): FaceGateResult {
   if (!landmarker || !video.videoWidth || !video.videoHeight || video.readyState < 2) {
     return { status: 'no_face', faceCount: 0, widthRatio: null, pose: 'no_hand' };
   }
@@ -162,19 +183,27 @@ export function evaluateFaceFrame(video: HTMLVideoElement, viewW: number, viewH:
     if (sx > maxX) maxX = sx;
   }
   const widthRatio = (maxX - minX) / viewW;
-  if (widthRatio < FACE_WIDTH_MIN) return { status: 'too_far', faceCount: 1, widthRatio, pose: 'no_hand' };
-  if (widthRatio > FACE_WIDTH_MAX) return { status: 'too_close', faceCount: 1, widthRatio, pose: 'no_hand' };
+  const widthMin = guide === 'frame' ? FRAME_WIDTH_MIN : FACE_WIDTH_MIN;
+  const widthMax = guide === 'frame' ? FRAME_WIDTH_MAX : FACE_WIDTH_MAX;
+  if (widthRatio < widthMin) return { status: 'too_far', faceCount: 1, widthRatio, pose: 'no_hand' };
+  if (widthRatio > widthMax) return { status: 'too_close', faceCount: 1, widthRatio, pose: 'no_hand' };
 
   const oval = guideOval(viewW, viewH);
   const inside = ANCHORS.every((i) => {
     const p = pts[i];
     if (!p) return false;
     const s = toScreen(p);
+    if (guide === 'frame') {
+      return (
+        s.x >= viewW * FRAME_MARGIN && s.x <= viewW * (1 - FRAME_MARGIN) &&
+        s.y >= viewH * FRAME_MARGIN && s.y <= viewH * (1 - FRAME_MARGIN)
+      );
+    }
     return ((s.x - oval.cx) / oval.rx) ** 2 + ((s.y - oval.cy) / oval.ry) ** 2 <= 1;
   });
   if (!inside) return { status: 'off_center', faceCount: 1, widthRatio, pose: 'no_hand' };
 
-  return { status: 'ok', faceCount: 1, widthRatio, pose: detectPose(video, ts, pts, poseId) };
+  return { status: 'ok', faceCount: 1, widthRatio, pose: poseId === undefined ? 'no_hand' : detectPose(video, ts, pts, poseId) };
 }
 
 /** Hand pose for an aligned face (only run then, to keep budget phones responsive). */

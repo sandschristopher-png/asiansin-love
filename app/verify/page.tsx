@@ -9,36 +9,56 @@ import type { FaceGateResult, PoseState } from '@/lib/faceGate';
 import { FACE_GATE_MESSAGES, FACE_MIN_CONFIDENCE, type FaceGateStatus } from '@/lib/faceGateMessages';
 import { hapticError, hapticPhotoSnap } from '@/lib/utils/haptics';
 import { QrCode } from '@/components/QrCode';
+import { useActionToast } from '@/components/ActionToast';
 
-/** Sent with the selfie; the server rejects anything that isn't exactly one confident face. */
+/**
+ * Sent with the pose photo. Automatic captures carry the live gate's result (exactly one confident
+ * face); a manual capture says so ('manual_fallback') and leaves the face check to the server's
+ * AI pre-screen and the human review.
+ */
 interface FaceCheck {
-  detector: 'mediapipe_face_landmarker';
-  face_count: number;
-  min_confidence: number;
+  detector: 'mediapipe_face_landmarker' | 'manual_fallback';
+  face_count: number | null;
+  min_confidence: number | null;
   width_ratio: number | null;
   checked_at: number;
+  face_capture?: Capture;
+  pose_capture?: Capture;
 }
 
 const GATE_TICK_MS = 150;
-/** Auto-capture timing. There is no shutter: the photo is taken once the pose is held. */
+/** Step 1 (portrait): captured once one face has stayed aligned this long. */
+const FACE_STABLE_MS = 1200;
+/** Step 1: the manual "Capture Photo" button appears after this long. */
+const MANUAL_REVEAL_MS = 4000;
+/** Step 2 (pose) auto-capture timing; the manual button is always shown as well. */
 const POSE_HOLD_MS = 500; // pose recognised and held this long
 const HAND_FALLBACK_MS = 6000; // a hand in view this long counts, in case recognition struggles
 const FACE_ONLY_HOLD_MS = 2000; // devices where the hand model cannot load
 
-const MAX_DIM = 1200; // longest edge of the uploaded selfie
+const MAX_DIM = 1200; // longest edge of an uploaded photo
 const JPEG_QUALITY = 0.85;
 
-interface Snapshot {
+type Step = 'face' | 'pose';
+type Capture = 'auto' | 'manual';
+
+interface Shot {
   blob: Blob;
   previewUrl: string;
+}
+interface FaceShot extends Shot {
+  capture: Capture;
+}
+interface Snapshot extends Shot {
   faceCheck: FaceCheck;
+  capture: Capture;
 }
 
 /**
  * Grabs the current video frame (un-mirrored: the CSS flip is display-only), scales it to
- * MAX_DIM and rejects frames that are too dark or blown out to be reviewable.
+ * MAX_DIM and rejects frames that are too dark or blown out to be reviewable. Both steps use it.
  */
-async function snapshotFromVideo(video: HTMLVideoElement): Promise<{ snap?: Omit<Snapshot, 'faceCheck'>; error?: string }> {
+async function snapshotFromVideo(video: HTMLVideoElement): Promise<{ snap?: Shot; error?: string }> {
   const w = video.videoWidth;
   const h = video.videoHeight;
   if (!w || !h) return { error: 'Camera is still starting. Try again in a moment.' };
@@ -118,15 +138,19 @@ export default function VerifyPage() {
   const [attemptToken, setAttemptToken] = useState<string | null>(null);
   const [pose, setPose] = useState<VerificationPose | null>(null);
 
+  const showActionToast = useActionToast();
   const [cameraOn, setCameraOn] = useState(false);
+  // Step 1 takes a face portrait, step 2 the pose photo. The camera stays on between them.
+  const [step, setStep] = useState<Step>('face');
+  const [face, setFace] = useState<FaceShot | null>(null);
+  const [manualFaceReady, setManualFaceReady] = useState(false);
   const [snapshot, setSnapshot] = useState<Snapshot | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [done, setDone] = useState<{ fastTrack: boolean; message: string } | null>(null);
 
-  // Live single-face gate (MediaPipe, loaded when the camera opens). The shutter only works while
-  // the current frame has exactly one confident face, centered in the oval. Nothing advances on a
-  // timer: no face, no capture.
+  // Live single-face gate (MediaPipe, loaded when the camera opens). Automatic captures need exactly
+  // one confident face in the guide; the manual buttons are the way out when recognition struggles.
   const gateRef = useRef<typeof import('@/lib/faceGate') | null>(null);
   const [gateState, setGateState] = useState<'idle' | 'loading' | 'ready' | 'error'>('idle');
   const [faceStatus, setFaceStatus] = useState<FaceGateStatus>('no_face');
@@ -136,7 +160,8 @@ export default function VerifyPage() {
   const handSinceRef = useRef(0);
   const [poseState, setPoseState] = useState<PoseState>('no_hand');
   const autoCapturedRef = useRef(false);
-  const takeSnapshotRef = useRef<() => void>(() => {});
+  const takeSnapshotRef = useRef<(manual?: boolean) => void>(() => {});
+  const takeFaceRef = useRef<(manual?: boolean) => void>(() => {});
 
   /** Server issues one random pose in a signed, short-lived token. */
   const requestChallenge = useCallback(async () => {
@@ -278,8 +303,9 @@ export default function VerifyPage() {
     startCamera();
   }, [startCamera]);
 
-  // Gate loop: re-evaluates the live frame; only status changes re-render. The photo is taken
-  // automatically once the face is aligned AND the requested hand pose is held.
+  // Gate loop: re-evaluates the live frame; only status changes re-render. Step 1 captures the
+  // portrait once one face has been steady for FACE_STABLE_MS; step 2 captures once the face is in
+  // the wide frame AND the requested hand pose is held.
   const poseId = pose?.id;
   useEffect(() => {
     if (!cameraOn || gateState !== 'ready') return;
@@ -288,7 +314,10 @@ export default function VerifyPage() {
       const gate = gateRef.current;
       if (!video || !gate) return;
       try {
-        const result = gate.evaluateFaceFrame(video, video.clientWidth, video.clientHeight, poseId);
+        const result =
+          step === 'face'
+            ? gate.evaluateFaceFrame(video, video.clientWidth, video.clientHeight, undefined, 'oval')
+            : gate.evaluateFaceFrame(video, video.clientWidth, video.clientHeight, poseId, 'frame');
         lastResultRef.current = result;
         setFaceStatus((prev) => (prev === result.status ? prev : result.status));
         setPoseState((prev) => (prev === result.pose ? prev : result.pose));
@@ -300,6 +329,13 @@ export default function VerifyPage() {
           return;
         }
         if (okSinceRef.current === 0) okSinceRef.current = now;
+        if (step === 'face') {
+          if (now - okSinceRef.current >= FACE_STABLE_MS && !autoCapturedRef.current) {
+            autoCapturedRef.current = true;
+            takeFaceRef.current(false);
+          }
+          return;
+        }
         poseSinceRef.current = result.pose === 'match' ? poseSinceRef.current || now : 0;
         handSinceRef.current = result.pose === 'match' || result.pose === 'hand' ? handSinceRef.current || now : 0;
         const ready =
@@ -316,7 +352,17 @@ export default function VerifyPage() {
       }
     }, GATE_TICK_MS);
     return () => window.clearInterval(timer);
-  }, [cameraOn, gateState, poseId]);
+  }, [cameraOn, gateState, poseId, step]);
+
+  // Step 1: the manual "Capture Photo" button appears after MANUAL_REVEAL_MS.
+  useEffect(() => {
+    if (!cameraOn || step !== 'face') return;
+    const timer = window.setTimeout(() => setManualFaceReady(true), MANUAL_REVEAL_MS);
+    return () => {
+      window.clearTimeout(timer);
+      setManualFaceReady(false);
+    };
+  }, [cameraOn, step]);
 
   // Attach the stream once the video element is mounted
   useEffect(() => {
@@ -326,74 +372,135 @@ export default function VerifyPage() {
     }
   }, [cameraOn]);
 
-  const takeSnapshot = useCallback(async () => {
-    const video = videoRef.current;
-    const gate = gateRef.current;
-    if (!video) return;
-    // Synchronous re-check of this exact frame: the shutter never fires on a hand, an object,
-    // an empty frame or a second face.
-    const check = gate && gateState === 'ready' ? gate.evaluateFaceFrame(video, video.clientWidth, video.clientHeight) : null;
-    if (!check || check.status !== 'ok') {
-      if (check) setFaceStatus(check.status);
-      autoCapturedRef.current = false;
-      okSinceRef.current = 0;
-      poseSinceRef.current = 0;
-      handSinceRef.current = 0;
-      hapticError();
-      setErrorMsg('Face not verified. Please align your face in the oval.');
-      return;
-    }
-    hapticPhotoSnap();
-    const { snap, error } = await snapshotFromVideo(video);
-    if (!snap) {
-      autoCapturedRef.current = false;
-      setErrorMsg(error || 'Could not capture photo. Please try again.');
-      return;
-    }
-    setErrorMsg(null);
-    setSnapshot({
-      ...snap,
-      faceCheck: {
-        detector: 'mediapipe_face_landmarker',
-        face_count: check.faceCount,
-        min_confidence: FACE_MIN_CONFIDENCE,
-        width_ratio: check.widthRatio,
-        checked_at: Date.now(),
-      },
-    });
-    stopCamera();
-  }, [stopCamera, gateState]);
-  useEffect(() => {
-    takeSnapshotRef.current = takeSnapshot;
-  }, [takeSnapshot]);
-
-  const retake = useCallback(() => {
+  const resetHold = useCallback(() => {
     okSinceRef.current = 0;
     poseSinceRef.current = 0;
     handSinceRef.current = 0;
     autoCapturedRef.current = false;
+  }, []);
+
+  /** Step 1: portrait. Automatic needs one aligned face; manual takes the frame as it is. */
+  const takeFace = useCallback(
+    async (manual = false) => {
+      const video = videoRef.current;
+      const gate = gateRef.current;
+      if (!video) return;
+      if (!manual) {
+        const check =
+          gate && gateState === 'ready' ? gate.evaluateFaceFrame(video, video.clientWidth, video.clientHeight, undefined, 'oval') : null;
+        if (!check || check.status !== 'ok') {
+          if (check) setFaceStatus(check.status);
+          resetHold();
+          return;
+        }
+      }
+      const { snap, error } = await snapshotFromVideo(video);
+      if (!snap) {
+        resetHold();
+        setErrorMsg(error || 'Could not capture photo. Please try again.');
+        return;
+      }
+      hapticPhotoSnap();
+      setErrorMsg(null);
+      setFace((prev) => {
+        if (prev) URL.revokeObjectURL(prev.previewUrl);
+        return { ...snap, capture: manual ? 'manual' : 'auto' };
+      });
+      setStep('pose');
+      resetHold();
+    },
+    [gateState, resetHold]
+  );
+  useEffect(() => {
+    takeFaceRef.current = takeFace;
+  }, [takeFace]);
+
+  /** Step 2: pose photo. Automatic needs the face in the wide frame; manual takes the frame as it is. */
+  const takeSnapshot = useCallback(
+    async (manual = false) => {
+      const video = videoRef.current;
+      const gate = gateRef.current;
+      if (!video) return;
+      // Synchronous re-check of this exact frame: an automatic shot never fires on a hand, an
+      // object, an empty frame or a second face.
+      const check =
+        gate && gateState === 'ready' ? gate.evaluateFaceFrame(video, video.clientWidth, video.clientHeight, undefined, 'frame') : null;
+      if (!manual && (!check || check.status !== 'ok')) {
+        if (check) setFaceStatus(check.status);
+        resetHold();
+        hapticError();
+        setErrorMsg('Face not detected. Keep your face inside the frame.');
+        return;
+      }
+      const { snap, error } = await snapshotFromVideo(video);
+      if (!snap) {
+        resetHold();
+        setErrorMsg(error || 'Could not capture photo. Please try again.');
+        return;
+      }
+      hapticPhotoSnap();
+      setErrorMsg(null);
+      const faceCheck: FaceCheck =
+        !manual && check && check.status === 'ok'
+          ? {
+              detector: 'mediapipe_face_landmarker',
+              face_count: check.faceCount,
+              min_confidence: FACE_MIN_CONFIDENCE,
+              width_ratio: check.widthRatio,
+              checked_at: Date.now(),
+            }
+          : { detector: 'manual_fallback', face_count: null, min_confidence: null, width_ratio: null, checked_at: Date.now() };
+      setSnapshot({ ...snap, capture: manual ? 'manual' : 'auto', faceCheck });
+      stopCamera();
+    },
+    [stopCamera, gateState, resetHold]
+  );
+  useEffect(() => {
+    takeSnapshotRef.current = takeSnapshot;
+  }, [takeSnapshot]);
+
+  /** Review screen: redo the pose photo only. */
+  const retakePose = useCallback(() => {
+    resetHold();
     if (snapshot) URL.revokeObjectURL(snapshot.previewUrl);
     setSnapshot(null);
+    setStep('pose');
     startCamera();
-  }, [snapshot, startCamera]);
+  }, [snapshot, resetHold, startCamera]);
+
+  /** Redo the portrait (and with it the pose photo). */
+  const retakeFace = useCallback(() => {
+    resetHold();
+    if (snapshot) URL.revokeObjectURL(snapshot.previewUrl);
+    if (face) URL.revokeObjectURL(face.previewUrl);
+    setSnapshot(null);
+    setFace(null);
+    setStep('face');
+    if (!cameraOn) startCamera();
+  }, [snapshot, face, cameraOn, resetHold, startCamera]);
 
   const handleSubmit = useCallback(async () => {
-    if (!attemptToken || !snapshot) return;
+    if (!attemptToken || !snapshot || !face) return;
     setSubmitting(true);
     setErrorMsg(null);
     try {
       const form = new FormData();
       form.set('attemptId', attemptToken);
+      form.append('face', face.blob, 'face.jpg');
       form.append('selfie', snapshot.blob, 'selfie.jpg');
-      form.set('faceCheck', JSON.stringify(snapshot.faceCheck));
+      form.set('faceCheck', JSON.stringify({ ...snapshot.faceCheck, face_capture: face.capture, pose_capture: snapshot.capture }));
       const res = await fetch('/api/verify/submit', { method: 'POST', body: form });
       // A proxy error page (413, 504) is not JSON: show a friendly message, not a parse error.
       const data = await res.json().catch(() => ({}));
       if (res.status === 410) {
         // Token expired: issue a fresh pose rather than leaving the member stuck.
         setSnapshot(null);
+        setFace(null);
+        setStep('face');
         await requestChallenge();
-        setErrorMsg(data.error || 'Your session expired. Here is a new pose to copy.');
+        const expired = data.error || 'Your session expired. Here is a new pose to copy.';
+        setErrorMsg(expired);
+        showActionToast(expired, 'info');
         return;
       }
       if (!res.ok) throw new Error(data.error || 'Failed to submit verification');
@@ -403,11 +510,13 @@ export default function VerifyPage() {
       });
       setTimeout(() => router.push('/discover'), 4000);
     } catch (err: unknown) {
-      setErrorMsg(err instanceof Error ? err.message : 'Failed to submit verification.');
+      const failure = err instanceof Error ? err.message : 'Failed to submit verification.';
+      setErrorMsg(failure);
+      showActionToast(failure, 'info');
     } finally {
       setSubmitting(false);
     }
-  }, [attemptToken, snapshot, requestChallenge, router]);
+  }, [attemptToken, snapshot, face, requestChallenge, router, showActionToast]);
 
   return (
     <main className="min-h-screen bg-white text-[#413B5E] flex flex-col justify-start">
@@ -460,46 +569,63 @@ export default function VerifyPage() {
         </div>
       ) : cameraOn ? (
         <div className="fixed inset-0 bg-black z-[70]">
-          {/* Mirrored for display only (selfie view); the snapshot is taken from the raw frame. */}
-          <video
-            ref={videoRef}
-            autoPlay
-            muted
-            playsInline
-            className="absolute inset-0 w-full h-full object-cover scale-x-[-1]"
-          />
-
-          {/* Oval face guide (same geometry as guideOval() in lib/faceGate.ts) + live feedback pill */}
-          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-            <div className="relative w-[68%] max-w-[300px] aspect-[3/4]">
+          {/* Step 1 fills the screen behind the portrait oval; step 2 uses a wide 4:5 frame with no
+              oval. The same <video> serves both (mirrored for display only; snapshots are raw). */}
+          <div
+            className={
+              step === 'face'
+                ? 'absolute inset-0'
+                : 'absolute left-1/2 top-[76px] w-full max-w-[480px] -translate-x-1/2 aspect-[4/5] overflow-hidden rounded-2xl'
+            }
+          >
+            <video
+              ref={videoRef}
+              autoPlay
+              muted
+              playsInline
+              className="absolute inset-0 w-full h-full object-cover scale-x-[-1]"
+            />
+            {step === 'pose' && (
               <div
-                className={`absolute inset-0 rounded-[50%] border-[3px] shadow-[0_0_0_9999px_rgba(0,0,0,0.35)] transition-colors ${
-                  gateState === 'ready' && faceStatus === 'ok' ? 'border-emerald-400' : 'border-white/85'
+                aria-hidden
+                className={`pointer-events-none absolute inset-0 rounded-2xl border-[3px] transition-colors ${
+                  gateState === 'ready' && faceStatus === 'ok' ? 'border-emerald-400' : 'border-white/70'
                 }`}
               />
-              <div
-                role="status"
-                aria-live="polite"
-                className="absolute -top-12 left-1/2 -translate-x-1/2 whitespace-nowrap inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white text-[#413B5E] text-xs font-semibold shadow-lg"
-              >
-                <span
-                  aria-hidden
-                  className={`w-2 h-2 rounded-full ${
-                    gateState === 'ready' && faceStatus === 'ok' ? 'bg-emerald-500' : gateState === 'error' ? 'bg-red-500' : 'bg-amber-400'
+            )}
+          </div>
+
+          {/* Step 1: portrait oval (same geometry as guideOval() in lib/faceGate.ts) + live feedback pill */}
+          {step === 'face' && (
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+              <div className="relative w-[72%] max-w-[270px] aspect-[270/340]">
+                <div
+                  className={`absolute inset-0 rounded-[50%] border-2 shadow-[0_0_0_9999px_rgba(0,0,0,0.35)] transition-colors ${
+                    gateState === 'ready' && faceStatus === 'ok' ? 'border-emerald-400' : 'border-white/80'
                   }`}
                 />
-                {gateState === 'loading' || gateState === 'idle'
-                  ? 'Starting face check...'
-                  : gateState === 'error'
-                    ? "Couldn't start the face check. Tap Restart."
-                    : faceStatus !== 'ok' || poseState === 'unavailable'
-                      ? FACE_GATE_MESSAGES[faceStatus]
-                      : poseState === 'match'
-                        ? 'Pose detected. Hold still...'
-                        : `Now copy the pose: ${pose.label}`}
+                <div
+                  role="status"
+                  aria-live="polite"
+                  className="absolute -top-12 left-1/2 -translate-x-1/2 whitespace-nowrap inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-white text-[#413B5E] text-xs font-semibold shadow-lg"
+                >
+                  <span
+                    aria-hidden
+                    className={`w-2 h-2 rounded-full ${
+                      gateState === 'ready' && faceStatus === 'ok' ? 'bg-emerald-500' : gateState === 'error' ? 'bg-red-500' : 'bg-amber-400'
+                    }`}
+                  />
+                  {gateState === 'loading' || gateState === 'idle'
+                    ? 'Starting face check...'
+                    : gateState === 'error'
+                      ? "Face check unavailable. Use Capture Photo."
+                      : faceStatus !== 'ok'
+                        ? FACE_GATE_MESSAGES[faceStatus]
+                        : 'Hold still...'}
+                </div>
               </div>
             </div>
-          </div>
+          )}
 
           <button
             type="button"
@@ -520,46 +646,89 @@ export default function VerifyPage() {
             <X className="w-5 h-5 text-white" />
           </button>
 
+          {/* Step banner */}
           <div className="absolute top-4 left-4 right-16 z-50 flex items-center gap-2.5 px-2.5 py-2 rounded-2xl bg-black/45 backdrop-blur text-white">
-            <PoseImage pose={pose} className="w-12 h-12 rounded-xl shrink-0" />
+            {step === 'pose' && <PoseImage pose={pose} className="w-12 h-12 rounded-xl shrink-0" />}
             <div className="min-w-0">
-              <p className="text-[10px] uppercase tracking-wider text-white/70 font-semibold">Match this pose</p>
-              <p className="text-xs font-semibold leading-snug">{pose.label}</p>
+              <p className="text-[10px] uppercase tracking-wider text-white/70 font-semibold">
+                Step {step === 'face' ? '1' : '2'} of 2
+              </p>
+              <p className="text-xs font-semibold leading-snug">
+                {step === 'face' ? 'Center your face in the frame' : 'Hold this pose beside your face'}
+              </p>
+              {step === 'pose' && <p className="text-[11px] text-white/80 leading-snug">{pose.label}</p>}
             </div>
           </div>
 
-          {errorMsg && (
-            <div className="absolute bottom-32 left-4 right-4 z-50 px-3 py-2 rounded-xl bg-red-600/90 text-white text-xs text-center">
-              {errorMsg}
-            </div>
-          )}
-
-          <div className="absolute bottom-8 left-0 right-0 flex flex-col items-center gap-2 z-50">
-            <span className="text-[11px] text-white/85 font-medium">
-              {gateState === 'ready' && faceStatus === 'ok' && poseState === 'match'
-                ? 'Taking your photo...'
-                : 'Face in the oval, then copy the pose. The photo takes itself.'}
+          <div className="absolute bottom-0 inset-x-0 z-50 px-4 pt-4 pb-[max(1.5rem,env(safe-area-inset-bottom))] flex flex-col items-center gap-2.5">
+            {errorMsg && (
+              <p className="w-full max-w-[480px] px-3 py-2 rounded-xl bg-red-600/90 text-white text-xs text-center">{errorMsg}</p>
+            )}
+            <span className="text-[11px] text-white/85 font-medium text-center">
+              {step === 'face'
+                ? gateState === 'ready' && faceStatus === 'ok'
+                  ? 'Taking your portrait...'
+                  : 'Your portrait is taken automatically once your face is steady.'
+                : gateState === 'ready' && faceStatus === 'ok' && poseState === 'match'
+                  ? 'Taking your photo...'
+                  : 'The photo takes itself when you hold the pose, or tap the button.'}
             </span>
+
+            {step === 'face' && (manualFaceReady || gateState === 'error') && (
+              <button
+                type="button"
+                onClick={() => takeFace(true)}
+                className="w-full max-w-[480px] py-3.5 px-6 rounded-full font-semibold text-sm bg-[#8574B7] hover:bg-[#534377] text-white shadow-lg transition-transform active:scale-95"
+              >
+                Capture Photo
+              </button>
+            )}
+
+            {step === 'pose' && (
+              <>
+                <button
+                  type="button"
+                  onClick={() => takeSnapshot(true)}
+                  className="w-full max-w-[480px] py-3.5 px-6 rounded-full font-semibold text-sm bg-[#8574B7] hover:bg-[#534377] text-white shadow-lg transition-transform active:scale-95"
+                >
+                  Capture Verification Photo
+                </button>
+                <button type="button" onClick={retakeFace} className="text-xs font-medium text-white/85 underline underline-offset-4">
+                  Retake portrait
+                </button>
+              </>
+            )}
           </div>
         </div>
-      ) : snapshot ? (
+      ) : snapshot && face ? (
         <div className="mx-4 mt-4 space-y-4 pb-28">
           <div className="p-4 rounded-3xl bg-white border border-[#D0CDE1] shadow-sm space-y-3">
-            <span className="text-[11px] font-medium uppercase tracking-wider text-[#8574B7]">Check your photo</span>
-            <div className="grid grid-cols-[1fr_88px] gap-3 items-start">
-              <img
-                src={snapshot.previewUrl}
-                alt="Your verification selfie"
-                className="w-full aspect-[3/4] object-cover rounded-2xl border border-[#D0CDE1] scale-x-[-1]"
-              />
+            <span className="text-[11px] font-medium uppercase tracking-wider text-[#8574B7]">Check your photos</span>
+            <div className="grid grid-cols-2 gap-3">
               <figure className="space-y-1">
-                <PoseImage pose={pose} className="w-full aspect-square rounded-2xl" />
-                <figcaption className="text-[10px] text-center text-slate-600 leading-tight">{pose.label}</figcaption>
+                <img
+                  src={face.previewUrl}
+                  alt="Your portrait"
+                  className="w-full aspect-[3/4] object-cover rounded-2xl border border-[#D0CDE1] scale-x-[-1]"
+                />
+                <figcaption className="text-[10px] text-center text-slate-600">Step 1: Portrait</figcaption>
+              </figure>
+              <figure className="space-y-1">
+                <img
+                  src={snapshot.previewUrl}
+                  alt="Your pose photo"
+                  className="w-full aspect-[3/4] object-cover rounded-2xl border border-[#D0CDE1] scale-x-[-1]"
+                />
+                <figcaption className="text-[10px] text-center text-slate-600">Step 2: Pose</figcaption>
               </figure>
             </div>
-            <p className="text-xs text-[#413B5E]/75">
-              Make sure your whole face and the pose are clearly visible.
-            </p>
+            <div className="flex items-center gap-3 p-2 rounded-2xl bg-[#E8E6F1]/40">
+              <PoseImage pose={pose} className="w-12 h-12 rounded-xl shrink-0" />
+              <p className="text-xs text-[#413B5E]/75 leading-snug">
+                Requested pose: <span className="font-semibold text-[#413B5E]">{pose.label}</span>
+              </p>
+            </div>
+            <p className="text-xs text-[#413B5E]/75">Make sure your whole face and the pose are clearly visible.</p>
           </div>
 
           <ErrorNote message={errorMsg} />
@@ -568,32 +737,42 @@ export default function VerifyPage() {
             <button
               type="button"
               disabled={submitting}
-              onClick={retake}
+              onClick={retakePose}
               className="py-3.5 rounded-2xl bg-white border border-[#D0CDE1] text-[#413B5E] text-xs font-medium flex items-center justify-center gap-1.5 active:scale-95 transition disabled:opacity-50"
             >
               <RotateCcw className="w-4 h-4" />
-              Retake
+              Retake pose
             </button>
             <button
               type="button"
               disabled={submitting}
               onClick={handleSubmit}
-              className="py-3.5 rounded-2xl bg-[#8574B7] hover:bg-[#413B5E] text-white text-xs font-medium flex items-center justify-center gap-1.5 shadow-md shadow-[#8574B7]/30 active:scale-95 transition disabled:opacity-60"
+              className="py-3.5 rounded-2xl bg-[#8574B7] hover:bg-[#534377] text-white text-xs font-medium flex items-center justify-center gap-1.5 shadow-md shadow-[#8574B7]/30 active:scale-95 transition disabled:opacity-60"
             >
               {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : <ScanFace className="w-4 h-4" />}
-              {submitting ? 'Checking...' : 'Verify with AI'}
+              {submitting ? 'Submitting...' : 'Submit for review'}
             </button>
           </div>
+          <button type="button" disabled={submitting} onClick={retakeFace} className="w-full text-xs font-medium text-[#8574B7] hover:text-[#534377] disabled:opacity-50">
+            Retake portrait
+          </button>
         </div>
       ) : (
         <div className="mx-4 mt-4 space-y-4 pb-28">
           <div className="p-5 rounded-3xl bg-white border border-[#D0CDE1] space-y-3 shadow-sm">
-            <span className="text-[11px] font-medium uppercase tracking-wider text-[#8574B7]">Match this pose:</span>
-            <PoseImage pose={pose} className="w-44 h-44 mx-auto rounded-3xl" />
+            <span className="text-[11px] font-medium uppercase tracking-wider text-[#8574B7]">Two quick photos</span>
+            <ol className="space-y-1.5 text-xs text-[#413B5E]/85 leading-relaxed">
+              <li className={face ? 'line-through text-slate-500' : ''}>
+                <span className="font-semibold text-[#413B5E]">1. Portrait.</span> Center your face in the frame.
+              </li>
+              <li>
+                <span className="font-semibold text-[#413B5E]">2. Pose.</span> Hold this pose beside your face:
+              </li>
+            </ol>
+            <PoseImage pose={pose} className="w-36 h-36 mx-auto rounded-3xl" />
             <p className="text-center text-sm font-medium text-[#413B5E]">{pose.label}</p>
             <p className="text-xs text-[#413B5E]/75 leading-relaxed text-center">
-              Take one live selfie copying this pose. We compare it with your main photo, then a member of
-              our team approves your badge.
+              We compare your photos with your main photo, then a member of our team approves your badge.
             </p>
           </div>
 
@@ -618,10 +797,10 @@ export default function VerifyPage() {
           <button
             type="button"
             onClick={startCamera}
-            className="w-full py-3.5 rounded-2xl bg-[#8574B7] hover:bg-[#413B5E] text-white text-xs font-medium uppercase tracking-wider flex items-center justify-center gap-2 shadow-md shadow-[#8574B7]/30 active:scale-95 transition"
+            className="w-full py-3.5 rounded-full bg-[#8574B7] hover:bg-[#534377] text-white text-sm font-semibold flex items-center justify-center gap-2 shadow-md shadow-[#8574B7]/30 active:scale-95 transition"
           >
             <Camera className="w-4 h-4" />
-            Open camera
+            {face ? 'Continue to pose photo' : 'Open camera'}
           </button>
         </div>
       )}

@@ -14,6 +14,9 @@ export const runtime = 'nodejs';
 const SIGNED_URL_TTL_SECONDS = 60 * 60;
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
+/** How each photo was taken: 'auto' (live detection) or 'manual' (the member tapped the capture button). */
+type CaptureInfo = { face: 'auto' | 'manual' | null; pose: 'auto' | 'manual' | null };
+
 /** Legacy (multi-pose) pre-check shape, still present on older submissions. */
 type LegacyAiVerdict = { isSafe: boolean; poseMatchesPrompt: boolean; reason: string };
 
@@ -36,7 +39,7 @@ async function latestSubmission(admin: SupabaseClient, userId: string) {
   const names = (files || []).map((f) => f.name);
   const stamps = names.map((n) => n.split('_')[0]).filter((s) => /^\d+$/.test(s));
   if (stamps.length === 0) {
-    return { submittedAt: null, photos: [] as string[], poses: null, poseId: null, ai: null, review: null, fastTrack: false };
+    return { submittedAt: null, photos: [] as string[], facePhoto: null as string | null, capture: null as CaptureInfo | null, poses: null, poseId: null, ai: null, review: null, fastTrack: false };
   }
   const latest = stamps.reduce((a, b) => (Number(b) > Number(a) ? b : a));
 
@@ -45,6 +48,8 @@ async function latestSubmission(admin: SupabaseClient, userId: string) {
   let poses: string | null = null;
   let poseId: string | null = null;
   let selfiePath: string | null = null;
+  let facePath: string | null = null;
+  let capture: CaptureInfo | null = null;
   if (names.includes(`${latest}_meta.json`)) {
     const { data: blob } = await admin.storage.from('verifications').download(`${userId}/${latest}_meta.json`);
     if (blob) {
@@ -57,6 +62,13 @@ async function latestSubmission(admin: SupabaseClient, userId: string) {
         // Only paths inside this member's own folder are signed.
         if (typeof meta.selfie_path === 'string' && meta.selfie_path.startsWith(`${userId}/`)) {
           selfiePath = meta.selfie_path;
+        }
+        if (typeof meta.face_path === 'string' && meta.face_path.startsWith(`${userId}/`)) {
+          facePath = meta.face_path;
+        }
+        const mode = (v: unknown) => (v === 'auto' || v === 'manual' ? v : null);
+        if (meta.capture && typeof meta.capture === 'object') {
+          capture = { face: mode(meta.capture.face), pose: mode(meta.capture.pose) };
         }
       } catch {
         // malformed metadata: show the photos without it
@@ -74,10 +86,16 @@ async function latestSubmission(admin: SupabaseClient, userId: string) {
   const { data: signed } = photoPaths.length
     ? await admin.storage.from('verifications').createSignedUrls(photoPaths, SIGNED_URL_TTL_SECONDS)
     : { data: [] };
+  // Step 1 portrait (1-hour signed URL, like the pose photo).
+  const { data: faceSigned } = facePath
+    ? await admin.storage.from('verifications').createSignedUrl(facePath, SIGNED_URL_TTL_SECONDS)
+    : { data: null };
 
   return {
     submittedAt: new Date(Number(latest)).toISOString(),
     photos: (signed || []).map((s) => s.signedUrl).filter(Boolean) as string[],
+    facePhoto: faceSigned?.signedUrl ?? null,
+    capture,
     poses,
     poseId,
     ai,
@@ -96,12 +114,12 @@ export async function GET() {
     const [identityRes, avatarRes, reportsRes] = await Promise.all([
       admin
         .from('profiles')
-        .select('id, username, full_name, avatar_url, city, country, age, birthdate')
+        .select('id, username, avatar_url, city, country, age, birthdate')
         .eq('verification_status', 'pending')
         .limit(50),
       admin
         .from('profiles')
-        .select('id, username, full_name, avatar_url, gender')
+        .select('id, username, avatar_url, gender')
         .eq('avatar_status', 'pending_review')
         .limit(50),
       admin
@@ -177,6 +195,19 @@ export async function POST(req: NextRequest) {
     if (error) return NextResponse.json({ error: error.message }, { status: 500 });
     if (!data || data.length === 0) return NextResponse.json({ error: 'User not found' }, { status: 404 });
 
+    // History row (supabase/migrations/20261111_fix_verifications.sql); best effort, never blocks a decision.
+    const { error: requestErr } = await admin
+      .from('verification_requests')
+      .update({
+        status: approve ? 'approved' : 'rejected',
+        rejection_reason: approve ? null : reason || null,
+        reviewed_by: auth.adminId,
+        reviewed_at: new Date().toISOString(),
+      })
+      .eq('user_id', userId)
+      .eq('status', 'pending');
+    if (requestErr) console.warn('[admin/verifications] verification_requests not updated:', requestErr.message);
+
     // Approved members who already finished onboarding join the Day 1 cohort if a slot is left
     // (the claim also runs at POST /api/onboarding for members verified before finishing).
     if (approve) {
@@ -184,13 +215,13 @@ export async function POST(req: NextRequest) {
       if (slotErr) console.warn('[admin/verifications] day one claim skipped:', slotErr.message);
     }
 
-    // Rejected: purge the selfie (and any legacy pose photos); the small review-metadata JSON stays
+    // Rejected: purge the portrait and pose photo (and any legacy pose photos); the small review-metadata JSON stays
     // as an audit trail of the decision.
     if (!approve) {
       const { data: files } = await admin.storage.from('verifications').list(userId, { limit: 100 });
       const photos = (files || [])
         .map((f) => f.name)
-        .filter((n) => n === 'selfie.jpg' || /_pose_\d+\.jpg$/.test(n))
+        .filter((n) => n === 'selfie.jpg' || n === 'face.jpg' || /_pose_\d+\.jpg$/.test(n))
         .map((n) => `${userId}/${n}`);
       if (photos.length > 0) {
         const { error: purgeErr } = await admin.storage.from('verifications').remove(photos);

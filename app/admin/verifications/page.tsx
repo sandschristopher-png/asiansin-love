@@ -36,7 +36,6 @@ interface SelfieReview {
 interface IdentityItem {
   id: string;
   username?: string | null;
-  full_name?: string | null;
   avatar_url?: string | null;
   city?: string | null;
   country?: string | null;
@@ -45,6 +44,9 @@ interface IdentityItem {
   submission: {
     submittedAt: string | null;
     photos: string[];
+    /** Step 1 face portrait (signed URL); absent on submissions made before the two-step flow. */
+    facePhoto?: string | null;
+    capture?: { face: 'auto' | 'manual' | null; pose: 'auto' | 'manual' | null } | null;
     poses: string | null;
     poseId?: string | null;
     ai: AiVerdict | null;
@@ -56,7 +58,6 @@ interface IdentityItem {
 interface AvatarItem {
   id: string;
   username?: string | null;
-  full_name?: string | null;
   avatar_url?: string | null;
   gender?: string | null;
 }
@@ -86,8 +87,9 @@ const Chip = ({ tone, children }: { tone: 'good' | 'bad' | 'neutral'; children: 
   </span>
 );
 
-const nameOf = (p: { username?: string | null; full_name?: string | null; id: string }) =>
-  p.username ? `@${p.username}` : p.full_name || `User ${p.id.slice(0, 8)}`;
+// Usernames only: Google profile names are never shown in the review queues.
+const nameOf = (p: { username?: string | null; id: string }) =>
+  p.username ? `@${p.username}` : `Member ${p.id.slice(0, 8)}`;
 
 export default function AdminVerificationsPage() {
   const [identity, setIdentity] = useState<IdentityItem[]>([]);
@@ -294,7 +296,48 @@ export default function AdminVerificationsPage() {
                       const review = sub.review;
                       return (
                         <>
-                          {sub.photos.length > 0 ? (
+                          {sub.facePhoto && sub.photos.length > 0 ? (
+                            <div className="space-y-2">
+                              {/* Side by side: step 1 portrait, step 2 pose photo. */}
+                              <div className="grid grid-cols-2 gap-2">
+                                <figure className="space-y-1">
+                                  <a href={sub.facePhoto} target="_blank" rel="noreferrer">
+                                    <img src={sub.facePhoto} alt="Face portrait" className="w-full aspect-[3/4] object-cover rounded-xl border border-[#D0CDE1]" />
+                                  </a>
+                                  <figcaption className="text-[10px] text-center text-slate-600">Face portrait (step 1)</figcaption>
+                                </figure>
+                                <figure className="space-y-1">
+                                  <a href={sub.photos[0]} target="_blank" rel="noreferrer">
+                                    <img src={sub.photos[0]} alt="Gesture pose" className="w-full aspect-[3/4] object-cover rounded-xl border border-[#D0CDE1]" />
+                                  </a>
+                                  <figcaption className="text-[10px] text-center text-slate-600">Gesture pose (step 2)</figcaption>
+                                </figure>
+                              </div>
+                              <div className="grid grid-cols-2 gap-2">
+                                <figure className="space-y-1">
+                                  {item.avatar_url ? (
+                                    <img src={item.avatar_url} alt="Profile photo" className="w-full aspect-[4/3] object-cover rounded-xl border border-[#D0CDE1]" />
+                                  ) : (
+                                    <div className="w-full aspect-[4/3] rounded-xl bg-[#E8E6F1]/60" />
+                                  )}
+                                  <figcaption className="text-[10px] text-center text-slate-600">Main photo</figcaption>
+                                </figure>
+                                {pose && (
+                                  <figure className="space-y-1">
+                                    <img src={pose.image} alt={pose.label} className="w-full aspect-[4/3] object-contain rounded-xl border border-[#D0CDE1] bg-[#E8E6F1]/60" />
+                                    <figcaption className="text-[10px] text-center text-slate-600 leading-tight">Requested: {pose.label}</figcaption>
+                                  </figure>
+                                )}
+                              </div>
+                              {(sub.capture?.face === 'manual' || sub.capture?.pose === 'manual') && (
+                                <p className="text-[11px] text-slate-600">
+                                  Manual capture:{' '}
+                                  {[sub.capture?.face === 'manual' && 'portrait', sub.capture?.pose === 'manual' && 'pose'].filter(Boolean).join(' and ')}.
+                                  Live face detection did not confirm the photo, so check it carefully.
+                                </p>
+                              )}
+                            </div>
+                          ) : sub.photos.length > 0 ? (
                             <div className="grid grid-cols-3 gap-2">
                               <figure className="space-y-1">
                                 {item.avatar_url ? (
