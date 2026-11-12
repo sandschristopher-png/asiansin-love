@@ -33,14 +33,14 @@ export async function generateMetadata({ params }: { params: Promise<{ city: str
       title: city.metaTitle,
       description: city.metaDescription,
       locale: 'en_US',
-      // Shared social card (public/og-card.png, 1200x630).
-      images: [{ url: '/og-card.png', width: 1200, height: 630, alt: `${city.cityName} dating on Meet in Asia` }],
+      // Shared social card: the landing hero photo (public/Landing-Woman.png, 1024x687).
+      images: [{ url: '/Landing-Woman.png', width: 1024, height: 687, alt: `${city.cityName} dating on Meet in Asia` }],
     },
     twitter: {
       card: 'summary_large_image',
       title: city.metaTitle,
       description: city.metaDescription,
-      images: ['/og-card.png'],
+      images: ['/Landing-Woman.png'],
     },
   };
 }
