@@ -7,7 +7,8 @@
 // face count) is rejected with 400 BEFORE anything is uploaded or marked 'pending'.
 // The AI only scores and flags. The verified badge is NEVER granted here: verification_status is
 // set to 'pending' and an admin approves it at /admin/verifications.
-import { NextResponse } from 'next/server';
+import { NextResponse, after } from 'next/server';
+import { notifyAdmins } from '@/lib/adminNotify';
 import { createClient } from '@supabase/supabase-js';
 import { createClient as createSessionClient } from '@/lib/supabase/server';
 import { verifyToken, tokenFingerprint, TOKEN_TTL_MS } from '@/lib/verify/token';
@@ -313,6 +314,8 @@ export async function POST(req: Request) {
     console.error('[verify/submit] profile update failed:', updateError.message);
     return NextResponse.json({ error: 'Could not save verification status' }, { status: 500 });
   }
+
+  after(() => notifyAdmins({ kind: 'verification', title: 'New selfie verification to review', ref: userId, actorId: userId }));
 
   return NextResponse.json({
     verified: false,

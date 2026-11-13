@@ -6,6 +6,9 @@ import { useSyncExternalStore } from 'react';
  * Live unread counts shared by the app-wide RealtimeNotifier (writer) and the BottomNav badges /
  * document title (readers). One realtime channel feeds everything.
  */
+/** Fired on window when a notifications row may have arrived (account dropdown unread chip refreshes). */
+export const NOTIFICATIONS_CHANGED_EVENT = 'ail:notifications-changed';
+
 export interface NotificationCounts {
   unreadMessages: number;
   unseenSparks: number;

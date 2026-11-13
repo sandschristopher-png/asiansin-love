@@ -85,7 +85,9 @@
     "discover": "탐색",
     "sparks": "Sparks",
     "messages": "메시지",
-    "profile": "프로필"
+    "profile": "프로필",
+    "notifications": "알림",
+    "noNotifications": "아직 알림이 없습니다"
   },
   "discover": {
     "modeAll": "전체",
@@ -305,7 +307,9 @@
     "plusActiveTitle": "Meet in Asia Plus 이용 중",
     "plusActiveSub": "구독과 결제를 관리합니다",
     "privateOn": "프로필을 일시중지했습니다. 탐색에서 숨겨집니다.",
-    "privateOff": "프로필이 다시 탐색에 표시됩니다."
+    "privateOff": "프로필이 다시 탐색에 표시됩니다.",
+    "adminConsole": "관리자 콘솔",
+    "adminConsoleSub": "대기 중인 인증, 사진 및 신고"
   },
   "errors": {
     "generic": "문제가 발생했습니다. 다시 시도해 주세요.",

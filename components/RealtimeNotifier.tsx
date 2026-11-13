@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { usePathname, useRouter } from 'next/navigation';
 import { supabase } from '@/lib/supabase/client';
 import { applyContactRevealMask } from '@/lib/safety';
-import { alertPrefs, getNotificationCounts, setNotificationCounts } from '@/lib/notificationStore';
+import { alertPrefs, getNotificationCounts, setNotificationCounts, NOTIFICATIONS_CHANGED_EVENT } from '@/lib/notificationStore';
 import { NotificationToast, type NotificationKind, type NotificationToastData } from '@/components/NotificationToast';
 import { publicName } from '@/lib/publicName';
 
@@ -130,6 +130,8 @@ export function RealtimeNotifier() {
     const showNotificationToast = async (t: NotificationToastData) => {
       if (cancelled) return;
       setToast(t);
+      // The server writes a notifications row for this event; the header chip re-reads shortly.
+      window.setTimeout(() => window.dispatchEvent(new Event(NOTIFICATIONS_CHANGED_EVENT)), 1500);
       if (typeof window !== 'undefined' && 'vibrate' in navigator) {
         try {
           navigator.vibrate([20, 60, 20]);
@@ -193,6 +195,13 @@ export function RealtimeNotifier() {
 
       channel = supabase
         .channel(`realtime-user-notifications-${uid}`)
+        // Any new notifications row for me (announcements, verification results, staff alerts):
+        // refresh the account dropdown's unread chip. Toasts come from the source tables below.
+        .on(
+          'postgres_changes',
+          { event: 'INSERT', schema: 'public', table: 'notifications', filter: `user_id=eq.${uid}` },
+          () => window.dispatchEvent(new Event(NOTIFICATIONS_CHANGED_EVENT))
+        )
         // A. messages
         .on(
           'postgres_changes',

@@ -1,4 +1,5 @@
-﻿import { NextResponse } from 'next/server';
+﻿import { NextResponse, after } from 'next/server';
+import { notifyAdmins } from '@/lib/adminNotify';
 import { createClient } from '@/lib/supabase/server';
 
 const VALID_REASONS = ['fake_profile', 'harassment', 'spam', 'inappropriate_photos', 'other'];
@@ -29,6 +30,8 @@ export async function POST(req: Request) {
     console.error('Report insert failed:', error.message);
     return NextResponse.json({ error: 'Failed to submit report' }, { status: 500 });
   }
+
+  after(() => notifyAdmins({ kind: 'report', title: 'New report filed', ref: String(reportedId), actorId: String(reportedId) }));
 
   // Pending reports are listed in the admin review queue (/admin/verifications).
   return NextResponse.json({ success: true, data });

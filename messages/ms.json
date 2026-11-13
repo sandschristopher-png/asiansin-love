@@ -85,7 +85,9 @@
     "discover": "Teroka",
     "sparks": "Sparks",
     "messages": "Mesej",
-    "profile": "Profil"
+    "profile": "Profil",
+    "notifications": "Pemberitahuan",
+    "noNotifications": "Belum ada pemberitahuan"
   },
   "discover": {
     "modeAll": "Semua",
@@ -305,7 +307,9 @@
     "plusActiveTitle": "Meet in Asia Plus Aktif",
     "plusActiveSub": "Urus langganan dan pengebilan anda",
     "privateOn": "Profil dijeda. Anda tersembunyi daripada Teroka.",
-    "privateOff": "Profil anda kelihatan semula dalam Teroka."
+    "privateOff": "Profil anda kelihatan semula dalam Teroka.",
+    "adminConsole": "Konsol Admin",
+    "adminConsoleSub": "Pengesahan, foto dan laporan yang belum selesai"
   },
   "errors": {
     "generic": "Sesuatu tidak kena. Sila cuba lagi.",

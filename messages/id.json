@@ -85,7 +85,9 @@
     "discover": "Jelajahi",
     "sparks": "Sparks",
     "messages": "Pesan",
-    "profile": "Profil"
+    "profile": "Profil",
+    "notifications": "Notifikasi",
+    "noNotifications": "Belum ada notifikasi"
   },
   "discover": {
     "modeAll": "Semua",
@@ -305,7 +307,9 @@
     "plusActiveTitle": "Meet in Asia Plus Aktif",
     "plusActiveSub": "Kelola langganan dan penagihanmu",
     "privateOn": "Profil dijeda. Kamu tersembunyi dari Jelajahi.",
-    "privateOff": "Profilmu tampil lagi di Jelajahi."
+    "privateOff": "Profilmu tampil lagi di Jelajahi.",
+    "adminConsole": "Konsol Admin",
+    "adminConsoleSub": "Verifikasi, foto, dan laporan tertunda"
   },
   "errors": {
     "generic": "Terjadi kesalahan. Silakan coba lagi.",

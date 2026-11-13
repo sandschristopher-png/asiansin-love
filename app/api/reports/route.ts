@@ -5,7 +5,8 @@
 // (status 'pending') and appear in the admin review queue at /admin/verifications, where a
 // confirmed report costs the reported member reputation. With `block`, the reporter also blocks
 // them (public.user_blocks), same as /api/users/block.
-import { NextResponse } from 'next/server';
+import { NextResponse, after } from 'next/server';
+import { notifyAdmins } from '@/lib/adminNotify';
 import { createClient } from '@/lib/supabase/server';
 
 export const runtime = 'nodejs';
@@ -110,6 +111,10 @@ export async function POST(req: Request) {
     console.error('[api/reports] insert failed:', error.code, error.message);
     return NextResponse.json({ error: 'Could not submit your report. Please try again.' }, { status: 500 });
   }
+
+  after(() =>
+    notifyAdmins({ kind: 'report', title: `New report: ${REPORT_CATEGORIES[cat] ?? cat}`, ref: String(reportedId), actorId: String(reportedId) })
+  );
 
   let blocked = false;
   if (body.block === true) {

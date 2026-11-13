@@ -67,9 +67,9 @@ function LandingBody() {
           </div>
           <div className="mt-6 space-y-3">
             {STEP_KEYS.map(({ step, key }) => (
-              <div key={step} className="flex items-start gap-3 rounded-2xl border border-slate-200 bg-white p-4">
-                <span className="w-6 shrink-0 pt-px font-brand text-sm font-semibold tabular-nums text-[#8574B7]">{step}</span>
-                <div className="min-w-0 text-left">
+              <div key={step} className="flex flex-col items-center gap-1.5 rounded-3xl border border-slate-200 bg-white p-5 text-center">
+                <span className="font-brand text-sm font-semibold tabular-nums text-[#8574B7]">{step}</span>
+                <div className="min-w-0 w-full break-words">
                   <h3 className="text-[15px] font-semibold text-[#413B5E] leading-snug">{m.steps[key].title}</h3>
                   <p className="mt-1 text-[13px] text-slate-600 leading-relaxed">{m.steps[key].desc}</p>
                 </div>
@@ -78,20 +78,20 @@ function LandingBody() {
           </div>
         </section>
 
-        {/* Feature stories: illustration left, copy right */}
+        {/* Feature stories: illustration on top (object-contain, never cropped), centred copy below */}
         <section className="py-8 space-y-3">
           {FEATURES.map(({ key, src }) => (
-            <div key={key} className="flex items-center gap-4 rounded-2xl border border-slate-200 bg-white p-3.5">
-              <div className="relative w-24 h-24 sm:w-28 sm:h-28 shrink-0 overflow-hidden rounded-xl">
+            <div key={key} className="flex flex-col items-center gap-3 rounded-3xl border border-slate-200 bg-white p-4 text-center">
+              <div className="relative w-full h-40 overflow-hidden rounded-2xl bg-[#E8E6F1]/40">
                 {src ? (
-                  <Image src={src} alt={m.features[key].alt} fill sizes="112px" className="w-full h-full object-cover object-center select-none pointer-events-none" />
+                  <Image src={src} alt={m.features[key].alt} fill sizes="(max-width: 448px) 100vw, 408px" className="object-contain object-center select-none pointer-events-none" />
                 ) : (
                   <div className="w-full h-full bg-[#E8E6F1] flex items-center justify-center" role="img" aria-label={m.features[key].alt}>
                     <AudioLines className="w-11 h-11 text-[#8574B7]" strokeWidth={1.75} aria-hidden />
                   </div>
                 )}
               </div>
-              <div className="min-w-0 text-left">
+              <div className="min-w-0 w-full break-words">
                 <h3 className="text-[15px] font-semibold text-[#413B5E] leading-snug">{m.features[key].title}</h3>
                 <p className="mt-1 text-[13px] text-slate-600 leading-relaxed">{m.features[key].body}</p>
               </div>

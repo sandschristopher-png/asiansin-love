@@ -26,6 +26,7 @@ import { useActionToast } from '@/components/ActionToast';
 import { InstallAppCard } from '@/components/InstallAppCard';
 import { HapticsRow } from '@/components/HapticsRow';
 import { AlertPrefsRows } from '@/components/AlertPrefsRows';
+import { AdminConsoleSettingsRow } from '@/components/admin/AdminPendingChip';
 import { PlusBadge } from '@/components/ui/PlusBadge';
 import { Switch } from '@/components/ui/Switch';
 import { isPlusProfile } from '@/lib/plus';
@@ -440,6 +441,9 @@ export default function SettingsHubPage() {
           <AlertPrefsRows />
           <HapticsRow />
         </div>
+
+        {/* Staff only: Admin Console with the pending-queue chip (renders nothing for members) */}
+        <AdminConsoleSettingsRow label={t('settings.adminConsole')} sub={t('settings.adminConsoleSub')} />
 
         {/* CARD 4: SAFETY & SUPPORT */}
         <div className="rounded-3xl bg-white border border-[#D0CDE1] p-2 shadow-2xs space-y-1">

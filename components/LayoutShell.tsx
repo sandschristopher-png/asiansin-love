@@ -7,6 +7,7 @@ import { Navbar } from '@/components/Navbar';
 import { BottomNav } from '@/components/BottomNav';
 import { isCityPagePath } from '@/lib/seo/citySlugs';
 import { RealtimeNotifier } from '@/components/RealtimeNotifier';
+import { PushPromptOnce } from '@/components/PushPromptOnce';
 import { ActionToastProvider } from '@/components/ActionToast';
 import { DesktopQrHandoff } from '@/components/DesktopQrHandoff';
 import { AppShell } from '@/components/layout/AppShell';
@@ -71,6 +72,8 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
         <HeartbeatProvider />
         {/* Messages, Sparks, mutual Sparks and visits: toasts + badges on every in-app route */}
         {!isMarketingOrAuth && <RealtimeNotifier />}
+        {/* One-time push permission prompt (after sign-in / onboarding, never on those pages) */}
+        {!isMarketingOrAuth && !isAdmin && <PushPromptOnce />}
       </div>
       {!isMarketingOrAuth && !isChat && !isAdmin && <BottomNav />}
     </AppShell>

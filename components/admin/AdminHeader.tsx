@@ -13,6 +13,7 @@ const TABS = [
   { href: '/admin/verifications', label: 'IDs', match: (p: string) => p.startsWith('/admin/verifications') },
   { href: '/admin/moderation', label: 'Chat', match: (p: string) => p.startsWith('/admin/moderation') },
   { href: '/admin/announcements', label: 'News', match: (p: string) => p.startsWith('/admin/announcements') },
+  { href: '/admin/notifications', label: 'Alerts', match: (p: string) => p.startsWith('/admin/notifications') },
 ];
 
 /** Admin Console mobile header (wordmark, ADMIN pill, staff name, Exit) + pill tab bar. */

@@ -5,7 +5,8 @@
 //        { action: 'delete', id }
 // Writes use the service-role client from verifyAdminCaller; members only ever read
 // (RLS in 20261113_announcements.sql).
-import { NextRequest, NextResponse } from 'next/server';
+import { NextRequest, NextResponse, after } from 'next/server';
+import { broadcastPush } from '@/lib/pushSender';
 import { verifyAdminCaller } from '@/lib/adminAuth';
 import {
   BROADCAST_BODY_MAX,
@@ -68,6 +69,8 @@ export async function POST(req: NextRequest) {
       .select('*')
       .single();
     if (error) return dbError(error.message);
+    // Web push to every subscribed device (members who switched announcements off are skipped).
+    after(() => broadcastPush({ body: title, url: '/announcements', tag: `announcement:${data.id}` }));
     return NextResponse.json({ success: true, announcement: data });
   }
 

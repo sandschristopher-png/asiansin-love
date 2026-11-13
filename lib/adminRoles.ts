@@ -32,3 +32,8 @@ export const ADMIN_ROLE_LABEL: Record<AdminRole, string> = {
   moderator: 'Mod',
   super_admin: 'Super Admin',
 };
+
+/** Staff alerts are notifications rows whose type starts with admin_ (lib/adminNotify.ts). */
+export const ADMIN_TYPE_PREFIX = 'admin_';
+/** PostgREST LIKE pattern for every staff alert type ("_" escaped so it is literal). */
+export const ADMIN_TYPE_LIKE = 'admin\\_%';

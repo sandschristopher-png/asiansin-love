@@ -85,7 +85,9 @@
     "discover": "探す",
     "sparks": "Sparks",
     "messages": "メッセージ",
-    "profile": "プロフィール"
+    "profile": "プロフィール",
+    "notifications": "通知",
+    "noNotifications": "まだ通知はありません"
   },
   "discover": {
     "modeAll": "すべて",
@@ -305,7 +307,9 @@
     "plusActiveTitle": "Meet in Asia Plus有効",
     "plusActiveSub": "サブスクリプションと請求を管理",
     "privateOn": "プロフィールを一時停止しました。探すには表示されません。",
-    "privateOff": "プロフィールが再び「探す」に表示されます。"
+    "privateOff": "プロフィールが再び「探す」に表示されます。",
+    "adminConsole": "管理コンソール",
+    "adminConsoleSub": "保留中の認証・写真・報告"
   },
   "errors": {
     "generic": "問題が発生しました。もう一度お試しください。",

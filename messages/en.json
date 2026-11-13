@@ -8,7 +8,10 @@
     "discover": "Discover",
     "sparks": "Sparks",
     "messages": "Messages",
-    "profile": "Profile"
+    "profile": "Profile",
+    "notifications": "Notifications",
+    "noNotifications": "No notifications yet",
+    "markHandled": "Mark handled"
   },
   "hero": {
     "imageAlt": "Smiling woman sitting on a stone bench in a sunlit courtyard",
@@ -305,7 +308,9 @@
     "plusActiveTitle": "Meet in Asia Plus Active",
     "plusActiveSub": "Manage your subscription and billing",
     "privateOn": "Profile paused. You are hidden from Discover.",
-    "privateOff": "Profile visible in Discover again."
+    "privateOff": "Profile visible in Discover again.",
+    "adminConsole": "Admin Console",
+    "adminConsoleSub": "Pending verifications, photos and reports"
   },
   "errors": {
     "generic": "Something went wrong. Please try again.",

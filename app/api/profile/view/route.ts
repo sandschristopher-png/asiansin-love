@@ -5,7 +5,8 @@
 // (the Visitors tab in /favorites and the visit toast in RealtimeNotifier read these rows).
 // Ghost Mode: a Plus viewer with profiles.ghost_mode = true leaves no footprint. The flag has no
 // effect for a free member, so turning it on without Plus never hides anyone.
-import { NextResponse } from 'next/server';
+import { NextResponse, after } from 'next/server';
+import { sendPushToUser } from '@/lib/pushSender';
 import { createClient } from '@supabase/supabase-js';
 import { createClient as createSessionClient } from '@/lib/supabase/server';
 import { isPlusProfile } from '@/lib/plus';
@@ -72,5 +73,20 @@ export async function POST(req: Request) {
     console.error('[api/profile/view] insert failed:', error.code, error.message);
     return NextResponse.json({ logged: false });
   }
+  // Visit alert for the viewed member, Plus only (Visitor History is a Plus feature).
+  after(async () => {
+    const { data: owner } = await service.from('profiles').select('*').eq('id', viewedId).maybeSingle();
+    if (!isPlusProfile(owner)) return;
+    const name = (me as { username?: string | null } | null)?.username || 'Someone';
+    await service.from('notifications').insert({
+      user_id: viewedId,
+      actor_id: user.id,
+      type: 'visit',
+      title: 'New Profile Visit',
+      description: `${name} viewed your profile.`,
+      link_url: '/profile/' + user.id,
+    });
+    await sendPushToUser({ userId: viewedId, type: 'visit', actorId: user.id, body: `${name} viewed your profile.`, url: '/profile/' + user.id }).catch(() => {});
+  });
   return NextResponse.json({ logged: true });
 }

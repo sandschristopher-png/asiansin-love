@@ -8,7 +8,8 @@
 // Guardrails: a profile always keeps at least one photo; deleting the main photo promotes the next
 // one so Discover cards never break; the file is removed from storage (avatars / user_photos)
 // only when it sits in the member's own folder.
-import { NextResponse } from 'next/server';
+import { NextResponse, after } from 'next/server';
+import { notifyAdmins } from '@/lib/adminNotify';
 import { createClient } from '@supabase/supabase-js';
 import { createClient as createSessionClient } from '@/lib/supabase/server';
 
@@ -79,6 +80,7 @@ export async function PATCH(req: Request) {
     console.error('[profile/photo] set main failed:', updateError.message);
     return NextResponse.json({ error: 'Could not change your main photo.' }, { status: 500 });
   }
+  after(() => notifyAdmins({ kind: 'photo', title: 'New main photo to approve', ref: userId, actorId: userId }));
   return NextResponse.json({ success: true, photos, avatar_url: main });
 }
 

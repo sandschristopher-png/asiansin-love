@@ -163,7 +163,13 @@ export async function POST(req: Request) {
       description: (sender?.username || 'Someone') + ' sent you a voice note.',
       link_url: '/messages',
     });
-    await sendPushToUser({ userId: receiverId, type: 'message', conversationId: senderId }).catch(() => {});
+    await sendPushToUser({
+      userId: receiverId,
+      type: 'message',
+      conversationId: senderId,
+      actorId: senderId,
+      body: (sender?.username || 'Someone') + ' sent you a voice note.',
+    }).catch(() => {});
   } catch {
     // Non-blocking notification dispatch
   }

@@ -8,16 +8,46 @@ import { notifyUser } from '@/components/InAppToast';
 import React, { useEffect, useState, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { User, Settings, LogOut, ArrowLeft, Menu, ShieldAlert, Megaphone, CreditCard } from 'lucide-react';
-import { adminRoleOf, isStaff } from '@/lib/adminRoles';
+import { User, Settings, LogOut, ArrowLeft, ShieldAlert, Megaphone, CreditCard } from 'lucide-react';
+import { ADMIN_TYPE_LIKE, adminRoleOf, isStaff } from '@/lib/adminRoles';
 import { supabase } from '@/lib/supabase/client';
 import { hardSignOut } from '@/lib/hardSignOut';
 import { PlusBadge } from '@/components/ui/PlusBadge';
+import { CountChip, useAdminPendingCount } from '@/components/admin/AdminPendingChip';
+import { NOTIFICATIONS_CHANGED_EVENT } from '@/lib/notificationStore';
+import { AVATAR_IMAGE, supabaseImage } from '@/lib/images/supabaseImage';
+import { useLocale } from '@/components/i18n/LocaleProvider';
 import { useShare } from '@/components/share/useShare';
 
 /** Own-profile fields the header reads: username, Plus status (isPlusProfile) and staff role. */
 const NAV_PROFILE_COLUMNS =
-  'id, username, is_plus, is_premium, subscription_status, current_period_end, plus_expires_at, admin_role, role, is_admin';
+  'id, username, avatar_url, is_plus, is_premium, subscription_status, current_period_end, plus_expires_at, admin_role, role, is_admin';
+
+type NotifRow = {
+  id: string;
+  type: string;
+  title: string | null;
+  description: string | null;
+  link_url: string | null;
+  is_read: boolean;
+  created_at: string;
+  actor: { id: string; username: string | null; avatar_url: string | null } | null;
+};
+
+function timeAgo(iso: string): string {
+  const s = Math.max(0, (Date.now() - new Date(iso).getTime()) / 1000);
+  if (s < 60) return 'now';
+  if (s < 3600) return `${Math.floor(s / 60)}m`;
+  if (s < 86400) return `${Math.floor(s / 3600)}h`;
+  return `${Math.floor(s / 86400)}d`;
+}
+
+/** Where a dropdown row opens: chats to the thread, visits / sparks to the actor's profile. */
+function notifHref(n: NotifRow): string {
+  if (n.type === 'message' && n.actor) return `/chat/${n.actor.id}`;
+  if ((n.type === 'visit' || n.type === 'favorite' || n.type === 'spark') && n.actor) return `/profile/${n.actor.id}`;
+  return n.link_url || '/announcements';
+}
 /** Signed-in areas: the header never offers "Sign In" here (middleware already requires a session). */
 const IN_APP_PREFIXES = ['/discover', '/messages', '/favorites', '/profile', '/notifications', '/announcements', '/chat', '/settings', '/plus', '/upgrade', '/verify'];
 
@@ -30,6 +60,11 @@ export function Navbar() {
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const { share, shareSheet } = useShare();
   const [hasUnreadAnnouncements, setHasUnreadAnnouncements] = useState(false);
+  const { t } = useLocale();
+  // Account-dropdown notifications: unread chip on the avatar + the list at the top of the menu.
+  const [notifs, setNotifs] = useState<NotifRow[] | null>(null);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const adminPending = useAdminPendingCount(isStaff(adminRoleOf(profile)), menuOpen);
   const menuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const pathname = usePathname();
@@ -54,7 +89,8 @@ export function Navbar() {
           .select('id', { count: 'exact', head: true })
           .eq('user_id', user.id)
           .eq('is_read', false)
-          .not('type', 'in', NON_ANNOUNCEMENT_FILTER),
+          .not('type', 'in', NON_ANNOUNCEMENT_FILTER)
+          .not('type', 'like', ADMIN_TYPE_LIKE),
         supabase.from('announcements').select('published_at').order('published_at', { ascending: false }).limit(1).maybeSingle(),
         supabase.from('profiles').select('last_read_announcements_at').eq('id', user.id).maybeSingle(),
       ]);
@@ -69,6 +105,54 @@ export function Navbar() {
       window.removeEventListener(ANNOUNCEMENTS_READ_EVENT, cleared);
     };
   }, [user, pathname, menuOpen]);
+  // Unread chip: re-read on sign-in, route changes and whenever RealtimeNotifier sees a new row.
+  useEffect(() => {
+    if (!user) {
+      setUnreadCount(0);
+      setNotifs(null);
+      return;
+    }
+    let cancelled = false;
+    const load = () =>
+      fetch('/api/notifications?scope=all', { cache: 'no-store' })
+        .then((r) => (r.ok ? r.json() : null))
+        .then((j) => {
+          if (cancelled || !j) return;
+          setUnreadCount(Number(j.unread_count) || 0);
+        })
+        .catch(() => {});
+    load();
+    window.addEventListener(NOTIFICATIONS_CHANGED_EVENT, load);
+    return () => {
+      cancelled = true;
+      window.removeEventListener(NOTIFICATIONS_CHANGED_EVENT, load);
+    };
+  }, [user, pathname]);
+  // Opening the menu loads the list, then marks the unread rows it shows as read (the rows keep
+  // their tint until the menu closes). Types the member switched off are never listed or marked.
+  useEffect(() => {
+    if (!menuOpen || !user) return;
+    let cancelled = false;
+    fetch('/api/notifications?scope=all', { cache: 'no-store' })
+      .then((r) => (r.ok ? r.json() : null))
+      .then((j) => {
+        if (cancelled || !j) return;
+        const rows = (j.notifications ?? []) as NotifRow[];
+        setNotifs(rows);
+        const unreadIds = rows.filter((n) => !n.is_read).map((n) => n.id);
+        if (unreadIds.length === 0) return;
+        setUnreadCount(0);
+        void fetch('/api/notifications', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ids: unreadIds }),
+        });
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [menuOpen, user]);
   // Tracks the signed-in member and their profile.
   useEffect(() => {
     async function loadUser() {
@@ -229,19 +313,63 @@ export function Navbar() {
                 <button
                   type="button"
                   onClick={() => setMenuOpen(!menuOpen)}
-                  aria-label="Open menu"
+                  aria-label={unreadCount > 0 ? `Open account menu, ${unreadCount} unread notifications` : 'Open account menu'}
                   aria-haspopup="menu"
                   aria-expanded={menuOpen}
-                  className="w-9 h-9 flex items-center justify-center rounded-full hover:bg-[#E8E6F1]/70 text-[#413B5E] transition-colors relative"
+                  className="w-9 h-9 flex items-center justify-center rounded-full bg-[#E8E6F1]/70 text-[#8574B7] transition-opacity hover:opacity-90 relative"
                 >
-                  <Menu className="w-5 h-5" />
+                  {profile?.avatar_url ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={supabaseImage(profile.avatar_url, AVATAR_IMAGE)} alt="" width={36} height={36} className="w-9 h-9 rounded-full object-cover" />
+                  ) : (
+                    <User className="w-5 h-5" aria-hidden />
+                  )}
+                  <CountChip count={unreadCount} label={`${unreadCount} unread`} className="absolute -top-1 -right-1" />
                 </button>
                 {menuOpen && (
                   // Account utilities + announcements; dating activity lives on the BottomNav tabs.
-                  <div role="menu" className="absolute right-0 mt-2 w-64 rounded-2xl bg-white border border-[#D0CDE1] shadow-xl overflow-hidden z-[200] animate-[notifDropdownIn_0.2s_cubic-bezier(0.16,1,0.3,1)_both]">
+                  <div role="menu" className="absolute right-0 mt-2 w-72 max-w-[calc(100vw-2rem)] rounded-2xl bg-white border border-[#D0CDE1] shadow-xl overflow-hidden z-[200] animate-[notifDropdownIn_0.2s_cubic-bezier(0.16,1,0.3,1)_both]">
                     <div className="px-4 py-3 border-b border-[#D0CDE1] flex items-center gap-1.5 min-w-0">
                       <span className="text-sm font-semibold text-[#413B5E] truncate">{displayName.replace(/^@/, '')}</span>
                       {isPlusProfile(profile) && <PlusBadge size="profile" />}
+                    </div>
+                    {/* Notifications: newest first, scrolls inside the menu (max ~240px) */}
+                    <div className="border-b border-[#D0CDE1]">
+                      <p className="px-4 pt-2.5 pb-1 text-[10px] font-semibold uppercase tracking-wider text-[#8574B7]">{t('nav.notifications')}</p>
+                      <div className="max-h-[240px] overflow-y-auto overscroll-contain pb-1">
+                        {notifs === null ? (
+                          <div aria-hidden className="px-4 py-2 space-y-2">
+                            <div className="h-8 rounded-xl bg-[#E8E6F1]/60 animate-pulse" />
+                            <div className="h-8 rounded-xl bg-[#E8E6F1]/60 animate-pulse" />
+                          </div>
+                        ) : notifs.length === 0 ? (
+                          <p className="px-4 py-3 text-xs text-[#413B5E]/70">{t('nav.noNotifications')}</p>
+                        ) : (
+                          notifs.map((n) => (
+                            <Link
+                              key={n.id}
+                              href={notifHref(n)}
+                              role="menuitem"
+                              onClick={() => setMenuOpen(false)}
+                              className={`flex items-center gap-2.5 px-4 py-2 transition-colors hover:bg-[#E8E6F1]/40 ${n.is_read ? '' : 'bg-[#8574B7]/10'}`}
+                            >
+                              {n.actor?.avatar_url ? (
+                                // eslint-disable-next-line @next/next/no-img-element
+                                <img src={supabaseImage(n.actor.avatar_url, AVATAR_IMAGE)} alt="" width={32} height={32} className="w-8 h-8 rounded-full object-cover shrink-0 bg-[#E8E6F1]/60" />
+                              ) : (
+                                <span className="w-8 h-8 rounded-full shrink-0 bg-[#E8E6F1]/70 text-[#8574B7] flex items-center justify-center">
+                                  <Megaphone className="w-4 h-4" aria-hidden />
+                                </span>
+                              )}
+                              <span className="min-w-0 flex-1">
+                                <span className="block text-xs font-medium text-[#413B5E] truncate">{n.description || n.title || 'Notification'}</span>
+                                <span className="block text-[10px] text-[#413B5E]/60">{timeAgo(n.created_at)}</span>
+                              </span>
+                              {!n.is_read && <span aria-label="Unread" className="w-2 h-2 rounded-full bg-[#8574B7] shrink-0" />}
+                            </Link>
+                          ))
+                        )}
+                      </div>
                     </div>
                     <div className="py-1">
                       <Link href="/plus" role="menuitem" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 h-11 text-sm text-[#413B5E] hover:bg-[#E8E6F1]/40 transition-colors justify-between">
@@ -276,7 +404,8 @@ export function Navbar() {
                         // Staff only: never rendered for members.
                         <Link href="/admin" role="menuitem" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 h-11 text-sm text-[#413B5E] hover:bg-[#E8E6F1]/40 transition-colors">
                           <ShieldAlert className="w-4 h-4 text-slate-600" />
-                          Admin Console
+                          <span className="flex-1">Admin Console</span>
+                          <CountChip count={adminPending} />
                         </Link>
                       )}
                     </div>

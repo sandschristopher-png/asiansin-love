@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, after } from 'next/server';
+import { notifyAdmins } from '@/lib/adminNotify';
 import exifr from 'exifr';
 import { createClient as createServerClient } from '@/lib/supabase/server';
 import { createClient } from '@supabase/supabase-js';
@@ -244,6 +245,9 @@ export async function POST(req: Request) {
     }
 
     // 8. Main photos wait in the admin review queue (/admin/photos) while avatar_status is pending_review.
+    if (isPrimaryAvatar) {
+      after(() => notifyAdmins({ kind: 'photo', title: 'New main photo to approve', ref: userId, actorId: userId }));
+    }
 
     return NextResponse.json({
       success: true,

@@ -85,7 +85,9 @@
     "discover": "ค้นพบ",
     "sparks": "Sparks",
     "messages": "ข้อความ",
-    "profile": "โปรไฟล์"
+    "profile": "โปรไฟล์",
+    "notifications": "การแจ้งเตือน",
+    "noNotifications": "ยังไม่มีการแจ้งเตือน"
   },
   "discover": {
     "modeAll": "ทั้งหมด",
@@ -305,7 +307,9 @@
     "plusActiveTitle": "Meet in Asia Plus ใช้งานอยู่",
     "plusActiveSub": "จัดการการสมัครสมาชิกและการเรียกเก็บเงิน",
     "privateOn": "พักโปรไฟล์แล้ว คุณถูกซ่อนจากหน้าค้นพบ",
-    "privateOff": "โปรไฟล์ของคุณกลับมาแสดงในหน้าค้นพบแล้ว"
+    "privateOff": "โปรไฟล์ของคุณกลับมาแสดงในหน้าค้นพบแล้ว",
+    "adminConsole": "คอนโซลผู้ดูแล",
+    "adminConsoleSub": "การยืนยันตัวตน รูปภาพ และรายงานที่รอดำเนินการ"
   },
   "errors": {
     "generic": "เกิดข้อผิดพลาด โปรดลองอีกครั้ง",

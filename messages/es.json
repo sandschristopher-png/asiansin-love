@@ -85,7 +85,9 @@
     "discover": "Descubrir",
     "sparks": "Sparks",
     "messages": "Mensajes",
-    "profile": "Perfil"
+    "profile": "Perfil",
+    "notifications": "Notificaciones",
+    "noNotifications": "Aún no hay notificaciones"
   },
   "discover": {
     "modeAll": "Todos",
@@ -305,7 +307,9 @@
     "plusActiveTitle": "Meet in Asia Plus activo",
     "plusActiveSub": "Gestiona tu suscripción y facturación",
     "privateOn": "Perfil en pausa. Estás oculto en Descubrir.",
-    "privateOff": "Tu perfil vuelve a ser visible en Descubrir."
+    "privateOff": "Tu perfil vuelve a ser visible en Descubrir.",
+    "adminConsole": "Consola de administración",
+    "adminConsoleSub": "Verificaciones, fotos y reportes pendientes"
   },
   "errors": {
     "generic": "Algo salió mal. Inténtalo de nuevo.",

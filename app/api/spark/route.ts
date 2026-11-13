@@ -109,6 +109,9 @@ export async function POST(req: Request) {
       await sendPushToUser({
         userId: targetUserId,
         type: 'match',
+        actorId: user.id,
+        body: `You and ${senderName} sparked each other. Say hi.`,
+        url: '/chat/' + user.id,
       }).catch((e) => console.error('[Push] spark match error:', e))
     } else {
       // Regular spark - actor-aware copy
@@ -123,6 +126,9 @@ export async function POST(req: Request) {
       await sendPushToUser({
         userId: targetUserId,
         type: 'spark',
+        actorId: user.id,
+        body: senderName + ' sparked your profile.',
+        url: '/profile/' + user.id,
       }).catch((e) => console.error('[Push] spark regular error:', e))
     }
 

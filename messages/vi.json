@@ -85,7 +85,9 @@
     "discover": "Khám phá",
     "sparks": "Sparks",
     "messages": "Tin nhắn",
-    "profile": "Hồ sơ"
+    "profile": "Hồ sơ",
+    "notifications": "Thông báo",
+    "noNotifications": "Chưa có thông báo nào"
   },
   "discover": {
     "modeAll": "Tất cả",
@@ -305,7 +307,9 @@
     "plusActiveTitle": "Meet in Asia Plus đang hoạt động",
     "plusActiveSub": "Quản lý gói đăng ký và thanh toán",
     "privateOn": "Đã tạm ẩn hồ sơ. Bạn không hiển thị trong Khám phá.",
-    "privateOff": "Hồ sơ của bạn đã hiển thị lại trong Khám phá."
+    "privateOff": "Hồ sơ của bạn đã hiển thị lại trong Khám phá.",
+    "adminConsole": "Bảng quản trị",
+    "adminConsoleSub": "Xác minh, ảnh và báo cáo đang chờ"
   },
   "errors": {
     "generic": "Đã xảy ra lỗi. Vui lòng thử lại.",

@@ -85,7 +85,9 @@
     "discover": "Tuklasin",
     "sparks": "Sparks",
     "messages": "Mensahe",
-    "profile": "Profile"
+    "profile": "Profile",
+    "notifications": "Mga Notipikasyon",
+    "noNotifications": "Wala pang notipikasyon"
   },
   "discover": {
     "modeAll": "Lahat",
@@ -305,7 +307,9 @@
     "plusActiveTitle": "Aktibo ang Meet in Asia Plus",
     "plusActiveSub": "Pamahalaan ang subscription at billing mo",
     "privateOn": "Naka-pause ang profile. Nakatago ka sa Tuklasin.",
-    "privateOff": "Nakikita ka na ulit sa Tuklasin."
+    "privateOff": "Nakikita ka na ulit sa Tuklasin.",
+    "adminConsole": "Admin Console",
+    "adminConsoleSub": "Mga nakabinbing beripikasyon, larawan at ulat"
   },
   "errors": {
     "generic": "May nangyaring mali. Pakisubukan ulit.",

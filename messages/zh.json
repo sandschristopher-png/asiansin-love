@@ -85,7 +85,9 @@
     "discover": "发现",
     "sparks": "Sparks",
     "messages": "消息",
-    "profile": "我的"
+    "profile": "我的",
+    "notifications": "通知",
+    "noNotifications": "暂无通知"
   },
   "discover": {
     "modeAll": "全部",
@@ -305,7 +307,9 @@
     "plusActiveTitle": "Meet in Asia Plus 已生效",
     "plusActiveSub": "管理您的订阅和账单",
     "privateOn": "资料已暂停，您已在发现页隐藏。",
-    "privateOff": "您的资料已重新显示在发现页。"
+    "privateOff": "您的资料已重新显示在发现页。",
+    "adminConsole": "管理控制台",
+    "adminConsoleSub": "待处理的认证、照片和举报"
   },
   "errors": {
     "generic": "出了点问题，请重试。",

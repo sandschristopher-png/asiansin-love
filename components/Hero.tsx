@@ -25,8 +25,8 @@ export function SignInPrompt() {
 }
 
 /**
- * Hero stack, top to bottom: photo, headline and copy, then the CTA block (Join for Free, one
- * verification / Sparks text row, "Already a member? Sign in"). Text comes from the active
+ * Hero stack, top to bottom: photo, headline and copy, then the CTA block in this order: Join for
+ * Free (/signup), the Selfie-Verified trust line, the Sparks stat, "Already a member? Sign in" (/login). Text comes from the active
  * dictionary (messages/<locale>.json). Rendered inside LANDING_SHELL.
  */
 export default function Hero() {
@@ -34,26 +34,26 @@ export default function Hero() {
   return (
     <section className="w-full bg-white pt-2 pb-10">
       <div className="flex flex-col items-center text-center">
-        {/* Full-bleed photo in a rounded mask, 3:2 landscape (source is 1024x687). */}
-        <div className="relative w-full aspect-[3/2] overflow-hidden rounded-2xl bg-[#E8E6F1]/50">
+        {/* Photo in a rounded card at its own 1024x687 ratio with object-contain, so it is never cropped. */}
+        <div className="relative w-full aspect-[1024/687] overflow-hidden rounded-3xl bg-[#E8E6F1]/50">
           <Image
             src="/Landing-Woman.png"
             alt={m.hero.imageAlt}
             fill
-            priority
+            preload
             quality={95}
-            sizes="448px"
-            className="object-cover select-none pointer-events-none"
+            sizes="(max-width: 448px) 100vw, 448px"
+            className="object-contain select-none pointer-events-none"
           />
         </div>
 
-        <h1 className="mt-8 text-[28px] font-semibold tracking-tight leading-tight text-[#413B5E]">
+        <h1 className="mt-8 w-full text-[28px] font-semibold tracking-tight leading-tight text-[#413B5E] break-words">
           <span className="block">{m.hero.line1}</span>
           <span className="block text-[#8574B7]">{m.hero.line2}</span>
           <span className="block">{m.hero.line3}</span>
         </h1>
 
-        <p className="mt-3 text-[15px] leading-relaxed text-slate-600">{m.hero.subtitle}</p>
+        <p className="mt-3 w-full text-[15px] leading-relaxed text-slate-600 break-words">{m.hero.subtitle}</p>
 
         {/* CTA block: one item per row */}
         <div className="mt-7 w-full flex flex-col items-center gap-4">
@@ -64,12 +64,11 @@ export default function Hero() {
             {m.hero.join}
           </Link>
 
-          {/* One plain text row, no containers. */}
-          <p className="text-[13px] font-medium text-slate-600">
-            {m.hero.factVerified}
-            <span className="mx-2" aria-hidden="true">•</span>
-            {m.hero.factSparks}
-          </p>
+          {/* Trust line, then the Sparks social-proof stat: one row each. */}
+          <div className="flex flex-col items-center gap-1">
+            <p className="text-[13px] font-semibold text-[#8574B7]">{m.hero.factVerified}</p>
+            <p className="text-[13px] font-medium text-slate-600">{m.hero.factSparks}</p>
+          </div>
 
           <SignInPrompt />
         </div>

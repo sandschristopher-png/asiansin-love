@@ -8,7 +8,8 @@
 // v9: offline.html shows the 404 monkey, precached with the page.
 // v10: the monkey is now a 42 KB WebP (was a 750 KB PNG), so it is precached with the app shell.
 // v11: new Plus Jakarta Sans "M" monogram icons (PWA + favicon); the shell is re-fetched past the HTTP cache.
-const CACHE_NAME = 'ail-cache-v11';
+// v12: push shows the actor photo (icon + image), "Meet in Asia" title, 72px monochrome badge.
+const CACHE_NAME = 'ail-cache-v12';
 const OFFLINE_URL = '/offline.html';
 // App shell that must work with no network. Next.js JS / CSS chunks are content-hashed and are
 // cached at runtime on first use (fetch handler below).
@@ -88,7 +89,8 @@ self.addEventListener('push', (event) => {
     payload = { title: 'Meet in Asia', body: event.data.text() };
   }
 
-  const title = payload.title || 'Meet in Asia';
+  // Brand title; the body carries the event ("Anong: hi there", "Mai sparked your profile.").
+  const title = 'Meet in Asia';
   // Lock-screen buttons (Android / desktop Chrome, Edge; iOS shows the notification without them).
   const actions =
     payload.type === 'message'
@@ -99,8 +101,11 @@ self.addEventListener('push', (event) => {
   const options = {
     actions,
     body: payload.body || 'You have a new update waiting.',
+    // Actor photo when the server sends one (lib/pushSender.ts), else the app icon.
     icon: payload.icon || '/icon-192.png',
-    badge: '/icon-192.png',
+    ...(payload.image ? { image: payload.image } : {}),
+    // Android status-bar badge: 72x72 white-on-transparent mask.
+    badge: '/badge-72.png',
     tag: payload.tag || payload.type || 'ail-notification',
     renotify: true,
     vibrate: [200, 100, 200],

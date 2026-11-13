@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server';
+import { NextResponse, after } from 'next/server';
+import { notifyAdmins } from '@/lib/adminNotify';
 import { cookies } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
 import { createClient } from '@supabase/supabase-js';
@@ -300,6 +301,10 @@ export async function POST(req: Request) {
       await serviceClient
         .from('messages')
         .insert([{ sender_id: senderId, receiver_id: receiverId, content, is_quarantined: true }]);
+      // Staff alert: a quarantined message waits in the Chat moderation queue.
+      after(() =>
+        notifyAdmins({ kind: 'moderation', title: 'Message quarantined by the safety filter', ref: senderId, actorId: senderId })
+      );
 
       return NextResponse.json({ success: true, delivered: true });
     }
@@ -359,6 +364,8 @@ export async function POST(req: Request) {
         userId: receiverId,
         type: 'message',
         conversationId: senderId,
+        actorId: senderId,
+        body: senderName + ': ' + (content.length > 120 ? content.slice(0, 117) + '...' : content),
       }).catch((e) => console.error('[Push] message error:', e));
     } catch {
       // Non-blocking notification dispatch
