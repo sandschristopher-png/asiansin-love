@@ -449,5 +449,104 @@
     "adminPhoto": "{name} memuat naik foto utama baharu",
     "adminReport": "{name} telah dilaporkan",
     "adminModeration": "Mesej daripada {name} telah dikuarantin"
+  },
+  "landing": {
+    "nav": {
+      "how": "Cara Ia Berfungsi",
+      "cities": "Bandar",
+      "safety": "Keselamatan",
+      "join": "Sertai Percuma"
+    },
+    "badge": "Aktif di Asia Tenggara • Beta Pengasas",
+    "h1a": "Rancangan Sebenar.",
+    "h1b": "Orang Disahkan.",
+    "h1c": "Di Seluruh Asia.",
+    "sub": "Persahabatan rentas negara yang tulen dengan ahli yang disahkan melalui swafoto. Tiada bot, tiada pelawaan, tiada teka-teki.",
+    "ctaPrimary": "Mula Berkenalan Percuma",
+    "ctaSecondary": "Teroka Bandar",
+    "founding": "Kini Dibuka untuk Ahli Pengasas",
+    "preview": {
+      "label": "Pratonton aplikasi",
+      "sample": "Profil contoh, untuk ilustrasi sahaja",
+      "verified": "Disahkan",
+      "spark": "Spark",
+      "sparked": "Dihantar",
+      "message": "Mesej",
+      "all": "Semua",
+      "online": "Dalam talian",
+      "nearMe": "Berdekatan"
+    },
+    "cities": {
+      "heading": "Satu Akaun. Setiap Bandar Utama.",
+      "sub": "Layari, rancang dan berhubung di seluruh rantau dengan satu profil.",
+      "explore": "Teroka {city}",
+      "join": "Kenali ahli di sini"
+    },
+    "countries": {
+      "ph": "Filipina",
+      "th": "Thailand",
+      "vn": "Vietnam",
+      "id": "Indonesia",
+      "kh": "Kemboja"
+    },
+    "showcase": {
+      "heading": "Lihat Apa Di Dalamnya",
+      "sub": "Aplikasi sebenar, satu ketikan pada satu masa.",
+      "tabs": {
+        "discover": "Teroka",
+        "travel": "Pelan Perjalanan",
+        "verified": "Profil Disahkan"
+      },
+      "discover": {
+        "title": "Layari dengan niat",
+        "body": "Tapis siapa yang dalam talian, siapa yang berdekatan dan siapa yang baru menyertai, dengan matlamat hubungan dipaparkan."
+      },
+      "travel": {
+        "title": "Berhubung sebelum tiba",
+        "body": "Tambah destinasi dan tarikh anda supaya ahli di bandar itu tahu anda akan melawat tidak lama lagi."
+      },
+      "verified": {
+        "title": "Orang sebenar, disemak dengan teliti",
+        "body": "Setiap ahli melengkapkan semakan swafoto langsung yang disemak oleh pasukan kami, dan foto utama disemak sebelum dipaparkan."
+      },
+      "visiting": "Melawat Bangkok",
+      "dates": "12 – 19 Mac",
+      "selfie": "Semakan swafoto langsung",
+      "photo": "Semakan foto",
+      "report": "Lapor sekali ketik"
+    },
+    "how": {
+      "heading": "Cara Meet in Asia Berfungsi",
+      "one": {
+        "title": "Cipta Profil Anda",
+        "desc": "Kongsi kisah, niat anda dan di mana anda menetap atau destinasi seterusnya."
+      },
+      "two": {
+        "title": "Layari Orang Sebenar",
+        "desc": "Tapis mengikut bandar, gaya hidup dan matlamat hubungan untuk mencari ahli yang mahukan perkara yang sama."
+      },
+      "three": {
+        "title": "Berhubung & Bertemu",
+        "desc": "Mulakan perbualan tulen dan jadikan Spark dalam talian sebagai rancangan sebenar."
+      }
+    },
+    "faq": {
+      "heading": "Soalan lazim",
+      "q1": "Adakah percuma untuk menyertai Meet in Asia?",
+      "a1": "Ya. Mencipta profil dan melayari adalah percuma, dan setiap hari anda mendapat 30 Spark dan 5 perbualan baharu tanpa kos. Plus adalah pilihan.",
+      "q2": "Bagaimana anda memastikan profil tulen?",
+      "a2": "Setiap ahli melengkapkan pengesahan swafoto langsung yang disemak oleh pasukan kami. Foto utama juga disemak, mesej melalui penapis keselamatan, dan laporan terus ke moderator kami.",
+      "q3": "Bolehkah saya berhubung sebelum ke Asia?",
+      "a3": "Boleh. Tambah Pelan Perjalanan dengan destinasi dan tarikh anda, dan ahli di bandar itu akan nampak anda akan melawat dan boleh menegur dahulu."
+    },
+    "closing": {
+      "heading": "Dapatkan tempat anda lebih awal.",
+      "sub": "Ahli pengasas membentuk komuniti sejak hari pertama. Sertai percuma dalam masa kurang dua minit.",
+      "cta": "Cipta Profil Percuma"
+    },
+    "floating": {
+      "cta": "Cipta Profil Percuma",
+      "dismiss": "Tutup"
+    }
   }
 }

@@ -449,5 +449,104 @@
     "adminPhoto": "{name} subió una nueva foto principal",
     "adminReport": "{name} fue reportado",
     "adminModeration": "Un mensaje de {name} fue puesto en cuarentena"
+  },
+  "landing": {
+    "nav": {
+      "how": "Cómo funciona",
+      "cities": "Ciudades",
+      "safety": "Seguridad",
+      "join": "Únete gratis"
+    },
+    "badge": "En vivo en el Sudeste Asiático • Beta fundadora",
+    "h1a": "Planes reales.",
+    "h1b": "Personas verificadas.",
+    "h1c": "En toda Asia.",
+    "sub": "Compañía genuina entre países con miembros verificados por selfie. Sin bots, sin solicitudes, sin adivinanzas.",
+    "ctaPrimary": "Empieza a conocer gente gratis",
+    "ctaSecondary": "Explorar ciudades",
+    "founding": "Abierto ahora para miembros fundadores",
+    "preview": {
+      "label": "Vista previa de la app",
+      "sample": "Perfiles de muestra, solo ilustrativos",
+      "verified": "Verificado",
+      "spark": "Spark",
+      "sparked": "Spark enviado",
+      "message": "Mensaje",
+      "all": "Todos",
+      "online": "En línea",
+      "nearMe": "Cerca de mí"
+    },
+    "cities": {
+      "heading": "Una cuenta. Todos los grandes destinos.",
+      "sub": "Explora, planifica y conecta en toda la región con un solo perfil.",
+      "explore": "Explorar {city}",
+      "join": "Conoce miembros aquí"
+    },
+    "countries": {
+      "ph": "Filipinas",
+      "th": "Tailandia",
+      "vn": "Vietnam",
+      "id": "Indonesia",
+      "kh": "Camboya"
+    },
+    "showcase": {
+      "heading": "Mira lo que hay dentro",
+      "sub": "La app real, un toque a la vez.",
+      "tabs": {
+        "discover": "Descubrir",
+        "travel": "Planes de viaje",
+        "verified": "Perfiles verificados"
+      },
+      "discover": {
+        "title": "Explora con intención",
+        "body": "Filtra por quién está en línea, quién está cerca y quién acaba de unirse, con los objetivos de relación a la vista."
+      },
+      "travel": {
+        "title": "Conecta antes de llegar",
+        "body": "Añade tu destino y tus fechas para que los miembros de esa ciudad sepan que vas de visita pronto."
+      },
+      "verified": {
+        "title": "Personas reales, verificadas con discreción",
+        "body": "Cada miembro completa una verificación con selfie en vivo que revisa nuestro equipo, y las fotos principales se revisan antes de publicarse."
+      },
+      "visiting": "De visita en Bangkok",
+      "dates": "12 – 19 mar",
+      "selfie": "Selfie en vivo",
+      "photo": "Revisión de fotos",
+      "report": "Reporte con un toque"
+    },
+    "how": {
+      "heading": "Cómo funciona Meet in Asia",
+      "one": {
+        "title": "Crea tu perfil",
+        "desc": "Comparte tu historia, tus intenciones y dónde vives o a dónde viajarás."
+      },
+      "two": {
+        "title": "Conoce gente real",
+        "desc": "Filtra por ciudad, estilo de vida y objetivos de relación para encontrar a quien busca lo mismo que tú."
+      },
+      "three": {
+        "title": "Conecta y conócete en persona",
+        "desc": "Inicia conversaciones genuinas y convierte los Sparks en planes reales."
+      }
+    },
+    "faq": {
+      "heading": "Preguntas frecuentes",
+      "q1": "¿Es gratis unirse a Meet in Asia?",
+      "a1": "Sí. Crear un perfil y explorar es gratis, y cada día tienes 30 Sparks y 5 conversaciones nuevas sin costo. Plus es opcional.",
+      "q2": "¿Cómo mantienen los perfiles auténticos?",
+      "a2": "Cada miembro completa una verificación con selfie en vivo que revisa nuestro equipo. Las fotos principales también se revisan, los mensajes pasan un filtro de seguridad y los reportes llegan directo a nuestros moderadores.",
+      "q3": "¿Puedo conectar antes de viajar a Asia?",
+      "a3": "Sí. Añade un plan de viaje con tu destino y tus fechas, y los miembros de esa ciudad verán que vas de visita pronto y podrán saludarte primero."
+    },
+    "closing": {
+      "heading": "Reserva tu lugar desde ya.",
+      "sub": "Los miembros fundadores dan forma a la comunidad desde el primer día. Únete gratis en menos de dos minutos.",
+      "cta": "Crear perfil gratis"
+    },
+    "floating": {
+      "cta": "Crear perfil gratis",
+      "dismiss": "Cerrar"
+    }
   }
 }

@@ -449,5 +449,104 @@
     "adminPhoto": "{name} mengunggah foto utama baru",
     "adminReport": "{name} dilaporkan",
     "adminModeration": "Pesan dari {name} dikarantina"
+  },
+  "landing": {
+    "nav": {
+      "how": "Cara Kerja",
+      "cities": "Kota",
+      "safety": "Keamanan",
+      "join": "Gabung Gratis"
+    },
+    "badge": "Aktif di Asia Tenggara • Beta Pendiri",
+    "h1a": "Rencana Nyata.",
+    "h1b": "Orang Terverifikasi.",
+    "h1c": "Di Seluruh Asia.",
+    "sub": "Pertemanan lintas negara yang tulus dengan anggota terverifikasi selfie. Tanpa bot, tanpa ajakan transaksi, tanpa tebak-tebakan.",
+    "ctaPrimary": "Mulai Kenalan Gratis",
+    "ctaSecondary": "Jelajahi Kota",
+    "founding": "Kini Dibuka untuk Anggota Pendiri",
+    "preview": {
+      "label": "Pratinjau aplikasi",
+      "sample": "Profil contoh, hanya ilustrasi",
+      "verified": "Terverifikasi",
+      "spark": "Spark",
+      "sparked": "Terkirim",
+      "message": "Pesan",
+      "all": "Semua",
+      "online": "Online",
+      "nearMe": "Di Dekatku"
+    },
+    "cities": {
+      "heading": "Satu Akun. Semua Kota Utama.",
+      "sub": "Jelajahi, rencanakan, dan terhubung di seluruh kawasan dengan satu profil.",
+      "explore": "Jelajahi {city}",
+      "join": "Temui anggota di sini"
+    },
+    "countries": {
+      "ph": "Filipina",
+      "th": "Thailand",
+      "vn": "Vietnam",
+      "id": "Indonesia",
+      "kh": "Kamboja"
+    },
+    "showcase": {
+      "heading": "Lihat Isinya",
+      "sub": "Aplikasi sungguhan, satu ketukan setiap kali.",
+      "tabs": {
+        "discover": "Jelajahi",
+        "travel": "Rencana Perjalanan",
+        "verified": "Profil Terverifikasi"
+      },
+      "discover": {
+        "title": "Jelajahi dengan niat",
+        "body": "Saring siapa yang online, siapa yang dekat, dan siapa yang baru bergabung, dengan tujuan hubungan terlihat jelas."
+      },
+      "travel": {
+        "title": "Terhubung sebelum tiba",
+        "body": "Tambahkan tujuan dan tanggalmu agar anggota di kota itu tahu kamu akan segera berkunjung."
+      },
+      "verified": {
+        "title": "Orang nyata, diperiksa diam-diam",
+        "body": "Setiap anggota menjalani pemeriksaan selfie langsung yang ditinjau tim kami, dan foto utama ditinjau sebelum tayang."
+      },
+      "visiting": "Berkunjung ke Bangkok",
+      "dates": "12 – 19 Mar",
+      "selfie": "Cek selfie langsung",
+      "photo": "Tinjauan foto",
+      "report": "Lapor sekali ketuk"
+    },
+    "how": {
+      "heading": "Cara Kerja Meet in Asia",
+      "one": {
+        "title": "Buat Profilmu",
+        "desc": "Ceritakan kisahmu, niatmu, dan di mana kamu tinggal atau tujuan perjalananmu berikutnya."
+      },
+      "two": {
+        "title": "Jelajahi Orang Nyata",
+        "desc": "Saring berdasarkan kota, gaya hidup, dan tujuan hubungan untuk menemukan yang menginginkan hal yang sama."
+      },
+      "three": {
+        "title": "Terhubung & Bertemu Langsung",
+        "desc": "Mulai percakapan tulus dan ubah Spark online menjadi rencana nyata."
+      }
+    },
+    "faq": {
+      "heading": "Pertanyaan umum",
+      "q1": "Apakah gratis bergabung dengan Meet in Asia?",
+      "a1": "Ya. Membuat profil dan menjelajah gratis, dan setiap hari kamu mendapat 30 Spark dan 5 percakapan baru tanpa biaya. Plus bersifat opsional.",
+      "q2": "Bagaimana kalian menjaga profil tetap asli?",
+      "a2": "Setiap anggota menjalani verifikasi selfie langsung yang ditinjau tim kami. Foto utama juga ditinjau, pesan melewati filter keamanan, dan laporan langsung masuk ke moderator kami.",
+      "q3": "Bisakah saya terhubung sebelum bepergian ke Asia?",
+      "a3": "Bisa. Tambahkan Rencana Perjalanan dengan tujuan dan tanggalmu, dan anggota di kota itu akan melihat kamu segera berkunjung dan bisa menyapa lebih dulu."
+    },
+    "closing": {
+      "heading": "Amankan tempatmu lebih awal.",
+      "sub": "Anggota pendiri membentuk komunitas sejak hari pertama. Gabung gratis dalam kurang dari dua menit.",
+      "cta": "Buat Profil Gratis"
+    },
+    "floating": {
+      "cta": "Buat Profil Gratis",
+      "dismiss": "Tutup"
+    }
   }
 }
