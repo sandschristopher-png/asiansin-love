@@ -100,63 +100,6 @@ function wordmarkSvg() {
 `;
 }
 
-/**
- * 1200x630 Open Graph / Twitter share card: soft lilac canvas, squircle "a" mark, the
- * asiansin.love lockup and the hero line - all drawn from glyph outlines (no system fonts).
- */
-function ogSvg() {
-  const W = 1200;
-  const H = 630;
-  const LEFT = 96;
-  const MAX_TEXT = W - LEFT * 2;
-  const opts = { kerning: true, letterSpacing: -0.03 };
-
-  // Text path at a size that fits MAX_TEXT, left-aligned at LEFT with its baseline at y.
-  const line = (text, size, y, fill) => {
-    const fit = Math.min(size, (size * MAX_TEXT) / font.getAdvanceWidth(text, size, opts));
-    return `<path d="${font.getPath(text, LEFT, y, fit, opts).toPathData(2)}" fill="${fill}"/>`;
-  };
-
-  // Wordmark at 104px: "asiansin" ink + ".love" gradient.
-  const wmSize = 104;
-  const wmY = 352;
-  const advA = font.getAdvanceWidth('asiansin', wmSize, opts);
-  const wmA = font.getPath('asiansin', LEFT, wmY, wmSize, opts).toPathData(2);
-  const wmB = font.getPath('.love', LEFT + advA, wmY, wmSize, opts).toPathData(2);
-
-  // Mark: 132px squircle with the gradient "a".
-  const MARK = 132;
-  const markGlyph = glyphA({ canvas: MARK, inkSize: MARK * 0.6 });
-
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${W} ${H}" width="${W}" height="${H}">
-  <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#FFFFFF"/>
-      <stop offset="0.55" stop-color="#FAF8FD"/>
-      <stop offset="1" stop-color="#F3EFFC"/>
-    </linearGradient>
-    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
-      <stop offset="0" stop-color="#C084FC" stop-opacity="0.35"/>
-      <stop offset="1" stop-color="#C084FC" stop-opacity="0"/>
-    </radialGradient>
-    ${gradientDef('g')}
-    ${gradientDef('gx', 0, 0, 1, 0)}
-  </defs>
-  <rect width="${W}" height="${H}" fill="url(#bg)"/>
-  <circle cx="1060" cy="120" r="320" fill="url(#glow)"/>
-  <circle cx="1150" cy="600" r="240" fill="url(#glow)" opacity="0.6"/>
-  <g transform="translate(${LEFT} 92)">
-    <rect x="2" y="2" width="${MARK - 4}" height="${MARK - 4}" rx="${MARK / 4 - 2}" fill="${BG}" stroke="${HAIRLINE}" stroke-width="4"/>
-    <path d="${markGlyph}" fill="url(#g)"/>
-  </g>
-  <path d="${wmA}" fill="${INK}"/>
-  <path d="${wmB}" fill="url(#gx)"/>
-  ${line('Real connection, without the guesswork.', 46, 450, INK)}
-  ${line('Verified singles across Southeast Asia and beyond.', 30, 508, '#6C637B')}
-</svg>
-`;
-}
-
 const png = (svg, w, h = w) =>
   sharp(Buffer.from(svg), { density: Math.ceil((72 * Math.max(w, h)) / 512) * 2 })
     .resize(w, h)
@@ -215,8 +158,7 @@ const OUTPUTS = [
   ['public/logo-mark-transparent.png', await png(transparent, 512)],
   ['public/logo-mark-white-transparent.png', await png(whiteTransparent, 512)],
   ['public/logo-wordmark-transparent.png', await png(wordmark, 1024, 240)],
-  // Social share card (app/layout.tsx metadata: openGraph + twitter)
-  ['public/og-image.png', await png(ogSvg(), 1200, 630)],
+  // (Social share cards use the landing photo, public/Landing-Woman.png: see app/layout.tsx.)
 ];
 
 for (const [rel, data] of OUTPUTS) {
