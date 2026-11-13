@@ -83,9 +83,9 @@ export function Navbar() {
   const showBack = !ROOT_TABS.includes((pathname || '').replace(/\/+$/, ''));
   if (isChatThread || pathname === '/plus' || (pathname || '').startsWith('/plus/') || pathname === '/profile/edit' || (pathname || '').startsWith('/profile/edit/') || pathname === '/settings' || (pathname || '').startsWith('/settings/')) return null;
   return (
-    // Frosted glass. On Discover it overlays the scrolling feed (LayoutShell) with the frosted filter bar
-    // directly below; that bar carries the divider so both read as one surface.
-    <header className="sticky top-0 z-50 w-full bg-white/75 backdrop-blur-md supports-[backdrop-filter]:bg-white/75">
+    // Frosted glass. On Discover the header is transparent: the filter bar below extends up behind it and
+    // draws ONE frosted surface for both (two stacked backdrop blurs always leave a seam where they meet).
+    <header className={`sticky top-0 z-50 w-full ${pathname === '/discover' ? 'bg-transparent' : 'bg-white/75 backdrop-blur-md supports-[backdrop-filter]:bg-white/75'}`}>
       <div className="max-w-[480px] mx-auto px-4 h-14 flex items-center justify-between relative">
         <div className={`flex items-center gap-2 ${pageTitle ? 'min-w-0' : 'shrink-0'}`}>
           <div

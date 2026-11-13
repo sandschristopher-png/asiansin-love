@@ -983,8 +983,10 @@ function DiscoverContent() {
       <main className="w-full max-w-[480px] mx-auto px-4 min-[480px]:px-8 pt-1 pb-36 relative">
         {/* Static Pinned Search & Filter Controls on Left + Horizontally Scrolling Categories on Right.
             Spans the full 480px frame (main is frame-wide; the negative margins cancel its padding), so
-            the frosted bar meets the frosted header edge to edge as one surface. */}
-        <section aria-label="Search and Filters" className="sticky top-14 z-30 w-[calc(100%+2rem)] -mx-4 min-[480px]:w-[calc(100%+4rem)] min-[480px]:-mx-8 px-4 py-2 flex items-center gap-3 bg-white/75 backdrop-blur-md supports-[backdrop-filter]:bg-white/75 border-b border-slate-200/60">
+            the frosted bar meets the frosted header edge to edge as one surface. It also extends up behind
+            the transparent Navbar (-mt-14 / pt-16 = header height + its own py-2), so header and filters are
+            one frosted layer with no seam. */}
+        <section aria-label="Search and Filters" className="sticky top-0 -mt-14 z-30 w-[calc(100%+2rem)] -mx-4 min-[480px]:w-[calc(100%+4rem)] min-[480px]:-mx-8 px-4 pt-16 pb-2 flex items-center gap-3 bg-white/75 backdrop-blur-md supports-[backdrop-filter]:bg-white/75 border-b border-slate-200/60">
           <div className={`flex items-center gap-1.5 ${searchOpen || searchQuery ? 'flex-1 min-w-0' : 'hidden'}`}>
             {searchOpen || searchQuery ? (
               <div className={`flex-1 min-w-0 h-9 flex items-center gap-1 bg-white border border-[#D0CDE1] focus-within:border-[#8574B7] rounded-full pl-3 pr-2 shadow-2xs transition-all ${searchAnimating ? 'animate-[slideIn_200ms_cubic-bezier(0.16,1,0.3,1)]' : ''} ${searchClosing ? 'animate-[slideOut_180ms_ease-in_forwards]' : ''}`}>
