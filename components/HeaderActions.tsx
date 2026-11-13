@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { User, Settings, LogOut, ShieldAlert, Megaphone, CreditCard } from 'lucide-react';
@@ -14,10 +14,8 @@ import { AVATAR_IMAGE, supabaseImage } from '@/lib/images/supabaseImage';
 import { PlusBadge } from '@/components/ui/PlusBadge';
 import { CountChip, useAdminPendingCount } from '@/components/admin/AdminPendingChip';
 import { NotificationBell } from '@/components/notifications/NotificationBell';
+import { cachedHeaderProfile, clearHeaderProfile, loadHeaderProfile } from '@/lib/headerProfileStore';
 
-/** Own-profile fields the account menu reads: name, avatar, Plus status and staff role. */
-const PROFILE_COLUMNS =
-  'id, username, avatar_url, is_plus, is_premium, subscription_status, current_period_end, plus_expires_at, admin_role, role, is_admin';
 
 export type HeaderAction = {
   icon: React.ComponentType<{ className?: string }>;
@@ -41,7 +39,12 @@ export function HeaderActions({ action }: { action?: HeaderAction }) {
   const adminPending = useAdminPendingCount(isStaff(adminRoleOf(profile)), menuOpen);
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // Signed-in member + profile (re-read on sign-in / sign-out).
+  // Last known avatar before first paint (no flicker on remounts or reloads); the session read is
+  // local (getSession), the profile refresh is shared with Navbar (lib/headerProfileStore).
+  useLayoutEffect(() => {
+    const hit = cachedHeaderProfile();
+    if (hit) setProfile(hit);
+  }, []);
   useEffect(() => {
     let cancelled = false;
     const load = async (u: { id: string } | null) => {
@@ -50,11 +53,15 @@ export function HeaderActions({ action }: { action?: HeaderAction }) {
         setProfile(null);
         return;
       }
-      const { data } = await supabase.from('profiles').select(PROFILE_COLUMNS).eq('id', u.id).maybeSingle();
-      if (!cancelled) setProfile(data);
+      const hit = cachedHeaderProfile(u.id);
+      if (hit && !cancelled) setProfile(hit);
+      const fresh = await loadHeaderProfile(u.id);
+      if (fresh && !cancelled) setProfile(fresh);
     };
-    supabase.auth.getUser().then(({ data: { user: u } }) => load(u));
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_e, session) => void load(session?.user ?? null));
+    supabase.auth.getSession().then(({ data: { session } }) => load(session?.user ?? null));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'USER_UPDATED') void load(session?.user ?? null);
+    });
     return () => {
       cancelled = true;
       subscription.unsubscribe();
@@ -118,6 +125,7 @@ export function HeaderActions({ action }: { action?: HeaderAction }) {
 
   const handleSignOut = async () => {
     setMenuOpen(false);
+    clearHeaderProfile();
     await hardSignOut();
     window.location.href = '/';
   };

@@ -3,18 +3,15 @@ import { BrandLogo } from '@/components/BrandLogo';
 import { isPlusProfile } from '@/lib/plus';
 import { setCachedSubscription } from '@/lib/subscriptionStatus';
 import { notifyUser } from '@/components/InAppToast';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useLayoutEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
 import { ArrowLeft } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { PlusBadge } from '@/components/ui/PlusBadge';
 import { HeaderActions } from '@/components/HeaderActions';
+import { cachedHeaderProfile, loadHeaderProfile } from '@/lib/headerProfileStore';
 import { useShare } from '@/components/share/useShare';
-
-/** Own-profile fields the header reads: Plus status (isPlusProfile) for the badge and Upgrade link. */
-const NAV_PROFILE_COLUMNS =
-  'id, username, is_plus, is_premium, subscription_status, current_period_end, plus_expires_at, admin_role, role, is_admin';
 
 /** Signed-in areas: the header never offers "Sign In" here (middleware already requires a session). */
 const IN_APP_PREFIXES = ['/discover', '/messages', '/favorites', '/profile', '/notifications', '/announcements', '/chat', '/settings', '/plus', '/upgrade', '/verify'];
@@ -29,45 +26,45 @@ export function Navbar() {
   const router = useRouter();
   const pathname = usePathname();
   const isChatThread = pathname?.startsWith('/chat');
-  // Tracks the signed-in member and their profile.
-  useEffect(() => {
-    async function loadUser() {
-      const { data: { user } } = await supabase.auth.getUser();
-      setUser(user);
+  // Last known member + profile before first paint (no header flicker on remounts or reloads).
+  useLayoutEffect(() => {
+    const hit = cachedHeaderProfile();
+    if (hit) {
+      setUser({ id: hit.id });
+      setProfile(hit);
       setAuthLoading(false);
-      if (user) {
-        const { data } = await supabase
-          .from('profiles')
-          .select(NAV_PROFILE_COLUMNS)
-          .eq('id', user.id)
-          .single();
-        if (data) {
-          setProfile(data);
-          setCachedSubscription(isPlusProfile(data));
-        }
-      }
     }
-    loadUser();
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(async (_event, session) => {
-      const currentUser = session?.user ?? null;
+  }, []);
+  // Tracks the signed-in member and their profile. getSession is a local read; the profile query
+  // is shared with HeaderActions through lib/headerProfileStore (one request, cached).
+  useEffect(() => {
+    let cancelled = false;
+    const load = async (currentUser: { id: string } | null) => {
+      if (cancelled) return;
       setUser(currentUser);
       setAuthLoading(false);
-      if (currentUser) {
-        const { data } = await supabase
-          .from('profiles')
-          .select(NAV_PROFILE_COLUMNS)
-          .eq('id', currentUser.id)
-          .single();
-        if (data) {
-          setProfile(data);
-          setCachedSubscription(isPlusProfile(data));
-        }
-      } else {
+      if (!currentUser) {
         setProfile(null);
         setCachedSubscription(null);
+        return;
       }
+      const hit = cachedHeaderProfile(currentUser.id);
+      if (hit) setProfile(hit);
+      const data = await loadHeaderProfile(currentUser.id);
+      if (data && !cancelled) {
+        setProfile(data);
+        setCachedSubscription(isPlusProfile(data as Parameters<typeof isPlusProfile>[0]));
+      }
+    };
+    supabase.auth.getSession().then(({ data: { session } }) => load(session?.user ?? null));
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      // Token refreshes keep the same member: no re-query.
+      if (event === 'SIGNED_IN' || event === 'SIGNED_OUT' || event === 'USER_UPDATED') void load(session?.user ?? null);
     });
-    return () => subscription.unsubscribe();
+    return () => {
+      cancelled = true;
+      subscription.unsubscribe();
+    };
   }, []);
   const getPageTitle = () => {
     if (!pathname || pathname === '/' || pathname === '/discover') return null;

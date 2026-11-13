@@ -1,10 +1,11 @@
 'use client';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Bell } from 'lucide-react';
 import { CountChip } from '@/components/admin/AdminPendingChip';
+import { cachedUnread, setCachedUnread } from '@/lib/headerProfileStore';
 import { NOTIFICATIONS_CHANGED_EVENT } from '@/lib/notificationStore';
 import { useLocale } from '@/components/i18n/LocaleProvider';
 import { NOTIF_GROUP_LABEL, NotificationRow, markNotificationsRead, type MemberNotification } from '@/components/notifications/NotificationRow';
@@ -25,6 +26,13 @@ export function NotificationBell() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [unread, setUnread] = useState(0);
+  // Last known count before first paint, so a remounted header does not pop the chip in from zero.
+  useLayoutEffect(() => {
+    setUnread(cachedUnread());
+  }, []);
+  useEffect(() => {
+    setCachedUnread(unread);
+  }, [unread]);
   const [items, setItems] = useState<MemberNotification[] | null>(null);
   // Rows that were unread when shown in this open session: they keep the tint + dot until close.
   const [tinted, setTinted] = useState<Set<string>>(new Set());
