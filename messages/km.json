@@ -87,7 +87,13 @@
     "messages": "សារ",
     "profile": "ប្រវត្តិរូប",
     "notifications": "ការជូនដំណឹង",
-    "noNotifications": "មិនទាន់មានការជូនដំណឹងនៅឡើយ"
+    "noNotifications": "មិនទាន់មានការជូនដំណឹងនៅឡើយ",
+    "markAllRead": "សម្គាល់ថាបានអានទាំងអស់",
+    "seeAll": "មើលទាំងអស់",
+    "today": "ថ្ងៃនេះ",
+    "thisWeek": "សប្តាហ៍នេះ",
+    "earlier": "មុននេះ",
+    "loadMore": "ផ្ទុកបន្ថែម"
   },
   "discover": {
     "modeAll": "ទាំងអស់",

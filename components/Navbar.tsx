@@ -14,40 +14,15 @@ import { supabase } from '@/lib/supabase/client';
 import { hardSignOut } from '@/lib/hardSignOut';
 import { PlusBadge } from '@/components/ui/PlusBadge';
 import { CountChip, useAdminPendingCount } from '@/components/admin/AdminPendingChip';
-import { NOTIFICATIONS_CHANGED_EVENT } from '@/lib/notificationStore';
+import { NOTIFICATIONS_CHANGED_EVENT, NOTIFICATIONS_READ_EVENT } from '@/lib/notificationStore';
+import { NotificationBell } from '@/components/notifications/NotificationBell';
 import { AVATAR_IMAGE, supabaseImage } from '@/lib/images/supabaseImage';
-import { useLocale } from '@/components/i18n/LocaleProvider';
 import { useShare } from '@/components/share/useShare';
 
 /** Own-profile fields the header reads: username, Plus status (isPlusProfile) and staff role. */
 const NAV_PROFILE_COLUMNS =
   'id, username, avatar_url, is_plus, is_premium, subscription_status, current_period_end, plus_expires_at, admin_role, role, is_admin';
 
-type NotifRow = {
-  id: string;
-  type: string;
-  title: string | null;
-  description: string | null;
-  link_url: string | null;
-  is_read: boolean;
-  created_at: string;
-  actor: { id: string; username: string | null; avatar_url: string | null } | null;
-};
-
-function timeAgo(iso: string): string {
-  const s = Math.max(0, (Date.now() - new Date(iso).getTime()) / 1000);
-  if (s < 60) return 'now';
-  if (s < 3600) return `${Math.floor(s / 60)}m`;
-  if (s < 86400) return `${Math.floor(s / 3600)}h`;
-  return `${Math.floor(s / 86400)}d`;
-}
-
-/** Where a dropdown row opens: chats to the thread, visits / sparks to the actor's profile. */
-function notifHref(n: NotifRow): string {
-  if (n.type === 'message' && n.actor) return `/chat/${n.actor.id}`;
-  if ((n.type === 'visit' || n.type === 'favorite' || n.type === 'spark') && n.actor) return `/profile/${n.actor.id}`;
-  return n.link_url || '/announcements';
-}
 /** Signed-in areas: the header never offers "Sign In" here (middleware already requires a session). */
 const IN_APP_PREFIXES = ['/discover', '/messages', '/favorites', '/profile', '/notifications', '/announcements', '/chat', '/settings', '/plus', '/upgrade', '/verify'];
 
@@ -60,9 +35,7 @@ export function Navbar() {
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const { share, shareSheet } = useShare();
   const [hasUnreadAnnouncements, setHasUnreadAnnouncements] = useState(false);
-  const { t } = useLocale();
-  // Account-dropdown notifications: unread chip on the avatar + the list at the top of the menu.
-  const [notifs, setNotifs] = useState<NotifRow[] | null>(null);
+  // Unread-notifications chip on the avatar (the list itself lives in the bell panel).
   const [unreadCount, setUnreadCount] = useState(0);
   const adminPending = useAdminPendingCount(isStaff(adminRoleOf(profile)), menuOpen);
   const menuRef = useRef<HTMLDivElement>(null);
@@ -105,16 +78,15 @@ export function Navbar() {
       window.removeEventListener(ANNOUNCEMENTS_READ_EVENT, cleared);
     };
   }, [user, pathname, menuOpen]);
-  // Unread chip: re-read on sign-in, route changes and whenever RealtimeNotifier sees a new row.
+  // Unread chip: re-read on sign-in, route changes, new rows (RealtimeNotifier) and reads (bell panel).
   useEffect(() => {
     if (!user) {
       setUnreadCount(0);
-      setNotifs(null);
       return;
     }
     let cancelled = false;
     const load = () =>
-      fetch('/api/notifications?scope=all', { cache: 'no-store' })
+      fetch('/api/notifications?scope=all&fresh=1&limit=1', { cache: 'no-store' })
         .then((r) => (r.ok ? r.json() : null))
         .then((j) => {
           if (cancelled || !j) return;
@@ -123,36 +95,13 @@ export function Navbar() {
         .catch(() => {});
     load();
     window.addEventListener(NOTIFICATIONS_CHANGED_EVENT, load);
+    window.addEventListener(NOTIFICATIONS_READ_EVENT, load);
     return () => {
       cancelled = true;
       window.removeEventListener(NOTIFICATIONS_CHANGED_EVENT, load);
+      window.removeEventListener(NOTIFICATIONS_READ_EVENT, load);
     };
   }, [user, pathname]);
-  // Opening the menu loads the list, then marks the unread rows it shows as read (the rows keep
-  // their tint until the menu closes). Types the member switched off are never listed or marked.
-  useEffect(() => {
-    if (!menuOpen || !user) return;
-    let cancelled = false;
-    fetch('/api/notifications?scope=all', { cache: 'no-store' })
-      .then((r) => (r.ok ? r.json() : null))
-      .then((j) => {
-        if (cancelled || !j) return;
-        const rows = (j.notifications ?? []) as NotifRow[];
-        setNotifs(rows);
-        const unreadIds = rows.filter((n) => !n.is_read).map((n) => n.id);
-        if (unreadIds.length === 0) return;
-        setUnreadCount(0);
-        void fetch('/api/notifications', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ ids: unreadIds }),
-        });
-      })
-      .catch(() => {});
-    return () => {
-      cancelled = true;
-    };
-  }, [menuOpen, user]);
   // Tracks the signed-in member and their profile.
   useEffect(() => {
     async function loadUser() {
@@ -224,6 +173,7 @@ export function Navbar() {
     if (pathname.startsWith('/favorites') || pathname.startsWith('/saved')) return 'Sparks';
     if (pathname.startsWith('/chat') || pathname.startsWith('/messages')) return 'Messages';
     if (pathname === '/announcements') return 'Announcements';
+    if (pathname === '/notifications') return 'Notifications';
     if (pathname === '/settings') return 'Settings';
     if (pathname === '/profile') return 'My Profile';
     if (pathname.startsWith('/profile/')) return 'Profile';
@@ -286,7 +236,7 @@ export function Navbar() {
             )}
           </div>
         </div>
-        <div className="flex items-center gap-1">
+        <div className="relative flex items-center gap-1">
           {user ? (
             <>
             {/* Upgrade: signed-in members without Plus only (is_plus is the webhook-written flag);
@@ -309,6 +259,8 @@ export function Navbar() {
                 <Settings className="w-5 h-5 stroke-[2]" />
               </Link>
             )}
+            {/* Notifications bell, immediately left of the account avatar */}
+            <NotificationBell />
             <div className={`relative ${pathname === "/profile" ? "hidden" : ""}`} ref={menuRef}>
                 <button
                   type="button"
@@ -328,48 +280,10 @@ export function Navbar() {
                 </button>
                 {menuOpen && (
                   // Account utilities + announcements; dating activity lives on the BottomNav tabs.
-                  <div role="menu" className="absolute right-0 mt-2 w-72 max-w-[calc(100vw-2rem)] rounded-2xl bg-white border border-[#D0CDE1] shadow-xl overflow-hidden z-[200] animate-[notifDropdownIn_0.2s_cubic-bezier(0.16,1,0.3,1)_both]">
+                  <div role="menu" className="absolute right-0 mt-2 w-64 rounded-2xl bg-white border border-[#D0CDE1] shadow-xl overflow-hidden z-[200] animate-[notifDropdownIn_0.2s_cubic-bezier(0.16,1,0.3,1)_both]">
                     <div className="px-4 py-3 border-b border-[#D0CDE1] flex items-center gap-1.5 min-w-0">
                       <span className="text-sm font-semibold text-[#413B5E] truncate">{displayName.replace(/^@/, '')}</span>
                       {isPlusProfile(profile) && <PlusBadge size="profile" />}
-                    </div>
-                    {/* Notifications: newest first, scrolls inside the menu (max ~240px) */}
-                    <div className="border-b border-[#D0CDE1]">
-                      <p className="px-4 pt-2.5 pb-1 text-[10px] font-semibold uppercase tracking-wider text-[#8574B7]">{t('nav.notifications')}</p>
-                      <div className="max-h-[240px] overflow-y-auto overscroll-contain pb-1">
-                        {notifs === null ? (
-                          <div aria-hidden className="px-4 py-2 space-y-2">
-                            <div className="h-8 rounded-xl bg-[#E8E6F1]/60 animate-pulse" />
-                            <div className="h-8 rounded-xl bg-[#E8E6F1]/60 animate-pulse" />
-                          </div>
-                        ) : notifs.length === 0 ? (
-                          <p className="px-4 py-3 text-xs text-[#413B5E]/70">{t('nav.noNotifications')}</p>
-                        ) : (
-                          notifs.map((n) => (
-                            <Link
-                              key={n.id}
-                              href={notifHref(n)}
-                              role="menuitem"
-                              onClick={() => setMenuOpen(false)}
-                              className={`flex items-center gap-2.5 px-4 py-2 transition-colors hover:bg-[#E8E6F1]/40 ${n.is_read ? '' : 'bg-[#8574B7]/10'}`}
-                            >
-                              {n.actor?.avatar_url ? (
-                                // eslint-disable-next-line @next/next/no-img-element
-                                <img src={supabaseImage(n.actor.avatar_url, AVATAR_IMAGE)} alt="" width={32} height={32} className="w-8 h-8 rounded-full object-cover shrink-0 bg-[#E8E6F1]/60" />
-                              ) : (
-                                <span className="w-8 h-8 rounded-full shrink-0 bg-[#E8E6F1]/70 text-[#8574B7] flex items-center justify-center">
-                                  <Megaphone className="w-4 h-4" aria-hidden />
-                                </span>
-                              )}
-                              <span className="min-w-0 flex-1">
-                                <span className="block text-xs font-medium text-[#413B5E] truncate">{n.description || n.title || 'Notification'}</span>
-                                <span className="block text-[10px] text-[#413B5E]/60">{timeAgo(n.created_at)}</span>
-                              </span>
-                              {!n.is_read && <span aria-label="Unread" className="w-2 h-2 rounded-full bg-[#8574B7] shrink-0" />}
-                            </Link>
-                          ))
-                        )}
-                      </div>
                     </div>
                     <div className="py-1">
                       <Link href="/plus" role="menuitem" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 h-11 text-sm text-[#413B5E] hover:bg-[#E8E6F1]/40 transition-colors justify-between">

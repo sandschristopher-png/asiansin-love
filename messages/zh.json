@@ -87,7 +87,13 @@
     "messages": "消息",
     "profile": "我的",
     "notifications": "通知",
-    "noNotifications": "暂无通知"
+    "noNotifications": "暂无通知",
+    "markAllRead": "全部标为已读",
+    "seeAll": "查看全部",
+    "today": "今天",
+    "thisWeek": "本周",
+    "earlier": "更早",
+    "loadMore": "加载更多"
   },
   "discover": {
     "modeAll": "全部",

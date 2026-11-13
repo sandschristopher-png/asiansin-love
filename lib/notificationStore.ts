@@ -9,6 +9,9 @@ import { useSyncExternalStore } from 'react';
 /** Fired on window when a notifications row may have arrived (account dropdown unread chip refreshes). */
 export const NOTIFICATIONS_CHANGED_EVENT = 'ail:notifications-changed';
 
+/** Fired after notifications are marked read (bell panel, /notifications), so the avatar chip re-reads. */
+export const NOTIFICATIONS_READ_EVENT = 'ail:notifications-read';
+
 export interface NotificationCounts {
   unreadMessages: number;
   unseenSparks: number;

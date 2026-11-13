@@ -87,7 +87,13 @@
     "messages": "ข้อความ",
     "profile": "โปรไฟล์",
     "notifications": "การแจ้งเตือน",
-    "noNotifications": "ยังไม่มีการแจ้งเตือน"
+    "noNotifications": "ยังไม่มีการแจ้งเตือน",
+    "markAllRead": "ทำเครื่องหมายว่าอ่านทั้งหมด",
+    "seeAll": "ดูทั้งหมด",
+    "today": "วันนี้",
+    "thisWeek": "สัปดาห์นี้",
+    "earlier": "ก่อนหน้านี้",
+    "loadMore": "โหลดเพิ่ม"
   },
   "discover": {
     "modeAll": "ทั้งหมด",

@@ -87,7 +87,13 @@
     "messages": "메시지",
     "profile": "프로필",
     "notifications": "알림",
-    "noNotifications": "아직 알림이 없습니다"
+    "noNotifications": "아직 알림이 없습니다",
+    "markAllRead": "모두 읽음으로 표시",
+    "seeAll": "모두 보기",
+    "today": "오늘",
+    "thisWeek": "이번 주",
+    "earlier": "이전",
+    "loadMore": "더 보기"
   },
   "discover": {
     "modeAll": "전체",

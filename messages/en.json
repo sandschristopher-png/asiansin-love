@@ -11,7 +11,13 @@
     "profile": "Profile",
     "notifications": "Notifications",
     "noNotifications": "No notifications yet",
-    "markHandled": "Mark handled"
+    "markHandled": "Mark handled",
+    "markAllRead": "Mark all read",
+    "seeAll": "See all",
+    "today": "Today",
+    "thisWeek": "This week",
+    "earlier": "Earlier",
+    "loadMore": "Load more"
   },
   "hero": {
     "imageAlt": "Smiling woman sitting on a stone bench in a sunlit courtyard",

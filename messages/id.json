@@ -87,7 +87,13 @@
     "messages": "Pesan",
     "profile": "Profil",
     "notifications": "Notifikasi",
-    "noNotifications": "Belum ada notifikasi"
+    "noNotifications": "Belum ada notifikasi",
+    "markAllRead": "Tandai semua dibaca",
+    "seeAll": "Lihat semua",
+    "today": "Hari ini",
+    "thisWeek": "Minggu ini",
+    "earlier": "Sebelumnya",
+    "loadMore": "Muat lagi"
   },
   "discover": {
     "modeAll": "Semua",

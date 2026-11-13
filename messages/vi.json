@@ -87,7 +87,13 @@
     "messages": "Tin nhắn",
     "profile": "Hồ sơ",
     "notifications": "Thông báo",
-    "noNotifications": "Chưa có thông báo nào"
+    "noNotifications": "Chưa có thông báo nào",
+    "markAllRead": "Đánh dấu tất cả đã đọc",
+    "seeAll": "Xem tất cả",
+    "today": "Hôm nay",
+    "thisWeek": "Tuần này",
+    "earlier": "Trước đó",
+    "loadMore": "Tải thêm"
   },
   "discover": {
     "modeAll": "Tất cả",

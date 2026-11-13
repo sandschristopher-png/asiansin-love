@@ -87,7 +87,13 @@
     "messages": "Mensahe",
     "profile": "Profile",
     "notifications": "Mga Notipikasyon",
-    "noNotifications": "Wala pang notipikasyon"
+    "noNotifications": "Wala pang notipikasyon",
+    "markAllRead": "Markahan lahat na nabasa",
+    "seeAll": "Tingnan lahat",
+    "today": "Ngayon",
+    "thisWeek": "Ngayong linggo",
+    "earlier": "Mas maaga",
+    "loadMore": "Mag-load pa"
   },
   "discover": {
     "modeAll": "Lahat",

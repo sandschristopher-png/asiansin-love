@@ -87,7 +87,13 @@
     "messages": "メッセージ",
     "profile": "プロフィール",
     "notifications": "通知",
-    "noNotifications": "まだ通知はありません"
+    "noNotifications": "まだ通知はありません",
+    "markAllRead": "すべて既読にする",
+    "seeAll": "すべて見る",
+    "today": "今日",
+    "thisWeek": "今週",
+    "earlier": "それ以前",
+    "loadMore": "さらに読み込む"
   },
   "discover": {
     "modeAll": "すべて",

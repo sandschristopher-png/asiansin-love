@@ -31,19 +31,42 @@ export async function GET(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const all = req.nextUrl.searchParams.get('scope') === 'all';
-  let query = supabase
-    .from('notifications')
-    .select('id, user_id, actor_id, type, title, description, link_url, payload, is_read, created_at')
-    .eq('user_id', user.id)
-    .not('type', 'like', ADMIN_TYPE_LIKE);
-  if (all) {
-    const hidden = await hiddenTypes(supabase, user.id);
-    if (hidden.length) query = query.not('type', 'in', `(${hidden.join(',')})`);
-  } else {
-    query = query.not('type', 'in', NON_ANNOUNCEMENT_FILTER);
+  const params = req.nextUrl.searchParams;
+  const all = params.get('scope') === 'all';
+  // ?fresh=1 (bell panel): unread rows first, then read rows from the last 7 days only.
+  const fresh = all && params.get('fresh') === '1';
+  // ?before=<ISO> (the /notifications page "Load more"): older rows, newest first.
+  const before = params.get('before');
+  const beforeIso = before && !Number.isNaN(Date.parse(before)) ? new Date(before).toISOString() : null;
+  const limit = Math.min(Math.max(Number(params.get('limit')) || 30, 1), 50);
+
+  const hidden = all ? await hiddenTypes(supabase, user.id) : [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const scoped = (q: any): any => {
+    let out = q.not('type', 'like', ADMIN_TYPE_LIKE);
+    if (!all) out = out.not('type', 'in', NON_ANNOUNCEMENT_FILTER);
+    else if (hidden.length) out = out.not('type', 'in', `(${hidden.join(',')})`);
+    return out;
+  };
+
+  let query = scoped(
+    supabase
+      .from('notifications')
+      .select('id, user_id, actor_id, type, title, description, link_url, payload, is_read, created_at')
+      .eq('user_id', user.id)
+  );
+  if (fresh) {
+    const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString();
+    query = query.or(`is_read.eq.false,created_at.gte.${weekAgo}`).order('is_read', { ascending: true });
   }
-  const { data: rows, error } = await query.order('created_at', { ascending: false }).limit(30);
+  if (beforeIso) query = query.lt('created_at', beforeIso);
+  const [{ data: rows, error }, unreadRes] = await Promise.all([
+    query.order('created_at', { ascending: false }).limit(limit),
+    // Exact unread count for the bell chip (the list itself is capped).
+    all
+      ? scoped(supabase.from('notifications').select('id', { count: 'exact', head: true }).eq('user_id', user.id)).eq('is_read', false)
+      : Promise.resolve({ count: null as number | null }),
+  ]);
 
   if (error) {
     console.error('notifications GET failed:', error.message, error.code, error.details, error.hint);
@@ -65,8 +88,8 @@ export async function GET(req: NextRequest) {
     return { ...rest, actor: actor_id ? (actorMap[actor_id] ?? null) : null };
   });
 
-  const unread_count = notifications.filter((n: any) => !n.is_read).length;
-  return NextResponse.json({ notifications, unread_count });
+  const unread_count = unreadRes.count ?? notifications.filter((n: any) => !n.is_read).length;
+  return NextResponse.json({ notifications, unread_count, has_more: (rows ?? []).length === limit });
 }
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
@@ -79,14 +102,18 @@ export async function POST(req: NextRequest) {
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  // Body { ids: [...] }: mark exactly the rows the dropdown showed (so hidden types stay unread).
+  // Body { ids: [...] }: mark exactly the rows the bell panel showed / the row tapped.
+  // Body { all: true }: "Mark all read" - every member notification the member can see.
   let ids: string[] | null = null;
+  let markAll = false;
   try {
     const body = await req.json();
     if (Array.isArray(body?.ids)) ids = body.ids.filter((x: unknown) => typeof x === 'string' && UUID_RE.test(x)).slice(0, 100);
+    markAll = body?.all === true;
   } catch {
     // no body: mark all announcements read (the /announcements page)
   }
+  const hidden = markAll ? await hiddenTypes(supabase, user.id) : [];
 
   let query = supabase
     .from('notifications')
@@ -97,6 +124,8 @@ export async function POST(req: NextRequest) {
   if (ids) {
     if (ids.length === 0) return NextResponse.json({ ok: true });
     query = query.in('id', ids);
+  } else if (markAll) {
+    if (hidden.length) query = query.not('type', 'in', `(${hidden.join(',')})`);
   } else {
     query = query.not('type', 'in', NON_ANNOUNCEMENT_FILTER);
   }
