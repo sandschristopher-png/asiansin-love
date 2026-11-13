@@ -5,7 +5,8 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { ArrowLeft, Camera, ShieldCheck, Loader2, AlertCircle, X, RefreshCw } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
-import { getPoseById, type VerificationPose } from '@/lib/poses';
+import { getPoseById, type PoseId, type VerificationPose } from '@/lib/poses';
+import type { TKey } from '@/lib/i18n';
 import type { FaceGateResult, PoseState } from '@/lib/faceGate';
 import { FACE_MIN_CONFIDENCE, type FaceGateStatus } from '@/lib/faceGateMessages';
 import { hapticError, hapticPhotoSnap } from '@/lib/utils/haptics';
@@ -47,6 +48,17 @@ const PORTRAIT_GUIDE = { src: '/Landing-Woman.png', position: '64% 22%' };
 type Step = 'face' | 'pose';
 type Phase = 'align' | 'hold' | 'capturing';
 
+/** Snapshot problems, shown in the camera HUD in the member's language. */
+type SnapshotError = 'verify.errStarting' | 'verify.errProcess' | 'verify.errDark' | 'verify.errBright' | 'verify.errCapture';
+
+/** Reference-tile caption for each pose (lib/poses.ts ids). */
+const POSE_NAME_KEY = {
+  peace: 'verify.poseName.peace',
+  thumbs_up: 'verify.poseName.thumbs_up',
+  chin_touch: 'verify.poseName.chin_touch',
+  three_fingers: 'verify.poseName.three_fingers',
+} as const satisfies Record<PoseId, TKey>;
+
 interface Shot {
   blob: Blob;
 }
@@ -55,17 +67,17 @@ interface Shot {
  * Grabs the current video frame (un-mirrored: the CSS flip is display-only), scales it to
  * MAX_DIM and rejects frames that are too dark or blown out to be reviewable. Both steps use it.
  */
-async function snapshotFromVideo(video: HTMLVideoElement): Promise<{ snap?: Shot; error?: string }> {
+async function snapshotFromVideo(video: HTMLVideoElement): Promise<{ snap?: Shot; error?: SnapshotError }> {
   const w = video.videoWidth;
   const h = video.videoHeight;
-  if (!w || !h) return { error: 'Camera is still starting. Hold on a moment.' };
+  if (!w || !h) return { error: 'verify.errStarting' };
 
   const scale = Math.min(1, MAX_DIM / Math.max(w, h));
   const canvas = document.createElement('canvas');
   canvas.width = Math.round(w * scale);
   canvas.height = Math.round(h * scale);
   const ctx = canvas.getContext('2d');
-  if (!ctx) return { error: 'Photo could not be processed.' };
+  if (!ctx) return { error: 'verify.errProcess' };
   ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
   const data = ctx.getImageData(0, 0, canvas.width, canvas.height).data;
@@ -76,11 +88,11 @@ async function snapshotFromVideo(video: HTMLVideoElement): Promise<{ snap?: Shot
     samples++;
   }
   const brightness = samples > 0 ? total / samples : 0;
-  if (brightness < 40) return { error: 'Too dark. Move somewhere with better lighting.' };
-  if (brightness > 235) return { error: 'Overexposed. Try softer light.' };
+  if (brightness < 40) return { error: 'verify.errDark' };
+  if (brightness > 235) return { error: 'verify.errBright' };
 
   const blob = await new Promise<Blob | null>((resolve) => canvas.toBlob(resolve, 'image/jpeg', JPEG_QUALITY));
-  if (!blob) return { error: 'Could not capture photo. Hold still and it will try again.' };
+  if (!blob) return { error: 'verify.errCapture' };
   return { snap: { blob } };
 }
 
@@ -450,13 +462,13 @@ export default function VerifyPage() {
       } catch (err: unknown) {
         const failure = err instanceof Error ? err.message : 'Failed to submit verification.';
         hapticError();
-        setErrorMsg(`${failure} Tap Restart to try again.`);
+        setErrorMsg(`${failure} ${t('verify.tapRestart')}`);
         setHalted(true);
         resetHold();
         busyRef.current = false;
       }
     },
-    [attemptToken, requestChallenge, resetFlow, resetHold, router, showActionToast, stopCamera]
+    [attemptToken, requestChallenge, resetFlow, resetHold, router, showActionToast, stopCamera, t]
   );
 
   /** Called by the gate loop once a hold completes; re-checks this exact frame before taking it. */
@@ -478,7 +490,7 @@ export default function VerifyPage() {
       }
       const { snap, error } = await snapshotFromVideo(video);
       if (!snap) {
-        setErrorMsg(error || 'Could not capture photo.');
+        setErrorMsg(t(error || 'verify.errCapture'));
         busyRef.current = false;
         resetHold();
         return;
@@ -494,7 +506,7 @@ export default function VerifyPage() {
       }
       await submit(snap, { ...check, widthRatio: check.widthRatio ?? held.widthRatio });
     },
-    [step, submit, resetHold]
+    [step, submit, resetHold, t]
   );
   useEffect(() => {
     captureRef.current = capture;
@@ -660,7 +672,7 @@ export default function VerifyPage() {
               {step === 'face' ? t('verify.pipGuide') : t('verify.pipMatch')}
             </span>
             <span className="relative bg-gradient-to-t from-black/85 via-black/50 to-transparent px-2.5 pt-4 pb-2 text-center font-brand text-xs font-semibold text-white truncate">
-              {step === 'face' ? t('verify.pipLook') : pose.shortLabel}
+              {step === 'face' ? t('verify.pipLook') : t(POSE_NAME_KEY[pose.id])}
             </span>
           </div>
         </div>

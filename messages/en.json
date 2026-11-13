@@ -175,7 +175,19 @@
     "statusHold": "Hold still...",
     "statusVerifying": "Verifying pose...",
     "restart": "Restart",
-    "closeCamera": "Close camera"
+    "closeCamera": "Close camera",
+    "errStarting": "Camera is still starting. Hold on a moment.",
+    "errProcess": "Photo could not be processed.",
+    "errDark": "Too dark. Move somewhere with better lighting.",
+    "errBright": "Overexposed. Try softer light.",
+    "errCapture": "Could not capture photo. Hold still and it will try again.",
+    "tapRestart": "Tap Restart to try again.",
+    "poseName": {
+      "peace": "Peace Sign",
+      "thumbs_up": "Thumbs Up",
+      "chin_touch": "Chin Touch",
+      "three_fingers": "Three Fingers"
+    }
   },
   "settings": {
     "appLanguage": "App Language",
