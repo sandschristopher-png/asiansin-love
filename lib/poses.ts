@@ -8,6 +8,8 @@ export type PoseId = 'peace' | 'thumbs_up' | 'chin_touch' | 'three_fingers';
 export interface VerificationPose {
   id: PoseId;
   label: string;
+  /** Pose name for the /verify reference tile caption ("Peace Sign"). */
+  shortLabel: string;
   /** Mascot reference image in public/images/verification/. */
   image: string;
   /** Plain-language description sent to the vision model alongside the selfie. */
@@ -18,24 +20,28 @@ export const VERIFICATION_POSES: VerificationPose[] = [
   {
     id: 'peace',
     label: 'Peace sign by your cheek',
+    shortLabel: 'Peace Sign',
     image: '/images/verification/pose-peace.png',
     aiDescription: 'a peace / V sign (index and middle finger raised) held next to the cheek',
   },
   {
     id: 'thumbs_up',
     label: 'Thumbs up next to your face',
+    shortLabel: 'Thumbs Up',
     image: '/images/verification/pose-thumbs.png',
     aiDescription: 'a thumbs-up gesture held next to the face',
   },
   {
     id: 'chin_touch',
     label: 'Hand touching your chin',
+    shortLabel: 'Chin Touch',
     image: '/images/verification/pose-chin.png',
     aiDescription: 'one hand touching the chin',
   },
   {
     id: 'three_fingers',
     label: 'Three fingers held up',
+    shortLabel: 'Three Fingers',
     image: '/images/verification/pose-three.png',
     aiDescription: 'one hand holding up exactly three fingers',
   },

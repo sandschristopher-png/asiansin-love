@@ -13,6 +13,7 @@ import { createClient as createSessionClient } from '@/lib/supabase/server';
 import { verifyToken, tokenFingerprint, TOKEN_TTL_MS } from '@/lib/verify/token';
 import { reviewVerificationSelfie, isFastTrack, type SelfieReviewResult } from '@/lib/aiVision';
 import { getPoseById } from '@/lib/poses';
+import { FACE_MIN_CONFIDENCE } from '@/lib/faceGateMessages';
 
 export const runtime = 'nodejs';
 export const maxDuration = 30;
@@ -22,22 +23,22 @@ const MAX_PHOTO_BYTES = 10 * 1024 * 1024;
 const MAX_AVATAR_BYTES = 8 * 1024 * 1024;
 const AI_TIMEOUT_MS = 15000;
 const AVATAR_FETCH_TIMEOUT_MS = 5000;
-const MIN_FACE_CONFIDENCE = 0.8;
+const MIN_FACE_CONFIDENCE = FACE_MIN_CONFIDENCE;
 const NO_FACE_ERROR = 'Biometric validation failed: No valid face detected';
 /** Submissions per member per rolling hour (each one costs an AI review). */
 const MAX_ATTEMPTS_PER_HOUR = 10;
 const USED_PREFIX = '_used-attempts';
 
-/** Client face-gate metadata (lib/faceGate.ts): exactly one face at >= 0.8 confidence. */
+/**
+ * Client face-gate metadata (lib/faceGate.ts): exactly one face at >= FACE_MIN_CONFIDENCE. /verify
+ * only captures automatically (no manual shutter), so every submission must carry the live check.
+ */
 function validFaceCheck(raw: FormDataEntryValue | null, issuedAt: number): boolean {
   if (typeof raw !== 'string') return false;
   try {
     const c = JSON.parse(raw) as Record<string, unknown>;
     const checkedAt = Number(c.checked_at);
     const fresh = Number.isFinite(checkedAt) && checkedAt >= issuedAt && checkedAt <= Date.now() + 60_000;
-    // Manual capture (the member tapped the button because live detection struggled): no client
-    // face evidence, so the AI pre-screen below and the human review are the face check.
-    if (c.detector === 'manual_fallback') return fresh;
     return (
       c.detector === 'mediapipe_face_landmarker' &&
       c.face_count === 1 &&

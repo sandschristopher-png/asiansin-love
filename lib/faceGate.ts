@@ -2,10 +2,15 @@
 
 // Live single-face gate for /verify. Loaded only via `await import('@/lib/faceGate')` when the
 // camera opens, so @mediapipe/tasks-vision never ships in any route's initial bundle.
+//
+// The detectors only ever read the <video> element passed in (never the page, so the pose
+// reference tile can't be mistaken for a second face). Framing is measured in the part of the
+// video that is actually on screen (the feed is full-screen object-cover), so a face that passes
+// is always visible to the member too.
 import { FilesetResolver, FaceLandmarker, HandLandmarker, type NormalizedLandmark } from '@mediapipe/tasks-vision';
 import { FACE_MIN_CONFIDENCE, type FaceGateStatus } from '@/lib/faceGateMessages';
 
-export { FACE_MIN_CONFIDENCE, FACE_GATE_MESSAGES, type FaceGateStatus } from '@/lib/faceGateMessages';
+export { FACE_MIN_CONFIDENCE, type FaceGateStatus } from '@/lib/faceGateMessages';
 
 // Keep the WASM runtime in lockstep with the installed @mediapipe/tasks-vision version.
 const MEDIAPIPE_WASM = 'https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@1.2.0/wasm';
@@ -23,24 +28,25 @@ const HAND_LANDMARKER_MODEL =
  */
 export type PoseState = 'match' | 'hand' | 'no_hand' | 'unavailable';
 
-/** Face width as a share of the visible camera width (rejects hands up close / far silhouettes). */
-export const FACE_WIDTH_MIN = 0.3;
-export const FACE_WIDTH_MAX = 0.75;
-/** Pose step ('frame' guide): the face shares the wide frame with a hand, so it may be smaller. */
-export const FRAME_WIDTH_MIN = 0.18;
-export const FRAME_WIDTH_MAX = 0.7;
-/** Pose step: every anchor must sit this far (share of the view) inside the frame edges. */
-const FRAME_MARGIN = 0.04;
-
-/** Where the face has to be: 'oval' = portrait guide (step 1), 'frame' = anywhere in the wide frame (step 2). */
-export type FaceGuide = 'oval' | 'frame';
-/** Nose tip, left eye outer, right eye outer, chin: all must sit inside the guide oval. */
-const ANCHORS = [1, 33, 263, 152] as const;
+// All shares below are of the visible frame (width for widths and distances, height for heights).
+/** Faces narrower than this are ignored (posters, people far in the background). */
+const MIN_FACE_WIDTH = 0.14;
+/** Two boxes overlapping this much are one face (glasses, headsets, shadows). */
+const DEDUPE_IOU = 0.35;
+/** ...as are two boxes whose centers are this close. */
+const DEDUPE_CENTER = 0.12;
+/** A second face only counts when its center is at least this far from the main face. */
+const MULTIPLE_CENTER = 0.2;
+/** Arm's-length framing: where the face center may sit, and how tall the face may be. */
+const CENTER_X: [number, number] = [0.15, 0.85];
+const CENTER_Y: [number, number] = [0.15, 0.82];
+const FACE_HEIGHT: [number, number] = [0.16, 0.62];
 
 export interface FaceGateResult {
   status: FaceGateStatus;
+  /** Distinct faces after filtering and de-duplication. */
   faceCount: number;
-  /** Face width / visible width (0..1), when exactly one face is present. */
+  /** Main face width / visible width (0..1), when a face is present. */
   widthRatio: number | null;
   pose: PoseState;
 }
@@ -57,12 +63,12 @@ export async function initFaceGate(): Promise<void> {
     landmarker = await FaceLandmarker.createFromOptions(vision, {
       baseOptions: { modelAssetPath: FACE_LANDMARKER_MODEL, delegate: 'GPU' },
       runningMode: 'VIDEO',
-      numFaces: 2, // see a second face so it can be rejected
+      numFaces: 3, // room to see duplicates and a genuine second person
       minFaceDetectionConfidence: FACE_MIN_CONFIDENCE,
       minFacePresenceConfidence: FACE_MIN_CONFIDENCE,
       minTrackingConfidence: FACE_MIN_CONFIDENCE,
     });
-    // Optional: without the hand model the page falls back to a timed face-only capture.
+    // Optional: without the hand model the pose step falls back to a face-only capture.
     try {
       hands = await HandLandmarker.createFromOptions(vision, {
         baseOptions: { modelAssetPath: HAND_LANDMARKER_MODEL, delegate: 'GPU' },
@@ -77,24 +83,10 @@ export async function initFaceGate(): Promise<void> {
       hands = null;
     }
   })().catch((err) => {
-    initPromise = null; // allow a retry
+    initPromise = null; // allow a retry (the Restart pill)
     throw err;
   });
   return initPromise;
-}
-
-/** Portrait oval size, shared with the drawing in app/verify/page.tsx (270 x 340 at full size). */
-export const OVAL_MAX_W = 270;
-export const OVAL_ASPECT = 270 / 340; // width / height
-export const OVAL_VIEW_SHARE = 0.72;
-
-/**
- * The portrait guide oval as drawn in app/verify/page.tsx: centered, width min(72% of view, 270px),
- * aspect 270:340. Kept here so the check and the drawing can't drift apart.
- */
-export function guideOval(viewW: number, viewH: number) {
-  const w = Math.min(viewW * OVAL_VIEW_SHARE, OVAL_MAX_W);
-  return { cx: viewW / 2, cy: viewH / 2, rx: w / 2, ry: w / OVAL_ASPECT / 2 };
 }
 
 let lastTimestamp = -1;
@@ -102,6 +94,27 @@ let lastHandTimestamp = -1;
 
 type Pt = { x: number; y: number };
 const dist = (a: Pt, b: Pt) => Math.hypot(a.x - b.x, a.y - b.y);
+
+/** Face box in visible-frame units (0..1 on each axis). */
+interface Box {
+  x0: number;
+  y0: number;
+  x1: number;
+  y1: number;
+  cx: number;
+  cy: number;
+  w: number;
+  h: number;
+  pts: NormalizedLandmark[];
+}
+
+function iou(a: Box, b: Box): number {
+  const ix = Math.max(0, Math.min(a.x1, b.x1) - Math.max(a.x0, b.x0));
+  const iy = Math.max(0, Math.min(a.y1, b.y1) - Math.max(a.y0, b.y0));
+  const inter = ix * iy;
+  const union = a.w * a.h + b.w * b.h - inter;
+  return union > 0 ? inter / union : 0;
+}
 
 /**
  * Finger states from the 21 hand landmarks (in pixels). A finger counts as extended when its tip
@@ -141,19 +154,15 @@ function matchesPose(poseId: string | undefined, hand: Pt[], face: Pt[], faceWid
 }
 
 /**
- * Evaluates the current video frame against the gate. `viewW` / `viewH` are the on-screen size
- * of the <video> (object-cover). The CSS mirror doesn't matter: the guide is horizontally centered.
- * Hand detection only runs when a `poseId` is passed (the pose step), which keeps the portrait
- * step light on budget phones.
+ * Evaluates the current video frame. `viewW` / `viewH` are the on-screen size of the full-screen
+ * <video> (object-cover); the CSS mirror doesn't matter because every bound is symmetric. Hand
+ * detection only runs when a `poseId` is passed (the pose step) and the face already passes, which
+ * keeps budget phones responsive.
  */
-export function evaluateFaceFrame(
-  video: HTMLVideoElement,
-  viewW: number,
-  viewH: number,
-  poseId?: string,
-  guide: FaceGuide = 'oval'
-): FaceGateResult {
-  if (!landmarker || !video.videoWidth || !video.videoHeight || video.readyState < 2) {
+export function evaluateFaceFrame(video: HTMLVideoElement, viewW: number, viewH: number, poseId?: string): FaceGateResult {
+  const vw = video.videoWidth;
+  const vh = video.videoHeight;
+  if (!landmarker || !vw || !vh || video.readyState < 2 || !viewW || !viewH) {
     return { status: 'no_face', faceCount: 0, widthRatio: null, pose: 'no_hand' };
   }
   // detectForVideo needs strictly increasing timestamps.
@@ -162,52 +171,70 @@ export function evaluateFaceFrame(
   lastTimestamp = ts;
 
   const res = landmarker.detectForVideo(video, ts);
-  const faces = res.faceLandmarks || [];
-  if (faces.length === 0) return { status: 'no_face', faceCount: 0, widthRatio: null, pose: 'no_hand' };
-  if (faces.length > 1) return { status: 'multiple', faceCount: faces.length, widthRatio: null, pose: 'no_hand' };
+  const raw = res.faceLandmarks || [];
 
-  // Map normalized video coordinates to the object-cover rendering on screen.
-  const scale = Math.max(viewW / video.videoWidth, viewH / video.videoHeight);
-  const drawnW = video.videoWidth * scale;
-  const drawnH = video.videoHeight * scale;
-  const offX = (viewW - drawnW) / 2;
-  const offY = (viewH - drawnH) / 2;
-  const toScreen = (p: { x: number; y: number }) => ({ x: p.x * drawnW + offX, y: p.y * drawnH + offY });
+  // The visible crop of the video under object-cover, in normalized video coordinates.
+  const scale = Math.max(viewW / vw, viewH / vh);
+  const cropW = Math.min(1, viewW / scale / vw);
+  const cropH = Math.min(1, viewH / scale / vh);
+  const cropX = (1 - cropW) / 2;
+  const cropY = (1 - cropH) / 2;
+  // Distances are compared in screen pixels, then divided by the visible width.
+  const aspect = viewH / viewW;
 
-  const pts = faces[0];
-  let minX = Infinity;
-  let maxX = -Infinity;
-  for (const p of pts) {
-    const sx = toScreen(p).x;
-    if (sx < minX) minX = sx;
-    if (sx > maxX) maxX = sx;
-  }
-  const widthRatio = (maxX - minX) / viewW;
-  const widthMin = guide === 'frame' ? FRAME_WIDTH_MIN : FACE_WIDTH_MIN;
-  const widthMax = guide === 'frame' ? FRAME_WIDTH_MAX : FACE_WIDTH_MAX;
-  if (widthRatio < widthMin) return { status: 'too_far', faceCount: 1, widthRatio, pose: 'no_hand' };
-  if (widthRatio > widthMax) return { status: 'too_close', faceCount: 1, widthRatio, pose: 'no_hand' };
-
-  const oval = guideOval(viewW, viewH);
-  const inside = ANCHORS.every((i) => {
-    const p = pts[i];
-    if (!p) return false;
-    const s = toScreen(p);
-    if (guide === 'frame') {
-      return (
-        s.x >= viewW * FRAME_MARGIN && s.x <= viewW * (1 - FRAME_MARGIN) &&
-        s.y >= viewH * FRAME_MARGIN && s.y <= viewH * (1 - FRAME_MARGIN)
-      );
+  // 1. Boxes in visible-frame units; drop faces too small to be the member.
+  const boxes: Box[] = [];
+  for (const pts of raw) {
+    let x0 = Infinity;
+    let y0 = Infinity;
+    let x1 = -Infinity;
+    let y1 = -Infinity;
+    for (const p of pts) {
+      const u = (p.x - cropX) / cropW;
+      const v = (p.y - cropY) / cropH;
+      if (u < x0) x0 = u;
+      if (u > x1) x1 = u;
+      if (v < y0) y0 = v;
+      if (v > y1) y1 = v;
     }
-    return ((s.x - oval.cx) / oval.rx) ** 2 + ((s.y - oval.cy) / oval.ry) ** 2 <= 1;
-  });
-  if (!inside) return { status: 'off_center', faceCount: 1, widthRatio, pose: 'no_hand' };
+    const w = x1 - x0;
+    const h = y1 - y0;
+    if (w >= MIN_FACE_WIDTH) boxes.push({ x0, y0, x1, y1, w, h, cx: (x0 + x1) / 2, cy: (y0 + y1) / 2, pts });
+  }
+  if (boxes.length === 0) return { status: 'no_face', faceCount: 0, widthRatio: null, pose: 'no_hand' };
 
-  return { status: 'ok', faceCount: 1, widthRatio, pose: poseId === undefined ? 'no_hand' : detectPose(video, ts, pts, poseId) };
+  // 2. Largest first; merge overlapping or near-concentric boxes into the bigger one.
+  boxes.sort((a, b) => b.w * b.h - a.w * a.h);
+  const centerGap = (a: Box, b: Box) => Math.hypot(a.cx - b.cx, (a.cy - b.cy) * aspect);
+  const distinct: Box[] = [];
+  for (const b of boxes) {
+    if (!distinct.some((d) => iou(d, b) > DEDUPE_IOU || centerGap(d, b) < DEDUPE_CENTER)) distinct.push(b);
+  }
+
+  // 3. Only a clearly separate second face counts as another person.
+  const main = distinct[0];
+  if (distinct.some((d) => d !== main && centerGap(main, d) > MULTIPLE_CENTER)) {
+    return { status: 'multiple', faceCount: distinct.length, widthRatio: null, pose: 'no_hand' };
+  }
+
+  // 4. Arm's-length framing.
+  const widthRatio = main.w;
+  if (main.h < FACE_HEIGHT[0]) return { status: 'too_far', faceCount: 1, widthRatio, pose: 'no_hand' };
+  if (main.h > FACE_HEIGHT[1]) return { status: 'too_close', faceCount: 1, widthRatio, pose: 'no_hand' };
+  if (main.cx < CENTER_X[0] || main.cx > CENTER_X[1] || main.cy < CENTER_Y[0] || main.cy > CENTER_Y[1]) {
+    return { status: 'off_center', faceCount: 1, widthRatio, pose: 'no_hand' };
+  }
+
+  return {
+    status: 'ok',
+    faceCount: 1,
+    widthRatio,
+    pose: poseId === undefined ? 'no_hand' : detectPose(video, ts, main.pts, poseId),
+  };
 }
 
 /** Hand pose for an aligned face (only run then, to keep budget phones responsive). */
-function detectPose(video: HTMLVideoElement, ts: number, facePts: NormalizedLandmark[], poseId?: string): PoseState {
+function detectPose(video: HTMLVideoElement, ts: number, facePts: NormalizedLandmark[], poseId: string): PoseState {
   if (!hands) return 'unavailable';
   let hts = ts;
   if (hts <= lastHandTimestamp) hts = lastHandTimestamp + 1;
