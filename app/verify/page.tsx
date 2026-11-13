@@ -96,9 +96,17 @@ async function snapshotFromVideo(video: HTMLVideoElement): Promise<{ snap?: Shot
   return { snap: { blob } };
 }
 
-function PoseImage({ pose, className = '' }: { pose: VerificationPose; className?: string }) {
+/** Full pose instruction for the intro screen ("Peace sign by your cheek"). */
+const POSE_LABEL_KEY = {
+  peace: 'verify.poseLabel.peace',
+  thumbs_up: 'verify.poseLabel.thumbs_up',
+  chin_touch: 'verify.poseLabel.chin_touch',
+  three_fingers: 'verify.poseLabel.three_fingers',
+} as const satisfies Record<PoseId, TKey>;
+
+function PoseImage({ pose, alt, className = '' }: { pose: VerificationPose; alt: string; className?: string }) {
   // Functional figure: plain white, flat (no aura, border or glow).
-  return <img src={pose.image} alt={pose.label} className={`object-contain bg-white ${className}`} draggable={false} />;
+  return <img src={pose.image} alt={alt} className={`object-contain bg-white ${className}`} draggable={false} />;
 }
 
 function ErrorNote({ message }: { message: string | null }) {
@@ -112,22 +120,36 @@ function ErrorNote({ message }: { message: string | null }) {
 }
 
 /** Friendly guidance for each getUserMedia failure. */
-function cameraErrorMessage(err: unknown): string {
+function cameraErrorKey(err: unknown): TKey {
   switch ((err as DOMException)?.name) {
     case 'NotAllowedError':
     case 'SecurityError':
-      return 'Camera access is blocked. Allow camera access for Meet in Asia in your browser settings, then try again.';
+      return 'verify.camBlocked';
     case 'NotFoundError':
     case 'OverconstrainedError':
-      return 'No front camera was found on this device.';
+      return 'verify.camNotFound';
     case 'NotReadableError':
     case 'AbortError':
-      return 'Your camera is in use by another app. Close it, then try again.';
+      return 'verify.camInUse';
     case 'NotSupportedError':
-      return 'This browser cannot open the camera. Try Chrome or Safari.';
+      return 'verify.camUnsupported';
     default:
-      return 'Live camera is required for verification. Please allow camera access and try again.';
+      return 'verify.camRequired';
   }
+}
+
+/** A rejected submission, already worded in the member's language. */
+class SubmitError extends Error {}
+
+/** The server words its rejections in English; show them in the member's language. */
+function submitErrorText(status: number, message: string | undefined, t: (key: TKey) => string): string {
+  const m = message || '';
+  if (/no valid face/i.test(m)) return t('verify.errNoFace');
+  if (/only one person/i.test(m)) return t('verify.statusMultiple');
+  if (/too quickly/i.test(m)) return t('verify.errTooFast');
+  if (/main profile photo/i.test(m)) return t('verify.needPhoto');
+  if (/too many/i.test(m) || status === 429) return t('errors.rateLimit');
+  return localizeError({ status, message: m }, t, 'verify.submitFailed');
 }
 
 export default function VerifyPage() {
@@ -159,7 +181,9 @@ export default function VerifyPage() {
   /** After a failed submission auto-capture pauses until the member taps Restart. */
   const [halted, setHalted] = useState(false);
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
-  const [done, setDone] = useState<{ fastTrack: boolean; message: string } | null>(null);
+  const [done, setDone] = useState<{ fastTrack: boolean } | null>(null);
+  /** The start error is "add a main photo first": its button links to the photo editor. */
+  const [needPhoto, setNeedPhoto] = useState(false);
 
   // Live single-face gate (MediaPipe, loaded when the camera opens).
   const gateRef = useRef<typeof import('@/lib/faceGate') | null>(null);
@@ -182,7 +206,12 @@ export default function VerifyPage() {
       const res = await fetch('/api/verify/start', { method: 'POST' });
       const data = await res.json();
       if (!res.ok) {
-        setStartError(localizeError({ status: res.status, code: data.code, message: data.error }, tRef.current));
+        if (/main profile photo/i.test(data.error || '')) {
+          setNeedPhoto(true);
+          setStartError(tRef.current('verify.needPhoto'));
+        } else {
+          setStartError(localizeError({ status: res.status, code: data.code, message: data.error }, tRef.current));
+        }
         return;
       }
       const issued = getPoseById(data.sequence?.[0]);
@@ -219,6 +248,7 @@ export default function VerifyPage() {
         .maybeSingle();
       if (cancelled) return;
       if (!profile?.avatar_url) {
+        setNeedPhoto(true);
         setStartError(tRef.current('verify.needPhoto'));
         setStarting(false);
         return;
@@ -299,7 +329,7 @@ export default function VerifyPage() {
       }
     } catch (err) {
       setCameraOn(false);
-      setErrorMsg(cameraErrorMessage(err));
+      setErrorMsg(t(cameraErrorKey(err)));
       return;
     }
     if (!mountedRef.current) {
@@ -315,7 +345,7 @@ export default function VerifyPage() {
         if (streamRef.current !== stream) return;
         stopCamera();
         resetFlow();
-        setErrorMsg('The camera stopped. Open the camera to try again.');
+        setErrorMsg(t('verify.camStopped'));
       };
     });
     setCameraOn(true);
@@ -331,7 +361,7 @@ export default function VerifyPage() {
     } catch {
       setGateState('error');
     }
-  }, [stopCamera, resetFlow]);
+  }, [stopCamera, resetFlow, t]);
 
   /** Restart pill: fresh stream, back to step 1. */
   const restart = useCallback(() => {
@@ -448,19 +478,20 @@ export default function VerifyPage() {
         if (!mountedRef.current) return;
         if (res.status === 410) {
           // Token expired: issue a fresh pose and start over with the camera still on.
-          const expired = data.error || 'Your session expired. Here is a new pose to copy.';
+          const expired = t('verify.expired');
           resetFlow();
           await requestChallenge();
           setErrorMsg(expired);
           showActionToast(expired, 'info');
           return;
         }
-        if (!res.ok) throw new Error(data.error || 'Failed to submit verification');
+        if (!res.ok) throw new SubmitError(submitErrorText(res.status, data.error, t));
         stopCamera();
-        setDone({ fastTrack: Boolean(data.fastTrack), message: data.message || 'Submitted for review.' });
+        setDone({ fastTrack: Boolean(data.fastTrack) });
         setTimeout(() => router.push('/discover'), 4000);
       } catch (err: unknown) {
-        const failure = err instanceof Error ? err.message : 'Failed to submit verification.';
+        // A fetch that never reached the server throws a TypeError: that's a connection problem.
+        const failure = err instanceof SubmitError ? err.message : t('errors.network');
         hapticError();
         setErrorMsg(`${failure} ${t('verify.tapRestart')}`);
         setHalted(true);
@@ -550,13 +581,13 @@ export default function VerifyPage() {
             type="button"
             onClick={() => router.back()}
             className="h-10 w-10 rounded-2xl bg-white border border-[#D0CDE1] text-[#413B5E] hover:bg-[#E8E6F1]/70 flex items-center justify-center text-sm active:scale-95 transition shadow-xs"
-            aria-label="Back"
+            aria-label={t('verify.back')}
           >
             <ArrowLeft className="w-5 h-5 text-[#413B5E]" />
           </button>
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="w-5 h-5 text-[#8574B7]" />
-            <h1 className="text-xl font-medium text-[#413B5E]">Profile Verification</h1>
+          <div className="flex items-center gap-2 min-w-0">
+            <ShieldCheck className="w-5 h-5 text-[#8574B7] shrink-0" />
+            <h1 className="text-xl font-medium text-[#413B5E] truncate">{t('verify.title')}</h1>
           </div>
           <div className="w-10" />
         </div>
@@ -565,28 +596,30 @@ export default function VerifyPage() {
       {done ? (
         <div className="rounded-3xl bg-white border border-[#D0CDE1] p-8 text-center space-y-4 shadow-xl mx-4 mt-4">
           <div className="w-44 h-44 mx-auto rounded-3xl overflow-hidden bg-white">
-            <img src="/images/verification/approved.png" alt="Submitted" className="w-full h-full object-contain" />
+            <img src="/images/verification/approved.png" alt="" className="w-full h-full object-contain" />
           </div>
-          <h2 className="text-xl font-medium text-[#413B5E]">Submitted for review</h2>
-          <p className="text-sm text-[#413B5E]/75 leading-relaxed">{done.message} Taking you back to Discover...</p>
+          <h2 className="text-xl font-medium text-[#413B5E]">{t('verify.doneTitle')}</h2>
+          <p className="text-sm text-[#413B5E]/75 leading-relaxed">
+            {done.fastTrack ? t('verify.doneFast') : t('verify.doneQueued')} {t('verify.doneBack')}
+          </p>
         </div>
       ) : starting ? (
         <div className="p-6 text-center space-y-3">
           <Loader2 className="w-8 h-8 text-[#8574B7] animate-spin mx-auto" />
-          <p className="text-xs font-semibold text-[#413B5E]/75">Preparing your pose...</p>
+          <p className="text-xs font-semibold text-[#413B5E]/75">{t('verify.preparing')}</p>
         </div>
       ) : startError || !pose ? (
         <div className="rounded-3xl bg-white border border-[#D0CDE1] p-8 text-center space-y-4 shadow-sm mx-4 mt-4">
           <div className="h-16 w-16 mx-auto rounded-full bg-red-50 border border-red-200 text-red-600 flex items-center justify-center">
             <AlertCircle className="w-8 h-8" />
           </div>
-          <p className="text-sm text-[#413B5E]/75 leading-relaxed">{startError || 'Could not start verification.'}</p>
+          <p className="text-sm text-[#413B5E]/75 leading-relaxed">{startError || t('verify.startFailed')}</p>
           <button
             type="button"
-            onClick={() => router.push(startError?.includes('profile photo') ? '/profile/edit' : '/discover')}
+            onClick={() => router.push(needPhoto ? '/profile/edit' : '/discover')}
             className="text-xs font-medium text-[#8574B7] hover:text-[#413B5E] transition"
           >
-            {startError?.includes('profile photo') ? 'Add a main photo' : 'Back to Discover'}
+            {needPhoto ? t('verify.addPhoto') : t('verify.backToDiscover')}
           </button>
         </div>
       ) : cameraOn ? (
@@ -626,14 +659,16 @@ export default function VerifyPage() {
           </div>
 
           {/* Floating status pill (+ hold progress) and any error under it */}
-          <div className="fixed top-[104px] left-1/2 -translate-x-1/2 z-20 mt-[env(safe-area-inset-top,0px)] flex flex-col items-center gap-2 w-max max-w-[calc(100vw-2rem)]">
+          {/* Long translations (Khmer, Thai, the multi-face warning) wrap to a second line inside
+              90vw instead of running off a 360px screen; the dot stays centred beside the text. */}
+          <div className="fixed top-[104px] left-1/2 -translate-x-1/2 z-20 mt-[env(safe-area-inset-top,0px)] flex flex-col items-center gap-2 w-max max-w-[90vw]">
             <div
               role="status"
               aria-live="polite"
-              className="relative overflow-hidden bg-white/95 backdrop-blur-md text-[#413B5E] rounded-full px-4 py-1.5 text-sm font-semibold shadow-md flex items-center gap-2 whitespace-nowrap"
+              className="relative overflow-hidden bg-white/95 backdrop-blur-md text-[#413B5E] rounded-[20px] max-w-[90vw] w-max px-4 py-1.5 text-sm font-semibold text-center leading-snug shadow-md flex items-center justify-center gap-2"
             >
               <span aria-hidden className="w-2 h-2 rounded-full shrink-0 transition-colors" style={{ backgroundColor: dot }} />
-              {statusText}
+              <span className="min-w-0 text-balance">{statusText}</span>
               {phase === 'hold' && (
                 <span aria-hidden className="absolute left-0 bottom-0 h-[3px] w-full bg-[#22C55E]/15">
                   <span
@@ -688,12 +723,9 @@ export default function VerifyPage() {
                 <span className="font-semibold text-[#413B5E]">2. {t('verify.pose')}.</span> {t('verify.holdPose')}:
               </li>
             </ol>
-            <PoseImage pose={pose} className="w-36 h-36 mx-auto rounded-3xl" />
-            <p className="text-center text-sm font-medium text-[#413B5E]">{pose.label}</p>
-            <p className="text-xs text-[#413B5E]/75 leading-relaxed text-center">
-              Both photos are taken automatically. We compare them with your main photo, then a member of our team approves your
-              badge.
-            </p>
+            <PoseImage pose={pose} alt={t(POSE_LABEL_KEY[pose.id])} className="w-36 h-36 mx-auto rounded-3xl" />
+            <p className="text-center text-sm font-medium text-[#413B5E]">{t(POSE_LABEL_KEY[pose.id])}</p>
+            <p className="text-xs text-[#413B5E]/75 leading-relaxed text-center">{t('verify.introNote')}</p>
           </div>
 
           {/* Desktop: hand off to the phone camera (front cameras on laptops make poor selfies). */}
@@ -701,14 +733,12 @@ export default function VerifyPage() {
             <QrCode
               value="https://meetin.asia/verify"
               size={112}
-              label="QR code to open verification on your phone"
+              label={t('verify.qrLabel')}
               className="shrink-0 rounded-xl"
             />
             <div className="min-w-0">
-              <p className="text-sm font-semibold text-[#413B5E]">Verify with your phone</p>
-              <p className="mt-1 text-xs text-[#413B5E]/75 leading-relaxed">
-                Using a laptop? Scan with your phone camera to complete selfie verification in 15 seconds.
-              </p>
+              <p className="text-sm font-semibold text-[#413B5E]">{t('verify.phoneTitle')}</p>
+              <p className="mt-1 text-xs text-[#413B5E]/75 leading-relaxed">{t('verify.phoneBody')}</p>
             </div>
           </div>
 
