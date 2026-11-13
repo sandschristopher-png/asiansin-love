@@ -89,7 +89,7 @@ function FeedSkeleton({ count = 8 }: { count?: number }) {
 function FeedSkeletonPage() {
   return (
     <div className="w-full min-h-full bg-white" aria-busy="true" aria-label="Loading discover feed">
-      <main className="w-full max-w-md mx-auto px-4 pt-2 pb-36">
+      <main className="w-full max-w-[480px] mx-auto px-4 min-[480px]:px-8 pt-2 pb-36">
         <div className="flex items-center justify-between py-2">
           <div className="h-7 w-32 rounded-lg bg-[#E8E6F1]/60 animate-pulse" />
           <div className="flex items-center gap-2">
@@ -980,9 +980,11 @@ function DiscoverContent() {
           </span>
         )}
       </div>
-      <main className="w-full max-w-md mx-auto px-4 pt-1 pb-36 relative">
-        {/* Static Pinned Search & Filter Controls on Left + Horizontally Scrolling Categories on Right */}
-        <section aria-label="Search and Filters" className="sticky top-14 z-30 w-[calc(100%+2rem)] -mx-4 px-4 py-2 flex items-center gap-3 bg-white/75 backdrop-blur-md supports-[backdrop-filter]:bg-white/75 border-b border-slate-200/60">
+      <main className="w-full max-w-[480px] mx-auto px-4 min-[480px]:px-8 pt-1 pb-36 relative">
+        {/* Static Pinned Search & Filter Controls on Left + Horizontally Scrolling Categories on Right.
+            Spans the full 480px frame (main is frame-wide; the negative margins cancel its padding), so
+            the frosted bar meets the frosted header edge to edge as one surface. */}
+        <section aria-label="Search and Filters" className="sticky top-14 z-30 w-[calc(100%+2rem)] -mx-4 min-[480px]:w-[calc(100%+4rem)] min-[480px]:-mx-8 px-4 py-2 flex items-center gap-3 bg-white/75 backdrop-blur-md supports-[backdrop-filter]:bg-white/75 border-b border-slate-200/60">
           <div className={`flex items-center gap-1.5 ${searchOpen || searchQuery ? 'flex-1 min-w-0' : 'hidden'}`}>
             {searchOpen || searchQuery ? (
               <div className={`flex-1 min-w-0 h-9 flex items-center gap-1 bg-white border border-[#D0CDE1] focus-within:border-[#8574B7] rounded-full pl-3 pr-2 shadow-2xs transition-all ${searchAnimating ? 'animate-[slideIn_200ms_cubic-bezier(0.16,1,0.3,1)]' : ''} ${searchClosing ? 'animate-[slideOut_180ms_ease-in_forwards]' : ''}`}>
