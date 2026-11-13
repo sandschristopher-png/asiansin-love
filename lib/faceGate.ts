@@ -29,18 +29,20 @@ const HAND_LANDMARKER_MODEL =
 export type PoseState = 'match' | 'hand' | 'no_hand' | 'unavailable';
 
 // All shares below are of the visible frame (width for widths and distances, height for heights).
-/** Faces narrower than this are ignored (posters, people far in the background). */
-const MIN_FACE_WIDTH = 0.14;
+/** Faces narrower than this are ignored entirely (specks in the background). */
+const MIN_FACE_WIDTH = 0.05;
+/** A second face only counts toward "multiple faces" from this width (posters, people far behind). */
+const MIN_SECOND_FACE_WIDTH = 0.14;
 /** Two boxes overlapping this much are one face (glasses, headsets, shadows). */
 const DEDUPE_IOU = 0.35;
 /** ...as are two boxes whose centers are this close. */
 const DEDUPE_CENTER = 0.12;
 /** A second face only counts when its center is at least this far from the main face. */
 const MULTIPLE_CENTER = 0.2;
-/** Arm's-length framing: where the face center may sit, and how tall the face may be. */
-const CENTER_X: [number, number] = [0.15, 0.85];
-const CENTER_Y: [number, number] = [0.15, 0.82];
-const FACE_HEIGHT: [number, number] = [0.16, 0.62];
+/** Generous selfie framing: where the face center may sit, and how tall the face may be. */
+const CENTER_X: [number, number] = [0.1, 0.9];
+const CENTER_Y: [number, number] = [0.1, 0.88];
+const FACE_HEIGHT: [number, number] = [0.12, 0.82];
 
 export interface FaceGateResult {
   status: FaceGateStatus;
@@ -144,6 +146,8 @@ function matchesPose(poseId: string | undefined, hand: Pt[], face: Pt[], faceWid
       return f.thumb && !f.index && !f.middle && !f.ring && !f.pinky && hand[4].y < hand[2].y;
     case 'three_fingers':
       return [f.thumb, f.index, f.middle, f.ring, f.pinky].filter(Boolean).length === 3;
+    case 'open_palm':
+      return f.thumb && f.index && f.middle && f.ring && f.pinky;
     case 'chin_touch': {
       const chin = face[152];
       return Boolean(chin) && [4, 8, 12].some((i) => dist(hand[i], chin) < faceWidthPx * 0.45);
@@ -213,7 +217,7 @@ export function evaluateFaceFrame(video: HTMLVideoElement, viewW: number, viewH:
 
   // 3. Only a clearly separate second face counts as another person.
   const main = distinct[0];
-  if (distinct.some((d) => d !== main && centerGap(main, d) > MULTIPLE_CENTER)) {
+  if (distinct.some((d) => d !== main && d.w >= MIN_SECOND_FACE_WIDTH && centerGap(main, d) > MULTIPLE_CENTER)) {
     return { status: 'multiple', faceCount: distinct.length, widthRatio: null, pose: 'no_hand' };
   }
 

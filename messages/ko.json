@@ -164,7 +164,7 @@
     "hudMirror": "모서리의 포즈를 따라 해 주세요",
     "pipGuide": "1단계 가이드",
     "pipMatch": "이 포즈를 따라 하세요",
-    "pipLook": "정면을 바라보세요",
+    "pipLook": "정면 보기",
     "statusStarting": "카메라 준비 중...",
     "statusUnavailable": "얼굴 인식을 사용할 수 없어요. 다시 시작을 누르세요.",
     "statusFrame": "화면 안에 들어와 주세요",
@@ -186,7 +186,8 @@
       "peace": "브이",
       "thumbs_up": "엄지 척",
       "chin_touch": "턱 괴기",
-      "three_fingers": "손가락 세 개"
+      "three_fingers": "손가락 세 개",
+      "open_palm": "손바닥"
     },
     "title": "프로필 인증",
     "back": "뒤로",
@@ -216,8 +217,10 @@
       "peace": "뺨 옆에서 브이",
       "thumbs_up": "얼굴 옆에서 엄지 척",
       "chin_touch": "손으로 턱 만지기",
-      "three_fingers": "손가락 세 개 펴기"
-    }
+      "three_fingers": "손가락 세 개 펴기",
+      "open_palm": "얼굴 옆에서 손바닥 펴고 흔들기"
+    },
+    "alreadyVerified": "프로필이 이미 인증되었어요. 다시 진행하면 인증 사진이 업데이트돼요."
   },
   "settings": {
     "appLanguage": "앱 언어",

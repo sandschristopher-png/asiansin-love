@@ -164,7 +164,7 @@
     "hudMirror": "Làm theo tư thế ở góc màn hình",
     "pipGuide": "Hướng dẫn bước 1",
     "pipMatch": "Làm theo tư thế này",
-    "pipLook": "Nhìn thẳng về phía trước",
+    "pipLook": "Nhìn thẳng",
     "statusStarting": "Đang khởi động camera...",
     "statusUnavailable": "Không thể nhận diện khuôn mặt. Nhấn Bắt đầu lại.",
     "statusFrame": "Hãy vào trong khung hình",
@@ -186,7 +186,8 @@
       "peace": "Chữ V",
       "thumbs_up": "Giơ ngón cái",
       "chin_touch": "Chạm cằm",
-      "three_fingers": "Ba ngón tay"
+      "three_fingers": "Ba ngón tay",
+      "open_palm": "Xòe tay"
     },
     "title": "Xác minh hồ sơ",
     "back": "Quay lại",
@@ -216,8 +217,10 @@
       "peace": "Chữ V cạnh má",
       "thumbs_up": "Giơ ngón cái cạnh mặt",
       "chin_touch": "Tay chạm cằm",
-      "three_fingers": "Giơ ba ngón tay"
-    }
+      "three_fingers": "Giơ ba ngón tay",
+      "open_palm": "Xòe tay vẫy cạnh mặt"
+    },
+    "alreadyVerified": "Hồ sơ của bạn đã được xác minh. Hoàn tất lại bước này sẽ cập nhật ảnh xác minh của bạn."
   },
   "settings": {
     "appLanguage": "Ngôn ngữ ứng dụng",

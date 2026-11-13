@@ -164,7 +164,7 @@
     "hudMirror": "隅のポーズをまねてください",
     "pipGuide": "ステップ1の見本",
     "pipMatch": "このポーズをまねて",
-    "pipLook": "まっすぐ前を見て",
+    "pipLook": "正面を見て",
     "statusStarting": "カメラを準備中...",
     "statusUnavailable": "顔認識を利用できません。「やり直す」をタップしてください。",
     "statusFrame": "画面内に入ってください",
@@ -186,7 +186,8 @@
       "peace": "ピースサイン",
       "thumbs_up": "サムズアップ",
       "chin_touch": "あごに手",
-      "three_fingers": "指を3本"
+      "three_fingers": "指を3本",
+      "open_palm": "手のひら"
     },
     "title": "プロフィール認証",
     "back": "戻る",
@@ -216,8 +217,10 @@
       "peace": "頬の横でピースサイン",
       "thumbs_up": "顔の横でサムズアップ",
       "chin_touch": "手をあごに当てる",
-      "three_fingers": "指を3本立てる"
-    }
+      "three_fingers": "指を3本立てる",
+      "open_palm": "顔の横で手のひらを広げて振る"
+    },
+    "alreadyVerified": "プロフィールは認証済みです。もう一度行うと、認証用の写真が更新されます。"
   },
   "settings": {
     "appLanguage": "アプリの言語",

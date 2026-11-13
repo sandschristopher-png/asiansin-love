@@ -164,7 +164,7 @@
     "hudMirror": "模仿角落里的姿势",
     "pipGuide": "第1步示例",
     "pipMatch": "模仿这个姿势",
-    "pipLook": "请直视前方",
+    "pipLook": "直视前方",
     "statusStarting": "正在启动摄像头...",
     "statusUnavailable": "人脸检测不可用，请点按“重新开始”。",
     "statusFrame": "请进入画面",
@@ -186,7 +186,8 @@
       "peace": "比耶",
       "thumbs_up": "竖大拇指",
       "chin_touch": "托下巴",
-      "three_fingers": "三根手指"
+      "three_fingers": "三根手指",
+      "open_palm": "张开手掌"
     },
     "title": "个人资料验证",
     "back": "返回",
@@ -216,8 +217,10 @@
       "peace": "在脸颊旁比耶",
       "thumbs_up": "在脸旁竖大拇指",
       "chin_touch": "用手托下巴",
-      "three_fingers": "竖起三根手指"
-    }
+      "three_fingers": "竖起三根手指",
+      "open_palm": "在脸旁张开手掌挥手"
+    },
+    "alreadyVerified": "你的个人资料已通过验证。再次完成此流程将更新你的验证照片。"
   },
   "settings": {
     "appLanguage": "应用语言",

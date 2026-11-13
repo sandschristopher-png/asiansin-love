@@ -1,8 +1,10 @@
 import { createHmac, timingSafeEqual } from 'crypto';
 
-// Mascot hand poses (ids match VERIFICATION_POSES in lib/poses.ts). Each attempt gets one random
-// pose; the member copies it in a single selfie that Gemini pre-screens and an admin approves.
-export const POSE_POOL = ['peace', 'thumbs_up', 'chin_touch', 'three_fingers'] as const;
+// Hand poses (ids match VERIFICATION_POSES in lib/poses.ts). Each attempt gets one random pose,
+// picked server-side and sealed in the signed token, so the client can't choose an easy or
+// pre-recorded one; the member copies it in a single selfie that Gemini pre-screens and an admin
+// approves.
+export const POSE_POOL = ['thumbs_up', 'peace', 'three_fingers', 'chin_touch', 'open_palm'] as const;
 
 export const SEQUENCE_LENGTH = 1;
 export const TOKEN_TTL_MS = 5 * 60 * 1000;

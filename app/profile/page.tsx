@@ -122,6 +122,7 @@ export default function MyProfilePage() {
   useHideBottomNav(isEditing);
   // Main photo awaiting admin review (photo_review_status from 20261112, avatar_status before it).
   const [photoPending, setPhotoPending] = useState(false);
+  const [isSuperAdmin, setIsSuperAdmin] = useState(false);
   const [saving, setSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
 
@@ -129,6 +130,9 @@ export default function MyProfilePage() {
   const [username, setUsername] = useState<string>(() => initialProfile?.username ?? '');
   const [avatarUrl, setAvatarUrl] = useState<string | null>(() => initialProfile?.avatarUrl ?? null);
   const [photos, setPhotos] = useState<string[]>(() => initialProfile?.photos ?? []);
+  // Photo order as last saved. In edit mode a tapped thumbnail moves to the front of `photos`
+  // (becomes Main) locally; Save sends it to /api/profile/photo, Cancel restores this order.
+  const [savedPhotos, setSavedPhotos] = useState<string[]>(() => initialProfile?.photos ?? []);
   const [currentPhotoIdx, setCurrentPhotoIdx] = useState(0);
   const touchStartX = useRef<number | null>(null);
   const justSwiped = useRef(false);
@@ -218,6 +222,7 @@ export default function MyProfilePage() {
         setMyId(data.id ?? null);
         setHasPlusFlag(data.is_plus === true);
         setCachedSubscription(isPlusProfile(data));
+        setIsSuperAdmin(adminRoleOf(data) === 'super_admin');
         setPhotoPending(
           adminRoleOf(data) !== 'super_admin' &&
             data.photo_review_status !== 'approved' &&
@@ -245,8 +250,10 @@ export default function MyProfilePage() {
         }
         if (Array.isArray(data.photos) && data.photos.length > 0) {
           setPhotos(data.photos.filter(Boolean));
+          setSavedPhotos(data.photos.filter(Boolean));
         } else if (data.avatar_url) {
           setPhotos([data.avatar_url]);
+          setSavedPhotos([data.avatar_url]);
         }
         // Sync to instant memory cache
         updateProfileCache({
@@ -316,7 +323,10 @@ export default function MyProfilePage() {
       });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) throw new Error(data.error || 'Could not remove the photo.');
-      if (Array.isArray(data.photos)) setPhotos(data.photos);
+      if (Array.isArray(data.photos)) {
+        setPhotos(data.photos);
+        setSavedPhotos(data.photos);
+      }
       if (typeof data.avatar_url === 'string') setAvatarUrl(data.avatar_url);
       setCurrentPhotoIdx(0);
       showActionToast('Photo deleted', 'check');
@@ -375,6 +385,30 @@ export default function MyProfilePage() {
 
     setSaving(true);
     setSaveError(null);
+
+    // A thumbnail tapped to become Main: save the new main photo first.
+    const newMain = photos[0];
+    if (newMain && photos.length > 1 && newMain !== (savedPhotos[0] ?? avatarUrl)) {
+      try {
+        const res = await fetch('/api/profile/photo', {
+          method: 'PATCH',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ main: newMain }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok) throw new Error(data.error || 'Could not change your main photo.');
+        if (Array.isArray(data.photos)) {
+          setPhotos(data.photos);
+          setSavedPhotos(data.photos);
+        }
+        if (typeof data.avatar_url === 'string') setAvatarUrl(data.avatar_url);
+        if (!isSuperAdmin) setPhotoPending(true);
+      } catch (err) {
+        setSaving(false);
+        setSaveError(err instanceof Error ? err.message : 'Could not change your main photo.');
+        return;
+      }
+    }
     // One screened, whitelisted save for every field (bio, rhythm, vitals, location...).
     const result = await saveProfileFields(payload);
     setSaving(false);
@@ -510,8 +544,25 @@ export default function MyProfilePage() {
           <div className="space-y-1.5">
             <div className="flex gap-2 overflow-x-auto no-scrollbar [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pb-1">
               {photoList.map((url, idx) => (
-                <div key={url} className="relative w-20 aspect-[3/4] shrink-0 rounded-xl overflow-hidden bg-[#E8E6F1]/60 border border-[#D0CDE1]">
-                  <img src={supabaseImage(url, TILE_IMAGE)} alt={idx === 0 ? 'Main photo' : `Photo ${idx + 1}`} className="w-full h-full object-cover" />
+                <div
+                  key={url}
+                  className={`relative w-20 aspect-[3/4] shrink-0 rounded-xl overflow-hidden bg-[#E8E6F1]/60 border ${
+                    idx === 0 ? 'border-[#8574B7] ring-2 ring-[#8574B7]/30' : 'border-[#D0CDE1]'
+                  }`}
+                >
+                  {/* Tap a photo to make it Main: it moves to the front now, and is saved with Save Profile. */}
+                  <button
+                    type="button"
+                    disabled={idx === 0 || deletingPhoto !== null}
+                    onClick={() => {
+                      setPhotos([url, ...photoList.filter((p) => p !== url)]);
+                      setCurrentPhotoIdx(0);
+                    }}
+                    aria-label={idx === 0 ? 'Main photo' : `Make photo ${idx + 1} your main photo`}
+                    className="block w-full h-full cursor-pointer disabled:cursor-default"
+                  >
+                    <img src={supabaseImage(url, TILE_IMAGE)} alt="" className="w-full h-full object-cover" />
+                  </button>
                   {idx === 0 && (
                     <span className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded-full bg-[#8574B7]/90 text-white text-[9px] font-semibold">
                       Main
@@ -531,8 +582,10 @@ export default function MyProfilePage() {
                 </div>
               ))}
             </div>
-            {photoList.length <= 1 && (
+            {photoList.length <= 1 ? (
               <p className="text-[11px] text-slate-600">Profiles require at least one photo. Add another to replace this one.</p>
+            ) : (
+              <p className="text-[11px] text-slate-600">Tap a photo to make it your main photo, then Save Profile.</p>
             )}
             {photoNotice && <p role="alert" className="text-[11px] font-semibold text-red-600">{photoNotice}</p>}
           </div>
@@ -720,7 +773,12 @@ export default function MyProfilePage() {
               <div className="fixed bottom-0 left-1/2 -translate-x-1/2 z-50 w-full max-w-[480px] bg-white/95 backdrop-blur-md border-t border-[#D0CDE1] px-4 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] flex items-stretch gap-2.5 h-[calc(4.5rem+env(safe-area-inset-bottom))]">
                 <button
                   type="button"
-                  onClick={() => setIsEditing(false)}
+                  onClick={() => {
+                    // Undo an unsaved Main change.
+                    if (savedPhotos.length > 0) setPhotos(savedPhotos);
+                    setCurrentPhotoIdx(0);
+                    setIsEditing(false);
+                  }}
                   className="h-full flex-1 rounded-2xl bg-white border border-[#D0CDE1] text-xs font-medium text-[#413B5E]/85 hover:bg-[#E8E6F1]/40 transition flex items-center justify-center shadow-xs cursor-pointer active:scale-[0.99]"
                 >
                   Cancel

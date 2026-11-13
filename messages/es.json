@@ -164,7 +164,7 @@
     "hudMirror": "Imita la pose de la esquina",
     "pipGuide": "Guía paso 1",
     "pipMatch": "Copia esta pose",
-    "pipLook": "Mira de frente",
+    "pipLook": "Mira al frente",
     "statusStarting": "Iniciando la cámara...",
     "statusUnavailable": "Detección facial no disponible. Toca Reiniciar.",
     "statusFrame": "Colócate dentro del encuadre",
@@ -186,7 +186,8 @@
       "peace": "Signo de paz",
       "thumbs_up": "Pulgar arriba",
       "chin_touch": "Mano en la barbilla",
-      "three_fingers": "Tres dedos"
+      "three_fingers": "Tres dedos",
+      "open_palm": "Palma abierta"
     },
     "title": "Verificación del perfil",
     "back": "Atrás",
@@ -216,8 +217,10 @@
       "peace": "Signo de paz junto a la mejilla",
       "thumbs_up": "Pulgar arriba junto a la cara",
       "chin_touch": "Mano tocando la barbilla",
-      "three_fingers": "Tres dedos levantados"
-    }
+      "three_fingers": "Tres dedos levantados",
+      "open_palm": "Saluda con la palma abierta junto a la cara"
+    },
+    "alreadyVerified": "Tu perfil ya está verificado. Si lo completas de nuevo, se actualizarán tus fotos de verificación."
   },
   "settings": {
     "appLanguage": "Idioma de la app",

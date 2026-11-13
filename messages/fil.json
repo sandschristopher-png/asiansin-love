@@ -164,7 +164,7 @@
     "hudMirror": "Gayahin ang pose sa sulok",
     "pipGuide": "Gabay sa hakbang 1",
     "pipMatch": "Gayahin ang pose na ito",
-    "pipLook": "Tumingin nang diretso",
+    "pipLook": "Diretso ang tingin",
     "statusStarting": "Sinisimulan ang camera...",
     "statusUnavailable": "Hindi gumagana ang face check. I-tap ang Ulitin.",
     "statusFrame": "Pumuwesto sa loob ng frame",
@@ -186,7 +186,8 @@
       "peace": "Peace Sign",
       "thumbs_up": "Thumbs Up",
       "chin_touch": "Hawak sa Baba",
-      "three_fingers": "Tatlong Daliri"
+      "three_fingers": "Tatlong Daliri",
+      "open_palm": "Bukas na Palad"
     },
     "title": "Pag-verify ng Profile",
     "back": "Bumalik",
@@ -216,8 +217,10 @@
       "peace": "Peace sign sa tabi ng pisngi",
       "thumbs_up": "Thumbs up sa tabi ng mukha",
       "chin_touch": "Kamay na nakahawak sa baba",
-      "three_fingers": "Tatlong daliring nakataas"
-    }
+      "three_fingers": "Tatlong daliring nakataas",
+      "open_palm": "Kumaway nang bukas ang palad sa tabi ng mukha"
+    },
+    "alreadyVerified": "Verified na ang profile mo. Kapag inulit mo ito, mapapalitan ang mga verification photo mo."
   },
   "settings": {
     "appLanguage": "Wika ng App",

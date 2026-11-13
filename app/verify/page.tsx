@@ -36,14 +36,46 @@ const HOLD_MS = 1200;
 const JITTER_FRAMES = 2;
 /** Step 2: a hand held in view this long counts as the pose, in case recognition struggles. */
 const HAND_FALLBACK_MS = 6000;
+/** Step 1: after this long without a lock, any single detected face is taken (see acceptsLenient). */
+const STEP1_SAFETY_MS = 5000;
+
+/**
+ * Step 1 safety net: exactly one face was found, just not framed perfectly. A frame with no face
+ * (or two people) is never captured: the server and the AI pre-screen would reject it anyway.
+ */
+function acceptsLenient(r: FaceGateResult): boolean {
+  return r.faceCount === 1 && r.status !== 'no_face' && r.status !== 'multiple';
+}
 /** /api/verify/submit rejects attempts finished sooner than 4 s after the pose was issued. */
 const MIN_SUBMIT_AFTER_ISSUE_MS = 4500;
 
 const MAX_DIM = 1200; // longest edge of an uploaded photo
 const JPEG_QUALITY = 0.85;
 
-/** Step 1 reference tile: the landing photo, cropped to her head and shoulders. */
-const PORTRAIT_GUIDE = { src: '/Landing-Woman.png', position: '64% 22%' };
+/** Intro card and PiP tile share one rendition of the pose photo, so the tile is a cache hit. */
+const POSE_IMAGE_SIZES = '144px';
+
+/**
+ * Step 1 reference tile: a head-and-shoulders framing silhouette, so it reads as "frame yourself
+ * like this" and not as somebody's profile photo.
+ */
+function PortraitGuide() {
+  return (
+    <svg viewBox="0 0 124 168" preserveAspectRatio="xMidYMid slice" className="absolute inset-0 w-full h-full" aria-hidden>
+      <rect width="124" height="168" fill="#2A2540" />
+      {/* framing corners */}
+      <g stroke="#FFFFFF" strokeOpacity="0.55" strokeWidth="2.5" strokeLinecap="round" fill="none">
+        <path d="M22 40 V30 H32" />
+        <path d="M92 30 H102 V40" />
+        <path d="M22 112 V122 H32" />
+        <path d="M92 122 H102 V112" />
+      </g>
+      {/* head and shoulders */}
+      <ellipse cx="62" cy="70" rx="21" ry="26" fill="#D0CDE1" />
+      <path d="M14 168 C16 134 34 116 62 116 C90 116 108 134 110 168 Z" fill="#D0CDE1" />
+    </svg>
+  );
+}
 
 type Step = 'face' | 'pose';
 type Phase = 'align' | 'hold' | 'capturing';
@@ -57,6 +89,7 @@ const POSE_NAME_KEY = {
   thumbs_up: 'verify.poseName.thumbs_up',
   chin_touch: 'verify.poseName.chin_touch',
   three_fingers: 'verify.poseName.three_fingers',
+  open_palm: 'verify.poseName.open_palm',
 } as const satisfies Record<PoseId, TKey>;
 
 interface Shot {
@@ -102,11 +135,25 @@ const POSE_LABEL_KEY = {
   thumbs_up: 'verify.poseLabel.thumbs_up',
   chin_touch: 'verify.poseLabel.chin_touch',
   three_fingers: 'verify.poseLabel.three_fingers',
+  open_palm: 'verify.poseLabel.open_palm',
 } as const satisfies Record<PoseId, TKey>;
 
+/** Intro-card pose photo: space reserved up front and fetched eagerly, so nothing pops in late. */
 function PoseImage({ pose, alt, className = '' }: { pose: VerificationPose; alt: string; className?: string }) {
-  // Functional figure: plain white, flat (no aura, border or glow).
-  return <img src={pose.image} alt={alt} className={`object-contain bg-white ${className}`} draggable={false} />;
+  return (
+    <div className={`relative overflow-hidden bg-[#E8E6F1]/60 ${className}`}>
+      <Image
+        src={pose.image}
+        alt={alt}
+        fill
+        sizes={POSE_IMAGE_SIZES}
+        loading="eager"
+        fetchPriority="high"
+        className="object-cover"
+        draggable={false}
+      />
+    </div>
+  );
 }
 
 function ErrorNote({ message }: { message: string | null }) {
@@ -184,6 +231,8 @@ export default function VerifyPage() {
   const [done, setDone] = useState<{ fastTrack: boolean } | null>(null);
   /** The start error is "add a main photo first": its button links to the photo editor. */
   const [needPhoto, setNeedPhoto] = useState(false);
+  /** Verified members can run the flow again (it replaces their verification photos). */
+  const [alreadyVerified, setAlreadyVerified] = useState(false);
 
   // Live single-face gate (MediaPipe, loaded when the camera opens).
   const gateRef = useRef<typeof import('@/lib/faceGate') | null>(null);
@@ -195,7 +244,7 @@ export default function VerifyPage() {
   const handSinceRef = useRef(0);
   const handMissesRef = useRef(0);
   const busyRef = useRef(false);
-  const captureRef = useRef<(check: FaceGateResult) => void>(() => {});
+  const captureRef = useRef<(check: FaceGateResult, lenient?: boolean) => void>(() => {});
 
   /** Server issues one random pose in a signed, short-lived token. */
   const requestChallenge = useCallback(async () => {
@@ -243,10 +292,11 @@ export default function VerifyPage() {
       }
       const { data: profile } = await supabase
         .from('profiles')
-        .select('avatar_url')
+        .select('avatar_url, is_verified')
         .eq('id', userData.user.id)
         .maybeSingle();
       if (cancelled) return;
+      setAlreadyVerified(profile?.is_verified === true);
       if (!profile?.avatar_url) {
         setNeedPhoto(true);
         setStartError(tRef.current('verify.needPhoto'));
@@ -391,6 +441,7 @@ export default function VerifyPage() {
   const poseId = pose?.id;
   useEffect(() => {
     if (!cameraOn || gateState !== 'ready' || halted) return;
+    const startedAt = Date.now(); // this step's clock (the effect re-runs on each step change)
     const timer = window.setInterval(() => {
       const video = videoRef.current;
       const gate = gateRef.current;
@@ -405,7 +456,10 @@ export default function VerifyPage() {
       setPoseState((prev) => (prev === result.pose ? prev : result.pose));
       const now = Date.now();
 
-      let ready = result.status === 'ok';
+      // Step 1 safety net: after STEP1_SAFETY_MS, any single detected face (even too far, too close
+      // or off-center) is good enough for the portrait, so dim or colored light never traps anyone.
+      const lenient = step === 'face' && now - startedAt >= STEP1_SAFETY_MS && acceptsLenient(result);
+      let ready = result.status === 'ok' || lenient;
       if (ready && step === 'pose') {
         const handInView = result.pose === 'match' || result.pose === 'hand';
         if (handInView) {
@@ -437,10 +491,10 @@ export default function VerifyPage() {
       const progress = Math.min(1, (now - holdSinceRef.current) / HOLD_MS);
       setHoldProgress(progress);
       setPhase('hold');
-      if (progress >= 1 && result.status === 'ok') {
+      if (progress >= 1 && (result.status === 'ok' || lenient)) {
         busyRef.current = true;
         setPhase('capturing');
-        captureRef.current(result);
+        captureRef.current(result, lenient);
       }
     }, GATE_TICK_MS);
     return () => window.clearInterval(timer);
@@ -504,7 +558,7 @@ export default function VerifyPage() {
 
   /** Called by the gate loop once a hold completes; re-checks this exact frame before taking it. */
   const capture = useCallback(
-    async (held: FaceGateResult) => {
+    async (held: FaceGateResult, lenient = false) => {
       const video = videoRef.current;
       const gate = gateRef.current;
       if (!video || !gate) {
@@ -513,7 +567,7 @@ export default function VerifyPage() {
         return;
       }
       const check = gate.evaluateFaceFrame(video, video.clientWidth, video.clientHeight);
-      if (check.status !== 'ok') {
+      if (check.status !== 'ok' && !(lenient && acceptsLenient(check))) {
         setFaceStatus(check.status);
         busyRef.current = false;
         resetHold();
@@ -625,7 +679,8 @@ export default function VerifyPage() {
       ) : cameraOn ? (
         // Video-call layout: the member's own feed fills the screen with nothing over the face;
         // the pose to copy sits in a corner tile like the other caller's video.
-        <div className="fixed inset-0 z-[70] w-screen h-[100dvh] overflow-hidden bg-black select-none">
+        // 100svh (small viewport): the layout never extends under a mobile browser's bottom toolbar.
+        <div className="fixed inset-x-0 top-0 z-[70] w-screen h-[100svh] overflow-hidden bg-black select-none">
           <video ref={attachVideo} autoPlay muted playsInline className="w-full h-full object-cover scale-x-[-1]" />
 
           {/* Top HUD: instruction card left, close + Restart right */}
@@ -686,33 +741,40 @@ export default function VerifyPage() {
           {/* Picture-in-picture reference tile: what to copy, like the other caller's video */}
           <div
             aria-hidden
-            className={`fixed bottom-6 right-5 z-30 mb-[env(safe-area-inset-bottom,0px)] w-[124px] h-[168px] sm:w-[144px] sm:h-[192px] rounded-2xl border-2 bg-[#161422]/90 backdrop-blur-md shadow-[0_12px_32px_rgba(0,0,0,0.55)] overflow-hidden pointer-events-none flex flex-col justify-between transition-[border-color,box-shadow] duration-200 ${
+            className={`fixed bottom-[calc(env(safe-area-inset-bottom,0px)+28px)] right-4 z-30 w-[124px] h-[168px] sm:w-[144px] sm:h-[192px] rounded-2xl border-2 bg-[#161422]/90 backdrop-blur-md shadow-[0_12px_32px_rgba(0,0,0,0.55)] overflow-hidden pointer-events-none flex flex-col justify-between transition-[border-color,box-shadow] duration-200 ${
               locked ? 'border-[#22C55E] ring-4 ring-[#22C55E]/30' : 'border-white/90'
             }`}
           >
             {step === 'face' ? (
+              <PortraitGuide />
+            ) : (
               <Image
-                src={PORTRAIT_GUIDE.src}
+                src={pose.image}
                 alt=""
                 fill
-                sizes="144px"
+                sizes={POSE_IMAGE_SIZES}
+                loading="eager"
                 draggable={false}
-                className="w-full h-full object-cover"
-                style={{ objectPosition: PORTRAIT_GUIDE.position }}
+                className="w-full h-full object-cover bg-white"
               />
-            ) : (
-              <Image src={pose.image} alt="" fill sizes="144px" draggable={false} className="w-full h-full object-cover bg-white" />
             )}
             <span className="relative px-2 py-0.5 m-2 rounded-full bg-black/60 backdrop-blur-sm text-[10px] font-bold uppercase tracking-wider text-white w-fit">
               {step === 'face' ? t('verify.pipGuide') : t('verify.pipMatch')}
             </span>
-            <span className="relative bg-gradient-to-t from-black/85 via-black/50 to-transparent px-2.5 pt-4 pb-2 text-center font-brand text-xs font-semibold text-white truncate">
+            {/* Never truncated: short labels, wrapping to a second line if a language needs it. */}
+            <span className="relative bg-gradient-to-t from-black/85 via-black/50 to-transparent px-1.5 pt-3 pb-1.5 text-center font-brand text-[11px] leading-tight font-semibold text-white">
               {step === 'face' ? t('verify.pipLook') : t(POSE_NAME_KEY[pose.id])}
             </span>
           </div>
         </div>
       ) : (
         <div className="mx-4 mt-4 space-y-4 pb-28">
+          {alreadyVerified && (
+            <div role="note" className="flex items-start gap-2 p-3 rounded-2xl bg-[#E8E6F1]/50 border border-[#D0CDE1] text-xs text-[#413B5E]/85 leading-relaxed">
+              <ShieldCheck className="w-4 h-4 text-[#8574B7] shrink-0 mt-0.5" aria-hidden />
+              <span>{t('verify.alreadyVerified')}</span>
+            </div>
+          )}
           <div className="p-5 rounded-3xl bg-white border border-[#D0CDE1] space-y-3 shadow-sm">
             <span className="text-[11px] font-medium uppercase tracking-wider text-[#8574B7]">{t('verify.twoQuick')}</span>
             <ol className="space-y-1.5 text-xs text-[#413B5E]/85 leading-relaxed">
@@ -723,7 +785,7 @@ export default function VerifyPage() {
                 <span className="font-semibold text-[#413B5E]">2. {t('verify.pose')}.</span> {t('verify.holdPose')}:
               </li>
             </ol>
-            <PoseImage pose={pose} alt={t(POSE_LABEL_KEY[pose.id])} className="w-36 h-36 mx-auto rounded-3xl" />
+            <PoseImage pose={pose} alt={t(POSE_LABEL_KEY[pose.id])} className="w-36 h-48 mx-auto rounded-3xl" />
             <p className="text-center text-sm font-medium text-[#413B5E]">{t(POSE_LABEL_KEY[pose.id])}</p>
             <p className="text-xs text-[#413B5E]/75 leading-relaxed text-center">{t('verify.introNote')}</p>
           </div>

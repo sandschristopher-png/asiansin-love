@@ -164,7 +164,7 @@
     "hudMirror": "Tiru pose di penjuru",
     "pipGuide": "Panduan langkah 1",
     "pipMatch": "Tiru pose ini",
-    "pipLook": "Pandang lurus ke depan",
+    "pipLook": "Pandang depan",
     "statusStarting": "Memulakan kamera...",
     "statusUnavailable": "Semakan wajah tidak tersedia. Ketik Mula Semula.",
     "statusFrame": "Letakkan diri anda dalam bingkai",
@@ -186,7 +186,8 @@
       "peace": "Tanda Aman",
       "thumbs_up": "Ibu Jari ke Atas",
       "chin_touch": "Sentuh Dagu",
-      "three_fingers": "Tiga Jari"
+      "three_fingers": "Tiga Jari",
+      "open_palm": "Tapak Tangan"
     },
     "title": "Pengesahan Profil",
     "back": "Kembali",
@@ -216,8 +217,10 @@
       "peace": "Tanda aman di sebelah pipi",
       "thumbs_up": "Ibu jari ke atas di sebelah muka",
       "chin_touch": "Tangan menyentuh dagu",
-      "three_fingers": "Tiga jari diangkat"
-    }
+      "three_fingers": "Tiga jari diangkat",
+      "open_palm": "Lambai tapak tangan terbuka di sebelah muka"
+    },
+    "alreadyVerified": "Profil anda sudah disahkan. Melengkapkan ini sekali lagi akan mengemas kini foto pengesahan anda."
   },
   "settings": {
     "appLanguage": "Bahasa Aplikasi",
