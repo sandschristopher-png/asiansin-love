@@ -31,7 +31,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Failed to submit report' }, { status: 500 });
   }
 
-  after(() => notifyAdmins({ kind: 'report', title: 'New report filed', ref: String(reportedId), actorId: String(reportedId) }));
+  after(() => notifyAdmins({ kind: 'report', ref: String(reportedId), actorId: String(reportedId) }));
 
   // Pending reports are listed in the admin review queue (/admin/verifications).
   return NextResponse.json({ success: true, data });

@@ -438,5 +438,16 @@
     "cooldownBody": "Magiging walang limitasyon ang pagmemensahe sa sandaling sumagot sila. Maipapadala mo ang susunod mong mensahe sa loob ng {time}.",
     "cooldownCta": "Magsimula ng walang limitasyong bagong chat gamit ang Plus",
     "outreachLimit": "Naabot mo na ang {n} bagong pagpapakilala ngayong araw. Magiging walang limitasyon ang pagmemensahe kapag sumagot sila."
+  },
+  "notif": {
+    "message": "Nagpadala sa iyo ng mensahe si {name}",
+    "voice": "Nagpadala sa iyo ng voice note si {name}",
+    "spark": "Nag-spark sa iyo si {name}",
+    "match": "Nag-spark kayo ni {name} sa isa't isa",
+    "visit": "Tiningnan ni {name} ang profile mo",
+    "adminVerification": "Nagsumite si {name} ng selfie verification",
+    "adminPhoto": "Nag-upload si {name} ng bagong pangunahing larawan",
+    "adminReport": "Na-report si {name}",
+    "adminModeration": "Na-quarantine ang isang mensahe mula kay {name}"
   }
 }

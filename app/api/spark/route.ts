@@ -2,6 +2,7 @@ import { createClient } from '@/lib/supabase/server'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { NextResponse } from 'next/server'
 import { sendPushToUser } from '@/lib/pushSender'
+import { titleForRecipient } from '@/lib/notificationTitles'
 import { FREE_DAILY_SPARKS } from '@/lib/plusPlans'
 
 // POST { targetUserId, action?: 'spark' | 'toggle' }
@@ -95,6 +96,12 @@ export async function POST(req: Request) {
 
     const mutual = reverseSpark
     const senderName = senderProfile?.username || 'Someone'
+    const title = await titleForRecipient(
+      createServiceClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, { auth: { persistSession: false } }),
+      targetUserId,
+      mutual ? 'match' : 'spark',
+      senderProfile?.username
+    )
 
     if (mutual) {
       // It's a match - notify the recipient with match framing
@@ -102,7 +109,7 @@ export async function POST(req: Request) {
         user_id: targetUserId,
         actor_id: user.id,
         type: 'match',
-        title: "It's a Match!",
+        title,
         description: `You and ${senderName} sparked each other. Say hi.`,
         link_url: '/chat/' + user.id,
       })
@@ -110,7 +117,7 @@ export async function POST(req: Request) {
         userId: targetUserId,
         type: 'match',
         actorId: user.id,
-        body: `You and ${senderName} sparked each other. Say hi.`,
+        body: title,
         url: '/chat/' + user.id,
       }).catch((e) => console.error('[Push] spark match error:', e))
     } else {
@@ -119,7 +126,7 @@ export async function POST(req: Request) {
         user_id: targetUserId,
         actor_id: user.id,
         type: 'favorite',
-        title: 'New Spark',
+        title,
         description: senderName + ' sparked your profile.',
         link_url: '/favorites',
       })
@@ -127,7 +134,7 @@ export async function POST(req: Request) {
         userId: targetUserId,
         type: 'spark',
         actorId: user.id,
-        body: senderName + ' sparked your profile.',
+        body: title,
         url: '/profile/' + user.id,
       }).catch((e) => console.error('[Push] spark regular error:', e))
     }

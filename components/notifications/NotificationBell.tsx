@@ -7,7 +7,7 @@ import { Bell } from 'lucide-react';
 import { CountChip } from '@/components/admin/AdminPendingChip';
 import { NOTIFICATIONS_CHANGED_EVENT } from '@/lib/notificationStore';
 import { useLocale } from '@/components/i18n/LocaleProvider';
-import { NotificationRow, markNotificationsRead, type MemberNotification } from '@/components/notifications/NotificationRow';
+import { NOTIF_GROUP_LABEL, NotificationRow, markNotificationsRead, type MemberNotification } from '@/components/notifications/NotificationRow';
 
 const FRESH_URL = '/api/notifications?scope=all&fresh=1&limit=40';
 
@@ -117,8 +117,8 @@ export function NotificationBell() {
           aria-label={t('nav.notifications')}
           className="absolute right-0 top-full mt-2 w-80 max-w-[calc(100vw-2rem)] rounded-2xl bg-white/80 backdrop-blur-md shadow-xl overflow-hidden z-[200] animate-[notifDropdownIn_0.22s_cubic-bezier(0.16,1,0.3,1)_both]"
         >
-          <div className="flex items-center justify-between px-4 h-11">
-            <span className="text-sm font-semibold text-[#413B5E]">{t('nav.notifications')}</span>
+          <div className="flex items-center justify-between px-3.5 pt-2">
+            <span className={NOTIF_GROUP_LABEL.replace('px-1 ', '')}>{t('nav.notifications')}</span>
             <button
               type="button"
               onClick={markAll}
@@ -128,19 +128,20 @@ export function NotificationBell() {
               {t('nav.markAllRead')}
             </button>
           </div>
-          <div className="max-h-[360px] overflow-y-auto overscroll-contain">
+          <div className="max-h-[360px] overflow-y-auto overscroll-contain flex flex-col gap-2 px-2 pb-2">
             {items === null ? (
-              <div aria-hidden className="px-4 py-2 space-y-2">
+              <div aria-hidden className="px-1.5 flex flex-col gap-2">
                 <div className="h-9 rounded-xl bg-[#E8E6F1]/60 animate-pulse" />
                 <div className="h-9 rounded-xl bg-[#E8E6F1]/60 animate-pulse" />
               </div>
             ) : items.length === 0 ? (
-              <p className="px-4 py-4 text-xs text-[#413B5E]/70">{t('nav.noNotifications')}</p>
+              <p className="px-1.5 py-2 text-xs text-[#413B5E]/70">{t('nav.noNotifications')}</p>
             ) : (
               items.map((n) => (
                 <NotificationRow
                   key={n.id}
                   n={n}
+                  variant="panel"
                   highlighted={tinted.has(n.id) || !n.is_read}
                   onOpen={(row) => {
                     if (!row.is_read) void markNotificationsRead({ ids: [row.id] });
@@ -153,7 +154,7 @@ export function NotificationBell() {
           <Link
             href="/notifications"
             onClick={() => setOpen(false)}
-            className="block text-center text-xs font-medium text-[#8574B7] hover:text-[#534377] py-3 border-t border-[#D0CDE1]/50 transition-colors"
+            className="block text-center text-xs font-medium text-[#8574B7] hover:text-[#534377] py-2 border-t border-[#D0CDE1]/50 transition-colors"
           >
             {t('nav.seeAll')}
           </Link>

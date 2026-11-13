@@ -438,5 +438,16 @@
     "cooldownBody": "对方一回复，就可以无限畅聊。您可在 {time} 后发送下一条消息。",
     "cooldownCta": "用 Plus 无限开启新聊天",
     "outreachLimit": "您今天的 {n} 次新开场已用完。对方回复后即可无限畅聊。"
+  },
+  "notif": {
+    "message": "{name}给你发了一条消息",
+    "voice": "{name}给你发了一条语音",
+    "spark": "{name}给你发了Spark",
+    "match": "你和{name}互相发了Spark",
+    "visit": "{name}查看了你的资料",
+    "adminVerification": "{name}提交了自拍认证",
+    "adminPhoto": "{name}上传了新的主照片",
+    "adminReport": "{name}被举报了",
+    "adminModeration": "来自{name}的消息已被隔离"
   }
 }

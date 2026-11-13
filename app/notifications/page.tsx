@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from 'react';
 import { useLocale } from '@/components/i18n/LocaleProvider';
-import { NotificationRow, markNotificationsRead, type MemberNotification } from '@/components/notifications/NotificationRow';
+import { NOTIF_GROUP_LABEL, NotificationRow, markNotificationsRead, type MemberNotification } from '@/components/notifications/NotificationRow';
 
 const PAGE = 30;
 
@@ -57,9 +57,9 @@ export default function NotificationsPage() {
     .filter((g) => g.rows.length > 0);
 
   return (
-    <div className="w-full max-w-md mx-auto px-4 py-4 pb-24">
+    <div className="w-full max-w-md mx-auto px-4 pt-3 pb-24">
       {items === null ? (
-        <div aria-hidden className="space-y-2">
+        <div aria-hidden className="flex flex-col gap-2">
           {[0, 1, 2, 3].map((i) => (
             <div key={i} className="h-14 rounded-2xl bg-[#E8E6F1]/60 animate-pulse" />
           ))}
@@ -67,11 +67,11 @@ export default function NotificationsPage() {
       ) : items.length === 0 ? (
         <p className="py-16 text-center text-sm text-[#413B5E]/70">{t('nav.noNotifications')}</p>
       ) : (
-        <div className="space-y-5">
+        <div className="flex flex-col gap-3">
           {groups.map((g) => (
             <section key={g.key}>
-              <h2 className="px-1 pb-2 text-[10px] font-semibold uppercase tracking-wider text-[#8574B7]">{t(`nav.${g.key}`)}</h2>
-              <div className="rounded-2xl bg-white border border-[#D0CDE1] overflow-hidden divide-y divide-[#D0CDE1]/60">
+              <h2 className={NOTIF_GROUP_LABEL}>{t(`nav.${g.key}`)}</h2>
+              <div className="flex flex-col gap-2">
                 {g.rows.map((n) => (
                   <NotificationRow key={n.id} n={n} highlighted={!n.is_read} onOpen={open} />
                 ))}

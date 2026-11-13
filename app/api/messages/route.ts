@@ -1,5 +1,6 @@
 import { NextResponse, after } from 'next/server';
 import { notifyAdmins } from '@/lib/adminNotify';
+import { titleForRecipient } from '@/lib/notificationTitles';
 import { cookies } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
 import { createClient } from '@supabase/supabase-js';
@@ -303,7 +304,7 @@ export async function POST(req: Request) {
         .insert([{ sender_id: senderId, receiver_id: receiverId, content, is_quarantined: true }]);
       // Staff alert: a quarantined message waits in the Chat moderation queue.
       after(() =>
-        notifyAdmins({ kind: 'moderation', title: 'Message quarantined by the safety filter', ref: senderId, actorId: senderId })
+        notifyAdmins({ kind: 'moderation', ref: senderId, actorId: senderId })
       );
 
       return NextResponse.json({ success: true, delivered: true });
@@ -352,11 +353,12 @@ export async function POST(req: Request) {
         .eq('id', senderId)
         .maybeSingle();
       const senderName = sender?.username || 'Someone';
+      const title = await titleForRecipient(serviceClient, receiverId, 'message', sender?.username);
       await serviceClient.from('notifications').insert({
         user_id: receiverId,
         actor_id: senderId,
         type: 'message',
-        title: 'New Message',
+        title,
         description: senderName + ' sent you a message.',
         link_url: '/messages',
       });
@@ -365,7 +367,8 @@ export async function POST(req: Request) {
         type: 'message',
         conversationId: senderId,
         actorId: senderId,
-        body: senderName + ': ' + (content.length > 120 ? content.slice(0, 117) + '...' : content),
+        // Composed title, then a one-line preview of the message.
+        body: title + '\n' + (content.length > 120 ? content.slice(0, 117) + '...' : content),
       }).catch((e) => console.error('[Push] message error:', e));
     } catch {
       // Non-blocking notification dispatch

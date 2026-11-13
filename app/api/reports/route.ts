@@ -113,7 +113,7 @@ export async function POST(req: Request) {
   }
 
   after(() =>
-    notifyAdmins({ kind: 'report', title: `New report: ${REPORT_CATEGORIES[cat] ?? cat}`, ref: String(reportedId), actorId: String(reportedId) })
+    notifyAdmins({ kind: 'report', description: REPORT_CATEGORIES[cat], ref: String(reportedId), actorId: String(reportedId) })
   );
 
   let blocked = false;

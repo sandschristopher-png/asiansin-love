@@ -438,5 +438,16 @@
     "cooldownBody": "Los mensajes ilimitados se abren en cuanto responda. Podrás enviar tu próximo mensaje en {time}.",
     "cooldownCta": "Empieza chats nuevos ilimitados con Plus",
     "outreachLimit": "Has llegado a las {n} presentaciones nuevas de hoy. Los mensajes ilimitados se abren cuando responda."
+  },
+  "notif": {
+    "message": "{name} te envió un mensaje",
+    "voice": "{name} te envió una nota de voz",
+    "spark": "{name} te dio un Spark",
+    "match": "Tú y {name} se dieron un Spark",
+    "visit": "{name} vio tu perfil",
+    "adminVerification": "{name} envió una verificación con selfie",
+    "adminPhoto": "{name} subió una nueva foto principal",
+    "adminReport": "{name} fue reportado",
+    "adminModeration": "Un mensaje de {name} fue puesto en cuarentena"
   }
 }

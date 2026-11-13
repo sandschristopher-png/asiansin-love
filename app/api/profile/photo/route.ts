@@ -80,7 +80,7 @@ export async function PATCH(req: Request) {
     console.error('[profile/photo] set main failed:', updateError.message);
     return NextResponse.json({ error: 'Could not change your main photo.' }, { status: 500 });
   }
-  after(() => notifyAdmins({ kind: 'photo', title: 'New main photo to approve', ref: userId, actorId: userId }));
+  after(() => notifyAdmins({ kind: 'photo', ref: userId, actorId: userId }));
   return NextResponse.json({ success: true, photos, avatar_url: main });
 }
 

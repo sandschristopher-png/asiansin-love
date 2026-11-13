@@ -7,6 +7,7 @@
 // effect for a free member, so turning it on without Plus never hides anyone.
 import { NextResponse, after } from 'next/server';
 import { sendPushToUser } from '@/lib/pushSender';
+import { titleForRecipient } from '@/lib/notificationTitles';
 import { createClient } from '@supabase/supabase-js';
 import { createClient as createSessionClient } from '@/lib/supabase/server';
 import { isPlusProfile } from '@/lib/plus';
@@ -78,15 +79,16 @@ export async function POST(req: Request) {
     const { data: owner } = await service.from('profiles').select('*').eq('id', viewedId).maybeSingle();
     if (!isPlusProfile(owner)) return;
     const name = (me as { username?: string | null } | null)?.username || 'Someone';
+    const title = await titleForRecipient(service, viewedId, 'visit', name);
     await service.from('notifications').insert({
       user_id: viewedId,
       actor_id: user.id,
       type: 'visit',
-      title: 'New Profile Visit',
+      title,
       description: `${name} viewed your profile.`,
       link_url: '/profile/' + user.id,
     });
-    await sendPushToUser({ userId: viewedId, type: 'visit', actorId: user.id, body: `${name} viewed your profile.`, url: '/profile/' + user.id }).catch(() => {});
+    await sendPushToUser({ userId: viewedId, type: 'visit', actorId: user.id, body: title, url: '/profile/' + user.id }).catch(() => {});
   });
   return NextResponse.json({ logged: true });
 }

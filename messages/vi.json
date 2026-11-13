@@ -438,5 +438,16 @@
     "cooldownBody": "Nhắn tin không giới hạn sẽ mở ngay khi họ trả lời. Bạn có thể gửi tin tiếp theo sau {time}.",
     "cooldownCta": "Bắt đầu không giới hạn cuộc trò chuyện mới với Plus",
     "outreachLimit": "Bạn đã dùng hết {n} lượt làm quen mới hôm nay. Nhắn tin không giới hạn sẽ mở khi họ trả lời."
+  },
+  "notif": {
+    "message": "{name} đã gửi cho bạn một tin nhắn",
+    "voice": "{name} đã gửi cho bạn một tin nhắn thoại",
+    "spark": "{name} đã gửi Spark cho bạn",
+    "match": "Bạn và {name} đã gửi Spark cho nhau",
+    "visit": "{name} đã xem hồ sơ của bạn",
+    "adminVerification": "{name} đã gửi xác minh selfie",
+    "adminPhoto": "{name} đã tải lên ảnh chính mới",
+    "adminReport": "{name} đã bị báo cáo",
+    "adminModeration": "Một tin nhắn từ {name} đã bị cách ly"
   }
 }

@@ -438,5 +438,16 @@
     "cooldownBody": "相手が返信すると、メッセージは無制限になります。次のメッセージは{time}後に送れます。",
     "cooldownCta": "Plusで新しい会話を無制限に始める",
     "outreachLimit": "本日の新しい自己紹介{n}件に達しました。相手が返信すると、メッセージは無制限になります。"
+  },
+  "notif": {
+    "message": "{name}さんからメッセージが届きました",
+    "voice": "{name}さんからボイスメモが届きました",
+    "spark": "{name}さんがあなたにSparkしました",
+    "match": "{name}さんとお互いにSparkしました",
+    "visit": "{name}さんがあなたのプロフィールを見ました",
+    "adminVerification": "{name}さんがセルフィー認証を提出しました",
+    "adminPhoto": "{name}さんが新しいメイン写真をアップロードしました",
+    "adminReport": "{name}さんが報告されました",
+    "adminModeration": "{name}さんのメッセージが隔離されました"
   }
 }

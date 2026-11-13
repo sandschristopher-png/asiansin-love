@@ -438,5 +438,16 @@
     "cooldownBody": "Pesan tanpa batas terbuka begitu mereka membalas. Pesan berikutnya bisa dikirim dalam {time}.",
     "cooldownCta": "Mulai obrolan baru tanpa batas dengan Plus",
     "outreachLimit": "Kamu sudah memakai {n} perkenalan baru hari ini. Pesan tanpa batas terbuka setelah mereka membalas."
+  },
+  "notif": {
+    "message": "{name} mengirimimu pesan",
+    "voice": "{name} mengirimimu pesan suara",
+    "spark": "{name} memberimu Spark",
+    "match": "Kamu dan {name} saling memberi Spark",
+    "visit": "{name} melihat profilmu",
+    "adminVerification": "{name} mengirim verifikasi selfie",
+    "adminPhoto": "{name} mengunggah foto utama baru",
+    "adminReport": "{name} dilaporkan",
+    "adminModeration": "Pesan dari {name} dikarantina"
   }
 }

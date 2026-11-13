@@ -246,7 +246,7 @@ export async function POST(req: Request) {
 
     // 8. Main photos wait in the admin review queue (/admin/photos) while avatar_status is pending_review.
     if (isPrimaryAvatar) {
-      after(() => notifyAdmins({ kind: 'photo', title: 'New main photo to approve', ref: userId, actorId: userId }));
+      after(() => notifyAdmins({ kind: 'photo', ref: userId, actorId: userId }));
     }
 
     return NextResponse.json({

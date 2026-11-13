@@ -439,5 +439,16 @@
     "cooldownBody": "Unlimited messaging opens as soon as they reply. Your next message can go out in {time}.",
     "cooldownCta": "Start unlimited new chats with Plus",
     "outreachLimit": "You've reached today's {n} new introductions. Unlimited messaging opens once they reply."
+  },
+  "notif": {
+    "message": "{name} sent you a message",
+    "voice": "{name} sent you a voice note",
+    "spark": "{name} sparked you",
+    "match": "You and {name} sparked each other",
+    "visit": "{name} viewed your profile",
+    "adminVerification": "{name} submitted a selfie verification",
+    "adminPhoto": "{name} uploaded a new main photo",
+    "adminReport": "{name} was reported",
+    "adminModeration": "A message from {name} was quarantined"
   }
 }

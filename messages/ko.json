@@ -438,5 +438,16 @@
     "cooldownBody": "상대가 답장하면 바로 무제한으로 메시지를 보낼 수 있습니다. 다음 메시지는 {time} 후에 보낼 수 있어요.",
     "cooldownCta": "Plus로 새 채팅을 무제한으로 시작",
     "outreachLimit": "오늘의 새 첫인사 {n}건을 모두 사용했습니다. 상대가 답장하면 메시지가 무제한이 됩니다."
+  },
+  "notif": {
+    "message": "{name}님이 메시지를 보냈어요",
+    "voice": "{name}님이 음성 메모를 보냈어요",
+    "spark": "{name}님이 Spark를 보냈어요",
+    "match": "{name}님과 서로 Spark를 보냈어요",
+    "visit": "{name}님이 내 프로필을 봤어요",
+    "adminVerification": "{name}님이 셀피 인증을 제출했어요",
+    "adminPhoto": "{name}님이 새 대표 사진을 올렸어요",
+    "adminReport": "{name}님이 신고되었어요",
+    "adminModeration": "{name}님의 메시지가 격리되었어요"
   }
 }

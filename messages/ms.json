@@ -438,5 +438,16 @@
     "cooldownBody": "Mesej tanpa had dibuka sebaik sahaja mereka membalas. Mesej seterusnya boleh dihantar dalam {time}.",
     "cooldownCta": "Mulakan sembang baharu tanpa had dengan Plus",
     "outreachLimit": "Anda telah menggunakan {n} perkenalan baharu hari ini. Mesej tanpa had dibuka selepas mereka membalas."
+  },
+  "notif": {
+    "message": "{name} menghantar mesej kepada anda",
+    "voice": "{name} menghantar nota suara kepada anda",
+    "spark": "{name} memberi anda Spark",
+    "match": "Anda dan {name} saling memberi Spark",
+    "visit": "{name} melihat profil anda",
+    "adminVerification": "{name} menghantar pengesahan swafoto",
+    "adminPhoto": "{name} memuat naik foto utama baharu",
+    "adminReport": "{name} telah dilaporkan",
+    "adminModeration": "Mesej daripada {name} telah dikuarantin"
   }
 }

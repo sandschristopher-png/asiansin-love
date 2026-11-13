@@ -1,4 +1,13 @@
 import { SupabaseClient } from '@supabase/supabase-js';
+import { mergeMessages, translate, type TKey } from '@/lib/i18n';
+
+/** Composed title template per type (messages/en.json notif.*): "{name} sparked you". */
+const TITLE_KEY: Partial<Record<NotifType, TKey>> = {
+  favorite: 'notif.spark',
+  match: 'notif.match',
+  visit: 'notif.visit',
+  message: 'notif.message',
+};
 
 export type NotifType = 'favorite' | 'match' | 'visit' | 'message' | 'system';
 
@@ -39,11 +48,20 @@ export async function notifyUser(
       if (prefs && prefs[prefKey] === false) return; // recipient disabled this type
     }
 
+    // Compose "{name} sparked you" from the actor (this runs in the browser, so the English
+    // template; GET /api/notifications re-composes generic titles in the viewer's language).
+    let title = opts.title;
+    const key = TITLE_KEY[opts.type];
+    if (key && opts.actorId) {
+      const { data: actor } = await supabase.from('profiles').select('username').eq('id', opts.actorId).maybeSingle();
+      title = translate(mergeMessages(), key, { name: (actor?.username || 'Someone').replace(/^@/, '') });
+    }
+
     await supabase.from('notifications').insert({
       user_id: userId,
       actor_id: opts.actorId ?? null,
       type: opts.type,
-      title: opts.title,
+      title,
       description: opts.description,
       is_read: false,
     });

@@ -14,6 +14,7 @@ import { CONTACT_UNLOCK_TURNS } from '@/lib/safety';
 import { canSendVoiceNote, scoreOf } from '@/lib/reputation';
 import { AUDIO_MIME_EXT, VOICE_NOTE_MAX_BYTES, VOICE_NOTE_MAX_MS, baseMime, sniffAudioMime } from '@/lib/audio';
 import { sendPushToUser } from '@/lib/pushSender';
+import { titleForRecipient } from '@/lib/notificationTitles';
 
 export const runtime = 'nodejs';
 
@@ -155,11 +156,12 @@ export async function POST(req: Request) {
 
   try {
     const { data: sender } = await admin.from('profiles').select('username').eq('id', senderId).maybeSingle();
+    const title = await titleForRecipient(admin, receiverId, 'voice', sender?.username);
     await admin.from('notifications').insert({
       user_id: receiverId,
       actor_id: senderId,
       type: 'message',
-      title: 'New Voice Note',
+      title,
       description: (sender?.username || 'Someone') + ' sent you a voice note.',
       link_url: '/messages',
     });
@@ -168,7 +170,7 @@ export async function POST(req: Request) {
       type: 'message',
       conversationId: senderId,
       actorId: senderId,
-      body: (sender?.username || 'Someone') + ' sent you a voice note.',
+      body: title,
     }).catch(() => {});
   } catch {
     // Non-blocking notification dispatch

@@ -42,6 +42,10 @@ export function markNotificationsRead(body: { ids: string[] } | { all: true }) {
     .catch(() => {});
 }
 
+/** Group label (Today / This week / Earlier): Discover pill typography (text-xs font-medium) with
+ * Discover's uppercase label tracking (tracking-wider), on the pill row's py-2 rhythm. */
+export const NOTIF_GROUP_LABEL = 'px-1 py-2 text-xs font-medium uppercase tracking-wider text-[#413B5E]/75';
+
 /**
  * One notification row (bell panel and /notifications): circular actor avatar, single-line title,
  * time ago, unread dot; `highlighted` rows get the #8574B7/10 tint.
@@ -50,16 +54,21 @@ export function NotificationRow({
   n,
   highlighted,
   onOpen,
+  variant = 'card',
 }: {
   n: MemberNotification;
   highlighted: boolean;
+  /** card: bordered tile like a Discover pill (page); panel: borderless tile inside the bell panel. */
+  variant?: 'card' | 'panel';
   onOpen: (n: MemberNotification) => void;
 }) {
   return (
     <Link
       href={notificationHref(n)}
       onClick={() => onOpen(n)}
-      className={`flex items-center gap-3 px-4 py-2.5 transition-colors hover:bg-[#E8E6F1]/40 ${highlighted ? 'bg-[#8574B7]/10' : ''}`}
+      className={`flex items-center gap-2.5 px-3.5 py-2 transition-colors ${
+        variant === 'card' ? 'rounded-2xl border border-[#D0CDE1]' : 'rounded-xl'
+      } ${highlighted ? 'bg-[#8574B7]/10' : variant === 'card' ? 'bg-white hover:bg-[#8574B7]/5' : 'hover:bg-[#8574B7]/5'}`}
     >
       {n.actor?.avatar_url ? (
         // eslint-disable-next-line @next/next/no-img-element

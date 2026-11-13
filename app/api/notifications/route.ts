@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient as createSessionClient } from '@/lib/supabase/server';
 import { NON_ANNOUNCEMENT_FILTER } from '@/lib/announcements';
 import { ADMIN_TYPE_LIKE } from '@/lib/adminRoles';
+import { composeTitle, legacyTitleKind } from '@/lib/notificationTitles';
+import { getRequestLocale } from '@/lib/i18n/server';
 
 // Default: announcements only (verification results, safety warnings, Plus, platform updates).
 // Chats live on the Messages tab, sparks / matches / views on the Sparks tab (lib/announcements.ts).
@@ -83,9 +85,14 @@ export async function GET(req: NextRequest) {
     (actors ?? []).forEach((a: any) => { actorMap[a.id] = a; });
   }
 
+  // Legacy rows stored a bare label ("New Message"): compose "Annie sent you a message" from the
+  // joined actor in the viewer's language. Stored data is never rewritten.
+  const locale = await getRequestLocale();
   const notifications = (rows ?? []).map((r: any) => {
     const { actor_id, ...rest } = r;
-    return { ...rest, actor: actor_id ? (actorMap[actor_id] ?? null) : null };
+    const actor = actor_id ? (actorMap[actor_id] ?? null) : null;
+    const kind = actor ? legacyTitleKind(rest.title, rest.type) : null;
+    return { ...rest, title: kind ? composeTitle(locale, kind, actor.username) : rest.title, actor };
   });
 
   const unread_count = unreadRes.count ?? notifications.filter((n: any) => !n.is_read).length;

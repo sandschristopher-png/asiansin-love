@@ -315,7 +315,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Could not save verification status' }, { status: 500 });
   }
 
-  after(() => notifyAdmins({ kind: 'verification', title: 'New selfie verification to review', ref: userId, actorId: userId }));
+  after(() => notifyAdmins({ kind: 'verification', ref: userId, actorId: userId }));
 
   return NextResponse.json({
     verified: false,

@@ -2,6 +2,8 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { ADMIN_TYPE_PREFIX, adminRoleOf, isStaff } from '@/lib/adminRoles';
 export { ADMIN_TYPE_LIKE, ADMIN_TYPE_PREFIX } from '@/lib/adminRoles';
 import { sendPushToUser } from '@/lib/pushSender';
+import { composeTitle, type TitleKind } from '@/lib/notificationTitles';
+import { DEFAULT_LOCALE, isLocale, type Locale } from '@/lib/i18n/config';
 
 /**
  * Staff alerts.
@@ -33,8 +35,21 @@ function service(): SupabaseClient {
   });
 }
 
+/** Composed title per alert kind (messages/<locale>.json notif.*: "{name} submitted a selfie verification"). */
+const TITLE_KIND: Partial<Record<AdminAlertKind, TitleKind>> = {
+  verification: 'adminVerification',
+  photo: 'adminPhoto',
+  report: 'adminReport',
+  moderation: 'adminModeration',
+};
+
 /** Ids of every active staff member (moderator / super_admin, per lib/adminRoles adminRoleOf). */
 export async function staffIds(db: SupabaseClient = service()): Promise<string[]> {
+  return (await staffMembers(db)).map((s) => s.id);
+}
+
+/** Active staff with their saved language, so each admin's alert is composed in it. */
+async function staffMembers(db: SupabaseClient): Promise<{ id: string; locale: Locale }[]> {
   // '*': is_banned is optional across environments (as in lib/adminAuth.ts).
   const { data, error } = await db
     .from('profiles')
@@ -46,12 +61,13 @@ export async function staffIds(db: SupabaseClient = service()): Promise<string[]
   }
   return (data ?? [])
     .filter((p: Record<string, unknown>) => isStaff(adminRoleOf(p)) && p.is_banned !== true)
-    .map((p: Record<string, unknown>) => p.id as string);
+    .map((p: Record<string, unknown>) => ({ id: p.id as string, locale: isLocale(p.preferred_language) ? p.preferred_language : DEFAULT_LOCALE }));
 }
 
 interface AdminAlert {
   kind: AdminAlertKind;
-  title: string;
+  /** Only for kinds without a composed template (appeal / review). */
+  title?: string;
   description?: string;
   /** Queue item id (member id for verifications / photos / moderation, report id for reports). */
   ref: string;
@@ -65,8 +81,8 @@ interface AdminAlert {
 export async function notifyAdmins({ kind, title, description, ref, actorId }: AdminAlert): Promise<void> {
   try {
     const db = service();
-    const ids = await staffIds(db);
-    if (ids.length === 0) return;
+    const staff = await staffMembers(db);
+    if (staff.length === 0) return;
     const type = ADMIN_TYPE_PREFIX + kind;
     const link = ADMIN_QUEUE_HREF[kind];
 
@@ -80,12 +96,19 @@ export async function notifyAdmins({ kind, title, description, ref, actorId }: A
       .limit(1);
     if (open && open.length > 0) return;
 
+    const { data: actor } = actorId
+      ? await db.from('profiles').select('username').eq('id', actorId).maybeSingle()
+      : { data: null };
+    const titleKind = TITLE_KIND[kind];
+    const titleFor = (locale: Locale) =>
+      titleKind ? composeTitle(locale, titleKind, actor?.username) : title || 'Pending review';
+
     const { error } = await db.from('notifications').insert(
-      ids.map((userId) => ({
+      staff.map(({ id: userId, locale }) => ({
         user_id: userId,
         actor_id: actorId ?? null,
         type,
-        title,
+        title: titleFor(locale),
         description: description ?? null,
         link_url: link,
         payload: { kind, ref },
@@ -95,8 +118,8 @@ export async function notifyAdmins({ kind, title, description, ref, actorId }: A
     if (error) console.error('[adminNotify] insert failed:', error.message);
 
     await Promise.all(
-      ids.map((userId) =>
-        sendPushToUser({ userId, type: 'admin', actorId, body: title, url: link, tag: `${type}:${ref}` }).catch(() => {})
+      staff.map(({ id: userId, locale }) =>
+        sendPushToUser({ userId, type: 'admin', actorId, body: titleFor(locale), url: link, tag: `${type}:${ref}` }).catch(() => {})
       )
     );
   } catch (err) {
