@@ -27,6 +27,7 @@ import { InstallAppCard } from '@/components/InstallAppCard';
 import { HapticsRow } from '@/components/HapticsRow';
 import { AlertPrefsRows } from '@/components/AlertPrefsRows';
 import { AdminConsoleSettingsRow } from '@/components/admin/AdminPendingChip';
+import { HeaderActions } from '@/components/HeaderActions';
 import { PlusBadge } from '@/components/ui/PlusBadge';
 import { Switch } from '@/components/ui/Switch';
 import { isPlusProfile } from '@/lib/plus';
@@ -262,7 +263,9 @@ export default function SettingsHubPage() {
   return (
     <div className="relative flex-1 w-full bg-white text-[#413B5E] font-sans min-h-screen">
       {/* Sticky Header */}
-      <header className="flex items-center gap-3 px-4 py-3.5 bg-white/95 backdrop-blur-md border-b border-[#D0CDE1] sticky top-0 z-20">
+      {/* Same h-14 / px-4 frame as components/Navbar, so the shared cluster sits at the same spot */}
+      <header className="h-14 flex items-center justify-between gap-3 px-4 bg-white/95 backdrop-blur-md border-b border-[#D0CDE1] sticky top-0 z-20">
+        <div className="flex items-center gap-3 min-w-0">
         <button
           type="button"
           onClick={() => router.push('/profile')}
@@ -274,6 +277,8 @@ export default function SettingsHubPage() {
         <h1 className="text-sm font-semibold text-[#413B5E] tracking-tight">
           {t('settings.title')}
         </h1>
+        </div>
+        <HeaderActions />
       </header>
 
       <main className="max-w-md mx-auto px-4 pt-5 space-y-4 pb-[calc(8rem+env(safe-area-inset-bottom,0px))]">

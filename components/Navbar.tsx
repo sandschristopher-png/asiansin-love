@@ -2,26 +2,19 @@
 import { BrandLogo } from '@/components/BrandLogo';
 import { isPlusProfile } from '@/lib/plus';
 import { setCachedSubscription } from '@/lib/subscriptionStatus';
-import { ANNOUNCEMENTS_READ_EVENT, NON_ANNOUNCEMENT_FILTER } from '@/lib/announcements';
-import { hasUnreadBroadcast } from '@/lib/broadcasts';
 import { notifyUser } from '@/components/InAppToast';
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
-import { User, Settings, LogOut, ArrowLeft, ShieldAlert, Megaphone, CreditCard } from 'lucide-react';
-import { ADMIN_TYPE_LIKE, adminRoleOf, isStaff } from '@/lib/adminRoles';
+import { ArrowLeft } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
-import { hardSignOut } from '@/lib/hardSignOut';
 import { PlusBadge } from '@/components/ui/PlusBadge';
-import { CountChip, useAdminPendingCount } from '@/components/admin/AdminPendingChip';
-import { NOTIFICATIONS_CHANGED_EVENT, NOTIFICATIONS_READ_EVENT } from '@/lib/notificationStore';
-import { NotificationBell } from '@/components/notifications/NotificationBell';
-import { AVATAR_IMAGE, supabaseImage } from '@/lib/images/supabaseImage';
+import { HeaderActions } from '@/components/HeaderActions';
 import { useShare } from '@/components/share/useShare';
 
-/** Own-profile fields the header reads: username, Plus status (isPlusProfile) and staff role. */
+/** Own-profile fields the header reads: Plus status (isPlusProfile) for the badge and Upgrade link. */
 const NAV_PROFILE_COLUMNS =
-  'id, username, avatar_url, is_plus, is_premium, subscription_status, current_period_end, plus_expires_at, admin_role, role, is_admin';
+  'id, username, is_plus, is_premium, subscription_status, current_period_end, plus_expires_at, admin_role, role, is_admin';
 
 /** Signed-in areas: the header never offers "Sign In" here (middleware already requires a session). */
 const IN_APP_PREFIXES = ['/discover', '/messages', '/favorites', '/profile', '/notifications', '/announcements', '/chat', '/settings', '/plus', '/upgrade', '/verify'];
@@ -31,77 +24,11 @@ export function Navbar() {
   // True until the first auth check resolves: render a placeholder, never a flash of "Sign In".
   const [authLoading, setAuthLoading] = useState(true);
   const [profile, setProfile] = useState<any>(null);
-  const [menuOpen, setMenuOpen] = useState(false);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const { share, shareSheet } = useShare();
-  const [hasUnreadAnnouncements, setHasUnreadAnnouncements] = useState(false);
-  // Unread-notifications chip on the avatar (the list itself lives in the bell panel).
-  const [unreadCount, setUnreadCount] = useState(0);
-  const adminPending = useAdminPendingCount(isStaff(adminRoleOf(profile)), menuOpen);
-  const menuRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const pathname = usePathname();
   const isChatThread = pathname?.startsWith('/chat');
-  useEffect(() => {
-    setMenuOpen(false);
-  }, [pathname]);
-  // Unread system announcements -> pink dot beside "Announcements" in the menu. (Chats and Sparks
-  // activity have their own BottomNav badges; see lib/announcements.ts.)
-  useEffect(() => {
-    if (!user) {
-      setHasUnreadAnnouncements(false);
-      return;
-    }
-    let cancelled = false;
-    const check = async () => {
-      // Unread = a personal notice not yet read, or an admin broadcast newer than the member's
-      // read marker (lib/broadcasts.ts). Before the broadcasts migration, only notices count.
-      const [{ count }, { data: latest }, { data: me }] = await Promise.all([
-        supabase
-          .from('notifications')
-          .select('id', { count: 'exact', head: true })
-          .eq('user_id', user.id)
-          .eq('is_read', false)
-          .not('type', 'in', NON_ANNOUNCEMENT_FILTER)
-          .not('type', 'like', ADMIN_TYPE_LIKE),
-        supabase.from('announcements').select('published_at').order('published_at', { ascending: false }).limit(1).maybeSingle(),
-        supabase.from('profiles').select('last_read_announcements_at').eq('id', user.id).maybeSingle(),
-      ]);
-      const broadcastUnread = hasUnreadBroadcast(latest?.published_at, me?.last_read_announcements_at);
-      if (!cancelled) setHasUnreadAnnouncements((count ?? 0) > 0 || broadcastUnread);
-    };
-    check();
-    const cleared = () => setHasUnreadAnnouncements(false);
-    window.addEventListener(ANNOUNCEMENTS_READ_EVENT, cleared);
-    return () => {
-      cancelled = true;
-      window.removeEventListener(ANNOUNCEMENTS_READ_EVENT, cleared);
-    };
-  }, [user, pathname, menuOpen]);
-  // Unread chip: re-read on sign-in, route changes, new rows (RealtimeNotifier) and reads (bell panel).
-  useEffect(() => {
-    if (!user) {
-      setUnreadCount(0);
-      return;
-    }
-    let cancelled = false;
-    const load = () =>
-      fetch('/api/notifications?scope=all&fresh=1&limit=1', { cache: 'no-store' })
-        .then((r) => (r.ok ? r.json() : null))
-        .then((j) => {
-          if (cancelled || !j) return;
-          setUnreadCount(Number(j.unread_count) || 0);
-        })
-        .catch(() => {});
-    load();
-    window.addEventListener(NOTIFICATIONS_CHANGED_EVENT, load);
-    window.addEventListener(NOTIFICATIONS_READ_EVENT, load);
-    return () => {
-      cancelled = true;
-      window.removeEventListener(NOTIFICATIONS_CHANGED_EVENT, load);
-      window.removeEventListener(NOTIFICATIONS_READ_EVENT, load);
-    };
-  }, [user, pathname]);
   // Tracks the signed-in member and their profile.
   useEffect(() => {
     async function loadUser() {
@@ -142,32 +69,6 @@ export function Navbar() {
     });
     return () => subscription.unsubscribe();
   }, []);
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent | TouchEvent) {
-      if (menuRef.current && !menuRef.current.contains(event.target as Node)) {
-        setMenuOpen(false);
-      }
-    }
-    function handleKey(event: KeyboardEvent) {
-      if (event.key === 'Escape') setMenuOpen(false);
-    }
-    document.addEventListener('pointerdown', handleClickOutside);
-    document.addEventListener('touchstart', handleClickOutside);
-    document.addEventListener('keydown', handleKey);
-    return () => {
-      document.removeEventListener('pointerdown', handleClickOutside);
-      document.removeEventListener('touchstart', handleClickOutside);
-      document.removeEventListener('keydown', handleKey);
-    };
-  }, []);
-  const handleSignOut = async () => {
-    setMenuOpen(false);
-    await hardSignOut();
-    setUser(null);
-    setProfile(null);
-    window.location.href = '/';
-  };
-  const displayName = profile?.username || 'Member';
   const getPageTitle = () => {
     if (!pathname || pathname === '/' || pathname === '/discover') return null;
     if (pathname.startsWith('/favorites') || pathname.startsWith('/saved')) return 'Sparks';
@@ -249,89 +150,8 @@ export function Navbar() {
                 Upgrade
               </Link>
             )}
-            {pathname === '/profile' && (
-              <Link
-                href="/settings"
-                className="w-8 h-8 rounded-full flex items-center justify-center text-[#8574B7] hover:bg-[#E8E6F1]/70 transition-colors"
-                aria-label="Settings"
-                title="Settings"
-              >
-                <Settings className="w-5 h-5 stroke-[2]" />
-              </Link>
-            )}
-            {/* Notifications bell, immediately left of the account avatar */}
-            <NotificationBell />
-            <div className={`relative ${pathname === "/profile" ? "hidden" : ""}`} ref={menuRef}>
-                <button
-                  type="button"
-                  onClick={() => setMenuOpen(!menuOpen)}
-                  aria-label={unreadCount > 0 ? `Open account menu, ${unreadCount} unread notifications` : 'Open account menu'}
-                  aria-haspopup="menu"
-                  aria-expanded={menuOpen}
-                  className="w-9 h-9 flex items-center justify-center rounded-full bg-[#E8E6F1]/70 text-[#8574B7] transition-opacity hover:opacity-90 relative"
-                >
-                  {profile?.avatar_url ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img src={supabaseImage(profile.avatar_url, AVATAR_IMAGE)} alt="" width={36} height={36} className="w-9 h-9 rounded-full object-cover" />
-                  ) : (
-                    <User className="w-5 h-5" aria-hidden />
-                  )}
-                  <CountChip count={unreadCount} label={`${unreadCount} unread`} className="absolute -top-1 -right-1" />
-                </button>
-                {menuOpen && (
-                  // Account utilities + announcements; dating activity lives on the BottomNav tabs.
-                  <div role="menu" className="absolute right-0 mt-2 w-64 rounded-2xl bg-white border border-[#D0CDE1] shadow-xl overflow-hidden z-[200] animate-[notifDropdownIn_0.2s_cubic-bezier(0.16,1,0.3,1)_both]">
-                    <div className="px-4 py-3 border-b border-[#D0CDE1] flex items-center gap-1.5 min-w-0">
-                      <span className="text-sm font-semibold text-[#413B5E] truncate">{displayName.replace(/^@/, '')}</span>
-                      {isPlusProfile(profile) && <PlusBadge size="profile" />}
-                    </div>
-                    <div className="py-1">
-                      <Link href="/plus" role="menuitem" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 h-11 text-sm text-[#413B5E] hover:bg-[#E8E6F1]/40 transition-colors justify-between">
-                        {/* The header row above already shows the Plus badge: this row says "Membership". */}
-                        <span className="flex items-center gap-3">
-                          <CreditCard className="w-4 h-4 text-slate-600" aria-hidden />
-                          {/* Profile not loaded yet: neutral placeholder, never "Upgrade" to a Plus member. */}
-                          {!profile ? (
-                            <span aria-hidden className="h-3 w-24 rounded-full bg-[#E8E6F1]/70 animate-pulse" />
-                          ) : isPlusProfile(profile) ? 'Membership' : 'Upgrade to Plus'}
-                        </span>
-                        {!profile ? null : isPlusProfile(profile) ? (
-                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#8574B7]/10 border border-[#8574B7]/20 text-[#8574B7]">Active</span>
-                        ) : (
-                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-white border border-[#D0CDE1] text-slate-600">Upgrade</span>
-                        )}
-                      </Link>
-                      <Link href="/profile" role="menuitem" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 h-11 text-sm text-[#413B5E] hover:bg-[#E8E6F1]/40 transition-colors">
-                        <User className="w-4 h-4 text-slate-600" />
-                        My Profile
-                      </Link>
-                      <Link href="/settings" role="menuitem" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 h-11 text-sm text-[#413B5E] hover:bg-[#E8E6F1]/40 transition-colors">
-                        <Settings className="w-4 h-4 text-slate-600" />
-                        Settings
-                      </Link>
-                      <Link href="/announcements" role="menuitem" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 h-11 text-sm text-[#413B5E] hover:bg-[#E8E6F1]/40 transition-colors">
-                        <Megaphone className="w-4 h-4 text-slate-600" />
-                        <span>Announcements</span>
-                        {hasUnreadAnnouncements && <span aria-label="New announcements" className="w-2 h-2 rounded-full bg-[#9A93BC]" />}
-                      </Link>
-                      {isStaff(adminRoleOf(profile)) && (
-                        // Staff only: never rendered for members.
-                        <Link href="/admin" role="menuitem" onClick={() => setMenuOpen(false)} className="flex items-center gap-3 px-4 h-11 text-sm text-[#413B5E] hover:bg-[#E8E6F1]/40 transition-colors">
-                          <ShieldAlert className="w-4 h-4 text-slate-600" />
-                          <span className="flex-1">Admin Console</span>
-                          <CountChip count={adminPending} />
-                        </Link>
-                      )}
-                    </div>
-                    <div className="border-t border-[#D0CDE1] py-1">
-                      <button type="button" role="menuitem" onClick={handleSignOut} className="w-full flex items-center gap-3 px-4 h-11 text-sm text-red-600 hover:bg-red-50 transition-colors text-left">
-                        <LogOut className="w-4 h-4" />
-                        Sign Out
-                      </button>
-                    </div>
-                  </div>
-                )}
-              </div>
+            {/* Shared right-edge cluster: [page action] -> bell -> account avatar (components/HeaderActions) */}
+            <HeaderActions />
             </>
           ) : !authLoading && !IN_APP_PREFIXES.some((p) => pathname === p || pathname?.startsWith(p + '/')) ? (
             <Link

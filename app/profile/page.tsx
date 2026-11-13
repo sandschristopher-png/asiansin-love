@@ -12,7 +12,6 @@ import {
   MapPin,
   Languages,
   Edit3,
-  Settings,
   Check,
   Camera,
   X,
