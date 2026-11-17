@@ -482,7 +482,6 @@
     "title": "Momentos",
     "subtitle": "Momentos del día a día de miembros verificados en todo el sudeste asiático.",
     "post": "Publicar momento",
-    "allSea": "Todo el sudeste asiático",
     "tag": {
       "coffee": "Café y pasteles",
       "street_food": "Comida callejera",
@@ -492,7 +491,7 @@
       "date_spot": "Plan de cita"
     },
     "emptyTitle": "Aún no hay momentos aquí",
-    "emptyBody": "Sé la primera persona en compartir un momento de esta ciudad.",
+    "emptyBody": "Sé la primera persona en compartir un momento.",
     "loadMore": "Ver más",
     "verified": "Verificado",
     "founding": "Miembro fundador",

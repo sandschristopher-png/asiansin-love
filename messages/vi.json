@@ -482,7 +482,6 @@
     "title": "Khoảnh khắc",
     "subtitle": "Những khoảnh khắc đời thường từ các thành viên đã xác minh khắp Đông Nam Á.",
     "post": "Đăng khoảnh khắc",
-    "allSea": "Toàn Đông Nam Á",
     "tag": {
       "coffee": "Cà phê và bánh ngọt",
       "street_food": "Ẩm thực đường phố",
@@ -492,7 +491,7 @@
       "date_spot": "Chỗ hẹn hò"
     },
     "emptyTitle": "Chưa có khoảnh khắc nào ở đây",
-    "emptyBody": "Hãy là người đầu tiên chia sẻ khoảnh khắc từ thành phố này.",
+    "emptyBody": "Hãy là người đầu tiên chia sẻ một khoảnh khắc.",
     "loadMore": "Xem thêm",
     "verified": "Đã xác minh",
     "founding": "Thành viên sáng lập",

@@ -482,7 +482,6 @@
     "title": "Momen",
     "subtitle": "Momen sehari-hari dari anggota terverifikasi di seluruh Asia Tenggara.",
     "post": "Posting Momen",
-    "allSea": "Seluruh Asia Tenggara",
     "tag": {
       "coffee": "Kopi & Kue",
       "street_food": "Jajanan Kaki Lima",
@@ -492,7 +491,7 @@
       "date_spot": "Tempat Kencan"
     },
     "emptyTitle": "Belum ada Momen di sini",
-    "emptyBody": "Jadilah yang pertama membagikan Momen dari kota ini.",
+    "emptyBody": "Jadilah yang pertama membagikan Momen.",
     "loadMore": "Muat lebih banyak",
     "verified": "Terverifikasi",
     "founding": "Anggota Pendiri",

@@ -482,7 +482,6 @@
     "title": "Moments",
     "subtitle": "Mga pang-araw-araw na sandali mula sa mga verified na miyembro sa buong Timog-Silangang Asya.",
     "post": "Mag-post ng Moment",
-    "allSea": "Buong Timog-Silangang Asya",
     "tag": {
       "coffee": "Kape at Pastry",
       "street_food": "Street Food",
@@ -492,7 +491,7 @@
       "date_spot": "Date Spot"
     },
     "emptyTitle": "Wala pang Moments dito",
-    "emptyBody": "Ikaw ang maging una na magbahagi ng Moment mula sa lungsod na ito.",
+    "emptyBody": "Ikaw ang maging una na magbahagi ng Moment.",
     "loadMore": "Magpakita pa",
     "verified": "Verified",
     "founding": "Founding Member",

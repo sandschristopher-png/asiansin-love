@@ -482,7 +482,6 @@
     "title": "모먼트",
     "subtitle": "동남아시아 전역의 인증 회원들이 올린 일상의 순간들.",
     "post": "모먼트 올리기",
-    "allSea": "동남아시아 전체",
     "tag": {
       "coffee": "커피와 디저트",
       "street_food": "길거리 음식",
@@ -492,7 +491,7 @@
       "date_spot": "데이트 장소"
     },
     "emptyTitle": "이 도시에는 아직 모먼트가 없어요",
-    "emptyBody": "이 도시의 첫 모먼트를 공유해 보세요.",
+    "emptyBody": "첫 모먼트를 공유해 보세요.",
     "loadMore": "더 보기",
     "verified": "인증됨",
     "founding": "창립 회원",

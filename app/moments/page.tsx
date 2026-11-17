@@ -22,10 +22,8 @@ function markSeen() {
   } catch {}
 }
 
-const PILL = 'inline-flex shrink-0 items-center rounded-full px-3.5 py-2 text-xs font-medium leading-snug transition-colors cursor-pointer';
-
 /**
- * Moments feed: city pills, then cards in one centred column. Posting needs a verified profile
+ * Moments feed: one chronological Southeast Asia stream (each card names its city) in one centred column. Posting needs a verified profile
  * (the server says so in the member's language), and "Spark this Moment" opens a hello sheet that
  * attaches the photo to the conversation.
  */
@@ -40,7 +38,6 @@ export default function MomentsPage() {
     () => false
   );
   const showToast = useActionToast();
-  const [city, setCity] = useState<'' | MomentCity>('');
   const [items, setItems] = useState<MomentItem[]>([]);
   const [cursor, setCursor] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -53,14 +50,12 @@ export default function MomentsPage() {
 
   const [reloadKey, setReloadKey] = useState(0);
 
-  /** First page for the chosen city: re-runs when the city, the language or reloadKey changes. */
+  /** First page of the unified feed: re-runs when the language or reloadKey changes. */
   useEffect(() => {
     let active = true;
     (async () => {
       try {
-        const qs = new URLSearchParams();
-        if (city) qs.set('city', city);
-        const res = await fetch(`/api/moments?${qs.toString()}`);
+        const res = await fetch('/api/moments');
         const data = await res.json().catch(() => ({}));
         if (!active) return;
         if (!res.ok) throw Object.assign(new Error(data?.error || 'moments'), { status: res.status, code: data?.code });
@@ -76,14 +71,13 @@ export default function MomentsPage() {
     return () => {
       active = false;
     };
-  }, [city, reloadKey, t]);
+  }, [reloadKey, t]);
 
   const loadMore = async () => {
     if (!cursor || loadingMore) return;
     setLoadingMore(true);
     try {
       const qs = new URLSearchParams({ before: cursor });
-      if (city) qs.set('city', city);
       const res = await fetch(`/api/moments?${qs.toString()}`);
       const data = await res.json().catch(() => ({}));
       if (res.ok) {
@@ -93,13 +87,6 @@ export default function MomentsPage() {
     } finally {
       setLoadingMore(false);
     }
-  };
-
-  const selectCity = (c: '' | MomentCity) => {
-    if (c === city) return;
-    setLoading(true);
-    setError(null);
-    setCity(c);
   };
 
   // The composer starts on the member's own hub when their profile city is one of ours.
@@ -145,25 +132,7 @@ export default function MomentsPage() {
       <div className="mx-auto w-full max-w-[480px] px-4 pt-3">
         <p className="text-xs leading-relaxed text-slate-600">{t('moments.subtitle')}</p>
 
-        <div className="-mx-4 mt-3 flex gap-2 overflow-x-auto px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" role="tablist">
-          {(['', ...MOMENT_CITIES] as ('' | MomentCity)[]).map((c) => {
-            const on = city === c;
-            return (
-              <button
-                key={c || 'all'}
-                type="button"
-                role="tab"
-                aria-selected={on}
-                onClick={() => selectCity(c)}
-                className={`${PILL} ${on ? 'bg-[#8574B7] text-white' : 'bg-[#8574B7]/[0.08] text-[#413B5E] hover:bg-[#8574B7]/[0.15]'}`}
-              >
-                {c === '' ? t('moments.allSea') : c}
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="mt-3 space-y-4">
+        <div className="mt-4 space-y-4">
           {loading ? (
             [0, 1].map((i) => <div key={i} className="aspect-[4/5] w-full rounded-3xl ail-shimmer" />)
           ) : error ? (
@@ -226,7 +195,7 @@ export default function MomentsPage() {
 
       {composing && (
         <MomentComposer
-          defaultCity={city || homeCity}
+          defaultCity={homeCity}
           onClose={() => setComposing(false)}
           onPosted={() => {
             setComposing(false);

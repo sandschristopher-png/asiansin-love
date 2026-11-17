@@ -482,7 +482,6 @@
     "title": "Moments",
     "subtitle": "Everyday moments from verified members across Southeast Asia.",
     "post": "Post Moment",
-    "allSea": "All Southeast Asia",
     "tag": {
       "coffee": "Coffee & Pastries",
       "street_food": "Street Food",
@@ -492,7 +491,7 @@
       "date_spot": "Date Spot"
     },
     "emptyTitle": "No Moments here yet",
-    "emptyBody": "Be the first to share a Moment from this city.",
+    "emptyBody": "Be the first to share a Moment.",
     "loadMore": "Load more",
     "verified": "Verified",
     "founding": "Founding Member",

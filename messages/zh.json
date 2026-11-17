@@ -482,7 +482,6 @@
     "title": "动态",
     "subtitle": "来自东南亚各地已验证会员的日常瞬间。",
     "post": "发布动态",
-    "allSea": "整个东南亚",
     "tag": {
       "coffee": "咖啡与甜点",
       "street_food": "街头美食",
@@ -492,7 +491,7 @@
       "date_spot": "约会地点"
     },
     "emptyTitle": "这座城市还没有动态",
-    "emptyBody": "来分享这座城市的第一条动态吧。",
+    "emptyBody": "来分享第一条动态吧。",
     "loadMore": "加载更多",
     "verified": "已验证",
     "founding": "创始会员",
