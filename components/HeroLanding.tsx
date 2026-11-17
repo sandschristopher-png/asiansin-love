@@ -49,7 +49,7 @@ function LandingBody() {
       className="font-sans w-full min-h-screen bg-white overflow-x-clip text-[#413B5E] selection:bg-[#8574B7]/15 selection:text-[#8574B7]"
     >
       {/* Frosted header, same treatment as Discover: content scrolls under the blurred glass. */}
-      <header className="sticky top-0 z-50 w-full bg-white/75 backdrop-blur-md supports-[backdrop-filter]:bg-white/75 border-b border-slate-200/60">
+      <header className="sticky top-0 z-50 w-full bg-white/75 backdrop-blur-md supports-[backdrop-filter]:bg-white/75 border-b border-slate-200/60 pt-[env(safe-area-inset-top,0px)]">
         <div className={`${LANDING_SHELL} h-16 flex items-center justify-between`}>
           <BrandLogo href="/" size="header" />
           <LanguagePill />

@@ -187,7 +187,7 @@ export function AuthScreen({ mode, audience = 'western' }: { mode: 'login' | 'si
 
   return (
     // LayoutShell supplies the centered 480px frame on the #FFFFFF canvas.
-    <div className="relative isolate min-h-[100dvh] w-full flex flex-col bg-white font-sans antialiased overflow-hidden pb-[max(2.5rem,env(safe-area-inset-bottom))]">
+    <div className="relative isolate min-h-[100dvh] w-full flex flex-col bg-white font-sans antialiased overflow-hidden pb-[max(1.5rem,env(safe-area-inset-bottom))]">
       {/* Lavender aura drifting in the mid and lower canvas only: the top 30% (wordmark, city
           ticker) stays pure white. The mid-right orb starts at 38% and only ever drifts down (to about
           45%) and never scales up, so its 64 px blur never reaches above the 30% line.
@@ -227,13 +227,18 @@ export function AuthScreen({ mode, audience = 'western' }: { mode: 'login' | 'si
           </div>
         </div>
       )}
-      <main className="relative z-10 flex-1 w-full flex flex-col px-5 pt-4">
-        {/* Top bar, same px-5 / pt-4 as the rest of the app: the language picker (the same bottom-sheet
-            as the landing header and Settings) sits on the column's right edge. The pill's own 10px
-            inset is pulled back so its globe lines up with the edge. */}
+      <main className="relative z-10 flex-1 w-full flex flex-col px-5 pt-[max(1rem,env(safe-area-inset-top,0px))]">
+        {/* Top bar: the language picker (the same bottom-sheet as the landing header and Settings) sits on the
+            column's right edge, below the device's status bar / notch (viewport-fit=cover lets the page draw
+            under it, so the safe-area inset is added). The pill's own 10px inset is pulled back so its globe
+            lines up with the edge. */}
         <div className="flex justify-end">
           <LanguagePill className="-mr-2.5" />
         </div>
+        {/* Breathing room above the welcome block. It scales with the screen height (about 37px on a 667px
+            phone, about 84px on 844px, up to 112px on tall screens; 20px on screens 650px tall or less) so the greeting sits in the upper-middle
+            instead of against the top edge, and the whole sign-in stack still fits one screen down to 360x640. */}
+        <div aria-hidden className="h-[clamp(1.25rem,5.5dvh,4rem)] [@media(max-height:650px)]:h-5 [@media(min-height:760px)]:h-[clamp(3rem,10dvh,7rem)] shrink-0" />
         <div className="text-center">
           <span className="block text-[11px] font-semibold tracking-[0.25em] uppercase text-[#8574B7] mb-2 text-center">
             {mode === 'login' ? t('auth.welcomeBack') : t('auth.welcome')}
