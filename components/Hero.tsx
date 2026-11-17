@@ -27,18 +27,23 @@ export function SignInPrompt() {
 }
 
 /**
- * Hero stack, top to bottom: photo, headline and copy, then the CTA block in this order: Join for
- * Free (/signup), the Selfie-Verified trust line, the Sparks stat, "Already a member? Sign in" (/login). Text comes from the active
- * dictionary (messages/<locale>.json). Rendered inside LANDING_SHELL.
+ * Hero stack, top to bottom: Soft Launch pill, a compact photo, headline and copy (the subtext also
+ * carries the soft-launch message), then the CTA block: Join for Free (/signup), the Sparks stat,
+ * "Already a member? Sign in" (/login). Sized so Join for Free and Sign in are visible on first load
+ * on a phone without scrolling. Text comes from the active dictionary (messages/<locale>.json).
+ * Rendered inside LANDING_SHELL.
  */
 export default function Hero() {
   const { m } = useLocale();
   return (
-    <section className="w-full bg-white pt-2 pb-10">
+    <section className="w-full bg-white pt-1 pb-8">
       <div className="flex flex-col items-center text-center">
-        {/* Brand portrait in a rounded 4:5 card: nothing is drawn over her face, and no name, age or
-            profile badge, so it can never read as a real member. */}
-        <FadeIn className="relative w-full aspect-[4/5] overflow-hidden rounded-3xl bg-[#E8E6F1]/50 shadow-[0_8px_30px_rgba(65,59,94,0.12)]">
+        <SoftLaunchNotice showSub={false} className="mb-3" />
+
+        {/* Brand portrait in a rounded card, cropped short (180-300px, by screen height) so the CTA stays
+            above the fold. Nothing is drawn over her face, and no name, age or profile badge, so it
+            can never read as a real member. */}
+        <FadeIn className="relative h-[clamp(180px,28dvh,300px)] w-full overflow-hidden rounded-3xl bg-[#E8E6F1]/50 shadow-[0_8px_30px_rgba(65,59,94,0.12)]">
           <Image
             src="/Camille_Hero.png"
             alt={m.hero.imageAlt}
@@ -46,22 +51,20 @@ export default function Hero() {
             preload
             quality={90}
             sizes="(max-width: 448px) 100vw, 448px"
-            className="object-cover select-none pointer-events-none"
+            className="object-cover object-[50%_28%] select-none pointer-events-none"
           />
         </FadeIn>
 
-        <h1 className="mt-8 w-full text-[28px] font-semibold tracking-tight leading-tight text-[#413B5E] break-words">
+        <h1 className="mt-5 w-full text-[26px] font-semibold tracking-tight leading-tight text-[#413B5E] break-words">
           <span className="block">{m.hero.line1}</span>
           <span className="block text-[#8574B7]">{m.hero.line2}</span>
           <span className="block">{m.hero.line3}</span>
         </h1>
 
-        <p className="mt-3 w-full text-[15px] leading-relaxed text-slate-600 break-words">{m.hero.subtitle}</p>
-
-        <SoftLaunchNotice className="mt-6" />
+        <p className="mt-2.5 w-full text-sm leading-relaxed text-slate-600 break-words">{m.hero.subtitle}</p>
 
         {/* CTA block: one item per row */}
-        <FadeIn delay={0.08} className="mt-7 w-full flex flex-col items-center gap-4">
+        <FadeIn delay={0.08} className="mt-5 w-full flex flex-col items-center gap-3">
           <TapButton>
             <Link
               href="/signup"
@@ -71,11 +74,7 @@ export default function Hero() {
             </Link>
           </TapButton>
 
-          {/* Trust line, then the Sparks social-proof stat: one row each. */}
-          <div className="flex flex-col items-center gap-1">
-            <p className="text-[13px] font-semibold text-[#8574B7]">{m.hero.factVerified}</p>
-            <p className="text-[13px] font-medium text-slate-600">{m.hero.factSparks}</p>
-          </div>
+          <p className="text-[13px] font-medium text-slate-600">{m.hero.factSparks}</p>
 
           <SignInPrompt />
         </FadeIn>

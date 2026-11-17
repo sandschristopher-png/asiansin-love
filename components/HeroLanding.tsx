@@ -17,7 +17,7 @@ const STEP_KEYS = [
   { step: '03', key: 'three' },
 ] as const;
 
-// Card art: illustrations fill their tile edge to edge; "voices" uses an audio-wave graphic.
+// Card art: every illustration sits in the same white, bordered, padded frame; "voices" uses an audio-wave graphic.
 const FEATURES = [
   { key: 'screening', src: '/secured.webp' },
   { key: 'intent', src: '/hero-couple.webp' },
@@ -84,11 +84,13 @@ function LandingBody() {
         <section className="py-8 space-y-3">
           {FEATURES.map(({ key, src }) => (
             <Reveal key={key} className="flex flex-col items-center gap-3 rounded-3xl border border-slate-200 bg-white p-4 text-center">
-              <div className="relative w-full h-40 overflow-hidden rounded-2xl bg-[#E8E6F1]/40">
+              <div className="relative w-full h-40 overflow-hidden rounded-2xl border border-[#E6E2F0] bg-white p-3">
                 {src ? (
-                  <Image src={src} alt={m.features[key].alt} fill sizes="(max-width: 448px) 100vw, 408px" className="object-contain object-center select-none pointer-events-none" />
+                  <div className="relative h-full w-full">
+                    <Image src={src} alt={m.features[key].alt} fill sizes="(max-width: 448px) 100vw, 384px" className="object-contain object-center select-none pointer-events-none" />
+                  </div>
                 ) : (
-                  <div className="w-full h-full bg-[#E8E6F1] flex items-center justify-center" role="img" aria-label={m.features[key].alt}>
+                  <div className="w-full h-full bg-white flex items-center justify-center" role="img" aria-label={m.features[key].alt}>
                     <AudioLines className="w-11 h-11 text-[#8574B7]" strokeWidth={1.75} aria-hidden />
                   </div>
                 )}
@@ -129,9 +131,6 @@ function LandingBody() {
             <span className="text-[#D0CDE1]" aria-hidden="true">•</span>
             <Link className="hover:text-[#8574B7] transition-colors" href="/contact">{m.footer.contact}</Link>
           </nav>
-          <div className="mt-3 flex justify-center">
-            <LanguagePill full />
-          </div>
           <p className="mt-2 text-[11px] text-slate-600">© {new Date().getFullYear()} Meet in Asia</p>
         </footer>
       </div>

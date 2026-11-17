@@ -4,9 +4,8 @@
     "line1": "Kết nối thật.",
     "line2": "Hồ sơ xác minh bằng selfie.",
     "line3": "Ghép đôi và kết nối miễn phí.",
-    "subtitle": "Meet in Asia là nền tảng hẹn hò đã xác minh, dành cho những mối quan hệ chân thành vượt biên giới. Không bot, không bẫy tài chính, không trò chơi trả phí.",
+    "subtitle": "Chúng tôi vừa mở cửa đón những thành viên đầu tiên trên khắp Đông Nam Á. Gặp gỡ những người muốn một mối quan hệ chân thành vượt biên giới, không bot, không bẫy tài chính, không trò chơi trả phí.",
     "join": "Tham gia miễn phí",
-    "factVerified": "Xác minh selfie trực tiếp",
     "factSparks": "30 Sparks miễn phí mỗi ngày"
   },
   "auth": {
@@ -36,8 +35,8 @@
       "desc": "Đặt ra mục tiêu tình cảm, thời gian và kế hoạch du lịch ngay từ đầu."
     },
     "two": {
-      "title": "Xem thành viên đã xác minh",
-      "desc": "Khám phá những thành viên nghiêm túc đã được xác nhận qua xác minh selfie trực tiếp."
+      "title": "Xem thành viên hợp với bạn",
+      "desc": "Tìm những người có mục tiêu, thời gian và kế hoạch du lịch phù hợp với bạn."
     },
     "three": {
       "title": "Kết nối tự tin",

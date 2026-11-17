@@ -97,6 +97,13 @@ html, body {
   -webkit-overflow-scrolling: touch;
 }
 
+/* The app clips <body> and scrolls inside its column; a page whose shell is marked data-window-scroll (the
+   public landing page) lets the browser window scroll instead, so there is no inner scrollbar. */
+body:has([data-window-scroll]) {
+  overflow: visible;
+  height: auto;
+}
+
 /* Slate backdrop (slate-100 at 80%) around the 480px AppShell column; on phones the white frame covers it. */
 body {
   background-color: #F3F6FA !important;

@@ -4,9 +4,8 @@
     "line1": "Totoong koneksyon.",
     "line2": "Selfie-Verified na mga Profile.",
     "line3": "Libreng Mag-match at Kumonekta.",
-    "subtitle": "Ang Meet in Asia ay isang verified na dating platform para sa tapat na relasyon sa iba't ibang bansa. Walang bot, walang pinansyal na bitag, at walang laro sa likod ng paywall.",
+    "subtitle": "Kabubukas lang namin para sa mga unang miyembro sa buong Southeast Asia. Makilala ang mga taong naghahanap ng tapat na relasyon sa iba't ibang bansa, walang bot, walang pinansyal na bitag, at walang laro sa likod ng paywall.",
     "join": "Sumali nang Libre",
-    "factVerified": "Live Selfie Verified",
     "factSparks": "30 Libreng Sparks Araw-araw"
   },
   "auth": {
@@ -36,8 +35,8 @@
       "desc": "Itakda ang iyong mga layunin sa relasyon, timeline, at mga plano sa paglalakbay mula sa simula."
     },
     "two": {
-      "title": "Mag-browse ng verified na miyembro",
-      "desc": "Mag-browse ng mga seryosong miyembro na kumpirmado sa pamamagitan ng live selfie verification."
+      "title": "Mag-browse ng mga miyembrong bagay sa iyo",
+      "desc": "Hanapin ang mga taong kapareho ng iyong mga layunin, timeline, at plano sa paglalakbay."
     },
     "three": {
       "title": "Kumonekta nang may kumpiyansa",

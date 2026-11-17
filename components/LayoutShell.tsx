@@ -35,12 +35,12 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
   const overlayNav = pathname === '/discover';
 
   // The landing page is a single phone-width column on every screen (no desktop corner cards). Every other
-  // route keeps the same 480px AppShell column. <body> is overflow-hidden, so on the landing page
-  // the shell is the scroll container (its sticky header sticks within it).
+  // route keeps the same 480px AppShell column. <body> is overflow-hidden for the app; the landing page
+  // flows instead, so the browser window scrolls (no inner scrollbar) and globals.css un-clips <body>.
   if (pathname === '/') {
     return (
       <ActionToastProvider>
-        <AppShell scroll>{children}</AppShell>
+        <AppShell flow>{children}</AppShell>
       </ActionToastProvider>
     );
   }
