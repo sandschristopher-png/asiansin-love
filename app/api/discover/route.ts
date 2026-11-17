@@ -20,7 +20,7 @@ import {
 
 /**
  * Only the columns the Discover grid / profile sheet mapping below reads. Never select('*') here:
- * the feed scans up to 200 rows, and profiles also holds Stripe ids, admin flags and
+ * the feed scans up to 200 rows, and profiles also holds billing ids, admin flags and
  * verification photo paths that must not be loaded for a feed.
  */
 const DISCOVER_COLUMNS = [
@@ -180,7 +180,7 @@ export async function GET(req: Request) {
     const params = new URL(req.url).searchParams;
     const verifiedOnly = params.get('verified') === '1';
     const hideContacted = params.get('hide_contacted') === '1';
-    // One Plus rule for every gate below (lib/plus.ts: Stripe, status and complimentary Plus).
+    // One Plus rule for every gate below (lib/plus.ts: paid status and complimentary Plus).
     const viewerIsPlus = isPlusProfile(viewerProfile);
     const sparkedMeAccess = viewerIsPlus || viewerGender === 'female';
     const sparkedMeOnly = params.get('sparked_me') === '1' && sparkedMeAccess;

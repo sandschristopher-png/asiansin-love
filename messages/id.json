@@ -93,7 +93,8 @@
     "today": "Hari ini",
     "thisWeek": "Minggu ini",
     "earlier": "Sebelumnya",
-    "loadMore": "Muat lagi"
+    "loadMore": "Muat lagi",
+    "markHandled": "Tandai sudah ditangani"
   },
   "discover": {
     "modeAll": "Semua",
@@ -242,8 +243,6 @@
     "reputationSub": "Kepercayaan dan perilaku komunitas",
     "title": "Pengaturan & Privasi",
     "back": "Kembali ke profil",
-    "portalFailed": "Tidak dapat membuka portal penagihan.",
-    "portalTimeout": "Portal penagihan terlalu lama merespons. Silakan coba lagi.",
     "deleteFailed": "Gagal menghapus akun. Silakan coba lagi.",
     "privateMode": "Mode Privat (Jeda Profil)",
     "privateModeSub": "Sembunyikan profilmu dari Jelajahi sementara obrolan yang sedang berjalan tetap aktif.",
@@ -265,8 +264,6 @@
     "termsSub": "Aturan, penagihan Plus, dan pembatalan",
     "privacyPolicy": "Kebijakan Privasi",
     "privacyPolicySub": "Datamu, selfie, dan penghapusan akun",
-    "manageSub": "Kelola Langganan",
-    "manageSubSub": "Batalkan Plus atau perbarui metode pembayaran",
     "logOut": "Keluar",
     "logOutSub": "Keluar dari sesi browser ini",
     "deleteAccount": "Hapus Akun",
@@ -315,7 +312,9 @@
     "privateOn": "Profil dijeda. Kamu tersembunyi dari Jelajahi.",
     "privateOff": "Profilmu tampil lagi di Jelajahi.",
     "adminConsole": "Konsol Admin",
-    "adminConsoleSub": "Verifikasi, foto, dan laporan tertunda"
+    "adminConsoleSub": "Verifikasi, foto, dan laporan tertunda",
+    "billingSupportTitle": "Penagihan dan pembatalan",
+    "billingSupportSub": "Kirim email ke {email} untuk membatalkan Plus atau bertanya soal penagihan"
   },
   "errors": {
     "generic": "Terjadi kesalahan. Silakan coba lagi.",
@@ -346,7 +345,6 @@
   "plus": {
     "upgrade": "Tingkatkan ke Plus",
     "choosePlan": "Pilih paket",
-    "checkoutFailed": "Tidak dapat memulai pembayaran. Silakan coba lagi.",
     "plan1m": "1 Bulan",
     "plan3m": "3 Bulan",
     "plan6m": "6 Bulan",
@@ -363,10 +361,6 @@
       "banner3": "Lencana perjalanan Visiting Soon",
       "banner4": "Filter negara dan kota tujuan",
       "back": "Kembali",
-      "welcomeTitle": "Selamat datang di Plus",
-      "confirming": "Mengonfirmasi keanggotaanmu...",
-      "unlocked": "Semua yang ada di bawah kini terbuka.",
-      "finishing": "Menyelesaikan dengan Stripe.",
       "colFeature": "Fitur",
       "colFree": "Gratis",
       "compared": "Perbandingan Gratis dan Plus",
@@ -410,23 +404,21 @@
       "faqQ4": "Bagaimana nasib pasangan cocok saya jika berhenti membayar?",
       "faqA4": "Tidak ada yang dihapus. Pasangan cocok dan percakapanmu tetap ada; hanya fitur tambahan Plus yang mati di akhir periode yang sudah kamu bayar.",
       "billingTitle": "Ketentuan Penagihan",
-      "billing1": "Harga dalam dolar AS dan ditagih oleh Stripe. Pajak mungkin berlaku.",
+      "billing1": "Harga dalam dolar AS dan ditagih oleh pemroses pembayaran kami. Pajak mungkin berlaku.",
       "billing2": "1 Bulan diperpanjang setiap bulan seharga {p1}. 3 Bulan diperpanjang seharga {p3} setiap 3 bulan. 6 Bulan diperpanjang seharga {p6} setiap 6 bulan.",
-      "billing3": "Paket diperpanjang otomatis hingga kamu membatalkan. Batalkan kapan saja di Pengaturan, di bawah Kelola Langganan; Plus tetap aktif hingga akhir periode yang dibayar.",
+      "billing3": "Paket diperpanjang otomatis hingga kamu membatalkan. Untuk membatalkan, kirim email ke {email}; Plus tetap aktif hingga akhir periode yang dibayar.",
       "billing4": "Sparks tanpa batas tunduk pada penggunaan wajar untuk mencegah spam otomatis.",
       "fullDetails": "Detail lengkap di",
       "keepFree": "Tetap Gratis",
-      "opening": "Membuka pembayaran...",
-      "alreadySubscribed": "Sudah berlangganan? Kelola penagihan",
-      "encrypted": "Pembayaran terenkripsi oleh Stripe",
-      "paymentsSoon": "Pembayaran sedang disiapkan. Silakan cek lagi nanti.",
+      "paymentsSoon": "Sistem pembayaran sedang ditingkatkan. Keanggotaan Plus akan segera dibuka kembali.",
       "activeTitle": "Plus aktif",
       "activeBody": "Terima kasih telah mendukung Meet in Asia. Kelola penagihan atau batalkan kapan saja.",
       "receiptsPrompt": "Tanda baca dengan Plus",
       "savePct": "Hemat {pct}%",
       "rowPrivate": "Mode Privat",
       "rowGhost": "Mode Hantu",
-      "cellGhost": "Jelajahi tanpa meninggalkan jejak"
+      "cellGhost": "Jelajahi tanpa meninggalkan jejak",
+      "billingSupport": "Untuk membatalkan Plus atau bertanya soal penagihan, kirim email ke"
     }
   },
   "messages": {

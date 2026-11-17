@@ -61,7 +61,7 @@ export async function GET() {
   }
 
   // Plus unlocks Sparked You / Visitors for men; women always have full access for free.
-  // isPlusProfile is the same rule as everywhere else (Stripe, status and complimentary Plus).
+  // isPlusProfile is the same rule as everywhere else (paid status and complimentary Plus).
   const fullAccess = isPlusProfile(me) || me?.gender === 'female';
 
   const { data: sparkedYou, error: e1 } = await supabase.rpc('get_sparked_you_profiles');

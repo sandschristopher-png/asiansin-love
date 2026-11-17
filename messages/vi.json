@@ -93,7 +93,8 @@
     "today": "Hôm nay",
     "thisWeek": "Tuần này",
     "earlier": "Trước đó",
-    "loadMore": "Tải thêm"
+    "loadMore": "Tải thêm",
+    "markHandled": "Đánh dấu đã xử lý"
   },
   "discover": {
     "modeAll": "Tất cả",
@@ -242,8 +243,6 @@
     "reputationSub": "Độ tin cậy và hành vi trong cộng đồng",
     "title": "Cài đặt và quyền riêng tư",
     "back": "Quay lại hồ sơ",
-    "portalFailed": "Không thể mở cổng thanh toán.",
-    "portalTimeout": "Cổng thanh toán phản hồi quá lâu. Vui lòng thử lại.",
     "deleteFailed": "Không thể xóa tài khoản. Vui lòng thử lại.",
     "privateMode": "Chế độ riêng tư (Tạm ẩn hồ sơ)",
     "privateModeSub": "Ẩn hồ sơ của bạn khỏi Khám phá trong khi các cuộc trò chuyện hiện tại vẫn hoạt động.",
@@ -265,8 +264,6 @@
     "termsSub": "Quy tắc, thanh toán Plus và cách hủy",
     "privacyPolicy": "Chính sách quyền riêng tư",
     "privacyPolicySub": "Dữ liệu, ảnh selfie và việc xóa tài khoản của bạn",
-    "manageSub": "Quản lý gói đăng ký",
-    "manageSubSub": "Hủy Plus hoặc cập nhật phương thức thanh toán",
     "logOut": "Đăng xuất",
     "logOutSub": "Đăng xuất khỏi phiên trình duyệt này",
     "deleteAccount": "Xóa tài khoản",
@@ -315,7 +312,9 @@
     "privateOn": "Đã tạm ẩn hồ sơ. Bạn không hiển thị trong Khám phá.",
     "privateOff": "Hồ sơ của bạn đã hiển thị lại trong Khám phá.",
     "adminConsole": "Bảng quản trị",
-    "adminConsoleSub": "Xác minh, ảnh và báo cáo đang chờ"
+    "adminConsoleSub": "Xác minh, ảnh và báo cáo đang chờ",
+    "billingSupportTitle": "Thanh toán và hủy gói",
+    "billingSupportSub": "Gửi email tới {email} để hủy Plus hoặc hỏi về thanh toán"
   },
   "errors": {
     "generic": "Đã xảy ra lỗi. Vui lòng thử lại.",
@@ -346,7 +345,6 @@
   "plus": {
     "upgrade": "Nâng cấp lên Plus",
     "choosePlan": "Chọn gói",
-    "checkoutFailed": "Không thể bắt đầu thanh toán. Vui lòng thử lại.",
     "plan1m": "1 tháng",
     "plan3m": "3 tháng",
     "plan6m": "6 tháng",
@@ -363,10 +361,6 @@
       "banner3": "Huy hiệu chuyến đi Visiting Soon",
       "banner4": "Bộ lọc quốc gia và điểm đến",
       "back": "Quay lại",
-      "welcomeTitle": "Chào mừng đến với Plus",
-      "confirming": "Đang xác nhận tư cách thành viên của bạn...",
-      "unlocked": "Mọi thứ bên dưới đã được mở khóa.",
-      "finishing": "Đang hoàn tất với Stripe.",
       "colFeature": "Tính năng",
       "colFree": "Miễn phí",
       "compared": "So sánh Miễn phí và Plus",
@@ -410,23 +404,21 @@
       "faqQ4": "Điều gì xảy ra với các cặp đã kết đôi nếu tôi ngừng thanh toán?",
       "faqA4": "Không có gì bị xóa. Các cặp đã kết đôi và cuộc trò chuyện vẫn còn; chỉ các tính năng Plus tắt khi hết kỳ bạn đã thanh toán.",
       "billingTitle": "Điều khoản thanh toán",
-      "billing1": "Giá tính bằng đô la Mỹ và do Stripe thu. Có thể áp dụng thuế.",
+      "billing1": "Giá tính bằng đô la Mỹ và do đơn vị xử lý thanh toán của chúng tôi thu. Có thể áp dụng thuế.",
       "billing2": "Gói 1 tháng gia hạn mỗi tháng với giá {p1}. Gói 3 tháng gia hạn {p3} mỗi 3 tháng. Gói 6 tháng gia hạn {p6} mỗi 6 tháng.",
-      "billing3": "Các gói tự động gia hạn cho đến khi bạn hủy. Hủy bất cứ lúc nào trong Cài đặt, mục Quản lý gói đăng ký; bạn giữ Plus đến hết kỳ đã thanh toán.",
+      "billing3": "Các gói tự động gia hạn cho đến khi bạn hủy. Để hủy, hãy gửi email tới {email}; bạn giữ Plus đến hết kỳ đã thanh toán.",
       "billing4": "Sparks không giới hạn tuân theo chính sách sử dụng hợp lý để ngăn thư rác tự động.",
       "fullDetails": "Chi tiết đầy đủ trong",
       "keepFree": "Giữ gói miễn phí",
-      "opening": "Đang mở thanh toán...",
-      "alreadySubscribed": "Đã đăng ký? Quản lý thanh toán",
-      "encrypted": "Thanh toán được mã hóa bởi Stripe",
-      "paymentsSoon": "Thanh toán đang được cấu hình. Vui lòng quay lại sau.",
+      "paymentsSoon": "Hệ thống thanh toán đang được nâng cấp. Thành viên Plus sẽ sớm mở lại.",
       "activeTitle": "Plus đang hoạt động",
       "activeBody": "Cảm ơn bạn đã ủng hộ Meet in Asia. Quản lý thanh toán hoặc hủy bất cứ lúc nào.",
       "receiptsPrompt": "Xác nhận đã đọc với Plus",
       "savePct": "Tiết kiệm {pct}%",
       "rowPrivate": "Chế độ riêng tư",
       "rowGhost": "Chế độ ẩn danh",
-      "cellGhost": "Xem hồ sơ mà không để lại dấu vết"
+      "cellGhost": "Xem hồ sơ mà không để lại dấu vết",
+      "billingSupport": "Để hủy Plus hoặc hỏi về thanh toán, hãy gửi email tới"
     }
   },
   "messages": {

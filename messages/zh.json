@@ -93,7 +93,8 @@
     "today": "今天",
     "thisWeek": "本周",
     "earlier": "更早",
-    "loadMore": "加载更多"
+    "loadMore": "加载更多",
+    "markHandled": "标记为已处理"
   },
   "discover": {
     "modeAll": "全部",
@@ -242,8 +243,6 @@
     "reputationSub": "社区信任与行为",
     "title": "设置与隐私",
     "back": "返回资料",
-    "portalFailed": "无法打开账单页面。",
-    "portalTimeout": "账单页面响应时间过长，请重试。",
     "deleteFailed": "删除账号失败，请重试。",
     "privateMode": "隐私模式（暂停资料）",
     "privateModeSub": "在发现页隐藏您的资料，同时保持当前聊天正常进行。",
@@ -265,8 +264,6 @@
     "termsSub": "规则、Plus 计费与取消",
     "privacyPolicy": "隐私政策",
     "privacyPolicySub": "您的数据、自拍照与账号删除",
-    "manageSub": "管理订阅",
-    "manageSubSub": "取消 Plus 或更新付款方式",
     "logOut": "退出登录",
     "logOutSub": "退出此浏览器的登录状态",
     "deleteAccount": "删除账号",
@@ -315,7 +312,9 @@
     "privateOn": "资料已暂停，您已在发现页隐藏。",
     "privateOff": "您的资料已重新显示在发现页。",
     "adminConsole": "管理控制台",
-    "adminConsoleSub": "待处理的认证、照片和举报"
+    "adminConsoleSub": "待处理的认证、照片和举报",
+    "billingSupportTitle": "账单与取消",
+    "billingSupportSub": "发送邮件至 {email} 以取消 Plus 或咨询账单问题"
   },
   "errors": {
     "generic": "出了点问题，请重试。",
@@ -346,7 +345,6 @@
   "plus": {
     "upgrade": "升级到 Plus",
     "choosePlan": "选择套餐",
-    "checkoutFailed": "无法开始结账，请重试。",
     "plan1m": "1 个月",
     "plan3m": "3 个月",
     "plan6m": "6 个月",
@@ -363,10 +361,6 @@
       "banner3": "行程徽章 Visiting Soon",
       "banner4": "国家与城市筛选",
       "back": "返回",
-      "welcomeTitle": "欢迎加入 Plus",
-      "confirming": "正在确认您的会员资格...",
-      "unlocked": "下方所有功能现已解锁。",
-      "finishing": "正在与 Stripe 完成处理。",
       "colFeature": "功能",
       "colFree": "免费",
       "compared": "免费版与 Plus 对比",
@@ -410,23 +404,21 @@
       "faqQ4": "停止付费后，我的配对会怎样？",
       "faqA4": "不会删除任何内容。您的配对和对话都会保留，只有 Plus 的附加功能会在已付费周期结束时关闭。",
       "billingTitle": "计费条款",
-      "billing1": "价格以美元计，由 Stripe 收取，可能需要缴纳税费。",
+      "billing1": "价格以美元计，由我们的支付处理商收取，可能需要缴纳税费。",
       "billing2": "1 个月方案每月以 {p1} 续订。3 个月方案每 3 个月以 {p3} 续订。6 个月方案每 6 个月以 {p6} 续订。",
-      "billing3": "方案会自动续订，直到您取消。您可随时在设置的“管理订阅”中取消，Plus 会保留到已付费周期结束。",
+      "billing3": "方案会自动续订，直到您取消。如需取消，请发送邮件至 {email}；Plus 会保留到已付费周期结束。",
       "billing4": "无限 Sparks 须遵守合理使用原则，以防止自动化垃圾信息。",
       "fullDetails": "完整详情请见",
       "keepFree": "继续使用免费版",
-      "opening": "正在打开结账页面...",
-      "alreadySubscribed": "已订阅？管理账单",
-      "encrypted": "由 Stripe 提供加密结账",
-      "paymentsSoon": "支付功能正在配置中，请稍后再试。",
+      "paymentsSoon": "支付系统正在升级，Plus 会员即将重新开放。",
       "activeTitle": "Plus 已生效",
       "activeBody": "感谢您支持 Meet in Asia。您可随时管理账单或取消订阅。",
       "receiptsPrompt": "用 Plus 查看已读回执",
       "savePct": "立省 {pct}%",
       "rowPrivate": "隐私模式",
       "rowGhost": "幽灵模式",
-      "cellGhost": "浏览不留痕迹"
+      "cellGhost": "浏览不留痕迹",
+      "billingSupport": "如需取消 Plus 或咨询账单问题，请发送邮件至"
     }
   },
   "messages": {

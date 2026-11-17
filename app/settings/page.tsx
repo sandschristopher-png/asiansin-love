@@ -15,13 +15,14 @@ import {
   EyeOff,
   Ghost,
   Loader2,
-  MessageCircle, Trash2, AlertTriangle, CreditCard, FileText, Check, CheckCircle2 } from 'lucide-react';
+  MessageCircle, Trash2, AlertTriangle, Mail, FileText, Check, CheckCircle2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { hardSignOut } from '@/lib/hardSignOut';
 import { PushDeviceRow } from '@/components/PushDeviceRow';
 import { AppLanguageRow } from '@/components/i18n/AppLanguageRow';
 import { useLocale } from '@/components/i18n/LocaleProvider';
 import { localizeError } from '@/lib/i18n/errors';
+import { SUPPORT_EMAIL } from '@/lib/support';
 import { useActionToast } from '@/components/ActionToast';
 import { InstallAppCard } from '@/components/InstallAppCard';
 import { HapticsRow } from '@/components/HapticsRow';
@@ -87,14 +88,9 @@ export default function SettingsHubPage() {
   // Plus members never see a "Plus ·" upsell or a missing billing row while it loads.
   const [isSubscribed, setIsSubscribed] = useState<boolean | null>(() => getCachedSubscription());
   const isPlus = isSubscribed === true;
-  // Stripe subscriber (the billing row); complimentary Plus has features but nothing to manage.
-  // A known free member has no subscription; otherwise unknown until the profile read.
-  const [hasPlusBilling, setHasPlusBilling] = useState<boolean | null>(() => (getCachedSubscription() === false ? false : null));
   // Ghost Mode (Plus): browse without leaving a footprint. Read on its own so a database without
   // the ghost_mode column (20261114_privacy_features.sql) still loads the other settings.
   const [ghostMode, setGhostMode] = useState(false);
-  const [openingPortal, setOpeningPortal] = useState(false);
-  const [portalError, setPortalError] = useState<string | null>(null);
   const [settings, setSettings] = useState(() => cachedSettingsData || {
     hide_profile: false,
     show_active_status: true,
@@ -116,7 +112,7 @@ export default function SettingsHubPage() {
         .eq('id', user.id)
         .maybeSingle();
 
-      // Plus members get a "Manage Subscription" row (Stripe billing portal).
+      // Plus members get a billing-support row (see the isPlus block below).
       supabase
         .from('profiles')
         .select('*')
@@ -126,7 +122,6 @@ export default function SettingsHubPage() {
           const hasPlus = isPlusProfile(plus);
           setIsSubscribed(hasPlus);
           setCachedSubscription(hasPlus);
-          setHasPlusBilling(Boolean(plus?.is_plus));
           setGhostMode(plus?.ghost_mode === true);
         });
 
@@ -202,30 +197,6 @@ export default function SettingsHubPage() {
     }
   };
 
-  const openBillingPortal = async () => {
-    setOpeningPortal(true);
-    setPortalError(null);
-    // Never spin forever: give up after 15 s and show an error instead.
-    const controller = new AbortController();
-    const timer = window.setTimeout(() => controller.abort(), 15000);
-    try {
-      const res = await fetch('/api/stripe/portal', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ return_path: '/settings' }),
-        signal: controller.signal,
-      });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok || !data.url) throw Object.assign(new Error(data.error || 'portal'), { status: res.status, code: data.code });
-      window.location.href = data.url;
-    } catch (err) {
-      const aborted = err instanceof DOMException && err.name === 'AbortError';
-      setPortalError(aborted ? t('settings.portalTimeout') : localizeError(err instanceof Error ? err : null, t, 'settings.portalFailed'));
-      setOpeningPortal(false);
-    } finally {
-      window.clearTimeout(timer);
-    }
-  };
 
   const handleLogout = async () => {
     setLoggingOut(true);
@@ -498,40 +469,24 @@ export default function SettingsHubPage() {
           ))}
         </div>
 
-        {/* Plus BILLING (subscribers only); neutral placeholder until the status is known */}
-        {hasPlusBilling === null && (
-          <div aria-hidden className="rounded-3xl bg-white border border-[#D0CDE1] p-2 shadow-2xs">
-            <div className="h-11 w-full rounded-full bg-[#E8E6F1]/70 animate-pulse" />
-          </div>
-        )}
-        {hasPlusBilling === true && (
+        {/* Plus billing: cancellations and billing questions go to support while payments are handled by hand. */}
+        {isPlus && (
           <div className="rounded-3xl bg-white border border-[#D0CDE1] p-2 shadow-2xs">
-            <button
-              type="button"
-              onClick={openBillingPortal}
-              disabled={openingPortal}
-              className="w-full flex items-center justify-between p-3 rounded-2xl hover:bg-[#E8E6F1]/40 transition cursor-pointer text-left disabled:opacity-60"
+            <a
+              href={`mailto:${SUPPORT_EMAIL}`}
+              className="w-full flex items-center justify-between p-3 rounded-2xl hover:bg-[#E8E6F1]/40 transition cursor-pointer text-left"
             >
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-xl bg-[#E8E6F1]/60 text-[#8574B7] flex items-center justify-center">
-                  <CreditCard className="w-4 h-4" />
+                  <Mail className="w-4 h-4" />
                 </div>
                 <div>
-                  <p className="text-xs font-semibold text-[#413B5E]">{t('settings.manageSub')}</p>
-                  <p className="text-[11px] text-[#413B5E]/75">{t('settings.manageSubSub')}</p>
+                  <p className="text-xs font-semibold text-[#413B5E]">{t('settings.billingSupportTitle')}</p>
+                  <p className="text-[11px] text-[#413B5E]/75">{t('settings.billingSupportSub', { email: SUPPORT_EMAIL })}</p>
                 </div>
               </div>
-              {openingPortal ? (
-                <Loader2 className="w-4 h-4 animate-spin text-[#8574B7]" />
-              ) : (
-                <ChevronRight className="w-4 h-4 text-slate-600" />
-              )}
-            </button>
-            {portalError && (
-              <p role="alert" className="mx-3 mb-2 rounded-xl bg-red-50 border border-red-200 px-3 py-2 text-[11px] font-semibold text-red-700">
-                {portalError}
-              </p>
-            )}
+              <ChevronRight className="w-4 h-4 text-slate-600" />
+            </a>
           </div>
         )}
 

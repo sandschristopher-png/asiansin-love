@@ -73,7 +73,7 @@ const sections: LegalSection[] = [
     title: 'Plus subscriptions and billing',
     body: (
       <>
-        <p>Plus is an optional paid membership, billed in US dollars through Stripe:</p>
+        <p>Plus is an optional paid membership, billed in US dollars through our payment processor:</p>
         <ul>
           <li>Monthly: $14.99 per month, billed every month.</li>
           <li>3 months: $29.99 every 3 months ($9.99 per month).</li>
@@ -84,10 +84,9 @@ const sections: LegalSection[] = [
           Prices can change; any change applies from your next renewal and we will tell you before it does.
         </p>
         <p>
-          <strong>Cancel anytime</strong> in Settings → Manage Subscription, which opens the Stripe billing portal where you
-          can cancel or update your payment method yourself. Cancelling stops future renewals; you keep Plus until the end of
-          the period you already paid for. Payments are non-refundable except where the law requires otherwise. Deleting your
-          account also cancels any active subscription.
+          <strong>Cancel anytime</strong> by emailing support@meetin.asia (Settings shows the same address). Cancelling stops
+          future renewals; you keep Plus until the end of the period you already paid for. Payments are non-refundable except
+          where the law requires otherwise. Please cancel before you delete your account.
         </p>
       </>
     ),

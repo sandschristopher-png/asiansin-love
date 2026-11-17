@@ -93,7 +93,8 @@
     "today": "Hoy",
     "thisWeek": "Esta semana",
     "earlier": "Anteriores",
-    "loadMore": "Cargar más"
+    "loadMore": "Cargar más",
+    "markHandled": "Marcar como atendido"
   },
   "discover": {
     "modeAll": "Todos",
@@ -242,8 +243,6 @@
     "reputationSub": "Confianza y conducta en la comunidad",
     "title": "Ajustes y privacidad",
     "back": "Volver al perfil",
-    "portalFailed": "No se pudo abrir el portal de facturación.",
-    "portalTimeout": "El portal de facturación tardó demasiado en responder. Inténtalo de nuevo.",
     "deleteFailed": "No se pudo eliminar la cuenta. Inténtalo de nuevo.",
     "privateMode": "Modo privado (pausar perfil)",
     "privateModeSub": "Oculta tu perfil en Descubrir mientras tus chats actuales siguen activos.",
@@ -265,8 +264,6 @@
     "termsSub": "Normas, facturación de Plus y cancelación",
     "privacyPolicy": "Política de privacidad",
     "privacyPolicySub": "Tus datos, selfies y eliminación de la cuenta",
-    "manageSub": "Gestionar suscripción",
-    "manageSubSub": "Cancela Plus o actualiza tu método de pago",
     "logOut": "Cerrar sesión",
     "logOutSub": "Cierra la sesión en este navegador",
     "deleteAccount": "Eliminar cuenta",
@@ -315,7 +312,9 @@
     "privateOn": "Perfil en pausa. Estás oculto en Descubrir.",
     "privateOff": "Tu perfil vuelve a ser visible en Descubrir.",
     "adminConsole": "Consola de administración",
-    "adminConsoleSub": "Verificaciones, fotos y reportes pendientes"
+    "adminConsoleSub": "Verificaciones, fotos y reportes pendientes",
+    "billingSupportTitle": "Facturación y cancelación",
+    "billingSupportSub": "Escribe a {email} para cancelar Plus o consultar sobre la facturación"
   },
   "errors": {
     "generic": "Algo salió mal. Inténtalo de nuevo.",
@@ -346,7 +345,6 @@
   "plus": {
     "upgrade": "Pasar a Plus",
     "choosePlan": "Elige un plan",
-    "checkoutFailed": "No se pudo iniciar el pago. Inténtalo de nuevo.",
     "plan1m": "1 mes",
     "plan3m": "3 meses",
     "plan6m": "6 meses",
@@ -363,10 +361,6 @@
       "banner3": "Insignias de viaje Visiting Soon",
       "banner4": "Filtros de país y de ciudad destino",
       "back": "Atrás",
-      "welcomeTitle": "Te damos la bienvenida a Plus",
-      "confirming": "Confirmando tu membresía...",
-      "unlocked": "Todo lo de abajo ya está desbloqueado.",
-      "finishing": "Terminando con Stripe.",
       "colFeature": "Función",
       "colFree": "Gratis",
       "compared": "Comparación de Gratis y Plus",
@@ -410,23 +404,21 @@
       "faqQ4": "¿Qué pasa con mis coincidencias si dejo de pagar?",
       "faqA4": "No se borra nada. Tus coincidencias y conversaciones se mantienen; solo se desactivan los extras de Plus al terminar el periodo que pagaste.",
       "billingTitle": "Condiciones de facturación",
-      "billing1": "Los precios están en dólares estadounidenses y los cobra Stripe. Pueden aplicarse impuestos.",
+      "billing1": "Los precios están en dólares estadounidenses y los cobra nuestro procesador de pagos. Pueden aplicarse impuestos.",
       "billing2": "1 mes se renueva cada mes a {p1}. 3 meses se renueva a {p3} cada 3 meses. 6 meses se renueva a {p6} cada 6 meses.",
-      "billing3": "Los planes se renuevan automáticamente hasta que canceles. Cancela cuando quieras en Ajustes, en Gestionar suscripción; conservas Plus hasta el final del periodo pagado.",
+      "billing3": "Los planes se renuevan automáticamente hasta que canceles. Para cancelar, escribe a {email}; conservas Plus hasta el final del periodo pagado.",
       "billing4": "Los Sparks ilimitados están sujetos a uso razonable para evitar el spam automático.",
       "fullDetails": "Todos los detalles en nuestros",
       "keepFree": "Seguir gratis",
-      "opening": "Abriendo el pago...",
-      "alreadySubscribed": "¿Ya estás suscrito? Gestionar facturación",
-      "encrypted": "Pago cifrado por Stripe",
-      "paymentsSoon": "Estamos configurando los pagos. Vuelve a intentarlo en un momento.",
+      "paymentsSoon": "Estamos mejorando los pagos. Las membresías Plus volverán a abrirse en breve.",
       "activeTitle": "Plus está activo",
       "activeBody": "Gracias por apoyar Meet in Asia. Gestiona la facturación o cancela cuando quieras.",
       "receiptsPrompt": "Confirmación de lectura con Plus",
       "savePct": "Ahorra {pct}%",
       "rowPrivate": "Modo privado",
       "rowGhost": "Modo fantasma",
-      "cellGhost": "Navega sin dejar rastro"
+      "cellGhost": "Navega sin dejar rastro",
+      "billingSupport": "Para cancelar Plus o consultar sobre la facturación, escribe a"
     }
   },
   "messages": {

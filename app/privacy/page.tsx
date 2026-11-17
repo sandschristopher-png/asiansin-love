@@ -31,7 +31,7 @@ const sections: LegalSection[] = [
           Other members only ever see an approximate location.
         </li>
         <li>
-          <strong>Payments:</strong> handled by Stripe. We receive your subscription status, never your full card number.
+          <strong>Payments:</strong> handled by an independent payment processor. We receive your subscription status, never your full card number.
         </li>
       </ul>
     ),
@@ -78,7 +78,7 @@ const sections: LegalSection[] = [
         <ul>
           <li>Supabase: database, authentication and file storage.</li>
           <li>Vercel: hosting.</li>
-          <li>Stripe: payments and the billing portal.</li>
+          <li>Our payment processor: payments and billing.</li>
           <li>Google (Gemini): verification pre-screening and the optional in-chat Translate feature.</li>
         </ul>
         <p>We may also disclose information when the law requires it or to protect members from serious harm or fraud.</p>

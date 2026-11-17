@@ -93,7 +93,8 @@
     "today": "今日",
     "thisWeek": "今週",
     "earlier": "それ以前",
-    "loadMore": "さらに読み込む"
+    "loadMore": "さらに読み込む",
+    "markHandled": "対応済みにする"
   },
   "discover": {
     "modeAll": "すべて",
@@ -242,8 +243,6 @@
     "reputationSub": "コミュニティでの信頼とマナー",
     "title": "設定とプライバシー",
     "back": "プロフィールに戻る",
-    "portalFailed": "請求ポータルを開けませんでした。",
-    "portalTimeout": "請求ポータルの応答に時間がかかっています。もう一度お試しください。",
     "deleteFailed": "アカウントを削除できませんでした。もう一度お試しください。",
     "privateMode": "プライベートモード(プロフィールを一時停止)",
     "privateModeSub": "プロフィールを「探す」から非表示にしても、現在のチャットはそのまま利用できます。",
@@ -265,8 +264,6 @@
     "termsSub": "ルール、Plusの請求と解約",
     "privacyPolicy": "プライバシーポリシー",
     "privacyPolicySub": "データ、セルフィー、アカウント削除について",
-    "manageSub": "サブスクリプションを管理",
-    "manageSubSub": "Plusの解約や支払い方法の更新",
     "logOut": "ログアウト",
     "logOutSub": "このブラウザのセッションからログアウトします",
     "deleteAccount": "アカウントを削除",
@@ -315,7 +312,9 @@
     "privateOn": "プロフィールを一時停止しました。探すには表示されません。",
     "privateOff": "プロフィールが再び「探す」に表示されます。",
     "adminConsole": "管理コンソール",
-    "adminConsoleSub": "保留中の認証・写真・報告"
+    "adminConsoleSub": "保留中の認証・写真・報告",
+    "billingSupportTitle": "請求と解約",
+    "billingSupportSub": "Plusの解約や請求のご相談は{email}までメールしてください"
   },
   "errors": {
     "generic": "問題が発生しました。もう一度お試しください。",
@@ -346,7 +345,6 @@
   "plus": {
     "upgrade": "Plusにアップグレード",
     "choosePlan": "プランを選択",
-    "checkoutFailed": "お支払いを開始できませんでした。もう一度お試しください。",
     "plan1m": "1か月",
     "plan3m": "3か月",
     "plan6m": "6か月",
@@ -363,10 +361,6 @@
       "banner3": "旅行バッジ「まもなく訪問」",
       "banner4": "国と都市のフィルター",
       "back": "戻る",
-      "welcomeTitle": "Plusへようこそ",
-      "confirming": "メンバーシップを確認しています...",
-      "unlocked": "以下のすべてが利用可能になりました。",
-      "finishing": "Stripeで手続きを完了しています。",
       "colFeature": "機能",
       "colFree": "無料",
       "compared": "無料とPlusの比較",
@@ -410,23 +404,21 @@
       "faqQ4": "支払いをやめるとマッチはどうなりますか?",
       "faqA4": "何も削除されません。マッチと会話は残り、Plusの追加機能だけが支払い済み期間の終了時にオフになります。",
       "billingTitle": "請求条件",
-      "billing1": "価格は米ドル建てで、Stripeが請求します。税金がかかる場合があります。",
+      "billing1": "価格は米ドル建てで、当社の決済事業者が請求します。税金がかかる場合があります。",
       "billing2": "1か月プランは毎月{p1}で更新されます。3か月プランは3か月ごとに{p3}、6か月プランは6か月ごとに{p6}で更新されます。",
-      "billing3": "プランは解約するまで自動更新されます。設定の「サブスクリプションを管理」からいつでも解約でき、支払い済み期間の終了までPlusを利用できます。",
+      "billing3": "プランは解約するまで自動更新されます。解約するには{email}までメールしてください。支払い済み期間の終了までPlusを利用できます。",
       "billing4": "Sparksの無制限利用は、自動化されたスパムを防ぐため公正利用の対象です。",
       "fullDetails": "詳細は次をご覧ください:",
       "keepFree": "無料のまま使う",
-      "opening": "お支払い画面を開いています...",
-      "alreadySubscribed": "登録済みですか?請求を管理",
-      "encrypted": "Stripeによる暗号化されたお支払い",
-      "paymentsSoon": "お支払いを設定中です。しばらくしてからもう一度お試しください。",
+      "paymentsSoon": "お支払いシステムをアップグレード中です。Plusメンバーシップはまもなく再開します。",
       "activeTitle": "Plusは有効です",
       "activeBody": "Meet in Asiaをご支援いただきありがとうございます。請求の管理や解約はいつでもできます。",
       "receiptsPrompt": "Plusで既読表示",
       "savePct": "{pct}%お得",
       "rowPrivate": "プライベートモード",
       "rowGhost": "ゴーストモード",
-      "cellGhost": "足跡を残さずに閲覧"
+      "cellGhost": "足跡を残さずに閲覧",
+      "billingSupport": "Plusの解約や請求のご相談は、次のアドレスまでメールしてください:"
     }
   },
   "messages": {

@@ -153,7 +153,6 @@ const OUTPUTS = [
   ['public/icon-512-maskable.png', await png(maskable, 512)],
   // Third-party branding
   ['public/google-oauth-logo.png', await png(squircle, 512)],
-  ['public/stripe-logo.png', await png(squircle, 512)],
   // Marks + lockup for decks, social, email
   ['public/logo-mark-transparent.png', await png(transparent, 512)],
   ['public/logo-mark-white-transparent.png', await png(whiteTransparent, 512)],

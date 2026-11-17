@@ -93,7 +93,8 @@
     "today": "Hari ini",
     "thisWeek": "Minggu ini",
     "earlier": "Sebelum ini",
-    "loadMore": "Muat lagi"
+    "loadMore": "Muat lagi",
+    "markHandled": "Tandakan sudah diuruskan"
   },
   "discover": {
     "modeAll": "Semua",
@@ -242,8 +243,6 @@
     "reputationSub": "Kepercayaan dan tingkah laku komuniti",
     "title": "Tetapan & Privasi",
     "back": "Kembali ke profil",
-    "portalFailed": "Tidak dapat membuka portal pengebilan.",
-    "portalTimeout": "Portal pengebilan mengambil masa terlalu lama untuk bertindak balas. Sila cuba lagi.",
     "deleteFailed": "Gagal memadam akaun. Sila cuba lagi.",
     "privateMode": "Mod Peribadi (Jeda Profil)",
     "privateModeSub": "Sembunyikan profil anda daripada Teroka sementara sembang semasa kekal aktif.",
@@ -265,8 +264,6 @@
     "termsSub": "Peraturan, pengebilan Plus dan pembatalan",
     "privacyPolicy": "Dasar Privasi",
     "privacyPolicySub": "Data anda, swafoto dan pemadaman akaun",
-    "manageSub": "Urus Langganan",
-    "manageSubSub": "Batalkan Plus atau kemas kini kaedah pembayaran",
     "logOut": "Log Keluar",
     "logOutSub": "Log keluar daripada sesi pelayar ini",
     "deleteAccount": "Padam Akaun",
@@ -315,7 +312,9 @@
     "privateOn": "Profil dijeda. Anda tersembunyi daripada Teroka.",
     "privateOff": "Profil anda kelihatan semula dalam Teroka.",
     "adminConsole": "Konsol Admin",
-    "adminConsoleSub": "Pengesahan, foto dan laporan yang belum selesai"
+    "adminConsoleSub": "Pengesahan, foto dan laporan yang belum selesai",
+    "billingSupportTitle": "Pengebilan dan pembatalan",
+    "billingSupportSub": "E-mel {email} untuk membatalkan Plus atau bertanya tentang pengebilan"
   },
   "errors": {
     "generic": "Sesuatu tidak kena. Sila cuba lagi.",
@@ -346,7 +345,6 @@
   "plus": {
     "upgrade": "Naik taraf ke Plus",
     "choosePlan": "Pilih pelan",
-    "checkoutFailed": "Tidak dapat memulakan pembayaran. Sila cuba lagi.",
     "plan1m": "1 Bulan",
     "plan3m": "3 Bulan",
     "plan6m": "6 Bulan",
@@ -363,10 +361,6 @@
       "banner3": "Lencana perjalanan Visiting Soon",
       "banner4": "Penapis negara dan bandar destinasi",
       "back": "Kembali",
-      "welcomeTitle": "Selamat datang ke Plus",
-      "confirming": "Mengesahkan keahlian anda...",
-      "unlocked": "Semua di bawah kini dibuka kuncinya.",
-      "finishing": "Menyiapkan dengan Stripe.",
       "colFeature": "Ciri",
       "colFree": "Percuma",
       "compared": "Perbandingan Percuma dan Plus",
@@ -410,23 +404,21 @@
       "faqQ4": "Apa jadi pada padanan saya jika saya berhenti membayar?",
       "faqA4": "Tiada apa yang dipadam. Padanan dan perbualan anda kekal; hanya ciri tambahan Plus yang ditutup pada akhir tempoh yang anda bayar.",
       "billingTitle": "Terma Pengebilan",
-      "billing1": "Harga dalam dolar AS dan dicaj oleh Stripe. Cukai mungkin dikenakan.",
+      "billing1": "Harga dalam dolar AS dan dicaj oleh pemproses pembayaran kami. Cukai mungkin dikenakan.",
       "billing2": "1 Bulan diperbaharui setiap bulan pada {p1}. 3 Bulan diperbaharui pada {p3} setiap 3 bulan. 6 Bulan diperbaharui pada {p6} setiap 6 bulan.",
-      "billing3": "Pelan diperbaharui secara automatik sehingga anda membatalkannya. Batalkan pada bila-bila masa dalam Tetapan, di bawah Urus Langganan; anda kekal mempunyai Plus sehingga akhir tempoh yang dibayar.",
+      "billing3": "Pelan diperbaharui secara automatik sehingga anda membatalkannya. Untuk membatalkan, e-mel {email}; anda kekal mempunyai Plus sehingga akhir tempoh yang dibayar.",
       "billing4": "Sparks tanpa had tertakluk kepada penggunaan saksama untuk menghalang spam automatik.",
       "fullDetails": "Butiran penuh dalam",
       "keepFree": "Kekal Percuma",
-      "opening": "Membuka pembayaran...",
-      "alreadySubscribed": "Sudah melanggan? Urus pengebilan",
-      "encrypted": "Pembayaran disulitkan oleh Stripe",
-      "paymentsSoon": "Pembayaran sedang disediakan. Sila semak semula sebentar lagi.",
+      "paymentsSoon": "Sistem pembayaran sedang dinaik taraf. Keahlian Plus akan dibuka semula tidak lama lagi.",
       "activeTitle": "Plus aktif",
       "activeBody": "Terima kasih kerana menyokong Meet in Asia. Urus pengebilan atau batalkan pada bila-bila masa.",
       "receiptsPrompt": "Resit baca dengan Plus",
       "savePct": "Jimat {pct}%",
       "rowPrivate": "Mod Peribadi",
       "rowGhost": "Mod Hantu",
-      "cellGhost": "Layari tanpa meninggalkan kesan"
+      "cellGhost": "Layari tanpa meninggalkan kesan",
+      "billingSupport": "Untuk membatalkan Plus atau bertanya tentang pengebilan, e-mel"
     }
   },
   "messages": {

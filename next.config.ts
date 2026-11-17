@@ -16,13 +16,13 @@ const nextConfig: NextConfig = {
       { source: '/dating/khmer-dating', destination: '/phnom-penh', statusCode: 301 },
     ];
   },
-  // Lets the Payment Request API (Google Pay / Apple Pay) run for this site and Stripe's frames,
-  // so wallet buttons work in mobile Chrome and Android WebViews.
+  // Lets the Payment Request API (Google Pay / Apple Pay) run on this site, so wallet buttons work
+  // in mobile Chrome and Android WebViews. Add the new processor's origin here when it is chosen.
   async headers() {
     return [
       {
         source: '/:path*',
-        headers: [{ key: 'Permissions-Policy', value: 'payment=(self "https://js.stripe.com" "https://checkout.stripe.com")' }],
+        headers: [{ key: 'Permissions-Policy', value: 'payment=(self)' }],
       },
       // Static fonts, SVGs and brand images in /public: cached for a year. These URLs carry no
       // content hash, so a changed asset must ship under a new file name to reach returning

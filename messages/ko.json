@@ -93,7 +93,8 @@
     "today": "오늘",
     "thisWeek": "이번 주",
     "earlier": "이전",
-    "loadMore": "더 보기"
+    "loadMore": "더 보기",
+    "markHandled": "처리됨으로 표시"
   },
   "discover": {
     "modeAll": "전체",
@@ -242,8 +243,6 @@
     "reputationSub": "커뮤니티 신뢰와 행동",
     "title": "설정 및 개인정보",
     "back": "프로필로 돌아가기",
-    "portalFailed": "결제 포털을 열 수 없습니다.",
-    "portalTimeout": "결제 포털의 응답이 너무 오래 걸립니다. 다시 시도해 주세요.",
     "deleteFailed": "계정을 삭제하지 못했습니다. 다시 시도해 주세요.",
     "privateMode": "비공개 모드(프로필 일시중지)",
     "privateModeSub": "프로필을 탐색에서 숨기더라도 현재 진행 중인 채팅은 그대로 유지됩니다.",
@@ -265,8 +264,6 @@
     "termsSub": "규칙, Plus 결제 및 해지",
     "privacyPolicy": "개인정보 처리방침",
     "privacyPolicySub": "내 데이터, 셀피 및 계정 삭제",
-    "manageSub": "구독 관리",
-    "manageSubSub": "Plus를 해지하거나 결제 수단을 변경합니다",
     "logOut": "로그아웃",
     "logOutSub": "이 브라우저 세션에서 로그아웃합니다",
     "deleteAccount": "계정 삭제",
@@ -315,7 +312,9 @@
     "privateOn": "프로필을 일시중지했습니다. 탐색에서 숨겨집니다.",
     "privateOff": "프로필이 다시 탐색에 표시됩니다.",
     "adminConsole": "관리자 콘솔",
-    "adminConsoleSub": "대기 중인 인증, 사진 및 신고"
+    "adminConsoleSub": "대기 중인 인증, 사진 및 신고",
+    "billingSupportTitle": "결제 및 해지",
+    "billingSupportSub": "Plus 해지나 결제 문의는 {email}로 이메일을 보내 주세요"
   },
   "errors": {
     "generic": "문제가 발생했습니다. 다시 시도해 주세요.",
@@ -346,7 +345,6 @@
   "plus": {
     "upgrade": "Plus로 업그레이드",
     "choosePlan": "요금제 선택",
-    "checkoutFailed": "결제를 시작하지 못했습니다. 다시 시도해 주세요.",
     "plan1m": "1개월",
     "plan3m": "3개월",
     "plan6m": "6개월",
@@ -363,10 +361,6 @@
       "banner3": "여행 배지 Visiting Soon",
       "banner4": "국가 및 여행지 필터",
       "back": "뒤로",
-      "welcomeTitle": "Plus에 오신 것을 환영합니다",
-      "confirming": "멤버십을 확인하는 중...",
-      "unlocked": "아래 모든 기능이 잠금 해제되었습니다.",
-      "finishing": "Stripe에서 마무리하는 중입니다.",
       "colFeature": "기능",
       "colFree": "무료",
       "compared": "무료와 Plus 비교",
@@ -410,23 +404,21 @@
       "faqQ4": "결제를 멈추면 매칭은 어떻게 되나요?",
       "faqA4": "삭제되는 것은 없습니다. 매칭과 대화는 그대로 유지되고, 결제한 기간이 끝나면 Plus 추가 기능만 꺼집니다.",
       "billingTitle": "결제 약관",
-      "billing1": "가격은 미국 달러 기준이며 Stripe에서 청구합니다. 세금이 부과될 수 있습니다.",
+      "billing1": "가격은 미국 달러 기준이며 당사 결제 대행사에서 청구합니다. 세금이 부과될 수 있습니다.",
       "billing2": "1개월 플랜은 매월 {p1}에 갱신됩니다. 3개월 플랜은 3개월마다 {p3}, 6개월 플랜은 6개월마다 {p6}에 갱신됩니다.",
-      "billing3": "플랜은 해지할 때까지 자동 갱신됩니다. 설정의 구독 관리에서 언제든지 해지할 수 있으며, 결제한 기간이 끝날 때까지 Plus를 이용할 수 있습니다.",
+      "billing3": "플랜은 해지할 때까지 자동 갱신됩니다. 해지하려면 {email}로 이메일을 보내 주세요. 결제한 기간이 끝날 때까지 Plus를 이용할 수 있습니다.",
       "billing4": "무제한 Sparks는 자동화된 스팸을 막기 위해 공정 사용 정책이 적용됩니다.",
       "fullDetails": "자세한 내용은 다음에서 확인하세요:",
       "keepFree": "무료로 계속",
-      "opening": "결제 창을 여는 중...",
-      "alreadySubscribed": "이미 구독 중이신가요? 결제 관리",
-      "encrypted": "Stripe의 암호화된 결제",
-      "paymentsSoon": "결제를 준비 중입니다. 잠시 후 다시 확인해 주세요.",
+      "paymentsSoon": "결제 시스템을 업그레이드하고 있습니다. Plus 멤버십은 곧 다시 열립니다.",
       "activeTitle": "Plus 이용 중",
       "activeBody": "Meet in Asia를 응원해 주셔서 감사합니다. 결제 관리와 해지는 언제든 가능합니다.",
       "receiptsPrompt": "Plus로 읽음 표시",
       "savePct": "{pct}% 절약",
       "rowPrivate": "비공개 모드",
       "rowGhost": "고스트 모드",
-      "cellGhost": "흔적을 남기지 않고 둘러보기"
+      "cellGhost": "흔적을 남기지 않고 둘러보기",
+      "billingSupport": "Plus 해지나 결제 문의는 다음 주소로 이메일을 보내 주세요:"
     }
   },
   "messages": {

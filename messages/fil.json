@@ -93,7 +93,8 @@
     "today": "Ngayon",
     "thisWeek": "Ngayong linggo",
     "earlier": "Mas maaga",
-    "loadMore": "Mag-load pa"
+    "loadMore": "Mag-load pa",
+    "markHandled": "Markahang naasikaso na"
   },
   "discover": {
     "modeAll": "Lahat",
@@ -242,8 +243,6 @@
     "reputationSub": "Tiwala at pag-uugali sa komunidad",
     "title": "Mga Setting at Privacy",
     "back": "Bumalik sa profile",
-    "portalFailed": "Hindi mabuksan ang billing portal.",
-    "portalTimeout": "Natagalan ang pagsagot ng billing portal. Pakisubukan ulit.",
     "deleteFailed": "Hindi na-delete ang account. Pakisubukan ulit.",
     "privateMode": "Private Mode (I-pause ang Profile)",
     "privateModeSub": "Itago ang profile mo sa Tuklasin habang nananatiling aktibo ang kasalukuyan mong mga chat.",
@@ -265,8 +264,6 @@
     "termsSub": "Mga patakaran, billing ng Plus at pagkansela",
     "privacyPolicy": "Patakaran sa Privacy",
     "privacyPolicySub": "Ang data mo, mga selfie at pagbura ng account",
-    "manageSub": "Pamahalaan ang Subscription",
-    "manageSubSub": "Kanselahin ang Plus o palitan ang paraan ng pagbabayad",
     "logOut": "Mag-log Out",
     "logOutSub": "Mag-sign out sa session ng browser na ito",
     "deleteAccount": "Burahin ang Account",
@@ -315,7 +312,9 @@
     "privateOn": "Naka-pause ang profile. Nakatago ka sa Tuklasin.",
     "privateOff": "Nakikita ka na ulit sa Tuklasin.",
     "adminConsole": "Admin Console",
-    "adminConsoleSub": "Mga nakabinbing beripikasyon, larawan at ulat"
+    "adminConsoleSub": "Mga nakabinbing beripikasyon, larawan at ulat",
+    "billingSupportTitle": "Billing at pagkansela",
+    "billingSupportSub": "Mag-email sa {email} para magkansela ng Plus o magtanong tungkol sa billing"
   },
   "errors": {
     "generic": "May nangyaring mali. Pakisubukan ulit.",
@@ -346,7 +345,6 @@
   "plus": {
     "upgrade": "Mag-upgrade sa Plus",
     "choosePlan": "Pumili ng plano",
-    "checkoutFailed": "Hindi masimulan ang checkout. Pakisubukan ulit.",
     "plan1m": "1 Buwan",
     "plan3m": "3 Buwan",
     "plan6m": "6 na Buwan",
@@ -363,10 +361,6 @@
       "banner3": "Mga badge ng Visiting Soon sa biyahe",
       "banner4": "Mga filter ng bansa at hub",
       "back": "Bumalik",
-      "welcomeTitle": "Maligayang pagdating sa Plus",
-      "confirming": "Kinukumpirma ang membership mo...",
-      "unlocked": "Naka-unlock na ang lahat ng nasa ibaba.",
-      "finishing": "Tinatapos ang proseso sa Stripe.",
       "colFeature": "Tampok",
       "colFree": "Libre",
       "compared": "Paghahambing ng Libre at Plus",
@@ -410,23 +404,21 @@
       "faqQ4": "Ano ang mangyayari sa mga match ko kapag huminto akong magbayad?",
       "faqA4": "Walang buburahin. Mananatili ang mga match at usapan mo; ang mga dagdag lang ng Plus ang titigil sa pagtatapos ng panahong binayaran mo.",
       "billingTitle": "Mga Tuntunin sa Pagsingil",
-      "billing1": "Nasa US dollar ang mga presyo at sinisingil ng Stripe. Maaaring may buwis.",
+      "billing1": "Nasa US dollar ang mga presyo at sinisingil ng aming payment processor. Maaaring may buwis.",
       "billing2": "Ang 1 Buwan ay nagre-renew kada buwan sa {p1}. Ang 3 Buwan ay nagre-renew sa {p3} kada 3 buwan. Ang 6 na Buwan ay nagre-renew sa {p6} kada 6 na buwan.",
-      "billing3": "Kusang nagre-renew ang mga plano hanggang kanselahin mo. Magkansela anumang oras sa Mga Setting, sa ilalim ng Pamahalaan ang Subscription; mananatili ang Plus mo hanggang matapos ang binayarang panahon.",
+      "billing3": "Kusang nagre-renew ang mga plano hanggang kanselahin mo. Para magkansela, mag-email sa {email}; mananatili ang Plus mo hanggang matapos ang binayarang panahon.",
       "billing4": "May patas na paggamit ang walang limitasyong Sparks para mapigilan ang awtomatikong spam.",
       "fullDetails": "Buong detalye sa aming",
       "keepFree": "Manatiling Libre",
-      "opening": "Binubuksan ang checkout...",
-      "alreadySubscribed": "Naka-subscribe na? Pamahalaan ang billing",
-      "encrypted": "Naka-encrypt na checkout ng Stripe",
-      "paymentsSoon": "Inaayos pa ang mga pagbabayad. Bumalik ulit mamaya.",
+      "paymentsSoon": "Ina-upgrade ang mga pagbabayad. Muling magbubukas ang Plus memberships sa lalong madaling panahon.",
       "activeTitle": "Aktibo ang Plus",
       "activeBody": "Salamat sa pagsuporta sa Meet in Asia. Pamahalaan ang billing o magkansela anumang oras.",
       "receiptsPrompt": "Read receipt gamit ang Plus",
       "savePct": "Makatipid ng {pct}%",
       "rowPrivate": "Private Mode",
       "rowGhost": "Ghost Mode",
-      "cellGhost": "Mag-browse nang walang iniiwang bakas"
+      "cellGhost": "Mag-browse nang walang iniiwang bakas",
+      "billingSupport": "Para magkansela ng Plus o magtanong tungkol sa billing, mag-email sa"
     }
   },
   "messages": {

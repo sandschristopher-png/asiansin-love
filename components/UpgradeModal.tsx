@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useState } from 'react';
-import { usePathname } from 'next/navigation';
+import { useLocale } from '@/components/i18n/LocaleProvider';
 import { AmbientAurora } from '@/components/ui/AmbientAurora';
 import { PlusBadge } from '@/components/ui/PlusBadge';
-import { X, Infinity, Compass, TrendingUp, Lock, ArrowRight, Loader2, Zap } from 'lucide-react';
+import { X, Infinity, Compass, TrendingUp, ArrowRight, Zap } from 'lucide-react';
 
 interface UpgradeModalProps {
   isOpen: boolean;
@@ -19,8 +19,11 @@ export default function UpgradeModal({
   onSelectPlan,
   triggerContext = 'general',
 }: UpgradeModalProps) {
-  const pathname = usePathname();
-  const [isRedirecting, setIsRedirecting] = useState(false);
+  const { t } = useLocale();
+  const [notice, setNotice] = useState<string | null>(null);
+
+  // Hooks first: an early return above a hook breaks the rules of hooks.
+  const [selectedTier, setSelectedTier] = useState<'6m' | '3m' | '1m'>('6m');
 
   if (!isOpen) return null;
 
@@ -50,32 +53,13 @@ export default function UpgradeModal({
     }
   };
 
-  const [selectedTier, setSelectedTier] = useState<'6m' | '3m' | '1m'>('6m');
-
-  const handleCheckout = async (planId: string = '1m') => {
+  const handleCheckout = (planId: string = '1m') => {
     if (onSelectPlan) {
       onSelectPlan(planId);
       return;
     }
-
-    try {
-      setIsRedirecting(true);
-      const res = await fetch('/api/plus/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ planId, returnPath: pathname || '/plus' }),
-      });
-      const data = await res.json();
-      if (data?.url) {
-        window.location.assign(data.url);
-      } else {
-        window.location.assign('/plus');
-      }
-    } catch {
-      window.location.assign('/plus');
-    } finally {
-      setIsRedirecting(false);
-    }
+    // Checkout is paused while payments move to a new processor: explain, never redirect or error.
+    setNotice(t('plus.page.paymentsSoon'));
   };
 
   return (
@@ -195,23 +179,19 @@ export default function UpgradeModal({
           {/* Primary CTA Button */}
           <button
             onClick={() => handleCheckout(selectedTier)}
-            disabled={isRedirecting}
-            className="w-full py-3 rounded-2xl bg-[#8574B7] hover:bg-[#8574B7] active:bg-[#8574B7] disabled:opacity-75 disabled:cursor-not-allowed text-white font-medium text-xs tracking-wider uppercase shadow-md shadow-[#8574B7]/20 transition active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer mb-2"
+            className="w-full py-3 rounded-2xl bg-[#8574B7] hover:bg-[#534377] active:bg-[#534377] text-white font-medium text-xs tracking-wider uppercase shadow-md shadow-[#8574B7]/20 transition active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer mb-2"
           >
-            {isRedirecting ? (
-              <>
-                <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                <span>Preparing Checkout...</span>
-              </>
-            ) : (
-              <>
-                <span>
-                  Upgrade to Plus • {selectedTier === '6m' ? '$47.99 / 6 mo' : '$14.99/mo'}
-                </span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </>
-            )}
+            <span>
+              Upgrade to Plus • {selectedTier === '6m' ? '$47.99 / 6 mo' : '$14.99/mo'}
+            </span>
+            <ArrowRight className="w-3.5 h-3.5" />
           </button>
+
+          {notice && (
+            <p role="status" className="mb-2 rounded-xl bg-[#FAF9FC] border border-[#8574B7]/25 px-3 py-2 text-[11px] font-medium leading-snug text-[#413B5E] text-center">
+              {notice}
+            </p>
+          )}
 
           {/* Secondary Dismiss */}
         <button
@@ -222,11 +202,6 @@ export default function UpgradeModal({
           Maybe later
         </button>
 
-        {/* Trust Footnote */}
-        <div className="flex items-center justify-center gap-1 text-[10px] text-slate-600 pt-1">
-          <Lock className="w-3 h-3 text-slate-600" />
-          <span>Encrypted checkout via Stripe</span>
-        </div>
       </div>
     </div>
   );

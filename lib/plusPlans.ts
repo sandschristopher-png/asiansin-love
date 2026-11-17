@@ -1,6 +1,6 @@
 /**
  * Plus plans: the single source for prices shown on /plus, the upgrade sheets and the Terms.
- * Stripe holds the real charge: STRIPE_PLUS_PRICE_1M / _3M / _6M must match these amounts.
+ * The payment processor must charge exactly these amounts (checkout is paused until the new one is live).
  */
 export type PlusPlanId = '1m' | '3m' | '6m';
 

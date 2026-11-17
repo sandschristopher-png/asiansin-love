@@ -4,12 +4,13 @@ import React, { useEffect, useState, useSyncExternalStore, Suspense } from 'reac
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ArrowLeft, Check, CheckCircle2, ChevronDown, Compass, Loader2, Lock, Minus, MessageSquare, Settings, X } from 'lucide-react';
+import { ArrowLeft, Check, CheckCircle2, ChevronDown, Minus, X } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { isPlusProfile } from '@/lib/plus';
 import { PlusBadge } from '@/components/ui/PlusBadge';
 import { useLocale } from '@/components/i18n/LocaleProvider';
-import { localizeError } from '@/lib/i18n/errors';
+import { useActionToast } from '@/components/ActionToast';
+import { SUPPORT_EMAIL } from '@/lib/support';
 import type { TKey } from '@/lib/i18n';
 import { getCachedSubscription, setCachedSubscription } from '@/lib/subscriptionStatus';
 import { TRIP_HUBS } from '@/lib/tripHubs';
@@ -100,78 +101,55 @@ function PlusHubContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { t } = useLocale();
-  const isPostCheckoutSuccess = searchParams.get('success') === '1';
   const highlightRow = FEATURE_ROW[searchParams.get('feature') ?? ''] ?? null;
+  const showActionToast = useActionToast();
 
-  const [loading, setLoading] = useState(true);
-  const [starting, setStarting] = useState(false);
-  const [openingPortal, setOpeningPortal] = useState(false);
   // null until the profile read resolves (or the cached status from an earlier page in this tab):
-  // the checkout bar shows a skeleton, never "Keep Free" to a Plus member.
+  // the bottom bar shows a skeleton, never "Keep Free" to a Plus member.
   const [isSubscribed, setIsSubscribed] = useState<boolean | null>(() => getCachedSubscription());
-  const [isLoadingSubscription, setIsLoadingSubscription] = useState(() => isPostCheckoutSuccess || getCachedSubscription() === null);
+  const [isLoadingSubscription, setIsLoadingSubscription] = useState(() => getCachedSubscription() === null);
   const isPlus = isSubscribed === true;
   const showFreeOffer = !isLoadingSubscription && isSubscribed === false;
   const [selectedPlan, setSelectedPlan] = useState<PlusPlanId>(DEFAULT_PLUS_PLAN);
-  const [statusMsg, setStatusMsg] = useState<string | null>(null);
-  const [isVerifyingPlus, setIsVerifyingPlus] = useState(isPostCheckoutSuccess);
   const mounted = useSyncExternalStore(
     () => () => {},
     () => true,
     () => false
   );
 
+
   useEffect(() => {
-    let mounted = true;
-    let pollCount = 0;
-    const maxPolls = 5;
+    let active = true;
 
     async function checkProfile() {
-      // Waiting on Stripe's webhook after checkout: the bar stays a skeleton between polls.
-      let polling = false;
       try {
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) {
-          if (mounted) {
-            setIsSubscribed(false);
-            setIsLoadingSubscription(false);
-            setLoading(false);
-          }
+          if (active) setIsSubscribed(false);
           return;
         }
         const { data: prof } = await supabase.from('profiles').select('*').eq('id', user.id).maybeSingle();
-        if (mounted && prof) {
+        if (active && prof) {
           const hasPlus = isPlusProfile(prof);
-          // Stripe's webhook can land a moment after the redirect back here.
-          if (isPostCheckoutSuccess && !hasPlus && pollCount < maxPolls) {
-            pollCount++;
-            polling = true;
-            setTimeout(checkProfile, 1500);
-            return;
-          }
           setIsSubscribed(hasPlus);
-          setIsLoadingSubscription(false);
           setCachedSubscription(hasPlus);
-          if (hasPlus) setIsVerifyingPlus(false);
         }
       } catch (e) {
         console.error(e);
       } finally {
-        if (mounted && !polling) {
+        if (active) {
           // A failed read falls back to the free offer rather than a skeleton forever.
           setIsSubscribed((v) => v ?? false);
           setIsLoadingSubscription(false);
-          setLoading(false);
-          if (pollCount >= maxPolls) setIsVerifyingPlus(false);
         }
       }
     }
 
     checkProfile();
     return () => {
-      mounted = false;
+      active = false;
     };
-  }, [isPostCheckoutSuccess]);
+  }, []);
 
   // A locked tap elsewhere in the app lands here with ?feature=: bring that row into view.
   useEffect(() => {
@@ -182,52 +160,9 @@ function PlusHubContent() {
     return () => window.clearTimeout(timer);
   }, [highlightRow]);
 
-  async function handleSubscribe() {
-    setStarting(true);
-    setStatusMsg(null);
-    try {
-      const res = await fetch('/api/plus/checkout', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ planId: selectedPlan, returnPath: '/plus' }),
-      });
-      const json = await res.json().catch(() => ({}));
-      if (res.status === 503) {
-        setStatusMsg(t('plus.page.paymentsSoon'));
-        return;
-      }
-      if (!res.ok || !json.url) {
-        setStatusMsg(localizeError({ status: res.status, code: json.code, message: json.error }, t, 'plus.checkoutFailed'));
-        return;
-      }
-      window.location.href = json.url;
-    } catch {
-      setStatusMsg(t('errors.network'));
-    } finally {
-      setStarting(false);
-    }
-  }
-
-  async function handlePortal() {
-    setOpeningPortal(true);
-    setStatusMsg(null);
-    try {
-      const res = await fetch('/api/stripe/portal', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ return_path: '/plus' }),
-      });
-      const json = await res.json().catch(() => ({}));
-      if (!res.ok || !json.url) {
-        setStatusMsg(localizeError({ status: res.status, code: json.code, message: json.error }, t, 'settings.portalFailed'));
-        return;
-      }
-      window.location.href = json.url;
-    } catch {
-      setStatusMsg(t('errors.network'));
-    } finally {
-      setOpeningPortal(false);
-    }
+  /** Checkout is paused while payments move to a new processor; say so, never redirect or error. */
+  function handleSubscribe() {
+    showActionToast(t('plus.page.paymentsSoon'), 'info');
   }
 
   const plan = plusPlan(selectedPlan);
@@ -258,24 +193,6 @@ function PlusHubContent() {
           </button>
         </div>
 
-        {isPostCheckoutSuccess && (
-          <div className="p-4 rounded-2xl bg-white/90 border border-[#D0CDE1] shadow-sm flex flex-col items-center text-center">
-            <div className="w-10 h-10 rounded-full bg-[#8574B7]/10 text-[#8574B7] flex items-center justify-center mb-2">
-              {isVerifyingPlus && !isPlus ? <Loader2 className="w-5 h-5 animate-spin" /> : <CheckCircle2 className="w-6 h-6" />}
-            </div>
-            <h2 className="text-base font-semibold text-[#413B5E]">{isPlus ? t('plus.page.welcomeTitle') : t('plus.page.confirming')}</h2>
-            <p className="text-xs text-slate-600 mt-0.5 mb-3">{isPlus ? t('plus.page.unlocked') : t('plus.page.finishing')}</p>
-            <div className="flex items-center gap-2 w-full">
-              <Link href="/messages" className="flex-1 h-10 rounded-full bg-[#8574B7] hover:bg-[#534377] text-white text-xs font-medium transition-colors flex items-center justify-center gap-1.5">
-                <MessageSquare className="w-3.5 h-3.5" /> {t('nav.messages')}
-              </Link>
-              <Link href="/discover" className="flex-1 h-10 rounded-full border border-[#D0CDE1] bg-white text-[#413B5E] text-xs font-medium flex items-center justify-center gap-1.5 hover:bg-[#E8E6F1]/40 transition-colors">
-                <Compass className="w-3.5 h-3.5" /> {t('nav.discover')}
-              </Link>
-            </div>
-          </div>
-        )}
-
         {/* Hero */}
         <header className="space-y-3.5">
           <PlusBadge />
@@ -292,10 +209,6 @@ function PlusHubContent() {
             ))}
           </ul>
         </header>
-
-        {statusMsg && (
-          <div role="alert" className="p-3 rounded-2xl bg-white/90 border border-[#D0CDE1] text-xs font-medium text-[#413B5E] text-center">{statusMsg}</div>
-        )}
 
         {/* Plans (free members) or the active state (Plus members) */}
         {showFreeOffer && (
@@ -341,6 +254,12 @@ function PlusHubContent() {
                 {t('plus.page.activeTitle')} <PlusBadge />
               </p>
               <p className="mt-1 text-xs leading-relaxed text-slate-600">{t('plus.page.activeBody')}</p>
+              <p className="mt-2 text-xs leading-relaxed text-slate-600">
+                {t('plus.page.billingSupport')}{' '}
+                <a href={`mailto:${SUPPORT_EMAIL}`} className="font-medium text-[#8574B7] underline underline-offset-4">
+                  {SUPPORT_EMAIL}
+                </a>
+              </p>
             </div>
           </section>
         )}
@@ -395,7 +314,7 @@ function PlusHubContent() {
             <ul className="space-y-2 list-disc pl-4 text-xs text-slate-600 leading-relaxed">
               <li>{t('plus.page.billing1')}</li>
               <li>{t('plus.page.billing2', { p1: plusPlan('1m').total, p3: plusPlan('3m').total, p6: plusPlan('6m').total })}</li>
-              <li>{t('plus.page.billing3')}</li>
+              <li>{t('plus.page.billing3', { email: SUPPORT_EMAIL })}</li>
               <li>{t('plus.page.billing4')}</li>
             </ul>
             <p className="text-xs text-slate-600">
@@ -407,9 +326,6 @@ function PlusHubContent() {
           </Drawer>
         </section>
 
-        <p className="flex items-center justify-center gap-1 text-[10px] text-slate-600">
-          <Lock className="w-3 h-3" /> {t('plus.page.encrypted')}
-        </p>
       </div>
 
       {/* Pinned checkout bar: portaled to <body> so the route transition's transform can't trap it */}
@@ -418,15 +334,12 @@ function PlusHubContent() {
         {isLoadingSubscription ? (
           <div aria-hidden className="h-12 w-full rounded-full bg-[#E8E6F1] animate-pulse" />
         ) : isPlus ? (
-          <button
-            type="button"
-            disabled={openingPortal}
-            onClick={handlePortal}
-            className="w-full h-12 rounded-full border border-[#D0CDE1] bg-white text-sm font-medium text-[#413B5E] hover:bg-[#E8E6F1]/40 transition-colors flex items-center justify-center gap-2 disabled:opacity-60"
-          >
-            {openingPortal ? <Loader2 className="w-4 h-4 animate-spin" /> : <Settings className="w-4 h-4 text-[#8574B7]" />}
-            {t('settings.manageSub')}
-          </button>
+          <p className="text-center text-xs leading-relaxed text-slate-600">
+            {t('plus.page.billingSupport')}{' '}
+            <a href={`mailto:${SUPPORT_EMAIL}`} className="font-medium text-[#8574B7] underline underline-offset-4">
+              {SUPPORT_EMAIL}
+            </a>
+          </p>
         ) : (
           <div className="flex items-center gap-2.5">
             <Link
@@ -435,31 +348,15 @@ function PlusHubContent() {
             >
               {t('plus.page.keepFree')}
             </Link>
+            {/* Card payments are being moved to a new processor: the button explains instead of redirecting. */}
             <button
               type="button"
-              disabled={starting || loading}
               onClick={handleSubscribe}
-              className="flex-1 min-w-0 h-12 px-6 rounded-full bg-[#8574B7] hover:bg-[#534377] text-white font-medium text-sm shadow-brand-glow transition-colors flex items-center justify-center gap-2 whitespace-nowrap disabled:opacity-70"
+              className="flex-1 min-w-0 h-12 px-6 rounded-full bg-[#8574B7] hover:bg-[#534377] text-white font-medium text-sm shadow-brand-glow transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
             >
-              {starting ? (
-                <>
-                  <Loader2 className="w-4 h-4 animate-spin" /> {t('plus.page.opening')}
-                </>
-              ) : (
-                <>{t('plus.upgrade')} · {plan.total}</>
-              )}
+              {t('plus.upgrade')} · {plan.total}
             </button>
           </div>
-        )}
-        {showFreeOffer && (
-          <button
-            type="button"
-            disabled={openingPortal}
-            onClick={handlePortal}
-            className="mt-2.5 w-full text-xs text-slate-600 hover:text-[#413B5E] underline-offset-4 hover:underline disabled:opacity-50"
-          >
-            {t('plus.page.alreadySubscribed')}
-          </button>
         )}
       </div>,
       document.body
