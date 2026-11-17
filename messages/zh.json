@@ -429,7 +429,14 @@
     "cooldownTitle": "您已发送 {n} 条开场消息",
     "cooldownBody": "对方一回复，就可以无限畅聊。您可在 {time} 后发送下一条消息。",
     "cooldownCta": "用 Plus 无限开启新聊天",
-    "outreachLimit": "您今天的 {n} 次新开场已用完。对方回复后即可无限畅聊。"
+    "outreachLimit": "您今天的 {n} 次新开场已用完。对方回复后即可无限畅聊。",
+    "safety": {
+      "financial": "安全提示：切勿向未曾当面见过的人转账、充话费或转加密货币，也不要在 Meet in Asia 之外进行付款。",
+      "solicitation": "安全提示：有偿服务、陪侍以及成人内容推广均违反 Meet in Asia 社区准则。",
+      "offPlatform": "请注意安全：在彼此完成验证并感到放心之前，请继续在 Meet in Asia 内聊天。",
+      "harassment": "安全提示：Meet in Asia 不容许辱骂或威胁性的言语。",
+      "lowReputation": "安全提示：该会员的信誉正在审核中。请放慢节奏，并继续在 Meet in Asia 内聊天。"
+    }
   },
   "notif": {
     "message": "{name}给你发了一条消息",
@@ -445,5 +452,26 @@
   "launch": {
     "badge": "试运营 • 现已开放",
     "sub": "我们刚刚向东南亚各地的早期会员敞开大门。今天免费加入，成为我们创始社区的一员。"
+  },
+  "report": {
+    "messageTitle": "举报此消息",
+    "memberTitle": "举报会员",
+    "titleFor": "举报 {name}",
+    "sub": "举报内容严格保密。我们会审核每一条举报，以保护社区安全。",
+    "reasonFinancial": "索要钱财 / 金融诈骗",
+    "reasonSolicitation": "性交易招揽 / 陪侍",
+    "reasonAdult": "出售成人内容 / 垃圾链接",
+    "reasonHarassment": "骚扰或不当行为",
+    "reasonUnderage": "未成年或虚假资料",
+    "reasonOffPlatform": "诱导转到其他平台",
+    "reasonCommercial": "推销服务或商品",
+    "reasonFake": "虚假照片或冒充他人",
+    "reasonOther": "其他社区问题",
+    "reasonFor": "举报 {name} 的原因",
+    "details": "补充说明（可选）...",
+    "submit": "提交举报",
+    "thanks": "感谢您守护社区安全。我们的团队正在审核这条举报。",
+    "already": "您已举报过这条消息，谢谢。",
+    "blockUnmatch": "拉黑并取消配对"
   }
 }

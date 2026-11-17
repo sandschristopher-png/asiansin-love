@@ -429,7 +429,14 @@
     "cooldownTitle": "Nakapagpadala ka na ng {n} panimulang mensahe",
     "cooldownBody": "Magiging walang limitasyon ang pagmemensahe sa sandaling sumagot sila. Maipapadala mo ang susunod mong mensahe sa loob ng {time}.",
     "cooldownCta": "Magsimula ng walang limitasyong bagong chat gamit ang Plus",
-    "outreachLimit": "Naabot mo na ang {n} bagong pagpapakilala ngayong araw. Magiging walang limitasyon ang pagmemensahe kapag sumagot sila."
+    "outreachLimit": "Naabot mo na ang {n} bagong pagpapakilala ngayong araw. Magiging walang limitasyon ang pagmemensahe kapag sumagot sila.",
+    "safety": {
+      "financial": "Paalala sa Kaligtasan: Huwag magpadala ng pera, load o crypto sa taong hindi mo pa nakikilala nang personal. Huwag gawin ang mga bayad sa Meet in Asia.",
+      "solicitation": "Abiso sa Kaligtasan: Ang bayad na serbisyo, escorting at pag-promote ng adult content ay labag sa mga alituntunin ng Meet in Asia.",
+      "offPlatform": "Manatiling Ligtas: Manatili sa usapan sa Meet in Asia hanggang makumpirma ninyo ang isa't isa at maging panatag kayo.",
+      "harassment": "Abiso sa Kaligtasan: Hindi pinahihintulutan sa Meet in Asia ang mapang-abuso o nananakot na pananalita.",
+      "lowReputation": "Paalala sa Kaligtasan: Sinusuri pa ang reputasyon ng miyembrong ito. Dahan-dahan lang at manatili sa usapan sa Meet in Asia."
+    }
   },
   "notif": {
     "message": "Nagpadala sa iyo ng mensahe si {name}",
@@ -445,5 +452,26 @@
   "launch": {
     "badge": "Soft Launch • Bukas Na",
     "sub": "Kabubukas pa lang namin para sa mga unang miyembro sa buong Timog-Silangang Asya. Sumali nang libre ngayon at maging bahagi ng aming founding community."
+  },
+  "report": {
+    "messageTitle": "I-report ang mensaheng ito",
+    "memberTitle": "I-report ang miyembro",
+    "titleFor": "I-report si {name}",
+    "sub": "Kumpidensyal ang mga report. Sinusuri namin ang bawat report para protektahan ang komunidad.",
+    "reasonFinancial": "Humihingi ng pera / panloloko sa pera",
+    "reasonSolicitation": "Alok na sex / escorting",
+    "reasonAdult": "Nagbebenta ng adult content / spam na link",
+    "reasonHarassment": "Panliligalig o hindi angkop na asal",
+    "reasonUnderage": "Menor de edad o pekeng profile",
+    "reasonOffPlatform": "Pinipilit lumipat sa ibang platform",
+    "reasonCommercial": "Nagbebenta ng serbisyo o produkto",
+    "reasonFake": "Pekeng larawan o panggagaya",
+    "reasonOther": "Iba pang alalahanin sa komunidad",
+    "reasonFor": "Dahilan ng pag-report kay {name}",
+    "details": "Magbigay ng karagdagang konteksto (opsyonal)...",
+    "submit": "Isumite ang Report",
+    "thanks": "Salamat sa pagpapanatiling ligtas ng aming komunidad. Sinusuri ng aming team ang report na ito.",
+    "already": "Na-report mo na ang mensaheng ito. Salamat.",
+    "blockUnmatch": "I-block at I-unmatch"
   }
 }

@@ -5,6 +5,7 @@ import VerifiedBadge from '@/components/VerifiedBadge';
 import { ChatSafetyBanner } from '@/components/chat/ChatSafetyBanner';
 import { TraitIcebreakers } from '@/components/chat/TraitIcebreakers';
 import { FirstMessageShield } from '@/components/chat/FirstMessageShield';
+import { SafetyBanner } from '@/components/chat/SafetyBanner';
 import { inspectFirstMessageSafety } from '@/lib/safety/shield';
 import { isPlusProfile } from '@/lib/plus';
 import { useLocale } from '@/components/i18n/LocaleProvider';
@@ -26,6 +27,7 @@ import {
   X,
   ArrowDown,
   Mic,
+  Flag,
   Lock,
   Square,
   Trash2,
@@ -69,6 +71,8 @@ interface ChatMessage {
   /** Network / server error while sending: kept in the thread with a one-tap retry. */
   failed?: boolean;
   wasMasked?: boolean;
+  /** Warning-banner category for a received message the filters flagged (recipient-only). */
+  safety?: string | null;
   hasAudio?: boolean;
   audioDurationMs?: number | null;
 }
@@ -203,6 +207,7 @@ export default function ChatConversationPage() {
   // Incoming bubble whose actions (Report message) are showing, and the message being reported.
   const [activeMsgId, setActiveMsgId] = useState<string | null>(null);
   const [reportMessageId, setReportMessageId] = useState<string | null>(null);
+  const [reportDuplicate, setReportDuplicate] = useState(false);
   // Tab visible: read receipts are only sent while the member can actually see the thread.
   const [pageVisible, setPageVisible] = useState(true);
   // Typing indicator (Realtime broadcast, no database writes).
@@ -555,6 +560,7 @@ export default function ChatConversationPage() {
             createdAt: m.createdAt,
             time: formatTimeShort(m.createdAt),
             wasMasked: m.wasMasked,
+            safety: m.safety ?? null,
             read: Boolean(m.read ?? m.is_read),
             hasAudio: Boolean(m.hasAudio),
             audioDurationMs: m.audioDurationMs ?? null,
@@ -634,6 +640,27 @@ export default function ChatConversationPage() {
           }
           return [...prev, confirmed];
         });
+
+        // Warning banner for a flagged incoming message: the server writes the flag a moment after the
+        // message, so look it up (recipient-only table) with two retries.
+        if (!isMe) {
+          const lookUpFlag = (attempt: number) => {
+            supabase
+              .from('message_safety_flags')
+              .select('category')
+              .eq('message_id', row.id)
+              .maybeSingle()
+              .then(({ data }) => {
+                if (!isMounted) return;
+                if (data?.category) {
+                  setMessages((prev) => prev.map((m) => (m.id === row.id ? { ...m, safety: data.category as string } : m)));
+                } else if (attempt < 2) {
+                  setTimeout(() => lookUpFlag(attempt + 1), 900);
+                }
+              });
+          };
+          lookUpFlag(0);
+        }
 
         // The gate may have unlocked since this thread loaded: ask the server once before
         // leaving contact details hidden.
@@ -1276,9 +1303,22 @@ export default function ChatConversationPage() {
                             msg.text
                           )}
                         </div>
+                        {/* One-tap report on every received message. */}
+                        {!isMe && isRealId && !msg.hasAudio && (
+                          <button
+                            type="button"
+                            onClick={() => setReportMessageId(msg.id)}
+                            aria-label={t('report.messageTitle')}
+                            title={t('report.messageTitle')}
+                            className="mb-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-[#E8E6F1]/70 hover:text-[#8574B7]"
+                          >
+                            <Flag className="h-3.5 w-3.5" aria-hidden />
+                          </button>
+                        )}
                       </div>
 
                       {showFirstMessageShield && <FirstMessageShield senderName={targetInfo.name} />}
+                      {!isMe && isRealId && msg.safety && <SafetyBanner kind={msg.safety} onReport={() => setReportMessageId(msg.id)} />}
 
                       {earlyContact && !showFirstMessageShield && (
                         <p className="mt-1 ml-8 max-w-[84%] rounded-xl border border-[#D0CDE1] bg-white px-2.5 py-1.5 text-[10.5px] leading-snug text-slate-600">
@@ -1558,19 +1598,20 @@ export default function ChatConversationPage() {
           setShowReportModal(false);
           setReportMessageId(null);
         }}
-        onDone={() => {
+        onDone={(_blocked, duplicate) => {
           setShowReportModal(false);
           setReportMessageId(null);
+          setReportDuplicate(Boolean(duplicate));
           setReportThanks(true);
         }}
       />
       )}
       <InAppToast
-        message={reportThanks ? 'Thank you for keeping our community safe. Our team is reviewing this profile.' : null}
+        message={reportThanks ? (reportDuplicate ? t('report.already') : t('report.thanks')) : null}
         onClose={closeReportThanks}
         durationMs={8000}
         icon={<ShieldAlert className="w-3.5 h-3.5" />}
-        action={{ label: `Block ${targetInfo.name || 'member'}`, onClick: handleBlockUser }}
+        action={{ label: t('report.blockUnmatch'), onClick: handleBlockUser }}
       />
     </div>
   );

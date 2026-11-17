@@ -78,6 +78,18 @@ export async function GET(req: Request) {
     const gate = evaluateSubstantiveConversation(messages.slice(-40), user.id, targetUserId, 15, CONTACT_UNLOCK_TURNS);
     const mutualCount = Math.min(gate.senderSubstantiveCount, gate.receiverSubstantiveCount);
 
+    // Warning banners on the messages this member received (recipient-only table; none for their own).
+    const incomingIds = visibleMessages.filter((m) => m.sender_id !== user.id).map((m) => m.id);
+    const bannerByMessage = new Map<string, string>();
+    if (incomingIds.length > 0) {
+      const { data: flags } = await serviceClient
+        .from('message_safety_flags')
+        .select('message_id, category')
+        .eq('receiver_id', user.id)
+        .in('message_id', incomingIds);
+      for (const f of (flags || []) as { message_id: string; category: string }[]) bannerByMessage.set(f.message_id, f.category);
+    }
+
     // Mask contact info and retain is_read status
     const maskedMessages = visibleMessages.map((msg) => {
       const maskResult = applyContactRevealMask(msg.content || '', mutualCount);
@@ -88,6 +100,7 @@ export async function GET(req: Request) {
         createdAt: msg.created_at,
         read: Boolean(msg.is_read),
         wasMasked: maskResult.hasBlockedContent,
+        safety: bannerByMessage.get(msg.id) ?? null,
         // Voice notes: the client fetches a signed URL from /api/messages/voice?id=...
         hasAudio: Boolean(msg.audio_path),
         audioDurationMs: msg.audio_duration_ms ?? null,
@@ -185,6 +198,20 @@ export async function POST(req: Request) {
       .eq('id', senderId)
       .maybeSingle();
     const senderRep = scoreOf(senderProfile?.reputation_score);
+
+    // Held for review after a zero-tolerance hit (account_freezes is server-only; missing table = no freezes).
+    const { data: freeze } = await serviceClient
+      .from('account_freezes')
+      .select('user_id')
+      .eq('user_id', senderId)
+      .is('cleared_at', null)
+      .maybeSingle();
+    if (freeze) {
+      return NextResponse.json(
+        { error: 'Your account is under review, so messaging is paused for now.', code: 'ACCOUNT_UNDER_REVIEW' },
+        { status: 403 }
+      );
+    }
 
     if (isRestricted(senderRep)) {
       const { count: sentLastHour } = await serviceClient
@@ -294,6 +321,18 @@ export async function POST(req: Request) {
       return penErr;
     };
 
+    // Zero tolerance (underage or extortion wording): nothing is sent, the score drops by 100, the account is
+    // frozen for review and staff are alerted. The reply never says which words matched.
+    if (decision.outcome === 'hard_block') {
+      await applyPenalty();
+      const { error: freezeErr } = await serviceClient
+        .from('account_freezes')
+        .upsert({ user_id: senderId, reason: `zero_tolerance: ${decision.flagged.join(' | ').slice(0, 200)}`, source: 'filter', cleared_at: null }, { onConflict: 'user_id' });
+      if (freezeErr) console.error('[messages] could not freeze account:', freezeErr.message);
+      after(() => notifyAdmins({ kind: 'moderation', ref: senderId, actorId: senderId }));
+      return NextResponse.json({ error: "This message can't be sent.", code: 'SAFETY_BLOCKED' }, { status: 403 });
+    }
+
     // High severity (scam, solicitation, explicit request, slur, threat): silently quarantine
     if (decision.outcome === 'quarantine') {
       if (await applyPenalty()) {
@@ -344,6 +383,16 @@ export async function POST(req: Request) {
 
     if (insertError) {
       return NextResponse.json({ error: insertError.message }, { status: 500 });
+    }
+
+    // Warning banner for the recipient: the matched category, or low reputation for a sender under review.
+    // Stored apart from the message (message_safety_flags, recipient-only RLS) so the sender cannot probe it.
+    const bannerCategory = decision.safetyCategory ?? (isRestricted(senderRep) ? 'low_reputation' : null);
+    if (bannerCategory && message?.id) {
+      const { error: flagErr } = await serviceClient
+        .from('message_safety_flags')
+        .insert({ message_id: message.id, receiver_id: receiverId, category: bannerCategory });
+      if (flagErr && !/message_safety_flags|relation/i.test(flagErr.message)) console.warn('[messages] safety flag failed:', flagErr.message);
     }
 
     try {

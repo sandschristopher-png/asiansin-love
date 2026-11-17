@@ -5,6 +5,7 @@
  * Regression cases: scripts/test-reputation.mjs.
  */
 import { detectContactSharing, evaluateMessageModeration } from './moderation';
+import { evaluateMasterSafety, type SafetyCategory } from './safety/masterSafetyRules';
 
 export const REPUTATION_RULES = {
   max: 100,
@@ -68,7 +69,7 @@ export function canSendVoiceNote(score: number): boolean {
   return !isRestricted(score);
 }
 
-export type MessageOutcome = 'deliver' | 'deliver_with_warning' | 'quarantine' | 'soft_block';
+export type MessageOutcome = 'deliver' | 'deliver_with_warning' | 'quarantine' | 'soft_block' | 'hard_block';
 
 export interface MessageDecision {
   outcome: MessageOutcome;
@@ -76,10 +77,83 @@ export interface MessageDecision {
   /** moderation_log category, e.g. "financial_scam,commercial_solicitation" or "contact_evasion". */
   category: string | null;
   flagged: string[];
+  /**
+   * Warning-banner category for the recipient of a delivered message (solicitation, adult_content,
+   * financial, harassment, off_platform), stored in message_safety_flags. Never sent to the sender.
+   */
+  safetyCategory?: string | null;
 }
 
-/** What /api/messages does with a text message, and how much reputation it costs. */
+const MASTER_LOG_NAME: Record<SafetyCategory, string> = {
+  0: 'zero_tolerance',
+  1: 'sex_solicitation',
+  2: 'adult_content_selling',
+  3: 'financial_scam_dictionary',
+  4: 'harassment_dictionary',
+  5: 'off_platform_funnel',
+};
+
+const join = (...parts: Array<string | null | undefined>) => parts.filter(Boolean).join(',') || null;
+const uniq = (xs: string[]) => Array.from(new Set(xs));
+
+/** Banner category for the filters in lib/moderationWordlists.ts that deliver with a warning. */
+function bannerForLegacy(category: string | null): string | null {
+  if (!category) return null;
+  if (/wallet|financial|crypto/.test(category)) return 'financial';
+  if (/harass/.test(category)) return 'harassment';
+  if (/solicit|explicit/.test(category)) return 'solicitation';
+  return null;
+}
+
+/**
+ * What /api/messages does with a text message, and how much reputation it costs. Two engines feed it:
+ * the original wordlists (scams and solicitation are quarantined) and the master dictionary
+ * (lib/safety/masterSafetyRules.ts). Zero tolerance blocks the send; otherwise the harsher outcome
+ * wins and the larger deduction applies once (no double charge for the same message).
+ */
 export function decideMessageOutcome(text: string, contactUnlocked: boolean): MessageDecision {
+  const master = evaluateMasterSafety(text);
+  if (master.hardBlock) {
+    return { outcome: 'hard_block', deduction: master.deduction, category: MASTER_LOG_NAME[0], flagged: uniq(master.terms), safetyCategory: null };
+  }
+  const legacy = legacyDecision(text, contactUnlocked);
+  const masterCategory = master.categories.length ? master.categories.map((c) => MASTER_LOG_NAME[c]).join(',') : null;
+  // Off-platform funneling only costs reputation while contact sharing is still locked.
+  const masterDeduction = contactUnlocked ? master.deductionWithoutFunnel : master.deduction;
+  const flagged = uniq([...legacy.flagged, ...master.terms]);
+
+  if (legacy.outcome === 'quarantine' || legacy.outcome === 'soft_block') {
+    return {
+      ...legacy,
+      deduction: Math.max(legacy.deduction, masterDeduction),
+      category: join(legacy.category, masterCategory),
+      flagged,
+    };
+  }
+
+  const dictionaryHit = master.categories.some((c) => c >= 1 && c <= 4);
+  if (dictionaryHit) {
+    return {
+      outcome: 'deliver_with_warning',
+      deduction: Math.max(legacy.deduction, master.deductionWithoutFunnel),
+      category: join(legacy.category, masterCategory),
+      flagged,
+      safetyCategory: master.banner,
+    };
+  }
+
+  if (master.categories.includes(5)) {
+    if (!contactUnlocked) {
+      // Funneling before the contact gate opens is blocked like any contact sharing, at 4 per term.
+      return { outcome: 'soft_block', deduction: Math.max(legacy.deduction, master.deduction), category: join(legacy.category, masterCategory), flagged };
+    }
+    return { ...legacy, flagged, category: join(legacy.category, masterCategory), safetyCategory: legacy.safetyCategory ?? 'off_platform' };
+  }
+
+  return legacy;
+}
+
+function legacyDecision(text: string, contactUnlocked: boolean): MessageDecision {
   const mod = evaluateMessageModeration(text);
 
   if (mod.highestSeverity === 'high') {
@@ -105,15 +179,17 @@ export function decideMessageOutcome(text: string, contactUnlocked: boolean): Me
   }
 
   if (mod.highestSeverity === 'medium') {
+    const category = mod.violations.map((v) => v.category).join(',');
     return {
       outcome: 'deliver_with_warning',
       deduction: REPUTATION_RULES.mediumSeverity,
-      category: mod.violations.map((v) => v.category).join(','),
+      category,
       flagged: mod.flaggedPhrases,
+      safetyCategory: bannerForLegacy(category),
     };
   }
 
-  return { outcome: 'deliver', deduction: 0, category: null, flagged: [] };
+  return { outcome: 'deliver', deduction: 0, category: null, flagged: [], safetyCategory: null };
 }
 
 export type ReputationTier = 'good' | 'fair' | 'low';

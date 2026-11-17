@@ -429,7 +429,14 @@
     "cooldownTitle": "Has enviado {n} mensajes de presentación",
     "cooldownBody": "Los mensajes ilimitados se abren en cuanto responda. Podrás enviar tu próximo mensaje en {time}.",
     "cooldownCta": "Empieza chats nuevos ilimitados con Plus",
-    "outreachLimit": "Has llegado a las {n} presentaciones nuevas de hoy. Los mensajes ilimitados se abren cuando responda."
+    "outreachLimit": "Has llegado a las {n} presentaciones nuevas de hoy. Los mensajes ilimitados se abren cuando responda.",
+    "safety": {
+      "financial": "Consejo de seguridad: nunca envíes dinero, saldo móvil ni criptomonedas a alguien que no has conocido en persona. Mantén los pagos fuera de Meet in Asia.",
+      "solicitation": "Aviso de seguridad: los servicios de pago, el escorting y la promoción de contenido para adultos incumplen las normas de Meet in Asia.",
+      "offPlatform": "Mantente a salvo: sigue conversando en Meet in Asia hasta que os hayáis verificado y os sintáis cómodos.",
+      "harassment": "Aviso de seguridad: en Meet in Asia no se tolera el lenguaje abusivo ni amenazante.",
+      "lowReputation": "Consejo de seguridad: la reputación de este miembro está en revisión. Tómate tu tiempo y mantén la conversación en Meet in Asia."
+    }
   },
   "notif": {
     "message": "{name} te envió un mensaje",
@@ -445,5 +452,26 @@
   "launch": {
     "badge": "Lanzamiento suave • Ya abierto",
     "sub": "Acabamos de abrir las puertas a los primeros miembros en todo el sudeste asiático. Únete gratis hoy y forma parte de nuestra comunidad fundadora."
+  },
+  "report": {
+    "messageTitle": "Denunciar este mensaje",
+    "memberTitle": "Denunciar al miembro",
+    "titleFor": "Denunciar a {name}",
+    "sub": "Las denuncias son confidenciales. Revisamos cada una para proteger a la comunidad.",
+    "reasonFinancial": "Pide dinero / estafa financiera",
+    "reasonSolicitation": "Solicitud sexual / escorting",
+    "reasonAdult": "Venta de contenido adulto / enlaces spam",
+    "reasonHarassment": "Acoso o comportamiento inapropiado",
+    "reasonUnderage": "Menor de edad o perfil falso",
+    "reasonOffPlatform": "Insiste en pasar a otra plataforma",
+    "reasonCommercial": "Vende servicios o productos",
+    "reasonFake": "Fotos falsas o suplantación",
+    "reasonOther": "Otra preocupación de la comunidad",
+    "reasonFor": "Motivo de la denuncia a {name}",
+    "details": "Añade más contexto (opcional)...",
+    "submit": "Enviar denuncia",
+    "thanks": "Gracias por mantener segura a la comunidad. Nuestro equipo está revisando esta denuncia.",
+    "already": "Ya denunciaste este mensaje. Gracias.",
+    "blockUnmatch": "Bloquear y deshacer la coincidencia"
   }
 }

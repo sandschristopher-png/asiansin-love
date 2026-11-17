@@ -429,7 +429,14 @@
     "cooldownTitle": "첫 인사 메시지를 {n}개 보냈습니다",
     "cooldownBody": "상대가 답장하면 바로 무제한으로 메시지를 보낼 수 있습니다. 다음 메시지는 {time} 후에 보낼 수 있어요.",
     "cooldownCta": "Plus로 새 채팅을 무제한으로 시작",
-    "outreachLimit": "오늘의 새 첫인사 {n}건을 모두 사용했습니다. 상대가 답장하면 메시지가 무제한이 됩니다."
+    "outreachLimit": "오늘의 새 첫인사 {n}건을 모두 사용했습니다. 상대가 답장하면 메시지가 무제한이 됩니다.",
+    "safety": {
+      "financial": "안전 팁: 직접 만나 본 적 없는 사람에게 돈, 휴대폰 충전, 암호화폐를 절대 보내지 마세요. 결제는 Meet in Asia 밖에서 하지 마세요.",
+      "solicitation": "안전 안내: 유료 서비스, 에스코트, 성인 콘텐츠 홍보는 Meet in Asia 가이드라인에 위반됩니다.",
+      "offPlatform": "안전하게: 서로를 확인하고 편안해질 때까지 Meet in Asia 안에서 대화를 이어가세요.",
+      "harassment": "안전 안내: 욕설이나 위협적인 표현은 Meet in Asia에서 용납되지 않습니다.",
+      "lowReputation": "안전 팁: 이 회원의 평판을 검토 중입니다. 천천히 알아가고 대화는 Meet in Asia 안에서 이어가세요."
+    }
   },
   "notif": {
     "message": "{name}님이 메시지를 보냈어요",
@@ -445,5 +452,26 @@
   "launch": {
     "badge": "소프트 론칭 • 지금 오픈",
     "sub": "동남아시아 전역의 초기 회원을 위해 막 문을 열었습니다. 오늘 무료로 가입하고 창립 커뮤니티의 일원이 되어 보세요."
+  },
+  "report": {
+    "messageTitle": "이 메시지 신고",
+    "memberTitle": "회원 신고",
+    "titleFor": "{name} 신고",
+    "sub": "신고는 비밀이 보장됩니다. 커뮤니티 안전을 위해 모든 신고를 검토합니다.",
+    "reasonFinancial": "금전 요구 / 금융 사기",
+    "reasonSolicitation": "성매매 권유 / 에스코트",
+    "reasonAdult": "성인 콘텐츠 판매 / 스팸 링크",
+    "reasonHarassment": "괴롭힘 또는 부적절한 행동",
+    "reasonUnderage": "미성년자 또는 가짜 프로필",
+    "reasonOffPlatform": "다른 플랫폼으로 유도",
+    "reasonCommercial": "서비스 또는 상품 판매",
+    "reasonFake": "가짜 사진 또는 사칭",
+    "reasonOther": "기타 커뮤니티 관련 문제",
+    "reasonFor": "{name} 신고 사유",
+    "details": "추가 설명을 입력하세요(선택)...",
+    "submit": "신고 제출",
+    "thanks": "커뮤니티를 안전하게 지켜 주셔서 감사합니다. 담당 팀이 이 신고를 검토하고 있습니다.",
+    "already": "이미 이 메시지를 신고하셨습니다. 감사합니다.",
+    "blockUnmatch": "차단 및 매칭 해제"
   }
 }

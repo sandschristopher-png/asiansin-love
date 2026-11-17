@@ -429,7 +429,14 @@
     "cooldownTitle": "You've sent {n} intro messages",
     "cooldownBody": "Unlimited messaging opens as soon as they reply. Your next message can go out in {time}.",
     "cooldownCta": "Start unlimited new chats with Plus",
-    "outreachLimit": "You've reached today's {n} new introductions. Unlimited messaging opens once they reply."
+    "outreachLimit": "You've reached today's {n} new introductions. Unlimited messaging opens once they reply.",
+    "safety": {
+      "financial": "Safety Tip: Never send money, mobile load, or crypto to someone you haven't met in person. Keep payments off Meet in Asia.",
+      "solicitation": "Safety Notice: Paid services, escorting, and adult content promotion violate Meet in Asia guidelines.",
+      "offPlatform": "Stay Safe: Keep conversations on Meet in Asia until you've verified each other and feel comfortable.",
+      "harassment": "Safety Notice: Abusive or threatening language is not tolerated on Meet in Asia.",
+      "lowReputation": "Safety Tip: This member's reputation is under review. Take your time and keep conversations on Meet in Asia."
+    }
   },
   "notif": {
     "message": "{name} sent you a message",
@@ -445,5 +452,26 @@
   "launch": {
     "badge": "Soft Launch • Now Open",
     "sub": "We just opened our doors for early members across Southeast Asia. Join free today and be part of our founding community."
+  },
+  "report": {
+    "messageTitle": "Report this message",
+    "memberTitle": "Report member",
+    "titleFor": "Report {name}",
+    "sub": "Reports are confidential. We review every report to protect community safety.",
+    "reasonFinancial": "Asking for money / financial scam",
+    "reasonSolicitation": "Sex solicitation / escorting",
+    "reasonAdult": "Selling adult content / spam links",
+    "reasonHarassment": "Harassment or inappropriate behavior",
+    "reasonUnderage": "Underage or fake profile",
+    "reasonOffPlatform": "Pushing to move off-platform",
+    "reasonCommercial": "Selling services or products",
+    "reasonFake": "Fake photos or impersonation",
+    "reasonOther": "Other community concern",
+    "reasonFor": "Reason for reporting {name}",
+    "details": "Provide additional context (optional)...",
+    "submit": "Submit Report",
+    "thanks": "Thank you for keeping our community safe. Our team is reviewing this report.",
+    "already": "You already reported this message. Thank you.",
+    "blockUnmatch": "Block & Unmatch"
   }
 }

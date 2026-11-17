@@ -1,18 +1,26 @@
 // app/api/reports/route.ts
-//   POST { reported_id, reason_category, details?, block?, context?, message_id? } -> { success, blocked }
+//   POST { reported_id, reason_category, details?, block?, context?, message_id? } -> { success, blocked, duplicate }
 //
-// Reason-based member reports (components/ReportModal.tsx). Rows go to public.user_reports
-// (status 'pending') and appear in the admin review queue at /admin/verifications, where a
-// confirmed report costs the reported member reputation. With `block`, the reporter also blocks
-// them (public.user_blocks), same as /api/users/block.
+// Reason-based reports (components/ReportModal.tsx). Rows go to public.user_reports (status
+// 'pending') and appear in the admin review queue at /admin/verifications. A report of one chat
+// MESSAGE also:
+//   - is recorded once per (reporter, message) in public.message_reports (a repeat is a no-op),
+//   - costs the sender reputation at once through the service-role RPC apply_moderation_penalty
+//     (10 points; 100 for an underage report, which also freezes the account for review).
+// A confirmed member report costs more later in the admin console. With `block`, the reporter also
+// blocks them (public.user_blocks), same as /api/users/block.
 import { NextResponse, after } from 'next/server';
+import { createClient as createServiceClient } from '@supabase/supabase-js';
 import { notifyAdmins } from '@/lib/adminNotify';
 import { createClient } from '@/lib/supabase/server';
+import { reportExcerpt, reportPenalty } from '@/lib/safety/reportRules';
 
 export const runtime = 'nodejs';
 
 /** Must match the reasons in components/ReportModal.tsx. */
 const REPORT_CATEGORIES = {
+  sex_solicitation: 'Sex solicitation / escorting',
+  adult_content: 'Selling adult content / spam links',
   commercial_solicitation: 'Commercial solicitation / Selling services or products',
   financial_scam: 'Asking for money / Financial fraud',
   off_platform_steering: 'Asking for off-platform contact too quickly (WhatsApp/Telegram/Line)',
@@ -25,6 +33,8 @@ type ReportCategory = keyof typeof REPORT_CATEGORIES;
 
 /** Older reason values, used only if the table's CHECK constraint predates these categories. */
 const LEGACY_REASON: Record<ReportCategory, string> = {
+  sex_solicitation: 'spam',
+  adult_content: 'spam',
   fake_profile: 'fake_profile',
   financial_scam: 'spam',
   commercial_solicitation: 'spam',
@@ -65,6 +75,7 @@ export async function POST(req: Request) {
   // Message-level report: the server (not the client) quotes the reported message and the 5
   // messages before it, after checking it really was sent by the reported member to the reporter.
   let transcript = '';
+  let messageExcerpt = '';
   const messageId = typeof body.message_id === 'string' && UUID_RE.test(body.message_id) ? body.message_id : null;
   if (messageId) {
     const { data: target } = await supabase
@@ -87,11 +98,36 @@ export async function POST(req: Request) {
       `${m.sender_id === reportedId ? 'Reported' : 'Reporter'}: ${
         m.audio_path ? '[voice note]' : String(m.content || '').replace(/\s+/g, ' ').slice(0, 200)
       }`;
+    messageExcerpt = reportExcerpt(target.content);
     transcript = [`[message ${messageId}]`, ...(before || []).reverse().map((m) => `  ${line(m)}`), `> ${line(target)}`].join('\n');
   }
 
   const details = [`${context ? `[from ${context}] ` : ''}${rawDetails}`.trim(), transcript].filter(Boolean).join('\n');
   const cat = category as ReportCategory;
+
+  const admin = createServiceClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, { auth: { persistSession: false } });
+
+  const blockReporter = async () => {
+    const { error: blockError } = await supabase.from('user_blocks').insert({ blocker_id: user.id, blocked_id: reportedId });
+    const done = !blockError || blockError.code === '23505'; // already blocked counts as blocked
+    if (!done) console.error('[api/reports] block failed:', blockError?.message);
+    return done;
+  };
+
+  // One report per (reporter, message): a repeat is accepted quietly and changes nothing.
+  if (messageId) {
+    const { error: dupError } = await admin.from('message_reports').insert({
+      reporter_id: user.id,
+      reported_user_id: reportedId,
+      message_id: messageId,
+      reason: category,
+      message_excerpt: messageExcerpt,
+    });
+    if (dupError?.code === '23505') {
+      return NextResponse.json({ success: true, blocked: body.block === true ? await blockReporter() : false, duplicate: true });
+    }
+    if (dupError) console.warn('[api/reports] message_reports insert skipped:', dupError.message); // table not migrated yet
+  }
 
   const insert = (reason: string, text: string | null) =>
     supabase.from('user_reports').insert({
@@ -112,18 +148,29 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Could not submit your report. Please try again.' }, { status: 500 });
   }
 
+  // Immediate, atomic reputation hit for a reported message (service-role RPC; RLS cannot stop it).
+  if (messageId) {
+    const { error: penaltyError } = await admin.rpc('apply_moderation_penalty', {
+      p_user_id: reportedId,
+      p_deduction: reportPenalty(cat),
+      p_action: 'message_report',
+      p_category: `report:${cat}`,
+      p_flagged: messageExcerpt,
+    });
+    if (penaltyError) console.error('[api/reports] reputation penalty failed:', penaltyError.message);
+    if (cat === 'underage') {
+      const { error: freezeError } = await admin
+        .from('account_freezes')
+        .upsert({ user_id: reportedId, reason: 'reported as underage', source: 'report', cleared_at: null }, { onConflict: 'user_id' });
+      if (freezeError) console.error('[api/reports] freeze failed:', freezeError.message);
+    }
+  }
+
   after(() =>
     notifyAdmins({ kind: 'report', description: REPORT_CATEGORIES[cat], ref: String(reportedId), actorId: String(reportedId) })
   );
 
-  let blocked = false;
-  if (body.block === true) {
-    const { error: blockError } = await supabase
-      .from('user_blocks')
-      .insert({ blocker_id: user.id, blocked_id: reportedId });
-    blocked = !blockError || blockError.code === '23505'; // already blocked counts as blocked
-    if (!blocked) console.error('[api/reports] block failed:', blockError?.message);
-  }
+  const blocked = body.block === true ? await blockReporter() : false;
 
-  return NextResponse.json({ success: true, blocked });
+  return NextResponse.json({ success: true, blocked, duplicate: false });
 }

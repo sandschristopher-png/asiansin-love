@@ -45,18 +45,18 @@ function replay(messages, contactUnlocked = false) {
   check('solicitation is quarantined', outcomes[0].outcome === 'quarantine');
 }
 
-// Leetspeak contact evasion before unlock -> -5, soft block
+// Leetspeak contact evasion before unlock -> soft block; costs the larger of the 5-point evasion floor and 4 per funneling term (add me on + whatsapp = 8)
 {
   const { score, outcomes } = replay(['add me on wh@ts@pp']);
-  check('leet contact evasion deducts 5', score === 95, `score=${score}`);
+  check('leet contact evasion deducts 8', score === 92, `score=${score}`);
   check('leet contact evasion is soft-blocked', outcomes[0].outcome === 'soft_block', outcomes[0].outcome);
-  check('leet contact evasion category', outcomes[0].category === 'contact_evasion', outcomes[0].category);
+  check('leet contact evasion category', /contact_evasion/.test(outcomes[0].category || ''), outcomes[0].category);
 }
 
-// Plain contact before unlock -> blocked with the friendly message, no penalty
+// Plain contact before unlock -> blocked with the friendly message; one funneling term costs 4
 {
   const { score, outcomes } = replay(['are you on telegram?']);
-  check('plain contact before unlock: no penalty', score === 100, `score=${score}`);
+  check('plain contact before unlock: costs 4', score === 96, `score=${score}`);
   check('plain contact before unlock: soft block', outcomes[0].outcome === 'soft_block');
 }
 
@@ -87,11 +87,11 @@ check('confirmed report deducts 20', applyDeduction(100, REPUTATION_RULES.confir
   check('clean messages delivered', outcomes.every((o) => o.outcome === 'deliver'));
 }
 
-// Medium severity -> delivered with warning
+// Dictionary financial hit (local wallet) -> delivered with a warning banner, -20
 {
   const { score, outcomes } = replay(['do you use gcash there?'], true);
   check('wallet mention warns', outcomes[0].outcome === 'deliver_with_warning', outcomes[0].outcome);
-  check('wallet mention deducts 5', score === 95, `score=${score}`);
+  check('wallet mention deducts 20', score === 80, `score=${score}`);
 }
 
 // Floor at 0

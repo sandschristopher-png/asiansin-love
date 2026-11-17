@@ -429,7 +429,14 @@
     "cooldownTitle": "Bạn đã gửi {n} tin nhắn làm quen",
     "cooldownBody": "Nhắn tin không giới hạn sẽ mở ngay khi họ trả lời. Bạn có thể gửi tin tiếp theo sau {time}.",
     "cooldownCta": "Bắt đầu không giới hạn cuộc trò chuyện mới với Plus",
-    "outreachLimit": "Bạn đã dùng hết {n} lượt làm quen mới hôm nay. Nhắn tin không giới hạn sẽ mở khi họ trả lời."
+    "outreachLimit": "Bạn đã dùng hết {n} lượt làm quen mới hôm nay. Nhắn tin không giới hạn sẽ mở khi họ trả lời.",
+    "safety": {
+      "financial": "Mẹo an toàn: Đừng bao giờ gửi tiền, nạp thẻ điện thoại hay tiền mã hóa cho người bạn chưa gặp trực tiếp. Hãy giữ mọi khoản thanh toán ngoài Meet in Asia.",
+      "solicitation": "Thông báo an toàn: Dịch vụ trả phí, escort và quảng bá nội dung người lớn vi phạm quy tắc của Meet in Asia.",
+      "offPlatform": "Giữ an toàn: Hãy trò chuyện trên Meet in Asia cho đến khi hai bạn đã xác minh nhau và cảm thấy thoải mái.",
+      "harassment": "Thông báo an toàn: Meet in Asia không chấp nhận lời lẽ lăng mạ hay đe dọa.",
+      "lowReputation": "Mẹo an toàn: Uy tín của thành viên này đang được xem xét. Hãy thong thả và giữ cuộc trò chuyện trên Meet in Asia."
+    }
   },
   "notif": {
     "message": "{name} đã gửi cho bạn một tin nhắn",
@@ -445,5 +452,26 @@
   "launch": {
     "badge": "Ra mắt thử nghiệm • Đã mở cửa",
     "sub": "Chúng tôi vừa mở cửa đón những thành viên đầu tiên trên khắp Đông Nam Á. Tham gia miễn phí hôm nay và trở thành một phần của cộng đồng sáng lập."
+  },
+  "report": {
+    "messageTitle": "Báo cáo tin nhắn này",
+    "memberTitle": "Báo cáo thành viên",
+    "titleFor": "Báo cáo {name}",
+    "sub": "Báo cáo được giữ bí mật. Chúng tôi xem xét mọi báo cáo để bảo vệ an toàn cộng đồng.",
+    "reasonFinancial": "Xin tiền / lừa đảo tài chính",
+    "reasonSolicitation": "Mời gọi mua bán dâm / escort",
+    "reasonAdult": "Bán nội dung người lớn / liên kết spam",
+    "reasonHarassment": "Quấy rối hoặc hành vi không phù hợp",
+    "reasonUnderage": "Chưa đủ tuổi hoặc hồ sơ giả",
+    "reasonOffPlatform": "Thúc ép chuyển sang nền tảng khác",
+    "reasonCommercial": "Bán dịch vụ hoặc sản phẩm",
+    "reasonFake": "Ảnh giả hoặc mạo danh",
+    "reasonOther": "Vấn đề khác của cộng đồng",
+    "reasonFor": "Lý do báo cáo {name}",
+    "details": "Thêm thông tin bối cảnh (không bắt buộc)...",
+    "submit": "Gửi báo cáo",
+    "thanks": "Cảm ơn bạn đã giữ cộng đồng an toàn. Đội ngũ của chúng tôi đang xem xét báo cáo này.",
+    "already": "Bạn đã báo cáo tin nhắn này rồi. Cảm ơn bạn.",
+    "blockUnmatch": "Chặn và hủy kết đôi"
   }
 }

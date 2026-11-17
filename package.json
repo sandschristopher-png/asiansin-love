@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "eslint",
     "i18n:check": "node scripts/check-i18n.mjs",
-    "i18n:test": "node scripts/test-i18n-errors.mjs"
+    "i18n:test": "node scripts/test-i18n-errors.mjs",
+    "safety:test": "node scripts/test-safety-rules.mjs"
   },
   "dependencies": {
     "@google/genai": "^2.24.0",

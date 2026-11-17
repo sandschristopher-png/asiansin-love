@@ -429,7 +429,14 @@
     "cooldownTitle": "Kamu sudah mengirim {n} pesan perkenalan",
     "cooldownBody": "Pesan tanpa batas terbuka begitu mereka membalas. Pesan berikutnya bisa dikirim dalam {time}.",
     "cooldownCta": "Mulai obrolan baru tanpa batas dengan Plus",
-    "outreachLimit": "Kamu sudah memakai {n} perkenalan baru hari ini. Pesan tanpa batas terbuka setelah mereka membalas."
+    "outreachLimit": "Kamu sudah memakai {n} perkenalan baru hari ini. Pesan tanpa batas terbuka setelah mereka membalas.",
+    "safety": {
+      "financial": "Tips Keamanan: Jangan pernah mengirim uang, pulsa, atau kripto kepada orang yang belum pernah kamu temui langsung. Jauhkan pembayaran dari Meet in Asia.",
+      "solicitation": "Pemberitahuan Keamanan: Layanan berbayar, escort, dan promosi konten dewasa melanggar pedoman Meet in Asia.",
+      "offPlatform": "Tetap Aman: Lanjutkan percakapan di Meet in Asia sampai kalian saling terverifikasi dan merasa nyaman.",
+      "harassment": "Pemberitahuan Keamanan: Bahasa yang kasar atau mengancam tidak ditoleransi di Meet in Asia.",
+      "lowReputation": "Tips Keamanan: Reputasi anggota ini sedang ditinjau. Santai saja dan tetap bercakap di Meet in Asia."
+    }
   },
   "notif": {
     "message": "{name} mengirimimu pesan",
@@ -445,5 +452,26 @@
   "launch": {
     "badge": "Peluncuran Awal • Sudah Dibuka",
     "sub": "Kami baru saja membuka pintu bagi anggota awal di seluruh Asia Tenggara. Bergabung gratis hari ini dan jadilah bagian dari komunitas pendiri kami."
+  },
+  "report": {
+    "messageTitle": "Laporkan pesan ini",
+    "memberTitle": "Laporkan anggota",
+    "titleFor": "Laporkan {name}",
+    "sub": "Laporan bersifat rahasia. Kami meninjau setiap laporan untuk menjaga keamanan komunitas.",
+    "reasonFinancial": "Meminta uang / penipuan finansial",
+    "reasonSolicitation": "Penawaran seks / escort",
+    "reasonAdult": "Menjual konten dewasa / tautan spam",
+    "reasonHarassment": "Pelecehan atau perilaku tidak pantas",
+    "reasonUnderage": "Di bawah umur atau profil palsu",
+    "reasonOffPlatform": "Mendorong pindah ke platform lain",
+    "reasonCommercial": "Menjual layanan atau produk",
+    "reasonFake": "Foto palsu atau peniruan identitas",
+    "reasonOther": "Masalah komunitas lainnya",
+    "reasonFor": "Alasan melaporkan {name}",
+    "details": "Berikan konteks tambahan (opsional)...",
+    "submit": "Kirim Laporan",
+    "thanks": "Terima kasih telah menjaga komunitas tetap aman. Tim kami sedang meninjau laporan ini.",
+    "already": "Kamu sudah melaporkan pesan ini. Terima kasih.",
+    "blockUnmatch": "Blokir & Batalkan Kecocokan"
   }
 }
