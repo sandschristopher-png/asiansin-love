@@ -448,7 +448,7 @@ export default function PublicProfilePage() {
 
           {/* Frosted Top Navigation (Back & More Menu) */}
           <div className="absolute top-0 inset-x-0 z-20 flex items-center justify-between p-3.5 pointer-events-none">
-            <BackButton variant="dark" className="pointer-events-auto !h-10 !w-10" />
+            <BackButton variant="overlay" className="pointer-events-auto !h-10 !w-10" />
 
             <div className="relative pointer-events-auto">
               <button
