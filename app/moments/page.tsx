@@ -13,6 +13,7 @@ import { ReportMomentSheet } from '@/components/moments/ReportMomentSheet';
 import { SparkMomentSheet } from '@/components/moments/SparkMomentSheet';
 import { localizeError } from '@/lib/i18n/errors';
 import { clearMomentsCache, readMomentsCache, writeMomentsCache, type MomentsFeed } from '@/lib/momentsCache';
+import { haptic } from '@/lib/haptics';
 import { mergeRefresh, type MomentEdit } from '@/lib/momentsMerge';
 import { MOMENTS_SEEN_EVENT, MOMENTS_SEEN_KEY, promptOfDay, type MomentCity, type MomentItem, type MomentPrompt } from '@/lib/moments';
 import { matchSeaCity } from '@/lib/seaLocations';
@@ -161,11 +162,13 @@ export default function MomentsPage() {
   }, [loading]);
 
   const openComposer = (prompt: MomentPrompt | null) => {
+    haptic.tap();
     setComposerPrompt(prompt);
     setComposing(true);
   };
 
   const toggleLike = async (m: MomentItem) => {
+    if (!m.likedByMe) haptic.like(); // synchronous, inside the tap; nothing on unlike
     const flip = (liked: boolean, count: number) => {
       localEdits.current.set(m.id, { at: Date.now(), like: { liked, count } });
       updateItems((prev) => prev.map((x) => (x.id === m.id ? { ...x, likedByMe: liked, likesCount: count } : x)));

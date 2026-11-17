@@ -17,7 +17,7 @@ function ensureConfigured(): boolean {
   return true;
 }
 
-export type PushType = 'spark' | 'match' | 'message' | 'visit' | 'announcement' | 'admin';
+export type PushType = 'spark' | 'match' | 'message' | 'visit' | 'announcement' | 'admin' | 'call' | 'moment_like' | 'identity';
 
 /** Every push shows the brand as its title; the body carries the event. */
 export const PUSH_TITLE = 'Meet in Asia';
@@ -36,6 +36,9 @@ const PREF_KEY: Record<PushType, string> = {
   message: 'messages',
   announcement: 'announcements',
   admin: 'admin',
+  call: 'calls',
+  moment_like: 'likes',
+  identity: 'identity',
 };
 
 const DEFAULT_BODY: Record<PushType, string> = {
@@ -45,6 +48,9 @@ const DEFAULT_BODY: Record<PushType, string> = {
   visit: 'Someone viewed your profile.',
   announcement: 'There is a new announcement.',
   admin: 'A new item is waiting for review.',
+  call: 'You missed a voice call.',
+  moment_like: 'Someone liked your Moment.',
+  identity: 'There is an update on your identity check.',
 };
 
 type PrefRow = { id?: string; notification_prefs?: unknown; notify_messages?: boolean | null; notify_sparks?: boolean | null };
@@ -78,6 +84,9 @@ function defaultUrl(type: PushType, conversationId?: string): string {
   if (type === 'message') return conversationId ? `/chat/${conversationId}` : '/messages';
   if (type === 'match' || type === 'spark' || type === 'visit') return '/favorites';
   if (type === 'announcement') return '/announcements';
+  if (type === 'call') return conversationId ? `/chat/${conversationId}` : '/messages';
+  if (type === 'moment_like') return '/moments';
+  if (type === 'identity') return '/profile';
   return '/admin/notifications';
 }
 

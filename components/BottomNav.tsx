@@ -16,6 +16,7 @@ import { useBottomNavHidden } from '@/lib/bottomNavStore';
 import { useLocale } from '@/components/i18n/LocaleProvider';
 import { MOMENTS_SEEN_EVENT, MOMENTS_SEEN_KEY } from '@/lib/moments';
 import { readMomentsCache, writeMomentsCache } from '@/lib/momentsCache';
+import { haptic } from '@/lib/haptics';
 
 const PUBLIC_ROUTES = [
   '/',
@@ -159,6 +160,7 @@ export function BottomNav() {
               key={item.href}
               href={item.href}
               prefetch={true}
+              onClick={() => haptic.tap()}
               className={`relative flex-1 flex flex-col items-center justify-center py-1 px-2 rounded-2xl transition-all duration-200 ease-out active:scale-95 select-none cursor-pointer ${
                 active 
                   ? 'text-[#413B5E]'

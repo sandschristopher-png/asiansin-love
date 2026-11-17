@@ -144,3 +144,37 @@ export function formatDuration(totalSec: number): string {
   if (m < 60) return `${m}m ${s % 60}s`;
   return `${Math.floor(m / 60)}h ${m % 60}m`;
 }
+
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const REASONS: CallEndReason[] = ['completed', 'missed', 'declined', 'failed'];
+
+export interface CallLogInput {
+  id: string;
+  peer: string;
+  startedAt: string;
+  endedAt: string;
+  durationSec: number;
+  reason: CallEndReason;
+}
+
+/**
+ * Validates the body of POST /api/calls/log (also sent with sendBeacon when a tab closes mid-call).
+ * Nothing the client says is trusted beyond sanity: ids are UUIDs, times are recent and ordered, the
+ * duration is capped by the 30-minute session cap plus slack. Returns null when anything is off.
+ */
+export function parseCallLogBody(raw: unknown, now: number): CallLogInput | null {
+  if (!raw || typeof raw !== 'object') return null;
+  const b = raw as Record<string, unknown>;
+  const reason = b.reason as CallEndReason;
+  if (!REASONS.includes(reason)) return null;
+  if (typeof b.id !== 'string' || !UUID.test(b.id) || typeof b.peer !== 'string' || !UUID.test(b.peer)) return null;
+  const started = Date.parse(String(b.startedAt));
+  const ended = Date.parse(String(b.endedAt));
+  if (!Number.isFinite(started) || !Number.isFinite(ended)) return null;
+  const HOUR = 3600_000;
+  if (started > now + 60_000 || ended > now + 60_000 || ended < started || now - started > 3 * HOUR) return null;
+  const duration = Math.round(Number(b.durationSec));
+  if (!Number.isFinite(duration) || duration < 0 || duration > SESSION_CAP_SEC + 120) return null;
+  if (reason !== 'completed' && reason !== 'failed' && duration > 0) return null;
+  return { id: b.id, peer: b.peer, startedAt: new Date(started).toISOString(), endedAt: new Date(ended).toISOString(), durationSec: duration, reason };
+}

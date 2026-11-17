@@ -70,6 +70,9 @@ const CONNECT_TIMEOUT_MS = 20_000;
 const DISCONNECT_GRACE_MS = 20_000;
 const RECHECK_MS = 60_000;
 
+/** Tiny silent clip: playing it inside the tap unlocks the <audio> element on iOS Safari and Android Chrome. */
+const SILENT_WAV = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQAAAAA=';
+
 const uuid = (v: unknown): v is string =>
   typeof v === 'string' && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v);
 
@@ -191,6 +194,26 @@ class CallEngine {
     this.audioEl = el;
   }
 
+  /**
+   * Must run synchronously inside the Call / Accept tap, before any await: starts the remote <audio>
+   * element (and the AudioContext) while the browser still counts it as a user gesture, so the other
+   * member's voice is never blocked by autoplay rules later when the stream arrives.
+   */
+  private unlockAudio() {
+    primeCallAudio();
+    const el = this.audioEl;
+    if (!el) return;
+    try {
+      el.muted = false;
+      if (!el.srcObject) {
+        el.src = SILENT_WAV;
+        void el.play().catch(() => {});
+      }
+    } catch {
+      // the stream's own play() call below is the fallback
+    }
+  }
+
   setMinimized(minimized: boolean) {
     if (this.live) this.set({ minimized });
   }
@@ -230,7 +253,7 @@ class CallEngine {
     const me = this.userId;
     if (!me || !uuid(peerId) || peerId === me) return { ok: false, reason: 'network' };
     if (this.live || this.vetting) return { ok: false, reason: 'busy' };
-    primeCallAudio(); // inside the tap, so the ring tones are allowed to play
+    this.unlockAudio(); // inside the tap, before any await
 
     const [elig, peer] = await Promise.all([fetchEligibility(peerId, 'outgoing'), loadPeer(peerId)]);
     if (!elig) return { ok: false, reason: 'network' };
@@ -338,7 +361,7 @@ class CallEngine {
   async accept() {
     const live = this.live;
     if (!live || live.role !== 'callee' || this.snap.phase !== 'incoming') return;
-    primeCallAudio();
+    this.unlockAudio(); // inside the tap, before any await
     let stream: MediaStream;
     try {
       stream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
@@ -480,6 +503,7 @@ class CallEngine {
     pc.ontrack = (e) => {
       const el = this.audioEl;
       if (!el) return;
+      el.removeAttribute('src'); // drop the silent unlock clip
       el.srcObject = e.streams[0] ?? new MediaStream([e.track]);
       void el.play().catch(() => {});
     };
@@ -655,12 +679,9 @@ class CallEngine {
     const leave = () => {
       const live = this.live;
       if (!live || live.ended) return;
-      this.signal(live, { type: 'hangup' });
-      if (live.role === 'caller' && !live.connectedAt && live.ringChan) {
-        void live.ringChan.send({ type: 'broadcast', event: 'cancel', payload: { callId: live.callId, from: this.userId } });
-      }
-      live.stream?.getTracks().forEach((t) => t.stop());
-      live.pc?.close();
+      // The same wrap-up as a normal hangup (hangup + cancel signals, tracks stopped, peer connection
+      // closed), with the call log sent by beacon because an ordinary request dies with the page.
+      this.finish(live.connectedAt ? 'completed' : 'missed', { notify: true, unloading: true });
     };
     window.addEventListener('pagehide', leave);
     window.addEventListener('beforeunload', leave);
@@ -669,7 +690,7 @@ class CallEngine {
     });
   }
 
-  private finish(reason: CallEndReason, opts: { notify: boolean }) {
+  private finish(reason: CallEndReason, opts: { notify: boolean; unloading?: boolean }) {
     const live = this.live;
     if (!live || live.ended) return;
     live.ended = true;
@@ -695,11 +716,11 @@ class CallEngine {
     this.releaseWake();
     const duration = live.connectedAt ? Math.round((Date.now() - live.connectedAt) / 1000) : 0;
     const me = this.userId;
-    if (live.role === 'caller' && me) void this.writeLog(live, me, reason, duration);
+    if (live.role === 'caller' && me) this.writeLog(live, reason, duration, Boolean(opts.unloading));
     // Let the hangup frame leave before the channels close.
     const channels = [live.pair, live.ringChan];
     window.setTimeout(() => channels.forEach((c) => c && supabase.removeChannel(c)), 400);
-    playDisconnectChime();
+    if (!opts.unloading) playDisconnectChime();
     this.live = null;
     this.vetting = null;
     this.set({ ...INITIAL, speakerSupported: this.snap.speakerSupported, logVersion: this.snap.logVersion + 1 });
@@ -707,18 +728,29 @@ class CallEngine {
     window.setTimeout(() => this.set({ logVersion: this.snap.logVersion + 1 }), 1800);
   }
 
-  private async writeLog(live: Live, me: string, reason: CallEndReason, duration: number) {
+  /**
+   * Sends how the call ended to POST /api/calls/log (the caller is the single writer). The call id is the
+   * row id, so a repeat is a no-op. keepalive lets the request outlive a navigation; a closing tab uses
+   * sendBeacon, which the browser guarantees to deliver.
+   */
+  private writeLog(live: Live, reason: CallEndReason, duration: number, unloading: boolean) {
+    const body = JSON.stringify({
+      id: live.callId,
+      peer: live.peerId,
+      startedAt: new Date(live.startedAt).toISOString(),
+      endedAt: new Date().toISOString(),
+      durationSec: Math.min(duration, SESSION_CAP_SEC),
+      reason,
+    });
     try {
-      const { error } = await supabase.from('call_logs').insert({
-        match_id: pairKey(me, live.peerId),
-        caller_id: me,
-        callee_id: live.peerId,
-        started_at: new Date(live.startedAt).toISOString(),
-        ended_at: new Date().toISOString(),
-        duration_sec: Math.min(duration, 7200),
-        end_reason: reason,
-      });
-      if (error) console.warn('[calls] could not save the call log', error.message);
+      if (unloading && typeof navigator.sendBeacon === 'function') {
+        if (navigator.sendBeacon('/api/calls/log', new Blob([body], { type: 'application/json' }))) return;
+      }
+      void fetch('/api/calls/log', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body, keepalive: true })
+        .then((r) => {
+          if (!r.ok) console.warn('[calls] could not save the call log', r.status);
+        })
+        .catch((err) => console.warn('[calls] could not save the call log', err));
     } catch (err) {
       console.warn('[calls] could not save the call log', err);
     }

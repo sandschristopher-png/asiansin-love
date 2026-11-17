@@ -6,6 +6,7 @@ import { ChevronDown, ChevronUp, MapPin, Mic, MicOff, Phone, PhoneOff, Volume2 }
 import VerifiedBadge from '@/components/VerifiedBadge';
 import { useLocale } from '@/components/i18n/LocaleProvider';
 import { formatClock } from '@/lib/callRules';
+import { haptic } from '@/lib/haptics';
 import type { CallSnapshot, MicError } from '@/lib/callEngine';
 
 const MIC_KEY: Record<MicError, 'call.micBlocked' | 'call.micMissing' | 'call.micBusy'> = {
@@ -50,7 +51,10 @@ function DockButton({
     <div className="flex w-24 flex-col items-center gap-2">
       <button
         type="button"
-        onClick={onClick}
+        onClick={() => {
+          haptic.tap(); // synchronous, inside the tap
+          onClick();
+        }}
         disabled={disabled}
         aria-label={label}
         aria-pressed={pressed}

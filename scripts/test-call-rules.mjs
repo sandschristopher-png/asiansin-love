@@ -63,6 +63,22 @@ ok('duration', r.formatDuration(384) === '6m 24s' && r.formatDuration(45) === '4
 ok('pair key is order independent', r.pairKey('b', 'a') === 'a:b' && r.pairKey('a', 'b') === 'a:b');
 ok('constants', r.RING_TIMEOUT_MS === 30000 && r.SESSION_CAP_SEC === 1800 && r.SESSION_WARN_SEC === 1500 && r.MISS_LOCK_MS === 3600000);
 
+// --- Call log body (also sent by sendBeacon when a tab closes) ------------------------------------
+{
+  const A = '11111111-1111-4111-8111-111111111111';
+  const B = '22222222-2222-4222-8222-222222222222';
+  const now = Date.parse('2026-11-17T12:00:00Z');
+  const body = (o = {}) => ({ id: A, peer: B, startedAt: '2026-11-17T11:50:00Z', endedAt: '2026-11-17T11:56:24Z', durationSec: 384, reason: 'completed', ...o });
+  ok('a normal completed call parses', r.parseCallLogBody(body(), now)?.durationSec === 384);
+  ok('a missed call has no duration', r.parseCallLogBody(body({ reason: 'missed', durationSec: 0 }), now) !== null && r.parseCallLogBody(body({ reason: 'missed', durationSec: 30 }), now) === null);
+  ok('unknown reasons are refused', r.parseCallLogBody(body({ reason: 'ghosted' }), now) === null);
+  ok('non-UUID ids are refused', r.parseCallLogBody(body({ peer: 'abc' }), now) === null && r.parseCallLogBody(body({ id: 'x' }), now) === null);
+  ok('over the session cap is refused', r.parseCallLogBody(body({ durationSec: 1800 + 121 }), now) === null && r.parseCallLogBody(body({ durationSec: 1800 }), now) !== null);
+  ok('a call from the future or older than 3 hours is refused', r.parseCallLogBody(body({ endedAt: '2026-11-17T13:00:00Z' }), now) === null && r.parseCallLogBody(body({ startedAt: '2026-11-17T07:00:00Z', endedAt: '2026-11-17T07:10:00Z' }), now) === null);
+  ok('end before start is refused', r.parseCallLogBody(body({ endedAt: '2026-11-17T11:40:00Z' }), now) === null);
+  ok('garbage is refused', r.parseCallLogBody(null, now) === null && r.parseCallLogBody('x', now) === null);
+}
+
 // --- Migration -------------------------------------------------------------------------------------
 const sql = fs.readFileSync('supabase/migrations/20261126_voice_calls.sql', 'utf8');
 ok('call_logs end reasons match the TypeScript union', ["'completed'", "'missed'", "'declined'", "'failed'"].every((x) => sql.includes(x)));

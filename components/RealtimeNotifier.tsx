@@ -7,6 +7,7 @@ import { applyContactRevealMask } from '@/lib/safety';
 import { alertPrefs, getNotificationCounts, setNotificationCounts, NOTIFICATIONS_CHANGED_EVENT } from '@/lib/notificationStore';
 import { NotificationToast, type NotificationKind, type NotificationToastData } from '@/components/NotificationToast';
 import { publicName } from '@/lib/publicName';
+import { haptic } from '@/lib/haptics';
 
 const SPARKS_SEEN_KEY = 'ail_sparks_seen_at';
 
@@ -16,6 +17,13 @@ function actorName(a: Actor | null, fallback: string): string {
   if (!a) return fallback;
   return publicName(a, fallback);
 }
+
+/** notifications.type -> toast kind, for events that exist only as a notifications row. */
+const ROW_TOAST: Record<string, NotificationKind> = {
+  moment_like: 'moment_like',
+  call_missed: 'call',
+  identity: 'identity',
+};
 
 function sparksSeenAt(): string {
   try {
@@ -132,11 +140,9 @@ export function RealtimeNotifier() {
       setToast(t);
       // The server writes a notifications row for this event; the header chip re-reads shortly.
       window.setTimeout(() => window.dispatchEvent(new Event(NOTIFICATIONS_CHANGED_EVENT)), 1500);
-      if (typeof window !== 'undefined' && 'vibrate' in navigator) {
-        try {
-          navigator.vibrate([20, 60, 20]);
-        } catch {}
-      }
+      // Mutual matches get their own celebration pattern, everything else the soft notify pulse.
+      if (t.kind === 'mutual') haptic.match();
+      else haptic.notify();
 
       // Background tab: native alert, unless this device already gets web push (no duplicates).
       if (
@@ -200,7 +206,27 @@ export function RealtimeNotifier() {
         .on(
           'postgres_changes',
           { event: 'INSERT', schema: 'public', table: 'notifications', filter: `user_id=eq.${uid}` },
-          () => window.dispatchEvent(new Event(NOTIFICATIONS_CHANGED_EVENT))
+          async (payload) => {
+            window.dispatchEvent(new Event(NOTIFICATIONS_CHANGED_EVENT)); // bell badge: count it at once
+            // Messages, Sparks, matches and visits toast from their own tables below. These types have
+            // no other source, so the notifications row itself is the toast.
+            const row = (payload.new || {}) as { id?: string; type?: string; actor_id?: string | null; title?: string | null; description?: string | null };
+            const kind = row.type ? ROW_TOAST[row.type] : undefined;
+            if (!row.id || !kind) return;
+            if (row.actor_id && blockedIds.has(row.actor_id)) return;
+            // Already looking at that chat: a missed-call toast would only repeat the timeline pill.
+            if (row.type === 'call_missed' && row.actor_id && (pathRef.current || '').includes(row.actor_id) && document.visibilityState === 'visible') return;
+            const actor = row.actor_id ? await fetchActor(row.actor_id) : null;
+            showNotificationToast({
+              key: `n-${row.id}`,
+              kind,
+              actorId: row.actor_id || '',
+              name: row.actor_id ? actorName(actor, 'Meet in Asia') : 'Meet in Asia',
+              avatarUrl: actor?.avatar_url ?? null,
+              preview: String(row.title || row.description || '').slice(0, 140),
+              href: row.type === 'call_missed' && row.actor_id ? `/chat/${row.actor_id}` : row.type === 'moment_like' ? '/moments' : '/profile',
+            });
+          }
         )
         // A. messages
         .on(
@@ -334,6 +360,10 @@ export function RealtimeNotifier() {
       onClose={closeToast}
       onOpen={(t) => {
         setToast(null);
+        // Badge first, navigation second: the count drops on the tap itself, not after the next sync.
+        const counts = getNotificationCounts();
+        if (t.kind === 'message') setNotificationCounts({ unreadMessages: Math.max(0, counts.unreadMessages - 1) });
+        else if (t.kind === 'spark' || t.kind === 'mutual' || t.kind === 'visit') setNotificationCounts({ unseenSparks: Math.max(0, counts.unseenSparks - 1) });
         router.push(t.href);
       }}
     />

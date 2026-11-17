@@ -1,10 +1,10 @@
 'use client';
 
 import React, { useCallback, useEffect, useRef, useState } from 'react';
-import { Eye, Heart, MessageCircle } from 'lucide-react';
+import { Eye, Heart, MessageCircle, Phone, ShieldCheck } from 'lucide-react';
 import { AVATAR_IMAGE, supabaseImage } from '@/lib/images/supabaseImage';
 
-export type NotificationKind = 'message' | 'spark' | 'mutual' | 'visit';
+export type NotificationKind = 'message' | 'spark' | 'mutual' | 'visit' | 'moment_like' | 'call' | 'identity';
 
 export interface NotificationToastData {
   /** Changes for every toast so a new event restarts the timer and animation. */
@@ -26,6 +26,9 @@ const KIND_ICON = {
   spark: Heart,
   mutual: Heart,
   visit: Eye,
+  moment_like: Heart,
+  call: Phone,
+  identity: ShieldCheck,
 } as const;
 
 /**

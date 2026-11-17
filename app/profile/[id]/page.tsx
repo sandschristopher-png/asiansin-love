@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import VerifiedBadge from '@/components/VerifiedBadge';
 import { useLocale } from '@/components/i18n/LocaleProvider';
+import { haptic } from '@/lib/haptics';
 
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
@@ -196,6 +197,7 @@ export default function PublicProfilePage() {
   }, [targetUserId]);
 
   const handleToggleSpark = async () => {
+    if (!isSparked) haptic.spark(); // synchronous, before any await
     setSparkLoading(true);
     try {
       const { data: { user } } = await supabase.auth.getUser();

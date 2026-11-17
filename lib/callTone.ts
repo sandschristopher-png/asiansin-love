@@ -10,7 +10,7 @@
  * member has already used the app, so we resume it on the first gesture and, if it is still blocked, the call
  * screen is simply silent: the visual ring never depends on sound.
  */
-import { hapticsEnabled } from '@/lib/utils/haptics';
+import { haptic } from '@/lib/haptics';
 
 const NOTE = { F4: 349.23, A4: 440, C5: 523.25, E5: 659.25, G5: 783.99, G4: 392, E4: 329.63 } as const;
 const LOOP_MS = 3000;
@@ -89,13 +89,7 @@ export function startRingtone(): () => void {
     sequence(
       [NOTE.F4, NOTE.A4, NOTE.C5, NOTE.E5, NOTE.G5].map((f, i) => ({ f, offset: i * 0.16, dur: i === 4 ? 1.1 : 0.7, gain: 0.2 }))
     );
-    if (hapticsEnabled() && typeof navigator !== 'undefined' && 'vibrate' in navigator) {
-      try {
-        navigator.vibrate([200, 100, 200]);
-      } catch {
-        // Vibration is optional.
-      }
-    }
+    haptic.ring(); // [200, 100, 200] every ring cycle, if the member has haptics on
   });
   return () => {
     stop();
