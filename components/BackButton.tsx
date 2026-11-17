@@ -18,8 +18,9 @@ const VARIANTS: Record<'plain' | 'circled' | 'dark', string> = {
   plain: 'text-[#413B5E]',
   circled:
     'rounded-full border border-[#D0CDE1] bg-white/90 backdrop-blur text-[#413B5E] shadow-xs',
+  // Over a photo: a soft translucent dark disc with a hairline edge, readable on light or dark pictures.
   dark:
-    'rounded-full bg-black/45 text-white hover:bg-black/60 shadow-xs',
+    'rounded-full border border-white/20 bg-black/35 text-white backdrop-blur-sm hover:bg-black/50 shadow-[0_2px_10px_rgba(0,0,0,0.22)]',
 };
 
 export function BackButton({

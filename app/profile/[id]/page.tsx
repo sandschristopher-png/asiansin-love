@@ -448,14 +448,14 @@ export default function PublicProfilePage() {
 
           {/* Frosted Top Navigation (Back & More Menu) */}
           <div className="absolute top-0 inset-x-0 z-20 flex items-center justify-between p-3.5 pointer-events-none">
-            <BackButton variant="dark" className="pointer-events-auto" />
+            <BackButton variant="dark" className="pointer-events-auto !h-10 !w-10" />
 
             <div className="relative pointer-events-auto">
               <button
                 type="button"
                 onClick={() => setShowMenu(!showMenu)}
                 aria-label="More options"
-                className="flex h-10 w-10 items-center justify-center rounded-full bg-black/45 text-white transition hover:bg-black/60 active:scale-95 shadow-xs cursor-pointer"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-black/35 text-white backdrop-blur-sm shadow-[0_2px_10px_rgba(0,0,0,0.22)] transition hover:bg-black/50 active:scale-95 cursor-pointer"
               >
                 <MoreHorizontal className="h-5 w-5" />
               </button>
