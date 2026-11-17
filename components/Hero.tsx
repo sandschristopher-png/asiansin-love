@@ -35,16 +35,17 @@ export default function Hero() {
   return (
     <section className="w-full bg-white pt-2 pb-10">
       <div className="flex flex-col items-center text-center">
-        {/* Photo in a rounded card at its own 1024x687 ratio with object-contain, so it is never cropped. */}
-        <div className="relative w-full aspect-[1024/687] overflow-hidden rounded-3xl bg-[#E8E6F1]/50">
+        {/* Brand portrait in a rounded 4:5 card: nothing is drawn over her face, and no name, age or
+            profile badge, so it can never read as a real member. */}
+        <div className="relative w-full aspect-[4/5] overflow-hidden rounded-3xl bg-[#E8E6F1]/50 shadow-[0_8px_30px_rgba(65,59,94,0.12)]">
           <Image
-            src="/Landing-Woman.png"
+            src="/Camille_Hero.png"
             alt={m.hero.imageAlt}
             fill
             preload
-            quality={95}
+            quality={90}
             sizes="(max-width: 448px) 100vw, 448px"
-            className="object-contain select-none pointer-events-none"
+            className="object-cover select-none pointer-events-none"
           />
         </div>
 
