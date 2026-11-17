@@ -624,5 +624,34 @@
     "startFailed": "Hindi nasimulan ang camera check. Pakisubukang muli",
     "expired": "Nag-expire na ang check na iyon. Pakisimulang muli",
     "unavailable": "Hindi available ang identity check ngayon. Pakisubukang muli mamaya"
+  },
+  "ph": {
+    "imageAlt": "Nakangiting si Camille habang hawak ang phone niya sa harap ng pininturahang pader",
+    "badge": "Tumatanggap na ng Founding Members sa Pilipinas",
+    "headline": "Totoong koneksyon. Beripikadong tao. Walang kalat.",
+    "subtitle": "Makilala ang totoo at beripikadong mga single sa Manila, Cebu, Davao, at iba pa—gawa sa live selfie check, proteksyon laban sa scam, at walang pekeng profile.",
+    "join": "Sumali Nang Libre bilang Founding Member",
+    "haveAccount": "May account na ako",
+    "whyHeading": "Bakit kakaiba ang Meet in Asia",
+    "verified": {
+      "title": "Beripikado sa Live Selfie",
+      "body": "Bawat miyembro ay dumaraan sa live camera check bago makapag-message—walang catfishing, walang ninakaw na litrato."
+    },
+    "shield": {
+      "title": "Built-In na Anti-Scam Shield",
+      "body": "Awtomatikong proteksyon laban sa pamimilit na lumipat sa ibang platform, paghingi ng pera, at spam na account."
+    },
+    "fast": {
+      "title": "Mabilis at Magaan Kahit Saan",
+      "body": "Dinisenyo para mabilis mag-load kahit sa 4G sa probinsya—walang mabigat na kalat o walang katapusang paywall."
+    },
+    "founding": {
+      "title": "Mga perk ng Founding Member",
+      "body": "Ang mga unang miyembro sa Pilipinas ay makakakuha ng libreng Founding Member access at Founding Member badge sa profile habang lumalaki ang komunidad."
+    },
+    "footer": {
+      "safety": "Kaligtasan at Beripikasyon",
+      "guidelines": "Mga Alituntunin ng Komunidad"
+    }
   }
 }

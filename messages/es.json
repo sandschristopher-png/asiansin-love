@@ -624,5 +624,34 @@
     "startFailed": "No se pudo iniciar la comprobación con la cámara. Inténtalo de nuevo",
     "expired": "Esa comprobación caducó. Empieza de nuevo",
     "unavailable": "La comprobación de identidad no está disponible ahora. Inténtalo más tarde"
+  },
+  "ph": {
+    "imageAlt": "Camille sonriendo con su teléfono frente a una pared pintada",
+    "badge": "Ya damos la bienvenida a Founding Members en Filipinas",
+    "headline": "Conexiones reales. Personas verificadas. Cero ruido.",
+    "subtitle": "Conoce a solteros reales y verificados en Manila, Cebu, Davao y más allá, con verificación de selfi en vivo, protección antiestafas y cero perfiles falsos.",
+    "join": "Únete gratis como Founding Member",
+    "haveAccount": "Ya tengo una cuenta",
+    "whyHeading": "Por qué Meet in Asia es diferente",
+    "verified": {
+      "title": "Verificado con selfi en vivo",
+      "body": "Cada miembro completa una verificación con cámara en vivo antes de escribir: sin catfishing, sin fotos robadas."
+    },
+    "shield": {
+      "title": "Escudo antiestafas integrado",
+      "body": "Protección automática contra la presión para salir de la plataforma, las peticiones de dinero y las cuentas de spam."
+    },
+    "fast": {
+      "title": "Rápida y ligera en cualquier lugar",
+      "body": "Diseñada para cargar rápido incluso con 4G en provincias: sin saturación ni muros de pago interminables."
+    },
+    "founding": {
+      "title": "Ventajas de Founding Member",
+      "body": "Los primeros miembros en Filipinas obtienen acceso gratuito de Founding Member y una insignia de Founding Member en su perfil a medida que crece la comunidad."
+    },
+    "footer": {
+      "safety": "Seguridad y verificación",
+      "guidelines": "Normas de la comunidad"
+    }
   }
 }

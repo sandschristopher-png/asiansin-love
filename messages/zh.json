@@ -624,5 +624,34 @@
     "startFailed": "无法开始摄像头检测，请重试",
     "expired": "该检测已过期，请重新开始",
     "unavailable": "身份确认暂时不可用，请稍后再试"
+  },
+  "ph": {
+    "imageAlt": "卡米尔在涂漆的墙前拿着手机微笑",
+    "badge": "现已在菲律宾欢迎 Founding Member 加入",
+    "headline": "真实的缘分，经过认证的人，不杂乱。",
+    "subtitle": "在马尼拉、宿务、达沃及更多地方，认识真实且经过认证的单身人士——拥有实时自拍验证、防诈骗保护，没有虚假资料。",
+    "join": "免费加入成为 Founding Member",
+    "haveAccount": "我已有账号",
+    "whyHeading": "Meet in Asia 与众不同的原因",
+    "verified": {
+      "title": "实时自拍认证",
+      "body": "每位成员在发消息前都要完成实时摄像头验证——没有冒充，没有盗用照片。"
+    },
+    "shield": {
+      "title": "内置防诈骗防护",
+      "body": "自动防范诱导转移平台、索要钱财和垃圾账号。"
+    },
+    "fast": {
+      "title": "随处快速轻盈",
+      "body": "即使在外省的 4G 网络下也能快速加载——没有繁重杂乱，也没有无尽的付费墙。"
+    },
+    "founding": {
+      "title": "Founding Member 专属福利",
+      "body": "菲律宾的早期成员将随社区成长获得免费的 Founding Member 权益和个人资料徽章。"
+    },
+    "footer": {
+      "safety": "安全与认证",
+      "guidelines": "社区准则"
+    }
   }
 }

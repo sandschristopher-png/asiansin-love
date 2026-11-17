@@ -624,5 +624,34 @@
     "startFailed": "Semakan kamera tidak dapat dimulakan. Sila cuba lagi",
     "expired": "Semakan itu telah tamat tempoh. Sila mula semula",
     "unavailable": "Pengesahan identiti tidak tersedia buat masa ini. Sila cuba lagi nanti"
+  },
+  "ph": {
+    "imageAlt": "Camille tersenyum sambil memegang telefon di hadapan dinding bercat",
+    "badge": "Kini mengalu-alukan Founding Member di Filipina",
+    "headline": "Hubungan sebenar. Orang yang disahkan. Tiada kekusutan.",
+    "subtitle": "Kenali bujang tulen yang disahkan di Manila, Cebu, Davao dan sekitarnya—dengan semakan swafoto langsung, perlindungan anti-penipuan dan tiada profil palsu.",
+    "join": "Sertai Percuma sebagai Founding Member",
+    "haveAccount": "Saya sudah mempunyai akaun",
+    "whyHeading": "Mengapa Meet in Asia berbeza",
+    "verified": {
+      "title": "Disahkan dengan Swafoto Langsung",
+      "body": "Setiap ahli melengkapkan semakan kamera langsung sebelum menghantar mesej—tiada catfishing, tiada gambar curi."
+    },
+    "shield": {
+      "title": "Perisai Anti-Penipuan Terbina Dalam",
+      "body": "Perlindungan automatik daripada tekanan untuk keluar platform, permintaan wang dan akaun spam."
+    },
+    "fast": {
+      "title": "Pantas & Ringan Di Mana-mana",
+      "body": "Direka untuk dimuat pantas walaupun pada 4G luar bandar—tiada kekusutan berat atau paywall tanpa henti."
+    },
+    "founding": {
+      "title": "Kelebihan Founding Member",
+      "body": "Ahli awal di Filipina mendapat akses Founding Member percuma dan lencana profil Founding Member apabila komuniti berkembang."
+    },
+    "footer": {
+      "safety": "Keselamatan & Pengesahan",
+      "guidelines": "Garis Panduan Komuniti"
+    }
   }
 }

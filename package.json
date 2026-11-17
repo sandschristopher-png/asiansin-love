@@ -13,7 +13,8 @@
     "vpn:test": "node scripts/test-vpn-check.mjs",
     "moments:test": "node scripts/test-moments-config.mjs",
     "calls:test": "node scripts/test-call-rules.mjs",
-    "stepup:test": "node scripts/test-stepup.mjs"
+    "stepup:test": "node scripts/test-stepup.mjs",
+    "landing:test": "node scripts/test-landing-geo.mjs"
   },
   "dependencies": {
     "@google/genai": "^2.24.0",

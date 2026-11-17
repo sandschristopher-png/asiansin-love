@@ -34,8 +34,9 @@ const nextConfig: NextConfig = {
     ];
   },
   images: {
-    // Next 16 only accepts listed qualities (default [75]); 95 is the landing hero photo.
-    qualities: [75, 95],
+    // Next 16 only accepts listed qualities (default [75]); 95 is the landing hero photo, 80 the
+    // Philippines landing hero (components/PhilippinesLanding.tsx).
+    qualities: [75, 80, 95],
     // Two-tier WebP delivery: ~640px for Discover cards, up to 1440px for the profile detail view
     // (matches the 1440px max edge from lib/utils/imageCompressor.ts). WebP only: fast to encode
     // and decoded in hardware on budget Android chipsets.

@@ -624,5 +624,34 @@
     "startFailed": "Không thể bắt đầu kiểm tra bằng camera. Vui lòng thử lại",
     "expired": "Lần kiểm tra đó đã hết hạn. Vui lòng bắt đầu lại",
     "unavailable": "Hiện chưa thể xác nhận danh tính. Vui lòng thử lại sau"
+  },
+  "ph": {
+    "imageAlt": "Camille mỉm cười, cầm điện thoại trước bức tường sơn",
+    "badge": "Đang chào đón Founding Member tại Philippines",
+    "headline": "Kết nối thật. Người thật đã xác minh. Không rườm rà.",
+    "subtitle": "Gặp gỡ những người độc thân thật, đã xác minh ở Manila, Cebu, Davao và nhiều nơi khác—với kiểm tra selfie trực tiếp, chống lừa đảo và không có hồ sơ giả.",
+    "join": "Tham gia miễn phí với tư cách Founding Member",
+    "haveAccount": "Tôi đã có tài khoản",
+    "whyHeading": "Vì sao Meet in Asia khác biệt",
+    "verified": {
+      "title": "Xác minh bằng selfie trực tiếp",
+      "body": "Mọi thành viên đều hoàn tất kiểm tra camera trực tiếp trước khi nhắn tin—không giả mạo, không ảnh đánh cắp."
+    },
+    "shield": {
+      "title": "Lá chắn chống lừa đảo tích hợp",
+      "body": "Tự động bảo vệ trước áp lực chuyển sang nền tảng khác, yêu cầu tiền bạc và tài khoản spam."
+    },
+    "fast": {
+      "title": "Nhanh và nhẹ ở mọi nơi",
+      "body": "Được thiết kế để tải nhanh ngay cả với 4G ở vùng tỉnh—không rườm rà nặng nề, không rào thanh toán vô tận."
+    },
+    "founding": {
+      "title": "Đặc quyền Founding Member",
+      "body": "Thành viên đầu tiên tại Philippines được dùng Founding Member miễn phí và nhận huy hiệu Founding Member trên hồ sơ khi cộng đồng phát triển."
+    },
+    "footer": {
+      "safety": "An toàn & Xác minh",
+      "guidelines": "Nguyên tắc cộng đồng"
+    }
   }
 }

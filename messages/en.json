@@ -624,5 +624,34 @@
     "startFailed": "The camera check could not start. Please try again",
     "expired": "That check expired. Please start again",
     "unavailable": "The identity check is not available right now. Please try again later"
+  },
+  "ph": {
+    "imageAlt": "Camille smiling, holding her phone against a painted wall",
+    "badge": "Now welcoming Founding Members in the Philippines",
+    "headline": "Real connections. Verified people. Zero clutter.",
+    "subtitle": "Meet genuine, verified singles across Manila, Cebu, Davao, and beyond—built with live selfie checks, anti-scam protection, and zero fake profiles.",
+    "join": "Join Free as a Founding Member",
+    "haveAccount": "I already have an account",
+    "whyHeading": "Why Meet in Asia is different",
+    "verified": {
+      "title": "Live Selfie Verified",
+      "body": "Every member completes a live camera check before messaging—no catfishing, no stolen photos."
+    },
+    "shield": {
+      "title": "Built-In Anti-Scam Shield",
+      "body": "Automatic protection against off-platform pressure, financial solicitation, and spam accounts."
+    },
+    "fast": {
+      "title": "Fast & Lightweight Everywhere",
+      "body": "Designed to load fast even on provincial 4G connections—no heavy clutter or endless paywalls."
+    },
+    "founding": {
+      "title": "Founding Member perks",
+      "body": "Early members in the Philippines get free Founding Member access and a Founding Member profile badge as the community grows."
+    },
+    "footer": {
+      "safety": "Safety & Verification",
+      "guidelines": "Community Guidelines"
+    }
   }
 }
