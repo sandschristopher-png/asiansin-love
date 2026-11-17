@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { 
+  Camera,
   Compass, 
   Heart,
   MessageCircle, 
@@ -13,6 +14,7 @@ import { supabase } from '@/lib/supabase/client';
 import { useNotificationCounts } from '@/lib/notificationStore';
 import { useBottomNavHidden } from '@/lib/bottomNavStore';
 import { useLocale } from '@/components/i18n/LocaleProvider';
+import { MOMENTS_SEEN_EVENT, MOMENTS_SEEN_KEY } from '@/lib/moments';
 
 const PUBLIC_ROUTES = [
   '/',
@@ -35,6 +37,8 @@ export function BottomNav() {
   const hiddenByScreen = useBottomNavHidden();
   const [user, setUser] = useState<any>(null);
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
+  // "Fresh" dot on the Moments tab: a newer Moment in the member's hub than the last time they opened the feed.
+  const [freshMoments, setFreshMoments] = useState(false);
   const pathname = usePathname();
   const cleanPath = pathname?.replace(/\/+$/, '') || '';
   const isPublicProfile = cleanPath.startsWith('/profile/') && !['/profile/edit', '/profile/reputation'].includes(cleanPath);
@@ -60,6 +64,34 @@ export function BottomNav() {
   }, []);
 
   useEffect(() => {
+    if (!user) return;
+    let cancelled = false;
+    const seenAt = () => {
+      try {
+        return localStorage.getItem(MOMENTS_SEEN_KEY) || '';
+      } catch {
+        return '';
+      }
+    };
+    const check = () => {
+      if (pathname?.startsWith('/moments')) return;
+      fetch('/api/moments/fresh')
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => {
+          if (!cancelled && d?.latest) setFreshMoments(d.latest > seenAt());
+        })
+        .catch(() => {});
+    };
+    const clear = () => setFreshMoments(false);
+    check();
+    window.addEventListener(MOMENTS_SEEN_EVENT, clear);
+    return () => {
+      cancelled = true;
+      window.removeEventListener(MOMENTS_SEEN_EVENT, clear);
+    };
+  }, [user, pathname]);
+
+  useEffect(() => {
     if (typeof window === 'undefined' || !window.visualViewport) return;
 
     const handleResize = () => {
@@ -80,8 +112,9 @@ export function BottomNav() {
     return null;
   }
 
-  const navItems = [
+  const navItems: { href: string; label: string; icon: typeof Compass; badge?: number; dot?: boolean }[] = [
     { href: '/discover', label: t('nav.discover'), icon: Compass },
+    { href: '/moments', label: t('moments.nav'), icon: Camera, dot: freshMoments },
     { href: '/favorites', label: t('nav.sparks'), icon: Heart, badge: unseenSparks },
     { href: '/messages', label: t('nav.messages'), icon: MessageCircle, badge: unreadCount },
     { href: '/profile', label: t('nav.profile'), icon: User },
@@ -115,6 +148,9 @@ export function BottomNav() {
                   className={`w-5 h-5 transition-transform duration-200 ${active ? 'scale-110' : ''}`} 
                   strokeWidth={active ? 2.3 : 1.75} 
                 />
+                {item.dot && !active && (
+                  <span aria-hidden className="absolute -top-0.5 -right-1.5 h-2 w-2 rounded-full bg-[#8574B7] ring-2 ring-white" />
+                )}
                 {Boolean(item.badge && item.badge > 0) && (() => {
                   // Never clipped: one digit is a circle, "10".."99" and "99+" widen the pill instead.
                   const label = item.badge! > 99 ? '99+' : String(item.badge);

@@ -17,6 +17,7 @@ import {
 import { REPUTATION_RULES } from '@/lib/reputation';
 import { ReputationBadge } from '@/components/ReputationBadge';
 import { ThemedSelect } from '@/components/ui/ThemedSelect';
+import { ReportedMoments } from '@/components/admin/ReportedMoments';
 
 interface ModeratedMessage {
   id: string;
@@ -382,6 +383,8 @@ export default function AdminModerationPage() {
           </div>
         </div>
       )}
+
+      <ReportedMoments />
     </div>
   );
 }

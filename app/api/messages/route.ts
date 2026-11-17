@@ -55,7 +55,7 @@ export async function GET(req: Request) {
         .eq('is_quarantined', false)
         .order('created_at', { ascending: false })
         .limit(60);
-    let optionalCols = ['audio_path', 'audio_duration_ms', 'deleted_by'];
+    let optionalCols = ['audio_path', 'audio_duration_ms', 'deleted_by', 'moment_id'];
     let { data: rawMessages, error: fetchError } = await fetchThread([BASE_COLS, ...optionalCols].join(', '));
     for (let attempt = 0; fetchError && attempt < optionalCols.length; attempt++) {
       const missing = optionalCols.find((c) => fetchError!.message.includes(c));
@@ -77,6 +77,16 @@ export async function GET(req: Request) {
     // messages within the latest 40.
     const gate = evaluateSubstantiveConversation(messages.slice(-40), user.id, targetUserId, 15, CONTACT_UNLOCK_TURNS);
     const mutualCount = Math.min(gate.senderSubstantiveCount, gate.receiverSubstantiveCount);
+
+    // Thumbnails for messages sent from a Moment (the photo that started the conversation).
+    const momentIds = Array.from(new Set(visibleMessages.map((m) => m.moment_id).filter((v): v is string => typeof v === 'string')));
+    const momentById = new Map<string, string>();
+    if (momentIds.length > 0) {
+      const { data: moments } = await serviceClient.from('moments').select('id, image_url, status').in('id', momentIds);
+      for (const mo of (moments || []) as { id: string; image_url: string; status: string }[]) {
+        if (mo.status === 'active') momentById.set(mo.id, mo.image_url);
+      }
+    }
 
     // Warning banners on the messages this member received (recipient-only table; none for their own).
     const incomingIds = visibleMessages.filter((m) => m.sender_id !== user.id).map((m) => m.id);
@@ -101,6 +111,7 @@ export async function GET(req: Request) {
         read: Boolean(msg.is_read),
         wasMasked: maskResult.hasBlockedContent,
         safety: bannerByMessage.get(msg.id) ?? null,
+        moment: msg.moment_id && momentById.has(msg.moment_id) ? { imageUrl: momentById.get(msg.moment_id) } : null,
         // Voice notes: the client fetches a signed URL from /api/messages/voice?id=...
         hasAudio: Boolean(msg.audio_path),
         audioDurationMs: msg.audio_duration_ms ?? null,
@@ -154,6 +165,8 @@ export async function POST(req: Request) {
     const body = await req.json();
     const { receiverId } = body;
     const content = typeof body.content === 'string' ? body.content.trim() : '';
+    // "Spark this Moment": the photo that started the conversation (must belong to the recipient and be live).
+    const momentId = typeof body.momentId === 'string' && isUUID(body.momentId) ? body.momentId : null;
 
     if (!receiverId || !content) {
       return NextResponse.json({ error: 'Missing message parameters.' }, { status: 400 });
@@ -383,6 +396,20 @@ export async function POST(req: Request) {
 
     if (insertError) {
       return NextResponse.json({ error: insertError.message }, { status: 500 });
+    }
+
+    if (momentId && message?.id) {
+      const { data: moment } = await serviceClient
+        .from('moments')
+        .select('id')
+        .eq('id', momentId)
+        .eq('user_id', receiverId)
+        .eq('status', 'active')
+        .maybeSingle();
+      if (moment) {
+        const { error: attachErr } = await serviceClient.from('messages').update({ moment_id: momentId }).eq('id', message.id);
+        if (attachErr && !/moment_id|column/i.test(attachErr.message)) console.warn('[messages] moment attach failed:', attachErr.message);
+      }
     }
 
     // Warning banner for the recipient: the matched category, or low reputation for a sender under review.

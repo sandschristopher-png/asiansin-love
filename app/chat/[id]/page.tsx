@@ -73,6 +73,8 @@ interface ChatMessage {
   wasMasked?: boolean;
   /** Warning-banner category for a received message the filters flagged (recipient-only). */
   safety?: string | null;
+  /** The Moment photo this message was sent from ("Spark this Moment"). */
+  moment?: { imageUrl: string } | null;
   hasAudio?: boolean;
   audioDurationMs?: number | null;
 }
@@ -561,6 +563,7 @@ export default function ChatConversationPage() {
             time: formatTimeShort(m.createdAt),
             wasMasked: m.wasMasked,
             safety: m.safety ?? null,
+            moment: m.moment ?? null,
             read: Boolean(m.read ?? m.is_read),
             hasAudio: Boolean(m.hasAudio),
             audioDurationMs: m.audioDurationMs ?? null,
@@ -660,6 +663,16 @@ export default function ChatConversationPage() {
               });
           };
           lookUpFlag(0);
+          // A message sent from a Moment gets its photo attached a moment after delivery.
+          setTimeout(() => {
+            fetch(`/api/messages?target_user_id=${resolvedTargetUuid}`)
+              .then((r) => (r.ok ? r.json() : null))
+              .then((d) => {
+                const fresh = d?.messages?.find((m: any) => m.id === row.id);
+                if (isMounted && fresh?.moment) setMessages((prev) => prev.map((m) => (m.id === row.id ? { ...m, moment: fresh.moment } : m)));
+              })
+              .catch(() => {});
+          }, 1500);
         }
 
         // The gate may have unlocked since this thread loaded: ask the server once before
@@ -1280,6 +1293,11 @@ export default function ChatConversationPage() {
                                 ' shadow-[0_1px_3px_rgba(65,59,94,0.03)]')
                           }
                         >
+                          {msg.moment && (
+                            <span className="relative mb-2 block h-36 w-28 overflow-hidden rounded-xl border border-[#D0CDE1]/60 bg-[#E8E6F1]/50">
+                              <Image src={msg.moment.imageUrl} alt={t('moments.attachedAlt')} fill sizes="112px" className="object-cover" />
+                            </span>
+                          )}
                           {msg.hasAudio ? (
                             <AudioPill
                               src={() => fetchVoiceUrl(msg.id)}

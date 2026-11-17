@@ -5,7 +5,7 @@ import { safeReturnTo } from '@/lib/authRedirect';
 
 const PROTECTED_PREFIXES = [
   '/discover', '/sparks', '/messages', '/profile', '/chat', '/settings',
-  '/favorites', '/notifications', '/announcements', '/verify',
+  '/favorites', '/notifications', '/announcements', '/verify', '/moments',
 ];
 
 /** Signed-out request for a protected page -> /login?returnTo=<that page>. */
@@ -186,6 +186,7 @@ export const config = {
     '/chat/:path*',
     '/settings/:path*',
     '/favorites/:path*',
+    '/moments/:path*',
     '/notifications/:path*',
     '/announcements/:path*',
     '/verify/:path*',

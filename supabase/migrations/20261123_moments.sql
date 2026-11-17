@@ -1,0 +1,248 @@
+-- =====================================================================
+-- 20261123_moments.sql        (meetin.asia)
+--
+-- "Moments": a verified photo feed. Cards carry a photo, a 140-character caption, one curated
+-- activity tag and a Southeast Asian hub; there are no public comments (nothing to spam). Members
+-- can like a Moment, Spark its author, or report it.
+--
+--   moments          the posts. Members never insert directly: POST /api/moments screens the caption
+--                    (lib/safety/masterSafetyRules.ts) and calls create_moment with the service role,
+--                    which enforces verification, reputation and 2 Moments per 24 hours.
+--   moment_likes     one row per (moment, member); toggle_moment_like keeps likes_count exact.
+--   moment_reports   one row per (reporter, moment). The API hides a Moment at 2 unique reports.
+--   moment-photos    public-read storage bucket, 5 MB, JPEG/PNG/WebP, members write only into
+--                    their own {user_id}/ folder.
+--   messages.moment_id / sparks.moment_id   the Moment a Spark or message was sent from, so the
+--                    recipient sees which photo started the conversation.
+-- Reads: active Moments by authors above the caution reputation (70), never from or to a blocked
+-- member; authors always see their own. Safe to re-run.
+-- =====================================================================
+
+begin;
+
+-- 1. Tables ---------------------------------------------------------------------------------------
+create table if not exists public.moments (
+  id uuid primary key default gen_random_uuid(),
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  image_url text not null,
+  aspect_ratio text not null default '4:5',
+  caption text check (caption is null or char_length(caption) <= 140),
+  activity_tag text not null check (activity_tag in ('coffee', 'street_food', 'city_walk', 'sunset', 'gym', 'date_spot')),
+  city text not null check (city in ('Manila', 'Cebu', 'Bangkok', 'Chiang Mai', 'Ho Chi Minh City', 'Hanoi', 'Jakarta', 'Bali', 'Phnom Penh', 'Kuala Lumpur', 'Singapore')),
+  status text not null default 'active' check (status in ('active', 'hidden', 'removed')),
+  likes_count integer not null default 0 check (likes_count >= 0),
+  created_at timestamptz not null default now()
+);
+
+create index if not exists idx_moments_feed on public.moments (created_at desc) where status = 'active';
+create index if not exists idx_moments_city_feed on public.moments (city, created_at desc) where status = 'active';
+create index if not exists idx_moments_author on public.moments (user_id, created_at desc);
+
+create table if not exists public.moment_likes (
+  moment_id uuid not null references public.moments(id) on delete cascade,
+  user_id uuid not null references public.profiles(id) on delete cascade,
+  created_at timestamptz not null default now(),
+  primary key (moment_id, user_id)
+);
+
+create table if not exists public.moment_reports (
+  id uuid primary key default gen_random_uuid(),
+  moment_id uuid not null references public.moments(id) on delete cascade,
+  reporter_id uuid not null references auth.users(id) on delete cascade,
+  reported_user_id uuid not null references auth.users(id) on delete cascade,
+  reason text not null,
+  created_at timestamptz not null default now(),
+  unique (reporter_id, moment_id)
+);
+
+create index if not exists idx_moment_reports_moment on public.moment_reports (moment_id, created_at desc);
+
+alter table public.messages add column if not exists moment_id uuid references public.moments(id) on delete set null;
+alter table public.sparks add column if not exists moment_id uuid references public.moments(id) on delete set null;
+
+-- 2. Helpers (SECURITY DEFINER so RLS on profiles / user_blocks cannot hide the answer) ------------
+create or replace function public.moment_author_visible(p_author uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select coalesce((select coalesce(reputation_score, 100) >= 70 from public.profiles where id = p_author), false);
+$$;
+
+create or replace function public.moment_blocked_with(p_author uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = public
+as $$
+  select exists (
+    select 1 from public.user_blocks b
+     where (b.blocker_id = auth.uid() and b.blocked_id = p_author)
+        or (b.blocker_id = p_author and b.blocked_id = auth.uid())
+  );
+$$;
+
+revoke all on function public.moment_author_visible(uuid) from public, anon;
+revoke all on function public.moment_blocked_with(uuid) from public, anon;
+grant execute on function public.moment_author_visible(uuid) to authenticated, service_role;
+grant execute on function public.moment_blocked_with(uuid) to authenticated, service_role;
+
+-- 3. RLS ----------------------------------------------------------------------------------------
+alter table public.moments enable row level security;
+alter table public.moment_likes enable row level security;
+alter table public.moment_reports enable row level security;
+
+drop policy if exists "Members read active Moments" on public.moments;
+create policy "Members read active Moments" on public.moments
+  for select to authenticated
+  using (
+    user_id = auth.uid()
+    or (status = 'active' and public.moment_author_visible(user_id) and not public.moment_blocked_with(user_id))
+  );
+
+drop policy if exists "Authors delete their Moments" on public.moments;
+create policy "Authors delete their Moments" on public.moments
+  for delete to authenticated using (user_id = auth.uid());
+
+drop policy if exists "Members read their own likes" on public.moment_likes;
+create policy "Members read their own likes" on public.moment_likes
+  for select to authenticated using (user_id = auth.uid());
+
+drop policy if exists "Reporters read their own Moment reports" on public.moment_reports;
+create policy "Reporters read their own Moment reports" on public.moment_reports
+  for select to authenticated using (reporter_id = auth.uid());
+
+-- Writes go through the functions below and the service-role API routes only.
+revoke all on public.moments, public.moment_likes, public.moment_reports from anon, authenticated;
+grant select, delete on public.moments to authenticated;
+grant select on public.moment_likes, public.moment_reports to authenticated;
+
+-- 4. create_moment: verification, reputation and the 2-per-24-hours cap (service role only) --------
+create or replace function public.create_moment(
+  p_user_id uuid,
+  p_image_url text,
+  p_aspect_ratio text,
+  p_caption text,
+  p_activity_tag text,
+  p_city text
+)
+returns uuid
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_verified boolean;
+  v_rep integer;
+  v_recent integer;
+  v_id uuid;
+begin
+  -- One poster at a time per member, so two parallel requests cannot both pass the cap.
+  perform pg_advisory_xact_lock(hashtext('moments:' || p_user_id::text));
+
+  select (coalesce(is_verified, false) or lower(coalesce(verification_status, '')) = 'verified'),
+         coalesce(reputation_score, 100)
+    into v_verified, v_rep
+    from public.profiles where id = p_user_id;
+
+  if not coalesce(v_verified, false) then
+    raise exception 'MOMENT_VERIFICATION_REQUIRED' using errcode = 'P0001';
+  end if;
+  if v_rep < 70 then
+    raise exception 'MOMENT_LOW_REPUTATION' using errcode = 'P0001';
+  end if;
+
+  select count(*) into v_recent from public.moments
+   where user_id = p_user_id and created_at > now() - interval '24 hours' and status <> 'removed';
+  if v_recent >= 2 then
+    raise exception 'MOMENT_RATE_LIMIT' using errcode = 'P0001';
+  end if;
+
+  insert into public.moments (user_id, image_url, aspect_ratio, caption, activity_tag, city)
+  values (p_user_id, p_image_url, coalesce(nullif(p_aspect_ratio, ''), '4:5'), nullif(btrim(coalesce(p_caption, '')), ''), p_activity_tag, p_city)
+  returning id into v_id;
+
+  return v_id;
+end;
+$$;
+
+revoke all on function public.create_moment(uuid, text, text, text, text, text) from public, anon, authenticated;
+grant execute on function public.create_moment(uuid, text, text, text, text, text) to service_role;
+
+-- 5. toggle_moment_like: atomic, keeps likes_count exact -------------------------------------------
+create or replace function public.toggle_moment_like(p_moment_id uuid)
+returns jsonb
+language plpgsql
+security definer
+set search_path = public
+as $$
+declare
+  v_uid uuid := auth.uid();
+  v_author uuid;
+  v_status text;
+  v_count integer;
+  v_liked boolean;
+  v_rows integer;
+begin
+  if v_uid is null then
+    raise exception 'Not authenticated' using errcode = '28000';
+  end if;
+
+  select user_id, status into v_author, v_status from public.moments where id = p_moment_id;
+  if v_author is null or v_status <> 'active' or public.moment_blocked_with(v_author) then
+    raise exception 'MOMENT_NOT_FOUND' using errcode = 'P0002';
+  end if;
+
+  delete from public.moment_likes where moment_id = p_moment_id and user_id = v_uid;
+  get diagnostics v_rows = row_count;
+  if v_rows > 0 then
+    v_liked := false;
+    update public.moments set likes_count = greatest(likes_count - 1, 0) where id = p_moment_id returning likes_count into v_count;
+  else
+    insert into public.moment_likes (moment_id, user_id) values (p_moment_id, v_uid) on conflict do nothing;
+    get diagnostics v_rows = row_count;
+    v_liked := true;
+    if v_rows > 0 then
+      update public.moments set likes_count = likes_count + 1 where id = p_moment_id returning likes_count into v_count;
+    else
+      select likes_count into v_count from public.moments where id = p_moment_id;
+    end if;
+  end if;
+
+  return jsonb_build_object('liked', v_liked, 'likes_count', v_count);
+end;
+$$;
+
+revoke all on function public.toggle_moment_like(uuid) from public, anon;
+grant execute on function public.toggle_moment_like(uuid) to authenticated, service_role;
+
+-- 6. Storage bucket: 5 MB, JPEG/PNG/WebP, members write only into their own folder ---------------
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('moment-photos', 'moment-photos', true, 5242880, array['image/jpeg', 'image/png', 'image/webp'])
+on conflict (id) do update
+  set public = true, file_size_limit = 5242880, allowed_mime_types = array['image/jpeg', 'image/png', 'image/webp'];
+
+drop policy if exists "Moment photos are publicly readable" on storage.objects;
+create policy "Moment photos are publicly readable" on storage.objects
+  for select to anon, authenticated using (bucket_id = 'moment-photos');
+
+drop policy if exists "Members upload Moment photos to their own folder" on storage.objects;
+create policy "Members upload Moment photos to their own folder" on storage.objects
+  for insert to authenticated
+  with check (bucket_id = 'moment-photos' and (storage.foldername(name))[1] = auth.uid()::text);
+
+drop policy if exists "Members delete their own Moment photos" on storage.objects;
+create policy "Members delete their own Moment photos" on storage.objects
+  for delete to authenticated
+  using (bucket_id = 'moment-photos' and (storage.foldername(name))[1] = auth.uid()::text);
+
+commit;
+
+-- Checks worth running afterwards (read-only)
+--   select policyname, cmd from pg_policies where schemaname = 'public' and tablename like 'moment%';
+--   select id, public, file_size_limit, allowed_mime_types from storage.buckets where id = 'moment-photos';
+--   select p.proname, has_function_privilege('anon', p.oid, 'execute') as anon_can_run
+--     from pg_proc p where p.proname in ('create_moment', 'toggle_moment_like');

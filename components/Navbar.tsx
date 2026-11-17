@@ -14,7 +14,7 @@ import { cachedHeaderProfile, loadHeaderProfile } from '@/lib/headerProfileStore
 import { useShare } from '@/components/share/useShare';
 
 /** Signed-in areas: the header never offers "Sign In" here (middleware already requires a session). */
-const IN_APP_PREFIXES = ['/discover', '/messages', '/favorites', '/profile', '/notifications', '/announcements', '/chat', '/settings', '/plus', '/upgrade', '/verify'];
+const IN_APP_PREFIXES = ['/discover', '/moments', '/messages', '/favorites', '/profile', '/notifications', '/announcements', '/chat', '/settings', '/plus', '/upgrade', '/verify'];
 
 export function Navbar() {
   const [user, setUser] = useState<any>(null);
@@ -69,6 +69,7 @@ export function Navbar() {
   const getPageTitle = () => {
     if (!pathname || pathname === '/' || pathname === '/discover') return null;
     if (pathname.startsWith('/favorites') || pathname.startsWith('/saved')) return 'Sparks';
+    if (pathname.startsWith('/moments')) return 'Moments';
     if (pathname.startsWith('/chat') || pathname.startsWith('/messages')) return 'Messages';
     if (pathname === '/announcements') return 'Announcements';
     if (pathname === '/notifications') return 'Notifications';
@@ -79,7 +80,7 @@ export function Navbar() {
   };
   const pageTitle = getPageTitle();
   // Root bottom-nav tabs never show a back arrow; only subpages do.
-  const ROOT_TABS = ['/discover', '/favorites', '/messages', '/profile'];
+  const ROOT_TABS = ['/discover', '/moments', '/favorites', '/messages', '/profile'];
   const showBack = !ROOT_TABS.includes((pathname || '').replace(/\/+$/, ''));
   if (isChatThread || pathname === '/plus' || (pathname || '').startsWith('/plus/') || pathname === '/profile/edit' || (pathname || '').startsWith('/profile/edit/') || pathname === '/settings' || (pathname || '').startsWith('/settings/')) return null;
   return (
