@@ -8,6 +8,7 @@ import { alertPrefs, getNotificationCounts, setNotificationCounts, NOTIFICATIONS
 import { NotificationToast, type NotificationKind, type NotificationToastData } from '@/components/NotificationToast';
 import { publicName } from '@/lib/publicName';
 import { haptic } from '@/lib/haptics';
+import { useLocale } from '@/components/i18n/LocaleProvider';
 
 const SPARKS_SEEN_KEY = 'ail_sparks_seen_at';
 
@@ -49,6 +50,12 @@ function sparksSeenAt(): string {
  * the tab is hidden and web push isn't already covering this device, it raises a browser alert.
  */
 export function RealtimeNotifier() {
+  const { t } = useLocale();
+  // The subscription effect runs once per session; it reads the current translator through this ref.
+  const tRef = useRef(t);
+  useEffect(() => {
+    tRef.current = t;
+  }, [t]);
   const router = useRouter();
   const pathname = usePathname();
   const pathRef = useRef(pathname);
@@ -126,12 +133,18 @@ export function RealtimeNotifier() {
       if (!cancelled) setNotificationCounts({ unseenSparks: (sparks.count || 0) + (views.count || 0) });
     };
 
+    // Name and avatar of whoever triggered the event, kept for the session: the first message from someone
+    // costs one lookup, every later one shows its toast with no round trip.
+    const actorCache = new Map<string, Actor>();
     const fetchActor = async (id: string): Promise<Actor | null> => {
+      const hit = actorCache.get(id);
+      if (hit) return hit;
       const { data } = await supabase
         .from('profiles')
         .select('username, display_name, full_name, avatar_url')
         .eq('id', id)
         .maybeSingle();
+      if (data) actorCache.set(id, data);
       return data;
     };
 
@@ -223,7 +236,8 @@ export function RealtimeNotifier() {
               actorId: row.actor_id || '',
               name: row.actor_id ? actorName(actor, 'Meet in Asia') : 'Meet in Asia',
               avatarUrl: actor?.avatar_url ?? null,
-              preview: String(row.title || row.description || '').slice(0, 140),
+              title: String(row.title || '').slice(0, 120) || undefined,
+              preview: row.type === 'identity' ? String(row.description || '').slice(0, 140) : '',
               href: row.type === 'call_missed' && row.actor_id ? `/chat/${row.actor_id}` : row.type === 'moment_like' ? '/moments' : '/profile',
             });
           }
@@ -250,14 +264,17 @@ export function RealtimeNotifier() {
               openKey !== null &&
               (openKey === row.sender_id.toLowerCase() || openKey === String(actor?.username || '').toLowerCase());
             if (onThatChat && document.visibilityState === 'visible') return;
+            const who = actorName(actor, 'Someone');
             showNotificationToast({
               key: `m-${row.id}`,
               kind: 'message',
               actorId: row.sender_id,
-              name: actorName(actor, 'New message'),
+              name: who,
+              // "Annie sent you a message" / "Annie sent you a voice note", with the text underneath.
+              title: tRef.current(row.audio_path ? 'notif.voice' : 'notif.message', { name: who }),
               avatarUrl: actor?.avatar_url ?? null,
               // Contact details stay hidden in previews, as in a locked chat.
-              preview: row.audio_path ? 'Voice note' : applyContactRevealMask(String(row.content || ''), 0).text || 'Sent you a message',
+              preview: row.audio_path ? '' : applyContactRevealMask(String(row.content || ''), 0).text.slice(0, 140),
               href: `/chat/${row.sender_id}`,
             });
           }
@@ -284,8 +301,9 @@ export function RealtimeNotifier() {
               kind,
               actorId: row.sender_id,
               name: mutual ? `It's a Mutual Spark with ${name}!` : name,
+              title: mutual ? undefined : tRef.current('notif.spark', { name }),
               avatarUrl: actor?.avatar_url ?? null,
-              preview: mutual ? 'Tap to send the first message' : `${name} sparked you!`,
+              preview: mutual ? 'Tap to send the first message' : '',
               href: mutual ? `/chat/${row.sender_id}` : '/favorites',
             });
           }
@@ -308,8 +326,9 @@ export function RealtimeNotifier() {
               kind: 'visit',
               actorId: row.viewer_id,
               name,
+              title: tRef.current('notif.visit', { name }),
               avatarUrl: actor?.avatar_url ?? null,
-              preview: `${name} viewed your profile`,
+              preview: '',
               href: '/favorites',
             });
           }

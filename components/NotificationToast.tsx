@@ -13,6 +13,9 @@ export interface NotificationToastData {
   actorId: string;
   name: string;
   avatarUrl: string | null;
+  /** Bold headline ("Annie sent you a message"). Falls back to `name` when a source has no sentence of its own. */
+  title?: string;
+  /** Snippet under the headline (the message text); the card shows nothing there when empty. */
   preview: string;
   href: string;
 }
@@ -32,9 +35,10 @@ const KIND_ICON = {
 } as const;
 
 /**
- * Floating in-app notification (messages, Sparks, mutual Sparks, profile visits): slides down at
- * the top (z-[100]), avatar + name with a context icon + one-line preview + unread dot. Tapping it
- * opens the destination; it closes itself after 4.5 s.
+ * Floating in-app notification (messages, Sparks, mutual Sparks, profile visits, likes, missed calls): slides
+ * down at the top (z-[100]). A white card with a soft lavender edge: the sender's round avatar with a small
+ * kind badge, a bold headline ("Annie sent you a message") and the message snippet in a lavender capsule.
+ * Tapping it dismisses it and opens the destination; it closes itself after 4.5 s.
  */
 export function NotificationToast({
   toast,
@@ -69,6 +73,7 @@ export function NotificationToast({
   const leaving = leavingKey === toast.key;
   const Icon = KIND_ICON[toast.kind];
   const mutual = toast.kind === 'mutual';
+  const headline = toast.title || toast.name;
 
   return (
     // Centering lives on this wrapper so the slide-in transform on the card can't fight it.
@@ -79,26 +84,41 @@ export function NotificationToast({
         role="status"
         aria-live="polite"
         onClick={() => onOpen(toast)}
-        className={`${leaving ? 'ail-toast-out pointer-events-none' : 'ail-toast-in pointer-events-auto'} w-[94%] max-w-sm backdrop-blur-md shadow-xl rounded-2xl p-3 border flex items-center gap-3 cursor-pointer active:scale-[0.98] transition-all ${
-          mutual ? 'bg-[#8574B7] border-[#8574B7]' : 'bg-white/95 border-[#D0CDE1]/60'
+        className={`${leaving ? 'ail-toast-out pointer-events-none' : 'ail-toast-in pointer-events-auto'} w-[94%] max-w-sm rounded-2xl p-3 border flex items-center gap-3 cursor-pointer active:scale-[0.98] transition-transform ${
+          mutual
+            ? 'bg-[#8574B7] border-[#8574B7] shadow-[0_14px_34px_rgba(133,116,183,0.35)]'
+            : 'bg-white border-[#8574B7]/25 shadow-[0_14px_34px_rgba(133,116,183,0.22),0_2px_8px_rgba(65,59,94,0.06)]'
         }`}
       >
-        <img
-          src={supabaseImage(toast.avatarUrl, AVATAR_IMAGE)}
-          alt=""
-          className="w-11 h-11 rounded-full object-cover ring-2 ring-[#8574B7]/20 shrink-0"
-        />
+        <span className="relative shrink-0">
+          <img
+            src={supabaseImage(toast.avatarUrl, AVATAR_IMAGE)}
+            alt=""
+            width={48}
+            height={48}
+            className={`w-12 h-12 rounded-full object-cover bg-[#F6F4FB] ring-2 ${mutual ? 'ring-white/60' : 'ring-[#8574B7]/20'}`}
+          />
+          <span
+            aria-hidden
+            className={`absolute -bottom-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full ring-2 ${
+              mutual ? 'bg-white text-[#8574B7] ring-[#8574B7]' : 'bg-[#8574B7] text-white ring-white'
+            }`}
+          >
+            <Icon className={`h-3 w-3 ${toast.kind === 'spark' || mutual ? 'fill-current' : ''}`} strokeWidth={2.25} />
+          </span>
+        </span>
         <div className="min-w-0 flex-1">
-          <p className={`flex items-center gap-1.5 font-semibold text-sm truncate ${mutual ? 'text-white' : 'text-[#413B5E]'}`}>
-            <Icon
-              className={`w-3.5 h-3.5 shrink-0 ${mutual ? 'text-white fill-white' : 'text-[#8574B7]'} ${toast.kind === 'spark' ? 'fill-[#8574B7]' : ''}`}
-              strokeWidth={2}
-            />
-            <span className="truncate">{toast.name}</span>
-          </p>
-          <p className={`text-xs truncate max-w-[210px] mt-0.5 ${mutual ? 'text-white/85' : 'text-slate-600'}`}>{toast.preview}</p>
+          <p className={`truncate text-sm font-bold leading-snug ${mutual ? 'text-white' : 'text-[#413B5E]'}`}>{headline}</p>
+          {toast.preview && (
+            <p
+              className={`mt-1 truncate rounded-lg px-2 py-1 text-xs leading-snug ${
+                mutual ? 'bg-white/15 text-white' : 'bg-[#F6F4FB] text-[#413B5E]/80'
+              }`}
+            >
+              {toast.preview}
+            </p>
+          )}
         </div>
-        <span aria-hidden className={`w-2 h-2 rounded-full shrink-0 ${mutual ? 'bg-white' : 'bg-[#8574B7]'}`} />
       </div>
     </div>
   );
