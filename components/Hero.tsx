@@ -4,7 +4,6 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useLocale } from '@/components/i18n/LocaleProvider';
-import { SoftLaunchNotice } from '@/components/SoftLaunchNotice';
 import { FadeIn, TapButton } from '@/components/landing/Motion';
 
 /**
@@ -27,8 +26,8 @@ export function SignInPrompt() {
 }
 
 /**
- * Hero stack, top to bottom: Soft Launch pill, a compact photo, headline and copy (the subtext also
- * carries the soft-launch message), then the CTA block: Join for Free (/signup), the Sparks stat,
+ * Hero stack, top to bottom: a compact photo, headline and copy (the subtext carries the soft-launch
+ * message), then the CTA block: Join for Free (/signup), the Sparks stat,
  * "Already a member? Sign in" (/login). Sized so Join for Free and Sign in are visible on first load
  * on a phone without scrolling. Text comes from the active dictionary (messages/<locale>.json).
  * Rendered inside LANDING_SHELL.
@@ -36,10 +35,8 @@ export function SignInPrompt() {
 export default function Hero() {
   const { m } = useLocale();
   return (
-    <section className="w-full bg-white pt-1 pb-8">
+    <section className="w-full bg-white pb-8">
       <div className="flex flex-col items-center text-center">
-        <SoftLaunchNotice className="mb-3" />
-
         {/* Brand portrait (Camille_Hero.png, unchanged) in a 4:3 card, cropped from the top so the cafe, the iced
             coffee and her smile stay in frame while the empty table in the foreground is trimmed. Nothing is
             drawn over her face, and no name, age or profile badge, so it can never read as a real member. */}
@@ -55,16 +52,16 @@ export default function Hero() {
           />
         </FadeIn>
 
-        <h1 className="mt-5 w-full text-[26px] font-semibold tracking-tight leading-tight text-[#413B5E] break-words">
+        <h1 className="mt-4 w-full text-[26px] font-semibold tracking-tight leading-tight text-[#413B5E] break-words">
           <span className="block">{m.hero.line1}</span>
           <span className="block text-[#8574B7]">{m.hero.line2}</span>
           <span className="block">{m.hero.line3}</span>
         </h1>
 
-        <p className="mt-2.5 w-full text-sm leading-relaxed text-slate-600 break-words">{m.hero.subtitle}</p>
+        <p className="mt-2 w-full text-sm leading-relaxed text-slate-600 break-words">{m.hero.subtitle}</p>
 
         {/* CTA block: one item per row */}
-        <FadeIn delay={0.08} className="mt-5 w-full flex flex-col items-center gap-3">
+        <FadeIn delay={0.08} className="mt-4 w-full flex flex-col items-center gap-3">
           <TapButton>
             <Link
               href="/signup"

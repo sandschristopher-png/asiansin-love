@@ -57,7 +57,7 @@ function LandingBody() {
       </header>
 
       <div className={LANDING_SHELL}>
-        <div className="pt-4">
+        <div className="pt-3">
           <Hero />
         </div>
 
