@@ -547,6 +547,8 @@
     "useLocation": "Use current location",
     "locationVerified": "Location verified",
     "locateDenied": "We couldn't get your location. Allow location access in your browser, or pick a city from the list.",
-    "locateOutside": "Your location isn't in Southeast Asia, so we can't confirm a city. Pick one from the list."
+    "locateOutside": "Your location isn't in Southeast Asia, so we can't confirm a city. Pick one from the list.",
+    "errTimeout": "This is taking too long. Check your connection and try again.",
+    "errUnavailable": "Posting isn't available right now. Please try again in a little while."
   }
 }

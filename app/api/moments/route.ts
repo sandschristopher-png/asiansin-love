@@ -56,9 +56,36 @@ interface MomentRow {
  * not exist yet (42703, 42P01) or is missing from PostgREST's schema cache (PGRST204, PGRST205, PGRST200).
  * Those degrade to an older query or an empty feed; any other error is a real failure.
  */
-function isSchemaMismatch(error: { code?: string; message?: string }): boolean {
+function isFeedSchemaMismatch(error: { code?: string; message?: string }): boolean {
   return ['42703', '42P01', 'PGRST204', 'PGRST205', 'PGRST200'].includes(String(error.code || ''));
 }
+
+/** Rejects with Error('TIMEOUT') if the work has not finished in `ms`. */
+function withTimeout<T>(work: PromiseLike<T>, ms: number): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => reject(new Error('TIMEOUT')), ms);
+    Promise.resolve(work).then(
+      (v) => {
+        clearTimeout(timer);
+        resolve(v);
+      },
+      (e) => {
+        clearTimeout(timer);
+        reject(e);
+      }
+    );
+  });
+}
+
+/** The database is behind the code: create_moment's new signature or a column is missing (20261125 not run yet). */
+function isSchemaMismatch(error: { code?: string; message?: string }): boolean {
+  return (
+    ['PGRST202', 'PGRST204', 'PGRST205', '42883', '42703', '42P01'].includes(String(error.code || '')) ||
+    /could not find the function|schema cache/i.test(error.message || '')
+  );
+}
+
+const unavailable = () => NextResponse.json({ error: 'Posting is unavailable right now.', code: 'MOMENTS_UNAVAILABLE' }, { status: 503 });
 
 const serviceClient = () =>
   createServiceClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, { auth: { persistSession: false } });
@@ -87,13 +114,13 @@ export async function GET(req: Request) {
   let result = await run(FULL_COLUMNS);
   if (result.error) {
     console.error('[moments:get]', result.error);
-    if (isSchemaMismatch(result.error)) {
+    if (isFeedSchemaMismatch(result.error)) {
       result = await run(LEGACY_COLUMNS);
       if (result.error) console.error('[moments:get] fallback', result.error);
     }
   }
   if (result.error) {
-    if (isSchemaMismatch(result.error)) return NextResponse.json({ moments: [], nextCursor: null });
+    if (isFeedSchemaMismatch(result.error)) return NextResponse.json({ moments: [], nextCursor: null });
     return NextResponse.json({ error: 'Could not load Moments.', code: 'DB_ERROR' }, { status: 500 });
   }
   const rows = (result.data || []) as unknown as MomentRow[];
@@ -154,7 +181,27 @@ export async function GET(req: Request) {
   return NextResponse.json({ moments, nextCursor: hasMore ? page[page.length - 1].created_at : null });
 }
 
+/**
+ * POST: every outcome is JSON { error, code } with a real status. The wrapper turns anything unexpected
+ * (a missing env var, a dropped connection, a step that takes too long) into a 500 / 504 / 503 instead
+ * of an HTML error page, so the composer always has something to show.
+ */
 export async function POST(req: Request) {
+  try {
+    return await createMoment(req);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.error('[moments:post]', err);
+    if (message === 'TIMEOUT') return NextResponse.json({ error: 'This took too long.', code: 'TIMEOUT' }, { status: 504 });
+    return NextResponse.json({ error: 'Could not post.', code: 'SERVER_ERROR' }, { status: 500 });
+  }
+}
+
+async function createMoment(req: Request) {
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    console.error('[moments:post] SUPABASE_SERVICE_ROLE_KEY or NEXT_PUBLIC_SUPABASE_URL is not set');
+    return unavailable();
+  }
   const session = await createClient();
   const { data: { user } } = await session.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized', code: 'UNAUTHORIZED' }, { status: 401 });
@@ -162,7 +209,8 @@ export async function POST(req: Request) {
   if (!(req.headers.get('content-type') || '').includes('multipart/form-data')) {
     return NextResponse.json({ error: 'Invalid request.', code: 'INVALID_INPUT' }, { status: 400 });
   }
-  const form = await req.formData();
+  const form = await req.formData().catch(() => null);
+  if (!form) return NextResponse.json({ error: 'Invalid request.', code: 'INVALID_INPUT' }, { status: 400 });
   const file = form.get('image') as File | null;
   const caption = String(form.get('caption') ?? '').replace(/\s+/g, ' ').trim();
   const vibeTag = form.get('vibeTag');
@@ -218,30 +266,50 @@ export async function POST(req: Request) {
   }
 
   const path = `${user.id}/${crypto.randomUUID()}.${MIME_EXT[file.type]}`;
-  const { error: uploadError } = await admin.storage.from(MOMENT_BUCKET).upload(path, bytes, { contentType: file.type, upsert: false });
+  let uploaded;
+  try {
+    uploaded = await withTimeout(admin.storage.from(MOMENT_BUCKET).upload(path, bytes, { contentType: file.type, upsert: false }), 10_000);
+  } catch (err) {
+    // A slow upload may still land later: remove it so no orphan photo is left behind.
+    await admin.storage.from(MOMENT_BUCKET).remove([path]).catch(() => null);
+    throw err;
+  }
+  const { error: uploadError } = uploaded;
   if (uploadError) {
-    console.error('[api/moments] upload failed:', uploadError.message);
-    return NextResponse.json({ error: 'Upload failed.', code: 'DB_ERROR' }, { status: 500 });
+    console.error('[moments:post] upload failed:', uploadError);
+    return NextResponse.json({ error: 'Upload failed.', code: 'UPLOAD_FAILED' }, { status: 502 });
   }
   const { data: publicUrl } = admin.storage.from(MOMENT_BUCKET).getPublicUrl(path);
 
-  const { data: id, error: rpcError } = await admin.rpc('create_moment', {
-    p_user_id: user.id,
-    p_image_url: publicUrl.publicUrl,
-    p_aspect_ratio: '4:5',
-    p_caption: caption || null,
-    p_vibe_tag: vibeTag,
-    p_prompt: prompt,
-    p_city: city,
-    p_location_verified: Boolean(locationToken) && verifyLocationToken(locationToken, user.id, city),
-  });
+  let created;
+  try {
+    created = await withTimeout(
+      admin.rpc('create_moment', {
+        p_user_id: user.id,
+        p_image_url: publicUrl.publicUrl,
+        p_aspect_ratio: '4:5',
+        p_caption: caption || null,
+        p_vibe_tag: vibeTag,
+        p_prompt: prompt,
+        p_city: city,
+        p_location_verified: Boolean(locationToken) && verifyLocationToken(locationToken, user.id, city),
+      }),
+      8_000
+    );
+  } catch (err) {
+    // Timed out or the connection dropped: do not leave the photo behind.
+    await admin.storage.from(MOMENT_BUCKET).remove([path]).catch(() => null);
+    throw err;
+  }
+  const { data: id, error: rpcError } = created;
   if (rpcError) {
-    await admin.storage.from(MOMENT_BUCKET).remove([path]);
+    await admin.storage.from(MOMENT_BUCKET).remove([path]).catch(() => null);
     const text = rpcError.message || '';
     if (/MOMENT_VERIFICATION_REQUIRED/.test(text)) return NextResponse.json({ error: 'Verification required.', code: 'MOMENT_VERIFICATION_REQUIRED' }, { status: 403 });
     if (/MOMENT_RATE_LIMIT/.test(text)) return NextResponse.json({ error: 'Daily limit reached.', code: 'MOMENT_RATE_LIMIT' }, { status: 429 });
     if (/MOMENT_LOW_REPUTATION/.test(text)) return NextResponse.json({ error: 'Reputation too low.', code: 'MOMENT_LOW_REPUTATION' }, { status: 403 });
-    console.error('[api/moments] create failed:', text);
+    console.error('[moments:post] create failed:', rpcError);
+    if (isSchemaMismatch(rpcError)) return unavailable();
     return NextResponse.json({ error: 'Could not post.', code: 'DB_ERROR' }, { status: 500 });
   }
 

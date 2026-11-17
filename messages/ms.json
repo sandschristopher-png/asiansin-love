@@ -547,6 +547,8 @@
     "useLocation": "Guna lokasi semasa",
     "locationVerified": "Lokasi disahkan",
     "locateDenied": "Kami tidak dapat mengesan lokasi anda. Benarkan akses lokasi dalam pelayar, atau pilih bandar daripada senarai.",
-    "locateOutside": "Lokasi anda tidak berada di Asia Tenggara, jadi kami tidak dapat mengesahkan bandar. Pilih daripada senarai."
+    "locateOutside": "Lokasi anda tidak berada di Asia Tenggara, jadi kami tidak dapat mengesahkan bandar. Pilih daripada senarai.",
+    "errTimeout": "Ini mengambil masa terlalu lama. Semak sambungan anda dan cuba lagi.",
+    "errUnavailable": "Penyiaran belum tersedia sekarang. Sila cuba lagi sebentar nanti."
   }
 }

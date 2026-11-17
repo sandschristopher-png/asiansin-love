@@ -547,6 +547,8 @@
     "useLocation": "Dùng vị trí hiện tại",
     "locationVerified": "Đã xác minh vị trí",
     "locateDenied": "Không thể lấy vị trí của bạn. Hãy cho phép truy cập vị trí trong trình duyệt hoặc chọn một thành phố trong danh sách.",
-    "locateOutside": "Vị trí của bạn không ở Đông Nam Á nên chúng tôi không thể xác nhận thành phố. Hãy chọn từ danh sách."
+    "locateOutside": "Vị trí của bạn không ở Đông Nam Á nên chúng tôi không thể xác nhận thành phố. Hãy chọn từ danh sách.",
+    "errTimeout": "Đang mất quá nhiều thời gian. Hãy kiểm tra kết nối và thử lại.",
+    "errUnavailable": "Hiện chưa thể đăng. Vui lòng thử lại sau ít phút."
   }
 }

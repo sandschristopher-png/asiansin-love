@@ -547,6 +547,8 @@
     "useLocation": "Gunakan lokasi saat ini",
     "locationVerified": "Lokasi terverifikasi",
     "locateDenied": "Kami tidak bisa mendapatkan lokasimu. Izinkan akses lokasi di browser, atau pilih kota dari daftar.",
-    "locateOutside": "Lokasimu tidak berada di Asia Tenggara, jadi kami tidak bisa memastikan kota. Pilih dari daftar."
+    "locateOutside": "Lokasimu tidak berada di Asia Tenggara, jadi kami tidak bisa memastikan kota. Pilih dari daftar.",
+    "errTimeout": "Ini memakan waktu terlalu lama. Periksa koneksimu dan coba lagi.",
+    "errUnavailable": "Posting belum tersedia saat ini. Silakan coba lagi sebentar lagi."
   }
 }

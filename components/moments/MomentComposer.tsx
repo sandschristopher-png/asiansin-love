@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
 import { Camera, ChevronDown, Loader2, LocateFixed } from 'lucide-react';
 import { BottomSheet } from '@/components/ui/BottomSheet';
@@ -13,6 +13,10 @@ import type { TKey } from '@/lib/i18n';
 
 const FIELD =
   'w-full rounded-xl border border-[#D0CDE1] bg-white px-3.5 py-2.5 text-sm text-[#413B5E] placeholder:text-slate-400 focus:border-[#8574B7] focus:outline-none';
+/** A request, or the whole submit, that has not finished by then shows an error and frees the button. */
+const SUBMIT_TIMEOUT_MS = 20_000;
+/** Resizing a photo should take well under a second; a file the browser cannot decode must not hang. */
+const RESIZE_TIMEOUT_MS = 15_000;
 const LABEL = 'mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-slate-600';
 
 /**
@@ -45,6 +49,7 @@ export function MomentComposer({
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [needsVerify, setNeedsVerify] = useState(false);
+  const errorRef = useRef<HTMLParagraphElement>(null);
 
   const preview = useMemo(() => (blob ? URL.createObjectURL(blob) : null), [blob]);
   useEffect(
@@ -54,6 +59,11 @@ export function MomentComposer({
     [preview]
   );
 
+  // The banner sits right above the Share Moment button; bring it into view when a message appears.
+  useEffect(() => {
+    if (error) errorRef.current?.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
+  }, [error]);
+
   const pickPhoto = async (file: File | undefined) => {
     if (!file) return;
     setError(null);
@@ -61,10 +71,19 @@ export function MomentComposer({
       setError(t('errors.fileType'));
       return;
     }
+    let timer: ReturnType<typeof setTimeout> | undefined;
     try {
-      setBlob(await prepareMomentPhoto(file));
-    } catch {
-      setError(t('errors.fileTooLarge'));
+      const resized = await Promise.race([
+        prepareMomentPhoto(file),
+        new Promise<never>((_, reject) => {
+          timer = setTimeout(() => reject(new Error('resize_timeout')), RESIZE_TIMEOUT_MS);
+        }),
+      ]);
+      setBlob(resized);
+    } catch (err) {
+      setError(err instanceof Error && err.message === 'too_large' ? t('errors.fileTooLarge') : t('errors.fileType'));
+    } finally {
+      clearTimeout(timer);
     }
   };
 
@@ -112,6 +131,8 @@ export function MomentComposer({
     setBusy(true);
     setError(null);
     setNeedsVerify(false);
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), SUBMIT_TIMEOUT_MS);
     try {
       const form = new FormData();
       form.append('image', new File([blob], 'moment', { type: blob.type }));
@@ -120,7 +141,7 @@ export function MomentComposer({
       if (prompt) form.append('prompt', prompt);
       form.append('city', city);
       if (fix && fix.city === city) form.append('locationToken', fix.token);
-      const res = await fetch('/api/moments', { method: 'POST', body: form });
+      const res = await fetch('/api/moments', { method: 'POST', body: form, signal: controller.signal });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         const code = data?.code as string | undefined;
@@ -131,13 +152,17 @@ export function MomentComposer({
         else if (code === 'MOMENT_CAPTION_REJECTED' || code === 'SAFETY_BLOCKED') setError(t('moments.errCaption'));
         else if (code === 'MOMENT_LOW_REPUTATION') setError(t('moments.errReputation'));
         else if (code === 'ACCOUNT_UNDER_REVIEW') setError(t('moments.errFrozen'));
+        else if (code === 'MOMENTS_UNAVAILABLE') setError(t('moments.errUnavailable'));
+        else if (code === 'TIMEOUT' || res.status === 504) setError(t('moments.errTimeout'));
         else setError(localizeError({ status: res.status, code, message: data?.error }, t));
         return;
       }
       onPosted();
-    } catch {
-      setError(t('errors.network'));
+    } catch (err) {
+      // An aborted request is the 20 s timeout; anything else (offline, dropped connection) is a network error.
+      setError(err instanceof DOMException && err.name === 'AbortError' ? t('moments.errTimeout') : t('errors.network'));
     } finally {
+      clearTimeout(timer);
       setBusy(false);
     }
   };
@@ -145,22 +170,6 @@ export function MomentComposer({
   return (
     <BottomSheet title={t('moments.composeTitle')} onClose={onClose}>
       <form onSubmit={submit} className="mt-4 space-y-4">
-        {error && (
-          <p role="alert" className="rounded-xl bg-red-50 px-3 py-2 text-xs font-medium leading-relaxed text-red-600">
-            {error}
-            {needsVerify && (
-              <>
-                {' '}
-                <Link href="/verify" className="font-semibold underline underline-offset-2">
-                  {t('settings.identityVerification')}
-                </Link>
-              </>
-            )}
-          </p>
-        )}
-
-        {/* Compact (about 96px) until a photo is chosen, so city, vibe and prompt are visible without
-            scrolling; it then expands to the 4:5 preview the feed will show. */}
         <label
           className={
             preview
@@ -290,6 +299,22 @@ export function MomentComposer({
           </p>
         </div>
 
+        {error && (
+          <p ref={errorRef} role="alert" className="rounded-xl border border-[#8574B7]/40 bg-[#F6F4FB] px-3.5 py-3 text-xs font-medium leading-relaxed text-[#413B5E]">
+            {error}
+            {needsVerify && (
+              <>
+                {' '}
+                <Link href="/verify" className="font-semibold text-[#8574B7] underline underline-offset-2">
+                  {t('settings.identityVerification')}
+                </Link>
+              </>
+            )}
+          </p>
+        )}
+
+        {/* Compact (about 96px) until a photo is chosen, so city, vibe and prompt are visible without
+            scrolling; it then expands to the 4:5 preview the feed will show. */}
         <button
           type="submit"
           disabled={!blob || !vibe || busy}

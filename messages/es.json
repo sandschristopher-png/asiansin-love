@@ -547,6 +547,8 @@
     "useLocation": "Usar mi ubicación actual",
     "locationVerified": "Ubicación verificada",
     "locateDenied": "No pudimos obtener tu ubicación. Permite el acceso a la ubicación en el navegador o elige una ciudad de la lista.",
-    "locateOutside": "Tu ubicación no está en el Sudeste Asiático, así que no podemos confirmar una ciudad. Elige una de la lista."
+    "locateOutside": "Tu ubicación no está en el Sudeste Asiático, así que no podemos confirmar una ciudad. Elige una de la lista.",
+    "errTimeout": "Esto está tardando demasiado. Revisa tu conexión e inténtalo de nuevo.",
+    "errUnavailable": "No se puede publicar en este momento. Inténtalo de nuevo en un rato."
   }
 }

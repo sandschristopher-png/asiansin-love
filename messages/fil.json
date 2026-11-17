@@ -547,6 +547,8 @@
     "useLocation": "Gamitin ang kasalukuyang lokasyon",
     "locationVerified": "Na-verify ang lokasyon",
     "locateDenied": "Hindi namin makuha ang iyong lokasyon. Payagan ang access sa lokasyon sa browser, o pumili ng lungsod sa listahan.",
-    "locateOutside": "Wala ka sa Southeast Asia, kaya hindi namin makumpirma ang lungsod. Pumili sa listahan."
+    "locateOutside": "Wala ka sa Southeast Asia, kaya hindi namin makumpirma ang lungsod. Pumili sa listahan.",
+    "errTimeout": "Masyadong matagal ito. Suriin ang iyong koneksyon at subukang muli.",
+    "errUnavailable": "Hindi available ang pag-post ngayon. Pakisubukang muli mamaya."
   }
 }
