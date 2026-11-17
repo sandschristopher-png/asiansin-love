@@ -40,10 +40,10 @@ export default function Hero() {
       <div className="flex flex-col items-center text-center">
         <SoftLaunchNotice className="mb-3" />
 
-        {/* Brand portrait in a rounded card, cropped short (180-300px, by screen height) so the CTA stays
-            above the fold. Nothing is drawn over her face, and no name, age or profile badge, so it
-            can never read as a real member. */}
-        <FadeIn className="relative h-[clamp(180px,28dvh,300px)] w-full overflow-hidden rounded-3xl bg-[#E8E6F1]/50 shadow-[0_8px_30px_rgba(65,59,94,0.12)]">
+        {/* Brand portrait (Camille_Hero.png, unchanged) in a 4:3 card, cropped from the top so the cafe, the iced
+            coffee and her smile stay in frame while the empty table in the foreground is trimmed. Nothing is
+            drawn over her face, and no name, age or profile badge, so it can never read as a real member. */}
+        <FadeIn className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl bg-[#E8E6F1]/50 shadow-[0_8px_30px_rgba(65,59,94,0.12)]">
           <Image
             src="/Camille_Hero.png"
             alt={m.hero.imageAlt}
@@ -51,7 +51,7 @@ export default function Hero() {
             preload
             quality={90}
             sizes="(max-width: 448px) 100vw, 448px"
-            className="object-cover object-[50%_28%] select-none pointer-events-none"
+            className="object-cover object-[50%_22%] select-none pointer-events-none"
           />
         </FadeIn>
 
