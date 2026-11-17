@@ -55,14 +55,14 @@ function Body() {
           <section className="w-full pb-8 pt-3">
             <div className="flex flex-col items-center text-center">
               {/*
-                Camille-PH-Landing.png is 2400x1792 (~5.7 MB). next/image serves a resized WebP for the phone's
+                Camille-PH-Landing-lavender.jpg (2400x1792; the concrete wall recoloured to the same lavender as the main hero) is served by next/image: it serves a resized WebP for the phone's
                 width (sizes below), so a 4G handset downloads a small file, not the original. Camille stands in
                 the right third of the frame: the 5:4 window trims a little of the empty painted wall on the left,
                 and object-[68%_20%] keeps her face, smile and phone inside it.
               */}
               <FadeIn className="relative aspect-[5/4] w-full overflow-hidden rounded-3xl bg-[#E8E6F1]/50 shadow-[0_8px_30px_rgba(65,59,94,0.12)]">
                 <Image
-                  src="/Camille-PH-Landing.png"
+                  src="/Camille-PH-Landing-lavender.jpg"
                   alt={m.ph.imageAlt}
                   width={2400}
                   height={1792}
