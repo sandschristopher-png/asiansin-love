@@ -438,6 +438,14 @@
       "offPlatform": "Tetap Aman: Lanjutkan percakapan di Meet in Asia sampai kalian saling terverifikasi dan merasa nyaman.",
       "harassment": "Pemberitahuan Keamanan: Bahasa yang kasar atau mengancam tidak ditoleransi di Meet in Asia.",
       "lowReputation": "Tips Keamanan: Reputasi anggota ini sedang ditinjau. Santai saja dan tetap bercakap di Meet in Asia."
+    },
+    "react": {
+      "picker": "Beri reaksi pada pesan ini",
+      "heart": "Hati",
+      "thumbsUp": "Jempol",
+      "laugh": "Tertawa",
+      "fire": "Api",
+      "failed": "Reaksimu tidak dapat disimpan. Silakan coba lagi"
     }
   },
   "notif": {

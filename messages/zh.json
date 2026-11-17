@@ -438,6 +438,14 @@
       "offPlatform": "请注意安全：在彼此完成验证并感到放心之前，请继续在 Meet in Asia 内聊天。",
       "harassment": "安全提示：Meet in Asia 不容许辱骂或威胁性的言语。",
       "lowReputation": "安全提示：该会员的信誉正在审核中。请放慢节奏，并继续在 Meet in Asia 内聊天。"
+    },
+    "react": {
+      "picker": "对这条消息做出回应",
+      "heart": "爱心",
+      "thumbsUp": "点赞",
+      "laugh": "大笑",
+      "fire": "火焰",
+      "failed": "无法保存你的回应，请重试"
     }
   },
   "notif": {

@@ -438,6 +438,14 @@
       "offPlatform": "Kekal Selamat: Teruskan perbualan di Meet in Asia sehingga kamu berdua saling mengesahkan dan berasa selesa.",
       "harassment": "Notis Keselamatan: Bahasa kesat atau mengancam tidak dibenarkan di Meet in Asia.",
       "lowReputation": "Petua Keselamatan: Reputasi ahli ini sedang disemak. Ambil masa anda dan teruskan perbualan di Meet in Asia."
+    },
+    "react": {
+      "picker": "Beri reaksi pada mesej ini",
+      "heart": "Hati",
+      "thumbsUp": "Bagus",
+      "laugh": "Ketawa",
+      "fire": "Api",
+      "failed": "Reaksi anda tidak dapat disimpan. Sila cuba lagi"
     }
   },
   "notif": {

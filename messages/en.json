@@ -438,6 +438,14 @@
       "offPlatform": "Stay Safe: Keep conversations on Meet in Asia until you've verified each other and feel comfortable.",
       "harassment": "Safety Notice: Abusive or threatening language is not tolerated on Meet in Asia.",
       "lowReputation": "Safety Tip: This member's reputation is under review. Take your time and keep conversations on Meet in Asia."
+    },
+    "react": {
+      "picker": "React to this message",
+      "heart": "Heart",
+      "thumbsUp": "Thumbs up",
+      "laugh": "Laugh",
+      "fire": "Fire",
+      "failed": "Could not save your reaction. Please try again"
     }
   },
   "notif": {

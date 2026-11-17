@@ -438,6 +438,14 @@
       "offPlatform": "安心のために: お互いを確認して安心できるまで、会話はMeet in Asia内で続けましょう。",
       "harassment": "安全のお知らせ: 暴言や脅迫的な言葉はMeet in Asiaでは容認されません。",
       "lowReputation": "安全のヒント: このメンバーの評価は確認中です。焦らず、会話はMeet in Asia内で続けてください。"
+    },
+    "react": {
+      "picker": "このメッセージにリアクション",
+      "heart": "ハート",
+      "thumbsUp": "いいね",
+      "laugh": "笑い",
+      "fire": "炎",
+      "failed": "リアクションを保存できませんでした。もう一度お試しください"
     }
   },
   "notif": {

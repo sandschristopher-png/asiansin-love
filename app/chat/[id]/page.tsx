@@ -55,6 +55,8 @@ import { RepBadge } from '@/components/profile/RhythmBadges';
 import { hapticError, hapticSuccess, hapticTap } from '@/lib/utils/haptics';
 import { BackButton } from '@/components/BackButton';
 import { Switch } from '@/components/ui/Switch';
+import { ReactionPicker, ReactionPills } from '@/components/chat/MessageReactions';
+import { isReactionKey, tallyReactions, withReaction, type ReactionKey, type ReactionMap } from '@/lib/reactions';
 import { useStepUp } from '@/components/verify/useStepUp';
 import { isReverificationError, useReverification } from '@/lib/useReverification';
 import { useCall } from '@/components/calls/CallProvider';
@@ -226,6 +228,11 @@ export default function ChatConversationPage() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   // Incoming bubble whose actions (Report message) are showing, and the message being reported.
   const [activeMsgId, setActiveMsgId] = useState<string | null>(null);
+  // Message reactions: message id -> member id -> reaction. reactionIdsRef lets the realtime handler ignore
+  // reactions to messages that are not in this thread.
+  const [reactions, setReactions] = useState<ReactionMap>({});
+  const reactionIdsRef = useRef<Set<string>>(new Set());
+  const reactionsLoadedRef = useRef(false);
   const [reportMessageId, setReportMessageId] = useState<string | null>(null);
   const [reportDuplicate, setReportDuplicate] = useState(false);
   // Tab visible: read receipts are only sent while the member can actually see the thread.
@@ -900,6 +907,17 @@ export default function ChatConversationPage() {
             .catch(() => {});
         }
       })
+      // Reactions: the other member's heart / thumbs up / laugh / fire appears here without a refresh.
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'message_reactions' }, (payload) => {
+        if (!isMounted) return;
+        const removed = payload.eventType === 'DELETE';
+        const row = (removed ? payload.old : payload.new) as { message_id?: string; user_id?: string; reaction?: string } | null;
+        if (!row?.message_id || !row.user_id || !reactionIdsRef.current.has(row.message_id)) return;
+        const messageId = row.message_id;
+        const userId = row.user_id;
+        const next = !removed && isReactionKey(row.reaction) ? row.reaction : null;
+        setReactions((prev) => withReaction(prev, messageId, userId, next));
+      })
       .subscribe((status) => {
         if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
           console.error('[chat] Channel error:', status);
@@ -969,6 +987,54 @@ export default function ChatConversationPage() {
       await submitMessage(text);
     } finally {
       starterSendingRef.current = false;
+    }
+  };
+
+  // Which message ids are in this thread (for the realtime filter) ...
+  useEffect(() => {
+    reactionIdsRef.current = new Set(messages.filter((m) => /^[0-9a-f-]{36}$/i.test(m.id)).map((m) => m.id));
+  }, [messages]);
+
+  // ... and the reactions already on them, read once when the thread has loaded. (A missing table, before the
+  // reactions migration is applied, just means none.)
+  useEffect(() => {
+    if (isInitialLoading || reactionsLoadedRef.current) return;
+    reactionsLoadedRef.current = true;
+    const ids = Array.from(reactionIdsRef.current);
+    if (ids.length === 0) return;
+    supabase
+      .from('message_reactions')
+      .select('message_id, user_id, reaction')
+      .in('message_id', ids)
+      .then(({ data }) => {
+        if (!data) return;
+        setReactions((prev) =>
+          (data as { message_id: string; user_id: string; reaction: string }[]).reduce(
+            (acc, r) => (isReactionKey(r.reaction) ? withReaction(acc, r.message_id, r.user_id, r.reaction) : acc),
+            prev
+          )
+        );
+      });
+  }, [isInitialLoading]);
+
+  /** Tap a reaction: set it, switch to it, or (the same one again) remove it. Optimistic; rolled back on failure. */
+  const toggleReaction = async (messageId: string, key: ReactionKey) => {
+    if (!currentUserId) return;
+    hapticTap(); // synchronous, inside the tap
+    const before = reactions[messageId]?.[currentUserId] ?? null;
+    const next = before === key ? null : key;
+    setReactions((prev) => withReaction(prev, messageId, currentUserId, next));
+    setActiveMsgId(null);
+    try {
+      const res = await fetch(`/api/messages/${messageId}/reaction`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ reaction: next }),
+      });
+      if (!res.ok) throw new Error('reaction');
+    } catch {
+      setReactions((prev) => withReaction(prev, messageId, currentUserId, before));
+      setToast(t('chat.react.failed'));
     }
   };
 
@@ -1557,7 +1623,7 @@ export default function ChatConversationPage() {
 
                         <div
                           onClick={
-                            !isMe && isRealId
+                            isRealId
                               ? () => {
                                   if (window.getSelection()?.toString()) return; // selecting text, not tapping
                                   setActiveMsgId((cur) => (cur === msg.id ? null : msg.id));
@@ -1566,7 +1632,7 @@ export default function ChatConversationPage() {
                           }
                           className={
                             'px-3.5 py-2 text-[13.5px] leading-[1.45] break-words select-text transition-opacity ' +
-                            (!isMe && isRealId ? 'cursor-pointer ' : '') +
+                            (isRealId ? 'cursor-pointer ' : '') +
                             (msg.pending ? 'opacity-75 ' : msg.failed ? 'opacity-60 ' : 'opacity-100 ') +
                             (isMe
                               ? 'bg-[#8574B7] text-white rounded-2xl ' +
@@ -1618,6 +1684,19 @@ export default function ChatConversationPage() {
                           </button>
                         )}
                       </div>
+
+                      {/* Reactions: the picker opens on the tapped bubble, the tally pills stay under it */}
+                      {isRealId && (() => {
+                        const tally = tallyReactions(reactions[msg.id], currentUserId);
+                        const picking = activeMsgId === msg.id;
+                        if (!picking && tally.length === 0) return null;
+                        return (
+                          <div className={'mt-1 flex flex-col gap-1 ' + (isMe ? 'items-end pr-0.5' : 'items-start pl-8')}>
+                            {picking && <ReactionPicker mine={reactions[msg.id]?.[currentUserId] ?? null} onPick={(key) => void toggleReaction(msg.id, key)} />}
+                            {tally.length > 0 && <ReactionPills tally={tally} onToggle={(key) => void toggleReaction(msg.id, key)} />}
+                          </div>
+                        );
+                      })()}
 
                       {showFirstMessageShield && <FirstMessageShield senderName={targetInfo.name} />}
                       {!isMe && isRealId && msg.safety && <SafetyBanner kind={msg.safety} onReport={() => setReportMessageId(msg.id)} />}

@@ -438,6 +438,14 @@
       "offPlatform": "Manatiling Ligtas: Manatili sa usapan sa Meet in Asia hanggang makumpirma ninyo ang isa't isa at maging panatag kayo.",
       "harassment": "Abiso sa Kaligtasan: Hindi pinahihintulutan sa Meet in Asia ang mapang-abuso o nananakot na pananalita.",
       "lowReputation": "Paalala sa Kaligtasan: Sinusuri pa ang reputasyon ng miyembrong ito. Dahan-dahan lang at manatili sa usapan sa Meet in Asia."
+    },
+    "react": {
+      "picker": "Mag-react sa mensaheng ito",
+      "heart": "Puso",
+      "thumbsUp": "Thumbs up",
+      "laugh": "Tawa",
+      "fire": "Apoy",
+      "failed": "Hindi na-save ang reaksyon mo. Pakisubukang muli"
     }
   },
   "notif": {

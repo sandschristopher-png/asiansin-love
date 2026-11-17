@@ -438,6 +438,14 @@
       "offPlatform": "Giữ an toàn: Hãy trò chuyện trên Meet in Asia cho đến khi hai bạn đã xác minh nhau và cảm thấy thoải mái.",
       "harassment": "Thông báo an toàn: Meet in Asia không chấp nhận lời lẽ lăng mạ hay đe dọa.",
       "lowReputation": "Mẹo an toàn: Uy tín của thành viên này đang được xem xét. Hãy thong thả và giữ cuộc trò chuyện trên Meet in Asia."
+    },
+    "react": {
+      "picker": "Bày tỏ cảm xúc với tin nhắn này",
+      "heart": "Trái tim",
+      "thumbsUp": "Thích",
+      "laugh": "Cười",
+      "fire": "Lửa",
+      "failed": "Không thể lưu phản hồi của bạn. Vui lòng thử lại"
     }
   },
   "notif": {

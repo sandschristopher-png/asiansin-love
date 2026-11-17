@@ -438,6 +438,14 @@
       "offPlatform": "안전하게: 서로를 확인하고 편안해질 때까지 Meet in Asia 안에서 대화를 이어가세요.",
       "harassment": "안전 안내: 욕설이나 위협적인 표현은 Meet in Asia에서 용납되지 않습니다.",
       "lowReputation": "안전 팁: 이 회원의 평판을 검토 중입니다. 천천히 알아가고 대화는 Meet in Asia 안에서 이어가세요."
+    },
+    "react": {
+      "picker": "이 메시지에 반응하기",
+      "heart": "하트",
+      "thumbsUp": "좋아요",
+      "laugh": "웃음",
+      "fire": "불꽃",
+      "failed": "반응을 저장하지 못했어요. 다시 시도해 주세요"
     }
   },
   "notif": {

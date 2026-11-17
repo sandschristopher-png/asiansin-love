@@ -438,6 +438,14 @@
       "offPlatform": "Mantente a salvo: sigue conversando en Meet in Asia hasta que os hayáis verificado y os sintáis cómodos.",
       "harassment": "Aviso de seguridad: en Meet in Asia no se tolera el lenguaje abusivo ni amenazante.",
       "lowReputation": "Consejo de seguridad: la reputación de este miembro está en revisión. Tómate tu tiempo y mantén la conversación en Meet in Asia."
+    },
+    "react": {
+      "picker": "Reaccionar a este mensaje",
+      "heart": "Corazón",
+      "thumbsUp": "Me gusta",
+      "laugh": "Risa",
+      "fire": "Fuego",
+      "failed": "No se pudo guardar tu reacción. Inténtalo de nuevo"
     }
   },
   "notif": {
