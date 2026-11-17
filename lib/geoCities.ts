@@ -7,6 +7,8 @@
  * ?target=asia (the last two force the city roster).
  */
 
+import { countryFromHeaders } from '@/lib/geoLanding';
+
 export type HeroAudience = 'western' | 'asian';
 
 /**
@@ -49,11 +51,20 @@ export const HERO_PREFIX: Record<HeroAudience, string> = {
 /** Older names kept for existing imports. */
 export const SEA_CITIES = WESTERN_AUDIENCE_CITIES;
 
-const ASIAN_COUNTRY_CODES = new Set(['PH', 'TH', 'VN', 'ID', 'MY', 'KH', 'JP', 'SG', 'TW', 'KR']);
+/**
+ * Visitors who read "Meet someone from" + Western countries: every Southeast Asian country the app serves
+ * (Philippines, Thailand, Vietnam, Indonesia, Malaysia, Cambodia, Singapore, Laos, Brunei, plus Myanmar and
+ * Timor-Leste) and the wider East Asian markets it already treated this way.
+ */
+export const ASIAN_COUNTRY_CODES: ReadonlySet<string> = new Set([
+  'PH', 'TH', 'VN', 'ID', 'MY', 'KH', 'SG', 'LA', 'BN', 'MM', 'TL',
+  'JP', 'KR', 'TW', 'HK', 'MO',
+]);
 
 /** Country from Vercel or Cloudflare's edge header; null when neither is present (local dev). */
 export function visitorCountry(h: Headers): string | null {
-  return h.get('x-vercel-ip-country') || h.get('cf-ipcountry');
+  // Same header order as the landing page (lib/geoLanding.ts); unknown codes ("XX", Tor's "T1") are ignored.
+  return countryFromHeaders((name) => h.get(name));
 }
 
 export function resolveHeroAudience(

@@ -1,90 +1,34 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { heroRoster, type HeroAudience } from '@/lib/geoCities';
 import { useLocale } from '@/components/i18n/LocaleProvider';
 
 const CYCLE_MS = 3200;
-/** One new letter locks in every 3 frames at 60 Hz (about 50 ms), as in the original spec. */
-const LOCK_MS = 50;
-/** Random glyphs keep each position's case, so the scramble is never wider than the real name. */
-const UPPER = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-const LOWER = 'abcdefghijklmnopqrstuvwxyz0123456789';
-const pick = (set: string) => set[Math.floor(Math.random() * set.length)];
-
-/** Frame text: the first `locked` letters are final, the rest are random glyphs. */
-function scrambled(target: string, locked: number): string {
-  return target
-    .split('')
-    .map((ch, i) => {
-      if (ch === ' ' || i < locked) return ch;
-      return pick(ch === ch.toUpperCase() && ch !== ch.toLowerCase() ? UPPER : LOWER);
-    })
-    .join('');
-}
 
 /**
- * "Meet someone in {city}" / "Meet someone from {country}" auth hero (login and signup): the name
- * decodes letter by letter from random glyphs, with a brief chromatic offset while it scrambles.
- * Layout never moves: a fixed-height line, and an invisible copy of the longest name reserves the
- * width. The animated text is hidden from screen readers; they get the real name once, with no
- * live announcements. Reduced motion: the name swaps without the scramble.
+ * "Meet someone in {city}" / "Meet someone from {country}" auth hero (login and signup). Visitors from
+ * Southeast Asia read "from" with Western countries; everyone else reads "in" with Southeast Asian cities
+ * (lib/geoCities.ts). The name changes with a short fade-and-rise: it is always a real city or country, never
+ * a half-decoded string of random letters (the old letter-scramble could freeze on frames like "Coxx" and
+ * read as a bug). Layout never moves: a fixed-height line, and an invisible copy of the longest name
+ * reserves the width. Reduced motion: the name just swaps.
  */
 export function KineticCityTicker({ audience = 'western' }: { audience?: HeroAudience }) {
   const pool = heroRoster(audience);
   const { t } = useLocale();
   // Only the label is translated: city and country names stay as they are written.
   const prefix = audience === 'asian' ? t('auth.prefixFrom') : t('auth.prefixIn');
-  const [target, setTarget] = useState(pool[0]);
-  const [shown, setShown] = useState(pool[0]);
-  const [glitching, setGlitching] = useState(false);
-  const indexRef = useRef(0);
-  const frameRef = useRef<number | null>(null);
+  const [index, setIndex] = useState(0);
 
   useEffect(() => {
-    // The pool is fixed for the page's lifetime (audience comes from the server), so state starts
-    // at pool[0] and only the cycle below changes it.
-    indexRef.current = 0;
+    // The pool is fixed for the page's lifetime (audience comes from the server).
     if (pool.length < 2) return;
-
-    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-    const stop = () => {
-      if (frameRef.current !== null) cancelAnimationFrame(frameRef.current);
-      frameRef.current = null;
-    };
-
-    const cycle = window.setInterval(() => {
-      indexRef.current = (indexRef.current + 1) % pool.length;
-      const next = pool[indexRef.current];
-      setTarget(next);
-      stop();
-      if (reduceMotion) {
-        setShown(next);
-        return;
-      }
-      setGlitching(true);
-      const started = performance.now();
-      const frame = (now: number) => {
-        const locked = Math.floor((now - started) / LOCK_MS);
-        if (locked >= next.length) {
-          setShown(next);
-          setGlitching(false);
-          frameRef.current = null;
-          return;
-        }
-        setShown(scrambled(next, locked));
-        frameRef.current = requestAnimationFrame(frame);
-      };
-      frameRef.current = requestAnimationFrame(frame);
-    }, CYCLE_MS);
-
-    return () => {
-      window.clearInterval(cycle);
-      stop();
-    };
+    const cycle = window.setInterval(() => setIndex((i) => (i + 1) % pool.length), CYCLE_MS);
+    return () => window.clearInterval(cycle);
   }, [pool]);
 
+  const current = pool[index % pool.length];
   const longest = pool.reduce((a, b) => (a.length >= b.length ? a : b), '');
   const word = 'text-2xl sm:text-3xl font-semibold tracking-tight leading-tight whitespace-nowrap';
 
@@ -95,14 +39,10 @@ export function KineticCityTicker({ audience = 'western' }: { audience?: HeroAud
         <span aria-hidden="true" className={`invisible ${word}`}>
           {longest}
         </span>
-        <span className="sr-only">{target}</span>
-        <span
-          aria-hidden="true"
-          className={`absolute inset-0 flex items-center justify-center text-[#8574B7] transition-[transform,filter] duration-75 ${word} ${
-            glitching ? 'drop-shadow-[1.5px_0_0_#413B5E] skew-x-[-1.5deg] -translate-x-[0.5px]' : 'drop-shadow-none skew-x-0 translate-x-0'
-          }`}
-        >
-          {shown}
+        {/* Screen readers get the name once per change, with no live announcements. */}
+        <span className="sr-only">{current}</span>
+        <span key={current} aria-hidden="true" className={`ail-ticker-in absolute inset-0 flex items-center justify-center text-[#8574B7] ${word}`}>
+          {current}
         </span>
       </div>
     </div>
