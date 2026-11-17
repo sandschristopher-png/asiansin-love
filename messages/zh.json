@@ -532,6 +532,7 @@
     "sparkDefault": "你的动态吸引了我。",
     "sparkSend": "发送 Spark",
     "sparkSent": "Spark 已发送",
-    "attachedAlt": "动态照片"
+    "attachedAlt": "动态照片",
+    "postFirst": "发布第一条动态"
   }
 }

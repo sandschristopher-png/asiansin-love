@@ -532,6 +532,7 @@
     "sparkDefault": "Tu momento me llamó la atención.",
     "sparkSend": "Enviar Spark",
     "sparkSent": "Spark enviado",
-    "attachedAlt": "Foto del momento"
+    "attachedAlt": "Foto del momento",
+    "postFirst": "Publica el primer momento"
   }
 }

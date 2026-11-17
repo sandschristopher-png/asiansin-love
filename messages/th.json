@@ -532,6 +532,7 @@
     "sparkDefault": "โมเมนต์ของคุณดึงดูดฉัน",
     "sparkSend": "ส่ง Spark",
     "sparkSent": "ส่ง Spark แล้ว",
-    "attachedAlt": "รูปโมเมนต์"
+    "attachedAlt": "รูปโมเมนต์",
+    "postFirst": "โพสต์โมเมนต์แรก"
   }
 }

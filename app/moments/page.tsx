@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useEffect, useState } from 'react';
+import { motion, useReducedMotion } from 'framer-motion';
 import { Camera, Loader2, Plus } from 'lucide-react';
 import { useActionToast } from '@/components/ActionToast';
 import { useLocale } from '@/components/i18n/LocaleProvider';
@@ -29,6 +30,7 @@ const PILL = 'inline-flex shrink-0 items-center rounded-full px-3.5 py-2 text-xs
  */
 export default function MomentsPage() {
   const { t } = useLocale();
+  const reduceMotion = useReducedMotion();
   const showToast = useActionToast();
   const [city, setCity] = useState<'' | MomentCity>('');
   const [items, setItems] = useState<MomentItem[]>([]);
@@ -132,23 +134,13 @@ export default function MomentsPage() {
 
   return (
     <main className="min-h-[100dvh] w-full bg-white pb-[calc(8rem+env(safe-area-inset-bottom,0px))] text-[#413B5E]">
-      <div className="mx-auto w-full max-w-[480px] px-4 pt-4">
-        <div className="flex items-start justify-between gap-3">
-          <div className="min-w-0">
-            <h1 className="font-brand text-2xl font-semibold leading-snug tracking-tight text-[#413B5E]">{t('moments.title')}</h1>
-            <p className="mt-1 text-xs leading-relaxed text-slate-600">{t('moments.subtitle')}</p>
-          </div>
-          <button
-            type="button"
-            onClick={() => setComposing(true)}
-            className="inline-flex h-10 shrink-0 items-center gap-1.5 rounded-full bg-[#8574B7] px-4 text-[13px] font-medium leading-snug text-white transition-colors hover:bg-[#534377]"
-          >
-            <Plus className="h-4 w-4" aria-hidden />
-            {t('moments.post')}
-          </button>
+      <div className="mx-auto w-full max-w-[480px] px-4 pt-5">
+        <div className="min-w-0">
+          <h1 className="font-brand text-2xl font-semibold leading-snug tracking-tight text-[#413B5E]">{t('moments.title')}</h1>
+          <p className="mt-1.5 text-xs leading-relaxed text-slate-600">{t('moments.subtitle')}</p>
         </div>
 
-        <div className="-mx-4 mt-4 flex gap-2 overflow-x-auto px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" role="tablist">
+        <div className="-mx-4 mt-5 flex gap-2 overflow-x-auto px-4 pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" role="tablist">
           {(['', ...MOMENT_CITIES] as ('' | MomentCity)[]).map((c) => {
             const on = city === c;
             return (
@@ -180,6 +172,14 @@ export default function MomentsPage() {
               </span>
               <h2 className="mt-3 text-sm font-semibold leading-snug text-[#413B5E]">{t('moments.emptyTitle')}</h2>
               <p className="mx-auto mt-1 max-w-xs text-xs leading-relaxed text-slate-600">{t('moments.emptyBody')}</p>
+              <button
+                type="button"
+                onClick={() => setComposing(true)}
+                className="mx-auto mt-5 inline-flex h-11 items-center gap-1.5 rounded-full bg-[#8574B7] px-6 text-[13px] font-medium leading-snug text-white transition-colors hover:bg-[#534377]"
+              >
+                <Plus className="h-4 w-4" aria-hidden />
+                {t('moments.postFirst')}
+              </button>
             </div>
           ) : (
             items.map((m) => (
@@ -199,6 +199,19 @@ export default function MomentsPage() {
             </button>
           )}
         </div>
+      </div>
+
+      {/* Thumb-zone button: a full-width 480px track that ignores taps, with the button docked at its right edge above the nav. */}
+      <div className="pointer-events-none fixed bottom-[calc(6rem+env(safe-area-inset-bottom,0px))] left-1/2 z-40 flex w-full max-w-[480px] -translate-x-1/2 justify-end px-4">
+        <motion.button
+          type="button"
+          onClick={() => setComposing(true)}
+          whileTap={reduceMotion ? undefined : { scale: 0.97 }}
+          className="pointer-events-auto inline-flex h-12 items-center gap-1.5 rounded-full bg-[#8574B7] px-5 text-[13px] font-medium leading-snug text-white shadow-[0_8px_24px_rgba(133,116,183,0.45)] transition-colors hover:bg-[#534377]"
+        >
+          <Plus className="h-4 w-4" aria-hidden />
+          {t('moments.post')}
+        </motion.button>
       </div>
 
       {composing && (

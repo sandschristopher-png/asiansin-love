@@ -532,6 +532,7 @@
     "sparkDefault": "あなたのモーメントが気になりました。",
     "sparkSend": "Sparkを送る",
     "sparkSent": "Sparkを送りました",
-    "attachedAlt": "モーメントの写真"
+    "attachedAlt": "モーメントの写真",
+    "postFirst": "最初のモーメントを投稿"
   }
 }

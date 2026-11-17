@@ -532,6 +532,7 @@
     "sparkDefault": "Your Moment caught my eye.",
     "sparkSend": "Send Spark",
     "sparkSent": "Spark sent",
-    "attachedAlt": "Moment photo"
+    "attachedAlt": "Moment photo",
+    "postFirst": "Post the First Moment"
   }
 }

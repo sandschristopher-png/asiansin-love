@@ -532,6 +532,7 @@
     "sparkDefault": "당신의 모먼트가 눈길을 끌었어요.",
     "sparkSend": "Spark 보내기",
     "sparkSent": "Spark를 보냈습니다",
-    "attachedAlt": "모먼트 사진"
+    "attachedAlt": "모먼트 사진",
+    "postFirst": "첫 모먼트 올리기"
   }
 }
