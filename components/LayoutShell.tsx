@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useLayoutEffect, useRef } from 'react';
 import HeartbeatProvider from "./HeartbeatProvider";
 import { usePathname } from 'next/navigation';
 import { Navbar } from '@/components/Navbar';
@@ -20,6 +20,15 @@ function CallShell({ enabled, children }: { enabled: boolean; children: React.Re
 
 export function LayoutShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  // The scrolling column outlives every route, so it would carry one tab's scroll position into the next.
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const tabRoot = '/' + (pathname?.split('/')[1] ?? '');
+  const lastTabRoot = useRef(tabRoot);
+  useLayoutEffect(() => {
+    if (lastTabRoot.current === tabRoot) return;
+    lastTabRoot.current = tabRoot;
+    scrollRef.current?.scrollTo({ top: 0, left: 0 }); // before paint: the new tab opens at its top, with no jump
+  }, [tabRoot]);
   const isMarketingOrAuth =
     pathname === '/' ||
     pathname?.startsWith('/login') ||
@@ -56,17 +65,16 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
     <AppShell>
       {/* Voice calls: an incoming call reaches every in-app page; the call screen lives inside this 480px frame. */}
       <CallShell enabled={!isMarketingOrAuth && !isAdmin}>
-      {!isMarketingOrAuth && !isPublicProfile && !isChat && !isAdmin &&
-        (overlayNav ? (
-          // Discover: the frosted header floats over the feed, so cards scroll behind the glass
-          // instead of being cut off at its bottom edge.
-          <div className="absolute inset-x-0 top-0 z-50">
-            <Navbar />
-          </div>
-        ) : (
+      {!isMarketingOrAuth && !isPublicProfile && !isChat && !isAdmin && (
+        // One wrapper in one place for every route, so the header is never torn down and rebuilt when a tab is
+        // tapped. Discover floats it over the feed (cards scroll behind the frosted glass instead of being cut
+        // off at its bottom edge); everywhere else it sits in the flow above the page.
+        <div className={overlayNav ? 'absolute inset-x-0 top-0 z-50' : 'shrink-0'}>
           <Navbar />
-        ))}
+        </div>
+      )}
       <div
+        ref={scrollRef}
         className={`flex-1 flex flex-col min-h-0 relative ${
           isChat
             ? 'overflow-hidden'
