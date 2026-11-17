@@ -15,7 +15,7 @@ import { decideMessageOutcome } from '@/lib/reputation';
 import { toList } from '@/lib/rhythm';
 import { countryOfCity } from '@/lib/seaLocations';
 import { verifyLocationToken } from '@/lib/momentLocation';
-import { MAX_CAPTION, MAX_MOMENT_BYTES, MOMENT_BUCKET, isMomentCity, isMomentPrompt, isVibeTag, sharesVibe, type MomentItem } from '@/lib/moments';
+import { LEGACY_ACTIVITY_VIBE, MAX_CAPTION, MAX_MOMENT_BYTES, MOMENT_BUCKET, isMomentCity, isMomentPrompt, isVibeTag, sharesVibe, type MomentItem } from '@/lib/moments';
 
 export const runtime = 'nodejs';
 
@@ -31,6 +31,35 @@ function matchesImageSignature(buf: Buffer, mime: string): boolean {
   return false;
 }
 
+/** Columns the feed needs from 20261123_moments.sql, plus what 20261125_moments_vibes.sql adds. */
+const BASE_COLUMNS = 'id, user_id, image_url, aspect_ratio, caption, city, likes_count, created_at';
+const FULL_COLUMNS = `${BASE_COLUMNS}, vibe_tag, prompt_question, location_verified`;
+const LEGACY_COLUMNS = `${BASE_COLUMNS}, activity_tag`;
+
+interface MomentRow {
+  id: string;
+  user_id: string;
+  image_url: string;
+  aspect_ratio: string;
+  caption: string | null;
+  city: string;
+  likes_count: number;
+  created_at: string;
+  vibe_tag?: string | null;
+  prompt_question?: string | null;
+  location_verified?: boolean | null;
+  activity_tag?: string | null;
+}
+
+/**
+ * PostgREST / Postgres errors that mean "the schema is behind the code": a column or table that does
+ * not exist yet (42703, 42P01) or is missing from PostgREST's schema cache (PGRST204, PGRST205, PGRST200).
+ * Those degrade to an older query or an empty feed; any other error is a real failure.
+ */
+function isSchemaMismatch(error: { code?: string; message?: string }): boolean {
+  return ['42703', '42P01', 'PGRST204', 'PGRST205', 'PGRST200'].includes(String(error.code || ''));
+}
+
 const serviceClient = () =>
   createServiceClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, { auth: { persistSession: false } });
 
@@ -42,21 +71,34 @@ export async function GET(req: Request) {
   const params = new URL(req.url).searchParams;
   const before = params.get('before');
 
-  let q = supabase
-    .from('moments')
-    .select('id, user_id, image_url, aspect_ratio, caption, vibe_tag, prompt_question, city, location_verified, likes_count, created_at')
-    .eq('status', 'active')
-    .order('created_at', { ascending: false })
-    .limit(PAGE + 1);
-  if (before && !Number.isNaN(Date.parse(before))) q = q.lt('created_at', before);
+  const run = (columns: string) => {
+    let q = supabase
+      .from('moments')
+      .select(columns)
+      .eq('status', 'active')
+      .order('created_at', { ascending: false })
+      .limit(PAGE + 1);
+    if (before && !Number.isNaN(Date.parse(before))) q = q.lt('created_at', before);
+    return q;
+  };
 
-  const { data: rows, error } = await q;
-  if (error) {
-    console.error('[api/moments] feed failed:', error.message);
+  // Full query first; if 20261125_moments_vibes.sql has not been run (or PostgREST has not reloaded its
+  // schema yet) retry with the original columns, and if even those are missing show an empty feed.
+  let result = await run(FULL_COLUMNS);
+  if (result.error) {
+    console.error('[moments:get]', result.error);
+    if (isSchemaMismatch(result.error)) {
+      result = await run(LEGACY_COLUMNS);
+      if (result.error) console.error('[moments:get] fallback', result.error);
+    }
+  }
+  if (result.error) {
+    if (isSchemaMismatch(result.error)) return NextResponse.json({ moments: [], nextCursor: null });
     return NextResponse.json({ error: 'Could not load Moments.', code: 'DB_ERROR' }, { status: 500 });
   }
-  const page = (rows || []).slice(0, PAGE);
-  const hasMore = (rows || []).length > PAGE;
+  const rows = (result.data || []) as unknown as MomentRow[];
+  const page = rows.slice(0, PAGE);
+  const hasMore = rows.length > PAGE;
   const authorIds = Array.from(new Set(page.map((m) => m.user_id)));
   const momentIds = page.map((m) => m.id);
 
@@ -80,20 +122,22 @@ export async function GET(req: Request) {
     .filter((m) => byAuthor.has(m.user_id))
     .map((m) => {
       const a = byAuthor.get(m.user_id)! as Record<string, unknown>;
+      // Rows from before the vibes migration only have the old activity tag: map it onto a vibe.
+      const vibe = isVibeTag(m.vibe_tag) ? m.vibe_tag : LEGACY_ACTIVITY_VIBE[m.activity_tag ?? ''] ?? null;
       return {
         id: m.id,
         userId: m.user_id,
         imageUrl: m.image_url,
         aspectRatio: m.aspect_ratio,
         caption: m.caption,
-        vibeTag: isVibeTag(m.vibe_tag) ? m.vibe_tag : null,
+        vibeTag: vibe,
         prompt: isMomentPrompt(m.prompt_question) ? m.prompt_question : null,
         city: m.city,
         country: countryOfCity(m.city),
         likesCount: m.likes_count,
         likedByMe: liked.has(m.id),
         locationVerified: m.location_verified === true,
-        sharedVibe: m.user_id !== user.id && isVibeTag(m.vibe_tag) && sharesVibe(myInterests, m.vibe_tag),
+        sharedVibe: m.user_id !== user.id && vibe !== null && sharesVibe(myInterests, vibe),
         createdAt: m.created_at,
         isMine: m.user_id === user.id,
         author: {

@@ -29,6 +29,7 @@ ok('migration vibe check equals VIBE_TAGS', sameSet(listAfter('check (vibe_tag i
 ok('migration prompt check equals MOMENT_PROMPTS', sameSet(listAfter('check (prompt_question is null or prompt_question in'), mom.MOMENT_PROMPTS));
 ok('every legacy activity tag maps to a valid vibe', Object.values(mom.LEGACY_ACTIVITY_VIBE).every((v) => mom.isVibeTag(v)));
 for (const [from, to] of Object.entries(mom.LEGACY_ACTIVITY_VIBE)) ok(`migration backfills ${from} -> ${to}`, sql.includes(`when '${from}' then '${to}'`));
+ok('the migration reloads the PostgREST schema cache after the commit', sql.indexOf("notify pgrst, 'reload schema';") > sql.indexOf('commit;'));
 ok('the migration adds location_verified', /add column if not exists location_verified boolean not null default false/.test(sql));
 
 // --- Locations ---------------------------------------------------------------------------------

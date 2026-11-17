@@ -109,6 +109,9 @@ grant execute on function public.create_moment(uuid, text, text, text, text, tex
 
 commit;
 
+-- Make PostgREST pick up the new columns and function signature right away.
+notify pgrst, 'reload schema';
+
 -- Checks worth running afterwards (read-only)
 --   select vibe_tag, count(*) from public.moments group by 1 order by 2 desc;
 --   select conname from pg_constraint where conrelid = 'public.moments'::regclass and contype = 'c';

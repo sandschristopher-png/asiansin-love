@@ -454,3 +454,6 @@ revoke all on function public.create_moment(uuid, text, text, text, text, text, 
 grant execute on function public.create_moment(uuid, text, text, text, text, text, text, boolean) to service_role;
 
 commit;
+
+-- Make PostgREST pick up the new columns and function signature right away.
+notify pgrst, 'reload schema';
