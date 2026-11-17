@@ -4,6 +4,7 @@
  * No imports, so server code, client components and the Discover API can all use it.
  */
 
+/** Southeast Asia only, like the rest of the launch: 15 hub cities in seven countries. */
 export const TRIP_HUBS = [
   { city: 'Manila', country: 'Philippines' },
   { city: 'Cebu City', country: 'Philippines' },
@@ -16,8 +17,6 @@ export const TRIP_HUBS = [
   { city: 'Hanoi', country: 'Vietnam' },
   { city: 'Phnom Penh', country: 'Cambodia' },
   { city: 'Siem Reap', country: 'Cambodia' },
-  { city: 'Tokyo', country: 'Japan' },
-  { city: 'Osaka', country: 'Japan' },
   { city: 'Jakarta', country: 'Indonesia' },
   { city: 'Bali', country: 'Indonesia' },
   { city: 'Kuala Lumpur', country: 'Malaysia' },
