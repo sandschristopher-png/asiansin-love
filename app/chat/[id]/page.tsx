@@ -55,7 +55,7 @@ import { RepBadge } from '@/components/profile/RhythmBadges';
 import { hapticError, hapticSuccess, hapticTap } from '@/lib/utils/haptics';
 import { BackButton } from '@/components/BackButton';
 import { Switch } from '@/components/ui/Switch';
-import { ReactionPicker, ReactionPills } from '@/components/chat/MessageReactions';
+import { ReactionBar, ReactionPills } from '@/components/chat/MessageReactions';
 import { isReactionKey, tallyReactions, withReaction, type ReactionKey, type ReactionMap } from '@/lib/reactions';
 import { useStepUp } from '@/components/verify/useStepUp';
 import { isReverificationError, useReverification } from '@/lib/useReverification';
@@ -233,6 +233,8 @@ export default function ChatConversationPage() {
   const [reactions, setReactions] = useState<ReactionMap>({});
   const reactionIdsRef = useRef<Set<string>>(new Set());
   const reactionsLoadedRef = useRef(false);
+  // Tapping a bubble opens its reaction bar (pointer devices also get it on hover).
+  const [pickerFor, setPickerFor] = useState<string | null>(null);
   const [reportMessageId, setReportMessageId] = useState<string | null>(null);
   const [reportDuplicate, setReportDuplicate] = useState(false);
   // Tab visible: read receipts are only sent while the member can actually see the thread.
@@ -1020,6 +1022,16 @@ export default function ChatConversationPage() {
       });
   }, [isInitialLoading]);
 
+  // A tap anywhere else closes the bar (a tap on a bubble is handled by the bubble itself, which toggles it).
+  useEffect(() => {
+    if (!pickerFor) return;
+    const close = (e: PointerEvent) => {
+      if (!(e.target as Element | null)?.closest?.('[data-reaction-bar], [data-msg-bubble]')) setPickerFor(null);
+    };
+    document.addEventListener('pointerdown', close);
+    return () => document.removeEventListener('pointerdown', close);
+  }, [pickerFor]);
+
   /** Tap a reaction: set it, switch to it, or (the same one again) remove it. Optimistic; rolled back on failure. */
   const toggleReaction = async (messageId: string, key: ReactionKey) => {
     if (!currentUserId) return;
@@ -1028,6 +1040,7 @@ export default function ChatConversationPage() {
     const next = before === key ? null : key;
     setReactions((prev) => withReaction(prev, messageId, currentUserId, next));
     setActiveMsgId(null);
+    setPickerFor(null);
     try {
       const res = await fetch(`/api/messages/${messageId}/reaction`, {
         method: 'POST',
@@ -1687,17 +1700,20 @@ export default function ChatConversationPage() {
                         )}
 
                         <div
+                          data-msg-bubble={isRealId ? '' : undefined}
                           onClick={
                             isRealId
                               ? () => {
                                   if (window.getSelection()?.toString()) return; // selecting text, not tapping
-                                  setActiveMsgId((cur) => (cur === msg.id ? null : msg.id));
+                                  setPickerFor((cur) => (cur === msg.id ? null : msg.id));
+                                  // Incoming bubbles also show their time and Report action.
+                                  if (!isMe) setActiveMsgId((cur) => (cur === msg.id ? null : msg.id));
                                 }
                               : undefined
                           }
                           className={
                             'px-3.5 py-2 text-[13.5px] leading-[1.45] break-words select-text transition-opacity ' +
-                            (isRealId ? 'cursor-pointer ' : '') +
+                            (isRealId ? 'cursor-pointer relative group/msg ' : '') +
                             (msg.pending ? 'opacity-75 ' : msg.failed ? 'opacity-60 ' : 'opacity-100 ') +
                             (isMe
                               ? 'bg-[#8574B7] text-white rounded-2xl ' +
@@ -1735,6 +1751,14 @@ export default function ChatConversationPage() {
                           ) : (
                             msg.text
                           )}
+                          {isRealId && (
+                            <ReactionBar
+                              mine={reactions[msg.id]?.[currentUserId] ?? null}
+                              forced={pickerFor === msg.id}
+                              align={isMe ? 'end' : 'start'}
+                              onPick={(key) => void toggleReaction(msg.id, key)}
+                            />
+                          )}
                         </div>
                         {/* One-tap report on every received message. */}
                         {!isMe && isRealId && !msg.hasAudio && (
@@ -1753,12 +1777,10 @@ export default function ChatConversationPage() {
                       {/* Reactions: the picker opens on the tapped bubble, the tally pills stay under it */}
                       {isRealId && (() => {
                         const tally = tallyReactions(reactions[msg.id], currentUserId);
-                        const picking = activeMsgId === msg.id;
-                        if (!picking && tally.length === 0) return null;
+                        if (tally.length === 0) return null;
                         return (
-                          <div className={'mt-1 flex flex-col gap-1 ' + (isMe ? 'items-end pr-0.5' : 'items-start pl-8')}>
-                            {picking && <ReactionPicker mine={reactions[msg.id]?.[currentUserId] ?? null} onPick={(key) => void toggleReaction(msg.id, key)} />}
-                            {tally.length > 0 && <ReactionPills tally={tally} onToggle={(key) => void toggleReaction(msg.id, key)} />}
+                          <div className={'mt-1 flex ' + (isMe ? 'justify-end pr-1' : 'justify-start pl-9')}>
+                            <ReactionPills tally={tally} onToggle={(key) => void toggleReaction(msg.id, key)} />
                           </div>
                         );
                       })()}
