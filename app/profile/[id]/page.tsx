@@ -79,6 +79,8 @@ export default function PublicProfilePage() {
   const [profile, setProfile] = useState<any>(null);
   const [viewerInterests, setViewerInterests] = useState<string[]>([]);
   const [viewerLanguages, setViewerLanguages] = useState<string[]>([]);
+  /** Who is looking: undefined until known, null when signed out. Compared with the profile to spot your own. */
+  const [viewerId, setViewerId] = useState<string | null | undefined>(undefined);
   const [highlights, setHighlights] = useState<HighlightRow[]>([]);
   const [currentPhotoIdx, setCurrentPhotoIdx] = useState(0);
 
@@ -117,6 +119,7 @@ export default function PublicProfilePage() {
 
       try {
         const { data: { user: currentUser } } = await supabase.auth.getUser();
+        setViewerId(currentUser?.id ?? null);
 
         if (currentUser) {
           const { data: viewerData } = await supabase
@@ -307,10 +310,13 @@ export default function PublicProfilePage() {
   const isOnline = profile.show_active_status !== false && getPresenceStatus(profile.last_active).isOnline;
   const hasMultiplePhotos = photoList.length > 1;
 
+  // Your own profile: no Spark, Message, reply prompts or "in common" (you would be comparing yourself with yourself).
+  const isOwnProfile = typeof viewerId === 'string' && viewerId === String(profile.id ?? targetUserId);
+
   const targetInterests: string[] = Array.isArray(profile.interests) ? profile.interests : [];
-  const sharedInterests = targetInterests.filter((tag) =>
-    viewerInterests.some((v) => v.toLowerCase() === String(tag).toLowerCase())
-  );
+  const sharedInterests = isOwnProfile
+    ? []
+    : targetInterests.filter((tag) => viewerInterests.some((v) => v.toLowerCase() === String(tag).toLowerCase()));
 
   const lookingForText = formatIntent(
     profile.looking_for || profile.relationship_goal || profile.relationship_intent || profile.intentions
@@ -320,10 +326,12 @@ export default function PublicProfilePage() {
   const languagesList: string[] = parsedLanguages.length > 0 ? parsedLanguages : ['English'];
 
   // Interests + languages you both have (shown as the "N in common" card above the bio).
-  const inCommon = sharedTraits(
-    { interests: viewerInterests, languages: viewerLanguages },
-    { interests: targetInterests, languages: parsedLanguages }
-  );
+  const inCommon = isOwnProfile
+    ? []
+    : sharedTraits(
+        { interests: viewerInterests, languages: viewerLanguages },
+        { interests: targetInterests, languages: parsedLanguages }
+      );
   const relocationReadiness = rhythmOption('relocation_readiness', profile.relocation_readiness);
   const timelineIntent = rhythmOption('timeline_intent', profile.timeline_intent);
 
@@ -349,7 +357,8 @@ export default function PublicProfilePage() {
   );
 
   // Portal dock directly to document.body so LayoutShell's scroll container never moves it
-  const floatingDock = mounted
+  // Shown once we know who is looking, and never on your own profile.
+  const floatingDock = mounted && viewerId !== undefined && !isOwnProfile
     ? createPortal(
         <aside className="fixed bottom-3.5 left-1/2 -translate-x-1/2 w-[calc(100%-1.75rem)] max-w-[390px] z-[90] bg-white/95 border border-[#D0CDE1] shadow-[0_12px_36px_rgba(102,93,150,0.18),0_2px_8px_rgba(0,0,0,0.04)] rounded-full p-1.5">
           <div className="grid grid-cols-2 gap-2">
@@ -548,15 +557,15 @@ export default function PublicProfilePage() {
               >
                 Highlights &amp; Stories
               </h2>
-              <span className="text-[10px] font-medium text-slate-600">Tap to reply</span>
+              {!isOwnProfile && <span className="text-[10px] font-medium text-slate-600">Tap to reply</span>}
             </div>
 
             <div className="grid gap-2.5">
               {highlights.map((item) => (
                 <div
                   key={item.tag_id}
-                  onClick={() => router.push(`/chat/${targetUserId}`)}
-                  className="group cursor-pointer rounded-2xl border border-[#D0CDE1] bg-white p-3.5 transition hover:border-[#8574B7]/50"
+                  onClick={isOwnProfile ? undefined : () => router.push(`/chat/${targetUserId}`)}
+                  className={`group rounded-2xl border border-[#D0CDE1] bg-white p-3.5 transition ${isOwnProfile ? '' : 'cursor-pointer hover:border-[#8574B7]/50'}`}
                 >
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
@@ -566,9 +575,11 @@ export default function PublicProfilePage() {
                       })()}
                       <span className="text-xs font-semibold text-[#413B5E]">{item.label}</span>
                     </div>
-                    <span className="text-[11px] font-semibold text-[#8574B7]">
-                      <span className="inline-flex items-center gap-1">Reply <MessageCircle className="w-3 h-3" aria-hidden /></span>
-                    </span>
+                    {!isOwnProfile && (
+                      <span className="text-[11px] font-semibold text-[#8574B7]">
+                        <span className="inline-flex items-center gap-1">Reply <MessageCircle className="w-3 h-3" aria-hidden /></span>
+                      </span>
+                    )}
                   </div>
                   {item.story && (
                     <p className="mt-1.5 text-xs leading-relaxed text-[#413B5E]/85 italic">

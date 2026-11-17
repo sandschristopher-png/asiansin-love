@@ -18,6 +18,7 @@ globalThis.sessionStorage = {
   removeItem: (k) => { if (storageBroken) throw new Error('blocked'); store.delete(k); },
 };
 const cache = await loadLib('momentsCache');
+const { mergeRefresh } = await loadLib('momentsMerge');
 
 let passed = 0;
 const failures = [];
@@ -124,6 +125,24 @@ let threw = false;
 try { cache.writeMomentsCache({ items: mk(3), cursor: null }, t1); cache.clearMomentsCache(); } catch { threw = true; }
 ok('blocked storage never throws', !threw);
 storageBroken = false;
+
+// --- A refresh must not undo a like or delete made while it was loading -------------------------------
+const row = (id, liked, n) => ({ id, likedByMe: liked, likesCount: n });
+const T = 5000;
+const edits = new Map([
+  ['a', { at: T + 100, like: { liked: true, count: 1 } }],
+  ['b', { at: T - 100, like: { liked: true, count: 9 } }],
+  ['c', { at: T + 50, removed: true }],
+  ['d', { at: T - 50, removed: true }],
+]);
+const merged = mergeRefresh([row('a', false, 0), row('b', false, 4), row('c', false, 2), row('d', false, 3), row('e', false, 7)], edits, T);
+ok('a like made during the refresh survives it (0 stays 1)', merged.find((m) => m.id === 'a').likedByMe === true && merged.find((m) => m.id === 'a').likesCount === 1);
+ok('a like made before the refresh began is not forced (the server already has it)', merged.find((m) => m.id === 'b').likesCount === 4);
+ok('a delete made during the refresh stays deleted', !merged.some((m) => m.id === 'c'));
+ok('a delete made before the refresh began is left to the server', merged.some((m) => m.id === 'd'));
+ok('untouched rows pass through unchanged', merged.find((m) => m.id === 'e').likesCount === 7);
+ok('no edits: the fetched page is returned as is', mergeRefresh([row('x', false, 1)], new Map(), T).length === 1);
+ok('an unliked row during the refresh stays unliked', mergeRefresh([row('a', true, 5)], new Map([['a', { at: T + 1, like: { liked: false, count: 4 } }]]), T)[0].likedByMe === false);
 
 console.log(`Moments config: ${passed} checks passed${failures.length ? `, ${failures.length} FAILED` : ''}`);
 for (const f of failures) console.log(`  FAIL ${f}`);

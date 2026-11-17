@@ -15,6 +15,7 @@ import { useNotificationCounts } from '@/lib/notificationStore';
 import { useBottomNavHidden } from '@/lib/bottomNavStore';
 import { useLocale } from '@/components/i18n/LocaleProvider';
 import { MOMENTS_SEEN_EVENT, MOMENTS_SEEN_KEY } from '@/lib/moments';
+import { readMomentsCache, writeMomentsCache } from '@/lib/momentsCache';
 
 const PUBLIC_ROUTES = [
   '/',
@@ -88,6 +89,27 @@ export function BottomNav() {
     return () => {
       cancelled = true;
       window.removeEventListener(MOMENTS_SEEN_EVENT, clear);
+    };
+  }, [user, pathname]);
+
+  // Warm the Moments feed cache: a moment after the app settles, load the first page once (only when the
+  // cache is empty or older than its 5 minutes) so the first visit to /moments paints real cards at once.
+  useEffect(() => {
+    if (!user || pathname?.startsWith('/moments') || readMomentsCache()) return;
+    let cancelled = false;
+    const timer = setTimeout(() => {
+      fetch('/api/moments')
+        .then((r) => (r.ok ? r.json() : null))
+        .then((d) => {
+          if (!cancelled && Array.isArray(d?.moments) && !readMomentsCache()) {
+            writeMomentsCache({ items: d.moments, cursor: d.nextCursor ?? null });
+          }
+        })
+        .catch(() => {});
+    }, 1500);
+    return () => {
+      cancelled = true;
+      clearTimeout(timer);
     };
   }, [user, pathname]);
 

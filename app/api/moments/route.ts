@@ -90,10 +90,29 @@ const unavailable = () => NextResponse.json({ error: 'Posting is unavailable rig
 const serviceClient = () =>
   createServiceClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, { auth: { persistSession: false } });
 
+/**
+ * Who is asking. getClaims() verifies the session token's signature locally (the signing keys are
+ * cached), so the feed does not wait on a round trip to the Auth server; projects without asymmetric
+ * signing keys make the same call fall back to the server check inside supabase-js. If anything about
+ * it fails we ask the Auth server directly, so a member is never wrongly locked out.
+ */
+async function viewerIdOf(supabase: Awaited<ReturnType<typeof createClient>>): Promise<string | null> {
+  try {
+    const { data } = await supabase.auth.getClaims();
+    const sub = data?.claims?.sub;
+    if (typeof sub === 'string' && sub) return sub;
+  } catch {
+    /* fall through to the server check */
+  }
+  const { data: { user } } = await supabase.auth.getUser();
+  return user?.id ?? null;
+}
+
 export async function GET(req: Request) {
   const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  if (!user) return NextResponse.json({ error: 'Unauthorized', code: 'UNAUTHORIZED' }, { status: 401 });
+  const viewerId = await viewerIdOf(supabase);
+  if (!viewerId) return NextResponse.json({ error: 'Unauthorized', code: 'UNAUTHORIZED' }, { status: 401 });
+  const user = { id: viewerId };
 
   const params = new URL(req.url).searchParams;
   const before = params.get('before');

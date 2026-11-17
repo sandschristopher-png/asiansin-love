@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useState, useSyncExternalStore } from 'react';
+import React, { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Camera, Loader2, Plus } from 'lucide-react';
@@ -13,6 +13,7 @@ import { ReportMomentSheet } from '@/components/moments/ReportMomentSheet';
 import { SparkMomentSheet } from '@/components/moments/SparkMomentSheet';
 import { localizeError } from '@/lib/i18n/errors';
 import { clearMomentsCache, readMomentsCache, writeMomentsCache, type MomentsFeed } from '@/lib/momentsCache';
+import { mergeRefresh, type MomentEdit } from '@/lib/momentsMerge';
 import { MOMENTS_SEEN_EVENT, MOMENTS_SEEN_KEY, promptOfDay, type MomentCity, type MomentItem, type MomentPrompt } from '@/lib/moments';
 import { matchSeaCity } from '@/lib/seaLocations';
 import { supabase } from '@/lib/supabase/client';
@@ -76,6 +77,13 @@ export default function MomentsPage() {
 
   const [reloadKey, setReloadKey] = useState(0);
 
+  /**
+   * Likes and deletes the member makes while a feed refresh is in flight. The cards are already on
+   * screen (from the cache), so a refresh that started before the tap would otherwise land afterwards
+   * with the old count and flip the heart back. Entries newer than the refresh's start are re-applied.
+   */
+  const localEdits = useRef(new Map<string, MomentEdit>());
+
   const updateFeed = (change: (f: MomentsFeed) => MomentsFeed) =>
     setLocal((prev) => change(prev ?? readMomentsCache() ?? { items: [], cursor: null }));
   const updateItems = (change: (list: MomentItem[]) => MomentItem[]) => updateFeed((f) => ({ ...f, items: change(f.items) }));
@@ -89,13 +97,14 @@ export default function MomentsPage() {
   /** First page of the unified feed: re-runs when the language or reloadKey changes. */
   useEffect(() => {
     let active = true;
+    const startedAt = Date.now();
     (async () => {
       try {
         const res = await fetch('/api/moments');
         const data = await res.json().catch(() => ({}));
         if (!active) return;
         if (!res.ok) throw Object.assign(new Error(data?.error || 'moments'), { status: res.status, code: data?.code });
-        setLocal({ items: data.moments as MomentItem[], cursor: data.nextCursor ?? null });
+        setLocal({ items: mergeRefresh(data.moments as MomentItem[], localEdits.current, startedAt), cursor: data.nextCursor ?? null });
         setError(null);
       } catch (err) {
         // Shown only when there is nothing on screen: a failed background refresh keeps the cached cards.
@@ -128,6 +137,8 @@ export default function MomentsPage() {
   // The composer starts on the city the member is visiting right now (an active Visiting Soon trip),
   // otherwise their profile city, when it is one of ours.
   useEffect(() => {
+    // Wait for the feed: these lookups must not compete with it on a cold visit.
+    if (loading) return;
     let active = true;
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
@@ -147,7 +158,7 @@ export default function MomentsPage() {
     return () => {
       active = false;
     };
-  }, []);
+  }, [loading]);
 
   const openComposer = (prompt: MomentPrompt | null) => {
     setComposerPrompt(prompt);
@@ -155,8 +166,10 @@ export default function MomentsPage() {
   };
 
   const toggleLike = async (m: MomentItem) => {
-    const flip = (liked: boolean, count: number) =>
+    const flip = (liked: boolean, count: number) => {
+      localEdits.current.set(m.id, { at: Date.now(), like: { liked, count } });
       updateItems((prev) => prev.map((x) => (x.id === m.id ? { ...x, likedByMe: liked, likesCount: count } : x)));
+    };
     flip(!m.likedByMe, Math.max(0, m.likesCount + (m.likedByMe ? -1 : 1)));
     try {
       const res = await fetch(`/api/moments/${m.id}/like`, { method: 'POST' });
@@ -173,6 +186,7 @@ export default function MomentsPage() {
     if (!window.confirm(`${t('moments.deleteMoment')}?`)) return;
     const res = await fetch(`/api/moments/${m.id}`, { method: 'DELETE' }).catch(() => null);
     if (res?.ok) {
+      localEdits.current.set(m.id, { at: Date.now(), removed: true });
       updateItems((prev) => prev.filter((x) => x.id !== m.id));
       showToast(t('moments.deleted'), 'check');
     } else {
@@ -289,7 +303,10 @@ export default function MomentsPage() {
           onDone={({ duplicate, hidden }) => {
             const id = reportTarget.id;
             setReportTarget(null);
-            if (hidden) updateItems((prev) => prev.filter((x) => x.id !== id));
+            if (hidden) {
+              localEdits.current.set(id, { at: Date.now(), removed: true });
+              updateItems((prev) => prev.filter((x) => x.id !== id));
+            }
             showToast(duplicate ? t('moments.reportAlready') : t('moments.reportThanks'), 'info');
           }}
         />

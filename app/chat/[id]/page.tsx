@@ -396,9 +396,14 @@ export default function ChatConversationPage() {
         return;
       }
 
-      if (isMounted) setCurrentUserId(user.id);
-
       const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(rawParam);
+      // Your own id is not a conversation (the API refuses it too): leave at once instead of waiting on a load that fails.
+      if (isUuid && rawParam.toLowerCase() === user.id.toLowerCase()) {
+        router.replace('/messages');
+        return;
+      }
+
+      if (isMounted) setCurrentUserId(user.id);
       // Handles only: strip anything that could alter the PostgREST .or() filter (commas, parens, dots).
       const handleParam = decodeURIComponent(rawParam).replace(/^@+/, '').replace(/[^a-zA-Z0-9_]/g, '');
       if (!isUuid && !handleParam) {
@@ -441,7 +446,8 @@ export default function ChatConversationPage() {
       const profData: any = targetProfRes.data;
       const targetUuid: string | null = profData?.id || (isUuid ? rawParam : null);
 
-      if (!targetUuid) {
+      // Also catches your own @username typed into the address.
+      if (!targetUuid || targetUuid === user.id) {
         router.replace('/messages');
         return;
       }
@@ -575,7 +581,11 @@ export default function ChatConversationPage() {
       setIsInitialLoading(false);
     }
 
-    initUserAndTarget();
+    initUserAndTarget().catch((err) => {
+      // Without this a failed load (the API refuses a bad target, the network drops) left the skeleton up forever.
+      console.error('[chat] could not open the conversation', err);
+      if (isMounted) router.replace('/messages');
+    });
     return () => {
       isMounted = false;
     };
