@@ -159,23 +159,33 @@ export function MomentComposer({
           </p>
         )}
 
-        <label className="relative flex aspect-[4/5] w-full cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border border-dashed border-[#8574B7]/50 bg-[#FAF9FC] text-center">
+        {/* Compact (about 96px) until a photo is chosen, so city, vibe and prompt are visible without
+            scrolling; it then expands to the 4:5 preview the feed will show. */}
+        <label
+          className={
+            preview
+              ? 'relative block aspect-[4/5] w-full cursor-pointer overflow-hidden rounded-2xl bg-[#FAF9FD]'
+              : 'flex w-full cursor-pointer items-center gap-3.5 rounded-2xl border border-dashed border-[#D8D1EA] bg-[#FAF9FD] px-4 py-5 text-left'
+          }
+        >
           {preview ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={preview} alt="" className="absolute inset-0 h-full w-full object-cover" />
+            <>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={preview} alt="" className="absolute inset-0 h-full w-full object-cover" />
+              <span className="absolute right-3 top-3 rounded-full bg-white/80 px-3.5 py-1.5 text-[11px] font-semibold leading-none text-[#413B5E] backdrop-blur-md">
+                {t('moments.changePhoto')}
+              </span>
+            </>
           ) : (
-            <span className="flex flex-col items-center gap-2 px-6 text-[#413B5E]">
-              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-[#8574B7]/15 text-[#8574B7]">
+            <>
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#8574B7]/15 text-[#8574B7]">
                 <Camera className="h-5 w-5" aria-hidden />
               </span>
-              <span className="text-sm font-semibold leading-snug">{t('moments.addPhoto')}</span>
-              <span className="text-[11px] leading-relaxed text-slate-600">{t('moments.photoHint')}</span>
-            </span>
-          )}
-          {preview && (
-            <span className="absolute bottom-3 left-1/2 -translate-x-1/2 rounded-full bg-white/80 px-3.5 py-1.5 text-[11px] font-semibold leading-none text-[#413B5E] backdrop-blur-md">
-              {t('moments.changePhoto')}
-            </span>
+              <span className="min-w-0">
+                <span className="block text-sm font-semibold leading-snug text-[#413B5E]">{t('moments.addPhoto')}</span>
+                <span className="mt-0.5 block text-[11px] leading-relaxed text-slate-600">{t('moments.photoHint')}</span>
+              </span>
+            </>
           )}
           <input type="file" accept="image/jpeg,image/png,image/webp" className="sr-only" onChange={(e) => pickPhoto(e.target.files?.[0])} />
         </label>
