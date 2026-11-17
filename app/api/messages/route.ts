@@ -10,6 +10,7 @@ import { REPUTATION_RULES, canSendMessage, decideMessageOutcome, isRestricted, s
 import { applyContactRevealMask, CONTACT_UNLOCK_TURNS } from '@/lib/safety';
 import { createClient as createSessionClient } from '@/lib/supabase/server';
 import { sendPushToUser } from '@/lib/pushSender';
+import { checkVelocity, reverificationBlocked, reverificationState } from '@/lib/verify/riskFlags';
 
 const isUUID = (str: unknown) =>
   typeof str === 'string' &&
@@ -204,6 +205,12 @@ export async function POST(req: Request) {
     if (block) {
       return NextResponse.json({ error: 'You cannot message this member.' }, { status: 403 });
     }
+
+    // 1.45 Unusual activity or a released safety hold: identity must be confirmed before sending (step-up check).
+    if ((await reverificationState(serviceClient, senderId)).required) {
+      return reverificationBlocked('Confirm your identity to send messages.');
+    }
+    after(() => checkVelocity(serviceClient, senderId)); // burst messaging / sparking flags the account
 
     // 1.5 Sender standing: reputation-based hourly limit (server-enforced)
     const { data: senderProfile } = await serviceClient

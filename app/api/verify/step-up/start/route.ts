@@ -1,0 +1,53 @@
+import { NextResponse } from 'next/server';
+import { createClient as createSessionClient } from '@/lib/supabase/server';
+import { newChallenge, signStepUp, stepUpDb } from '@/lib/verify/stepUp';
+import { reverificationState } from '@/lib/verify/riskFlags';
+import { MIN_HOLD_MS, MIN_TOTAL_MS, isTriggerReason, type TriggerReason } from '@/lib/verify/stepUpRules';
+
+export const runtime = 'nodejs';
+
+/** Challenges a member can be issued per hour (a retry is a new challenge); beyond this the check waits. */
+const MAX_ISSUED_PER_HOUR = 8;
+
+/**
+ * POST { reason?: 'photo_swap' } -> { token, poses, minHoldMs, minTotalMs }
+ *
+ * Issues a signed (HMAC-SHA256), single-use challenge with 3 random poses from
+ * turn_left / turn_right / look_up / look_down (plus a neutral centre capture the client always takes).
+ * The reason is never the client's choice: a member can ask for a primary-photo-swap check, otherwise a
+ * challenge exists only while their account is flagged, and carries the flag's own reason.
+ */
+export async function POST(req: Request) {
+  const session = await createSessionClient();
+  const { data: { user } } = await session.auth.getUser();
+  if (!user) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+
+  const body = (await req.json().catch(() => ({}))) as { reason?: unknown };
+  const db = stepUpDb();
+  const state = await reverificationState(db, user.id);
+
+  let reason: TriggerReason;
+  if (body.reason === 'photo_swap') reason = 'photo_swap';
+  else if (state.required) reason = isTriggerReason(state.reason) ? state.reason : 'manual';
+  else return NextResponse.json({ error: 'No identity check is needed right now.', code: 'NOT_REQUIRED' }, { status: 400 });
+
+  const since = new Date(Date.now() - 60 * 60 * 1000).toISOString();
+  const { count } = await db.from('liveness_challenges').select('id', { count: 'exact', head: true }).eq('user_id', user.id).gte('created_at', since);
+  if ((count ?? 0) >= MAX_ISSUED_PER_HOUR) {
+    return NextResponse.json({ error: 'Too many checks. Please try again in a while.', code: 'RATE_LIMITED' }, { status: 429 });
+  }
+
+  const challenge = newChallenge(user.id, reason);
+  const { error } = await db.from('liveness_challenges').insert({
+    user_id: user.id,
+    trigger_reason: reason,
+    poses_requested: challenge.p,
+    nonce: challenge.n,
+  });
+  if (error) {
+    console.error('[step-up/start] could not record the challenge:', error.message);
+    return NextResponse.json({ error: 'The identity check is not available yet.', code: 'STEP_UP_UNAVAILABLE' }, { status: 503 });
+  }
+
+  return NextResponse.json({ token: signStepUp(challenge), poses: challenge.p, reason, minHoldMs: MIN_HOLD_MS, minTotalMs: MIN_TOTAL_MS });
+}

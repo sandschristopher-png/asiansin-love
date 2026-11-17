@@ -4,6 +4,7 @@ import exifr from 'exifr';
 import { createClient as createServerClient } from '@/lib/supabase/server';
 import { createClient } from '@supabase/supabase-js';
 import crypto from 'crypto';
+import { consumePhotoSwap, photoSwapCleared } from '@/lib/verify/stepUp';
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 const ALLOWED_MIME_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
@@ -119,6 +120,18 @@ export async function POST(req: Request) {
         { status: 400 }
       );
     }
+    // A new MAIN photo (replacing an existing one) needs a passed step-up check on this exact file.
+    const fileSha = crypto.createHash('sha256').update(buffer).digest('hex');
+    const swapChallengeId = formData.get('stepUpId');
+    if (isPrimaryAvatar) {
+      const { data: existing } = await serviceClient.from('profiles').select('avatar_url').eq('id', userId).maybeSingle();
+      if (existing?.avatar_url && !(await photoSwapCleared(serviceClient, userId, swapChallengeId, fileSha))) {
+        return NextResponse.json(
+          { error: 'Confirm your identity to change your main photo.', code: 'STEP_UP_REQUIRED' },
+          { status: 403 }
+        );
+      }
+    }
     // AI-photo safeguard (20261108): classify upload origin before storing.
     let aiStatus: 'camera' | 'suspect' | 'ai' = 'suspect';
     try {
@@ -152,6 +165,8 @@ export async function POST(req: Request) {
         { status: 500 }
       );
     }
+
+    if (isPrimaryAvatar) await consumePhotoSwap(serviceClient, swapChallengeId); // one check, one swap
 
     // 6. Public URL resolution
     const { data: publicUrlData } = serviceClient.storage

@@ -14,6 +14,7 @@ import { createClient as createServiceClient } from '@supabase/supabase-js';
 import { notifyAdmins } from '@/lib/adminNotify';
 import { createClient } from '@/lib/supabase/server';
 import { reportExcerpt, reportPenalty } from '@/lib/safety/reportRules';
+import { checkReports } from '@/lib/verify/riskFlags';
 
 export const runtime = 'nodejs';
 
@@ -106,6 +107,10 @@ export async function POST(req: Request) {
   const cat = category as ReportCategory;
 
   const admin = createServiceClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, { auth: { persistSession: false } });
+
+  // Two or more reports within 7 days require the reported member to confirm their identity. Runs after the
+  // response, once this report has been written.
+  after(() => checkReports(admin, reportedId));
 
   const blockReporter = async () => {
     const { error: blockError } = await supabase.from('user_blocks').insert({ blocker_id: user.id, blocked_id: reportedId });

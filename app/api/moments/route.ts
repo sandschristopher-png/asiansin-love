@@ -5,6 +5,8 @@
 // Posting is server-side only: the caption goes through the master safety dictionary, the photo is
 // checked by its leading bytes and uploaded to moment-photos under the member's own folder, and
 // create_moment (service role) enforces verification, reputation and 2 Moments per 24 hours.
+import { reverificationBlocked, reverificationState } from '@/lib/verify/riskFlags';
+import { stepUpDb } from '@/lib/verify/stepUp';
 import crypto from 'node:crypto';
 import { NextResponse, after } from 'next/server';
 import { createClient as createServiceClient } from '@supabase/supabase-js';
@@ -228,6 +230,8 @@ async function createMoment(req: Request) {
   const session = await createClient();
   const { data: { user } } = await session.auth.getUser();
   if (!user) return NextResponse.json({ error: 'Unauthorized', code: 'UNAUTHORIZED' }, { status: 401 });
+  // Unusual activity or a released safety hold: identity must be confirmed before posting.
+  if ((await reverificationState(stepUpDb(), user.id)).required) return reverificationBlocked('Confirm your identity to post.');
 
   if (!(req.headers.get('content-type') || '').includes('multipart/form-data')) {
     return NextResponse.json({ error: 'Invalid request.', code: 'INVALID_INPUT' }, { status: 400 });

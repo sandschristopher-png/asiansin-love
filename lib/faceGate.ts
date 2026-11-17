@@ -258,3 +258,25 @@ function detectPose(video: HTMLVideoElement, ts: number, facePts: NormalizedLand
   const faceWidthPx = Math.max(...faceXs) - Math.min(...faceXs);
   return found.some((hand) => matchesPose(poseId, hand.map(px), face, faceWidthPx)) ? 'match' : 'hand';
 }
+
+/**
+ * Landmarks of the single largest face in the current frame, in RAW (un-mirrored) video coordinates, for
+ * the head-turn check (lib/headPose.ts). `faces` counts every face the model sees so the caller can insist
+ * on exactly one; `points` is null when there is none.
+ */
+export function readFaceLandmarks(video: HTMLVideoElement): { faces: number; points: NormalizedLandmark[] | null } {
+  if (!landmarker || !video.videoWidth || !video.videoHeight || video.readyState < 2) return { faces: 0, points: null };
+  let ts = performance.now();
+  if (ts <= lastTimestamp) ts = lastTimestamp + 1;
+  lastTimestamp = ts;
+  const found = landmarker.detectForVideo(video, ts).faceLandmarks || [];
+  if (found.length === 0) return { faces: 0, points: null };
+  const width = (pts: NormalizedLandmark[]) => Math.max(...pts.map((p) => p.x)) - Math.min(...pts.map((p) => p.x));
+  // Ignore specks in the background: only faces at least 5% of the frame wide count.
+  const real = found.filter((pts) => width(pts) >= MIN_FACE_WIDTH);
+  if (real.length === 0) return { faces: 0, points: null };
+  real.sort((a, b) => width(b) - width(a));
+  // Only a clearly sized second face (a real person nearby, not a poster far behind) counts as another one.
+  const others = real.slice(1).filter((pts) => width(pts) >= MIN_SECOND_FACE_WIDTH).length;
+  return { faces: 1 + others, points: real[0] };
+}

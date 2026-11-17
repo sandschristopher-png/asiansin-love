@@ -9,6 +9,7 @@ import { NextResponse } from 'next/server';
 import { randomUUID } from 'crypto';
 import { createClient } from '@supabase/supabase-js';
 import { createClient as createSessionClient } from '@/lib/supabase/server';
+import { reverificationBlocked, reverificationState } from '@/lib/verify/riskFlags';
 import { evaluateSubstantiveConversation } from '@/lib/moderation';
 import { CONTACT_UNLOCK_TURNS } from '@/lib/safety';
 import { canSendVoiceNote, scoreOf } from '@/lib/reputation';
@@ -76,6 +77,7 @@ export async function POST(req: Request) {
     .limit(1)
     .maybeSingle();
   if (block) return NextResponse.json({ error: 'You cannot message this member.' }, { status: 403 });
+  if ((await reverificationState(admin, senderId)).required) return reverificationBlocked('Confirm your identity to send messages.');
 
   // Members under review (reputation below 70) cannot send voice notes: audio can't be screened.
   const { data: senderProfile } = await admin

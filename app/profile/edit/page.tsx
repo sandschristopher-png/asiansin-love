@@ -25,6 +25,7 @@ import { ThemedSelect } from '@/components/ui/ThemedSelect';
 import { validateProfileContent } from '@/lib/moderation';
 import { profileContentMessage } from '@/lib/i18n/moderationMessages';
 import { useLocale } from '@/components/i18n/LocaleProvider';
+import { useStepUp } from '@/components/verify/useStepUp';
 
 /** Loaded on first open (keeps the upgrade sheet out of the page bundle). */
 const UpgradeModal = dynamic(() => import('@/components/UpgradeModal'), { ssr: false });
@@ -63,6 +64,7 @@ function cleanHeightForDb(input: string): string | null {
 export default function EditProfilePage() {
   const router = useRouter();
   const { t } = useLocale();
+  const stepUp = useStepUp();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [statusMsg, setStatusMsg] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
@@ -238,6 +240,16 @@ export default function EditProfilePage() {
       const isPrimary = slotIdx === 0;
       formData.append('isPrimary', isPrimary ? 'true' : 'false');
 
+      // Replacing the main photo: confirm identity first (live check matched against THIS photo).
+      if (isPrimary && photos.length > 0) {
+        const check = await stepUp.run({ reason: 'photo_swap', photo: compressed.file });
+        if (check?.status === 'passed') formData.append('stepUpId', check.challengeId);
+        else if (check?.status !== 'unavailable') {
+          if (check?.status === 'manual_review') setStatusMsg({ type: 'error', text: t('stepup.manualTitle') });
+          return; // closed or in review: nothing is uploaded
+        }
+      }
+
       const res = await fetch('/api/photos/upload', {
         method: 'POST',
         body: formData,
@@ -269,23 +281,24 @@ export default function EditProfilePage() {
     const targetUrl = photos[targetIdx];
     const previousPhotos = [...photos];
     const newPhotos = [targetUrl, ...photos.filter((_, idx) => idx !== targetIdx)];
-
-    setPhotos(newPhotos);
     setStatusMsg(null);
 
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
+      // Changing the main photo needs a passed identity check matched against exactly this photo.
+      const blob = await (await fetch(targetUrl)).blob();
+      const check = await stepUp.run({ reason: 'photo_swap', photo: blob });
+      if (check?.status === 'manual_review') setStatusMsg({ type: 'error', text: t('stepup.manualTitle') });
+      if (check?.status !== 'passed' && check?.status !== 'unavailable') return;
 
-      const { error } = await supabase
-        .from('profiles')
-        .update({
-          avatar_url: targetUrl,
-          photos: newPhotos,
-        })
-        .eq('id', user.id);
-
-      if (error) throw error;
+      setPhotos(newPhotos); // optimistic from here; rolled back if the server refuses
+      const res = await fetch('/api/profile/primary', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url: targetUrl, stepUpId: check.status === 'passed' ? check.challengeId : null }),
+      });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(data.error || 'Failed to set avatar.');
+      if (Array.isArray(data.photos)) setPhotos(data.photos);
       setStatusMsg({ type: 'success', text: 'Primary avatar updated!' });
     } catch (err: any) {
       setPhotos(previousPhotos);
@@ -411,6 +424,7 @@ export default function EditProfilePage() {
 
   return (
     <div className="min-h-screen bg-white text-[#413B5E]">
+      {stepUp.element}
       <div className="max-w-xl mx-auto px-4 py-8 pb-28 space-y-6">
         
         {/* Header */}

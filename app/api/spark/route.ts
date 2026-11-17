@@ -1,6 +1,7 @@
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
-import { NextResponse } from 'next/server'
+import { NextResponse, after } from 'next/server'
+import { checkVelocity } from '@/lib/verify/riskFlags'
 import { sendPushToUser } from '@/lib/pushSender'
 import { titleForRecipient } from '@/lib/notificationTitles'
 import { FREE_DAILY_SPARKS } from '@/lib/plusPlans'
@@ -34,6 +35,7 @@ export async function POST(req: Request) {
     const service = createServiceClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, {
       auth: { persistSession: false },
     })
+    after(() => checkVelocity(service, user.id)) // burst Sparking (with burst messaging) flags the account
     const [{ data: existing }, { data: reverseSpark }, allowanceResult, { data: senderProfile }, { data: block }] = await Promise.all([
       supabase.from('sparks').select('id').eq('sender_id', user.id).eq('receiver_id', targetUserId).maybeSingle(),
       supabase.from('sparks').select('id').eq('sender_id', targetUserId).eq('receiver_id', user.id).maybeSingle(),

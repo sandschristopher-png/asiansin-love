@@ -9,9 +9,13 @@ const HEARTBEAT_MS = 2 * 60 * 1000;
 
 export default function HeartbeatProvider() {
   useEffect(() => {
+    let first = true;
     const sendHeartbeat = () => {
       if (document.visibilityState === "visible") {
-        fetch("/api/user/heartbeat", { method: "POST" }).catch(() => {
+        // The first ping of this session also lets the server notice a login from a new country.
+        const headers: Record<string, string> = first ? { "x-session-start": "1" } : {};
+        first = false;
+        fetch("/api/user/heartbeat", { method: "POST", headers }).catch(() => {
           // Fail silently on network drops
         });
       }

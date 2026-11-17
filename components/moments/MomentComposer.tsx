@@ -30,12 +30,15 @@ export function MomentComposer({
   initialPrompt = null,
   onClose,
   onPosted,
+  onReverificationRequired,
 }: {
   defaultCity: MomentCity;
   /** A prompt to start on (the Today's Prompt card). */
   initialPrompt?: MomentPrompt | null;
   onClose: () => void;
   onPosted: () => void;
+  /** The server answered REVERIFICATION_REQUIRED: the page closes the composer and opens the identity check. */
+  onReverificationRequired?: () => void;
 }) {
   const { t } = useLocale();
   const [blob, setBlob] = useState<Blob | null>(null);
@@ -145,6 +148,10 @@ export function MomentComposer({
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
         const code = data?.code as string | undefined;
+        if (code === 'REVERIFICATION_REQUIRED' && onReverificationRequired) {
+          onReverificationRequired();
+          return;
+        }
         if (code === 'MOMENT_VERIFICATION_REQUIRED') {
           setNeedsVerify(true);
           setError(t('moments.errVerify'));

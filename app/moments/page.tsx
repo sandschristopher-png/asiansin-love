@@ -14,6 +14,8 @@ import { SparkMomentSheet } from '@/components/moments/SparkMomentSheet';
 import { localizeError } from '@/lib/i18n/errors';
 import { clearMomentsCache, readMomentsCache, writeMomentsCache, type MomentsFeed } from '@/lib/momentsCache';
 import { haptic } from '@/lib/haptics';
+import { useStepUp } from '@/components/verify/useStepUp';
+import { useReverification } from '@/lib/useReverification';
 import { mergeRefresh, type MomentEdit } from '@/lib/momentsMerge';
 import { MOMENTS_SEEN_EVENT, MOMENTS_SEEN_KEY, promptOfDay, type MomentCity, type MomentItem, type MomentPrompt } from '@/lib/moments';
 import { matchSeaCity } from '@/lib/seaLocations';
@@ -161,8 +163,24 @@ export default function MomentsPage() {
     };
   }, [loading]);
 
+  // Step-up identity check: a restricted account confirms its identity before it can post.
+  const reverification = useReverification();
+  const stepUp = useStepUp();
+  const confirmThenCompose = async (prompt: MomentPrompt | null) => {
+    const result = await stepUp.run();
+    if (result?.status === 'passed') {
+      reverification.clear();
+      setComposerPrompt(prompt);
+      setComposing(true);
+    }
+  };
+
   const openComposer = (prompt: MomentPrompt | null) => {
     haptic.tap();
+    if (reverification.required) {
+      void confirmThenCompose(prompt);
+      return;
+    }
     setComposerPrompt(prompt);
     setComposing(true);
   };
@@ -275,11 +293,17 @@ export default function MomentsPage() {
           document.body
         )}
 
+      {stepUp.element}
       {composing && (
         <MomentComposer
           defaultCity={homeCity}
           initialPrompt={composerPrompt}
           onClose={() => setComposing(false)}
+          onReverificationRequired={() => {
+            setComposing(false);
+            reverification.markRequired();
+            void confirmThenCompose(composerPrompt);
+          }}
           onPosted={() => {
             setComposing(false);
             showToast(t('moments.posted'), 'check');

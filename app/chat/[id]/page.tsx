@@ -55,6 +55,8 @@ import { RepBadge, RhythmPill } from '@/components/profile/RhythmBadges';
 import { hapticError, hapticSuccess, hapticTap } from '@/lib/utils/haptics';
 import { BackButton } from '@/components/BackButton';
 import { Switch } from '@/components/ui/Switch';
+import { useStepUp } from '@/components/verify/useStepUp';
+import { isReverificationError, useReverification } from '@/lib/useReverification';
 import { useCall } from '@/components/calls/CallProvider';
 import { CallLogPill } from '@/components/calls/CallLogPill';
 import { callUnlockState, missLockUntil, pairKey, type CallEndReason } from '@/lib/callRules';
@@ -274,6 +276,13 @@ export default function ChatConversationPage() {
 
   // ---- Voice calls (lib/callEngine.ts; the screens live in components/calls) ----------------------------------
   const call = useCall();
+  // Step-up identity check: when the account is restricted the composer is replaced by a locked card.
+  const reverification = useReverification();
+  const stepUp = useStepUp();
+  const confirmIdentity = async () => {
+    const result = await stepUp.run();
+    if (result?.status === 'passed') reverification.clear();
+  };
   const [myVerified, setMyVerified] = useState(false);
   const [callLogs, setCallLogs] = useState<CallLogRow[]>([]);
   const [callsMuted, setCallsMuted] = useState(false);
@@ -953,6 +962,10 @@ export default function ChatConversationPage() {
       if (!res.ok) {
         setMessages((prev) => prev.filter((m) => m.id !== tempId));
         setInputText((current) => current || clean); // give the draft back so it can be edited
+        if (isReverificationError(resData)) {
+          reverification.markRequired(); // the composer swaps to the locked card
+          return;
+        }
         if (resData.courtshipLocked) setShowSafetyNotice(true);
         if (resData.code === 'OUTREACH_LIMIT_REACHED') {
           // A calm explanation, then the comparison screen; the draft is kept above.
@@ -1055,6 +1068,10 @@ export default function ChatConversationPage() {
       const res = await fetch('/api/messages/voice', { method: 'POST', body: form });
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
+        if (isReverificationError(data)) {
+          reverification.markRequired();
+          return;
+        }
         if (data.courtshipLocked) setShowSafetyNotice(true);
         setErrorBanner(data.error || 'Voice note could not be sent.');
         return;
@@ -1674,8 +1691,19 @@ export default function ChatConversationPage() {
         </button>
       )}
 
+      {/* Restricted account: the composer gives way to the identity prompt (step-up check) */}
+      {reverification.required && (
+        <div className="shrink-0 w-full border-t border-[#8574B7]/20 bg-[#F6F4FB] p-4 pb-[max(1rem,env(safe-area-inset-bottom))] text-center z-20">
+          <p className="text-sm font-semibold text-[#413B5E]">{t('stepup.lockedTitle')}</p>
+          <p className="mt-1 text-xs leading-relaxed text-[#413B5E]/75">{t('stepup.lockedBody')}</p>
+          <button type="button" onClick={confirmIdentity} className="mt-3 flex h-11 w-full items-center justify-center rounded-full bg-[#8574B7] text-sm font-semibold text-white transition hover:bg-[#534377]">
+            {t('stepup.continue')}
+          </button>
+        </div>
+      )}
+      {stepUp.element}
       {/* Docked Flex Composer (Never overlaps message feed) */}
-      <div className="shrink-0 w-full bg-white/95 backdrop-blur-md border-t border-[#D0CDE1] px-3 pt-2 pb-[max(0.625rem,env(safe-area-inset-bottom))] z-20">
+      <div className={`shrink-0 w-full bg-white/95 backdrop-blur-md border-t border-[#D0CDE1] px-3 pt-2 pb-[max(0.625rem,env(safe-area-inset-bottom))] z-20 ${reverification.required ? 'hidden' : ''}`}>
         {!isInitialLoading && !gateUnlocked && (() => {
           // One friendly line; shows whichever side still needs messages (each member needs 3).
           const mine = Math.min(liveGate.senderSubstantiveCount, CONTACT_UNLOCK_TURNS);

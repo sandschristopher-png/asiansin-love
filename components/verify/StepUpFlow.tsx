@@ -1,0 +1,465 @@
+'use client';
+
+import React, { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import { createPortal } from 'react-dom';
+import {
+  ArrowDown,
+  ArrowLeft,
+  ArrowRight,
+  ArrowUp,
+  Check,
+  CheckCircle2,
+  CircleHelp,
+  Loader2,
+  ScanFace,
+  ShieldCheck,
+  Lock,
+} from 'lucide-react';
+import { useLocale } from '@/components/i18n/LocaleProvider';
+import { haptic } from '@/lib/haptics';
+import { poseRatios, poseReached, type PoseRatios, type StepUpPose } from '@/lib/headPose';
+import { MIN_HOLD_MS } from '@/lib/verify/stepUpRules';
+import { FACE_MIN_CONFIDENCE } from '@/lib/faceGateMessages';
+import type { TKey } from '@/lib/i18n';
+
+/** 'unavailable': the identity check is not set up yet (database migration not applied); the server is not enforcing it either. */
+export type StepUpResult = { status: 'passed'; challengeId: string } | { status: 'manual_review' } | { status: 'unavailable' };
+
+interface Props {
+  open: boolean;
+  /** 'photo_swap' when changing the main photo; otherwise the check follows the account's own restriction. */
+  reason?: 'photo_swap';
+  /** photo_swap: the exact photo about to become primary (it is matched against the live face). */
+  photo?: Blob | null;
+  onClose: () => void;
+  onResult: (r: StepUpResult) => void;
+}
+
+type Step = 'intro' | 'tips' | 'camera' | 'reviewing' | 'passed' | 'failed' | 'manual' | 'error';
+
+/** The hold the member sees fill. The server needs >= MIN_HOLD_MS; a margin keeps slow phones above it. */
+const HOLD_TARGET_MS = MIN_HOLD_MS + 250;
+const NEUTRAL_MS = 700;
+const TICK_MS = 66;
+const CHECK_TIMEOUT_MS = 75_000;
+const FRAME_WIDTH = 480;
+
+const INSTRUCTION: Record<StepUpPose, TKey> = {
+  turn_left: 'stepup.turnLeft',
+  turn_right: 'stepup.turnRight',
+  look_up: 'stepup.lookUp',
+  look_down: 'stepup.lookDown',
+};
+const ARROW = { turn_left: ArrowLeft, turn_right: ArrowRight, look_up: ArrowUp, look_down: ArrowDown } as const;
+
+/** Arc centre angle (degrees, SVG: 0 = right, 90 = down) for the side of the circle each pose uses. */
+const ARC_ANGLE: Record<StepUpPose, number> = { turn_left: 180, turn_right: 0, look_up: 270, look_down: 90 };
+const ARC_SPAN = 84;
+const R = 47;
+const polar = (deg: number) => [50 + R * Math.cos((deg * Math.PI) / 180), 50 + R * Math.sin((deg * Math.PI) / 180)] as const;
+
+function arcPath(center: number) {
+  const [x0, y0] = polar(center - ARC_SPAN / 2);
+  const [x1, y1] = polar(center + ARC_SPAN / 2);
+  return `M ${x0.toFixed(2)} ${y0.toFixed(2)} A ${R} ${R} 0 0 1 ${x1.toFixed(2)} ${y1.toFixed(2)}`;
+}
+const ARC_LEN = (R * Math.PI * ARC_SPAN) / 180;
+
+function frameOf(video: HTMLVideoElement): Promise<Blob | null> {
+  const scale = Math.min(1, FRAME_WIDTH / (video.videoWidth || FRAME_WIDTH));
+  const canvas = document.createElement('canvas');
+  canvas.width = Math.round(video.videoWidth * scale);
+  canvas.height = Math.round(video.videoHeight * scale);
+  canvas.getContext('2d')?.drawImage(video, 0, 0, canvas.width, canvas.height); // raw frame: the CSS mirror is preview only
+  return new Promise((resolve) => canvas.toBlob(resolve, 'image/jpeg', 0.72));
+}
+
+const subscribeNever = () => () => {};
+
+function Illustration() {
+  // 16:9 slot for the custom manga art that replaces it later.
+  return (
+    <div className="flex aspect-video w-full items-center justify-center rounded-2xl bg-[#F6F4FB]" aria-hidden>
+      <ScanFace className="h-12 w-12 text-[#8574B7]/60" strokeWidth={1.5} />
+    </div>
+  );
+}
+
+/**
+ * The step-up identity check: Intro sheet -> Tips sheet -> circular 4-direction camera check -> reviewing.
+ * The camera is analysed on the device (MediaPipe); the server receives a few still frames, never video.
+ * Camera tracks are always stopped when the screen leaves the camera step, closes or unmounts.
+ */
+export function StepUpFlow({ open, reason, photo, onClose, onResult }: Props) {
+  const { t } = useLocale();
+  const [step, setStep] = useState<Step>('intro');
+  const [error, setError] = useState<TKey | null>(null);
+  const [retriesLeft, setRetriesLeft] = useState(0);
+  const [help, setHelp] = useState(false);
+  // Camera-step UI state (the loop itself runs from refs, so a re-render never restarts it).
+  const [poses, setPoses] = useState<StepUpPose[]>([]);
+  const [index, setIndex] = useState(-1); // -1 = neutral capture, 0..2 = poses
+  const [progress, setProgress] = useState(0);
+  // True on the client only (portals need document.body): no state, so no setState-in-effect.
+  const mounted = useSyncExternalStore(subscribeNever, () => true, () => false);
+  const [starting, setStarting] = useState(false);
+
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const viewRef = useRef<HTMLDivElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
+  const cancelRef = useRef(false);
+
+  const stopCamera = useCallback(() => {
+    streamRef.current?.getTracks().forEach((track) => track.stop());
+    streamRef.current = null;
+    if (videoRef.current) videoRef.current.srcObject = null;
+  }, []);
+
+  // Closed or unmounted: cancel any running check and release the camera.
+  useEffect(() => {
+    if (open) return;
+    cancelRef.current = true;
+    stopCamera();
+  }, [open, stopCamera]);
+  useEffect(
+    () => () => {
+      cancelRef.current = true;
+      stopCamera();
+    },
+    [stopCamera]
+  );
+
+  const fail = useCallback(
+    (key: TKey) => {
+      stopCamera();
+      setError(key);
+      setStep('error');
+    },
+    [stopCamera]
+  );
+
+  const submit = useCallback(
+    async (token: string, log: unknown, neutral: Blob, frames: Blob[]) => {
+      setStep('reviewing');
+      stopCamera();
+      const form = new FormData();
+      form.append('token', token);
+      form.append('log', JSON.stringify(log));
+      form.append('faceCheck', JSON.stringify({ detector: 'mediapipe_face_landmarker', face_count: 1, min_confidence: FACE_MIN_CONFIDENCE, checked_at: Date.now() }));
+      form.append('center', neutral, 'center.jpg');
+      frames.forEach((f, i) => form.append(`pose_${i}`, f, `pose_${i}.jpg`));
+      if (reason === 'photo_swap' && photo) form.append('photo', photo, 'photo');
+      try {
+        const res = await fetch('/api/verify/step-up/finish', { method: 'POST', body: form });
+        const data = await res.json().catch(() => ({}));
+        if (cancelRef.current) return;
+        if (res.ok && data.status === 'passed') {
+          setStep('passed');
+          haptic.notify();
+          onResult({ status: 'passed', challengeId: String(data.challengeId) });
+        } else if (res.ok && data.status === 'failed') {
+          setRetriesLeft(Number(data.retriesLeft) || 0);
+          setStep('failed');
+        } else if (res.ok && data.status === 'manual_review') {
+          setStep('manual');
+          onResult({ status: 'manual_review' });
+        } else if (data.code === 'EXPIRED' || data.code === 'USED') fail('stepup.expired');
+        else fail('stepup.startFailed');
+      } catch {
+        if (!cancelRef.current) fail('stepup.startFailed');
+      }
+    },
+    [fail, onResult, photo, reason, stopCamera]
+  );
+
+  /** Begins the camera step: camera, face model and signed challenge are requested together, inside the tap. */
+  const begin = useCallback(async () => {
+    if (starting) return;
+    setStarting(true);
+    cancelRef.current = false;
+    setProgress(0);
+    setIndex(-1);
+    try {
+      const [stream, startRes, gate] = await Promise.all([
+        navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user', width: { ideal: 640 }, height: { ideal: 640 } }, audio: false }),
+        fetch('/api/verify/step-up/start', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(reason ? { reason } : {}),
+        }),
+        import('@/lib/faceGate').then(async (m) => {
+          await m.initFaceGate();
+          return m;
+        }),
+      ]);
+      streamRef.current = stream;
+      if (cancelRef.current) return stopCamera();
+      const start = await startRes.json().catch(() => ({}));
+      if (!startRes.ok && startRes.status === 503 && reason === 'photo_swap') {
+        // Not set up yet: the photo upload does not enforce it either, so let the swap carry on.
+        stopCamera();
+        onResult({ status: 'unavailable' });
+        onClose();
+        return;
+      }
+      if (!startRes.ok) return fail(startRes.status === 503 ? 'stepup.unavailable' : 'stepup.startFailed');
+      const token = String(start.token);
+      const sequence = start.poses as StepUpPose[];
+      setPoses(sequence);
+      setStep('camera');
+      // Let React mount the camera screen (and its <video>) before attaching the stream.
+      await new Promise<void>((resolve) => requestAnimationFrame(() => requestAnimationFrame(() => resolve())));
+      if (cancelRef.current) return stopCamera();
+
+      const video = videoRef.current;
+      if (!video) return fail('stepup.startFailed');
+      video.srcObject = stream;
+      await video.play().catch(() => {});
+
+      // ---- The check loop: neutral capture, then each pose held for HOLD_TARGET_MS --------------------
+      const began = performance.now();
+      let neutral: PoseRatios | null = null;
+      let neutralBlob: Blob | null = null;
+      let neutralSince: number | null = null;
+      const neutralSamples: PoseRatios[] = [];
+      let poseIdx = -1;
+      let holdStart: number | null = null;
+      const log: { pose: StepUpPose; holdMs: number }[] = [];
+      const frames: Blob[] = [];
+      let busy = false;
+
+      const timer = window.setInterval(async () => {
+        if (busy) return;
+        if (cancelRef.current || !streamRef.current) return window.clearInterval(timer);
+        if (performance.now() - began > CHECK_TIMEOUT_MS) {
+          window.clearInterval(timer);
+          return fail('stepup.expired');
+        }
+        busy = true;
+        try {
+          const { faces, points } = gate.readFaceLandmarks(video);
+          const ratios = faces === 1 ? poseRatios(points) : null;
+          const now = performance.now();
+
+          if (poseIdx === -1) {
+            // Neutral: one face, looking at the camera, steady for NEUTRAL_MS.
+            if (!ratios) {
+              neutralSince = null;
+              neutralSamples.length = 0;
+              return;
+            }
+            neutralSince ??= now;
+            neutralSamples.push(ratios);
+            setProgress(Math.min(1, (now - neutralSince) / NEUTRAL_MS));
+            if (now - neutralSince >= NEUTRAL_MS) {
+              neutral = {
+                yaw: neutralSamples.reduce((s, r) => s + r.yaw, 0) / neutralSamples.length,
+                pitch: neutralSamples.reduce((s, r) => s + r.pitch, 0) / neutralSamples.length,
+              };
+              neutralBlob = await frameOf(video);
+              poseIdx = 0;
+              holdStart = null;
+              setIndex(0);
+              setProgress(0);
+            }
+            return;
+          }
+
+          const target = sequence[poseIdx];
+          if (!ratios || !neutral || !poseReached(target, ratios, neutral)) {
+            holdStart = null;
+            setProgress(0);
+            return;
+          }
+          holdStart ??= now;
+          const held = now - holdStart;
+          setProgress(Math.min(1, held / HOLD_TARGET_MS));
+          if (held >= HOLD_TARGET_MS) {
+            const blob = await frameOf(video);
+            if (!blob) return;
+            log.push({ pose: target, holdMs: Math.round(held) });
+            frames.push(blob);
+            haptic.poseLock(); // a tick as each direction locks in
+            poseIdx += 1;
+            holdStart = null;
+            setProgress(0);
+            if (poseIdx >= sequence.length) {
+              window.clearInterval(timer);
+              if (neutralBlob) void submit(token, log, neutralBlob, frames);
+            } else {
+              setIndex(poseIdx);
+            }
+          }
+        } finally {
+          busy = false;
+        }
+      }, TICK_MS);
+    } catch (err) {
+      const name = (err as { name?: string } | null)?.name;
+      fail(name === 'NotFoundError' || name === 'OverconstrainedError' ? 'stepup.cameraMissing' : name === 'NotAllowedError' || name === 'SecurityError' ? 'stepup.cameraDenied' : 'stepup.startFailed');
+    } finally {
+      setStarting(false);
+    }
+  }, [fail, onClose, onResult, reason, starting, stopCamera, submit]);
+
+  if (!open || !mounted) return null;
+
+  const active: StepUpPose | null = index >= 0 ? (poses[index] ?? null) : null;
+  const Arrow = active ? ARROW[active] : null;
+  const close = () => {
+    cancelRef.current = true;
+    stopCamera();
+    onClose();
+  };
+
+  const primary = 'flex h-12 w-full items-center justify-center rounded-full bg-[#8574B7] text-sm font-semibold text-white transition hover:bg-[#534377] active:scale-[0.99] disabled:opacity-60';
+
+  const bullets: Array<[React.ComponentType<{ className?: string }>, TKey]> = [
+    [ScanFace, 'stepup.introBullet1'],
+    [ShieldCheck, 'stepup.introBullet2'],
+    [Lock, 'stepup.introBullet3'],
+  ];
+
+  let body: React.ReactNode;
+  if (step === 'intro' || step === 'tips') {
+    const intro = step === 'intro';
+    body = (
+      <div className="flex h-full flex-col bg-white">
+        <div className="flex h-14 shrink-0 items-center px-3">
+          <button type="button" onClick={close} aria-label={t('stepup.close')} className="flex h-9 w-9 items-center justify-center rounded-full text-[#413B5E] transition hover:bg-[#F6F4FB]">
+            <ArrowLeft className="h-5 w-5" aria-hidden />
+          </button>
+        </div>
+        <div className="flex-1 overflow-y-auto px-5 pb-4">
+          <Illustration />
+          <h2 className="mt-6 text-xl font-semibold tracking-tight text-[#413B5E]">{t(intro ? 'stepup.introTitle' : 'stepup.tipsTitle')}</h2>
+          <ul className="mt-5 space-y-4">
+            {intro
+              ? bullets.map(([Icon, key]) => (
+                  <li key={key} className="flex items-start gap-3">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#F6F4FB] text-[#8574B7]">
+                      <Icon className="h-4.5 w-4.5" aria-hidden />
+                    </span>
+                    <span className="pt-1.5 text-sm leading-snug text-[#413B5E]">{t(key)}</span>
+                  </li>
+                ))
+              : (['stepup.tip1', 'stepup.tip2', 'stepup.tip3'] as const).map((key) => (
+                  <li key={key} className="flex items-start gap-3">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#F6F4FB] text-[#8574B7]">
+                      <Check className="h-4.5 w-4.5" aria-hidden />
+                    </span>
+                    <span className="pt-1.5 text-sm leading-snug text-[#413B5E]">{t(key)}</span>
+                  </li>
+                ))}
+          </ul>
+        </div>
+        <div className="shrink-0 px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] pt-2">
+          <button type="button" className={primary} disabled={starting} onClick={() => (intro ? setStep('tips') : void begin())}>
+            {starting ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : t(intro ? 'stepup.next' : 'stepup.start')}
+          </button>
+        </div>
+      </div>
+    );
+  } else if (step === 'camera') {
+    body = (
+      <div className="relative flex h-full flex-col bg-white">
+        <div className="flex h-14 shrink-0 items-center justify-between px-3">
+          <button type="button" onClick={close} aria-label={t('stepup.close')} className="flex h-9 w-9 items-center justify-center rounded-full text-[#413B5E] transition hover:bg-[#F6F4FB]">
+            <ArrowLeft className="h-5 w-5" aria-hidden />
+          </button>
+          <button type="button" onClick={() => setHelp((v) => !v)} aria-expanded={help} className="inline-flex h-9 items-center gap-1.5 rounded-full px-3 text-sm font-medium text-[#413B5E] transition hover:bg-[#F6F4FB]">
+            <CircleHelp className="h-4 w-4" aria-hidden />
+            {t('stepup.help')}
+          </button>
+        </div>
+        {help && (
+          <div role="status" className="absolute right-3 top-14 z-10 w-[260px] rounded-2xl border border-[#D0CDE1] bg-white p-3.5 text-xs leading-relaxed text-[#413B5E] shadow-[0_12px_30px_rgba(65,59,94,0.16)]">
+            {t('stepup.helpBody')}
+          </div>
+        )}
+        <div className="flex flex-1 flex-col items-center justify-center px-6">
+          <div ref={viewRef} className="relative aspect-square w-full max-w-[320px]">
+            {/* Front-camera preview, mirrored like a mirror: turning to your left fills the LEFT arc. */}
+            <div className="absolute inset-[7%] overflow-hidden rounded-full bg-[#E8E6F1]">
+              <video ref={videoRef} playsInline muted autoPlay className="h-full w-full -scale-x-100 object-cover" />
+            </div>
+            <svg viewBox="0 0 100 100" className="pointer-events-none absolute inset-0 h-full w-full" aria-hidden>
+              <circle cx="50" cy="50" r={R} fill="none" stroke="#E8E6F1" strokeWidth="2.2" />
+              {active && (
+                <>
+                  <path d={arcPath(ARC_ANGLE[active])} fill="none" stroke="#D0CDE1" strokeWidth="3.6" strokeLinecap="round" />
+                  <path
+                    d={arcPath(ARC_ANGLE[active])}
+                    fill="none"
+                    stroke="#8574B7"
+                    strokeWidth="3.6"
+                    strokeLinecap="round"
+                    strokeDasharray={`${ARC_LEN * progress} ${ARC_LEN}`}
+                  />
+                </>
+              )}
+              {!active && <circle cx="50" cy="50" r={R} fill="none" stroke="#8574B7" strokeWidth="3.6" strokeLinecap="round" strokeDasharray={`${2 * Math.PI * R * progress} ${2 * Math.PI * R}`} transform="rotate(-90 50 50)" />}
+            </svg>
+            {active && Arrow && (
+              <span
+                className="absolute flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-[#8574B7] text-white shadow-md ring-4 ring-white"
+                style={{ left: `${polar(ARC_ANGLE[active])[0]}%`, top: `${polar(ARC_ANGLE[active])[1]}%` }}
+              >
+                <Arrow className="h-5 w-5" strokeWidth={2.5} aria-hidden />
+              </span>
+            )}
+          </div>
+          <p aria-live="polite" className="mt-8 text-center text-xl font-bold tracking-tight text-[#413B5E]">
+            {active ? t(INSTRUCTION[active]) : t('stepup.lookCenter')}
+          </p>
+        </div>
+      </div>
+    );
+  } else if (step === 'reviewing') {
+    body = (
+      <div className="flex h-full flex-col items-center justify-center bg-white px-8 text-center">
+        <Loader2 className="h-9 w-9 animate-spin text-[#8574B7]" aria-hidden />
+        <p className="mt-5 text-base font-semibold text-[#413B5E]">{t('stepup.reviewing')}</p>
+      </div>
+    );
+  } else {
+    const result =
+      step === 'passed'
+        ? { icon: <CheckCircle2 className="h-12 w-12 text-[#8574B7]" aria-hidden />, title: t('stepup.passedTitle'), text: t('stepup.passedBody') }
+        : step === 'failed'
+          ? { icon: <ScanFace className="h-12 w-12 text-[#8574B7]" aria-hidden />, title: t('stepup.failedTitle'), text: t('stepup.failedBody', { count: retriesLeft }) }
+          : step === 'manual'
+            ? { icon: <ShieldCheck className="h-12 w-12 text-[#8574B7]" aria-hidden />, title: t('stepup.manualTitle'), text: t('stepup.manualBody') }
+            : { icon: <ScanFace className="h-12 w-12 text-[#8574B7]" aria-hidden />, title: t('stepup.introTitle'), text: error ? t(error) : '' };
+    body = (
+      <div className="flex h-full flex-col items-center justify-center bg-white px-8 text-center">
+        {result.icon}
+        <h2 className="mt-5 text-xl font-semibold tracking-tight text-[#413B5E]">{result.title}</h2>
+        {result.text && <p className="mt-2 max-w-[300px] text-sm leading-relaxed text-[#413B5E]/75">{result.text}</p>}
+        <div className="mt-8 w-full max-w-[300px] space-y-2.5">
+          {(step === 'failed' || step === 'error') && (
+            <button type="button" className={primary} onClick={() => setStep('tips')}>
+              {t('stepup.tryAgain')}
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={close}
+            className={step === 'passed' || step === 'manual' ? primary : 'flex h-12 w-full items-center justify-center rounded-full border border-[#D0CDE1] bg-white text-sm font-semibold text-[#413B5E] transition hover:bg-[#F6F4FB]'}
+          >
+            {t('stepup.close')}
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return createPortal(
+    <div role="dialog" aria-modal="true" className="fixed inset-0 z-[600] flex justify-center bg-black/30">
+      <div className="h-full w-full max-w-[480px] bg-white pt-[env(safe-area-inset-top,0px)]">{body}</div>
+    </div>,
+    document.body
+  );
+}
+
+export default StepUpFlow;
