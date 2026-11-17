@@ -7,6 +7,7 @@ import { BrandLogo } from '@/components/BrandLogo';
 import Hero, { LANDING_SHELL, SignInPrompt } from '@/components/Hero';
 import { LocaleProvider, useLocale } from '@/components/i18n/LocaleProvider';
 import { LanguagePill } from '@/components/i18n/LanguageSheet';
+import { LandingMotion, Reveal, TapButton } from '@/components/landing/Motion';
 import { HTML_LANG, type Locale } from '@/lib/i18n/config';
 import type { Messages } from '@/lib/i18n/messages';
 
@@ -42,6 +43,7 @@ export function HeroLanding({ locale, messages }: { locale: Locale; messages: Me
 function LandingBody() {
   const { locale, m } = useLocale();
   return (
+    <LandingMotion>
     <div
       lang={HTML_LANG[locale]}
       className="font-sans w-full min-h-screen bg-white overflow-x-clip text-[#413B5E] selection:bg-[#8574B7]/15 selection:text-[#8574B7]"
@@ -67,13 +69,13 @@ function LandingBody() {
           </div>
           <div className="mt-6 space-y-3">
             {STEP_KEYS.map(({ step, key }) => (
-              <div key={step} className="flex flex-col items-center gap-1.5 rounded-3xl border border-slate-200 bg-white p-5 text-center">
+              <Reveal key={step} className="flex flex-col items-center gap-1.5 rounded-3xl border border-slate-200 bg-white p-5 text-center">
                 <span className="font-brand text-sm font-semibold tabular-nums text-[#8574B7]">{step}</span>
                 <div className="min-w-0 w-full break-words">
                   <h3 className="text-[15px] font-semibold text-[#413B5E] leading-snug">{m.steps[key].title}</h3>
                   <p className="mt-1 text-[13px] text-slate-600 leading-relaxed">{m.steps[key].desc}</p>
                 </div>
-              </div>
+              </Reveal>
             ))}
           </div>
         </section>
@@ -81,7 +83,7 @@ function LandingBody() {
         {/* Feature stories: illustration on top (object-contain, never cropped), centred copy below */}
         <section className="py-8 space-y-3">
           {FEATURES.map(({ key, src }) => (
-            <div key={key} className="flex flex-col items-center gap-3 rounded-3xl border border-slate-200 bg-white p-4 text-center">
+            <Reveal key={key} className="flex flex-col items-center gap-3 rounded-3xl border border-slate-200 bg-white p-4 text-center">
               <div className="relative w-full h-40 overflow-hidden rounded-2xl bg-[#E8E6F1]/40">
                 {src ? (
                   <Image src={src} alt={m.features[key].alt} fill sizes="(max-width: 448px) 100vw, 408px" className="object-contain object-center select-none pointer-events-none" />
@@ -95,7 +97,7 @@ function LandingBody() {
                 <h3 className="text-[15px] font-semibold text-[#413B5E] leading-snug">{m.features[key].title}</h3>
                 <p className="mt-1 text-[13px] text-slate-600 leading-relaxed">{m.features[key].body}</p>
               </div>
-            </div>
+            </Reveal>
           ))}
         </section>
 
@@ -104,12 +106,14 @@ function LandingBody() {
           <h2 className="font-brand text-xl font-semibold tracking-tight text-[#413B5E]">{m.cta.heading}</h2>
           <p className="mt-2 text-sm text-slate-600">{m.cta.sub}</p>
           <div className="mt-6 flex flex-col items-center gap-4">
-            <Link
-              href="/signup"
-              className="w-full h-12 inline-flex items-center justify-center rounded-full bg-[#8574B7] hover:bg-[#534377] text-white font-medium text-sm active:scale-95 transition-all"
-            >
-              {m.hero.join}
-            </Link>
+            <TapButton>
+              <Link
+                href="/signup"
+                className="w-full h-12 inline-flex items-center justify-center rounded-full bg-[#8574B7] hover:bg-[#534377] text-white font-medium text-sm transition-colors duration-200"
+              >
+                {m.hero.join}
+              </Link>
+            </TapButton>
             <SignInPrompt />
           </div>
         </section>
@@ -132,6 +136,7 @@ function LandingBody() {
         </footer>
       </div>
     </div>
+    </LandingMotion>
   );
 }
 

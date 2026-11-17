@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useLocale } from '@/components/i18n/LocaleProvider';
 import { SoftLaunchNotice } from '@/components/SoftLaunchNotice';
+import { FadeIn, TapButton } from '@/components/landing/Motion';
 
 /**
  * The landing page is one centred phone-width column on every screen: no breakpoints change its
@@ -37,7 +38,7 @@ export default function Hero() {
       <div className="flex flex-col items-center text-center">
         {/* Brand portrait in a rounded 4:5 card: nothing is drawn over her face, and no name, age or
             profile badge, so it can never read as a real member. */}
-        <div className="relative w-full aspect-[4/5] overflow-hidden rounded-3xl bg-[#E8E6F1]/50 shadow-[0_8px_30px_rgba(65,59,94,0.12)]">
+        <FadeIn className="relative w-full aspect-[4/5] overflow-hidden rounded-3xl bg-[#E8E6F1]/50 shadow-[0_8px_30px_rgba(65,59,94,0.12)]">
           <Image
             src="/Camille_Hero.png"
             alt={m.hero.imageAlt}
@@ -47,7 +48,7 @@ export default function Hero() {
             sizes="(max-width: 448px) 100vw, 448px"
             className="object-cover select-none pointer-events-none"
           />
-        </div>
+        </FadeIn>
 
         <h1 className="mt-8 w-full text-[28px] font-semibold tracking-tight leading-tight text-[#413B5E] break-words">
           <span className="block">{m.hero.line1}</span>
@@ -60,13 +61,15 @@ export default function Hero() {
         <SoftLaunchNotice className="mt-6" />
 
         {/* CTA block: one item per row */}
-        <div className="mt-7 w-full flex flex-col items-center gap-4">
-          <Link
-            href="/signup"
-            className="w-full h-12 inline-flex items-center justify-center rounded-full bg-[#8574B7] hover:bg-[#534377] text-white font-medium text-sm active:scale-95 transition-all"
-          >
-            {m.hero.join}
-          </Link>
+        <FadeIn delay={0.08} className="mt-7 w-full flex flex-col items-center gap-4">
+          <TapButton>
+            <Link
+              href="/signup"
+              className="w-full h-12 inline-flex items-center justify-center rounded-full bg-[#8574B7] hover:bg-[#534377] text-white font-medium text-sm transition-colors duration-200"
+            >
+              {m.hero.join}
+            </Link>
+          </TapButton>
 
           {/* Trust line, then the Sparks social-proof stat: one row each. */}
           <div className="flex flex-col items-center gap-1">
@@ -75,7 +78,7 @@ export default function Hero() {
           </div>
 
           <SignInPrompt />
-        </div>
+        </FadeIn>
       </div>
     </section>
   );
