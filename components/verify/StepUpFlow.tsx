@@ -15,6 +15,7 @@ import {
   ShieldCheck,
   Lock,
 } from 'lucide-react';
+import Image from 'next/image';
 import { useLocale } from '@/components/i18n/LocaleProvider';
 import { haptic } from '@/lib/haptics';
 import { poseRatios, poseReached, type PoseRatios, type StepUpPose } from '@/lib/headPose';
@@ -50,6 +51,14 @@ const INSTRUCTION: Record<StepUpPose, TKey> = {
   look_up: 'stepup.lookUp',
   look_down: 'stepup.lookDown',
 };
+/** The four direction illustrations (public/verify, 320px WebP, about 9 KB each). All four stay mounted and cross-fade, so there is never a load between steps. */
+const GUIDE_SRC: Record<StepUpPose, string> = {
+  turn_left: '/verify/step-up-left.webp',
+  turn_right: '/verify/step-up-right.webp',
+  look_up: '/verify/step-up-up.webp',
+  look_down: '/verify/step-up-down.webp',
+};
+const GUIDE_ORDER: StepUpPose[] = ['turn_left', 'turn_right', 'look_up', 'look_down'];
 const ARROW = { turn_left: ArrowLeft, turn_right: ArrowRight, look_up: ArrowUp, look_down: ArrowDown } as const;
 
 /** Arc centre angle (degrees, SVG: 0 = right, 90 = down) for the side of the circle each pose uses. */
@@ -409,7 +418,24 @@ export function StepUpFlow({ open, reason, photo, onClose, onResult }: Props) {
               </span>
             )}
           </div>
-          <p aria-live="polite" className="mt-8 text-center text-xl font-bold tracking-tight text-[#413B5E]">
+          {/* Under the circle: the illustration for the current direction. It fades to the next one as each pose
+              locks in, and is empty (space reserved, nothing shifts) during the straight-ahead capture. */}
+          <div aria-hidden className="relative mt-5 h-28 w-28 shrink-0">
+            {GUIDE_ORDER.map((pose) => (
+              <Image
+                key={pose}
+                src={GUIDE_SRC[pose]}
+                alt=""
+                width={320}
+                height={320}
+                unoptimized
+                loading="eager"
+                draggable={false}
+                className={`absolute inset-0 h-full w-full select-none object-contain transition-opacity duration-300 ease-out motion-reduce:transition-none ${active === pose ? 'opacity-100' : 'opacity-0'}`}
+              />
+            ))}
+          </div>
+          <p aria-live="polite" className="mt-4 text-center text-xl font-bold tracking-tight text-[#413B5E]">
             {active ? t(INSTRUCTION[active]) : t('stepup.lookCenter')}
           </p>
         </div>
