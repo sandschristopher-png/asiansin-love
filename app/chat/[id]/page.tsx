@@ -6,6 +6,7 @@ import { ChatSafetyBanner } from '@/components/chat/ChatSafetyBanner';
 import { TraitIcebreakers } from '@/components/chat/TraitIcebreakers';
 import { FirstMessageShield } from '@/components/chat/FirstMessageShield';
 import { SafetyBanner } from '@/components/chat/SafetyBanner';
+import { localizeError } from '@/lib/i18n/errors';
 import { inspectFirstMessageSafety } from '@/lib/safety/shield';
 import { isPlusProfile } from '@/lib/plus';
 import { useLocale } from '@/components/i18n/LocaleProvider';
@@ -788,7 +789,7 @@ export default function ChatConversationPage() {
           router.push('/plus?feature=conversations');
           return;
         }
-        setErrorBanner(resData.error || 'Message could not be delivered.');
+        setErrorBanner(String(resData.code || '').startsWith('NETWORK_') ? localizeError({ code: resData.code }, t) : resData.error || 'Message could not be delivered.');
         return;
       }
 

@@ -340,7 +340,10 @@
     "providerDown": "Opsi masuk itu belum tersedia saat ini. Silakan gunakan yang lain.",
     "signInFailed": "Gagal masuk. Silakan coba lagi.",
     "resetExpired": "Tautan reset kata sandi sudah kedaluwarsa atau sudah dipakai. Minta yang baru lewat Lupa kata sandi.",
-    "providerNamedDown": "Masuk dengan {provider} belum tersedia saat ini. Silakan gunakan opsi lain."
+    "providerNamedDown": "Masuk dengan {provider} belum tersedia saat ini. Silakan gunakan opsi lain.",
+    "networkVerify": "Verifikasi profilmu dengan selfie langsung untuk mengirim pesan saat memakai VPN.",
+    "networkRestricted": "Mengirim pesan belum tersedia dari koneksi ini sampai profilmu terverifikasi. Verifikasi dengan selfie langsung, atau beralih ke koneksi biasamu.",
+    "locationMasked": "Kami tidak dapat mengonfirmasi lokasimu dari koneksi VPN, proxy, atau pusat data. Matikan lalu coba lagi."
   },
   "plus": {
     "upgrade": "Tingkatkan ke Plus",

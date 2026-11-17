@@ -1,5 +1,6 @@
 import { NextResponse, after } from 'next/server';
 import { notifyAdmins } from '@/lib/adminNotify';
+import { assessNetwork, networkGate, recordNetworkRisk } from '@/lib/safety/vpnCheck';
 import { titleForRecipient } from '@/lib/notificationTitles';
 import { cookies } from 'next/headers';
 import { createServerClient } from '@supabase/ssr';
@@ -211,6 +212,22 @@ export async function POST(req: Request) {
       .eq('id', senderId)
       .maybeSingle();
     const senderRep = scoreOf(senderProfile?.reputation_score);
+
+    // Network risk (lib/safety/vpnCheck.ts): a VPN asks an unverified member for a live selfie before they can
+    // message; a Tor, proxy or datacenter connection also costs 15 reputation (once a day) and is flagged for
+    // staff. Verified, trusted and staff accounts, and any lookup outage, are never gated.
+    const net = await assessNetwork(req.headers, { userId: senderId, db: serviceClient });
+    await recordNetworkRisk(serviceClient, senderId, net, {
+      event: 'message',
+      onAlert: () => after(() => notifyAdmins({ kind: 'moderation', ref: senderId, actorId: senderId })),
+    });
+    const gate = networkGate(net.tier, { verified: senderProfile?.is_verified === true, trusted: net.trusted });
+    if (gate) {
+      return NextResponse.json(
+        { error: 'Verify with a live selfie to message from this connection.', code: gate.code },
+        { status: gate.status }
+      );
+    }
 
     // Held for review after a zero-tolerance hit (account_freezes is server-only; missing table = no freezes).
     const { data: freeze } = await serviceClient

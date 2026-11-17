@@ -41,6 +41,10 @@ const BY_CODE: Record<string, ErrorKey> = {
   RATE_LIMITED: 'errors.rateLimit',
   FILE_TOO_LARGE: 'errors.fileTooLarge',
   UNSUPPORTED_FILE_TYPE: 'errors.fileType',
+  // Network risk (lib/safety/vpnCheck.ts)
+  NETWORK_VERIFICATION_REQUIRED: 'errors.networkVerify',
+  NETWORK_RESTRICTED: 'errors.networkRestricted',
+  LOCATION_NETWORK_MASKED: 'errors.locationMasked',
   // Supabase auth
   invalid_credentials: 'errors.badCredentials',
   over_request_rate_limit: 'errors.rateLimit',

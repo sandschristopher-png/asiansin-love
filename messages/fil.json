@@ -340,7 +340,10 @@
     "providerDown": "Hindi available ngayon ang opsyong iyon sa pag-sign in. Gumamit ng iba.",
     "signInFailed": "Nabigo ang pag-sign in. Pakisubukan ulit.",
     "resetExpired": "Nag-expire na o nagamit na ang link sa pag-reset ng password. Humiling ng bago mula sa Nakalimutan ang password.",
-    "providerNamedDown": "Hindi available ngayon ang pag-sign in gamit ang {provider}. Gumamit ng ibang opsyon."
+    "providerNamedDown": "Hindi available ngayon ang pag-sign in gamit ang {provider}. Gumamit ng ibang opsyon.",
+    "networkVerify": "I-verify ang profile mo gamit ang live selfie para makapag-mensahe habang gumagamit ng VPN.",
+    "networkRestricted": "Hindi pa available ang pagmemensahe mula sa koneksyong ito hangga't hindi pa na-verify ang profile mo. Mag-verify gamit ang live selfie o lumipat sa regular mong koneksyon.",
+    "locationMasked": "Hindi namin makumpirma ang lokasyon mo mula sa VPN, proxy o datacenter na koneksyon. I-off ito at subukan ulit."
   },
   "plus": {
     "upgrade": "Mag-upgrade sa Plus",

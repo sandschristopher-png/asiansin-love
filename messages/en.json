@@ -340,7 +340,10 @@
     "providerDown": "That sign-in option is not available right now. Please use another one.",
     "signInFailed": "Sign-in failed. Please try again.",
     "resetExpired": "That password reset link has expired or was already used. Request a new one from Forgot password.",
-    "providerNamedDown": "{provider} sign-in is not available right now. Please use another option."
+    "providerNamedDown": "{provider} sign-in is not available right now. Please use another option.",
+    "networkVerify": "Verify your profile with a live selfie to message while using a VPN.",
+    "networkRestricted": "Messaging isn't available from this connection until your profile is verified. Verify with a live selfie, or switch to your regular connection.",
+    "locationMasked": "We can't confirm your location from a VPN, proxy or datacenter connection. Turn it off and try again."
   },
   "plus": {
     "upgrade": "Upgrade to Plus",

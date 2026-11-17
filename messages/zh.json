@@ -340,7 +340,10 @@
     "providerDown": "该登录方式暂时不可用，请使用其他方式。",
     "signInFailed": "登录失败，请重试。",
     "resetExpired": "该密码重置链接已过期或已被使用。请通过“忘记密码”重新申请。",
-    "providerNamedDown": "暂时无法使用 {provider} 登录，请使用其他方式。"
+    "providerNamedDown": "暂时无法使用 {provider} 登录，请使用其他方式。",
+    "networkVerify": "使用 VPN 时，请先用实时自拍验证您的资料才能发送消息。",
+    "networkRestricted": "在您的资料通过验证之前，无法通过此连接发送消息。请用实时自拍完成验证，或切换回常用网络。",
+    "locationMasked": "无法通过 VPN、代理或数据中心连接确认您的位置。请关闭后重试。"
   },
   "plus": {
     "upgrade": "升级到 Plus",

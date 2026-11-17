@@ -2,6 +2,9 @@ import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { createClient as createSessionClient } from '@/lib/supabase/server';
 import { COUNTRY_NAMES, normalizeCountry } from '@/lib/countries';
+import { after } from 'next/server';
+import { notifyAdmins } from '@/lib/adminNotify';
+import { assessNetwork, canProvePresence, recordNetworkRisk } from '@/lib/safety/vpnCheck';
 
 export const runtime = 'nodejs';
 
@@ -51,6 +54,26 @@ export async function POST(req: NextRequest) {
 
     if (fetchErr || !profile) {
       return NextResponse.json({ error: 'Profile not found.' }, { status: 404 });
+    }
+
+    // A VPN, proxy or datacenter connection cannot show that someone is physically in a city: someone in
+    // Lagos on a Manila VPN must not earn a location badge. The attempt is logged for the Admin Console.
+    const declaredCode = Object.entries(COUNTRY_NAMES).find(([, name]) => name.toLowerCase() === normalizeCountry(profile.country).toLowerCase())?.[0];
+    const net = await assessNetwork(req.headers, { userId, db: admin });
+    await recordNetworkRisk(admin, userId, net, {
+      event: 'location_verify',
+      declaredCountry: declaredCode ?? null,
+      onAlert: () => after(() => notifyAdmins({ kind: 'moderation', ref: userId, actorId: userId })),
+    });
+    if (!canProvePresence(net.tier, net.trusted)) {
+      return NextResponse.json(
+        {
+          error: 'Location cannot be confirmed from this connection.',
+          code: 'LOCATION_NETWORK_MASKED',
+          message: 'We cannot confirm your location from a VPN, proxy or datacenter connection. Turn it off and try again from your regular connection.',
+        },
+        { status: 422 }
+      );
     }
 
     // Country comes from the hosting platform's IP geolocation headers.

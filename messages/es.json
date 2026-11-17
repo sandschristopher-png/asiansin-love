@@ -340,7 +340,10 @@
     "providerDown": "Esa opción de acceso no está disponible ahora. Usa otra.",
     "signInFailed": "No se pudo iniciar sesión. Inténtalo de nuevo.",
     "resetExpired": "Ese enlace para restablecer la contraseña ha caducado o ya se usó. Solicita uno nuevo en Olvidé mi contraseña.",
-    "providerNamedDown": "El acceso con {provider} no está disponible ahora. Usa otra opción."
+    "providerNamedDown": "El acceso con {provider} no está disponible ahora. Usa otra opción.",
+    "networkVerify": "Verifica tu perfil con un selfie en vivo para enviar mensajes mientras usas una VPN.",
+    "networkRestricted": "No puedes enviar mensajes desde esta conexión hasta que tu perfil esté verificado. Verifica con un selfie en vivo o cambia a tu conexión habitual.",
+    "locationMasked": "No podemos confirmar tu ubicación desde una conexión VPN, proxy o de centro de datos. Desactívala e inténtalo de nuevo."
   },
   "plus": {
     "upgrade": "Pasar a Plus",

@@ -340,7 +340,10 @@
     "providerDown": "Tùy chọn đăng nhập này hiện không khả dụng. Vui lòng dùng cách khác.",
     "signInFailed": "Đăng nhập không thành công. Vui lòng thử lại.",
     "resetExpired": "Liên kết đặt lại mật khẩu đã hết hạn hoặc đã được dùng. Hãy yêu cầu liên kết mới từ mục Quên mật khẩu.",
-    "providerNamedDown": "Đăng nhập bằng {provider} hiện không khả dụng. Vui lòng dùng cách khác."
+    "providerNamedDown": "Đăng nhập bằng {provider} hiện không khả dụng. Vui lòng dùng cách khác.",
+    "networkVerify": "Hãy xác minh hồ sơ bằng ảnh selfie trực tiếp để nhắn tin khi đang dùng VPN.",
+    "networkRestricted": "Chưa thể nhắn tin từ kết nối này cho đến khi hồ sơ của bạn được xác minh. Hãy xác minh bằng ảnh selfie trực tiếp hoặc chuyển sang kết nối thông thường.",
+    "locationMasked": "Chúng tôi không thể xác nhận vị trí của bạn từ kết nối VPN, proxy hoặc trung tâm dữ liệu. Hãy tắt nó và thử lại."
   },
   "plus": {
     "upgrade": "Nâng cấp lên Plus",

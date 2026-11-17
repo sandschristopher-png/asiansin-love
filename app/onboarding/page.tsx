@@ -581,9 +581,9 @@ export default function OnboardingPage() {
         {/* STEP 1: USERNAME SELECTION */}
         {vpnBlocked && (
           <div role="alert" className="rounded-2xl border border-amber-300 bg-amber-50 px-4 py-3.5 space-y-1">
-            <p className="text-sm font-semibold text-amber-900">VPN or Proxy Detected</p>
+            <p className="text-sm font-semibold text-amber-900">Connection Not Accepted</p>
             <p className="text-xs text-amber-900/90 leading-relaxed">
-              Please turn off your VPN/Private Relay connection to verify your location and continue.
+              This looks like a proxy, Tor or datacenter network. Please switch to your regular home or mobile connection to continue. A standard VPN is fine.
             </p>
             <button
               type="button"
@@ -595,7 +595,7 @@ export default function OnboardingPage() {
               }}
               className="text-xs font-medium text-amber-900 underline"
             >
-              I turned it off, check again
+              I switched, check again
             </button>
           </div>
         )}

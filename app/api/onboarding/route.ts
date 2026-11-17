@@ -1,7 +1,11 @@
 // app/api/onboarding/route.ts
-//   GET  -> { blocked } early VPN / proxy heads-up for the onboarding screen
-//   POST -> completes onboarding: VPN / proxy / datacenter gate, required fields check, then sets
+//   GET  -> { blocked, vpn } early connection heads-up for the onboarding screen
+//   POST -> completes onboarding: connection gate, required fields check, then sets
 //           profiles.onboarding_completed = true with the service role.
+//
+// The connection gate (lib/safety/vpnCheck.ts) refuses only high-risk connections (Tor, open proxies,
+// flagged abusers, plain datacenters). A consumer VPN is allowed through and logged for the Admin
+// Console, since real travellers use them; they are asked for a live selfie before messaging instead.
 //
 // Members can't set onboarding_completed from the browser once 20261107_launch_patch.sql runs,
 // so this route is the only way past onboarding. The VPN gate applies here only, never to
@@ -9,14 +13,16 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { createClient as createSessionClient } from '@/lib/supabase/server';
-import { checkIpReputation, clientIpFromHeaders } from '@/lib/ipReputation';
+import { after } from 'next/server';
+import { notifyAdmins } from '@/lib/adminNotify';
+import { assessNetwork, recordNetworkRisk } from '@/lib/safety/vpnCheck';
 
 export const runtime = 'nodejs';
 
 const VPN_RESPONSE = {
   error: 'vpn_detected',
   message:
-    'Please disable your VPN or proxy to complete onboarding. We enforce strict location integrity to protect our community.',
+    'We could not accept this connection (proxy, Tor or datacenter network). Please switch to your regular home or mobile connection to complete onboarding. A standard VPN is fine.',
 };
 
 async function currentUserId(): Promise<string | null> {
@@ -25,19 +31,27 @@ async function currentUserId(): Promise<string | null> {
   return error || !data?.user ? null : data.user.id;
 }
 
+const serviceDb = () =>
+  createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, { auth: { persistSession: false } });
+
 export async function GET(req: Request) {
-  if (!(await currentUserId())) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-  const verdict = await checkIpReputation(clientIpFromHeaders(req.headers));
-  return NextResponse.json({ blocked: verdict.blocked });
+  const userId = await currentUserId();
+  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const net = await assessNetwork(req.headers, { userId, db: serviceDb() });
+  return NextResponse.json({ blocked: net.tier === 'high' && !net.trusted, vpn: net.tier === 'vpn' });
 }
 
 export async function POST(req: Request) {
   const userId = await currentUserId();
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
 
-  const verdict = await checkIpReputation(clientIpFromHeaders(req.headers));
-  if (verdict.blocked) {
-    console.warn(`[onboarding] blocked ${verdict.reason} connection for ${userId}`);
+  const net = await assessNetwork(req.headers, { userId, db: serviceDb() });
+  await recordNetworkRisk(serviceDb(), userId, net, {
+    event: 'onboarding',
+    onAlert: () => after(() => notifyAdmins({ kind: 'moderation', ref: userId, actorId: userId })),
+  });
+  if (net.tier === 'high' && !net.trusted) {
+    console.warn(`[onboarding] blocked high-risk connection for ${userId} (AS${net.asn ?? '?'})`);
     return NextResponse.json(VPN_RESPONSE, { status: 403 });
   }
 

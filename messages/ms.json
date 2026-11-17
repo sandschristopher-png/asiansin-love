@@ -340,7 +340,10 @@
     "providerDown": "Pilihan log masuk itu tidak tersedia buat masa ini. Sila gunakan yang lain.",
     "signInFailed": "Log masuk gagal. Sila cuba lagi.",
     "resetExpired": "Pautan tetapan semula kata laluan telah tamat tempoh atau sudah digunakan. Minta yang baharu daripada Lupa kata laluan.",
-    "providerNamedDown": "Log masuk dengan {provider} tidak tersedia buat masa ini. Sila gunakan pilihan lain."
+    "providerNamedDown": "Log masuk dengan {provider} tidak tersedia buat masa ini. Sila gunakan pilihan lain.",
+    "networkVerify": "Sahkan profil anda dengan swafoto langsung untuk bermesej semasa menggunakan VPN.",
+    "networkRestricted": "Bermesej belum tersedia daripada sambungan ini sehingga profil anda disahkan. Sahkan dengan swafoto langsung, atau beralih kepada sambungan biasa anda.",
+    "locationMasked": "Kami tidak dapat mengesahkan lokasi anda daripada sambungan VPN, proksi atau pusat data. Matikannya dan cuba lagi."
   },
   "plus": {
     "upgrade": "Naik taraf ke Plus",
