@@ -2,7 +2,7 @@
 
 import React, { useEffect, useMemo, useState } from 'react';
 import Link from 'next/link';
-import { Camera, Loader2, LocateFixed } from 'lucide-react';
+import { Camera, ChevronDown, Loader2, LocateFixed } from 'lucide-react';
 import { BottomSheet } from '@/components/ui/BottomSheet';
 import { useLocale } from '@/components/i18n/LocaleProvider';
 import { localizeError } from '@/lib/i18n/errors';
@@ -183,29 +183,32 @@ export function MomentComposer({
         <div>
           <label htmlFor="moment-city" className={LABEL}>{t('moments.city')}</label>
           <div className="flex items-center gap-2">
-            <select
-              id="moment-city"
-              value={city}
-              onChange={(e) => setCity(e.target.value as MomentCity)}
-              className={`${FIELD} min-w-0 flex-1`}
-            >
-              {SEA_LOCATIONS.map((loc) => (
-                <optgroup key={loc.country} label={loc.country}>
-                  {loc.cities.map((c) => (
-                    <option key={c} value={c}>
-                      {c}
-                    </option>
-                  ))}
-                </optgroup>
-              ))}
-            </select>
+            <div className="relative flex min-w-0 flex-1 items-center">
+              <select
+                id="moment-city"
+                value={city}
+                onChange={(e) => setCity(e.target.value as MomentCity)}
+                className="h-11 w-full appearance-none rounded-xl border border-[#E6E2F0] bg-white pl-4 pr-10 text-sm text-[#413B5E] focus:border-[#8574B7] focus:outline-none"
+              >
+                {SEA_LOCATIONS.map((loc) => (
+                  <optgroup key={loc.country} label={loc.country}>
+                    {loc.cities.map((c) => (
+                      <option key={c} value={c}>
+                        {c}
+                      </option>
+                    ))}
+                  </optgroup>
+                ))}
+              </select>
+              <ChevronDown className="pointer-events-none absolute right-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-[#413B5E]/60" aria-hidden />
+            </div>
             <button
               type="button"
               onClick={locate}
               disabled={locating}
               aria-label={t('moments.useLocation')}
               title={t('moments.useLocation')}
-              className="flex h-[42px] w-[42px] shrink-0 items-center justify-center rounded-xl border border-[#D0CDE1] bg-white text-[#8574B7] transition-colors hover:bg-[#E8E6F1]/50 disabled:opacity-60"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#E6E2F0] bg-white text-[#8574B7] transition-colors hover:bg-[#E8E6F1]/50 disabled:opacity-60"
             >
               {locating ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <LocateFixed className="h-4 w-4" aria-hidden />}
             </button>
