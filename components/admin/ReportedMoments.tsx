@@ -7,7 +7,7 @@ interface QueueMoment {
   id: string;
   image_url: string;
   caption: string | null;
-  activity_tag: string;
+  vibe_tag: string | null;
   city: string;
   status: 'active' | 'hidden';
   reportCount: number;

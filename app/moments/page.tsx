@@ -11,8 +11,11 @@ import { MomentComposer } from '@/components/moments/MomentComposer';
 import { ReportMomentSheet } from '@/components/moments/ReportMomentSheet';
 import { SparkMomentSheet } from '@/components/moments/SparkMomentSheet';
 import { localizeError } from '@/lib/i18n/errors';
-import { MOMENTS_SEEN_EVENT, MOMENTS_SEEN_KEY, MOMENT_CITIES, type MomentCity, type MomentItem } from '@/lib/moments';
+import { MOMENTS_SEEN_EVENT, MOMENTS_SEEN_KEY, promptOfDay, type MomentCity, type MomentItem, type MomentPrompt } from '@/lib/moments';
+import { matchSeaCity } from '@/lib/seaLocations';
 import { supabase } from '@/lib/supabase/client';
+import { fetchUpcomingTrips, localIsoDate } from '@/lib/trips';
+import type { TKey } from '@/lib/i18n';
 
 /** Marks the feed as seen so the nav tab's dot clears (BottomNav listens for the event). */
 function markSeen() {
@@ -23,9 +26,10 @@ function markSeen() {
 }
 
 /**
- * Moments feed: one chronological Southeast Asia stream (each card names its city) in one centred column. Posting needs a verified profile
- * (the server says so in the member's language), and "Spark this Moment" opens a hello sheet that
- * attaches the photo to the conversation.
+ * Moments feed: a Today's Prompt card (the same prompt for every member each day), then one
+ * chronological Southeast Asia stream (each card names its city) in one centred column. Posting needs
+ * a verified profile (the server says so in the member's language), and "Spark this Moment" opens a
+ * hello sheet that attaches the photo to the conversation.
  */
 export default function MomentsPage() {
   const { t } = useLocale();
@@ -44,6 +48,9 @@ export default function MomentsPage() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [composing, setComposing] = useState(false);
+  /** The prompt the composer opens on: today's when started from the card, none from the button. */
+  const [composerPrompt, setComposerPrompt] = useState<MomentPrompt | null>(null);
+  const [todaysPrompt] = useState<MomentPrompt>(() => promptOfDay());
   const [sparkTarget, setSparkTarget] = useState<MomentItem | null>(null);
   const [reportTarget, setReportTarget] = useState<MomentItem | null>(null);
   const [homeCity, setHomeCity] = useState<MomentCity>('Manila');
@@ -89,17 +96,34 @@ export default function MomentsPage() {
     }
   };
 
-  // The composer starts on the member's own hub when their profile city is one of ours.
+  // The composer starts on the city the member is visiting right now (an active Visiting Soon trip),
+  // otherwise their profile city, when it is one of ours.
   useEffect(() => {
+    let active = true;
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      if (!user || !active) return;
+      const today = localIsoDate();
+      const trips = await fetchUpcomingTrips(user.id);
+      const current = trips.find((trip) => trip.start_date <= today && trip.end_date >= today);
+      const tripCity = matchSeaCity(current?.destination_city);
+      if (tripCity) {
+        if (active) setHomeCity(tripCity);
+        return;
+      }
       const { data } = await supabase.from('profiles').select('city').eq('id', user.id).maybeSingle();
-      const raw = String(data?.city || '').trim().toLowerCase();
-      const hub = raw.length > 2 ? MOMENT_CITIES.find((c) => raw.includes(c.toLowerCase()) || c.toLowerCase().includes(raw)) : undefined;
-      if (hub) setHomeCity(hub);
+      const hub = matchSeaCity(data?.city);
+      if (hub && active) setHomeCity(hub);
     })();
+    return () => {
+      active = false;
+    };
   }, []);
+
+  const openComposer = (prompt: MomentPrompt | null) => {
+    setComposerPrompt(prompt);
+    setComposing(true);
+  };
 
   const toggleLike = async (m: MomentItem) => {
     const flip = (liked: boolean, count: number) =>
@@ -132,6 +156,18 @@ export default function MomentsPage() {
       <div className="mx-auto w-full max-w-[480px] px-4 pt-3">
         <p className="text-xs leading-relaxed text-slate-600">{t('moments.subtitle')}</p>
 
+        <section aria-label={t('moments.todaysPrompt')} className="mt-4 rounded-[20px] border border-[#E6E2F0] bg-[#F6F4FB] p-4">
+          <p className="text-[11px] font-semibold uppercase leading-none tracking-wider text-[#8574B7]">{t('moments.todaysPrompt')}</p>
+          <p className="mt-2.5 text-base font-semibold leading-snug text-[#413B5E]">{t(`moments.prompt.${todaysPrompt}` as TKey)}</p>
+          <button
+            type="button"
+            onClick={() => openComposer(todaysPrompt)}
+            className="mt-3.5 inline-flex h-10 items-center rounded-full bg-[#8574B7] px-5 text-[13px] font-medium leading-snug text-white transition-colors hover:bg-[#534377]"
+          >
+            {t('moments.joinPost')}
+          </button>
+        </section>
+
         <div className="mt-4 space-y-4">
           {loading ? (
             [0, 1].map((i) => <div key={i} className="aspect-[4/5] w-full rounded-3xl ail-shimmer" />)
@@ -148,7 +184,7 @@ export default function MomentsPage() {
               <p className="mx-auto mt-1 max-w-xs text-xs leading-relaxed text-slate-600">{t('moments.emptyBody')}</p>
               <button
                 type="button"
-                onClick={() => setComposing(true)}
+                onClick={() => openComposer(null)}
                 className="mx-auto mt-5 inline-flex h-11 items-center gap-1.5 rounded-full bg-[#8574B7] px-6 text-[13px] font-medium leading-snug text-white transition-colors hover:bg-[#534377]"
               >
                 <Plus className="h-4 w-4" aria-hidden />
@@ -182,7 +218,7 @@ export default function MomentsPage() {
           <div className="pointer-events-none fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom,0px))] left-1/2 z-40 flex w-full max-w-[480px] -translate-x-1/2 justify-end px-4">
             <motion.button
               type="button"
-              onClick={() => setComposing(true)}
+              onClick={() => openComposer(null)}
               whileTap={reduceMotion ? undefined : { scale: 0.97 }}
               className="pointer-events-auto inline-flex h-12 items-center gap-1.5 rounded-full bg-[#8574B7] px-5 text-[13px] font-medium leading-snug text-white shadow-[0_8px_24px_rgba(133,116,183,0.45)] transition-colors hover:bg-[#534377]"
             >
@@ -196,6 +232,7 @@ export default function MomentsPage() {
       {composing && (
         <MomentComposer
           defaultCity={homeCity}
+          initialPrompt={composerPrompt}
           onClose={() => setComposing(false)}
           onPosted={() => {
             setComposing(false);

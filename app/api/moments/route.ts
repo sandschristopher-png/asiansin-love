@@ -1,6 +1,6 @@
 // app/api/moments/route.ts
-//   GET  ?city=<hub>&before=<iso>  -> { moments, nextCursor }   the feed (RLS hides low-reputation authors and blocks)
-//   POST multipart { image, caption?, activityTag, city }       -> { success, id }
+//   GET  ?before=<iso>  -> { moments, nextCursor }   the feed (RLS hides low-reputation authors and blocks)
+//   POST multipart { image, caption?, vibeTag, prompt?, city, locationToken? } -> { success, id }
 //
 // Posting is server-side only: the caption goes through the master safety dictionary, the photo is
 // checked by its leading bytes and uploaded to moment-photos under the member's own folder, and
@@ -12,7 +12,10 @@ import { createClient } from '@/lib/supabase/server';
 import { notifyAdmins } from '@/lib/adminNotify';
 import { ageOf } from '@/lib/age';
 import { decideMessageOutcome } from '@/lib/reputation';
-import { MAX_CAPTION, MAX_MOMENT_BYTES, MOMENT_BUCKET, isMomentCity, isMomentTag, type MomentItem } from '@/lib/moments';
+import { toList } from '@/lib/rhythm';
+import { countryOfCity } from '@/lib/seaLocations';
+import { verifyLocationToken } from '@/lib/momentLocation';
+import { MAX_CAPTION, MAX_MOMENT_BYTES, MOMENT_BUCKET, isMomentCity, isMomentPrompt, isVibeTag, sharesVibe, type MomentItem } from '@/lib/moments';
 
 export const runtime = 'nodejs';
 
@@ -37,16 +40,14 @@ export async function GET(req: Request) {
   if (!user) return NextResponse.json({ error: 'Unauthorized', code: 'UNAUTHORIZED' }, { status: 401 });
 
   const params = new URL(req.url).searchParams;
-  const city = params.get('city');
   const before = params.get('before');
 
   let q = supabase
     .from('moments')
-    .select('id, user_id, image_url, aspect_ratio, caption, activity_tag, city, likes_count, created_at')
+    .select('id, user_id, image_url, aspect_ratio, caption, vibe_tag, prompt_question, city, location_verified, likes_count, created_at')
     .eq('status', 'active')
     .order('created_at', { ascending: false })
     .limit(PAGE + 1);
-  if (isMomentCity(city)) q = q.eq('city', city);
   if (before && !Number.isNaN(Date.parse(before))) q = q.lt('created_at', before);
 
   const { data: rows, error } = await q;
@@ -59,7 +60,7 @@ export async function GET(req: Request) {
   const authorIds = Array.from(new Set(page.map((m) => m.user_id)));
   const momentIds = page.map((m) => m.id);
 
-  const [{ data: authors }, { data: likes }] = await Promise.all([
+  const [{ data: authors }, { data: likes }, { data: viewer }] = await Promise.all([
     authorIds.length
       ? supabase
           .from('profiles')
@@ -69,7 +70,9 @@ export async function GET(req: Request) {
     momentIds.length
       ? supabase.from('moment_likes').select('moment_id').eq('user_id', user.id).in('moment_id', momentIds)
       : Promise.resolve({ data: [] as { moment_id: string }[] }),
+    supabase.from('profiles').select('interests').eq('id', user.id).maybeSingle(),
   ]);
+  const myInterests = toList(viewer?.interests);
   const byAuthor = new Map((authors || []).map((a: Record<string, unknown>) => [a.id as string, a]));
   const liked = new Set((likes || []).map((l: { moment_id: string }) => l.moment_id));
 
@@ -83,10 +86,14 @@ export async function GET(req: Request) {
         imageUrl: m.image_url,
         aspectRatio: m.aspect_ratio,
         caption: m.caption,
-        activityTag: m.activity_tag,
+        vibeTag: isVibeTag(m.vibe_tag) ? m.vibe_tag : null,
+        prompt: isMomentPrompt(m.prompt_question) ? m.prompt_question : null,
         city: m.city,
+        country: countryOfCity(m.city),
         likesCount: m.likes_count,
         likedByMe: liked.has(m.id),
+        locationVerified: m.location_verified === true,
+        sharedVibe: m.user_id !== user.id && isVibeTag(m.vibe_tag) && sharesVibe(myInterests, m.vibe_tag),
         createdAt: m.created_at,
         isMine: m.user_id === user.id,
         author: {
@@ -114,10 +121,13 @@ export async function POST(req: Request) {
   const form = await req.formData();
   const file = form.get('image') as File | null;
   const caption = String(form.get('caption') ?? '').replace(/\s+/g, ' ').trim();
-  const activityTag = form.get('activityTag');
+  const vibeTag = form.get('vibeTag');
+  const promptRaw = form.get('prompt');
+  const prompt = promptRaw === null || promptRaw === '' ? null : promptRaw;
   const city = form.get('city');
+  const locationToken = typeof form.get('locationToken') === 'string' ? String(form.get('locationToken')) : '';
 
-  if (!isMomentTag(activityTag) || !isMomentCity(city) || caption.length > MAX_CAPTION) {
+  if (!isVibeTag(vibeTag) || !isMomentCity(city) || (prompt !== null && !isMomentPrompt(prompt)) || caption.length > MAX_CAPTION) {
     return NextResponse.json({ error: 'Invalid Moment.', code: 'INVALID_INPUT' }, { status: 400 });
   }
   if (!file || typeof file === 'string' || !MIME_EXT[file.type]) {
@@ -176,8 +186,10 @@ export async function POST(req: Request) {
     p_image_url: publicUrl.publicUrl,
     p_aspect_ratio: '4:5',
     p_caption: caption || null,
-    p_activity_tag: activityTag,
+    p_vibe_tag: vibeTag,
+    p_prompt: prompt,
     p_city: city,
+    p_location_verified: Boolean(locationToken) && verifyLocationToken(locationToken, user.id, city),
   });
   if (rpcError) {
     await admin.storage.from(MOMENT_BUCKET).remove([path]);

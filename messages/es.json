@@ -482,14 +482,6 @@
     "title": "Momentos",
     "subtitle": "Momentos del día a día de miembros verificados en todo el sudeste asiático.",
     "post": "Publicar momento",
-    "tag": {
-      "coffee": "Café y pasteles",
-      "street_food": "Comida callejera",
-      "city_walk": "Paseo por la ciudad",
-      "sunset": "Atardecer",
-      "gym": "Gimnasio",
-      "date_spot": "Plan de cita"
-    },
     "emptyTitle": "Aún no hay momentos aquí",
     "emptyBody": "Sé la primera persona en compartir un momento.",
     "loadMore": "Ver más",
@@ -504,7 +496,6 @@
     "spark": "Dar Spark a este momento",
     "composeTitle": "Publicar un momento",
     "city": "Ciudad",
-    "activity": "¿Qué estás haciendo?",
     "captionPlaceholder": "Cuenta algo sobre esto (140 caracteres)",
     "addPhoto": "Añadir una foto",
     "changePhoto": "Cambiar foto",
@@ -532,6 +523,32 @@
     "sparkSend": "Enviar Spark",
     "sparkSent": "Spark enviado",
     "attachedAlt": "Foto del momento",
-    "postFirst": "Publica el primer momento"
+    "postFirst": "Publica el primer momento",
+    "vibe": {
+      "cafe_hopping": "Ruta de cafés",
+      "street_food": "Comida callejera y mercados",
+      "city_walks": "Paseos por la ciudad",
+      "beach_sunset": "Playas y atardeceres",
+      "fitness_wellness": "Gimnasio y paseos",
+      "remote_work": "Trabajo remoto",
+      "weekend_trips": "Escapadas de fin de semana",
+      "local_gems": "Joyas locales ocultas"
+    },
+    "prompt": {
+      "favorite_spot": "Mi lugar favorito de la ciudad ahora mismo...",
+      "weekend": "Así es mi fin de semana...",
+      "best_food": "La mejor comida o café que probé esta semana...",
+      "first_hangout": "Te llevaría aquí en nuestra primera salida...",
+      "view": "Una vista que nunca me canso de mirar..."
+    },
+    "sharedVibe": "Vibra en común",
+    "todaysPrompt": "Propuesta de hoy",
+    "joinPost": "Unirme y publicar",
+    "vibeLabel": "Elige una vibra",
+    "promptLabel": "Empieza con una propuesta (opcional)",
+    "useLocation": "Usar mi ubicación actual",
+    "locationVerified": "Ubicación verificada",
+    "locateDenied": "No pudimos obtener tu ubicación. Permite el acceso a la ubicación en el navegador o elige una ciudad de la lista.",
+    "locateOutside": "Tu ubicación no está en el Sudeste Asiático, así que no podemos confirmar una ciudad. Elige una de la lista."
   }
 }

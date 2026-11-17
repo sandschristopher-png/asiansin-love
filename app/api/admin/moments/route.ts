@@ -32,7 +32,7 @@ export async function GET() {
 
   const { data: rows } = await db
     .from('moments')
-    .select('id, user_id, image_url, caption, activity_tag, city, status, created_at')
+    .select('id, user_id, image_url, caption, vibe_tag, city, status, created_at')
     .in('id', ids)
     .neq('status', 'removed');
   const authorIds = Array.from(new Set((rows || []).map((m) => m.user_id)));

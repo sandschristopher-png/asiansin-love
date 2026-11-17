@@ -482,14 +482,6 @@
     "title": "动态",
     "subtitle": "来自东南亚各地已验证会员的日常瞬间。",
     "post": "发布动态",
-    "tag": {
-      "coffee": "咖啡与甜点",
-      "street_food": "街头美食",
-      "city_walk": "城市漫步",
-      "sunset": "日落",
-      "gym": "健身房",
-      "date_spot": "约会地点"
-    },
     "emptyTitle": "这座城市还没有动态",
     "emptyBody": "来分享第一条动态吧。",
     "loadMore": "加载更多",
@@ -504,7 +496,6 @@
     "spark": "给这条动态发 Spark",
     "composeTitle": "发布动态",
     "city": "城市",
-    "activity": "你在做什么？",
     "captionPlaceholder": "说点什么吧（140 字以内）",
     "addPhoto": "添加照片",
     "changePhoto": "更换照片",
@@ -532,6 +523,32 @@
     "sparkSend": "发送 Spark",
     "sparkSent": "Spark 已发送",
     "attachedAlt": "动态照片",
-    "postFirst": "发布第一条动态"
+    "postFirst": "发布第一条动态",
+    "vibe": {
+      "cafe_hopping": "探店咖啡",
+      "street_food": "街头美食与市集",
+      "city_walks": "城市漫步",
+      "beach_sunset": "海滩与日落",
+      "fitness_wellness": "健身与散步",
+      "remote_work": "远程办公",
+      "weekend_trips": "周末出游",
+      "local_gems": "本地宝藏地"
+    },
+    "prompt": {
+      "favorite_spot": "我现在最爱的城市角落……",
+      "weekend": "我的周末是这样的……",
+      "best_food": "这周吃到的最棒的美食或咖啡……",
+      "first_hangout": "第一次见面，我想带你来这里……",
+      "view": "一看再看也不腻的风景……"
+    },
+    "sharedVibe": "志趣相投",
+    "todaysPrompt": "今日话题",
+    "joinPost": "参与并发布",
+    "vibeLabel": "选择氛围",
+    "promptLabel": "从话题开始（可选）",
+    "useLocation": "使用当前位置",
+    "locationVerified": "位置已验证",
+    "locateDenied": "无法获取你的位置。请在浏览器中允许位置访问，或从列表中选择城市。",
+    "locateOutside": "你的位置不在东南亚，无法确认城市。请从列表中选择。"
   }
 }

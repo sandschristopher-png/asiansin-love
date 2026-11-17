@@ -482,14 +482,6 @@
     "title": "Momen",
     "subtitle": "Momen sehari-hari dari anggota terverifikasi di seluruh Asia Tenggara.",
     "post": "Posting Momen",
-    "tag": {
-      "coffee": "Kopi & Kue",
-      "street_food": "Jajanan Kaki Lima",
-      "city_walk": "Jalan-jalan Kota",
-      "sunset": "Matahari Terbenam",
-      "gym": "Gym",
-      "date_spot": "Tempat Kencan"
-    },
     "emptyTitle": "Belum ada Momen di sini",
     "emptyBody": "Jadilah yang pertama membagikan Momen.",
     "loadMore": "Muat lebih banyak",
@@ -504,7 +496,6 @@
     "spark": "Spark Momen ini",
     "composeTitle": "Posting Momen",
     "city": "Kota",
-    "activity": "Sedang apa?",
     "captionPlaceholder": "Tulis sesuatu tentangnya (140 karakter)",
     "addPhoto": "Tambah foto",
     "changePhoto": "Ganti foto",
@@ -532,6 +523,32 @@
     "sparkSend": "Kirim Spark",
     "sparkSent": "Spark terkirim",
     "attachedAlt": "Foto Momen",
-    "postFirst": "Posting Momen Pertama"
+    "postFirst": "Posting Momen Pertama",
+    "vibe": {
+      "cafe_hopping": "Keliling Kafe",
+      "street_food": "Jajanan Kaki Lima & Pasar",
+      "city_walks": "Jalan-jalan Kota",
+      "beach_sunset": "Pantai & Matahari Terbenam",
+      "fitness_wellness": "Gym & Jalan Pagi",
+      "remote_work": "Kerja Remote",
+      "weekend_trips": "Liburan Akhir Pekan",
+      "local_gems": "Permata Lokal Tersembunyi"
+    },
+    "prompt": {
+      "favorite_spot": "Tempat favoritku di kota saat ini...",
+      "weekend": "Akhir pekanku biasanya seperti ini...",
+      "best_food": "Makanan atau kopi terbaik yang kucoba minggu ini...",
+      "first_hangout": "Aku akan mengajakmu ke sini di pertemuan pertama kita...",
+      "view": "Pemandangan yang tak pernah bosan kulihat..."
+    },
+    "sharedVibe": "Vibe yang sama",
+    "todaysPrompt": "Topik Hari Ini",
+    "joinPost": "Ikut & Posting",
+    "vibeLabel": "Pilih vibe",
+    "promptLabel": "Mulai dari topik (opsional)",
+    "useLocation": "Gunakan lokasi saat ini",
+    "locationVerified": "Lokasi terverifikasi",
+    "locateDenied": "Kami tidak bisa mendapatkan lokasimu. Izinkan akses lokasi di browser, atau pilih kota dari daftar.",
+    "locateOutside": "Lokasimu tidak berada di Asia Tenggara, jadi kami tidak bisa memastikan kota. Pilih dari daftar."
   }
 }

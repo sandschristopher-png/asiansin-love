@@ -3,7 +3,7 @@
 // own. The nav tab compares it with the time the member last opened Moments to show its dot.
 import { NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
-import { MOMENT_CITIES } from '@/lib/moments';
+import { matchSeaCity } from '@/lib/seaLocations';
 
 export async function GET() {
   const supabase = await createClient();
@@ -11,8 +11,7 @@ export async function GET() {
   if (!user) return NextResponse.json({ latest: null });
 
   const { data: profile } = await supabase.from('profiles').select('city').eq('id', user.id).maybeSingle();
-  const raw = String(profile?.city || '').trim().toLowerCase();
-  const hub = raw.length > 2 ? MOMENT_CITIES.find((c) => raw.includes(c.toLowerCase()) || c.toLowerCase().includes(raw)) : undefined;
+  const hub = matchSeaCity(profile?.city);
 
   let q = supabase
     .from('moments')

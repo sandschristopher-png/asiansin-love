@@ -482,14 +482,6 @@
     "title": "Detik",
     "subtitle": "Detik-detik harian daripada ahli yang disahkan di seluruh Asia Tenggara.",
     "post": "Siar Detik",
-    "tag": {
-      "coffee": "Kopi & Pastri",
-      "street_food": "Makanan Jalanan",
-      "city_walk": "Jalan-jalan Bandar",
-      "sunset": "Matahari Terbenam",
-      "gym": "Gim",
-      "date_spot": "Tempat Janji Temu"
-    },
     "emptyTitle": "Belum ada Detik di sini",
     "emptyBody": "Jadilah yang pertama berkongsi Detik.",
     "loadMore": "Muat lagi",
@@ -504,7 +496,6 @@
     "spark": "Spark Detik ini",
     "composeTitle": "Siar Detik",
     "city": "Bandar",
-    "activity": "Sedang buat apa?",
     "captionPlaceholder": "Tulis sesuatu tentangnya (140 aksara)",
     "addPhoto": "Tambah foto",
     "changePhoto": "Tukar foto",
@@ -532,6 +523,32 @@
     "sparkSend": "Hantar Spark",
     "sparkSent": "Spark dihantar",
     "attachedAlt": "Foto Detik",
-    "postFirst": "Siar Detik Pertama"
+    "postFirst": "Siar Detik Pertama",
+    "vibe": {
+      "cafe_hopping": "Singgah Kafe",
+      "street_food": "Makanan Jalanan & Pasar",
+      "city_walks": "Berjalan di Bandar",
+      "beach_sunset": "Pantai & Matahari Terbenam",
+      "fitness_wellness": "Gim & Berjalan",
+      "remote_work": "Kerja Jarak Jauh",
+      "weekend_trips": "Percutian Hujung Minggu",
+      "local_gems": "Permata Tersembunyi Tempatan"
+    },
+    "prompt": {
+      "favorite_spot": "Tempat kegemaran saya di bandar sekarang...",
+      "weekend": "Beginilah hujung minggu saya...",
+      "best_food": "Makanan atau kopi terbaik yang saya cuba minggu ini...",
+      "first_hangout": "Saya akan bawa awak ke sini untuk pertemuan pertama kita...",
+      "view": "Pemandangan yang tidak pernah jemu saya lihat..."
+    },
+    "sharedVibe": "Vibe yang sama",
+    "todaysPrompt": "Topik Hari Ini",
+    "joinPost": "Sertai & Siar",
+    "vibeLabel": "Pilih vibe",
+    "promptLabel": "Mulakan dengan topik (pilihan)",
+    "useLocation": "Guna lokasi semasa",
+    "locationVerified": "Lokasi disahkan",
+    "locateDenied": "Kami tidak dapat mengesan lokasi anda. Benarkan akses lokasi dalam pelayar, atau pilih bandar daripada senarai.",
+    "locateOutside": "Lokasi anda tidak berada di Asia Tenggara, jadi kami tidak dapat mengesahkan bandar. Pilih daripada senarai."
   }
 }

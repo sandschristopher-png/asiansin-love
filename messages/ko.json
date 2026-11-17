@@ -482,14 +482,6 @@
     "title": "모먼트",
     "subtitle": "동남아시아 전역의 인증 회원들이 올린 일상의 순간들.",
     "post": "모먼트 올리기",
-    "tag": {
-      "coffee": "커피와 디저트",
-      "street_food": "길거리 음식",
-      "city_walk": "도시 산책",
-      "sunset": "노을",
-      "gym": "헬스장",
-      "date_spot": "데이트 장소"
-    },
     "emptyTitle": "이 도시에는 아직 모먼트가 없어요",
     "emptyBody": "첫 모먼트를 공유해 보세요.",
     "loadMore": "더 보기",
@@ -504,7 +496,6 @@
     "spark": "이 모먼트에 Spark 보내기",
     "composeTitle": "모먼트 올리기",
     "city": "도시",
-    "activity": "지금 뭐 하고 있나요?",
     "captionPlaceholder": "한마디 남겨 보세요(140자)",
     "addPhoto": "사진 추가",
     "changePhoto": "사진 변경",
@@ -532,6 +523,32 @@
     "sparkSend": "Spark 보내기",
     "sparkSent": "Spark를 보냈습니다",
     "attachedAlt": "모먼트 사진",
-    "postFirst": "첫 모먼트 올리기"
+    "postFirst": "첫 모먼트 올리기",
+    "vibe": {
+      "cafe_hopping": "카페 투어",
+      "street_food": "길거리 음식 & 시장",
+      "city_walks": "도시 산책",
+      "beach_sunset": "해변 & 일몰",
+      "fitness_wellness": "헬스 & 산책",
+      "remote_work": "원격 근무",
+      "weekend_trips": "주말 여행",
+      "local_gems": "숨은 로컬 명소"
+    },
+    "prompt": {
+      "favorite_spot": "요즘 도시에서 가장 좋아하는 곳...",
+      "weekend": "내 주말은 이런 모습...",
+      "best_food": "이번 주 가장 맛있게 먹은 음식이나 커피...",
+      "first_hangout": "우리 첫 만남엔 여기로 데려갈게요...",
+      "view": "아무리 봐도 질리지 않는 풍경..."
+    },
+    "sharedVibe": "비슷한 취향",
+    "todaysPrompt": "오늘의 주제",
+    "joinPost": "참여하고 올리기",
+    "vibeLabel": "분위기 선택",
+    "promptLabel": "주제로 시작하기 (선택)",
+    "useLocation": "현재 위치 사용",
+    "locationVerified": "위치 인증됨",
+    "locateDenied": "위치를 가져오지 못했어요. 브라우저에서 위치 접근을 허용하거나 목록에서 도시를 선택해 주세요.",
+    "locateOutside": "현재 위치가 동남아시아가 아니라서 도시를 확인할 수 없어요. 목록에서 선택해 주세요."
   }
 }

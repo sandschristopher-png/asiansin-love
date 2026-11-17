@@ -482,14 +482,6 @@
     "title": "モーメント",
     "subtitle": "東南アジア各地の認証済みメンバーの日常の一コマ。",
     "post": "モーメントを投稿",
-    "tag": {
-      "coffee": "コーヒーとスイーツ",
-      "street_food": "屋台グルメ",
-      "city_walk": "街歩き",
-      "sunset": "サンセット",
-      "gym": "ジム",
-      "date_spot": "デートスポット"
-    },
     "emptyTitle": "この街のモーメントはまだありません",
     "emptyBody": "最初のモーメントをシェアしてみましょう。",
     "loadMore": "もっと見る",
@@ -504,7 +496,6 @@
     "spark": "このモーメントにSparkを送る",
     "composeTitle": "モーメントを投稿",
     "city": "都市",
-    "activity": "何をしていますか?",
     "captionPlaceholder": "ひとこと添えましょう(140文字まで)",
     "addPhoto": "写真を追加",
     "changePhoto": "写真を変更",
@@ -532,6 +523,32 @@
     "sparkSend": "Sparkを送る",
     "sparkSent": "Sparkを送りました",
     "attachedAlt": "モーメントの写真",
-    "postFirst": "最初のモーメントを投稿"
+    "postFirst": "最初のモーメントを投稿",
+    "vibe": {
+      "cafe_hopping": "カフェ巡り",
+      "street_food": "ストリートフード＆市場",
+      "city_walks": "街歩き",
+      "beach_sunset": "ビーチ＆夕日",
+      "fitness_wellness": "ジム＆散歩",
+      "remote_work": "リモートワーク",
+      "weekend_trips": "週末旅行",
+      "local_gems": "地元の隠れた名所"
+    },
+    "prompt": {
+      "favorite_spot": "今、街で一番お気に入りの場所...",
+      "weekend": "私の週末はこんな感じ...",
+      "best_food": "今週食べた一番おいしい食事やコーヒー...",
+      "first_hangout": "初めて会うときはここに連れていきたい...",
+      "view": "何度見ても飽きない景色..."
+    },
+    "sharedVibe": "共通の雰囲気",
+    "todaysPrompt": "今日のお題",
+    "joinPost": "参加して投稿",
+    "vibeLabel": "雰囲気を選ぶ",
+    "promptLabel": "お題から始める（任意）",
+    "useLocation": "現在地を使う",
+    "locationVerified": "位置情報確認済み",
+    "locateDenied": "位置情報を取得できませんでした。ブラウザで位置情報を許可するか、リストから都市を選んでください。",
+    "locateOutside": "現在地が東南アジア外のため、都市を確認できません。リストから選んでください。"
   }
 }

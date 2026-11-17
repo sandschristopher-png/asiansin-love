@@ -482,14 +482,6 @@
     "title": "Moments",
     "subtitle": "Mga pang-araw-araw na sandali mula sa mga verified na miyembro sa buong Timog-Silangang Asya.",
     "post": "Mag-post ng Moment",
-    "tag": {
-      "coffee": "Kape at Pastry",
-      "street_food": "Street Food",
-      "city_walk": "Lakad sa Lungsod",
-      "sunset": "Paglubog ng Araw",
-      "gym": "Gym",
-      "date_spot": "Date Spot"
-    },
     "emptyTitle": "Wala pang Moments dito",
     "emptyBody": "Ikaw ang maging una na magbahagi ng Moment.",
     "loadMore": "Magpakita pa",
@@ -504,7 +496,6 @@
     "spark": "I-Spark ang Moment na ito",
     "composeTitle": "Mag-post ng Moment",
     "city": "Lungsod",
-    "activity": "Ano ang ginagawa mo?",
     "captionPlaceholder": "Magsulat ng kaunti tungkol dito (140 karakter)",
     "addPhoto": "Magdagdag ng larawan",
     "changePhoto": "Palitan ang larawan",
@@ -532,6 +523,32 @@
     "sparkSend": "Ipadala ang Spark",
     "sparkSent": "Naipadala ang Spark",
     "attachedAlt": "Larawan ng Moment",
-    "postFirst": "Mag-post ng Unang Moment"
+    "postFirst": "Mag-post ng Unang Moment",
+    "vibe": {
+      "cafe_hopping": "Cafe Hopping",
+      "street_food": "Street Food at Palengke",
+      "city_walks": "Paglalakad sa Lungsod",
+      "beach_sunset": "Dalampasigan at Paglubog ng Araw",
+      "fitness_wellness": "Gym at Paglalakad",
+      "remote_work": "Remote Work",
+      "weekend_trips": "Weekend Trips",
+      "local_gems": "Mga Nakatagong Hiyas"
+    },
+    "prompt": {
+      "favorite_spot": "Ang paborito kong lugar sa lungsod ngayon...",
+      "weekend": "Ganito ang weekend ko...",
+      "best_food": "Pinakamasarap na pagkain o kape ngayong linggo...",
+      "first_hangout": "Dadalhin kita rito sa una nating hangout...",
+      "view": "Tanawing hindi ko pinapagod tingnan..."
+    },
+    "sharedVibe": "Parehong vibe",
+    "todaysPrompt": "Prompt Ngayon",
+    "joinPost": "Sumali at Mag-post",
+    "vibeLabel": "Pumili ng vibe",
+    "promptLabel": "Magsimula sa prompt (opsyonal)",
+    "useLocation": "Gamitin ang kasalukuyang lokasyon",
+    "locationVerified": "Na-verify ang lokasyon",
+    "locateDenied": "Hindi namin makuha ang iyong lokasyon. Payagan ang access sa lokasyon sa browser, o pumili ng lungsod sa listahan.",
+    "locateOutside": "Wala ka sa Southeast Asia, kaya hindi namin makumpirma ang lungsod. Pumili sa listahan."
   }
 }

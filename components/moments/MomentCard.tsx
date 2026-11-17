@@ -4,7 +4,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Flag, Heart, MapPin, MoreHorizontal, Trash2, Zap } from 'lucide-react';
+import { Flag, Heart, LocateFixed, MapPin, MoreHorizontal, Trash2, Zap } from 'lucide-react';
 import VerifiedBadge from '@/components/VerifiedBadge';
 import { useLocale } from '@/components/i18n/LocaleProvider';
 import { supabaseImage, AVATAR_IMAGE } from '@/lib/images/supabaseImage';
@@ -24,8 +24,9 @@ function ago(iso: string, locale: string): string {
 }
 
 /**
- * One Moment, with.is style: author header, a 4:5 rounded photo with a frosted activity tag, the
- * caption (no comments, so nothing to spam), then a like toggle and the primary "Spark this Moment"
+ * One Moment, with.is style: author header (badges, city and country), a 4:5 rounded photo with a
+ * frosted vibe tag, a "Shared vibe" pill when the viewer's interests match, the guided-prompt eyebrow
+ * and caption (no comments, so nothing to spam), then a like toggle and the primary "Spark this Moment"
  * pill. Cards ease in as they scroll into view unless the visitor prefers reduced motion.
  */
 export function MomentCard({
@@ -56,13 +57,14 @@ export function MomentCard({
   }, [menuOpen]);
 
   const { author } = moment;
+  const vibeLabel = moment.vibeTag ? t(`moments.vibe.${moment.vibeTag}` as TKey) : '';
   return (
     <motion.article
       initial={reduce ? false : { opacity: 0, y: 12 }}
       whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
       viewport={{ once: true, amount: 0.15 }}
       transition={{ duration: 0.35, ease: 'easeOut' }}
-      className="rounded-3xl border border-slate-200 bg-white p-3 shadow-[0_2px_14px_rgba(65,59,94,0.05)]"
+      className="rounded-[20px] border border-[#E6E2F0] bg-white p-3"
     >
       <header className="flex items-center gap-3 px-1 pb-3">
         <Link href={`/profile/${author.id}`} className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full border border-[#D0CDE1] bg-[#E8E6F1]/60">
@@ -85,7 +87,13 @@ export function MomentCard({
           </div>
           <p className="mt-0.5 flex items-center gap-1 text-[11px] leading-snug text-slate-600">
             <MapPin className="h-3 w-3 shrink-0 text-[#8574B7]" aria-hidden />
-            <span className="truncate">{moment.city}</span>
+            <span className="truncate">{moment.country ? `${moment.city}, ${moment.country}` : moment.city}</span>
+            {moment.locationVerified && (
+              <span className="inline-flex shrink-0" title={t('moments.locationVerified')}>
+                <LocateFixed className="h-3 w-3 text-[#8574B7]" aria-hidden />
+                <span className="sr-only">{t('moments.locationVerified')}</span>
+              </span>
+            )}
             <span aria-hidden>·</span>
             <span suppressHydrationWarning className="shrink-0">{ago(moment.createdAt, locale)}</span>
           </p>
@@ -135,13 +143,25 @@ export function MomentCard({
       </header>
 
       <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl bg-[#E8E6F1]/50">
-        <Image src={moment.imageUrl} alt={t(`moments.tag.${moment.activityTag}` as TKey)} fill sizes="(max-width: 480px) 100vw, 456px" className="object-cover" />
-        <span className="absolute left-3 top-3 inline-flex items-center rounded-full bg-white/75 px-3 py-1.5 text-[11px] font-semibold leading-none text-[#413B5E] backdrop-blur-md">
-          {t(`moments.tag.${moment.activityTag}` as TKey)}
-        </span>
+        <Image src={moment.imageUrl} alt={vibeLabel || t('moments.attachedAlt')} fill sizes="(max-width: 480px) 100vw, 456px" className="object-cover" />
+        {vibeLabel && (
+          <span className="absolute left-3 top-3 inline-flex items-center rounded-full bg-white/75 px-3 py-1.5 text-[11px] font-semibold leading-none text-[#413B5E] backdrop-blur-md">
+            {vibeLabel}
+          </span>
+        )}
       </div>
 
-      {moment.caption && <p className="px-1 pt-3 text-sm leading-relaxed text-[#413B5E] break-words">{moment.caption}</p>}
+      {(moment.sharedVibe || moment.prompt || moment.caption) && (
+        <div className="px-1 pt-3">
+          {moment.sharedVibe && (
+            <span className="mb-2 inline-flex items-center rounded-md bg-[#F6F4FB] px-1.5 py-0.5 text-[10px] font-semibold leading-none text-[#8574B7]">
+              {t('moments.sharedVibe')}
+            </span>
+          )}
+          {moment.prompt && <p className="text-xs font-medium leading-snug text-[#8574B7]">{t(`moments.prompt.${moment.prompt}` as TKey)}</p>}
+          {moment.caption && <p className={`text-sm leading-relaxed text-[#413B5E] break-words ${moment.prompt ? 'mt-1' : ''}`}>{moment.caption}</p>}
+        </div>
+      )}
 
       <div className="flex items-center gap-2.5 px-1 pt-3">
         <motion.button

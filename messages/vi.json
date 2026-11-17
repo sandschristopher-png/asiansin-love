@@ -482,14 +482,6 @@
     "title": "Khoảnh khắc",
     "subtitle": "Những khoảnh khắc đời thường từ các thành viên đã xác minh khắp Đông Nam Á.",
     "post": "Đăng khoảnh khắc",
-    "tag": {
-      "coffee": "Cà phê và bánh ngọt",
-      "street_food": "Ẩm thực đường phố",
-      "city_walk": "Dạo phố",
-      "sunset": "Hoàng hôn",
-      "gym": "Phòng gym",
-      "date_spot": "Chỗ hẹn hò"
-    },
     "emptyTitle": "Chưa có khoảnh khắc nào ở đây",
     "emptyBody": "Hãy là người đầu tiên chia sẻ một khoảnh khắc.",
     "loadMore": "Xem thêm",
@@ -504,7 +496,6 @@
     "spark": "Spark khoảnh khắc này",
     "composeTitle": "Đăng một khoảnh khắc",
     "city": "Thành phố",
-    "activity": "Bạn đang làm gì?",
     "captionPlaceholder": "Chia sẻ đôi lời (140 ký tự)",
     "addPhoto": "Thêm ảnh",
     "changePhoto": "Đổi ảnh",
@@ -532,6 +523,32 @@
     "sparkSend": "Gửi Spark",
     "sparkSent": "Đã gửi Spark",
     "attachedAlt": "Ảnh khoảnh khắc",
-    "postFirst": "Đăng khoảnh khắc đầu tiên"
+    "postFirst": "Đăng khoảnh khắc đầu tiên",
+    "vibe": {
+      "cafe_hopping": "Đi cà phê",
+      "street_food": "Ẩm thực đường phố & chợ",
+      "city_walks": "Dạo phố",
+      "beach_sunset": "Biển & hoàng hôn",
+      "fitness_wellness": "Phòng gym & đi bộ",
+      "remote_work": "Làm việc từ xa",
+      "weekend_trips": "Chuyến đi cuối tuần",
+      "local_gems": "Địa điểm ẩn giấu"
+    },
+    "prompt": {
+      "favorite_spot": "Địa điểm yêu thích của mình trong thành phố lúc này...",
+      "weekend": "Cuối tuần của mình trông như thế này...",
+      "best_food": "Món ăn hoặc ly cà phê ngon nhất tuần này...",
+      "first_hangout": "Mình sẽ đưa bạn đến đây trong buổi hẹn đầu tiên...",
+      "view": "Một khung cảnh mình ngắm hoài không chán..."
+    },
+    "sharedVibe": "Cùng gu",
+    "todaysPrompt": "Gợi ý hôm nay",
+    "joinPost": "Tham gia & đăng",
+    "vibeLabel": "Chọn một chủ đề",
+    "promptLabel": "Bắt đầu bằng một gợi ý (tùy chọn)",
+    "useLocation": "Dùng vị trí hiện tại",
+    "locationVerified": "Đã xác minh vị trí",
+    "locateDenied": "Không thể lấy vị trí của bạn. Hãy cho phép truy cập vị trí trong trình duyệt hoặc chọn một thành phố trong danh sách.",
+    "locateOutside": "Vị trí của bạn không ở Đông Nam Á nên chúng tôi không thể xác nhận thành phố. Hãy chọn từ danh sách."
   }
 }
