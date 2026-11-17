@@ -383,8 +383,8 @@ nextjs-portal,
 
 /* Chat header "Unlocked" chip (app/chat/[id]/page.tsx): visible for a few seconds, then gone on its own */
 @keyframes ailGateDone {
-  0% { opacity: 0; transform: scale(0.9); }
-  8% { opacity: 1; transform: scale(1); }
+  0% { opacity: 0; transform: translateY(-4px); }
+  8% { opacity: 1; transform: translateY(0); }
   80% { opacity: 1; visibility: visible; }
   100% { opacity: 0; visibility: hidden; }
 }

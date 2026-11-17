@@ -453,6 +453,9 @@
       "you": "나",
       "aria": "잠금 해제 진행: 각자 {count}/{n}개",
       "unlocked": "해제됨"
+    },
+    "menu": {
+      "reputation": "평판"
     }
   },
   "notif": {

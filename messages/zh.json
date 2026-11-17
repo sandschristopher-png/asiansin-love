@@ -453,6 +453,9 @@
       "you": "你",
       "aria": "解锁进度：双方各 {count}/{n} 条",
       "unlocked": "已解锁"
+    },
+    "menu": {
+      "reputation": "信誉"
     }
   },
   "notif": {

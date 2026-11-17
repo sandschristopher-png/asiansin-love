@@ -453,6 +453,9 @@
       "you": "Kamu",
       "aria": "Kemajuan pembukaan: {count} dari {n} pesan masing-masing",
       "unlocked": "Terbuka"
+    },
+    "menu": {
+      "reputation": "Reputasi"
     }
   },
   "notif": {

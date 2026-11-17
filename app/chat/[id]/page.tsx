@@ -35,6 +35,7 @@ import {
   Loader2,
   MoreVertical,
   Phone,
+  ShieldCheck,
 } from 'lucide-react';
 import ReputationModal from '@/components/ReputationModal';
 import { supabase } from '@/lib/supabase/client';
@@ -51,7 +52,6 @@ import { localTimeIn, timeZoneFor } from '@/lib/timezone';
 import { evaluateSubstantiveConversation } from '@/lib/moderation';
 import { validateBio } from '@/lib/moderation/textFilter';
 import { isRestricted } from '@/lib/reputation';
-import { RepBadge } from '@/components/profile/RhythmBadges';
 import { hapticError, hapticSuccess, hapticTap } from '@/lib/utils/haptics';
 import { BackButton } from '@/components/BackButton';
 import { Switch } from '@/components/ui/Switch';
@@ -1289,12 +1289,12 @@ export default function ChatConversationPage() {
       {call.inCall && call.minimized && call.phase !== 'incoming' && <div className="h-9 shrink-0" aria-hidden />}
       {/* Sticky Header */}
       <header className="relative flex items-center justify-between px-3.5 py-2.5 bg-white/95 backdrop-blur-md border-b border-[#D0CDE1] shrink-0 z-20">
-        <div className="flex items-center gap-2.5 min-w-0">
-          <BackButton fallback="/messages" />
+        <div className="flex items-center gap-2 min-w-0">
+          <BackButton fallback="/messages" variant="plain" className="-ml-1.5" />
 
           {isInitialLoading ? (
             <div className="flex items-center gap-2.5 animate-pulse">
-              <div className="w-9 h-9 rounded-full bg-[#E8E6F1]/60" />
+              <div className="w-10 h-10 rounded-full bg-[#E8E6F1]/60" />
               <div className="space-y-1.5">
                 <div className="w-24 h-3.5 bg-[#E8E6F1]/60 rounded-full" />
                 <div className="w-16 h-2.5 bg-[#E8E6F1]/60 rounded-full" />
@@ -1305,19 +1305,19 @@ export default function ChatConversationPage() {
               href={'/profile/' + (resolvedTargetUuid || rawParam)}
               className="flex items-center gap-2.5 min-w-0 group"
             >
-              <div className="relative w-9 h-9 rounded-full overflow-hidden border border-[#D0CDE1] shrink-0 bg-[#E8E6F1]/60">
+              <div className="relative w-10 h-10 rounded-full overflow-hidden border border-[#D0CDE1] shrink-0 bg-[#E8E6F1]/60">
                 <Image
                   src={targetInfo.avatar}
                   alt={targetInfo.name || 'Member'}
                   fill
-                  sizes="36px"
+                  sizes="40px"
                   className="object-cover"
                 />
               </div>
               <div className="flex flex-col min-w-0">
                 <span className="flex items-center gap-1 min-w-0">
                   <span
-                    className="text-[13.5px] font-semibold text-[#413B5E] group-hover:text-[#8574B7] transition leading-tight truncate"
+                    className="text-[15px] font-semibold text-[#413B5E] group-hover:text-[#8574B7] transition leading-tight truncate"
                     style={{ fontFamily: 'var(--font-brand)' }}
                   >
                     {targetInfo.name || 'Member'}
@@ -1339,14 +1339,12 @@ export default function ChatConversationPage() {
                   const label = theyAreTyping ? 'typing...' : online ? 'Online' : activity;
                   if (!label && !cityLabel && !targetInfo.replyPace) return null;
                   return (
-                    <div className="flex items-center gap-1.5 mt-0.5 min-w-0">
+                    // One quiet line of plain text (no pills): "Online · Bislig 11:11 PM".
+                    <div className="flex items-center gap-1.5 mt-0.5 min-w-0 text-[11px] font-medium text-slate-600">
                       {online && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block shrink-0" />}
-                      {label && <span className="text-[11px] text-slate-600 font-medium truncate shrink-0">{label}</span>}
-                      {cityLabel && (
-                        <span className="px-1.5 py-px rounded-full bg-[#E8E6F1]/60 text-[10px] font-semibold text-[#8574B7] whitespace-nowrap truncate">
-                          {cityLabel}
-                        </span>
-                      )}
+                      {label && <span className="truncate shrink-0">{label}</span>}
+                      {label && cityLabel && <span aria-hidden className="text-[#D0CDE1]">&middot;</span>}
+                      {cityLabel && <span className="truncate whitespace-nowrap">{cityLabel}</span>}
                     </div>
                   );
                 })()}
@@ -1356,8 +1354,23 @@ export default function ChatConversationPage() {
         </div>
 
         <div className="flex items-center gap-1.5 shrink-0">
-          {!isInitialLoading && (
-            <RepBadge score={targetInfo.rep} onClick={() => setShowRepModal(true)} />
+          {showGate && (
+            // Unlock progress (see the drawer below). Small, quiet, and in the action row where nothing overlaps it.
+            <button
+              type="button"
+              onClick={() => {
+                setCallConfirm(false);
+                setCallNote(null);
+                setHeaderMenu(false);
+                setGateOpen((open) => !open);
+              }}
+              aria-label={t('chat.gate.aria', { count: gateLeast, n: CONTACT_UNLOCK_TURNS })}
+              aria-expanded={gateOpen}
+              className="mr-0.5 inline-flex h-7 items-center gap-1 rounded-full border border-[#E6E2F0] bg-[#F6F4FB] px-2 text-[11px] font-semibold tabular-nums text-[#413B5E]/80 transition hover:border-[#8574B7]/40 hover:text-[#8574B7]"
+            >
+              <Lock className="h-3 w-3 text-[#8574B7]" strokeWidth={2.25} aria-hidden />
+              {gateLeast}/{CONTACT_UNLOCK_TURNS}
+            </button>
           )}
           {!isInitialLoading && (
             // The call button is the one obvious action up here: a 40px circle on the lavender surface.
@@ -1423,6 +1436,19 @@ export default function ChatConversationPage() {
               role="menuitem"
               onClick={() => {
                 setHeaderMenu(false);
+                setShowRepModal(true);
+              }}
+              className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm text-[#413B5E] transition hover:bg-[#F6F4FB]"
+            >
+              <ShieldCheck className="h-4 w-4 text-slate-600" aria-hidden />
+              <span className="flex-1">{t('chat.menu.reputation')}</span>
+              <span className="text-xs font-semibold tabular-nums text-[#8574B7]">{targetInfo.rep}%</span>
+            </button>
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                setHeaderMenu(false);
                 setShowReportModal(true);
               }}
               className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm text-[#413B5E] transition hover:bg-[#F6F4FB]"
@@ -1440,32 +1466,17 @@ export default function ChatConversationPage() {
             <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-[3px] bg-[#E8E6F1]">
               <div className="h-full rounded-r-full bg-[#8574B7] transition-[width] duration-500 ease-out" style={{ width: `${Math.round(gateProgress * 100)}%` }} />
             </div>
-            <button
-              type="button"
-              onClick={() => {
-                setCallConfirm(false);
-                setCallNote(null);
-                setHeaderMenu(false);
-                setGateOpen((open) => !open);
-              }}
-              aria-label={t('chat.gate.aria', { count: gateLeast, n: CONTACT_UNLOCK_TURNS })}
-              aria-expanded={gateOpen}
-              className="absolute bottom-0 left-3.5 z-10 inline-flex h-5 translate-y-1/2 items-center gap-1 rounded-full border border-[#E6E2F0] bg-white px-2 text-[10.5px] font-semibold tabular-nums text-[#413B5E]/80 shadow-[0_2px_6px_rgba(65,59,94,0.08)] transition hover:border-[#8574B7]/40 hover:text-[#8574B7]"
-            >
-              <Lock className="h-2.5 w-2.5 text-[#8574B7]" strokeWidth={2.5} aria-hidden />
-              {gateLeast}/{CONTACT_UNLOCK_TURNS}
-            </button>
           </>
         )}
         {!isInitialLoading && gateUnlocked && gateLockedOnOpen && (
           // The moment it opens: a brief "Unlocked" that fades by itself (no timer state needed).
-          <span className="ail-gate-done pointer-events-none absolute bottom-0 left-3.5 z-10 inline-flex h-5 translate-y-1/2 items-center gap-1 rounded-full bg-[#8574B7] px-2 text-[10.5px] font-semibold text-white">
+          <span className="ail-gate-done pointer-events-none absolute right-3.5 top-full z-10 mt-2 inline-flex h-6 items-center gap-1 rounded-full bg-[#8574B7] px-2.5 text-[11px] font-semibold text-white shadow-[0_4px_12px_rgba(133,116,183,0.35)]">
             <Check className="h-2.5 w-2.5" strokeWidth={3} aria-hidden />
             {t('chat.gate.unlocked')}
           </span>
         )}
         {gateOpen && showGate && (
-          <div role="dialog" aria-label={t('chat.gate.title', { n: CONTACT_UNLOCK_TURNS })} className="absolute left-3 top-full z-30 mt-4 w-[280px] rounded-2xl border border-[#D0CDE1] bg-white p-3.5 shadow-[0_12px_30px_rgba(65,59,94,0.16)]">
+          <div role="dialog" aria-label={t('chat.gate.title', { n: CONTACT_UNLOCK_TURNS })} className="absolute right-3 top-full z-30 mt-1.5 w-[280px] rounded-2xl border border-[#D0CDE1] bg-white p-3.5 shadow-[0_12px_30px_rgba(65,59,94,0.16)]">
             <p className="text-[13px] font-semibold leading-snug text-[#413B5E]">{t('chat.gate.title', { n: CONTACT_UNLOCK_TURNS })}</p>
             <p className="mt-1 text-[11.5px] leading-relaxed text-slate-600">{t('chat.gate.body')}</p>
             <div className="mt-3 space-y-2.5">

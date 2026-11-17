@@ -453,6 +453,9 @@
       "you": "Bạn",
       "aria": "Tiến độ mở khóa: {count}/{n} tin nhắn mỗi người",
       "unlocked": "Đã mở khóa"
+    },
+    "menu": {
+      "reputation": "Uy tín"
     }
   },
   "notif": {

@@ -453,6 +453,9 @@
       "you": "Ikaw",
       "aria": "Progreso ng pag-unlock: {count} sa {n} mensahe bawat isa",
       "unlocked": "Nabuksan na"
+    },
+    "menu": {
+      "reputation": "Reputasyon"
     }
   },
   "notif": {

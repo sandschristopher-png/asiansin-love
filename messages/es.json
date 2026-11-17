@@ -453,6 +453,9 @@
       "you": "Tú",
       "aria": "Progreso del desbloqueo: {count} de {n} mensajes cada uno",
       "unlocked": "Desbloqueado"
+    },
+    "menu": {
+      "reputation": "Reputación"
     }
   },
   "notif": {

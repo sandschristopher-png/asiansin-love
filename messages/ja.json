@@ -453,6 +453,9 @@
       "you": "あなた",
       "aria": "ロック解除の進み具合：お互い{count}/{n}件",
       "unlocked": "解除済み"
+    },
+    "menu": {
+      "reputation": "評価"
     }
   },
   "notif": {

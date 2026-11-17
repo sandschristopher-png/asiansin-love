@@ -453,6 +453,9 @@
       "you": "You",
       "aria": "Unlock progress: {count} of {n} messages each",
       "unlocked": "Unlocked"
+    },
+    "menu": {
+      "reputation": "Reputation"
     }
   },
   "notif": {
