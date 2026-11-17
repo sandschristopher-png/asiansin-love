@@ -452,8 +452,7 @@
     "adminModeration": "Na-quarantine ang isang mensahe mula kay {name}"
   },
   "launch": {
-    "badge": "Soft Launch • Bukas Na",
-    "sub": "Kabubukas pa lang namin para sa mga unang miyembro sa buong Timog-Silangang Asya. Sumali nang libre ngayon at maging bahagi ng aming founding community."
+    "badge": "Soft Launch • Bukas Na"
   },
   "report": {
     "messageTitle": "I-report ang mensaheng ito",

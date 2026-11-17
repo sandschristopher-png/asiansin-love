@@ -452,8 +452,7 @@
     "adminModeration": "Một tin nhắn từ {name} đã bị cách ly"
   },
   "launch": {
-    "badge": "Ra mắt thử nghiệm • Đã mở cửa",
-    "sub": "Chúng tôi vừa mở cửa đón những thành viên đầu tiên trên khắp Đông Nam Á. Tham gia miễn phí hôm nay và trở thành một phần của cộng đồng sáng lập."
+    "badge": "Ra mắt thử nghiệm • Đã mở cửa"
   },
   "report": {
     "messageTitle": "Báo cáo tin nhắn này",

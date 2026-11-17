@@ -38,7 +38,7 @@ export default function Hero() {
   return (
     <section className="w-full bg-white pt-1 pb-8">
       <div className="flex flex-col items-center text-center">
-        <SoftLaunchNotice showSub={false} className="mb-3" />
+        <SoftLaunchNotice className="mb-3" />
 
         {/* Brand portrait in a rounded card, cropped short (180-300px, by screen height) so the CTA stays
             above the fold. Nothing is drawn over her face, and no name, age or profile badge, so it

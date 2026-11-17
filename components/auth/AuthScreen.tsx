@@ -227,10 +227,12 @@ export function AuthScreen({ mode, audience = 'western' }: { mode: 'login' | 'si
           </div>
         </div>
       )}
-      <main className="relative z-10 flex-1 w-full flex flex-col px-6 pt-10">
-        {/* App language: the same bottom-sheet picker as the landing header and Settings. */}
-        <div className="absolute right-3 top-2 z-20">
-          <LanguagePill />
+      <main className="relative z-10 flex-1 w-full flex flex-col px-5 pt-4">
+        {/* Top bar, same px-5 / pt-4 as the rest of the app: the language picker (the same bottom-sheet
+            as the landing header and Settings) sits on the column's right edge. The pill's own 10px
+            inset is pulled back so its globe lines up with the edge. */}
+        <div className="flex justify-end">
+          <LanguagePill className="-mr-2.5" />
         </div>
         <div className="text-center">
           <span className="block text-[11px] font-semibold tracking-[0.25em] uppercase text-[#8574B7] mb-2 text-center">
@@ -242,11 +244,11 @@ export function AuthScreen({ mode, audience = 'western' }: { mode: 'login' | 'si
           <KineticCityTicker audience={audience} />
         </div>
 
-        <SoftLaunchNotice className="mx-auto mb-6 mt-5 max-w-[340px]" />
+        <SoftLaunchNotice className="mb-5 mt-4" />
 
-        <div className="w-full max-w-[340px] mx-auto space-y-3">
+        <div className="w-full max-w-[360px] mx-auto space-y-3">
           {step === 'closed' ? (
-            <div className="flex flex-col gap-3 w-full max-w-[340px] mx-auto" aria-busy={!!busy}>
+            <div className="flex flex-col gap-3 w-full" aria-busy={!!busy}>
               <button type="button" className={PILL} onClick={() => oauth('google')} disabled={!!busy}>
                 <span className={PILL_ICON}>
                   {busy === 'google' ? <Loader2 className="w-4 h-4 animate-spin text-[#8574B7]" /> : <GoogleIcon />}
@@ -379,7 +381,7 @@ export function AuthScreen({ mode, audience = 'western' }: { mode: 'login' | 'si
           )}
         </p>
 
-        <p className="mt-auto pt-10 text-[10px] leading-relaxed text-slate-600 max-w-[340px] mx-auto text-center">
+        <p className="mt-7 text-[10px] leading-relaxed text-slate-600 max-w-[360px] mx-auto text-center">
           {t('auth.ageNotice')}
           {sp}
           {t('auth.legalLead')}
