@@ -37,18 +37,19 @@ export default function Hero() {
   return (
     <section className="w-full bg-white pb-8">
       <div className="flex flex-col items-center text-center">
-        {/* Brand portrait (Camille_Hero.png, unchanged) in a 4:3 card, cropped from the top so the cafe, the iced
-            coffee and her smile stay in frame while the empty table in the foreground is trimmed. Nothing is
-            drawn over her face, and no name, age or profile badge, so it can never read as a real member. */}
+        {/* Hero photo (hero-heart-lavender.jpg): a woman framing her smile with a heart made of her hands, the
+            wall recoloured to the brand lavender. It is 2000x1493 (about 4:3), so the 4:3 card shows all of it
+            and the heart stays centred. Nothing is drawn over her face, and no name, age or profile badge, so it
+            can never read as a real member. */}
         <FadeIn className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl bg-[#E8E6F1]/50 shadow-[0_8px_30px_rgba(65,59,94,0.12)]">
           <Image
-            src="/Camille_Hero.png"
+            src="/hero-heart-lavender.jpg"
             alt={m.hero.imageAlt}
             fill
             preload
-            quality={90}
+            quality={80}
             sizes="(max-width: 448px) 100vw, 448px"
-            className="object-cover object-[50%_22%] select-none pointer-events-none"
+            className="object-cover object-[50%_38%] select-none pointer-events-none"
           />
         </FadeIn>
 
