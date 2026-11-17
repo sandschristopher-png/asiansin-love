@@ -33,7 +33,7 @@ import {
   Square,
   Trash2,
   Loader2,
-  MoreVertical,
+  MoreHorizontal,
   Phone,
   ShieldCheck,
 } from 'lucide-react';
@@ -44,11 +44,8 @@ import { AudioPill } from '@/components/AudioPill';
 import { useVoiceRecorder } from '@/lib/useVoiceRecorder';
 import { VOICE_NOTE_MAX_MS, formatSeconds } from '@/lib/audio';
 import { InAppToast } from '@/components/InAppToast';
-import { getPresenceStatus } from '@/lib/presence';
-import { usePresentUserIds } from '@/lib/realtimePresence';
 import { toList } from '@/lib/rhythm';
 import { needsTranslation } from '@/lib/language';
-import { localTimeIn, timeZoneFor } from '@/lib/timezone';
 import { evaluateSubstantiveConversation } from '@/lib/moderation';
 import { validateBio } from '@/lib/moderation/textFilter';
 import { isRestricted } from '@/lib/reputation';
@@ -190,12 +187,6 @@ export default function ChatConversationPage() {
   const [sharedInterests, setSharedInterests] = useState<string[]>([]);
   const [myTraits, setMyTraits] = useState<string[]>([]);
   const [theirTraits, setTheirTraits] = useState<string[]>([]);
-  // Re-render once a minute so the match's local time stays current.
-  const [clockTick, setClockTick] = useState(0);
-  useEffect(() => {
-    const t = window.setInterval(() => setClockTick((n) => n + 1), 60_000);
-    return () => window.clearInterval(t);
-  }, []);
 
   const [icebreakerPrompt, setIcebreakerPrompt] = useState<string | null>(null);
   const [showIcebreaker, setShowIcebreaker] = useState(true);
@@ -210,12 +201,6 @@ export default function ChatConversationPage() {
     Record<string, { text?: string; showing: boolean; loading: boolean }>
   >({});
   const closeToast = useCallback(() => setToast(null), []);
-  const presentIds = usePresentUserIds();
-  const [, setPresenceTick] = useState(0);
-  useEffect(() => {
-    const t = setInterval(() => setPresenceTick((n) => n + 1), 60_000); // re-evaluate "Active Xm ago"
-    return () => clearInterval(t);
-  }, []);
   // Mic permission / recorder failures surface as a toast instead of failing silently.
   useEffect(() => {
     if (voice.error) setToast(voice.error);
@@ -1324,30 +1309,7 @@ export default function ChatConversationPage() {
                   </span>
                   {targetInfo.verified && <VerifiedBadge size="sm" />}
                 </span>
-                {(() => {
-                  // Green dot only when connected right now (Realtime Presence) or active in the last
-                  // 5 minutes; otherwise "Active 2h ago", falling back to their city.
-                  const city = targetInfo.city ? targetInfo.city.replace(/^@+/, '') : '';
-                  const presence = targetInfo.showActive ? getPresenceStatus(targetInfo.lastActive) : null;
-                  const online =
-                    targetInfo.showActive &&
-                    (Boolean(resolvedTargetUuid && presentIds.has(resolvedTargetUuid)) || Boolean(presence?.isOnline));
-                  const activity = !online && presence && presence.statusLabel !== 'Offline' ? presence.statusLabel : '';
-                  void clockTick; // minute re-render for the local time
-                  const localTime = localTimeIn(timeZoneFor(city, targetInfo.country));
-                  const cityLabel = city ? (localTime ? `${city.split(',')[0]} ${localTime}` : city) : '';
-                  const label = theyAreTyping ? 'typing...' : online ? 'Online' : activity;
-                  if (!label && !cityLabel && !targetInfo.replyPace) return null;
-                  return (
-                    // One quiet line of plain text (no pills): "Online · Bislig 11:11 PM".
-                    <div className="flex items-center gap-1.5 mt-0.5 min-w-0 text-[11px] font-medium text-slate-600">
-                      {online && <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 inline-block shrink-0" />}
-                      {label && <span className="truncate shrink-0">{label}</span>}
-                      {label && cityLabel && <span aria-hidden className="text-[#D0CDE1]">&middot;</span>}
-                      {cityLabel && <span className="truncate whitespace-nowrap">{cityLabel}</span>}
-                    </div>
-                  );
-                })()}
+                {/* No status line: the avatar and name sit centred in the bar (typing shows in the thread). */}
               </div>
             </Link>
           )}
@@ -1380,11 +1342,31 @@ export default function ChatConversationPage() {
               aria-label={t('call.phoneLabel')}
               title={t('call.phoneLabel')}
               aria-disabled={!callReady}
-              className={`w-10 h-10 flex items-center justify-center rounded-full bg-[#F6F4FB] ring-1 ring-[#E6E2F0] transition active:scale-95 cursor-pointer ${
+              className={`w-9 h-9 flex items-center justify-center rounded-full bg-[#F6F4FB] ring-1 ring-[#E6E2F0] transition active:scale-95 cursor-pointer ${
                 callReady ? 'text-[#8574B7] hover:text-[#534377] hover:bg-[#E8E6F1]' : 'text-[#413B5E]/35 hover:bg-[#E8E6F1]/60'
               }`}
             >
-              {callStarting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Phone className="w-5 h-5" />}
+              {callStarting ? <Loader2 className="w-[18px] h-[18px] animate-spin" /> : <Phone className="w-[18px] h-[18px]" />}
+            </button>
+          )}
+          {!isInitialLoading && (
+            // Safety shield: opens the safety and unlock info popover. A small dot marks that unlocks are pending.
+            <button
+              type="button"
+              onClick={() => {
+                setCallConfirm(false);
+                setCallNote(null);
+                setHeaderMenu(false);
+                setGateOpen((open) => !open);
+              }}
+              aria-label={t('chat.menu.safety')}
+              title={t('chat.menu.safety')}
+              aria-haspopup="dialog"
+              aria-expanded={gateOpen}
+              className="relative w-9 h-9 flex items-center justify-center text-[#413B5E] hover:bg-[#F6F4FB] rounded-full transition cursor-pointer"
+            >
+              <ShieldCheck className="w-5 h-5" strokeWidth={1.75} />
+              {showGate && <span aria-hidden className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-[#8574B7] ring-2 ring-white" />}
             </button>
           )}
           {!isInitialLoading && (
@@ -1399,9 +1381,9 @@ export default function ChatConversationPage() {
               aria-label={t('call.menuLabel')}
               aria-haspopup="menu"
               aria-expanded={headerMenu}
-              className="w-8 h-8 -mr-1 flex items-center justify-center text-[#413B5E] hover:bg-[#E8E6F1]/70 rounded-full transition cursor-pointer"
+              className="w-9 h-9 -mr-1.5 flex items-center justify-center text-[#413B5E] hover:bg-[#F6F4FB] rounded-full transition cursor-pointer"
             >
-              <MoreVertical className="w-4 h-4" />
+              <MoreHorizontal className="w-5 h-5" />
             </button>
           )}
         </div>
@@ -1444,18 +1426,6 @@ export default function ChatConversationPage() {
               <span className="flex-1">{t('chat.menu.reputation')}</span>
               <span className="text-xs font-semibold tabular-nums text-[#8574B7]">{targetInfo.rep}%</span>
             </button>
-            <button
-              type="button"
-              role="menuitem"
-              onClick={() => {
-                setHeaderMenu(false);
-                setShowReportModal(true);
-              }}
-              className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm text-[#413B5E] transition hover:bg-[#F6F4FB]"
-            >
-              <ShieldAlert className="h-4 w-4 text-slate-600" aria-hidden />
-              Safety &amp; Moderation
-            </button>
           </div>
         )}
 
@@ -1475,8 +1445,8 @@ export default function ChatConversationPage() {
             {t('chat.gate.unlocked')}
           </span>
         )}
-        {gateOpen && showGate && (
-          <div role="dialog" aria-label={t('chat.gate.title', { n: CONTACT_UNLOCK_TURNS })} className="ail-pop-in absolute right-3 top-full z-30 mt-1.5 w-[280px] origin-top-right rounded-2xl border border-[#8574B7]/25 bg-white p-3.5 shadow-[0_14px_36px_rgba(133,116,183,0.22),0_2px_8px_rgba(65,59,94,0.06)]">
+        {gateOpen && (
+          <div role="dialog" aria-label={t('chat.menu.safety')} className="ail-pop-in absolute right-3 top-full z-30 mt-1.5 w-[280px] origin-top-right rounded-2xl border border-[#8574B7]/25 bg-white p-3.5 shadow-[0_14px_36px_rgba(133,116,183,0.22),0_2px_8px_rgba(65,59,94,0.06)]">
             {/* Floats over the thread (absolute: it takes no space, so the bubbles below never move). */}
             <button
               type="button"
@@ -1486,24 +1456,44 @@ export default function ChatConversationPage() {
             >
               <X className="h-4 w-4" aria-hidden />
             </button>
-            <p className="pr-7 text-[13px] font-semibold leading-snug text-[#413B5E]">{t('chat.gate.title', { n: CONTACT_UNLOCK_TURNS })}</p>
-            <p className="mt-1 text-[11.5px] leading-relaxed text-slate-600">{t('chat.gate.body')}</p>
-            <div className="mt-3 space-y-2.5">
-              {[
-                { label: t('chat.gate.you'), count: gateMine },
-                { label: targetInfo.name || 'Member', count: gateTheirs },
-              ].map((row) => (
-                <div key={row.label}>
-                  <div className="flex items-center justify-between text-[11.5px] font-medium text-[#413B5E]">
-                    <span className="truncate">{row.label}</span>
-                    <span className="tabular-nums text-slate-600">{row.count}/{CONTACT_UNLOCK_TURNS}</span>
-                  </div>
-                  <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-[#E8E6F1]">
-                    <div className="h-full rounded-full bg-[#8574B7] transition-[width] duration-500 ease-out" style={{ width: `${(row.count / CONTACT_UNLOCK_TURNS) * 100}%` }} />
-                  </div>
+            {showGate ? (
+              <>
+                <p className="pr-7 text-[13px] font-semibold leading-snug text-[#413B5E]">{t('chat.gate.title', { n: CONTACT_UNLOCK_TURNS })}</p>
+                <p className="mt-1 text-[11.5px] leading-relaxed text-slate-600">{t('chat.gate.body')}</p>
+                <div className="mt-3 space-y-2.5">
+                  {[
+                    { label: t('chat.gate.you'), count: gateMine },
+                    { label: targetInfo.name || 'Member', count: gateTheirs },
+                  ].map((row) => (
+                    <div key={row.label}>
+                      <div className="flex items-center justify-between text-[11.5px] font-medium text-[#413B5E]">
+                        <span className="truncate">{row.label}</span>
+                        <span className="tabular-nums text-slate-600">{row.count}/{CONTACT_UNLOCK_TURNS}</span>
+                      </div>
+                      <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-[#E8E6F1]">
+                        <div className="h-full rounded-full bg-[#8574B7] transition-[width] duration-500 ease-out" style={{ width: `${(row.count / CONTACT_UNLOCK_TURNS) * 100}%` }} />
+                      </div>
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
+              </>
+            ) : (
+              <p className="flex items-center gap-1.5 pr-7 text-[13px] font-semibold text-[#413B5E]">
+                <Check className="h-4 w-4 text-[#8574B7]" strokeWidth={2.5} aria-hidden />
+                {t('chat.gate.unlocked')}
+              </p>
+            )}
+            <button
+              type="button"
+              onClick={() => {
+                setGateOpen(false);
+                setShowReportModal(true);
+              }}
+              className="mt-3 flex w-full items-center gap-2.5 rounded-xl border-t border-[#E6E2F0] px-1 pt-3 text-left text-sm text-[#413B5E] transition hover:text-[#8574B7]"
+            >
+              <ShieldAlert className="h-4 w-4 text-slate-600" aria-hidden />
+              {t('chat.menu.safety')}
+            </button>
           </div>
         )}
       </header>
@@ -1699,10 +1689,10 @@ export default function ChatConversationPage() {
                       className={
                         'flex flex-col ' +
                         (isMe ? 'items-end ' : 'items-start ') +
-                        (isSameSenderAsPrev || showDateHeader ? 'mt-0.5' : 'mt-2.5')
+                        (isSameSenderAsPrev || showDateHeader ? 'mt-1' : 'mt-3')
                       }
                     >
-                      <div className={'flex items-end gap-2 max-w-[84%] ' + (isMe ? 'flex-row-reverse' : 'flex-row')}>
+                      <div className={'group/row flex items-end gap-2 max-w-[90%] ' + (isMe ? 'flex-row-reverse' : 'flex-row')}>
                         {!isMe && (
                           <div className="w-6 h-6 shrink-0">
                             {!isSameSenderAsNext ? (
@@ -1732,16 +1722,11 @@ export default function ChatConversationPage() {
                               : undefined
                           }
                           className={
-                            'px-3.5 py-2 text-[13.5px] leading-[1.45] break-words select-text transition-opacity ' +
+                            // Quiet bubbles: roomy padding, one radius, no shadow. Mine #8574B7 with white text; theirs borderless #F6F4FB.
+                            'px-4 py-3 text-[14px] leading-[1.5] break-words select-text transition-opacity rounded-2xl ' +
                             (isRealId ? 'cursor-pointer relative group/msg ' : '') +
                             (msg.pending ? 'opacity-75 ' : msg.failed ? 'opacity-60 ' : 'opacity-100 ') +
-                            (isMe
-                              ? 'bg-[#8574B7] text-white rounded-2xl ' +
-                                (isSameSenderAsNext ? 'rounded-br-md' : 'rounded-br-xs') +
-                                ' shadow-[0_1px_6px_rgba(102,93,150,0.18)]'
-                              : 'bg-white text-[#413B5E] border border-[#D0CDE1] rounded-2xl ' +
-                                (isSameSenderAsNext ? 'rounded-bl-md' : 'rounded-bl-xs') +
-                                ' shadow-[0_1px_3px_rgba(65,59,94,0.03)]')
+                            (isMe ? 'bg-[#8574B7] text-white' : 'bg-[#F6F4FB] text-[#413B5E]')
                           }
                         >
                           {msg.moment && (
@@ -1780,14 +1765,31 @@ export default function ChatConversationPage() {
                             />
                           )}
                         </div>
-                        {/* One-tap report on every received message. */}
+                        {/* Time, and for Plus members the read mark, beside the bubble's bottom edge (Pairs-style): to the left
+                            of my bubbles, to the right of theirs. */}
+                        {!msg.failed && (
+                          <span className={'mb-0.5 flex shrink-0 flex-col gap-px text-[10px] leading-tight text-slate-500 select-none ' + (isMe ? 'items-end' : 'items-start')}>
+                            {isMe && !msg.pending && isPlus && (
+                              msg.read ? (
+                                <span className="inline-flex items-center gap-0.5 font-medium text-[#8574B7]">
+                                  <CheckCheck className="h-3 w-3" aria-hidden />
+                                  {t('chat.read')}
+                                </span>
+                              ) : (
+                                <Check className="h-3 w-3" aria-hidden />
+                              )
+                            )}
+                            <span className="tabular-nums">{msg.pending ? 'Sending...' : msg.time}</span>
+                          </span>
+                        )}
+                        {/* Report: hidden until you tap the message (the action bar below) or, with a mouse, hover it. */}
                         {!isMe && isRealId && !msg.hasAudio && (
                           <button
                             type="button"
                             onClick={() => setReportMessageId(msg.id)}
                             aria-label={t('report.messageTitle')}
                             title={t('report.messageTitle')}
-                            className="mb-1 flex h-7 w-7 shrink-0 items-center justify-center rounded-full text-slate-400 transition-colors hover:bg-[#E8E6F1]/70 hover:text-[#8574B7]"
+                            className="mb-1 hidden h-7 w-7 shrink-0 items-center justify-center rounded-full text-slate-400 opacity-0 transition hover:bg-[#F6F4FB] hover:text-[#8574B7] focus-visible:opacity-100 [@media(hover:hover)]:flex [@media(hover:hover)]:group-hover/row:opacity-100"
                           >
                             <Flag className="h-3.5 w-3.5" aria-hidden />
                           </button>
@@ -1814,82 +1816,82 @@ export default function ChatConversationPage() {
                         </p>
                       )}
 
-                      {(!isSameSenderAsNext || canTranslate || msg.failed || showActions) && (
-                        <div
-                          className={
-                            'flex items-center gap-1 mt-1 text-[10px] text-slate-600 select-none ' +
-                            (isMe ? 'pr-0.5' : 'pl-8')
-                          }
-                        >
-                          {msg.failed ? (
-                            <>
-                              <span className="text-red-600 font-semibold">Not delivered</span>
-                              <span aria-hidden>·</span>
-                              <button type="button" onClick={() => retryMessage(msg)} className="font-medium text-[#8574B7] hover:underline">
-                                Retry
-                              </button>
-                            </>
-                          ) : (
-                            (!isSameSenderAsNext || showActions) && <span>{msg.pending ? 'Sending...' : msg.time}</span>
-                          )}
-                          {showActions && (
-                            <>
-                              <span aria-hidden>·</span>
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  setReportMessageId(msg.id);
-                                  setActiveMsgId(null);
-                                }}
-                                className="font-medium text-slate-600 hover:text-red-600"
-                              >
-                                Report message
-                              </button>
-                            </>
-                          )}
-                          {canTranslate && (
-                            <>
-                              {!isSameSenderAsNext && <span aria-hidden>·</span>}
-                              <button
-                                type="button"
-                                onClick={() => toggleTranslation(msg)}
-                                disabled={translations[msg.id]?.loading}
-                                className="font-medium text-[#8574B7] hover:underline cursor-pointer disabled:opacity-60 inline-flex items-center gap-1"
-                              >
-                                {translations[msg.id]?.loading && <Loader2 className="w-2.5 h-2.5 animate-spin" />}
-                                {translations[msg.id]?.loading
-                                  ? 'Translating...'
-                                  : translations[msg.id]?.showing
-                                    ? 'Translated · Show original'
-                                    : 'Translate'}
-                              </button>
-                            </>
-                          )}
-                          {/* Delivered / Read indicators: Plus (free members see timestamps only) */}
-                          {isMe && !msg.pending && isPlus && (
-                            msg.read ? (
-                              <CheckCheck className="w-3 h-3 text-[#8574B7]" />
-                            ) : (
-                              <Check className="w-3 h-3 text-slate-600" />
-                            )
-                          )}
-                          {/* Free senders see timestamps only; one quiet prompt under the latest message. */}
-                          {isMe && !isPlus && msg.id === lastOwnMessageId && (
-                            <>
-                              <span aria-hidden>·</span>
-                              <Link href="/plus?feature=receipts" className="font-medium text-[#8574B7] hover:underline">
-                                {t('plus.page.receiptsPrompt')}
-                              </Link>
-                            </>
-                          )}
-                        </div>
-                      )}
+                      {(() => {
+                        const parts: React.ReactNode[] = [];
+                        if (msg.failed) {
+                          parts.push(<span key="f" className="text-red-600 font-semibold">Not delivered</span>);
+                          parts.push(
+                            <button key="r" type="button" onClick={() => retryMessage(msg)} className="font-medium text-[#8574B7] hover:underline">
+                              Retry
+                            </button>
+                          );
+                        }
+                        if (showActions) {
+                          parts.push(
+                            <button
+                              key="rep"
+                              type="button"
+                              onClick={() => {
+                                setReportMessageId(msg.id);
+                                setActiveMsgId(null);
+                              }}
+                              className="font-medium text-slate-600 hover:text-red-600"
+                            >
+                              Report message
+                            </button>
+                          );
+                        }
+                        if (canTranslate) {
+                          parts.push(
+                            <button
+                              key="tr"
+                              type="button"
+                              onClick={() => toggleTranslation(msg)}
+                              disabled={translations[msg.id]?.loading}
+                              className="font-medium text-[#8574B7] hover:underline cursor-pointer disabled:opacity-60 inline-flex items-center gap-1"
+                            >
+                              {translations[msg.id]?.loading && <Loader2 className="w-2.5 h-2.5 animate-spin" />}
+                              {translations[msg.id]?.loading ? 'Translating...' : translations[msg.id]?.showing ? 'Translated · Show original' : 'Translate'}
+                            </button>
+                          );
+                        }
+                        // Free senders see timestamps only; one quiet prompt under the latest message.
+                        if (isMe && !isPlus && msg.id === lastOwnMessageId) {
+                          parts.push(
+                            <Link key="plus" href="/plus?feature=receipts" className="font-medium text-[#8574B7] hover:underline">
+                              {t('plus.page.receiptsPrompt')}
+                            </Link>
+                          );
+                        }
+                        if (parts.length === 0) return null;
+                        return (
+                          <div className={'flex items-center gap-1 mt-1 text-[10px] text-slate-600 select-none ' + (isMe ? 'pr-0.5' : 'pl-8')}>
+                            {parts.map((part, i) => (
+                              <React.Fragment key={i}>
+                                {i > 0 && <span aria-hidden>·</span>}
+                                {part}
+                              </React.Fragment>
+                            ))}
+                          </div>
+                        );
+                      })()}
                     </div>
                   </React.Fragment>
                 );
               })
             )}
             {messages.length > 0 && callPillsBetween(Date.parse(messages[messages.length - 1].createdAt), Infinity)}
+            {theyAreTyping && (
+              <div className="mt-3 flex items-end gap-2" role="status">
+                <span className="w-6 shrink-0" aria-hidden />
+                <span className="inline-flex items-center gap-1 rounded-2xl bg-[#F6F4FB] px-4 py-3.5">
+                  <span className="sr-only">typing...</span>
+                  {[0, 1, 2].map((i) => (
+                    <span key={i} aria-hidden className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#8574B7]/60" style={{ animationDelay: `${i * 160}ms` }} />
+                  ))}
+                </span>
+              </div>
+            )}
           </>
         )}
       </div>

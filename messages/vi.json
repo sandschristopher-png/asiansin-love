@@ -455,8 +455,10 @@
       "unlocked": "Đã mở khóa"
     },
     "menu": {
-      "reputation": "Uy tín"
-    }
+      "reputation": "Uy tín",
+      "safety": "An toàn & Kiểm duyệt"
+    },
+    "read": "Đã xem"
   },
   "notif": {
     "message": "{name} đã gửi cho bạn một tin nhắn",

@@ -455,8 +455,10 @@
       "unlocked": "해제됨"
     },
     "menu": {
-      "reputation": "평판"
-    }
+      "reputation": "평판",
+      "safety": "안전 및 신고"
+    },
+    "read": "읽음"
   },
   "notif": {
     "message": "{name}님이 메시지를 보냈어요",

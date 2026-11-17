@@ -455,8 +455,10 @@
       "unlocked": "解除済み"
     },
     "menu": {
-      "reputation": "評価"
-    }
+      "reputation": "評価",
+      "safety": "安全とモデレーション"
+    },
+    "read": "既読"
   },
   "notif": {
     "message": "{name}さんからメッセージが届きました",

@@ -455,8 +455,10 @@
       "unlocked": "Terbuka"
     },
     "menu": {
-      "reputation": "Reputasi"
-    }
+      "reputation": "Reputasi",
+      "safety": "Keamanan & Moderasi"
+    },
+    "read": "Dibaca"
   },
   "notif": {
     "message": "{name} mengirimimu pesan",

@@ -455,8 +455,10 @@
       "unlocked": "Nabuksan na"
     },
     "menu": {
-      "reputation": "Reputasyon"
-    }
+      "reputation": "Reputasyon",
+      "safety": "Kaligtasan at Moderasyon"
+    },
+    "read": "Nabasa"
   },
   "notif": {
     "message": "Nagpadala sa iyo ng mensahe si {name}",

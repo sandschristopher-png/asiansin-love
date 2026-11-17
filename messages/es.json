@@ -455,8 +455,10 @@
       "unlocked": "Desbloqueado"
     },
     "menu": {
-      "reputation": "Reputación"
-    }
+      "reputation": "Reputación",
+      "safety": "Seguridad y moderación"
+    },
+    "read": "Leído"
   },
   "notif": {
     "message": "{name} te envió un mensaje",

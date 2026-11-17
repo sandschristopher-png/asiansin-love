@@ -455,8 +455,10 @@
       "unlocked": "已解锁"
     },
     "menu": {
-      "reputation": "信誉"
-    }
+      "reputation": "信誉",
+      "safety": "安全与审核"
+    },
+    "read": "已读"
   },
   "notif": {
     "message": "{name}给你发了一条消息",
