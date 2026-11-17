@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { ArrowLeft, ShieldCheck, ExternalLink } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
+import { HeaderActions } from '@/components/HeaderActions';
 import { ReputationBadge } from '@/components/ReputationBadge';
 import { reputationTokens } from '@/lib/utils/reputation';
 
@@ -35,17 +36,22 @@ export default function ReputationScreen() {
   return (
     <div className="min-h-screen max-w-md mx-auto bg-white border-x border-[#D0CDE1] flex flex-col text-[#413B5E]">
       {/* Sticky Top Header */}
-      <header className="flex items-center gap-3 px-4 py-3 bg-white/95 backdrop-blur-md border-b border-[#D0CDE1] sticky top-0 z-10">
-        <Link
-          href="/profile"
-          className="w-8 h-8 rounded-full flex items-center justify-center text-[#413B5E]/85 hover:text-[#413B5E] hover:bg-[#E8E6F1]/70 transition"
-          aria-label="Back to profile"
-        >
-          <ArrowLeft className="w-4 h-4" />
-        </Link>
-        <h1 className="text-sm font-semibold text-[#413B5E] tracking-tight">
-          Reputation & Trust
-        </h1>
+      {/* One header: same h-14 frame as Settings, so the bell and avatar sit where they do everywhere else.
+          The global Navbar is hidden on this route (components/Navbar.tsx). */}
+      <header className="h-14 flex items-center justify-between gap-3 px-4 bg-white/95 backdrop-blur-md border-b border-[#D0CDE1] sticky top-0 z-20">
+        <div className="flex items-center gap-3 min-w-0">
+          <Link
+            href="/profile"
+            className="w-8 h-8 rounded-full flex items-center justify-center text-[#413B5E]/85 hover:text-[#413B5E] hover:bg-[#E8E6F1]/70 transition"
+            aria-label="Back to profile"
+          >
+            <ArrowLeft className="w-4 h-4" />
+          </Link>
+          <h1 className="text-sm font-semibold text-[#413B5E] tracking-tight truncate">
+            Reputation & Trust
+          </h1>
+        </div>
+        <HeaderActions />
       </header>
 
       {/* Screen Body with pb-28 to clear the floating bottom dock */}

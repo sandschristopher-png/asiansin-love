@@ -1,7 +1,9 @@
 'use client';
 
 import dynamic from 'next/dynamic';
+import Link from 'next/link';
 import VerifiedBadge from '@/components/VerifiedBadge';
+import { useLocale } from '@/components/i18n/LocaleProvider';
 
 import React, { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
@@ -17,6 +19,7 @@ import {
   Ban,
   Languages,
   Loader2,
+  Pencil,
   Share2
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
@@ -70,6 +73,7 @@ function formatIntent(val: unknown): string {
 }
 
 export default function PublicProfilePage() {
+  const { t } = useLocale();
   const router = useRouter();
   const params = useParams();
   const targetUserId = params?.id as string;
@@ -358,8 +362,20 @@ export default function PublicProfilePage() {
 
   // Portal dock directly to document.body so LayoutShell's scroll container never moves it
   // Shown once we know who is looking, and never on your own profile.
-  const floatingDock = mounted && viewerId !== undefined && !isOwnProfile
+  const floatingDock = mounted && viewerId !== undefined
     ? createPortal(
+        isOwnProfile ? (
+          // Your own profile: no Spark or Message (they would point at yourself), one way to your editor instead.
+          <aside className="fixed bottom-3.5 left-1/2 -translate-x-1/2 w-[calc(100%-1.75rem)] max-w-[390px] z-[90] bg-white/95 border border-[#D0CDE1] shadow-[0_12px_36px_rgba(102,93,150,0.18),0_2px_8px_rgba(0,0,0,0.04)] rounded-full p-1.5">
+            <Link
+              href="/profile"
+              className="flex h-11 w-full items-center justify-center gap-1.5 rounded-full bg-[#8574B7] px-4 text-xs font-medium text-white shadow-md shadow-[#8574B7]/25 transition hover:bg-[#534377] active:scale-98"
+            >
+              <Pencil className="h-4 w-4" aria-hidden />
+              <span>{t('profile.editProfile')}</span>
+            </Link>
+          </aside>
+        ) : (
         <aside className="fixed bottom-3.5 left-1/2 -translate-x-1/2 w-[calc(100%-1.75rem)] max-w-[390px] z-[90] bg-white/95 border border-[#D0CDE1] shadow-[0_12px_36px_rgba(102,93,150,0.18),0_2px_8px_rgba(0,0,0,0.04)] rounded-full p-1.5">
           <div className="grid grid-cols-2 gap-2">
             <button
@@ -394,7 +410,8 @@ export default function PublicProfilePage() {
               <span>Message</span>
             </button>
           </div>
-        </aside>,
+        </aside>
+        ),
         document.body
       )
     : null;

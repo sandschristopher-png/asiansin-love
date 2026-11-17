@@ -82,7 +82,9 @@ export function Navbar() {
   // Root bottom-nav tabs never show a back arrow; only subpages do.
   const ROOT_TABS = ['/discover', '/moments', '/favorites', '/messages', '/profile'];
   const showBack = !ROOT_TABS.includes((pathname || '').replace(/\/+$/, ''));
-  if (isChatThread || pathname === '/plus' || (pathname || '').startsWith('/plus/') || pathname === '/profile/edit' || (pathname || '').startsWith('/profile/edit/') || pathname === '/settings' || (pathname || '').startsWith('/settings/')) return null;
+  // Reputation & Trust renders its own single header (back arrow + title + bell + avatar), like Settings.
+  const isReputation = (pathname || '').replace(/\/+$/, '') === '/profile/reputation';
+  if (isReputation || isChatThread || pathname === '/plus' || (pathname || '').startsWith('/plus/') || pathname === '/profile/edit' || (pathname || '').startsWith('/profile/edit/') || pathname === '/settings' || (pathname || '').startsWith('/settings/')) return null;
   return (
     // Frosted glass. On Discover the header is transparent: the filter bar below extends up behind it and
     // draws ONE frosted surface for both (two stacked backdrop blurs always leave a seam where they meet).
@@ -117,7 +119,7 @@ export function Navbar() {
                 >
                   {pageTitle}
                 </h1>
-                {pathname?.startsWith('/profile/') && (
+                {pathname?.startsWith('/profile/') && !isReputation && (
                   <button
                     type="button"
                     onClick={() => setProfileMenuOpen(true)}

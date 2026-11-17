@@ -11,6 +11,12 @@ import { PushPromptOnce } from '@/components/PushPromptOnce';
 import { ActionToastProvider } from '@/components/ActionToast';
 import { DesktopQrHandoff } from '@/components/DesktopQrHandoff';
 import { AppShell } from '@/components/layout/AppShell';
+import { CallProvider } from '@/components/calls/CallProvider';
+
+/** Wraps the in-app frame in the call provider; marketing, auth and admin routes get no calling. */
+function CallShell({ enabled, children }: { enabled: boolean; children: React.ReactNode }) {
+  return enabled ? <CallProvider>{children}</CallProvider> : <>{children}</>;
+}
 
 export function LayoutShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
@@ -48,6 +54,8 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
   return (
     <ActionToastProvider>
     <AppShell>
+      {/* Voice calls: an incoming call reaches every in-app page; the call screen lives inside this 480px frame. */}
+      <CallShell enabled={!isMarketingOrAuth && !isAdmin}>
       {!isMarketingOrAuth && !isPublicProfile && !isChat && !isAdmin &&
         (overlayNav ? (
           // Discover: the frosted header floats over the feed, so cards scroll behind the glass
@@ -76,6 +84,7 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
         {!isMarketingOrAuth && !isAdmin && <PushPromptOnce />}
       </div>
       {!isMarketingOrAuth && !isChat && !isAdmin && <BottomNav />}
+      </CallShell>
     </AppShell>
     {/* Outside the 480px frame (fixed, xl screens only); /verify shows its own QR card. */}
     {!isMarketingOrAuth && !isAdmin && <DesktopQrHandoff />}

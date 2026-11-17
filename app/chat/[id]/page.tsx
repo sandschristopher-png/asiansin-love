@@ -33,6 +33,8 @@ import {
   Square,
   Trash2,
   Loader2,
+  MoreVertical,
+  Phone,
 } from 'lucide-react';
 import ReputationModal from '@/components/ReputationModal';
 import { supabase } from '@/lib/supabase/client';
@@ -52,10 +54,23 @@ import { isRestricted } from '@/lib/reputation';
 import { RepBadge, RhythmPill } from '@/components/profile/RhythmBadges';
 import { hapticError, hapticSuccess, hapticTap } from '@/lib/utils/haptics';
 import { BackButton } from '@/components/BackButton';
+import { Switch } from '@/components/ui/Switch';
+import { useCall } from '@/components/calls/CallProvider';
+import { CallLogPill } from '@/components/calls/CallLogPill';
+import { callUnlockState, missLockUntil, pairKey, type CallEndReason } from '@/lib/callRules';
 
 /** Loaded on first open (keeps the upgrade sheet out of the page bundle). */
 /** Loaded on first open (keeps the report sheet out of the page bundle). */
 const ReportModal = dynamic(() => import('@/components/ReportModal').then((m) => m.ReportModal), { ssr: false });
+
+interface CallLogRow {
+  id: string;
+  caller_id: string;
+  started_at: string;
+  ended_at: string | null;
+  duration_sec: number;
+  end_reason: CallEndReason;
+}
 
 const VOICE_LOCKED_MESSAGE = `Voice notes unlock after both members exchange ${CONTACT_UNLOCK_TURNS} substantive messages (15+ characters each).`;
 const VOICE_REP_LOCKED_MESSAGE = 'Voice notes are paused while your account is under review. Text messages still work.';
@@ -257,6 +272,151 @@ export default function ChatConversationPage() {
   const [errorBanner, setErrorBanner] = useState<string | null>(null);
   const [showScrollPill, setShowScrollPill] = useState(false);
 
+  // ---- Voice calls (lib/callEngine.ts; the screens live in components/calls) ----------------------------------
+  const call = useCall();
+  const [myVerified, setMyVerified] = useState(false);
+  const [callLogs, setCallLogs] = useState<CallLogRow[]>([]);
+  const [callsMuted, setCallsMuted] = useState(false);
+  const [callNote, setCallNote] = useState<string | null>(null);
+  const [callConfirm, setCallConfirm] = useState(false);
+  const [callStarting, setCallStarting] = useState(false);
+  const [headerMenu, setHeaderMenu] = useState(false);
+  // "Now" for the pause check, refreshed every 30 s so a lifted pause unlocks the button without a reload.
+  const [callNowMs, setCallNowMs] = useState(() => Date.now());
+  useEffect(() => {
+    const id = window.setInterval(() => setCallNowMs(Date.now()), 30_000);
+    return () => window.clearInterval(id);
+  }, []);
+  const callMatchKey = currentUserId && resolvedTargetUuid ? pairKey(currentUserId, resolvedTargetUuid) : null;
+
+  // Unlock: both members selfie-verified and 5+ messages in the thread, at least one from each.
+  const callUnlock = React.useMemo(() => {
+    const real = messages.filter((m) => !m.pending && !m.failed);
+    return callUnlockState({
+      fromMe: real.filter((m) => m.sender === 'me').length,
+      fromThem: real.filter((m) => m.sender === 'them').length,
+      meVerified: myVerified,
+      theyVerified: targetInfo.verified,
+    });
+  }, [messages, myVerified, targetInfo.verified]);
+  // Two missed or declined calls in a row pause calling for 60 minutes, or until they write again.
+  const callPausedUntil = React.useMemo(() => {
+    const outgoing = callLogs
+      .filter((l) => l.caller_id === currentUserId)
+      .map((l) => ({ endedAt: Date.parse(l.ended_at ?? l.started_at), reason: l.end_reason }))
+      .sort((a, b) => b.endedAt - a.endedAt);
+    const lastFromThem = messages.filter((m) => m.sender === 'them' && !m.pending).map((m) => Date.parse(m.createdAt));
+    return missLockUntil(outgoing, lastFromThem.length ? Math.max(...lastFromThem) : null, callNowMs);
+  }, [callLogs, messages, currentUserId, callNowMs]);
+  const callReady = callUnlock === 'ok' && !callPausedUntil;
+
+  useEffect(() => {
+    if (!callMatchKey) return;
+    let alive = true;
+    supabase
+      .from('call_logs')
+      .select('id, caller_id, started_at, ended_at, duration_sec, end_reason')
+      .eq('match_id', callMatchKey)
+      .order('started_at', { ascending: true })
+      .limit(100)
+      .then(({ data }) => {
+        if (alive && data) setCallLogs(data as CallLogRow[]);
+      });
+    return () => {
+      alive = false;
+    };
+  }, [callMatchKey, call.logVersion]);
+
+  useEffect(() => {
+    if (!currentUserId || !resolvedTargetUuid) return;
+    let alive = true;
+    supabase
+      .from('call_mutes')
+      .select('peer_id')
+      .eq('user_id', currentUserId)
+      .eq('peer_id', resolvedTargetUuid)
+      .maybeSingle()
+      .then(({ data }) => {
+        if (alive) setCallsMuted(Boolean(data));
+      });
+    return () => {
+      alive = false;
+    };
+  }, [currentUserId, resolvedTargetUuid]);
+
+  useEffect(() => {
+    if (!callNote) return;
+    const id = window.setTimeout(() => setCallNote(null), 4500);
+    return () => window.clearTimeout(id);
+  }, [callNote]);
+
+  const closeCallPopovers = () => {
+    setCallConfirm(false);
+    setCallNote(null);
+    setHeaderMenu(false);
+  };
+
+  const onPhoneTap = () => {
+    setHeaderMenu(false);
+    if (call.inCall) {
+      setCallNote(call.peerId === resolvedTargetUuid ? null : t('call.inAnother'));
+      return;
+    }
+    if (callUnlock === 'few_messages') return setCallNote(t('call.lockedTip'));
+    if (callUnlock === 'unverified') return setCallNote(t('call.unverifiedTip'));
+    if (callPausedUntil) return setCallNote(t('call.pausedTip'));
+    setCallNote(null);
+    setCallConfirm((open) => !open);
+  };
+
+  const confirmCall = async () => {
+    if (!resolvedTargetUuid || callStarting) return;
+    setCallConfirm(false);
+    setCallStarting(true);
+    try {
+      const res = await call.startCall(resolvedTargetUuid);
+      if (res.ok) return;
+      const why: Record<string, string> = {
+        mic_denied: t('call.micBlocked'),
+        mic_missing: t('call.micMissing'),
+        mic_busy: t('call.micBusy'),
+        few_messages: t('call.lockedTip'),
+        unverified: t('call.unverifiedTip'),
+        paused: t('call.pausedTip'),
+        unavailable: t('call.unavailable'),
+        busy: t('call.inAnother'),
+        network: t('call.failed'),
+      };
+      setCallNote(why[res.reason] ?? t('call.failed'));
+    } finally {
+      setCallStarting(false);
+    }
+  };
+
+  const toggleCallMute = async () => {
+    if (!currentUserId || !resolvedTargetUuid) return;
+    const next = !callsMuted;
+    setCallsMuted(next); // optimistic; rolled back if the save fails
+    const { error } = next
+      ? await supabase.from('call_mutes').upsert({ user_id: currentUserId, peer_id: resolvedTargetUuid })
+      : await supabase.from('call_mutes').delete().eq('user_id', currentUserId).eq('peer_id', resolvedTargetUuid);
+    if (error) {
+      setCallsMuted(!next);
+      setToast(t('call.muteFailed'));
+      return;
+    }
+    if (next) call.terminateFor(resolvedTargetUuid); // muting also ends a call or ring with them right now
+  };
+
+  /** Call pills whose time falls in [from, to): placed between the messages they happened between. */
+  const callPillsBetween = (from: number, to: number) =>
+    callLogs
+      .filter((l) => {
+        const at = Date.parse(l.started_at);
+        return Number.isFinite(at) && at >= from && at < to;
+      })
+      .map((l) => <CallLogPill key={l.id} reason={l.end_reason} durationSec={l.duration_sec} />);
+
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   // Opened from a push notification's Reply button (?reply=1): focus the composer once loaded.
@@ -414,7 +574,7 @@ export default function ChatConversationPage() {
       const [myProfRes, targetProfRes] = await Promise.all([
         supabase
           .from('profiles')
-          .select('is_plus, is_premium, subscription_status, current_period_end, plus_expires_at, gender, is_verified, interests, languages, reputation_score')
+          .select('is_plus, is_premium, subscription_status, current_period_end, plus_expires_at, gender, is_verified, verification_status, interests, languages, reputation_score')
           .eq('id', user.id)
           .maybeSingle(),
         isUuid
@@ -442,6 +602,7 @@ export default function ChatConversationPage() {
       }
       const myInterests: string[] = Array.isArray(myProf?.interests) ? myProf.interests : [];
       if (isMounted && typeof myProf?.reputation_score === 'number') setMyRep(myProf.reputation_score);
+      if (isMounted) setMyVerified(myProf?.is_verified === true || myProf?.verification_status === 'verified');
 
       const profData: any = targetProfRes.data;
       const targetUuid: string | null = profData?.id || (isUuid ? rawParam : null);
@@ -955,6 +1116,7 @@ export default function ChatConversationPage() {
         body: JSON.stringify({ blockedId: target }),
       });
       if (res.ok) {
+        call.terminateFor(target); // blocking ends any call with them and revokes calling
         setToast('Member blocked. Taking you back to Messages...');
         setTimeout(() => router.push('/messages'), 1200);
       }
@@ -971,8 +1133,10 @@ export default function ChatConversationPage() {
 
   return (
     <div className="w-full h-[100dvh] max-h-[100dvh] flex flex-col bg-white text-[#413B5E] font-sans relative overflow-hidden">
+      {/* Room for the slim "Return to call" bar pinned above the header while the call screen is minimized */}
+      {call.inCall && call.minimized && call.phase !== 'incoming' && <div className="h-9 shrink-0" aria-hidden />}
       {/* Sticky Header */}
-      <header className="flex items-center justify-between px-3.5 py-2.5 bg-white/95 backdrop-blur-md border-b border-[#D0CDE1] shrink-0 z-20">
+      <header className="relative flex items-center justify-between px-3.5 py-2.5 bg-white/95 backdrop-blur-md border-b border-[#D0CDE1] shrink-0 z-20">
         <div className="flex items-center gap-2.5 min-w-0">
           <BackButton fallback="/messages" />
 
@@ -1044,6 +1208,20 @@ export default function ChatConversationPage() {
           {!isInitialLoading && (
             <RepBadge score={targetInfo.rep} onClick={() => setShowRepModal(true)} />
           )}
+          {!isInitialLoading && (
+            <button
+              type="button"
+              onClick={onPhoneTap}
+              aria-label={t('call.phoneLabel')}
+              title={t('call.phoneLabel')}
+              aria-disabled={!callReady}
+              className={`w-8 h-8 flex items-center justify-center rounded-full transition cursor-pointer ${
+                callReady ? 'text-[#8574B7] hover:text-[#534377] hover:bg-[#E8E6F1]/70' : 'text-[#413B5E]/35 hover:bg-[#E8E6F1]/40'
+              }`}
+            >
+              {callStarting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Phone className="w-4 h-4" />}
+            </button>
+          )}
           <button
             type="button"
             onClick={() => setShowReportModal(true)}
@@ -1052,8 +1230,55 @@ export default function ChatConversationPage() {
           >
             <ShieldAlert className="w-4 h-4" />
           </button>
+          {!isInitialLoading && (
+            <button
+              type="button"
+              onClick={() => {
+                setCallConfirm(false);
+                setCallNote(null);
+                setHeaderMenu((open) => !open);
+              }}
+              aria-label={t('call.menuLabel')}
+              aria-haspopup="menu"
+              aria-expanded={headerMenu}
+              className="w-8 h-8 -mr-1 flex items-center justify-center text-[#413B5E] hover:bg-[#E8E6F1]/70 rounded-full transition cursor-pointer"
+            >
+              <MoreVertical className="w-4 h-4" />
+            </button>
+          )}
         </div>
+
+        {/* Voice call: confirm popover, lock / error tooltip, and the chat menu */}
+        {callConfirm && (
+          <div role="dialog" aria-label={t('call.phoneLabel')} className="absolute right-3 top-full z-30 mt-1.5 w-[270px] rounded-2xl border border-[#D0CDE1] bg-white p-3.5 shadow-[0_12px_30px_rgba(65,59,94,0.16)]">
+            <p className="text-sm font-semibold leading-snug text-[#413B5E]">{t('call.confirmTitle', { name: targetInfo.name || 'Member' })}</p>
+            <div className="mt-3 grid grid-cols-2 gap-2">
+              <button type="button" onClick={closeCallPopovers} className="h-10 rounded-full border border-[#D0CDE1] bg-white text-xs font-semibold text-[#413B5E] transition hover:bg-[#F6F4FB]">
+                {t('call.confirmCancel')}
+              </button>
+              <button type="button" onClick={confirmCall} className="h-10 rounded-full bg-[#8574B7] text-xs font-semibold text-white transition hover:bg-[#534377]">
+                {t('call.confirmCall')}
+              </button>
+            </div>
+          </div>
+        )}
+        {callNote && !callConfirm && (
+          <div role="status" className="absolute right-3 top-full z-30 mt-1.5 w-[270px] rounded-2xl border border-[#D0CDE1] bg-white px-3.5 py-3 text-xs font-medium leading-relaxed text-[#413B5E] shadow-[0_12px_30px_rgba(65,59,94,0.16)]">
+            {callNote}
+          </div>
+        )}
+        {headerMenu && (
+          <div role="menu" className="absolute right-3 top-full z-30 mt-1.5 w-[250px] rounded-2xl border border-[#D0CDE1] bg-white p-1.5 shadow-[0_12px_30px_rgba(65,59,94,0.16)]">
+            <div className="flex items-center justify-between gap-3 rounded-xl px-3 py-2.5">
+              <span className="text-sm text-[#413B5E]">{t('call.menuMute')}</span>
+              <Switch on={callsMuted} onClick={toggleCallMute} label={t('call.menuMute')} />
+            </div>
+          </div>
+        )}
       </header>
+      {(callConfirm || callNote || headerMenu) && (
+        <button type="button" aria-hidden tabIndex={-1} onClick={closeCallPopovers} className="fixed inset-0 z-[15] cursor-default" />
+      )}
 
       {/* Isolated Auto-Scrolling Message Stream */}
       <div
@@ -1201,6 +1426,7 @@ export default function ChatConversationPage() {
               </div>
             ) : (
               messages.map((msg, idx) => {
+                const pillsBefore = callPillsBetween(idx === 0 ? -Infinity : Date.parse(messages[idx - 1].createdAt), Date.parse(msg.createdAt));
                 const isMe = msg.sender === 'me';
                 const prevMsg = idx > 0 ? messages[idx - 1] : null;
                 const nextMsg = idx < messages.length - 1 ? messages[idx + 1] : null;
@@ -1250,6 +1476,7 @@ export default function ChatConversationPage() {
 
                 return (
                   <React.Fragment key={msg.id}>
+                    {pillsBefore}
                     {showDateHeader && (
                       <div className="flex justify-center my-1.5 select-none">
                         <span className="px-3 py-0.5 rounded-full bg-[#E8E6F1]/60 text-slate-600 text-[10px] font-semibold tracking-wide">
@@ -1430,6 +1657,7 @@ export default function ChatConversationPage() {
                 );
               })
             )}
+            {messages.length > 0 && callPillsBetween(Date.parse(messages[messages.length - 1].createdAt), Infinity)}
           </>
         )}
       </div>
