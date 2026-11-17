@@ -8,9 +8,11 @@ import { useActionToast } from '@/components/ActionToast';
 import { useLocale } from '@/components/i18n/LocaleProvider';
 import { MomentCard } from '@/components/moments/MomentCard';
 import { MomentComposer } from '@/components/moments/MomentComposer';
+import { MomentSkeleton } from '@/components/moments/MomentSkeleton';
 import { ReportMomentSheet } from '@/components/moments/ReportMomentSheet';
 import { SparkMomentSheet } from '@/components/moments/SparkMomentSheet';
 import { localizeError } from '@/lib/i18n/errors';
+import { clearMomentsCache, readMomentsCache, writeMomentsCache, type MomentsFeed } from '@/lib/momentsCache';
 import { MOMENTS_SEEN_EVENT, MOMENTS_SEEN_KEY, promptOfDay, type MomentCity, type MomentItem, type MomentPrompt } from '@/lib/moments';
 import { matchSeaCity } from '@/lib/seaLocations';
 import { supabase } from '@/lib/supabase/client';
@@ -30,6 +32,11 @@ function markSeen() {
  * chronological Southeast Asia stream (each card names its city) in one centred column. Posting needs
  * a verified profile (the server says so in the member's language), and "Spark this Moment" opens a
  * hello sheet that attaches the photo to the conversation.
+ *
+ * Speed: the first page is cached in sessionStorage (lib/momentsCache.ts), so returning to the tab
+ * paints real cards at once and quietly revalidates /api/moments. A cold first visit shows a two-card
+ * shimmer skeleton, and cards that arrive after it ease in one after another (cards painted from the
+ * cache do not re-animate).
  */
 export default function MomentsPage() {
   const { t } = useLocale();
@@ -42,9 +49,21 @@ export default function MomentsPage() {
     () => false
   );
   const showToast = useActionToast();
-  const [items, setItems] = useState<MomentItem[]>([]);
-  const [cursor, setCursor] = useState<string | null>(null);
+  // Cached first page: read live on the client and null on the server, so a hard reload hydrates cleanly.
+  const cached = useSyncExternalStore(
+    () => () => {},
+    () => readMomentsCache(),
+    () => null
+  );
+  const [local, setLocal] = useState<MomentsFeed | null>(null);
+  const feed = local ?? cached;
+  const items = feed?.items ?? [];
+  const cursor = feed?.cursor ?? null;
+  /** True until the first network answer; the skeleton shows only while there is nothing cached either. */
   const [loading, setLoading] = useState(true);
+  const showSkeleton = loading && feed === null;
+  /** Cards painted from the cache on arrival appear at once; every card that mounts later eases in. */
+  const [initialIds] = useState<Set<string>>(() => new Set((readMomentsCache()?.items ?? []).map((m) => m.id)));
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [composing, setComposing] = useState(false);
@@ -57,6 +76,16 @@ export default function MomentsPage() {
 
   const [reloadKey, setReloadKey] = useState(0);
 
+  const updateFeed = (change: (f: MomentsFeed) => MomentsFeed) =>
+    setLocal((prev) => change(prev ?? readMomentsCache() ?? { items: [], cursor: null }));
+  const updateItems = (change: (list: MomentItem[]) => MomentItem[]) => updateFeed((f) => ({ ...f, items: change(f.items) }));
+
+  // Keep the cache in step with the feed (a like, a delete, a fresh load, "Load more"), so it never shows
+  // a count the member has already changed.
+  useEffect(() => {
+    if (local) writeMomentsCache(local);
+  }, [local]);
+
   /** First page of the unified feed: re-runs when the language or reloadKey changes. */
   useEffect(() => {
     let active = true;
@@ -66,9 +95,10 @@ export default function MomentsPage() {
         const data = await res.json().catch(() => ({}));
         if (!active) return;
         if (!res.ok) throw Object.assign(new Error(data?.error || 'moments'), { status: res.status, code: data?.code });
-        setItems(data.moments as MomentItem[]);
-        setCursor(data.nextCursor ?? null);
+        setLocal({ items: data.moments as MomentItem[], cursor: data.nextCursor ?? null });
+        setError(null);
       } catch (err) {
+        // Shown only when there is nothing on screen: a failed background refresh keeps the cached cards.
         if (active) setError(localizeError(err instanceof Error ? err : null, t));
       } finally {
         if (active) setLoading(false);
@@ -88,8 +118,7 @@ export default function MomentsPage() {
       const res = await fetch(`/api/moments?${qs.toString()}`);
       const data = await res.json().catch(() => ({}));
       if (res.ok) {
-        setItems((prev) => [...prev, ...(data.moments as MomentItem[])]);
-        setCursor(data.nextCursor ?? null);
+        updateFeed((f) => ({ items: [...f.items, ...(data.moments as MomentItem[])], cursor: data.nextCursor ?? null }));
       }
     } finally {
       setLoadingMore(false);
@@ -127,7 +156,7 @@ export default function MomentsPage() {
 
   const toggleLike = async (m: MomentItem) => {
     const flip = (liked: boolean, count: number) =>
-      setItems((prev) => prev.map((x) => (x.id === m.id ? { ...x, likedByMe: liked, likesCount: count } : x)));
+      updateItems((prev) => prev.map((x) => (x.id === m.id ? { ...x, likedByMe: liked, likesCount: count } : x)));
     flip(!m.likedByMe, Math.max(0, m.likesCount + (m.likedByMe ? -1 : 1)));
     try {
       const res = await fetch(`/api/moments/${m.id}/like`, { method: 'POST' });
@@ -144,7 +173,7 @@ export default function MomentsPage() {
     if (!window.confirm(`${t('moments.deleteMoment')}?`)) return;
     const res = await fetch(`/api/moments/${m.id}`, { method: 'DELETE' }).catch(() => null);
     if (res?.ok) {
-      setItems((prev) => prev.filter((x) => x.id !== m.id));
+      updateItems((prev) => prev.filter((x) => x.id !== m.id));
       showToast(t('moments.deleted'), 'check');
     } else {
       showToast(t('errors.generic'), 'info');
@@ -167,10 +196,10 @@ export default function MomentsPage() {
           <span className="mt-2.5 block text-base font-semibold leading-snug text-[#413B5E]">{t(`moments.prompt.${todaysPrompt}` as TKey)}</span>
         </button>
 
-        <div className="mt-4 space-y-4">
-          {loading ? (
-            [0, 1].map((i) => <div key={i} className="aspect-[4/5] w-full rounded-3xl ail-shimmer" />)
-          ) : error ? (
+        <div className="mt-4 space-y-4" aria-busy={showSkeleton}>
+          {showSkeleton ? (
+            <MomentSkeleton />
+          ) : error && feed === null ? (
             <p role="alert" className="rounded-2xl border border-red-200 bg-red-50 px-4 py-3 text-xs font-medium text-red-700">
               {error}
             </p>
@@ -183,12 +212,21 @@ export default function MomentsPage() {
               <p className="mx-auto mt-1 max-w-xs text-xs leading-relaxed text-slate-600">{t('moments.emptyBody')}</p>
             </div>
           ) : (
-            items.map((m) => (
-              <MomentCard key={m.id} moment={m} onLike={toggleLike} onSpark={setSparkTarget} onReport={setReportTarget} onDelete={remove} />
+            items.map((m, i) => (
+              <MomentCard
+                key={m.id}
+                moment={m}
+                onLike={toggleLike}
+                onSpark={setSparkTarget}
+                onReport={setReportTarget}
+                onDelete={remove}
+                enter={initialIds.has(m.id) ? null : { delay: Math.min(i % 12, 8) * 0.045 }}
+                priority={i === 0}
+              />
             ))
           )}
 
-          {cursor && !loading && (
+          {cursor && !showSkeleton && (
             <button
               type="button"
               onClick={() => void loadMore()}
@@ -228,7 +266,8 @@ export default function MomentsPage() {
           onPosted={() => {
             setComposing(false);
             showToast(t('moments.posted'), 'check');
-            setLoading(true);
+            // A post changes the feed: drop the cache and refresh in the background (no skeleton flash).
+            clearMomentsCache();
             setReloadKey((n) => n + 1);
           }}
         />
@@ -250,7 +289,7 @@ export default function MomentsPage() {
           onDone={({ duplicate, hidden }) => {
             const id = reportTarget.id;
             setReportTarget(null);
-            if (hidden) setItems((prev) => prev.filter((x) => x.id !== id));
+            if (hidden) updateItems((prev) => prev.filter((x) => x.id !== id));
             showToast(duplicate ? t('moments.reportAlready') : t('moments.reportThanks'), 'info');
           }}
         />

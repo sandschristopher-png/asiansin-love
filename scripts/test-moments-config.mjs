@@ -8,6 +8,17 @@ const sea = await loadLib('seaLocations');
 const mom = await loadLib('moments');
 const loc = await loadLib('momentLocation');
 
+// A browser-like environment for the feed cache: window plus an in-memory sessionStorage that can be switched to throw.
+const store = new Map();
+let storageBroken = false;
+globalThis.window = globalThis;
+globalThis.sessionStorage = {
+  getItem: (k) => { if (storageBroken) throw new Error('blocked'); return store.has(k) ? store.get(k) : null; },
+  setItem: (k, v) => { if (storageBroken) throw new Error('blocked'); store.set(k, String(v)); },
+  removeItem: (k) => { if (storageBroken) throw new Error('blocked'); store.delete(k); },
+};
+const cache = await loadLib('momentsCache');
+
 let passed = 0;
 const failures = [];
 const ok = (name, cond, detail = '') => (cond ? passed++ : failures.push(`${name}${detail ? ` -> ${detail}` : ''}`));
@@ -89,6 +100,30 @@ ok('Art & Design shares Hidden Local Gems', mom.sharesVibe(['Art & Design'], 'lo
 ok('unrelated interests do not match', !mom.sharesVibe(['Gaming', 'Faith & Church', 'Pets & Animals'], 'cafe_hopping'));
 ok('no interests, no shared vibe', !mom.sharesVibe([], 'cafe_hopping'));
 ok('"art" does not match inside another word', !mom.sharesVibe(['Smart Home'], 'local_gems'));
+
+// --- Feed cache (sessionStorage, 5 minutes) ----------------------------------------------------------
+const mk = (n) => Array.from({ length: n }, (_, i) => ({ id: 'm' + i, createdAt: new Date(2026, 10, 16, 12, 59 - i).toISOString() }));
+const t1 = 1_000_000;
+ok('cache key is ail_moments_fast_cache_v1', cache.MOMENTS_CACHE_KEY === 'ail_moments_fast_cache_v1' && cache.MOMENTS_CACHE_TTL_MS === 5 * 60 * 1000);
+ok('empty cache reads null', cache.readMomentsCache(t1) === null);
+cache.writeMomentsCache({ items: mk(5), cursor: null }, t1);
+ok('a written feed reads back', cache.readMomentsCache(t1 + 1000)?.items.length === 5);
+ok('it is stored in sessionStorage under the key', JSON.parse(store.get('ail_moments_fast_cache_v1')).items.length === 5);
+ok('still fresh just under 5 minutes', cache.readMomentsCache(t1 + cache.MOMENTS_CACHE_TTL_MS - 1) !== null);
+ok('expired after 5 minutes', cache.readMomentsCache(t1 + cache.MOMENTS_CACHE_TTL_MS + 1) === null);
+cache.writeMomentsCache({ items: mk(30), cursor: 'older' }, t1);
+const trimmed = cache.readMomentsCache(t1 + 1);
+ok('only one page (12) is cached', trimmed.items.length === 12);
+ok('the cursor continues from the last cached item', trimmed.cursor === trimmed.items[11].createdAt);
+cache.writeMomentsCache({ items: mk(4), cursor: null }, t1);
+ok('a short feed keeps its own cursor', cache.readMomentsCache(t1 + 1).cursor === null);
+cache.clearMomentsCache();
+ok('clearing empties memory and storage', cache.readMomentsCache(t1 + 1) === null && !store.has('ail_moments_fast_cache_v1'));
+storageBroken = true;
+let threw = false;
+try { cache.writeMomentsCache({ items: mk(3), cursor: null }, t1); cache.clearMomentsCache(); } catch { threw = true; }
+ok('blocked storage never throws', !threw);
+storageBroken = false;
 
 console.log(`Moments config: ${passed} checks passed${failures.length ? `, ${failures.length} FAILED` : ''}`);
 for (const f of failures) console.log(`  FAIL ${f}`);

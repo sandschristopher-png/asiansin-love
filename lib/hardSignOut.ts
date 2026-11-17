@@ -13,4 +13,5 @@ export async function hardSignOut() {
   }
   // A signed-out tab must not paint the previous member's feed.
   try { sessionStorage.removeItem('ail_discover_fast_cache_v1'); } catch {}
+  try { sessionStorage.removeItem('ail_moments_fast_cache_v1'); } catch {}
 }

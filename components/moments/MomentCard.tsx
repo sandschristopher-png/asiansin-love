@@ -27,7 +27,9 @@ function ago(iso: string, locale: string): string {
  * One Moment, with.is style: author header (badges, city and country), a 4:5 rounded photo with a
  * frosted vibe tag, a "Shared vibe" pill when the viewer's interests match, the guided-prompt eyebrow
  * and caption (no comments, so nothing to spam), then a like toggle and the primary "Spark this Moment"
- * pill. Cards ease in as they scroll into view unless the visitor prefers reduced motion.
+ * pill. A card that mounts after the skeleton (or a new post arriving) eases in: opacity 0 to 1 and
+ * 10px up over 260ms, offset by `enter.delay`. Cards painted straight from the cache pass `enter={null}`
+ * and appear at once, and reduced motion skips the movement altogether.
  */
 export function MomentCard({
   moment,
@@ -35,12 +37,18 @@ export function MomentCard({
   onSpark,
   onReport,
   onDelete,
+  enter = null,
+  priority = false,
 }: {
   moment: MomentItem;
   onLike: (m: MomentItem) => void;
   onSpark: (m: MomentItem) => void;
   onReport: (m: MomentItem) => void;
   onDelete: (m: MomentItem) => void;
+  /** Entrance animation with its stagger delay in seconds; null shows the card immediately. */
+  enter?: { delay: number } | null;
+  /** The first card's photo loads eagerly (it is above the fold). */
+  priority?: boolean;
 }) {
   const { t, locale } = useLocale();
   const reduce = useReducedMotion();
@@ -60,10 +68,9 @@ export function MomentCard({
   const vibeLabel = moment.vibeTag ? t(`moments.vibe.${moment.vibeTag}` as TKey) : '';
   return (
     <motion.article
-      initial={reduce ? false : { opacity: 0, y: 12 }}
-      whileInView={reduce ? undefined : { opacity: 1, y: 0 }}
-      viewport={{ once: true, amount: 0.15 }}
-      transition={{ duration: 0.35, ease: 'easeOut' }}
+      initial={reduce || !enter ? false : { opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.26, ease: 'easeOut', delay: enter?.delay ?? 0 }}
       className="rounded-[20px] border border-[#E6E2F0] bg-white p-3"
     >
       <header className="flex items-center gap-3 px-1 pb-3">
@@ -143,7 +150,7 @@ export function MomentCard({
       </header>
 
       <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl bg-[#E8E6F1]/50">
-        <Image src={moment.imageUrl} alt={vibeLabel || t('moments.attachedAlt')} fill sizes="(max-width: 480px) 100vw, 456px" className="object-cover" />
+        <Image src={moment.imageUrl} alt={vibeLabel || t('moments.attachedAlt')} fill sizes="(max-width: 480px) 100vw, 440px" preload={priority} className="object-cover" />
         {vibeLabel && (
           <span className="absolute left-3 top-3 inline-flex items-center rounded-full bg-white/75 px-3 py-1.5 text-[11px] font-semibold leading-none text-[#413B5E] backdrop-blur-md">
             {vibeLabel}

@@ -98,6 +98,9 @@ export async function GET(req: Request) {
   const params = new URL(req.url).searchParams;
   const before = params.get('before');
 
+  // Independent of the feed rows, so it runs while the feed query is in flight.
+  const viewerPromise = supabase.from('profiles').select('interests').eq('id', user.id).maybeSingle();
+
   const run = (columns: string) => {
     let q = supabase
       .from('moments')
@@ -129,6 +132,7 @@ export async function GET(req: Request) {
   const authorIds = Array.from(new Set(page.map((m) => m.user_id)));
   const momentIds = page.map((m) => m.id);
 
+  // Authors and this member's likes both need the page's ids, so they run together; the viewer is already done.
   const [{ data: authors }, { data: likes }, { data: viewer }] = await Promise.all([
     authorIds.length
       ? supabase
@@ -139,7 +143,7 @@ export async function GET(req: Request) {
     momentIds.length
       ? supabase.from('moment_likes').select('moment_id').eq('user_id', user.id).in('moment_id', momentIds)
       : Promise.resolve({ data: [] as { moment_id: string }[] }),
-    supabase.from('profiles').select('interests').eq('id', user.id).maybeSingle(),
+    viewerPromise,
   ]);
   const myInterests = toList(viewer?.interests);
   const byAuthor = new Map((authors || []).map((a: Record<string, unknown>) => [a.id as string, a]));
