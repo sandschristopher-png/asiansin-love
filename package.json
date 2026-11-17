@@ -14,7 +14,8 @@
     "moments:test": "node scripts/test-moments-config.mjs",
     "calls:test": "node scripts/test-call-rules.mjs",
     "stepup:test": "node scripts/test-stepup.mjs",
-    "landing:test": "node scripts/test-landing-geo.mjs"
+    "landing:test": "node scripts/test-landing-geo.mjs",
+    "gate:test": "node scripts/test-message-gate.mjs"
   },
   "dependencies": {
     "@google/genai": "^2.24.0",

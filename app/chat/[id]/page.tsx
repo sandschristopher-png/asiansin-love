@@ -51,7 +51,7 @@ import { localTimeIn, timeZoneFor } from '@/lib/timezone';
 import { evaluateSubstantiveConversation } from '@/lib/moderation';
 import { validateBio } from '@/lib/moderation/textFilter';
 import { isRestricted } from '@/lib/reputation';
-import { RepBadge, RhythmPill } from '@/components/profile/RhythmBadges';
+import { RepBadge } from '@/components/profile/RhythmBadges';
 import { hapticError, hapticSuccess, hapticTap } from '@/lib/utils/haptics';
 import { BackButton } from '@/components/BackButton';
 import { Switch } from '@/components/ui/Switch';
@@ -439,6 +439,31 @@ export default function ChatConversationPage() {
   const forceScrollNextRef = useRef(false);
   // Server-computed contact-reveal state (GET /api/messages); realtime rows are masked with it too.
   const contactUnlockedRef = useRef(false);
+
+  // The gate can open right here, the moment the last needed message arrives, before the server's flag is
+  // read again. Unmask at once: stop masking new messages, and re-read the thread once so contact details
+  // that were hidden earlier show without a page refresh.
+  useEffect(() => {
+    if (!liveGate.isUnlocked || contactUnlockedRef.current || !resolvedTargetUuid) return;
+    contactUnlockedRef.current = true;
+    let alive = true;
+    fetch(`/api/messages?target_user_id=${resolvedTargetUuid}`)
+      .then((r) => (r.ok ? r.json() : null))
+      .then((d) => {
+        if (!alive || !d?.messages) return;
+        const fresh = new Map<string, { text: string; wasMasked: boolean }>(d.messages.map((x: { id: string; text: string; wasMasked: boolean }) => [x.id, x]));
+        setMessages((prev) =>
+          prev.map((m) => {
+            const f = fresh.get(m.id);
+            return f && m.wasMasked && !f.wasMasked ? { ...m, text: f.text, wasMasked: false } : m;
+          })
+        );
+      })
+      .catch(() => {});
+    return () => {
+      alive = false;
+    };
+  }, [liveGate.isUnlocked, resolvedTargetUuid]);
 
   const scrollToBottom = useCallback((behavior: ScrollBehavior = 'smooth') => {
     const el = scrollContainerRef.current;
@@ -896,8 +921,8 @@ export default function ChatConversationPage() {
     return null;
   })();
 
-  const submitMessage = async () => {
-    const clean = inputText.trim();
+  const submitMessage = async (override?: string) => {
+    const clean = (override ?? inputText).trim();
     if (!clean || cooldownSeconds > 0 || !resolvedTargetUuid) return;
 
     setErrorBanner(null);
@@ -918,12 +943,33 @@ export default function ChatConversationPage() {
 
     forceScrollNextRef.current = true;
     setMessages((prev) => [...prev, myNewMsg]);
-    setInputText('');
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
+    if (override === undefined) {
+      setInputText('');
+      if (textareaRef.current) {
+        textareaRef.current.style.height = 'auto';
+      }
     }
     setShowIcebreaker(false);
     await deliver(tempId, clean);
+  };
+
+  /**
+   * A conversation starter was tapped: send it now instead of copying it into the box. The starters hide
+   * at once (the bubble appears optimistically and the empty state goes away), a second tap while the first
+   * is still going out is ignored, and a refusal (safety gate, daily limit) puts the text back in the box
+   * through deliver() like any other message.
+   */
+  const starterSendingRef = useRef(false);
+  const sendStarter = async (text: string) => {
+    if (starterSendingRef.current || !text.trim()) return;
+    starterSendingRef.current = true;
+    hapticTap(); // synchronous, inside the tap
+    setShowIcebreaker(false);
+    try {
+      await submitMessage(text);
+    } finally {
+      starterSendingRef.current = false;
+    }
   };
 
   /** Retry a bubble that failed to send (same text, same place in the thread). */
@@ -1212,7 +1258,6 @@ export default function ChatConversationPage() {
                           {cityLabel}
                         </span>
                       )}
-                      <RhythmPill field="reply_pace" value={targetInfo.replyPace} className="shrink-0" />
                     </div>
                   );
                 })()}
@@ -1226,27 +1271,20 @@ export default function ChatConversationPage() {
             <RepBadge score={targetInfo.rep} onClick={() => setShowRepModal(true)} />
           )}
           {!isInitialLoading && (
+            // The call button is the one obvious action up here: a 40px circle on the lavender surface.
             <button
               type="button"
               onClick={onPhoneTap}
               aria-label={t('call.phoneLabel')}
               title={t('call.phoneLabel')}
               aria-disabled={!callReady}
-              className={`w-8 h-8 flex items-center justify-center rounded-full transition cursor-pointer ${
-                callReady ? 'text-[#8574B7] hover:text-[#534377] hover:bg-[#E8E6F1]/70' : 'text-[#413B5E]/35 hover:bg-[#E8E6F1]/40'
+              className={`w-10 h-10 flex items-center justify-center rounded-full bg-[#F6F4FB] ring-1 ring-[#E6E2F0] transition active:scale-95 cursor-pointer ${
+                callReady ? 'text-[#8574B7] hover:text-[#534377] hover:bg-[#E8E6F1]' : 'text-[#413B5E]/35 hover:bg-[#E8E6F1]/60'
               }`}
             >
-              {callStarting ? <Loader2 className="w-4 h-4 animate-spin" /> : <Phone className="w-4 h-4" />}
+              {callStarting ? <Loader2 className="w-5 h-5 animate-spin" /> : <Phone className="w-5 h-5" />}
             </button>
           )}
-          <button
-            type="button"
-            onClick={() => setShowReportModal(true)}
-            className="w-8 h-8 flex items-center justify-center text-slate-600 hover:text-red-600 hover:bg-red-50 rounded-full transition cursor-pointer"
-            title="Safety & Moderation"
-          >
-            <ShieldAlert className="w-4 h-4" />
-          </button>
           {!isInitialLoading && (
             <button
               type="button"
@@ -1290,6 +1328,18 @@ export default function ChatConversationPage() {
               <span className="text-sm text-[#413B5E]">{t('call.menuMute')}</span>
               <Switch on={callsMuted} onClick={toggleCallMute} label={t('call.menuMute')} />
             </div>
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                setHeaderMenu(false);
+                setShowReportModal(true);
+              }}
+              className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm text-[#413B5E] transition hover:bg-[#F6F4FB]"
+            >
+              <ShieldAlert className="h-4 w-4 text-slate-600" aria-hidden />
+              Safety &amp; Moderation
+            </button>
           </div>
         )}
       </header>
@@ -1341,13 +1391,10 @@ export default function ChatConversationPage() {
                 </p>
                 <button
                   type="button"
-                  onClick={() => {
-                    setInputText(icebreakerPrompt);
-                    textareaRef.current?.focus();
-                  }}
+                  onClick={() => void sendStarter(icebreakerPrompt)}
                   className="text-[11px] font-medium text-[#8574B7] hover:underline cursor-pointer"
                 >
-                  Tap to use this starter &rarr;
+                  Tap to send this starter &rarr;
                 </button>
               </div>
             )}
@@ -1401,16 +1448,7 @@ export default function ChatConversationPage() {
                       myTraits={myTraits}
                       theirTraits={theirTraits}
                       theirName={targetInfo.name}
-                      onSelectPrompt={(text) => {
-                        setInputText(text);
-                        const el = textareaRef.current;
-                        el?.focus(); // inside the tap, so the mobile keyboard opens
-                        requestAnimationFrame(() => {
-                          if (!el) return;
-                          el.style.height = 'auto';
-                          el.style.height = Math.min(el.scrollHeight, 108) + 'px';
-                        });
-                      }}
+                      onSelectPrompt={(text) => void sendStarter(text)}
                     />
                   </div>
                 ) : (starterChips.length > 0 || icebreakerPrompt) && (
@@ -1422,16 +1460,7 @@ export default function ChatConversationPage() {
                       <button
                         key={chip.label}
                         type="button"
-                        onClick={() => {
-                          setInputText(chip.text);
-                          requestAnimationFrame(() => {
-                            const el = textareaRef.current;
-                            if (!el) return;
-                            el.focus();
-                            el.style.height = 'auto';
-                            el.style.height = Math.min(el.scrollHeight, 108) + 'px';
-                          });
-                        }}
+                        onClick={() => void sendStarter(chip.text)}
                         className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#E8E6F1]/60 border border-[#D0CDE1] text-[#8574B7] text-[11.5px] font-medium hover:bg-[#E8E6F1]/60 active:scale-95 transition"
                       >
                         <Lightbulb className="w-3 h-3" />

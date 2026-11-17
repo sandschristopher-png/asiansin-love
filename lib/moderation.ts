@@ -198,17 +198,55 @@ export function hasContactSharingIntent(text: string): boolean {
  * Validates whether a message has meaningful substance.
  * Rejects single-word filler ("hi", "hey", "yo", "blah"), keysmashes, and repetitive loops.
  */
+// Scripts that carry far more meaning per character, or are written without spaces between words. Counting
+// plain characters and spaces made a perfectly good Chinese, Japanese, Thai or Khmer sentence look like one
+// short word, so those members could exchange dozens of messages and still read 0/3.
+const HAN_KANA = /[\u3040-\u30ff\u3400-\u4dbf\u4e00-\u9fff\uf900-\ufaff]/; // Han and kana: no spaces, ~2 characters a word
+const HANGUL = /[\uac00-\ud7af]/; // Korean: spaced words, but each syllable block is worth a few Latin letters
+const UNSPACED = /[\u0e00-\u0eff\u1000-\u109f\u1780-\u17ff]/; // Thai, Lao, Myanmar, Khmer: no spaces, ~5 characters a word
+
+/**
+ * Size of a message in Latin-text terms: weighted characters, words and distinct words. Latin and other
+ * spaced scripts count exactly as before (length, space-separated words).
+ */
+export function messageSubstance(text: string): { chars: number; words: number; distinct: number } {
+  let chars = 0;
+  for (const ch of text) chars += HAN_KANA.test(ch) ? 2.5 : HANGUL.test(ch) ? 2 : UNSPACED.test(ch) ? 1.2 : 1;
+
+  let words = 0;
+  const distinct = new Set<string>();
+  for (const token of text.toLowerCase().split(/\s+/).filter(Boolean)) {
+    let latin = 0;
+    let han = 0;
+    let unspaced = 0;
+    for (const ch of token) {
+      if (HAN_KANA.test(ch)) {
+        han++;
+        distinct.add(ch);
+      } else if (UNSPACED.test(ch)) {
+        unspaced++;
+        distinct.add(ch);
+      } else latin++;
+    }
+    if (han === 0 && unspaced === 0) {
+      words += 1;
+      distinct.add(token);
+    } else {
+      words += (latin > 0 ? 1 : 0) + Math.ceil(han / 2) + Math.ceil(unspaced / 5);
+    }
+  }
+  return { chars, words, distinct: distinct.size };
+}
+
 export function isSubstantiveMessage(text: string, minChars = 15): boolean {
   if (!text || typeof text !== 'string') return false;
   const trimmed = text.trim();
-  if (trimmed.length < minChars) return false;
-
-  const words = trimmed.toLowerCase().split(/\s+/).filter(Boolean);
-  if (words.length < 3) return false;
+  const { chars, words, distinct } = messageSubstance(trimmed);
+  if (chars < minChars) return false;
+  if (words < 3) return false;
 
   // Single repetitive word loops like "hi hi hi hi" or "blah blah blah blah"
-  const uniqueWords = new Set(words);
-  if (uniqueWords.size < 2) return false;
+  if (distinct < 2) return false;
 
   const fillerRegex = /^(hi|hey|yo|hello|sup|blah|ok|k|cool|yes|no|good|haha|lol|nice|morning|night|test|asdf)[.!\s]*$/i;
   if (fillerRegex.test(trimmed)) return false;
