@@ -446,6 +446,13 @@
       "laugh": "Cười",
       "fire": "Lửa",
       "failed": "Không thể lưu phản hồi của bạn. Vui lòng thử lại"
+    },
+    "gate": {
+      "title": "Ghi âm và chia sẻ liên hệ sẽ mở khóa sau khi mỗi người gửi {n} tin nhắn có nội dung",
+      "body": "Tin nhắn được tính khi có vài từ (từ 15 ký tự). Những câu trả lời ngắn như \"ok\" không được tính.",
+      "you": "Bạn",
+      "aria": "Tiến độ mở khóa: {count}/{n} tin nhắn mỗi người",
+      "unlocked": "Đã mở khóa"
     }
   },
   "notif": {

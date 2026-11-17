@@ -250,7 +250,7 @@ export default function ChatConversationPage() {
     () =>
       evaluateSubstantiveConversation(
         messages
-          .filter((m) => !m.pending && !m.hasAudio)
+          .filter((m) => !m.pending && !m.failed && !m.hasAudio)
           .slice(-40)
           .map((m) => ({ sender_id: m.sender, content: m.text })),
         'me',
@@ -297,6 +297,8 @@ export default function ChatConversationPage() {
   const [callConfirm, setCallConfirm] = useState(false);
   const [callStarting, setCallStarting] = useState(false);
   const [headerMenu, setHeaderMenu] = useState(false);
+  // Unlock-progress drawer (opened from the pill on the header's lower edge).
+  const [gateOpen, setGateOpen] = useState(false);
   // "Now" for the pause check, refreshed every 30 s so a lifted pause unlocks the button without a reload.
   const [callNowMs, setCallNowMs] = useState(() => Date.now());
   useEffect(() => {
@@ -370,6 +372,7 @@ export default function ChatConversationPage() {
     setCallConfirm(false);
     setCallNote(null);
     setHeaderMenu(false);
+    setGateOpen(false);
   };
 
   const onPhoneTap = () => {
@@ -1260,6 +1263,13 @@ export default function ChatConversationPage() {
     return mins + ':' + (remaining < 10 ? '0' : '') + remaining;
   };
 
+  // Unlock progress for the header indicator: each side's count (capped at the target) and how far along both are.
+  const gateMine = Math.min(liveGate.senderSubstantiveCount, CONTACT_UNLOCK_TURNS);
+  const gateTheirs = Math.min(liveGate.receiverSubstantiveCount, CONTACT_UNLOCK_TURNS);
+  const gateLeast = Math.min(gateMine, gateTheirs); // it opens when the slower side gets there
+  const gateProgress = (gateMine + gateTheirs) / (2 * CONTACT_UNLOCK_TURNS);
+  const showGate = !isInitialLoading && !gateUnlocked;
+
   return (
     <div className="w-full h-[100dvh] max-h-[100dvh] flex flex-col bg-white text-[#413B5E] font-sans relative overflow-hidden">
       {/* Room for the slim "Return to call" bar pinned above the header while the call screen is minimized */}
@@ -1357,6 +1367,7 @@ export default function ChatConversationPage() {
               onClick={() => {
                 setCallConfirm(false);
                 setCallNote(null);
+                setGateOpen(false);
                 setHeaderMenu((open) => !open);
               }}
               aria-label={t('call.menuLabel')}
@@ -1408,8 +1419,62 @@ export default function ChatConversationPage() {
             </button>
           </div>
         )}
+
+        {/* Unlock progress: a thin bar along the header's lower edge, a small pill on it, and a drawer with the
+            detail. It replaces the banner that used to sit above the message box. */}
+        {showGate && (
+          <>
+            <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-[3px] bg-[#E8E6F1]">
+              <div className="h-full rounded-r-full bg-[#8574B7] transition-[width] duration-500 ease-out" style={{ width: `${Math.round(gateProgress * 100)}%` }} />
+            </div>
+            <button
+              type="button"
+              onClick={() => {
+                setCallConfirm(false);
+                setCallNote(null);
+                setHeaderMenu(false);
+                setGateOpen((open) => !open);
+              }}
+              aria-label={t('chat.gate.aria', { count: gateLeast, n: CONTACT_UNLOCK_TURNS })}
+              aria-expanded={gateOpen}
+              className="absolute bottom-0 left-3.5 z-10 inline-flex h-5 translate-y-1/2 items-center gap-1 rounded-full border border-[#E6E2F0] bg-white px-2 text-[10.5px] font-semibold tabular-nums text-[#413B5E]/80 shadow-[0_2px_6px_rgba(65,59,94,0.08)] transition hover:border-[#8574B7]/40 hover:text-[#8574B7]"
+            >
+              <Lock className="h-2.5 w-2.5 text-[#8574B7]" strokeWidth={2.5} aria-hidden />
+              {gateLeast}/{CONTACT_UNLOCK_TURNS}
+            </button>
+          </>
+        )}
+        {!isInitialLoading && gateUnlocked && gateLockedOnOpen && (
+          // The moment it opens: a brief "Unlocked" that fades by itself (no timer state needed).
+          <span className="ail-gate-done pointer-events-none absolute bottom-0 left-3.5 z-10 inline-flex h-5 translate-y-1/2 items-center gap-1 rounded-full bg-[#8574B7] px-2 text-[10.5px] font-semibold text-white">
+            <Check className="h-2.5 w-2.5" strokeWidth={3} aria-hidden />
+            {t('chat.gate.unlocked')}
+          </span>
+        )}
+        {gateOpen && showGate && (
+          <div role="dialog" aria-label={t('chat.gate.title', { n: CONTACT_UNLOCK_TURNS })} className="absolute left-3 top-full z-30 mt-4 w-[280px] rounded-2xl border border-[#D0CDE1] bg-white p-3.5 shadow-[0_12px_30px_rgba(65,59,94,0.16)]">
+            <p className="text-[13px] font-semibold leading-snug text-[#413B5E]">{t('chat.gate.title', { n: CONTACT_UNLOCK_TURNS })}</p>
+            <p className="mt-1 text-[11.5px] leading-relaxed text-slate-600">{t('chat.gate.body')}</p>
+            <div className="mt-3 space-y-2.5">
+              {[
+                { label: t('chat.gate.you'), count: gateMine },
+                { label: targetInfo.name || 'Member', count: gateTheirs },
+              ].map((row) => (
+                <div key={row.label}>
+                  <div className="flex items-center justify-between text-[11.5px] font-medium text-[#413B5E]">
+                    <span className="truncate">{row.label}</span>
+                    <span className="tabular-nums text-slate-600">{row.count}/{CONTACT_UNLOCK_TURNS}</span>
+                  </div>
+                  <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-[#E8E6F1]">
+                    <div className="h-full rounded-full bg-[#8574B7] transition-[width] duration-500 ease-out" style={{ width: `${(row.count / CONTACT_UNLOCK_TURNS) * 100}%` }} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </header>
-      {(callConfirm || callNote || headerMenu) && (
+      {(callConfirm || callNote || headerMenu || gateOpen) && (
         <button type="button" aria-hidden tabIndex={-1} onClick={closeCallPopovers} className="fixed inset-0 z-[15] cursor-default" />
       )}
 
@@ -1811,39 +1876,7 @@ export default function ChatConversationPage() {
       )}
       {stepUp.element}
       {/* Docked Flex Composer (Never overlaps message feed) */}
-      <div className={`shrink-0 w-full bg-white/95 backdrop-blur-md border-t border-[#D0CDE1] px-3 pt-2 pb-[max(0.625rem,env(safe-area-inset-bottom))] z-20 ${reverification.required ? 'hidden' : ''}`}>
-        {!isInitialLoading && !gateUnlocked && (() => {
-          // One friendly line; shows whichever side still needs messages (each member needs 3).
-          const mine = Math.min(liveGate.senderSubstantiveCount, CONTACT_UNLOCK_TURNS);
-          const theirs = Math.min(liveGate.receiverSubstantiveCount, CONTACT_UNLOCK_TURNS);
-          const them = targetInfo.name || 'them';
-          const progress =
-            mine < CONTACT_UNLOCK_TURNS && theirs < CONTACT_UNLOCK_TURNS
-              ? `You: ${mine}/${CONTACT_UNLOCK_TURNS} · ${them}: ${theirs}/${CONTACT_UNLOCK_TURNS}`
-              : mine < CONTACT_UNLOCK_TURNS
-                ? `You: ${mine}/${CONTACT_UNLOCK_TURNS}`
-                : `${them}: ${theirs}/${CONTACT_UNLOCK_TURNS}`;
-          return (
-            <p
-              className="text-xs text-slate-600 bg-white border border-[#D0CDE1] py-1.5 px-3 rounded-xl mx-auto mb-2 text-center max-w-md flex items-center justify-center gap-1.5"
-              aria-live="polite"
-              title="Messages count when they have a few words (15+ characters)."
-            >
-              <Lock className="w-3.5 h-3.5 shrink-0 text-[#8574B7]" aria-hidden />
-              <span>
-                Voice notes &amp; contact sharing unlock after {CONTACT_UNLOCK_TURNS} meaningful messages each ({progress})
-              </span>
-            </p>
-          );
-        })()}
-        {!isInitialLoading && gateUnlocked && gateLockedOnOpen && (
-          <p
-            className="text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 py-1.5 px-3 rounded-xl mx-auto mb-2 text-center max-w-md flex items-center justify-center gap-1.5"
-            aria-live="polite"
-          >
-            <span>Safety Gate unlocked · Voice notes &amp; direct sharing now available</span>
-          </p>
-        )}
+      <div className={`shrink-0 w-full bg-white/95 backdrop-blur-md border-t border-[#D0CDE1] px-3 pt-2.5 pb-[max(0.75rem,env(safe-area-inset-bottom))] z-20 ${reverification.required ? 'hidden' : ''}`}>
         {cooldownSeconds > 0 ? (
           // A calm nudge, not an error: what happened, how it opens up, when the next message can go.
           <div role="status" className="p-3.5 rounded-2xl bg-[#FAF9FC] border border-[#8574B7]/25 flex flex-col gap-2.5 text-center">
@@ -1960,9 +1993,9 @@ export default function ChatConversationPage() {
               type="submit"
               disabled={!inputText.trim()}
               aria-label="Send message"
-              className="w-9 h-9 rounded-full bg-[#8574B7] hover:bg-[#413B5E] active:scale-90 disabled:opacity-35 text-white flex items-center justify-center transition-all shadow-xs shrink-0 cursor-pointer"
+              className="w-10 h-10 rounded-full bg-[#8574B7] hover:bg-[#534377] active:scale-90 disabled:opacity-35 text-white flex items-center justify-center transition-all shadow-xs shrink-0 cursor-pointer"
             >
-              <Send className="w-4 h-4 translate-x-[0.5px]" />
+              <Send className="w-[18px] h-[18px] translate-x-[0.5px]" />
             </button>
           </form>
         )}

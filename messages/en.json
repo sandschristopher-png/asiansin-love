@@ -446,6 +446,13 @@
       "laugh": "Laugh",
       "fire": "Fire",
       "failed": "Could not save your reaction. Please try again"
+    },
+    "gate": {
+      "title": "Voice notes and contact sharing unlock after {n} meaningful messages each",
+      "body": "A message counts once it has a few words (15+ characters). Short replies like \"ok\" don't count.",
+      "you": "You",
+      "aria": "Unlock progress: {count} of {n} messages each",
+      "unlocked": "Unlocked"
     }
   },
   "notif": {

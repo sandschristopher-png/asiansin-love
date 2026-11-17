@@ -446,6 +446,13 @@
       "laugh": "Tertawa",
       "fire": "Api",
       "failed": "Reaksimu tidak dapat disimpan. Silakan coba lagi"
+    },
+    "gate": {
+      "title": "Pesan suara dan berbagi kontak terbuka setelah masing-masing mengirim {n} pesan bermakna",
+      "body": "Pesan dihitung jika berisi beberapa kata (15+ karakter). Balasan singkat seperti \"ok\" tidak dihitung.",
+      "you": "Kamu",
+      "aria": "Kemajuan pembukaan: {count} dari {n} pesan masing-masing",
+      "unlocked": "Terbuka"
     }
   },
   "notif": {

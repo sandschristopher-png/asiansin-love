@@ -446,6 +446,13 @@
       "laugh": "Ketawa",
       "fire": "Api",
       "failed": "Reaksi anda tidak dapat disimpan. Sila cuba lagi"
+    },
+    "gate": {
+      "title": "Nota suara dan perkongsian hubungan dibuka selepas setiap seorang menghantar {n} mesej bermakna",
+      "body": "Mesej dikira apabila ada beberapa patah perkataan (15+ aksara). Balasan pendek seperti \"ok\" tidak dikira.",
+      "you": "Anda",
+      "aria": "Kemajuan pembukaan: {count} daripada {n} mesej setiap seorang",
+      "unlocked": "Dibuka"
     }
   },
   "notif": {

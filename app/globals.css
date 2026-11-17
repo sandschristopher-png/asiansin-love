@@ -374,6 +374,15 @@ nextjs-portal,
 }
 .ail-ticker-in { animation: ailTickerIn 360ms cubic-bezier(0.16, 1, 0.3, 1) both; }
 
+/* Chat header "Unlocked" chip (app/chat/[id]/page.tsx): visible for a few seconds, then gone on its own */
+@keyframes ailGateDone {
+  0% { opacity: 0; transform: scale(0.9); }
+  8% { opacity: 1; transform: scale(1); }
+  80% { opacity: 1; visibility: visible; }
+  100% { opacity: 0; visibility: hidden; }
+}
+.ail-gate-done { animation: ailGateDone 4.5s ease-out both; }
+
 /* Voice call: a soft breathing ring behind the avatar while a call is ringing (components/calls/CallScreen.tsx) */
 @keyframes ailCallBreathe {
   0% { transform: scale(1); opacity: 0.45; }
@@ -390,7 +399,7 @@ nextjs-portal,
 @media (prefers-reduced-motion: reduce) {
   .ail-shimmer, .ail-sheet-up, .ail-modal-pop,
   .ail-avatar-left, .ail-avatar-right,
-  .ail-call-ring, .ail-call-in, .ail-ticker-in {
+  .ail-call-ring, .ail-call-in, .ail-ticker-in, .ail-gate-done {
     animation: none !important;
   }
 }

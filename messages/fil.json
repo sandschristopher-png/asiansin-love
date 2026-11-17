@@ -446,6 +446,13 @@
       "laugh": "Tawa",
       "fire": "Apoy",
       "failed": "Hindi na-save ang reaksyon mo. Pakisubukang muli"
+    },
+    "gate": {
+      "title": "Mabubuksan ang voice notes at pagbabahagi ng contact pagkatapos ng {n} makabuluhang mensahe mula sa bawat isa",
+      "body": "Ang mensahe ay nabibilang kapag may ilang salita ito (15+ karakter). Hindi bilang ang maikling sagot gaya ng \"ok\".",
+      "you": "Ikaw",
+      "aria": "Progreso ng pag-unlock: {count} sa {n} mensahe bawat isa",
+      "unlocked": "Nabuksan na"
     }
   },
   "notif": {

@@ -446,6 +446,13 @@
       "laugh": "Risa",
       "fire": "Fuego",
       "failed": "No se pudo guardar tu reacción. Inténtalo de nuevo"
+    },
+    "gate": {
+      "title": "Las notas de voz y compartir contacto se desbloquean tras {n} mensajes con contenido de cada uno",
+      "body": "Un mensaje cuenta cuando tiene unas cuantas palabras (15+ caracteres). Las respuestas cortas como \"ok\" no cuentan.",
+      "you": "Tú",
+      "aria": "Progreso del desbloqueo: {count} de {n} mensajes cada uno",
+      "unlocked": "Desbloqueado"
     }
   },
   "notif": {
