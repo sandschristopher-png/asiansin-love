@@ -643,7 +643,8 @@
     "cameraMissing": "No camera was found on this device",
     "startFailed": "The camera check could not start. Please try again",
     "expired": "That check expired. Please start again",
-    "unavailable": "The identity check is not available right now. Please try again later"
+    "unavailable": "The identity check is not available right now. Please try again later",
+    "accessibility": "Can't turn your head? Take a straight photo instead"
   },
   "ph": {
     "imageAlt": "Camille smiling, holding her phone against a painted wall",

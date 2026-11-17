@@ -643,7 +643,8 @@
     "cameraMissing": "Tiada kamera ditemui pada peranti ini",
     "startFailed": "Semakan kamera tidak dapat dimulakan. Sila cuba lagi",
     "expired": "Semakan itu telah tamat tempoh. Sila mula semula",
-    "unavailable": "Pengesahan identiti tidak tersedia buat masa ini. Sila cuba lagi nanti"
+    "unavailable": "Pengesahan identiti tidak tersedia buat masa ini. Sila cuba lagi nanti",
+    "accessibility": "Tidak boleh menoleh? Ambil foto menghadap depan sahaja"
   },
   "ph": {
     "imageAlt": "Camille tersenyum sambil memegang telefon di hadapan dinding bercat",

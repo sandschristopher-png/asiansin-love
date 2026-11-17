@@ -14,7 +14,9 @@ const MAX_ISSUED_PER_HOUR = 8;
  *
  * Issues a signed (HMAC-SHA256), single-use challenge with 3 random poses from
  * turn_left / turn_right / look_up / look_down (plus a neutral centre capture the client always takes).
- * The reason is never the client's choice: a member can ask for a primary-photo-swap check, otherwise a
+ * The reason is never the client's choice beyond two requests a member may make: a primary-photo-swap
+ * check, or the "get verified" check (only with a main photo; a verified member may run it again to refresh
+ * their review photos, as before). Otherwise a
  * challenge exists only while their account is flagged, and carries the flag's own reason.
  */
 export async function POST(req: Request) {
@@ -28,7 +30,13 @@ export async function POST(req: Request) {
 
   let reason: TriggerReason;
   if (body.reason === 'photo_swap') reason = 'photo_swap';
-  else if (state.required) reason = isTriggerReason(state.reason) ? state.reason : 'manual';
+  else if (body.reason === 'verification') {
+    const { data: profile } = await db.from('profiles').select('avatar_url').eq('id', user.id).maybeSingle();
+    if (!profile?.avatar_url) {
+      return NextResponse.json({ error: 'Add a clear main profile photo first - verification matches your face against it.', code: 'NEEDS_PHOTO' }, { status: 400 });
+    }
+    reason = 'verification';
+  } else if (state.required) reason = isTriggerReason(state.reason) ? state.reason : 'manual';
   else return NextResponse.json({ error: 'No identity check is needed right now.', code: 'NOT_REQUIRED' }, { status: 400 });
 
   const since = new Date(Date.now() - 60 * 60 * 1000).toISOString();

@@ -16,11 +16,34 @@ export const MAX_ATTEMPTS_PER_HOUR = 3;
 /** Match score (0-100) from the pre-screen needed to pass without a person. */
 export const MIN_MATCH_CONFIDENCE = 80;
 
-export type TriggerReason = 'photo_swap' | 'velocity' | 'reports' | 'new_country' | 'quarantine_recovery' | 'manual';
-export const TRIGGER_REASONS: TriggerReason[] = ['photo_swap', 'velocity', 'reports', 'new_country', 'quarantine_recovery', 'manual'];
+export type TriggerReason = 'photo_swap' | 'velocity' | 'reports' | 'new_country' | 'quarantine_recovery' | 'manual' | 'verification';
+export const TRIGGER_REASONS: TriggerReason[] = ['photo_swap', 'velocity', 'reports', 'new_country', 'quarantine_recovery', 'manual', 'verification'];
 
 export function isTriggerReason(v: unknown): v is TriggerReason {
   return typeof v === 'string' && (TRIGGER_REASONS as string[]).includes(v);
+}
+
+export type FinishDecision = 'passed' | 'retry' | 'queue';
+
+/**
+ * What happens to a finished check. Only the verified badge is special: for `verification` a good result is
+ * never "passed" (the AI only pre-screens; a person grants the badge), it joins the staff queue marked as a
+ * fast-track. Everything else passes on a good result and retries up to MAX_ATTEMPTS_PER_HOUR. No usable
+ * pre-screen (outage, timeout) and the straight-photo accessibility path always go to a person.
+ */
+export function decideFinish(i: {
+  reason: TriggerReason;
+  /** The pre-screen ran and every check came back good. */
+  reviewPassed: boolean;
+  /** The pre-screen produced a result at all. */
+  aiAvailable: boolean;
+  /** Failed attempts in the last hour, before this one. */
+  failedBefore: number;
+  accessibility?: boolean;
+}): FinishDecision {
+  if (i.accessibility || !i.aiAvailable) return 'queue';
+  if (i.reviewPassed) return i.reason === 'verification' ? 'queue' : 'passed';
+  return i.failedBefore + 1 < MAX_ATTEMPTS_PER_HOUR ? 'retry' : 'queue';
 }
 
 /** Three distinct random poses. `rand` is injectable for tests; the server passes crypto-backed randomness. */

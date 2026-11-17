@@ -57,7 +57,11 @@ let landmarker: FaceLandmarker | null = null;
 let hands: HandLandmarker | null = null;
 let initPromise: Promise<void> | null = null;
 
-export async function initFaceGate(): Promise<void> {
+/**
+ * Loads the face model. The hand model (a second, larger download used only by the retired hand-gesture check)
+ * is no longer fetched unless asked for with { hands: true }: the head-turn checks never need it.
+ */
+export async function initFaceGate(opts: { hands?: boolean } = {}): Promise<void> {
   if (landmarker) return;
   if (initPromise) return initPromise;
   initPromise = (async () => {
@@ -71,6 +75,7 @@ export async function initFaceGate(): Promise<void> {
       minTrackingConfidence: FACE_MIN_CONFIDENCE,
     });
     // Optional: without the hand model the pose step falls back to a face-only capture.
+    if (!opts.hands) return;
     try {
       hands = await HandLandmarker.createFromOptions(vision, {
         baseOptions: { modelAssetPath: HAND_LANDMARKER_MODEL, delegate: 'GPU' },

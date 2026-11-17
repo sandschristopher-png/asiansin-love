@@ -643,7 +643,8 @@
     "cameraMissing": "No se encontró ninguna cámara en este dispositivo",
     "startFailed": "No se pudo iniciar la comprobación con la cámara. Inténtalo de nuevo",
     "expired": "Esa comprobación caducó. Empieza de nuevo",
-    "unavailable": "La comprobación de identidad no está disponible ahora. Inténtalo más tarde"
+    "unavailable": "La comprobación de identidad no está disponible ahora. Inténtalo más tarde",
+    "accessibility": "¿No puedes girar la cabeza? Haz una foto de frente"
   },
   "ph": {
     "imageAlt": "Camille sonriendo con su teléfono frente a una pared pintada",

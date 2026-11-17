@@ -9,17 +9,18 @@ import { StepUpFlow, type StepUpResult } from '@/components/verify/StepUpFlow';
  *   const { run, element } = useStepUp();
  *   const result = await run();                                  // account restriction
  *   const result = await run({ reason: 'photo_swap', photo });   // changing the main photo
+ *   const result = await run({ reason: 'verification' });        // the get-verified check (/verify)
  *   ...render {element} once in the page
  */
 export function useStepUp() {
   const [open, setOpen] = useState(false);
   // A new key per run: every check starts from the intro sheet with clean state.
   const [session, setSession] = useState(0);
-  const [options, setOptions] = useState<{ reason?: 'photo_swap'; photo?: Blob | null }>({});
+  const [options, setOptions] = useState<{ reason?: 'photo_swap' | 'verification'; photo?: Blob | null }>({});
   const settle = useRef<((r: StepUpResult | null) => void) | null>(null);
   const last = useRef<StepUpResult | null>(null);
 
-  const run = useCallback((opts: { reason?: 'photo_swap'; photo?: Blob | null } = {}) => {
+  const run = useCallback((opts: { reason?: 'photo_swap' | 'verification'; photo?: Blob | null } = {}) => {
     last.current = null;
     setOptions(opts);
     setSession((n) => n + 1);

@@ -643,7 +643,8 @@
     "cameraMissing": "Kamera tidak ditemukan di perangkat ini",
     "startFailed": "Pemeriksaan kamera tidak dapat dimulai. Silakan coba lagi",
     "expired": "Pemeriksaan itu sudah kedaluwarsa. Silakan mulai lagi",
-    "unavailable": "Konfirmasi identitas belum tersedia saat ini. Silakan coba lagi nanti"
+    "unavailable": "Konfirmasi identitas belum tersedia saat ini. Silakan coba lagi nanti",
+    "accessibility": "Tidak bisa menoleh? Ambil foto menghadap lurus saja"
   },
   "ph": {
     "imageAlt": "Camille tersenyum sambil memegang ponsel di depan dinding yang dicat",

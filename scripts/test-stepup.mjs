@@ -67,13 +67,24 @@ ok('new country: first session or unknown never flags', rules.newCountryLogin('T
 ok('new country is case-insensitive', rules.newCountryLogin('th', 'PH', 'ph') === true && rules.newCountryLogin('ph', 'PH', 'vn') === false);
 ok('three attempts an hour, then a person', rules.MAX_ATTEMPTS_PER_HOUR === 3);
 
-// Migration
-const sql = fs.readFileSync('supabase/migrations/20261127_stepup_liveness.sql', 'utf8');
+// Finish decisions: the badge is only ever granted by a person
+const fin = (o) => rules.decideFinish({ reason: 'photo_swap', reviewPassed: false, aiAvailable: true, failedBefore: 0, ...o });
+ok('a good swap check passes', fin({ reviewPassed: true }) === 'passed');
+ok('a good account-restriction check passes', fin({ reason: 'velocity', reviewPassed: true }) === 'passed');
+ok('a good verification check is NEVER passed: it queues for a person', fin({ reason: 'verification', reviewPassed: true }) === 'queue');
+ok('a failed check retries twice, then queues', fin({ failedBefore: 0 }) === 'retry' && fin({ failedBefore: 1 }) === 'retry' && fin({ failedBefore: 2 }) === 'queue');
+ok('no pre-screen result goes to a person', fin({ aiAvailable: false }) === 'queue' && fin({ reason: 'verification', aiAvailable: false }) === 'queue');
+ok('the straight-photo path always goes to a person, even with a good result', fin({ accessibility: true, reviewPassed: true }) === 'queue' && fin({ reason: 'velocity', accessibility: true, reviewPassed: true }) === 'queue');
+ok('verification is a known reason', rules.isTriggerReason('verification'));
+
+// Migrations
+const sql = fs.readFileSync('supabase/migrations/20261127_stepup_liveness.sql', 'utf8') + ' ' + fs.readFileSync('supabase/migrations/20261129_stepup_verification_mode.sql', 'utf8');
 const code = sql.replace(/--.*$/gm, '');
 ok('profile columns exist', /reverification_required boolean not null default false/.test(sql) && /reverification_reason text/.test(sql));
 ok('members cannot change the flag themselves', /guard_profile_reverification/.test(sql) && /auth\.uid\(\) is null or coalesce\(auth\.role\(\), ''\) = 'service_role'/.test(sql));
 ok('liveness_challenges has RLS and read-own only', /alter table public\.liveness_challenges enable row level security/.test(sql) && !/on public\.liveness_challenges\s+for (insert|update|delete|all)/.test(code));
 ok('reasons in SQL match TypeScript', rules.TRIGGER_REASONS.every((r) => sql.includes(`'${r}'`)));
+ok('the verification migration re-creates the reason check with verification in it', /drop constraint if exists liveness_challenges_trigger_reason_check/.test(sql) && /'verification'\)/.test(sql));
 ok('no video or image columns', !/video|image|selfie|blob/i.test(code));
 
 console.log(`Step-up: ${passed} passed, ${failures.length} failed`);

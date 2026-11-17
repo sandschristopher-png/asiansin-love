@@ -643,7 +643,8 @@
     "cameraMissing": "Không tìm thấy camera trên thiết bị này",
     "startFailed": "Không thể bắt đầu kiểm tra bằng camera. Vui lòng thử lại",
     "expired": "Lần kiểm tra đó đã hết hạn. Vui lòng bắt đầu lại",
-    "unavailable": "Hiện chưa thể xác nhận danh tính. Vui lòng thử lại sau"
+    "unavailable": "Hiện chưa thể xác nhận danh tính. Vui lòng thử lại sau",
+    "accessibility": "Không thể xoay đầu? Hãy chụp ảnh nhìn thẳng"
   },
   "ph": {
     "imageAlt": "Camille mỉm cười, cầm điện thoại trước bức tường sơn",

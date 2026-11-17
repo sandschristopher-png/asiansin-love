@@ -643,7 +643,8 @@
     "cameraMissing": "Walang nakitang camera sa device na ito",
     "startFailed": "Hindi nasimulan ang camera check. Pakisubukang muli",
     "expired": "Nag-expire na ang check na iyon. Pakisimulang muli",
-    "unavailable": "Hindi available ang identity check ngayon. Pakisubukang muli mamaya"
+    "unavailable": "Hindi available ang identity check ngayon. Pakisubukang muli mamaya",
+    "accessibility": "Hindi makalingon? Kumuha na lang ng diretsong litrato"
   },
   "ph": {
     "imageAlt": "Nakangiting si Camille habang hawak ang phone niya sa harap ng pininturahang pader",

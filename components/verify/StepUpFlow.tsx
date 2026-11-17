@@ -24,12 +24,17 @@ import { FACE_MIN_CONFIDENCE } from '@/lib/faceGateMessages';
 import type { TKey } from '@/lib/i18n';
 
 /** 'unavailable': the identity check is not set up yet (database migration not applied); the server is not enforcing it either. */
-export type StepUpResult = { status: 'passed'; challengeId: string } | { status: 'manual_review' } | { status: 'unavailable' };
+export type StepUpResult =
+  | { status: 'passed'; challengeId: string }
+  // Sent to staff. fastTrack: the pre-screen looked good, so approval is usually quick (the "get verified" check).
+  | { status: 'manual_review'; fastTrack?: boolean }
+  | { status: 'unavailable' };
 
 interface Props {
   open: boolean;
   /** 'photo_swap' when changing the main photo; otherwise the check follows the account's own restriction. */
-  reason?: 'photo_swap';
+  /** 'photo_swap' when changing the main photo; 'verification' for the get-verified check at /verify. */
+  reason?: 'photo_swap' | 'verification';
   /** photo_swap: the exact photo about to become primary (it is matched against the live face). */
   photo?: Blob | null;
   onClose: () => void;
@@ -117,6 +122,9 @@ export function StepUpFlow({ open, reason, photo, onClose, onResult }: Props) {
   const viewRef = useRef<HTMLDivElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const cancelRef = useRef(false);
+  // "I can't turn my head": send the straight photo only, to be reviewed by a person (verification only).
+  const accessRef = useRef(false);
+  const [straight, setStraight] = useState(false);
 
   const stopCamera = useCallback(() => {
     streamRef.current?.getTracks().forEach((track) => track.stop());
@@ -148,7 +156,7 @@ export function StepUpFlow({ open, reason, photo, onClose, onResult }: Props) {
   );
 
   const submit = useCallback(
-    async (token: string, log: unknown, neutral: Blob, frames: Blob[]) => {
+    async (token: string, log: unknown, neutral: Blob, frames: Blob[], accessibility = false) => {
       setStep('reviewing');
       stopCamera();
       const form = new FormData();
@@ -158,6 +166,7 @@ export function StepUpFlow({ open, reason, photo, onClose, onResult }: Props) {
       form.append('center', neutral, 'center.jpg');
       frames.forEach((f, i) => form.append(`pose_${i}`, f, `pose_${i}.jpg`));
       if (reason === 'photo_swap' && photo) form.append('photo', photo, 'photo');
+      if (accessibility) form.append('accessibility', '1');
       try {
         const res = await fetch('/api/verify/step-up/finish', { method: 'POST', body: form });
         const data = await res.json().catch(() => ({}));
@@ -171,7 +180,7 @@ export function StepUpFlow({ open, reason, photo, onClose, onResult }: Props) {
           setStep('failed');
         } else if (res.ok && data.status === 'manual_review') {
           setStep('manual');
-          onResult({ status: 'manual_review' });
+          onResult({ status: 'manual_review', fastTrack: data.fastTrack === true });
         } else if (data.code === 'EXPIRED' || data.code === 'USED') fail('stepup.expired');
         else fail('stepup.startFailed');
       } catch {
@@ -186,6 +195,8 @@ export function StepUpFlow({ open, reason, photo, onClose, onResult }: Props) {
     if (starting) return;
     setStarting(true);
     cancelRef.current = false;
+    accessRef.current = false;
+    setStraight(false);
     setProgress(0);
     setIndex(-1);
     try {
@@ -246,6 +257,14 @@ export function StepUpFlow({ open, reason, photo, onClose, onResult }: Props) {
         }
         busy = true;
         try {
+          // The straight-photo path: as soon as the straight frame exists, send just that (after the 4 s minimum).
+          if (accessRef.current && neutralBlob) {
+            window.clearInterval(timer);
+            const wait = began + 4600 - performance.now();
+            if (wait > 0) await new Promise((resolve) => setTimeout(resolve, wait));
+            if (!cancelRef.current) void submit(token, [], neutralBlob, [], true);
+            return;
+          }
           const { faces, points } = gate.readFaceLandmarks(video);
           const ratios = faces === 1 ? poseRatios(points) : null;
           const now = performance.now();
@@ -313,7 +332,7 @@ export function StepUpFlow({ open, reason, photo, onClose, onResult }: Props) {
 
   if (!open || !mounted) return null;
 
-  const active: StepUpPose | null = index >= 0 ? (poses[index] ?? null) : null;
+  const active: StepUpPose | null = !straight && index >= 0 ? (poses[index] ?? null) : null;
   const Arrow = active ? ARROW[active] : null;
   const close = () => {
     cancelRef.current = true;
@@ -384,6 +403,19 @@ export function StepUpFlow({ open, reason, photo, onClose, onResult }: Props) {
         {help && (
           <div role="status" className="absolute right-3 top-14 z-10 w-[260px] rounded-2xl border border-[#D0CDE1] bg-white p-3.5 text-xs leading-relaxed text-[#413B5E] shadow-[0_12px_30px_rgba(65,59,94,0.16)]">
             {t('stepup.helpBody')}
+            {reason === 'verification' && !straight && (
+              <button
+                type="button"
+                onClick={() => {
+                  accessRef.current = true;
+                  setStraight(true);
+                  setHelp(false);
+                }}
+                className="mt-3 block w-full rounded-xl border-t border-[#E6E2F0] pt-3 text-left text-xs font-semibold text-[#8574B7] hover:text-[#534377]"
+              >
+                {t('stepup.accessibility')}
+              </button>
+            )}
           </div>
         )}
         <div className="flex flex-1 flex-col items-center justify-center px-6">
