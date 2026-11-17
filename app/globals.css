@@ -374,6 +374,16 @@ nextjs-portal,
 }
 .ail-ticker-in { animation: ailTickerIn 360ms cubic-bezier(0.16, 1, 0.3, 1) both; }
 
+/* The chat's safety shield, nudged when the locked microphone points at it */
+@keyframes ailShake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-3px) rotate(-6deg); }
+  40% { transform: translateX(3px) rotate(6deg); }
+  60% { transform: translateX(-2px) rotate(-3deg); }
+  80% { transform: translateX(2px) rotate(3deg); }
+}
+.ail-shake { animation: ailShake 520ms ease-in-out both; }
+
 /* Header popovers in the chat (unlock rules, call confirm, menu): a quick fade and scale from the top-right corner */
 @keyframes ailPopIn {
   from { opacity: 0; transform: scale(0.96); }
@@ -413,7 +423,7 @@ nextjs-portal,
 @media (prefers-reduced-motion: reduce) {
   .ail-shimmer, .ail-sheet-up, .ail-modal-pop,
   .ail-avatar-left, .ail-avatar-right,
-  .ail-call-ring, .ail-call-in, .ail-ticker-in, .ail-gate-done, .ail-route-in, .ail-pop-in {
+  .ail-call-ring, .ail-call-in, .ail-ticker-in, .ail-gate-done, .ail-route-in, .ail-pop-in, .ail-shake {
     animation: none !important;
   }
 }
