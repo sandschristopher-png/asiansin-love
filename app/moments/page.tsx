@@ -156,17 +156,16 @@ export default function MomentsPage() {
       <div className="mx-auto w-full max-w-[480px] px-4 pt-3">
         <p className="text-xs leading-relaxed text-slate-600">{t('moments.subtitle')}</p>
 
-        <section aria-label={t('moments.todaysPrompt')} className="mt-4 rounded-[20px] border border-[#E6E2F0] bg-[#F6F4FB] p-4">
-          <p className="text-[11px] font-semibold uppercase leading-none tracking-wider text-[#8574B7]">{t('moments.todaysPrompt')}</p>
-          <p className="mt-2.5 text-base font-semibold leading-snug text-[#413B5E]">{t(`moments.prompt.${todaysPrompt}` as TKey)}</p>
-          <button
-            type="button"
-            onClick={() => openComposer(todaysPrompt)}
-            className="mt-3.5 inline-flex h-10 items-center rounded-full bg-[#8574B7] px-5 text-[13px] font-medium leading-snug text-white transition-colors hover:bg-[#534377]"
-          >
-            {t('moments.joinPost')}
-          </button>
-        </section>
+        {/* Today's Prompt: the card itself opens the composer on this prompt. The floating "+ Post Moment"
+            button stays the one visible button; /moments is members-only, so the page always has it. */}
+        <button
+          type="button"
+          onClick={() => openComposer(todaysPrompt)}
+          className="mt-4 block w-full rounded-[20px] border border-[#E6E2F0] bg-[#F6F4FB] p-4 text-left transition-colors hover:border-[#8574B7]/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8574B7]"
+        >
+          <span className="block text-[11px] font-semibold uppercase leading-none tracking-wider text-[#8574B7]">{t('moments.todaysPrompt')}</span>
+          <span className="mt-2.5 block text-base font-semibold leading-snug text-[#413B5E]">{t(`moments.prompt.${todaysPrompt}` as TKey)}</span>
+        </button>
 
         <div className="mt-4 space-y-4">
           {loading ? (
@@ -182,14 +181,6 @@ export default function MomentsPage() {
               </span>
               <h2 className="mt-3 text-sm font-semibold leading-snug text-[#413B5E]">{t('moments.emptyTitle')}</h2>
               <p className="mx-auto mt-1 max-w-xs text-xs leading-relaxed text-slate-600">{t('moments.emptyBody')}</p>
-              <button
-                type="button"
-                onClick={() => openComposer(null)}
-                className="mx-auto mt-5 inline-flex h-11 items-center gap-1.5 rounded-full bg-[#8574B7] px-6 text-[13px] font-medium leading-snug text-white transition-colors hover:bg-[#534377]"
-              >
-                <Plus className="h-4 w-4" aria-hidden />
-                {t('moments.postFirst')}
-              </button>
             </div>
           ) : (
             items.map((m) => (

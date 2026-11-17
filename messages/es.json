@@ -521,7 +521,6 @@
     "sparkSend": "Enviar Spark",
     "sparkSent": "Spark enviado",
     "attachedAlt": "Foto del momento",
-    "postFirst": "Publica el primer momento",
     "vibe": {
       "cafe_hopping": "Ruta de cafés",
       "street_food": "Comida callejera y mercados",
@@ -541,7 +540,6 @@
     },
     "sharedVibe": "Vibra en común",
     "todaysPrompt": "Propuesta de hoy",
-    "joinPost": "Unirme y publicar",
     "vibeLabel": "Elige una vibra",
     "promptLabel": "Empieza con una propuesta (opcional)",
     "useLocation": "Usar mi ubicación actual",

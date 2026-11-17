@@ -521,7 +521,6 @@
     "sparkSend": "Sparkを送る",
     "sparkSent": "Sparkを送りました",
     "attachedAlt": "モーメントの写真",
-    "postFirst": "最初のモーメントを投稿",
     "vibe": {
       "cafe_hopping": "カフェ巡り",
       "street_food": "ストリートフード＆市場",
@@ -541,7 +540,6 @@
     },
     "sharedVibe": "共通の雰囲気",
     "todaysPrompt": "今日のお題",
-    "joinPost": "参加して投稿",
     "vibeLabel": "雰囲気を選ぶ",
     "promptLabel": "お題から始める（任意）",
     "useLocation": "現在地を使う",

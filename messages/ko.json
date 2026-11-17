@@ -521,7 +521,6 @@
     "sparkSend": "Spark 보내기",
     "sparkSent": "Spark를 보냈습니다",
     "attachedAlt": "모먼트 사진",
-    "postFirst": "첫 모먼트 올리기",
     "vibe": {
       "cafe_hopping": "카페 투어",
       "street_food": "길거리 음식 & 시장",
@@ -541,7 +540,6 @@
     },
     "sharedVibe": "비슷한 취향",
     "todaysPrompt": "오늘의 주제",
-    "joinPost": "참여하고 올리기",
     "vibeLabel": "분위기 선택",
     "promptLabel": "주제로 시작하기 (선택)",
     "useLocation": "현재 위치 사용",

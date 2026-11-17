@@ -521,7 +521,6 @@
     "sparkSend": "Ipadala ang Spark",
     "sparkSent": "Naipadala ang Spark",
     "attachedAlt": "Larawan ng Moment",
-    "postFirst": "Mag-post ng Unang Moment",
     "vibe": {
       "cafe_hopping": "Cafe Hopping",
       "street_food": "Street Food at Palengke",
@@ -541,7 +540,6 @@
     },
     "sharedVibe": "Parehong vibe",
     "todaysPrompt": "Prompt Ngayon",
-    "joinPost": "Sumali at Mag-post",
     "vibeLabel": "Pumili ng vibe",
     "promptLabel": "Magsimula sa prompt (opsyonal)",
     "useLocation": "Gamitin ang kasalukuyang lokasyon",

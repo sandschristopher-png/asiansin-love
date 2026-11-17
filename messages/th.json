@@ -521,7 +521,6 @@
     "sparkSend": "ส่ง Spark",
     "sparkSent": "ส่ง Spark แล้ว",
     "attachedAlt": "รูปโมเมนต์",
-    "postFirst": "โพสต์โมเมนต์แรก",
     "vibe": {
       "cafe_hopping": "คาเฟ่ฮอปปิง",
       "street_food": "สตรีทฟู้ดและตลาด",
@@ -541,7 +540,6 @@
     },
     "sharedVibe": "ไวบ์เดียวกัน",
     "todaysPrompt": "หัวข้อวันนี้",
-    "joinPost": "ร่วมและโพสต์",
     "vibeLabel": "เลือกไวบ์",
     "promptLabel": "เริ่มจากหัวข้อ (ไม่บังคับ)",
     "useLocation": "ใช้ตำแหน่งปัจจุบัน",

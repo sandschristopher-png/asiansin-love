@@ -521,7 +521,6 @@
     "sparkSend": "ផ្ញើ Spark",
     "sparkSent": "បានផ្ញើ Spark",
     "attachedAlt": "រូបថតពេលវេលា",
-    "postFirst": "បង្ហោះពេលវេលាដំបូង",
     "vibe": {
       "cafe_hopping": "ដើរកាហ្វេ",
       "street_food": "អាហារតាមចិញ្ចើមផ្លូវ និងផ្សារ",
@@ -541,7 +540,6 @@
     },
     "sharedVibe": "ចំណាប់អារម្មណ៍រួម",
     "todaysPrompt": "ប្រធានបទថ្ងៃនេះ",
-    "joinPost": "ចូលរួម និងបង្ហោះ",
     "vibeLabel": "ជ្រើសរើសប្រភេទ",
     "promptLabel": "ចាប់ផ្តើមដោយប្រធានបទ (ស្រេចចិត្ត)",
     "useLocation": "ប្រើទីតាំងបច្ចុប្បន្ន",

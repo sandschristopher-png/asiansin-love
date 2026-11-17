@@ -521,7 +521,6 @@
     "sparkSend": "Hantar Spark",
     "sparkSent": "Spark dihantar",
     "attachedAlt": "Foto Detik",
-    "postFirst": "Siar Detik Pertama",
     "vibe": {
       "cafe_hopping": "Singgah Kafe",
       "street_food": "Makanan Jalanan & Pasar",
@@ -541,7 +540,6 @@
     },
     "sharedVibe": "Vibe yang sama",
     "todaysPrompt": "Topik Hari Ini",
-    "joinPost": "Sertai & Siar",
     "vibeLabel": "Pilih vibe",
     "promptLabel": "Mulakan dengan topik (pilihan)",
     "useLocation": "Guna lokasi semasa",

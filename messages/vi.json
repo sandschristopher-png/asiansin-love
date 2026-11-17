@@ -521,7 +521,6 @@
     "sparkSend": "Gửi Spark",
     "sparkSent": "Đã gửi Spark",
     "attachedAlt": "Ảnh khoảnh khắc",
-    "postFirst": "Đăng khoảnh khắc đầu tiên",
     "vibe": {
       "cafe_hopping": "Đi cà phê",
       "street_food": "Ẩm thực đường phố & chợ",
@@ -541,7 +540,6 @@
     },
     "sharedVibe": "Cùng gu",
     "todaysPrompt": "Gợi ý hôm nay",
-    "joinPost": "Tham gia & đăng",
     "vibeLabel": "Chọn một chủ đề",
     "promptLabel": "Bắt đầu bằng một gợi ý (tùy chọn)",
     "useLocation": "Dùng vị trí hiện tại",

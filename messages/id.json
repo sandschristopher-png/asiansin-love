@@ -521,7 +521,6 @@
     "sparkSend": "Kirim Spark",
     "sparkSent": "Spark terkirim",
     "attachedAlt": "Foto Momen",
-    "postFirst": "Posting Momen Pertama",
     "vibe": {
       "cafe_hopping": "Keliling Kafe",
       "street_food": "Jajanan Kaki Lima & Pasar",
@@ -541,7 +540,6 @@
     },
     "sharedVibe": "Vibe yang sama",
     "todaysPrompt": "Topik Hari Ini",
-    "joinPost": "Ikut & Posting",
     "vibeLabel": "Pilih vibe",
     "promptLabel": "Mulai dari topik (opsional)",
     "useLocation": "Gunakan lokasi saat ini",

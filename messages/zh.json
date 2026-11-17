@@ -521,7 +521,6 @@
     "sparkSend": "发送 Spark",
     "sparkSent": "Spark 已发送",
     "attachedAlt": "动态照片",
-    "postFirst": "发布第一条动态",
     "vibe": {
       "cafe_hopping": "探店咖啡",
       "street_food": "街头美食与市集",
@@ -541,7 +540,6 @@
     },
     "sharedVibe": "志趣相投",
     "todaysPrompt": "今日话题",
-    "joinPost": "参与并发布",
     "vibeLabel": "选择氛围",
     "promptLabel": "从话题开始（可选）",
     "useLocation": "使用当前位置",

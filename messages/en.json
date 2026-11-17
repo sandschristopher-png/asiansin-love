@@ -521,7 +521,6 @@
     "sparkSend": "Send Spark",
     "sparkSent": "Spark sent",
     "attachedAlt": "Moment photo",
-    "postFirst": "Post the First Moment",
     "vibe": {
       "cafe_hopping": "Cafe Hopping",
       "street_food": "Street Food & Markets",
@@ -541,7 +540,6 @@
     },
     "sharedVibe": "Shared vibe",
     "todaysPrompt": "Today's Prompt",
-    "joinPost": "Join & Post",
     "vibeLabel": "Pick a vibe",
     "promptLabel": "Start with a prompt (optional)",
     "useLocation": "Use current location",
