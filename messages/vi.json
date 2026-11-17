@@ -4,7 +4,7 @@
     "line1": "Kết nối thật.",
     "line2": "Hồ sơ xác minh bằng selfie.",
     "line3": "Ghép đôi và kết nối miễn phí.",
-    "subtitle": "Chúng tôi vừa mở cửa đón những thành viên đầu tiên trên khắp Đông Nam Á. Gặp gỡ những người muốn một mối quan hệ chân thành vượt biên giới, không bot, không bẫy tài chính, không trò chơi trả phí.",
+    "subtitle": "Chúng tôi đang chào đón những thành viên đầu tiên trên khắp Đông Nam Á. Gặp gỡ những người độc thân đã xác minh ở Philippines, Thái Lan, Việt Nam và hơn thế nữa, những ai muốn một mối quan hệ thật sự—không bot, không giả mạo, và miễn phí để ghép đôi và trò chuyện.",
     "join": "Tham gia miễn phí",
     "factSparks": "30 Sparks miễn phí mỗi ngày"
   },
@@ -32,11 +32,11 @@
     "sub": "Ghép đôi theo ý định, không phải may rủi. Ba bước để gặp một người thật.",
     "one": {
       "title": "Chia sẻ điều bạn muốn",
-      "desc": "Đặt ra mục tiêu tình cảm, thời gian và kế hoạch du lịch ngay từ đầu."
+      "desc": "Chia sẻ ngay từ đầu mục tiêu mối quan hệ, khung thời gian và kế hoạch du lịch sắp tới của bạn."
     },
     "two": {
       "title": "Xem thành viên hợp với bạn",
-      "desc": "Tìm những người có mục tiêu, thời gian và kế hoạch du lịch phù hợp với bạn."
+      "desc": "Xem các thành viên đã xác minh bằng selfie phù hợp với điều bạn đang tìm."
     },
     "three": {
       "title": "Kết nối tự tin",
@@ -55,18 +55,18 @@
       "alt": "Hình minh họa cặp đôi đang mỉm cười"
     },
     "voices": {
-      "title": "Giọng nói thật, Sparks thật.",
+      "title": "Giọng nói thật, Sparks thật",
       "body": "Nghe giọng nói thật của thành viên trước khi kết nối, rồi gửi một Spark chu đáo để bắt đầu cuộc trò chuyện thật sự.",
       "alt": "Hình minh họa sóng âm"
     },
     "protection": {
       "title": "Bảo vệ chống lừa đảo tích hợp",
-      "body": "Kịch bản lừa đảo, chiêu trò giả mạo và yêu cầu tiền sớm đều bị chặn tự động. Báo cáo một chạm bảo vệ bạn khỏi lừa đảo tài chính.",
+      "body": "Kịch bản lừa đảo, chiêu trò giả mạo và yêu cầu tiền sớm đều được gắn cờ tự động. Báo cáo một chạm giúp cộng đồng an toàn cho tất cả mọi người.",
       "alt": "Hình minh họa thành viên phát hiện dấu hiệu cảnh báo trên điện thoại"
     }
   },
   "cta": {
-    "heading": "Hãy là một trong những thành viên đầu tiên.",
+    "heading": "Hãy là một trong những thành viên đầu tiên",
     "sub": "Tham gia miễn phí và bắt đầu gặp gỡ những người độc thân chân thành khắp Đông Nam Á ngay hôm nay."
   },
   "footer": {

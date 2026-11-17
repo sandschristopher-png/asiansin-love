@@ -8,6 +8,7 @@ import Hero, { LANDING_SHELL, SignInPrompt } from '@/components/Hero';
 import { LocaleProvider, useLocale } from '@/components/i18n/LocaleProvider';
 import { LanguagePill } from '@/components/i18n/LanguageSheet';
 import { LandingMotion, Reveal, TapButton } from '@/components/landing/Motion';
+import { LinkSpinner } from '@/components/ui/LinkSpinner';
 import { HTML_LANG, type Locale } from '@/lib/i18n/config';
 import type { Messages } from '@/lib/i18n/messages';
 
@@ -46,10 +47,10 @@ function LandingBody() {
     <LandingMotion>
     <div
       lang={HTML_LANG[locale]}
-      className="font-sans w-full min-h-screen bg-white overflow-x-clip text-[#413B5E] selection:bg-[#8574B7]/15 selection:text-[#8574B7]"
+      className="font-sans w-full min-h-[100dvh] bg-white overflow-x-clip text-[#413B5E] selection:bg-[#8574B7]/15 selection:text-[#8574B7]"
     >
       {/* Frosted header, same treatment as Discover: content scrolls under the blurred glass. */}
-      <header className="sticky top-0 z-50 w-full bg-white/75 backdrop-blur-md supports-[backdrop-filter]:bg-white/75 border-b border-slate-200/60 pt-[env(safe-area-inset-top,0px)]">
+      <header className="sticky top-0 z-50 w-full bg-white/75 backdrop-blur-md supports-[backdrop-filter]:bg-white/75 border-b border-[#E5E0F2]/80 pt-[env(safe-area-inset-top,0px)]">
         <div className={`${LANDING_SHELL} h-16 flex items-center justify-between`}>
           <BrandLogo href="/" size="header" />
           <LanguagePill />
@@ -109,9 +110,10 @@ function LandingBody() {
             <TapButton>
               <Link
                 href="/signup"
-                className="w-full h-12 inline-flex items-center justify-center rounded-full bg-[#8574B7] hover:bg-[#534377] text-white font-medium text-sm transition-colors duration-200"
+                className="relative w-full h-12 inline-flex items-center justify-center rounded-full bg-[#8574B7] hover:bg-[#534377] text-white font-medium text-sm transition-colors duration-200"
               >
                 {m.hero.join}
+                <LinkSpinner />
               </Link>
             </TapButton>
             <SignInPrompt />

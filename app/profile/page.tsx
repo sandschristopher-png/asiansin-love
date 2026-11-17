@@ -47,6 +47,7 @@ import { HeightInput, LanguagePicker, LifestyleBadges, LifestylePills } from '@/
 import { languageLabel, readLanguages } from '@/lib/constants/languages';
 import { LIFESTYLE_KEYS, formatHeight, readHeightCm, readLifestyle, type LifestyleValues } from '@/lib/lifestyle';
 import { publicName } from '@/lib/publicName';
+import { ProfileSkeleton } from '@/components/skeletons/Skeletons';
 
 /** Loaded on first open (recorder + waveform stay out of the profile bundle). */
 const VoiceRecordModal = dynamic(() => import('@/components/VoiceRecordModal').then((m) => m.VoiceRecordModal), { ssr: false });
@@ -430,16 +431,7 @@ export default function MyProfilePage() {
 
   if (loading) {
     // Same shapes as the loaded page (4:5 photo, action bar, rep card, sections) so nothing jumps.
-    return (
-      <div className="flex-1 w-full bg-white px-4 pt-4 space-y-5" aria-busy="true" aria-label="Loading profile">
-        <div className="h-14 rounded-3xl ail-shimmer" />
-        <div className="aspect-[4/5] w-full rounded-3xl ail-shimmer" />
-        <div className="h-11 rounded-2xl ail-shimmer" />
-        <div className="h-24 rounded-3xl ail-shimmer" />
-        <div className="h-20 rounded-3xl ail-shimmer" />
-        <div className="h-28 rounded-3xl ail-shimmer" />
-      </div>
-    );
+    return <ProfileSkeleton />;
   }
 
   const photoList = Array.isArray(photos) && photos.length > 0 ? photos : avatarUrl ? [avatarUrl] : [];

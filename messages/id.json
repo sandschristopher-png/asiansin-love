@@ -4,7 +4,7 @@
     "line1": "Koneksi nyata.",
     "line2": "Profil Terverifikasi Selfie.",
     "line3": "Gratis untuk Match & Terhubung.",
-    "subtitle": "Kami baru saja membuka pintu untuk anggota awal di seluruh Asia Tenggara. Temui orang yang menginginkan hubungan lintas negara yang tulus, tanpa bot, tanpa jebakan finansial, dan tanpa permainan berbayar.",
+    "subtitle": "Kini menyambut anggota awal di seluruh Asia Tenggara. Temui lajang terverifikasi di Filipina, Thailand, Vietnam, dan sekitarnya yang menginginkan hubungan sungguhan—tanpa bot, tanpa catfish, dan gratis untuk match dan chat.",
     "join": "Gabung Gratis",
     "factSparks": "30 Sparks Gratis per Hari"
   },
@@ -32,11 +32,11 @@
     "sub": "Match berdasarkan niat, bukan keberuntungan. Tiga langkah untuk bertemu orang yang nyata.",
     "one": {
       "title": "Bagikan keinginanmu",
-      "desc": "Tetapkan tujuan hubungan, rencana waktu, dan rencana perjalananmu sejak awal."
+      "desc": "Bagikan tujuan hubungan, jangka waktu, dan rencana perjalananmu yang akan datang sejak awal."
     },
     "two": {
       "title": "Jelajahi anggota yang cocok",
-      "desc": "Temukan orang yang tujuan, jadwal, dan rencana perjalanannya sejalan denganmu."
+      "desc": "Jelajahi anggota terverifikasi selfie yang cocok dengan yang kamu cari."
     },
     "three": {
       "title": "Terhubung dengan percaya diri",
@@ -55,18 +55,18 @@
       "alt": "Ilustrasi pasangan yang tersenyum"
     },
     "voices": {
-      "title": "Suara Asli, Sparks Asli.",
+      "title": "Suara Asli, Sparks Asli",
       "body": "Dengarkan suara asli anggota sebelum terhubung, lalu kirim Spark yang tulus untuk memulai percakapan yang nyata.",
       "alt": "Grafik gelombang suara"
     },
     "protection": {
       "title": "Perlindungan Penipuan Bawaan",
-      "body": "Skrip penipuan, taktik catfish, dan permintaan uang sejak awal dicegat secara otomatis. Laporan sekali ketuk melindungimu dari penipuan finansial.",
+      "body": "Skrip penipuan, taktik catfish, dan permintaan uang sejak awal ditandai otomatis. Pelaporan sekali ketuk menjaga komunitas tetap aman untuk semua orang.",
       "alt": "Ilustrasi anggota melihat tanda bahaya di ponselnya"
     }
   },
   "cta": {
-    "heading": "Jadilah salah satu anggota pertama kami.",
+    "heading": "Jadilah salah satu anggota pertama kami",
     "sub": "Gabung gratis dan mulai bertemu lajang yang tulus di seluruh Asia Tenggara hari ini."
   },
   "footer": {

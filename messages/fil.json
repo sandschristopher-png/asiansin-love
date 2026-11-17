@@ -4,7 +4,7 @@
     "line1": "Totoong koneksyon.",
     "line2": "Selfie-Verified na mga Profile.",
     "line3": "Libreng Mag-match at Kumonekta.",
-    "subtitle": "Kabubukas lang namin para sa mga unang miyembro sa buong Southeast Asia. Makilala ang mga taong naghahanap ng tapat na relasyon sa iba't ibang bansa, walang bot, walang pinansyal na bitag, at walang laro sa likod ng paywall.",
+    "subtitle": "Tumatanggap na kami ng mga unang miyembro sa buong Timog-Silangang Asya. Makilala ang mga beripikadong single sa Pilipinas, Thailand, Vietnam, at iba pa na naghahanap ng totoong relasyon—walang bot, walang catfish, at libre ang mag-match at mag-chat.",
     "join": "Sumali nang Libre",
     "factSparks": "30 Libreng Sparks Araw-araw"
   },
@@ -32,11 +32,11 @@
     "sub": "Mag-match ayon sa intensyon, hindi sa swerte. Tatlong hakbang para makakilala ng totoong tao.",
     "one": {
       "title": "Ibahagi ang gusto mo",
-      "desc": "Itakda ang iyong mga layunin sa relasyon, timeline, at mga plano sa paglalakbay mula sa simula."
+      "desc": "Ibahagi agad ang iyong mga layunin sa relasyon, timeline, at paparating na plano sa paglalakbay."
     },
     "two": {
       "title": "Mag-browse ng mga miyembrong bagay sa iyo",
-      "desc": "Hanapin ang mga taong kapareho ng iyong mga layunin, timeline, at plano sa paglalakbay."
+      "desc": "Mag-browse ng mga miyembrong beripikado ng selfie na tugma sa hinahanap mo."
     },
     "three": {
       "title": "Kumonekta nang may kumpiyansa",
@@ -55,18 +55,18 @@
       "alt": "Iginuhit na magkasintahang nakangiti"
     },
     "voices": {
-      "title": "Totoong Boses, Totoong Sparks.",
+      "title": "Totoong Boses, Totoong Sparks",
       "body": "Pakinggan ang totoong boses ng isang miyembro bago kumonekta, saka magpadala ng maalalahaning Spark na magsisimula ng totoong usapan.",
       "alt": "Grapiko ng sound wave"
     },
     "protection": {
       "title": "Built-In na Proteksyon Laban sa Scam",
-      "body": "Awtomatikong hinaharang ang mga scam script, taktika ng catfish, at maagang paghingi ng pera. Pinoprotektahan ka ng one-tap reporting laban sa panlolokong pinansyal.",
+      "body": "Awtomatikong namamarkahan ang mga scam script, taktika ng catfish, at maagang paghingi ng pera. Pinapanatili ng one-tap na pag-uulat na ligtas ang komunidad para sa lahat.",
       "alt": "Iginuhit na miyembrong nakakita ng red flag sa kanyang telepono"
     }
   },
   "cta": {
-    "heading": "Maging isa sa aming mga unang miyembro.",
+    "heading": "Maging isa sa aming mga unang miyembro",
     "sub": "Sumali nang libre at magsimulang makakilala ng mga tapat na single sa buong Southeast Asia ngayon."
   },
   "footer": {

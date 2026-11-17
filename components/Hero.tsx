@@ -5,6 +5,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useLocale } from '@/components/i18n/LocaleProvider';
 import { FadeIn, TapButton } from '@/components/landing/Motion';
+import { LinkSpinner } from '@/components/ui/LinkSpinner';
 
 /**
  * The landing page is one centred phone-width column on every screen: no breakpoints change its
@@ -49,7 +50,7 @@ export default function Hero() {
             preload
             quality={80}
             sizes="(max-width: 448px) 100vw, 448px"
-            className="object-cover object-[50%_38%] select-none pointer-events-none"
+            className="object-cover object-top select-none pointer-events-none"
           />
         </FadeIn>
 
@@ -66,9 +67,10 @@ export default function Hero() {
           <TapButton>
             <Link
               href="/signup"
-              className="w-full h-12 inline-flex items-center justify-center rounded-full bg-[#8574B7] hover:bg-[#534377] text-white font-medium text-sm transition-colors duration-200"
+              className="relative w-full h-12 inline-flex items-center justify-center rounded-full bg-[#8574B7] hover:bg-[#534377] text-white font-medium text-sm transition-colors duration-200"
             >
               {m.hero.join}
+              <LinkSpinner />
             </Link>
           </TapButton>
 

@@ -477,6 +477,31 @@ export default function ChatConversationPage() {
     });
   }, []);
 
+  // Keyboard discipline. The visual viewport is what is actually visible above the on-screen keyboard (iOS Safari
+  // does not shrink 100dvh for it), so the chat takes exactly that height; the composer then stays above the keys
+  // and the thread stays pinned to its newest message instead of jumping.
+  const chatRootRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const vv = window.visualViewport;
+    const el = chatRootRef.current;
+    if (!vv || !el) return;
+    const apply = () => {
+      const h = Math.round(vv.height) + 'px';
+      el.style.height = h;
+      el.style.maxHeight = h;
+      if (window.scrollY) window.scrollTo(0, 0); // the page itself never scrolls behind the chat
+      if (isNearBottomRef.current) scrollToBottom('instant');
+    };
+    vv.addEventListener('resize', apply);
+    vv.addEventListener('scroll', apply);
+    return () => {
+      vv.removeEventListener('resize', apply);
+      vv.removeEventListener('scroll', apply);
+      el.style.height = '';
+      el.style.maxHeight = '';
+    };
+  }, [scrollToBottom]);
+
   const handleContainerScroll = () => {
     const el = scrollContainerRef.current;
     if (!el) return;
@@ -1019,6 +1044,11 @@ export default function ChatConversationPage() {
     return () => document.removeEventListener('pointerdown', close);
   }, [pickerFor]);
 
+  // A reaction adds a chip under its bubble: if you are reading the bottom, stay there.
+  useEffect(() => {
+    if (isNearBottomRef.current) scrollToBottom('instant');
+  }, [reactions, scrollToBottom]);
+
   /** Tap a reaction: set it, switch to it, or (the same one again) remove it. Optimistic; rolled back on failure. */
   const toggleReaction = async (messageId: string, key: ReactionKey) => {
     if (!currentUserId) return;
@@ -1280,11 +1310,11 @@ export default function ChatConversationPage() {
   const showGate = !isInitialLoading && !gateUnlocked;
 
   return (
-    <div className="w-full h-[100dvh] max-h-[100dvh] flex flex-col bg-white text-[#413B5E] font-sans relative overflow-hidden">
+    <div ref={chatRootRef} className="w-full h-[100dvh] max-h-[100dvh] flex flex-col bg-white text-[#413B5E] font-sans relative overflow-hidden">
       {/* Room for the slim "Return to call" bar pinned above the header while the call screen is minimized */}
       {call.inCall && call.minimized && call.phase !== 'incoming' && <div className="h-9 shrink-0" aria-hidden />}
       {/* Sticky Header */}
-      <header className="relative flex items-center justify-between px-3.5 py-2.5 bg-white/95 backdrop-blur-md border-b border-[#D0CDE1] shrink-0 z-20">
+      <header className="relative flex items-center justify-between px-3.5 pb-2.5 pt-[calc(0.625rem+env(safe-area-inset-top,0px))] bg-white/95 backdrop-blur-md border-b border-[#D0CDE1] shrink-0 z-20">
         <div className="flex items-center gap-2 min-w-0">
           <BackButton fallback="/messages" variant="plain" className="-ml-1.5" />
 

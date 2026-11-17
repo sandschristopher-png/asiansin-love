@@ -105,6 +105,8 @@ export const viewport: Viewport = {
   initialScale: 1,
   maximumScale: 1,
   viewportFit: 'cover',
+  // Android Chrome: the page shrinks above the on-screen keyboard (so 100dvh screens keep their composer in view).
+  interactiveWidget: 'resizes-content',
   // Brand purple for the browser toolbar and the installed app's title bar.
   themeColor: '#8574B7',
 };

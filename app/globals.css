@@ -95,6 +95,23 @@ main {
 html, body {
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
+  /* Top-level views scroll and rubber-band like a normal mobile page; inner panes opt out with .smooth-scroll. */
+  overscroll-behavior-y: auto;
+}
+
+/* No 300 ms tap delay and no double-tap zoom on anything you can press. */
+a,
+button,
+summary,
+label,
+select,
+input,
+textarea,
+[role="button"],
+[role="tab"],
+[role="switch"],
+[role="menuitem"] {
+  touch-action: manipulation;
 }
 
 /* The app clips <body> and scrolls inside its column; a page whose shell is marked data-window-scroll (the
@@ -117,24 +134,25 @@ body {
 }
 
 /* Micro-press transitions for interactive elements */
+/* Crisp press: the scale lands in 100 ms, colour changes in 120 ms. (No will-change here: a permanent compositor
+   layer on every link and button costs memory on long lists for no visible gain.) */
 button,
 a,
 [role="button"],
 input[type="button"],
 input[type="submit"] {
-  transition: transform 140ms cubic-bezier(0.2, 0, 0, 1),
-              opacity 140ms ease,
-              box-shadow 180ms ease,
-              background-color 150ms ease,
-              border-color 150ms ease,
-              color 150ms ease;
-  will-change: transform;
+  transition: transform 100ms ease-out,
+              opacity 100ms ease-out,
+              box-shadow 150ms ease,
+              background-color 120ms ease,
+              border-color 120ms ease,
+              color 120ms ease;
 }
 
 button:active:not(:disabled),
 a:active,
 [role="button"]:active {
-  transform: scale(0.972);
+  transform: scale(0.98);
 }
 
 .rounded-3xl,

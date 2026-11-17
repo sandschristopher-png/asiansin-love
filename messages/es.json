@@ -4,7 +4,7 @@
     "line1": "Conexiones reales.",
     "line2": "Perfiles verificados con selfie.",
     "line3": "Haz match y conecta gratis.",
-    "subtitle": "Acabamos de abrir para los primeros miembros de todo el Sudeste Asiático. Conoce a personas que buscan una relación genuina entre países, sin bots, sin trampas financieras y sin juegos de pago.",
+    "subtitle": "Ya damos la bienvenida a los primeros miembros en todo el Sudeste Asiático. Conoce a solteros verificados de Filipinas, Tailandia, Vietnam y más allá que buscan una relación de verdad: sin bots, sin catfish y con emparejamiento y chat gratis.",
     "join": "Únete gratis",
     "factSparks": "30 Sparks gratis al día"
   },
@@ -32,11 +32,11 @@
     "sub": "Conecta por intención, no por suerte. Tres pasos para conocer a alguien real.",
     "one": {
       "title": "Comparte lo que buscas",
-      "desc": "Define desde el principio tus metas de pareja, tus plazos y tus planes de viaje."
+      "desc": "Comparte desde el principio tus objetivos de relación, tus plazos y tus próximos planes de viaje."
     },
     "two": {
       "title": "Explora miembros compatibles",
-      "desc": "Encuentra personas cuyas metas, plazos y planes de viaje encajan con los tuyos."
+      "desc": "Explora miembros verificados con selfi que coinciden con lo que buscas."
     },
     "three": {
       "title": "Conecta con confianza",
@@ -55,18 +55,18 @@
       "alt": "Ilustración de una pareja sonriendo"
     },
     "voices": {
-      "title": "Voces reales, Sparks reales.",
+      "title": "Voces reales, Sparks reales",
       "body": "Escucha la voz real de un miembro antes de conectar y luego envía un Spark sincero que inicie una conversación de verdad.",
       "alt": "Gráfico de ondas de sonido"
     },
     "protection": {
       "title": "Protección integrada contra estafas",
-      "body": "Los guiones de estafa, las tácticas de perfiles falsos y las peticiones tempranas de dinero se interceptan automáticamente. Los reportes con un toque te protegen del fraude financiero.",
+      "body": "Los guiones de estafa, las tácticas de catfish y las peticiones tempranas de dinero se marcan automáticamente. Los reportes con un toque mantienen segura a toda la comunidad.",
       "alt": "Ilustración de un miembro detectando señales de alerta en su teléfono"
     }
   },
   "cta": {
-    "heading": "Sé uno de nuestros primeros miembros.",
+    "heading": "Sé uno de nuestros primeros miembros",
     "sub": "Únete gratis y empieza hoy a conocer solteros genuinos en todo el Sudeste Asiático."
   },
   "footer": {

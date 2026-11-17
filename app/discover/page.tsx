@@ -57,6 +57,8 @@ function distanceKm(lat1: number, lon1: number, lat2: number, lon2: number): num
   return 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
 }
 
+import { CardGridSkeleton as FeedSkeleton, DiscoverSkeleton as FeedSkeletonPage } from '@/components/skeletons/Skeletons';
+
 const DEFAULT_MIN_AGE = 18;
 const DEFAULT_MAX_AGE = 99;
 const AGE_OPTIONS = Array.from({ length: DEFAULT_MAX_AGE - DEFAULT_MIN_AGE + 1 }, (_, i) => i + DEFAULT_MIN_AGE);
@@ -65,51 +67,6 @@ const HUB_FILTER_OPTIONS = [{ value: '', label: 'Any city' }, ...TRIP_HUBS.map((
 /** Trigger look for the filter sheet's themed dropdowns. */
 const FILTER_SELECT =
   'bg-white border border-[#D0CDE1] text-[#413B5E] font-medium rounded-xl px-3 py-2 text-sm focus:outline-none focus-visible:ring-2 focus-visible:ring-[#8574B7]/30';
-
-/** Grey rounded placeholder cards (feed loading and category switches). */
-function FeedSkeleton({ count = 8 }: { count?: number }) {
-  return (
-    <>
-      {Array.from({ length: count }).map((_, i) => (
-        <div
-          key={i}
-          aria-hidden
-          className="rounded-2xl overflow-hidden aspect-[3/4] w-full bg-[#E8E6F1]/60 animate-pulse border border-[#D0CDE1] relative"
-        >
-          <div className="absolute inset-x-0 bottom-0 p-3 space-y-2">
-            <div className="h-4 bg-white/50 rounded-full w-2/3" />
-            <div className="h-3 bg-white/40 rounded-full w-1/2" />
-          </div>
-        </div>
-      ))}
-    </>
-  );
-}
-
-function FeedSkeletonPage() {
-  return (
-    <div className="w-full min-h-full bg-white" aria-busy="true" aria-label="Loading discover feed">
-      <main className="w-full max-w-[480px] mx-auto px-4 min-[480px]:px-8 pt-2 pb-36">
-        <div className="flex items-center justify-between py-2">
-          <div className="h-7 w-32 rounded-lg bg-[#E8E6F1]/60 animate-pulse" />
-          <div className="flex items-center gap-2">
-            <div className="h-8 w-8 rounded-full bg-[#E8E6F1]/60 animate-pulse" />
-            <div className="h-8 w-8 rounded-full bg-[#E8E6F1]/60 animate-pulse" />
-          </div>
-        </div>
-        <div className="flex items-center gap-2 py-2 overflow-hidden border-b border-black/5">
-          <div className="h-7 w-12 rounded-full bg-[#8574B7]/20 animate-pulse shrink-0" />
-          <div className="h-7 w-16 rounded-full bg-[#E8E6F1]/60 animate-pulse shrink-0" />
-          <div className="h-7 w-20 rounded-full bg-[#E8E6F1]/60 animate-pulse shrink-0" />
-          <div className="h-7 w-14 rounded-full bg-[#E8E6F1]/60 animate-pulse shrink-0" />
-        </div>
-        <div className="grid grid-cols-2 gap-3 sm:gap-4 w-full pt-3">
-          <FeedSkeleton count={6} />
-        </div>
-      </main>
-    </div>
-  );
-}
 
 const DISCOVERY_MODES = [
   { id: 'all', label: 'All' },

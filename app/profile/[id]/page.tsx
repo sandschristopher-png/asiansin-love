@@ -6,7 +6,7 @@ import VerifiedBadge from '@/components/VerifiedBadge';
 import { useLocale } from '@/components/i18n/LocaleProvider';
 import { haptic } from '@/lib/haptics';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams, useRouter } from 'next/navigation';
 import {
@@ -19,7 +19,6 @@ import {
   ShieldAlert,
   Ban,
   Languages,
-  Loader2,
   Pencil,
   Share2
 } from 'lucide-react';
@@ -90,7 +89,7 @@ export default function PublicProfilePage() {
   const [currentPhotoIdx, setCurrentPhotoIdx] = useState(0);
 
   const [isSparked, setIsSparked] = useState(false);
-  const [sparkLoading, setSparkLoading] = useState(false);
+  const sparkBusyRef = useRef(false);
   const [showMenu, setShowMenu] = useState(false);
   // Native share sheet on phones, share drawer on desktop; the sheet outlives the menu.
   const { share, shareSheet } = useShare();
@@ -197,31 +196,29 @@ export default function PublicProfilePage() {
   }, [targetUserId]);
 
   const handleToggleSpark = async () => {
-    if (!isSparked) haptic.spark(); // synchronous, before any await
-    setSparkLoading(true);
+    if (sparkBusyRef.current) return; // one request at a time; the heart itself never waits
+    sparkBusyRef.current = true;
+    const before = isSparked;
+    if (!before) haptic.spark(); // synchronous, before any await
+    setIsSparked(!before); // optimistic: the heart and label flip on this frame
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        router.push('/login');
-        return;
-      }
-
       const res = await fetch('/api/spark', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         // This button is a real on/off toggle (Discover cards only ever add a Spark).
         body: JSON.stringify({ targetUserId, action: 'toggle' }),
       });
-
       const data = await res.json().catch(() => ({}));
 
       if (res.status === 401) {
+        setIsSparked(before);
         triggerToast('Your session has ended. Please sign in again.');
         setTimeout(() => router.push('/login?returnTo=' + encodeURIComponent('/profile/' + targetUserId)), 1500);
         return;
       }
       if (!res.ok) {
         // 429 carries the daily limit message from /api/spark.
+        setIsSparked(before);
         triggerToast(data?.error || 'Could not update your Spark. Please try again.');
         return;
       }
@@ -250,9 +247,10 @@ export default function PublicProfilePage() {
       }
     } catch (err) {
       console.error('Error toggling spark:', err);
+      setIsSparked(before);
       triggerToast('Network error toggling spark.');
     } finally {
-      setSparkLoading(false);
+      sparkBusyRef.current = false;
     }
   };
 
@@ -383,24 +381,17 @@ export default function PublicProfilePage() {
             <button
               type="button"
               onClick={handleToggleSpark}
-              disabled={sparkLoading}
               className={`flex h-11 w-full items-center justify-center gap-1.5 rounded-full border text-xs font-medium transition active:scale-95 cursor-pointer ${
                 isSparked
                   ? 'border-[#8574B7]/30 bg-[#E8E6F1]/60 text-[#8574B7]'
                   : 'border-[#D0CDE1] bg-white text-[#413B5E] hover:bg-[#E8E6F1]/70'
               }`}
             >
-              {sparkLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin text-[#8574B7]" />
-              ) : (
-                <>
-                  <Heart
-                    strokeWidth={2}
-                    className={`h-4 w-4 ${isSparked ? 'text-[#8574B7] fill-[#8574B7]' : 'text-slate-600'}`}
-                  />
-                  <span>{isSparked ? 'Sparked' : 'Spark'}</span>
-                </>
-              )}
+              <Heart
+                strokeWidth={2}
+                className={`h-4 w-4 ${isSparked ? 'text-[#8574B7] fill-[#8574B7]' : 'text-slate-600'}`}
+              />
+              <span>{isSparked ? 'Sparked' : 'Spark'}</span>
             </button>
 
             <button
