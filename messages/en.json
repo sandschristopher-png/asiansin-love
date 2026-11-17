@@ -441,5 +441,9 @@
     "adminPhoto": "{name} uploaded a new main photo",
     "adminReport": "{name} was reported",
     "adminModeration": "A message from {name} was quarantined"
+  },
+  "launch": {
+    "badge": "Soft Launch • Now Open",
+    "sub": "We just opened our doors for early members across Southeast Asia. Join free today and be part of our founding community."
   }
 }

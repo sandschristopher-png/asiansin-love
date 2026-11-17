@@ -441,5 +441,9 @@
     "adminPhoto": "{name}上传了新的主照片",
     "adminReport": "{name}被举报了",
     "adminModeration": "来自{name}的消息已被隔离"
+  },
+  "launch": {
+    "badge": "试运营 • 现已开放",
+    "sub": "我们刚刚向东南亚各地的早期会员敞开大门。今天免费加入，成为我们创始社区的一员。"
   }
 }

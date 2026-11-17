@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useLocale } from '@/components/i18n/LocaleProvider';
+import { SoftLaunchNotice } from '@/components/SoftLaunchNotice';
 
 /**
  * The landing page is one centred phone-width column on every screen: no breakpoints change its
@@ -54,6 +55,8 @@ export default function Hero() {
         </h1>
 
         <p className="mt-3 w-full text-[15px] leading-relaxed text-slate-600 break-words">{m.hero.subtitle}</p>
+
+        <SoftLaunchNotice className="mt-6" />
 
         {/* CTA block: one item per row */}
         <div className="mt-7 w-full flex flex-col items-center gap-4">

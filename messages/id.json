@@ -441,5 +441,9 @@
     "adminPhoto": "{name} mengunggah foto utama baru",
     "adminReport": "{name} dilaporkan",
     "adminModeration": "Pesan dari {name} dikarantina"
+  },
+  "launch": {
+    "badge": "Peluncuran Awal • Sudah Dibuka",
+    "sub": "Kami baru saja membuka pintu bagi anggota awal di seluruh Asia Tenggara. Bergabung gratis hari ini dan jadilah bagian dari komunitas pendiri kami."
   }
 }

@@ -45,7 +45,7 @@ export default function UpgradeModal({
       case 'chat':
         return 'Start direct conversations with new members without daily intro limits or waiting timers.';
       case 'passport':
-        return 'Explore and match with sincere singles in Tokyo, Manila, Bangkok, or Cebu before your trip.';
+        return 'Explore and match with sincere singles in Manila, Bangkok, Cebu, or Phnom Penh before your trip.';
       case 'handle':
         return 'Claim and update your distinctive personal username anytime.';
       default:

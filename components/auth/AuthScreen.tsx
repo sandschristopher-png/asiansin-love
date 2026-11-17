@@ -7,6 +7,7 @@ import { AlertCircle, ArrowLeft, Eye, EyeOff, Loader2, Mail, MailCheck, X } from
 import { BrandLogo } from '@/components/BrandLogo';
 import { InAppToast } from '@/components/InAppToast';
 import { KineticCityTicker } from '@/components/auth/KineticCityTicker';
+import { SoftLaunchNotice } from '@/components/SoftLaunchNotice';
 import { LanguagePill } from '@/components/i18n/LanguageSheet';
 import { useLocale } from '@/components/i18n/LocaleProvider';
 import type { HeroAudience } from '@/lib/geoCities';
@@ -240,6 +241,8 @@ export function AuthScreen({ mode, audience = 'western' }: { mode: 'login' | 'si
           </div>
           <KineticCityTicker audience={audience} />
         </div>
+
+        <SoftLaunchNotice className="mx-auto mb-6 mt-5 max-w-[340px]" />
 
         <div className="w-full max-w-[340px] mx-auto space-y-3">
           {step === 'closed' ? (

@@ -1,7 +1,7 @@
 /**
  * Auth hero ("Meet someone in / from ...") rosters, picked by the visitor's country (edge IP
  * header, no VPN needed).
- *   Western / global visitors: "Meet someone in" + Asian cities. Never Western countries.
+ *   Western / global visitors: "Meet someone in" + Southeast Asian cities. Never Western countries.
  *   Asian visitors: "Meet someone from" + Western partner countries.
  * Dev / campaign overrides: ?geo=US, ?geo=PH (any 2-letter country code), ?geo=asia, ?geo=sea and
  * ?target=asia (the last two force the city roster).
@@ -9,21 +9,23 @@
 
 export type HeroAudience = 'western' | 'asian';
 
+/**
+ * Southeast Asia only: every destination the hero names is in one of the launch countries
+ * (Philippines, Thailand, Vietnam, Indonesia, Cambodia, Malaysia, Singapore). No cities elsewhere
+ * in Asia belong in this list.
+ */
 export const WESTERN_AUDIENCE_CITIES = [
   'Manila',
+  'Cebu',
   'Bangkok',
-  'Cebu City',
-  'Ho Chi Minh City',
-  'Tokyo',
-  'Phuket',
-  'Da Nang',
-  'Phnom Penh',
-  'Davao',
   'Chiang Mai',
+  'Ho Chi Minh City',
+  'Hanoi',
   'Jakarta',
-  'Osaka',
-  'Siem Reap',
   'Bali',
+  'Phnom Penh',
+  'Kuala Lumpur',
+  'Singapore',
 ] as const;
 
 export const ASIAN_AUDIENCE_COUNTRIES = [

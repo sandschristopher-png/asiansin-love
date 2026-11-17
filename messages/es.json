@@ -441,5 +441,9 @@
     "adminPhoto": "{name} subió una nueva foto principal",
     "adminReport": "{name} fue reportado",
     "adminModeration": "Un mensaje de {name} fue puesto en cuarentena"
+  },
+  "launch": {
+    "badge": "Lanzamiento suave • Ya abierto",
+    "sub": "Acabamos de abrir las puertas a los primeros miembros en todo el sudeste asiático. Únete gratis hoy y forma parte de nuestra comunidad fundadora."
   }
 }
