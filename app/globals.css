@@ -374,6 +374,13 @@ nextjs-portal,
 }
 .ail-ticker-in { animation: ailTickerIn 360ms cubic-bezier(0.16, 1, 0.3, 1) both; }
 
+/* Header popovers in the chat (unlock rules, call confirm, menu): a quick fade and scale from the top-right corner */
+@keyframes ailPopIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+.ail-pop-in { animation: ailPopIn 160ms cubic-bezier(0.16, 1, 0.3, 1) both; }
+
 /* Page settle on every navigation (app/template.tsx): never fades through transparent, so no white flash */
 @keyframes ailRouteIn {
   from { opacity: 0.94; }
@@ -406,7 +413,7 @@ nextjs-portal,
 @media (prefers-reduced-motion: reduce) {
   .ail-shimmer, .ail-sheet-up, .ail-modal-pop,
   .ail-avatar-left, .ail-avatar-right,
-  .ail-call-ring, .ail-call-in, .ail-ticker-in, .ail-gate-done, .ail-route-in {
+  .ail-call-ring, .ail-call-in, .ail-ticker-in, .ail-gate-done, .ail-route-in, .ail-pop-in {
     animation: none !important;
   }
 }

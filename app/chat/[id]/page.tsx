@@ -1408,7 +1408,7 @@ export default function ChatConversationPage() {
 
         {/* Voice call: confirm popover, lock / error tooltip, and the chat menu */}
         {callConfirm && (
-          <div role="dialog" aria-label={t('call.phoneLabel')} className="absolute right-3 top-full z-30 mt-1.5 w-[270px] rounded-2xl border border-[#D0CDE1] bg-white p-3.5 shadow-[0_12px_30px_rgba(65,59,94,0.16)]">
+          <div role="dialog" aria-label={t('call.phoneLabel')} className="ail-pop-in absolute right-3 top-full z-30 mt-1.5 w-[270px] origin-top-right rounded-2xl border border-[#D0CDE1] bg-white p-3.5 shadow-[0_12px_30px_rgba(65,59,94,0.16)]">
             <p className="text-sm font-semibold leading-snug text-[#413B5E]">{t('call.confirmTitle', { name: targetInfo.name || 'Member' })}</p>
             <div className="mt-3 grid grid-cols-2 gap-2">
               <button type="button" onClick={closeCallPopovers} className="h-10 rounded-full border border-[#D0CDE1] bg-white text-xs font-semibold text-[#413B5E] transition hover:bg-[#F6F4FB]">
@@ -1421,12 +1421,12 @@ export default function ChatConversationPage() {
           </div>
         )}
         {callNote && !callConfirm && (
-          <div role="status" className="absolute right-3 top-full z-30 mt-1.5 w-[270px] rounded-2xl border border-[#D0CDE1] bg-white px-3.5 py-3 text-xs font-medium leading-relaxed text-[#413B5E] shadow-[0_12px_30px_rgba(65,59,94,0.16)]">
+          <div role="status" className="ail-pop-in absolute right-3 top-full z-30 mt-1.5 w-[270px] origin-top-right rounded-2xl border border-[#D0CDE1] bg-white px-3.5 py-3 text-xs font-medium leading-relaxed text-[#413B5E] shadow-[0_12px_30px_rgba(65,59,94,0.16)]">
             {callNote}
           </div>
         )}
         {headerMenu && (
-          <div role="menu" className="absolute right-3 top-full z-30 mt-1.5 w-[250px] rounded-2xl border border-[#D0CDE1] bg-white p-1.5 shadow-[0_12px_30px_rgba(65,59,94,0.16)]">
+          <div role="menu" className="ail-pop-in absolute right-3 top-full z-30 mt-1.5 w-[250px] origin-top-right rounded-2xl border border-[#D0CDE1] bg-white p-1.5 shadow-[0_12px_30px_rgba(65,59,94,0.16)]">
             <div className="flex items-center justify-between gap-3 rounded-xl px-3 py-2.5">
               <span className="text-sm text-[#413B5E]">{t('call.menuMute')}</span>
               <Switch on={callsMuted} onClick={toggleCallMute} label={t('call.menuMute')} />
@@ -1476,8 +1476,17 @@ export default function ChatConversationPage() {
           </span>
         )}
         {gateOpen && showGate && (
-          <div role="dialog" aria-label={t('chat.gate.title', { n: CONTACT_UNLOCK_TURNS })} className="absolute right-3 top-full z-30 mt-1.5 w-[280px] rounded-2xl border border-[#D0CDE1] bg-white p-3.5 shadow-[0_12px_30px_rgba(65,59,94,0.16)]">
-            <p className="text-[13px] font-semibold leading-snug text-[#413B5E]">{t('chat.gate.title', { n: CONTACT_UNLOCK_TURNS })}</p>
+          <div role="dialog" aria-label={t('chat.gate.title', { n: CONTACT_UNLOCK_TURNS })} className="ail-pop-in absolute right-3 top-full z-30 mt-1.5 w-[280px] origin-top-right rounded-2xl border border-[#8574B7]/25 bg-white p-3.5 shadow-[0_14px_36px_rgba(133,116,183,0.22),0_2px_8px_rgba(65,59,94,0.06)]">
+            {/* Floats over the thread (absolute: it takes no space, so the bubbles below never move). */}
+            <button
+              type="button"
+              onClick={() => setGateOpen(false)}
+              aria-label={t('common.close')}
+              className="absolute right-2 top-2 flex h-7 w-7 items-center justify-center rounded-full text-[#413B5E]/55 transition hover:bg-[#F6F4FB] hover:text-[#413B5E]"
+            >
+              <X className="h-4 w-4" aria-hidden />
+            </button>
+            <p className="pr-7 text-[13px] font-semibold leading-snug text-[#413B5E]">{t('chat.gate.title', { n: CONTACT_UNLOCK_TURNS })}</p>
             <p className="mt-1 text-[11.5px] leading-relaxed text-slate-600">{t('chat.gate.body')}</p>
             <div className="mt-3 space-y-2.5">
               {[
