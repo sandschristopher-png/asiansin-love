@@ -80,4 +80,3 @@ export default InAppToast;
 
 // Legacy no-op API (the old global toast system was removed); kept so existing imports stay valid.
 export interface ToastData { senderName?: string; avatarUrl?: string; message?: string; chatUrl?: string; id?: string }
-export function notifyUser(_data: Omit<ToastData, 'id'> & { id?: string }) { /* no-op */ }

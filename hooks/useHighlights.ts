@@ -24,7 +24,7 @@ export function useHighlights() {
         return;
       }
       if (data) {
-        const formatted: EditableInterest[] = data.map((item: any) => ({
+        const formatted: EditableInterest[] = data.map((item: { tag_id: EditableInterest['tag_id']; label: string; is_highlight?: boolean | null; highlight_story?: string | null }) => ({
           tag_id: item.tag_id,
           label: item.label,
           is_highlight: Boolean(item.is_highlight),
@@ -40,6 +40,7 @@ export function useHighlights() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- initial fetch on mount; the loader owns the state it sets
     fetchInterests();
   }, [fetchInterests]);
 

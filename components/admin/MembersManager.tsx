@@ -1,5 +1,6 @@
 'use client';
 
+import { errMsg } from '@/lib/errors';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Ban, BadgeCheck, ChevronRight, Search, ShieldPlus, Undo2, Users } from 'lucide-react';
 import { ReputationBadge } from '@/components/ReputationBadge';
@@ -33,8 +34,8 @@ function MemberSheet({ member, onClose, onChange }: { member: Member; onClose: (
     try {
       await adminFetch(url, { userId: member.id, ...body });
       onChange({ ...member, ...patch }, msg);
-    } catch (e: any) {
-      setError(e.message);
+    } catch (e) {
+      setError(errMsg(e));
     } finally {
       setBusy(null);
     }
@@ -169,8 +170,8 @@ export function MembersManager({ selfId, ownerId, isOwner }: { selfId: string; o
     try {
       const r = await adminFetch<{ members: Member[] }>(`/api/admin/members?q=${encodeURIComponent(q)}`);
       setMembers(r.members);
-    } catch (e: any) {
-      setError(e.message);
+    } catch (e) {
+      setError(errMsg(e));
       setMembers([]);
     }
   }, []);
@@ -198,8 +199,8 @@ export function MembersManager({ selfId, ownerId, isOwner }: { selfId: string; o
       setFlash(grantRole === 'moderator' ? `${match.name} is now a moderator.` : `${match.name}'s admin access was revoked.`);
       setGrantName('');
       load(query.trim());
-    } catch (err: any) {
-      setError(err.message);
+    } catch (err) {
+      setError(errMsg(err));
     } finally {
       setGranting(false);
     }

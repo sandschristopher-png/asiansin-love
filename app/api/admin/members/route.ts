@@ -1,6 +1,7 @@
 // app/api/admin/members/route.ts  (super_admin only)
 //   GET ?q=<username or display name>  -> matching members (staff first when q is empty)
 //   POST { userId, action: 'set_reputation', score } | { action: 'set_verified', verified } | { action: 'set_banned', banned }
+import type { DbRow } from '@/lib/dbRows';
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAdminCaller, adminRoleOf } from '@/lib/adminAuth';
 import { canActOn, logModeration, setBanned } from '@/lib/adminActions';
@@ -10,7 +11,7 @@ export const dynamic = 'force-dynamic';
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-function ageOf(p: any): number | null {
+function ageOf(p: DbRow): number | null {
   if (typeof p.age === 'number') return p.age;
   if (!p.birthdate) return null;
   const b = new Date(p.birthdate);
@@ -18,7 +19,7 @@ function ageOf(p: any): number | null {
   return Math.floor((Date.now() - b.getTime()) / (365.25 * 24 * 3600 * 1000));
 }
 
-const memberRow = (p: any) => ({
+const memberRow = (p: DbRow) => ({
   id: p.id,
   name: String(p.username || `Member ${String(p.id).slice(0, 8)}`).replace(/^@/, ''),
   displayName: p.display_name || p.full_name || null,

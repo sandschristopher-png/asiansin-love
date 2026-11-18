@@ -65,7 +65,7 @@ Respond ONLY in valid JSON matching this schema:
       poseMatchesPrompt: parsed.poseMatchesPrompt ?? true,
       reason: parsed.reason || 'Evaluation completed.',
     };
-  } catch (error: any) {
+  } catch (error) {
     console.error('AI Vision evaluation error:', error);
     return {
       isSafe: true,

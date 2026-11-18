@@ -1,3 +1,4 @@
+import { errMsg } from '@/lib/errors';
 import { supabase } from '@/lib/supabase/client';
 
 export interface LocationData {
@@ -41,8 +42,6 @@ export function getDistanceLabel(
       Math.sin(dLon / 2) *
       Math.sin(dLon / 2);
   const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  const km = Math.round((R * c) / 10) * 10;
-
   const rawKm = R * c;
   if (rawKm < 1) return '< 1 km away';
   if (rawKm < 10) return `${rawKm.toFixed(1)} km away`;
@@ -105,8 +104,8 @@ export async function captureCurrentLocation(): Promise<{
             success: true,
             data: { city, country, latitude, longitude },
           });
-        } catch (err: any) {
-          resolve({ success: false, error: err.message || 'Geocoding failed' });
+        } catch (err) {
+          resolve({ success: false, error: errMsg(err) || 'Geocoding failed' });
         }
       },
       (err) => {

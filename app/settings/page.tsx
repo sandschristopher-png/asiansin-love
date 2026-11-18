@@ -141,6 +141,7 @@ export default function SettingsHubPage() {
       setLoading(false);
     }
     loadSettings();
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- loads once; the translator is stable and must not re-run the load
   }, [router]);
 
   const handleToggle = async (key: SettingsKey) => {
@@ -201,6 +202,7 @@ export default function SettingsHubPage() {
   const handleLogout = async () => {
     setLoggingOut(true);
     await hardSignOut();
+    // eslint-disable-next-line @next/next/no-location-assign-relative-destination -- hard reload on purpose after sign-out, so no signed-in state survives
     window.location.href = '/';
   };
 
@@ -216,6 +218,7 @@ export default function SettingsHubPage() {
         return;
       }
       await hardSignOut();
+      // eslint-disable-next-line @next/next/no-location-assign-relative-destination -- hard reload on purpose after account deletion, so no signed-in state survives
       window.location.href = '/';
     } catch {
       setDeleteError(t('errors.network'));

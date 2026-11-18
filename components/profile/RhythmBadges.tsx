@@ -1,13 +1,6 @@
 import React from 'react';
 import { rhythmOption, RHYTHM_FIELDS, type RhythmField, type RhythmOption } from '@/lib/rhythm';
-import { reputationTier } from '@/lib/reputation';
 import { ReputationBadge } from '@/components/ReputationBadge';
-
-const REP_TIER_CLASS = {
-  good: 'bg-[#E8E6F1]/60 border-[#D0CDE1] text-[#8574B7]',
-  fair: 'bg-amber-50 border-amber-200 text-amber-800',
-  low: 'bg-red-50 border-red-200 text-red-700',
-} as const;
 
 /** Reputation pill ("[Shield] 98%", tier-colored); kept for existing callers. */
 export function RepBadge({

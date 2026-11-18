@@ -1,5 +1,6 @@
 'use client';
 
+import { errMsg } from '@/lib/errors';
 import React, { useCallback, useEffect, useState } from 'react';
 import { Ban, CheckCircle2, ChevronDown, ChevronUp, Flag, MessageCircle, MinusCircle, RefreshCw, UserRound } from 'lucide-react';
 import { ReputationBadge } from '@/components/ReputationBadge';
@@ -227,13 +228,14 @@ export default function AdminReportsPage() {
     try {
       const r = await adminFetch<{ reports: Report[] }>('/api/admin/reports');
       setReports(r.reports);
-    } catch (e: any) {
-      setError(e.message);
+    } catch (e) {
+      setError(errMsg(e));
       setReports([]);
     }
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- initial fetch on mount; the loader owns the state it sets
     load();
   }, [load]);
 

@@ -1,5 +1,7 @@
 'use client';
 
+import { useMounted } from '@/hooks/useMounted';
+import type { DbRow } from '@/lib/dbRows';
 import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import VerifiedBadge from '@/components/VerifiedBadge';
@@ -10,7 +12,6 @@ import React, { useState, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useParams, useRouter } from 'next/navigation';
 import {
-  ArrowLeft,
   MoreHorizontal,
   MapPin,
   MessageCircle,
@@ -78,9 +79,9 @@ export default function PublicProfilePage() {
   const params = useParams();
   const targetUserId = params?.id as string;
 
-  const [mounted, setMounted] = useState(false);
+  const mounted = useMounted();
   const [loading, setLoading] = useState(true);
-  const [profile, setProfile] = useState<any>(null);
+  const [profile, setProfile] = useState<DbRow | null>(null);
   const [viewerInterests, setViewerInterests] = useState<string[]>([]);
   const [viewerLanguages, setViewerLanguages] = useState<string[]>([]);
   /** Who is looking: undefined until known, null when signed out. Compared with the profile to spot your own. */
@@ -111,10 +112,6 @@ export default function PublicProfilePage() {
       showActionToast('Could not block this member. Try again.', 'info');
     }
   };
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   useEffect(() => {
     async function loadData() {
@@ -173,7 +170,7 @@ export default function PublicProfilePage() {
 
           if (Array.isArray(hlData) && hlData.length > 0) {
             setHighlights(
-              hlData.map((h: any) => ({
+              hlData.map((h: DbRow) => ({
                 tag_id: h.tag_id,
                 label: h.interest_tags?.label || h.interest_tags?.name || 'Highlight',
                 // Stored tag icons may be emoji: the UI renders a Lucide icon from the label instead.

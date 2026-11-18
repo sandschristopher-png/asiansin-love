@@ -30,6 +30,7 @@ export function EditHighlightsModal({
 
   useEffect(() => {
     if (!isOpen) return;
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- seeds the selection each time the modal opens
     setSelectedIds(
       availableInterests.filter((i) => i.is_highlight).map((i) => i.tag_id).slice(0, 3)
     );

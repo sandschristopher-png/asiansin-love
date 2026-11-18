@@ -1,3 +1,4 @@
+import type { DbRow } from '@/lib/dbRows';
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient as createSessionClient } from '@/lib/supabase/server';
 import { NON_ANNOUNCEMENT_FILTER } from '@/lib/announcements';
@@ -75,27 +76,27 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ error: 'Failed to load notifications' }, { status: 500 });
   }
 
-  const actorIds = [...new Set((rows ?? []).filter((r: any) => r.actor_id).map((r: any) => r.actor_id))];
-  const actorMap: Record<string, any> = {};
+  const actorIds = [...new Set((rows ?? []).filter((r: DbRow) => r.actor_id).map((r: DbRow) => r.actor_id))];
+  const actorMap: Record<string, DbRow> = {};
   if (actorIds.length > 0) {
     const { data: actors } = await supabase
       .from('profiles')
       .select('id, username, avatar_url')
       .in('id', actorIds);
-    (actors ?? []).forEach((a: any) => { actorMap[a.id] = a; });
+    (actors ?? []).forEach((a: DbRow) => { actorMap[a.id] = a; });
   }
 
   // Legacy rows stored a bare label ("New Message"): compose "Annie sent you a message" from the
   // joined actor in the viewer's language. Stored data is never rewritten.
   const locale = await getRequestLocale();
-  const notifications = (rows ?? []).map((r: any) => {
+  const notifications = (rows ?? []).map((r: DbRow) => {
     const { actor_id, ...rest } = r;
     const actor = actor_id ? (actorMap[actor_id] ?? null) : null;
     const kind = actor ? legacyTitleKind(rest.title, rest.type) : null;
-    return { ...rest, title: kind ? composeTitle(locale, kind, actor.username) : rest.title, actor };
+    return { ...rest, title: kind ? composeTitle(locale, kind, actor?.username) : rest.title, actor };
   });
 
-  const unread_count = unreadRes.count ?? notifications.filter((n: any) => !n.is_read).length;
+  const unread_count = unreadRes.count ?? notifications.filter((n: { is_read?: boolean }) => !n.is_read).length;
   return NextResponse.json({ notifications, unread_count, has_more: (rows ?? []).length === limit });
 }
 

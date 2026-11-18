@@ -37,7 +37,7 @@ export function BottomNav() {
   const { unreadMessages: unreadCount, unseenSparks } = useNotificationCounts();
   // A screen (e.g. My Profile while editing) can ask the dock to step aside.
   const hiddenByScreen = useBottomNavHidden();
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<{ id: string } | null>(null);
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
   // "Fresh" dot on the Moments tab: a newer Moment in the member's hub than the last time they opened the feed.
   const [freshMoments, setFreshMoments] = useState(false);

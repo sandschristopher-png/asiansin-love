@@ -1,3 +1,5 @@
+import type { DbRow } from '@/lib/dbRows';
+import { errMsg } from '@/lib/errors';
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { createClient } from '@supabase/supabase-js';
@@ -104,7 +106,7 @@ export async function GET(req: Request) {
     );
 
     const blockedUserIds = new Set<string>();
-    let viewerProfile: Record<string, any> | null = null;
+    let viewerProfile: DbRow | null = null;
     let viewerInterestedIn: string[] = [];
     let favoriteIds: string[] = [];
     // Already sparked (sparks table, the "You Sparked" tab) or favourited. Discover is an open
@@ -140,7 +142,7 @@ export async function GET(req: Request) {
         );
       }
 
-      blocksRes.data?.forEach((b: any) => {
+      blocksRes.data?.forEach((b: { blocker_id: string; blocked_id: string }) => {
         if (b.blocker_id === user.id) blockedUserIds.add(b.blocked_id);
         if (b.blocked_id === user.id) blockedUserIds.add(b.blocker_id);
       });
@@ -289,7 +291,7 @@ export async function GET(req: Request) {
     }
 
     const profiles = (allRows || [])
-      .filter((row: any) => {
+      .filter((row: DbRow) => {
         if (visitingHub && (!row.is_plus || !tripByUser.has(row.id))) return false;
         if (user && row.id === user.id) return false;
         if (blockedUserIds.has(row.id)) return false;
@@ -303,7 +305,7 @@ export async function GET(req: Request) {
         if (lowerName === 'bobby') return false;
 
         // Require at least one real (non-placeholder) photo
-        const isPlaceholder = (u: any) =>
+        const isPlaceholder = (u: unknown) =>
           !u ||
           typeof u !== 'string' ||
           u.trim() === '' ||
@@ -311,14 +313,14 @@ export async function GET(req: Request) {
           u.includes('default') ||
           u.endsWith('.svg');
 
-        const photoPool: any[] = Array.isArray(row.photos) ? row.photos.filter(Boolean) : [];
+        const photoPool: unknown[] = Array.isArray(row.photos) ? row.photos.filter(Boolean) : [];
         const hasRealAvatar = !isPlaceholder(row.avatar_url);
-        const hasRealGalleryPhoto = photoPool.some((p: any) => !isPlaceholder(p));
+        const hasRealGalleryPhoto = photoPool.some((p: unknown) => !isPlaceholder(p));
         if (!hasRealAvatar && !hasRealGalleryPhoto) return false;
 
         return Boolean(row.username || row.display_name || row.full_name || row.name || row.avatar_url);
       })
-      .map((row: any) => {
+      .map((row: DbRow) => {
         // Normalize codes ("US" -> "United States") and let an unambiguous city fix a mismatched
         // country ("Manila" + "US" -> Philippines). No invented default country.
         const countryVal = resolveCountry(row.city, row.country);
@@ -392,7 +394,7 @@ export async function GET(req: Request) {
         };
       });
 
-    profiles.sort((a: any, b: any) => (b.is_plus ? 1 : 0) - (a.is_plus ? 1 : 0));
+    profiles.sort((a, b) => (b.is_plus ? 1 : 0) - (a.is_plus ? 1 : 0));
 
     return NextResponse.json({
       viewer: viewerProfile
@@ -418,8 +420,8 @@ export async function GET(req: Request) {
       sparkedIds: Array.from(alreadyLikedIds),
       profiles,
     });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message || 'Failed to load discover feed' }, { status: 500 });
+  } catch (err) {
+    return NextResponse.json({ error: errMsg(err) || 'Failed to load discover feed' }, { status: 500 });
   }
 }
 

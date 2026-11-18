@@ -1,3 +1,4 @@
+import { errMsg, errField } from '@/lib/errors';
 import webpush from 'web-push';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 
@@ -106,10 +107,10 @@ async function deliver(admin: SupabaseClient, subs: Sub[], payload: string, urge
             // TTL: an alert older than an hour is noise, so the push service may drop it.
             { urgency, TTL: 3600 }
           );
-        } catch (err: any) {
-          const status = err?.statusCode;
+        } catch (err) {
+          const status = errField<number>(err, 'statusCode');
           if (status === 404 || status === 410) dead.push(sub.id);
-          else console.error('[Push] Send failed:', status, err?.body || err?.message);
+          else console.error('[Push] Send failed:', status, errField(err, 'body') || errMsg(err));
         }
       })
     );

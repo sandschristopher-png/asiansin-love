@@ -2,6 +2,7 @@
 //   GET                       -> pending member reports with reporter / reported profiles
 //   GET ?context=<reportId>   -> recent chat between the two members (Inspect Context)
 //   POST { reportId, action: 'dismiss' | 'penalize' | 'ban', points?, note? }
+import type { DbRow } from '@/lib/dbRows';
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAdminCaller } from '@/lib/adminAuth';
 import { adjustReputation, canActOn, logModeration, MISSING_ADMIN_COLUMNS_RE, setBanned } from '@/lib/adminActions';
@@ -38,7 +39,7 @@ function parseDetails(details: string | null): { source: 'chat' | 'profile' | nu
   return { source, note };
 }
 
-const profileCard = (p: any) =>
+const profileCard = (p: DbRow | null | undefined) =>
   p
     ? {
         id: p.id,

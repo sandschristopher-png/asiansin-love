@@ -1,5 +1,6 @@
 'use client';
 
+import type { HeaderProfile } from '@/lib/headerProfileStore';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
@@ -33,7 +34,7 @@ export type HeaderAction = {
 export function HeaderActions({ action }: { action?: HeaderAction }) {
   const pathname = usePathname();
   const [user, setUser] = useState<{ id: string } | null>(null);
-  const [profile, setProfile] = useState<any>(null);
+  const [profile, setProfile] = useState<HeaderProfile | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [hasUnreadAnnouncements, setHasUnreadAnnouncements] = useState(false);
   const adminPending = useAdminPendingCount(isStaff(adminRoleOf(profile)), menuOpen);
@@ -43,6 +44,7 @@ export function HeaderActions({ action }: { action?: HeaderAction }) {
   // local (getSession), the profile refresh is shared with Navbar (lib/headerProfileStore).
   useLayoutEffect(() => {
     const hit = cachedHeaderProfile();
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- paints the cached profile before first paint so the header never flickers
     if (hit) setProfile(hit);
   }, []);
   useEffect(() => {
@@ -69,12 +71,14 @@ export function HeaderActions({ action }: { action?: HeaderAction }) {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- closes the menu when the route changes
     setMenuOpen(false);
   }, [pathname]);
 
   // Unread system announcements -> dot beside "Announcements" in the menu.
   useEffect(() => {
     if (!user) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- clears the dot when signed out
       setHasUnreadAnnouncements(false);
       return;
     }
@@ -127,6 +131,7 @@ export function HeaderActions({ action }: { action?: HeaderAction }) {
     setMenuOpen(false);
     clearHeaderProfile();
     await hardSignOut();
+    // eslint-disable-next-line @next/next/no-location-assign-relative-destination -- hard reload on purpose after sign-out, so no signed-in state survives
     window.location.href = '/';
   };
 

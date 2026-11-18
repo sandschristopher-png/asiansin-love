@@ -40,7 +40,7 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ success: true });
-  } catch (err: any) {
+  } catch (err) {
     console.error('[Push] Route Error:', err);
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }

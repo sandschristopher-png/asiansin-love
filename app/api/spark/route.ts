@@ -1,3 +1,4 @@
+import { errMsg } from '@/lib/errors';
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { NextResponse, after } from 'next/server'
@@ -142,8 +143,8 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ success: true, sparked: true, is_mutual: !!mutual, mutual: !!mutual })
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 })
+  } catch (err) {
+    return NextResponse.json({ error: errMsg(err) }, { status: 500 })
   }
 }
 

@@ -1,5 +1,6 @@
 'use client';
 
+import { errMsg } from '@/lib/errors';
 import React, { useCallback, useEffect, useState } from 'react';
 import { BadgeCheck, CheckCircle2, ImageOff, MapPin, RefreshCw, X, XCircle } from 'lucide-react';
 import { ReputationBadge } from '@/components/ReputationBadge';
@@ -32,15 +33,15 @@ function PhotoCard({ member, onDone }: { member: PendingMember; onDone: (id: str
     setBusy(action);
     setError('');
     try {
-      const r = await adminFetch('/api/admin/photos', { userId: member.id, action, ...extra });
+      const r = await adminFetch<{ isVerified: boolean; removed: number }>('/api/admin/photos', { userId: member.id, action, ...extra });
       if (action === 'verify' || action === 'unverify') {
         setVerified(r.isVerified);
         setBusy(null);
         return;
       }
       onDone(member.id, action === 'approve' ? `Approved ${member.name}'s photos.` : `Removed ${r.removed} photo(s) from ${member.name}.`);
-    } catch (e: any) {
-      setError(e.message);
+    } catch (e) {
+      setError(errMsg(e));
       setBusy(null);
     }
   };
@@ -48,7 +49,8 @@ function PhotoCard({ member, onDone }: { member: PendingMember; onDone: (id: str
   const toggle = (url: string) =>
     setSelected((s) => {
       const next = new Set(s);
-      next.has(url) ? next.delete(url) : next.add(url);
+      if (next.has(url)) next.delete(url);
+      else next.add(url);
       return next;
     });
 
@@ -198,13 +200,14 @@ export default function AdminPhotosPage() {
     try {
       const r = await adminFetch<{ members: PendingMember[] }>('/api/admin/photos');
       setMembers(r.members);
-    } catch (e: any) {
-      setError(e.message);
+    } catch (e) {
+      setError(errMsg(e));
       setMembers([]);
     }
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- initial fetch on mount; the loader owns the state it sets
     load();
   }, [load]);
 

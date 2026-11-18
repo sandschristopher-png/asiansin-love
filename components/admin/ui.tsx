@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom';
 import { Loader2, UserRound, X } from 'lucide-react';
 
 /** JSON fetch for /api/admin/*: resolves the body or throws the route's error message. */
-export async function adminFetch<T = any>(url: string, body?: unknown): Promise<T> {
+export async function adminFetch<T = unknown>(url: string, body?: unknown): Promise<T> {
   const res = await fetch(url, {
     method: body === undefined ? 'GET' : 'POST',
     headers: body === undefined ? undefined : { 'Content-Type': 'application/json' },

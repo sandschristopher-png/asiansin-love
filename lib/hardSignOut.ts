@@ -1,7 +1,7 @@
 import { supabase } from './supabase/client';
 
 export async function hardSignOut() {
-  try { await supabase.auth.signOut(); } catch (e) { /* session may already be dead */ }
+  try { await supabase.auth.signOut(); } catch { /* session may already be dead */ }
   // Purge all Supabase local storage keys so ghost sessions can't resurrect
   if (typeof window !== 'undefined' && window.localStorage) {
     const doomed: string[] = [];

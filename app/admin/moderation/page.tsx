@@ -1,5 +1,6 @@
 'use client';
 
+import { errMsg, errField } from '@/lib/errors';
 import React, { useState, useEffect, useCallback } from 'react';
 import {
   ShieldAlert,
@@ -62,8 +63,8 @@ export default function AdminModerationPage() {
         throw new Error(data.error || `Failed to load queue (Status: ${res.status})`);
       }
       setMessages(Array.isArray(data.messages) ? data.messages : []);
-    } catch (err: any) {
-      setError(err?.name === 'AbortError' ? 'The queue took too long to load.' : err.message || 'Unable to fetch moderation queue.');
+    } catch (err) {
+      setError(errField(err, 'name') === 'AbortError' ? 'The queue took too long to load.' : errMsg(err) || 'Unable to fetch moderation queue.');
     } finally {
       clearTimeout(timer);
       setLoading(false);
@@ -71,6 +72,7 @@ export default function AdminModerationPage() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- initial fetch on mount; the loader owns the state it sets
     fetchQuarantinedMessages();
   }, [fetchQuarantinedMessages]);
 
@@ -108,10 +110,10 @@ export default function AdminModerationPage() {
       setMessages((prev) => prev.filter((m) => m.id !== activeMessage.id));
       setActiveMessage(null);
       setReviewNotes('');
-    } catch (err: any) {
+    } catch (err) {
       setActionFeedback({
         type: 'error',
-        text: err.message || 'Action failed to execute.',
+        text: errMsg(err) || 'Action failed to execute.',
       });
     } finally {
       setActionLoading(false);
@@ -251,7 +253,7 @@ export default function AdminModerationPage() {
 
                   {/* Flagged Content Preview */}
                   <p className="text-sm text-[#413B5E] bg-white p-3 rounded-xl border border-[#D0CDE1] break-words line-clamp-3">
-                    "{msg.content}"
+                    &ldquo;{msg.content}&rdquo;
                   </p>
 
                   <div className="flex items-center justify-between pt-1 text-xs">

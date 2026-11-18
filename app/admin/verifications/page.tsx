@@ -1,5 +1,6 @@
 'use client';
 
+import { errMsg } from '@/lib/errors';
 import React, { useCallback, useEffect, useState } from 'react';
 import {
   BadgeCheck,
@@ -129,14 +130,15 @@ export default function AdminVerificationsPage() {
       setIdentity(data.identity || []);
       setAvatars(data.avatars || []);
       setReports(data.reports || []);
-    } catch (err: any) {
-      setError(err.message || 'Unable to fetch review queue.');
+    } catch (err) {
+      setError(errMsg(err) || 'Unable to fetch review queue.');
     } finally {
       setLoading(false);
     }
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- initial fetch on mount; the loader owns the state it sets
     load();
   }, [load]);
 
@@ -172,8 +174,8 @@ export default function AdminVerificationsPage() {
                 ? `Report confirmed. Member docked ${REPUTATION_RULES.confirmedReport} reputation points.`
                 : 'Report dismissed.',
       });
-    } catch (err: any) {
-      setFeedback({ type: 'error', text: err.message || 'Action failed.' });
+    } catch (err) {
+      setFeedback({ type: 'error', text: errMsg(err) || 'Action failed.' });
     } finally {
       setBusy(null);
     }

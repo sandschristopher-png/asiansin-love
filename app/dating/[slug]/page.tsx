@@ -1,6 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
-import { ShieldCheck, Globe, Heart } from 'lucide-react';
+import { ShieldCheck, Globe } from 'lucide-react';
 import type { Metadata } from 'next';
 
 const TITLES: Record<string, string> = {

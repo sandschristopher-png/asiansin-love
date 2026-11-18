@@ -1,3 +1,4 @@
+import type { DbRow } from '@/lib/dbRows';
 import { NextResponse, after } from 'next/server';
 import { notifyAdmins } from '@/lib/adminNotify';
 import { assessNetwork, networkGate, recordNetworkRisk } from '@/lib/safety/vpnCheck';
@@ -72,7 +73,7 @@ export async function GET(req: Request) {
 
     // Chronological order for the UI. The contact-unlock gate below reads the whole thread, deleted
     // messages included, so deleting a conversation never resets the safety gate.
-    const messages = ((rawMessages || []) as any[]).reverse();
+    const messages = ((rawMessages || []) as unknown as Array<DbRow & { sender_id: string; content?: string }>).reverse();
     const visibleMessages = messages.filter((m) => !(Array.isArray(m.deleted_by) && m.deleted_by.includes(user.id)));
 
     // Same unlock rule as the POST send gate: both members sent 3 distinct substantive (15+ char)
@@ -129,7 +130,7 @@ export async function GET(req: Request) {
       partnerCount: Math.min(gate.receiverSubstantiveCount, CONTACT_UNLOCK_TURNS),
       contactUnlocked: gate.isUnlocked,
     });
-  } catch (err: any) {
+  } catch (err) {
     console.error('GET /api/messages error:', err);
     return NextResponse.json({ error: 'Internal error.' }, { status: 500 });
   }
@@ -312,7 +313,7 @@ export async function POST(req: Request) {
           .eq('sender_id', senderId)
           .gte('created_at', startOfToday.toISOString());
 
-        const uniqueRecipients = new Set((messagesToday || []).map((m: any) => m.receiver_id));
+        const uniqueRecipients = new Set((messagesToday || []).map((m: { receiver_id: string }) => m.receiver_id));
 
         if (!isPlus && !uniqueRecipients.has(receiverId) && uniqueRecipients.size >= 5) {
           return NextResponse.json(

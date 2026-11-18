@@ -1,5 +1,6 @@
 'use client';
 
+import type { DbRow } from '@/lib/dbRows';
 import dynamic from 'next/dynamic';
 import VerifiedBadge from '@/components/VerifiedBadge';
 import { ChatSafetyBanner } from '@/components/chat/ChatSafetyBanner';
@@ -17,7 +18,6 @@ import Link from 'next/link';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import {
-  ArrowLeft,
   Send,
   Zap,
   ShieldAlert,
@@ -203,6 +203,7 @@ export default function ChatConversationPage() {
   const closeToast = useCallback(() => setToast(null), []);
   // Mic permission / recorder failures surface as a toast instead of failing silently.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- surfaces the recorder error as a toast
     if (voice.error) setToast(voice.error);
   }, [voice.error]);
   const voicePreviewUrl = React.useMemo(() => (voice.blob ? URL.createObjectURL(voice.blob) : null), [voice.blob]);
@@ -556,6 +557,7 @@ export default function ChatConversationPage() {
     const hasUnreadFromTarget = messages.some((m) => m.sender === 'them' && !m.read);
     if (!hasUnreadFromTarget) return;
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- marks incoming messages read once the thread is visible
     setMessages((prev) => prev.map((m) => (m.sender === 'them' && !m.read ? { ...m, read: true } : m)));
     supabase
       .from('messages')
@@ -662,7 +664,7 @@ export default function ChatConversationPage() {
       if (isMounted && typeof myProf?.reputation_score === 'number') setMyRep(myProf.reputation_score);
       if (isMounted) setMyVerified(myProf?.is_verified === true || myProf?.verification_status === 'verified');
 
-      const profData: any = targetProfRes.data;
+      const profData: DbRow | null = targetProfRes.data;
       const targetUuid: string | null = profData?.id || (isUuid ? rawParam : null);
 
       // Also catches your own @username typed into the address.
@@ -781,7 +783,7 @@ export default function ChatConversationPage() {
         setMessages(
           remoteMsgsRes.messages
             // Deleted from the Messages list: only what came after stays visible (for this member).
-            .map((m: any) => ({
+            .map((m: DbRow) => ({
             id: m.id,
             sender: m.sender,
             text: m.text,
@@ -820,7 +822,7 @@ export default function ChatConversationPage() {
       .channel(channelName)
       .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, (payload) => {
         if (!isMounted) return;
-        const row: any = payload.new;
+        const row: DbRow = payload.new;
         if (!row?.id) return;
 
         // Only rows between me and THIS conversation partner. RLS delivers every message I can
@@ -898,7 +900,7 @@ export default function ChatConversationPage() {
             fetch(`/api/messages?target_user_id=${resolvedTargetUuid}`)
               .then((r) => (r.ok ? r.json() : null))
               .then((d) => {
-                const fresh = d?.messages?.find((m: any) => m.id === row.id);
+                const fresh = d?.messages?.find((m: { id: string }) => m.id === row.id);
                 if (isMounted && fresh?.moment) setMessages((prev) => prev.map((m) => (m.id === row.id ? { ...m, moment: fresh.moment } : m)));
               })
               .catch(() => {});
@@ -914,7 +916,7 @@ export default function ChatConversationPage() {
               if (!d || !isMounted) return;
               contactUnlockedRef.current = Boolean(d.contactUnlocked);
               setContactUnlocked(contactUnlockedRef.current);
-              const fresh = (d.messages || []).find((m: any) => m.id === row.id);
+              const fresh = (d.messages || []).find((m: { id: string }) => m.id === row.id);
               if (d.contactUnlocked && fresh) {
                 setMessages((prev) =>
                   prev.map((m) => (m.id === row.id ? { ...m, text: fresh.text, wasMasked: fresh.wasMasked } : m))
@@ -1184,7 +1186,7 @@ export default function ChatConversationPage() {
       const data = await res.json().catch(() => ({}));
       if (!res.ok || !data.translation) throw new Error('Translation temporarily unavailable');
       setTranslations((prev) => ({ ...prev, [msg.id]: { text: data.translation, showing: true, loading: false } }));
-    } catch (err) {
+    } catch {
       setTranslations((prev) => ({ ...prev, [msg.id]: { showing: false, loading: false } }));
       setToast('Translation temporarily unavailable');
     }

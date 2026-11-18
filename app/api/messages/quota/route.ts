@@ -1,3 +1,5 @@
+
+import { errMsg } from '@/lib/errors';
 import { NextResponse } from 'next/server';
 import { createClient as createSessionClient } from '@/lib/supabase/server';
 
@@ -62,7 +64,7 @@ export async function GET(req: Request) {
       .eq('sender_id', senderId)
       .gte('created_at', startOfToday.toISOString());
 
-    const uniqueRecipients = new Set((messagesToday || []).map((m: any) => m.receiver_id));
+    const uniqueRecipients = new Set((messagesToday || []).map((m: { receiver_id: string }) => m.receiver_id));
     const used = uniqueRecipients.size;
     const remaining = Math.max(0, 5 - used);
 
@@ -74,7 +76,7 @@ export async function GET(req: Request) {
       max: 5,
       label: `${remaining} of 5 new chats left today`,
     });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message }, { status: 500 });
+  } catch (err) {
+    return NextResponse.json({ error: errMsg(err) }, { status: 500 });
   }
 }

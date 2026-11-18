@@ -30,6 +30,7 @@ export function useAdminPendingCount(enabled: boolean, refreshKey?: unknown): nu
   const [count, setCount] = useState(0);
   useEffect(() => {
     if (!enabled) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- clears the count when the viewer is not staff
       setCount(0);
       return;
     }

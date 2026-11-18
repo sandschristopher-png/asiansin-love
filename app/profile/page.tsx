@@ -1,5 +1,6 @@
 'use client';
 
+import type { DbRow } from '@/lib/dbRows';
 import dynamic from 'next/dynamic';
 import { DETAIL_IMAGE, TILE_IMAGE, supabaseImage } from '@/lib/images/supabaseImage';
 import VerifiedBadge from '@/components/VerifiedBadge';
@@ -23,7 +24,6 @@ import {
   Trash2
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
-import { hardSignOut } from '@/lib/hardSignOut';
 import { INTENT_OPTIONS, normalizeIntent, intentLabel } from '@/lib/intents';
 import { PlusBadge } from '@/components/ui/PlusBadge';
 import { isPlusProfile } from '@/lib/plus';
@@ -87,7 +87,7 @@ const HOBBY_TAGS = [
 
 
 // --- IN-MEMORY & SESSION PROFILE CACHE (ELIMINATES ROUTE FLASH) ---
-let memoryProfileCache: any = null;
+let memoryProfileCache: DbRow | null = null;
 const getInitialProfileCache = () => {
   if (memoryProfileCache) return memoryProfileCache;
   if (typeof window !== 'undefined') {
@@ -102,7 +102,7 @@ const getInitialProfileCache = () => {
   return null;
 };
 
-const updateProfileCache = (data: any) => {
+const updateProfileCache = (data: DbRow) => {
   memoryProfileCache = { ...(memoryProfileCache || {}), ...data };
   if (typeof window !== 'undefined') {
     try {

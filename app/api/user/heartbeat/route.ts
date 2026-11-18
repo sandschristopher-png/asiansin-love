@@ -1,3 +1,4 @@
+import { errMsg } from '@/lib/errors';
 import { NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
 import { after } from "next/server";
@@ -33,7 +34,7 @@ export async function POST(req: Request) {
     }
 
     return NextResponse.json({ success: true, last_active: nowIso });
-  } catch (err: any) {
-    return NextResponse.json({ error: err.message || "Internal error" }, { status: 500 });
+  } catch (err) {
+    return NextResponse.json({ error: errMsg(err) || "Internal error" }, { status: 500 });
   }
 }

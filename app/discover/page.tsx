@@ -82,11 +82,6 @@ const MODE_KEY = {
   new: 'discover.modeNew',
 } as const satisfies Record<DiscoveryModeId, TKey>;
 
-const GENDER_LABELS: Record<string, string> = {
-  woman: 'Women',
-  man: 'Men',
-};
-
 /** Scroll offset of the nearest scrolled ancestor (the app shell scrolls an inner div). */
 function scrollTopOf(el: HTMLElement | null): number {
   for (let node = el; node; node = node.parentElement) {
@@ -222,18 +217,6 @@ function DiscoverCardPhotoCarousel({
   );
 }
 
-function normalizeGenderValue(raw?: string | null): 'female' | 'male' | 'male' {
-  const val = String(raw || '').toLowerCase().trim().replace(/[\s-]+/g, '_');
-  if (['male', 'male', 'male', 'm', 'guy', 'guys'].includes(val)) return 'male';
-  if (['female', 'female', 'female', 'f', 'lady', 'ladies', 'girl', 'girls'].includes(val)) return 'female';
-  if (['female', 'female', 'transgender_woman', 'transgender_women', 'male', 'mtf', 'transfemale'].includes(val))
-    return 'male';
-  if (['male', 'male', 'transgender_man', 'transgender_men', 'ftm', 'transmale'].includes(val)) return 'male';
-  if (['male', 'nonbinary', 'nb', 'enby'].includes(val)) return 'male';
-  return 'female';
-}
-
-
 // In-memory cache for instant tab switching within this session. It only ever holds feeds the
 // server already filtered (opposite gender, not sparked, not blocked). The old localStorage copy
 // survived reloads and painted stale, unfiltered cards before the real feed arrived.
@@ -329,7 +312,7 @@ function DiscoverContent() {
     if (switchTimer.current !== null) window.clearTimeout(switchTimer.current);
   }, []);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [searchAnimating, setSearchAnimating] = useState(false);
+  const [searchAnimating] = useState(false);
   const [searchClosing, setSearchClosing] = useState(false);
 
   useEffect(() => {
@@ -438,6 +421,7 @@ function DiscoverContent() {
 
   useEffect(() => {
     if (filtersOpen) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- copies the applied filters into the draft when the sheet opens
       setDraftMinAge(minAge);
       setDraftMaxAge(maxAge);
       setDraftCountry(selectedCountry);
@@ -464,8 +448,9 @@ function DiscoverContent() {
   }, [filtersOpen, minAge, maxAge, selectedCountry, selectedIntents, heightRange, selectedLanguages, selectedHabits, verifiedOnly, activeNowOnly, hideContacted, sparkedMeOnly, selectedTimeline, selectedChildren, selectedEnglish, selectedHub, discoveryMode]);
 
   useEffect(() => {
-    const handleMutualMatch = (e: CustomEvent<{ targetId: string }>) => {
-      const target = profiles.find((p) => p.id === e.detail.targetId);
+    const handleMutualMatch = (e: Event) => {
+      const detail = (e as CustomEvent<{ targetId: string }>).detail;
+      const target = profiles.find((p) => p.id === detail.targetId);
       if (target) {
         // Silent celebration: haptic pulse, no audio.
         try {
@@ -474,11 +459,12 @@ function DiscoverContent() {
         setMatchedModalProfile({ id: target.id, name: target.name, avatarUrl: target.avatarUrl });
       }
     };
-    window.addEventListener('ail-mutual-match' as any, handleMutualMatch);
-    return () => window.removeEventListener('ail-mutual-match' as any, handleMutualMatch);
+    window.addEventListener('ail-mutual-match', handleMutualMatch);
+    return () => window.removeEventListener('ail-mutual-match', handleMutualMatch);
   }, [profiles]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- restores the in-memory card state after mount (hydration-safe)
     setCardActions(reconcileSparks(getLocalCardActions(), getInitialDiscoverFeed()));
 
     async function loadFeed() {
@@ -557,7 +543,6 @@ function DiscoverContent() {
     if (feedUrlRef.current === feedUrl) return;
     feedUrlRef.current = feedUrl;
     void fetchProfiles();
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- fetchProfiles reads the ref
   }, [feedUrl]);
 
   const refreshFeed = async () => {
@@ -905,6 +890,7 @@ function DiscoverContent() {
       }
       return 0;
     });
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- isNearViewer is recreated each render from viewerPlace and currentUserCoords, both listed
   }, [profiles, cardActions, currentUserCoords, selectedCountry, countryOptions, searchQuery, minAge, maxAge, selectedIntents, heightNarrowed, heightRange, selectedLanguages, selectedHabits, verifiedOnly, activeNowOnly, discoveryMode, presentIds, viewerPlace]);
 
   const isDefaultFeed = activeFiltersCount === 0 && !searchQuery.trim();

@@ -1,5 +1,6 @@
 'use client';
 
+import { errMsg } from '@/lib/errors';
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
@@ -13,7 +14,6 @@ import {
   ShieldCheck,
   Trash2,
   Plus,
-  Check,
   Shield
 } from 'lucide-react';
 import { captureCurrentLocation } from '@/lib/location';
@@ -33,11 +33,6 @@ const DRAFT_KEY = 'ail_onboarding_draft_v1';
 const GENDER_OPTIONS = [
   { val: 'male', label: 'Man' },
   { val: 'female', label: 'Woman' },
-] as const;
-
-const INTERESTED_IN_OPTIONS = [
-  { val: 'male', label: 'Men' },
-  { val: 'female', label: 'Women' },
 ] as const;
 
 const HEIGHT_OPTIONS = [
@@ -60,6 +55,11 @@ const COUNTRIES = [
   'Singapore', 'Laos', 'United States', 'Canada', 'Australia', 'United Kingdom',
   'Japan', 'South Korea', 'Taiwan', 'Hong Kong', 'United Arab Emirates', 'New Zealand', 'Other'
 ];
+
+/** Storage path for a new profile photo: unique per upload, grouped by member. */
+function photoStoragePath(userId: string, slotIdx: number, ext: string): string {
+  return userId + '/photo-' + Date.now() + '-' + slotIdx + '.' + ext;
+}
 
 export default function OnboardingPage() {
   const router = useRouter();
@@ -86,6 +86,8 @@ export default function OnboardingPage() {
   // Intent (canonical values from lib/intents.ts)
   const [intent, setIntent] = useState('');
   const [birthdate, setBirthdate] = useState('');
+  // Newest allowed birth date (18 years ago), fixed when the form opens.
+  const [latestBirthdate] = useState(() => new Date(Date.now() - 18 * 365.25 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]);
 
   // Step 3: Location (GPS first, manual fallback, NOT location-verified)
   const [city, setCity] = useState('');
@@ -203,6 +205,7 @@ export default function OnboardingPage() {
   useEffect(() => {
     const clean = username.trim().replace(/[^a-zA-Z0-9_]/g, '');
     if (!clean) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- clears the availability result when the username changes
       setUsernameStatus(null);
       return;
     }
@@ -268,8 +271,10 @@ export default function OnboardingPage() {
 
   useEffect(() => {
     if (step === 3 && !city && !gpsCaptured) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- runs location detection once when step 3 opens
       triggerLocationDetection();
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps -- runs only when the step changes; city and gpsCaptured are read, not triggers
   }, [step]);
 
   const calculateAge = (dobStr: string): number => {
@@ -380,7 +385,7 @@ export default function OnboardingPage() {
         'image/webp': 'webp',
       };
       const ext = mimeExtMap[file.type] || 'jpg';
-      const filePath = userId + '/photo-' + Date.now() + '-' + slotIdx + '.' + ext;
+      const filePath = photoStoragePath(userId, slotIdx, ext);
 
       const { error: uploadError } = await supabase.storage
         .from('user_photos')
@@ -415,8 +420,8 @@ export default function OnboardingPage() {
         }
         return next.slice(0, 6);
       });
-    } catch (err: any) {
-      setErrorMessage(err.message || 'Photo upload failed. Please try again.');
+    } catch (err) {
+      setErrorMessage(errMsg(err) || 'Photo upload failed. Please try again.');
     } finally {
       setUploadingSlot(null);
     }
@@ -515,8 +520,8 @@ export default function OnboardingPage() {
 
       router.push('/profile');
       router.refresh();
-    } catch (err: any) {
-      setErrorMessage(err.message || 'Could not save your profile. Please try again.');
+    } catch (err) {
+      setErrorMessage(errMsg(err) || 'Could not save your profile. Please try again.');
     } finally {
       setLoading(false);
     }
@@ -733,7 +738,7 @@ export default function OnboardingPage() {
               <input
                 type="date"
                 value={birthdate}
-                max={new Date(Date.now() - 18 * 365.25 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]}
+                max={latestBirthdate}
                 onChange={(e) => setBirthdate(e.target.value)}
                 className="w-full px-4 py-3 rounded-2xl bg-white border border-[#D0CDE1] text-[#413B5E] focus:outline-none focus:border-[#8574B7] focus:ring-2 focus:ring-[#8574B7]/15 text-sm transition"
               />

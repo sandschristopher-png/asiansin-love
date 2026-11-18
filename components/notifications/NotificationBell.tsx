@@ -28,6 +28,7 @@ export function NotificationBell() {
   const [unread, setUnread] = useState(0);
   // Last known count before first paint, so a remounted header does not pop the chip in from zero.
   useLayoutEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- paints the cached count before first paint so the chip never pops in
     setUnread(cachedUnread());
   }, []);
   useEffect(() => {
@@ -66,6 +67,7 @@ export function NotificationBell() {
 
   // Chip: on mount, on route change, and whenever a new notifications row may have arrived.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- initial fetch on mount; the loader owns the state it sets
     void loadCount();
   }, [loadCount, pathname]);
   useEffect(() => {
@@ -76,6 +78,7 @@ export function NotificationBell() {
 
   // Close on route change, outside tap and Escape.
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- closes the panel when the route changes
     setOpen(false);
   }, [pathname]);
   useEffect(() => {
@@ -95,6 +98,7 @@ export function NotificationBell() {
   }, [open]);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- loads the panel when it opens
     if (open) void loadPanel();
     else setTinted(new Set());
   }, [open, loadPanel]);

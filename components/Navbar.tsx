@@ -1,8 +1,8 @@
 'use client';
+import type { HeaderProfile } from '@/lib/headerProfileStore';
 import { BrandLogo } from '@/components/BrandLogo';
 import { isPlusProfile } from '@/lib/plus';
 import { setCachedSubscription } from '@/lib/subscriptionStatus';
-import { notifyUser } from '@/components/InAppToast';
 import React, { useEffect, useLayoutEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter, usePathname } from 'next/navigation';
@@ -17,10 +17,10 @@ import { useShare } from '@/components/share/useShare';
 const IN_APP_PREFIXES = ['/discover', '/moments', '/messages', '/favorites', '/profile', '/notifications', '/announcements', '/chat', '/settings', '/plus', '/upgrade', '/verify'];
 
 export function Navbar() {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<{ id: string } | null>(null);
   // True until the first auth check resolves: render a placeholder, never a flash of "Sign In".
   const [authLoading, setAuthLoading] = useState(true);
-  const [profile, setProfile] = useState<any>(null);
+  const [profile, setProfile] = useState<HeaderProfile | null>(null);
   const [profileMenuOpen, setProfileMenuOpen] = useState(false);
   const { share, shareSheet } = useShare();
   const router = useRouter();
@@ -30,6 +30,7 @@ export function Navbar() {
   useLayoutEffect(() => {
     const hit = cachedHeaderProfile();
     if (hit) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- paints the cached profile before first paint so the header never flickers
       setUser({ id: hit.id });
       setProfile(hit);
       setAuthLoading(false);

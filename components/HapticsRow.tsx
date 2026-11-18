@@ -13,6 +13,7 @@ export function HapticsRow() {
   const [supported, setSupported] = useState(true);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- reads the stored preference after hydration
     setOn(hapticsEnabled());
     setSupported(hapticsSupported());
   }, []);

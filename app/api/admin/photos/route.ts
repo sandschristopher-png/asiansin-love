@@ -1,6 +1,7 @@
 // app/api/admin/photos/route.ts  (staff only)
 //   GET  -> members whose photos await review (photo_review_status 'pending', else avatar_status 'pending_review')
 //   POST { userId, action: 'approve' | 'reject' | 'verify' | 'unverify', removePhotos?, reason?, points? }
+import type { DbRow } from '@/lib/dbRows';
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAdminCaller } from '@/lib/adminAuth';
 import { adjustReputation, canActOn, logModeration, MISSING_ADMIN_COLUMNS_RE } from '@/lib/adminActions';
@@ -11,7 +12,7 @@ export const dynamic = 'force-dynamic';
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const PENALTY_STEPS = [0, 5, 10, 20];
 
-function ageOf(p: any): number | null {
+function ageOf(p: DbRow): number | null {
   if (typeof p.age === 'number') return p.age;
   if (!p.birthdate) return null;
   const b = new Date(p.birthdate);

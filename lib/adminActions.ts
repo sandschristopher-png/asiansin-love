@@ -15,7 +15,7 @@ export async function canActOn(
   actorRole: AdminRole,
   actorId: string,
   targetId: string
-): Promise<{ ok: true; target: Record<string, any> } | { ok: false; status: number; error: string }> {
+): Promise<{ ok: true; target: Record<string, unknown> } | { ok: false; status: number; error: string }> {
   const { data: target } = await admin.from('profiles').select('*').eq('id', targetId).maybeSingle();
   if (!target) return { ok: false, status: 404, error: 'Member not found.' };
   if (targetId === actorId) return { ok: false, status: 400, error: 'You cannot apply this to your own account.' };

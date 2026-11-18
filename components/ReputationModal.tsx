@@ -1,6 +1,7 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
+import { useMounted } from '@/hooks/useMounted';
+import React, { useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import { ShieldCheck, AlertTriangle, CheckCircle2, X } from 'lucide-react';
 import { ReputationBadge } from '@/components/ReputationBadge';
@@ -15,14 +16,9 @@ interface ReputationModalProps {
 export default function ReputationModal({
   isOpen,
   onClose,
-  name = 'You',
   score = 100,
 }: ReputationModalProps) {
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useMounted();
 
   // Lock background scroll when open
   useEffect(() => {

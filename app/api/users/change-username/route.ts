@@ -1,3 +1,4 @@
+import { errMsg } from '@/lib/errors';
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 
@@ -17,7 +18,7 @@ export async function POST(req: Request) {
     }
     const status = data?.ok ? 200 : data?.error === 'not_authenticated' ? 401 : 400;
     return NextResponse.json(data, { status });
-  } catch (err: any) {
-    return NextResponse.json({ ok: false, error: err?.message || 'server_error' }, { status: 500 });
+  } catch (err) {
+    return NextResponse.json({ ok: false, error: errMsg(err) || 'server_error' }, { status: 500 });
   }
 }

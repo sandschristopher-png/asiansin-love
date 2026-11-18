@@ -31,6 +31,7 @@ export function PushDeviceRow() {
     return onPushSyncChange(read);
   }, []);
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- reads browser push support after hydration
   useEffect(() => setState(getPushSupport()), []);
 
   const canEnable = state === 'default' || state === 'error';

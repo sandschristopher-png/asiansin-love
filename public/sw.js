@@ -86,7 +86,7 @@ self.addEventListener('push', (event) => {
   let payload = {};
   try {
     payload = event.data.json();
-  } catch (err) {
+  } catch {
     payload = { title: 'Meet in Asia', body: event.data.text() };
   }
 

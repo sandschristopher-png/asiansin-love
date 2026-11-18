@@ -36,6 +36,7 @@ function VerifyContent() {
   const finish = async (userId: string, type: EmailOtpType) => {
     setStatus('success');
     if (type === 'recovery') {
+      // eslint-disable-next-line @next/next/no-location-assign-relative-destination -- hard reload on purpose: the recovery session must start from a clean client
       window.location.href = '/reset-password';
       return;
     }

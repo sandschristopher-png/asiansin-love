@@ -12,7 +12,20 @@ import { supabase } from '@/lib/supabase/client';
 export const HEADER_PROFILE_COLUMNS =
   'id, username, avatar_url, is_plus, is_premium, subscription_status, current_period_end, plus_expires_at, admin_role, role, is_admin';
 
-export type HeaderProfile = Record<string, any> & { id: string };
+/** The columns of HEADER_PROFILE_COLUMNS, as they come back from the database. */
+export type HeaderProfile = {
+  id: string;
+  username?: string | null;
+  avatar_url?: string | null;
+  is_plus?: boolean | null;
+  is_premium?: boolean | null;
+  subscription_status?: string | null;
+  current_period_end?: string | null;
+  plus_expires_at?: string | null;
+  admin_role?: string | null;
+  role?: string | null;
+  is_admin?: boolean | null;
+};
 
 const STORAGE_KEY = 'mia_header_profile';
 const COUNT_KEY = 'mia_header_unread';

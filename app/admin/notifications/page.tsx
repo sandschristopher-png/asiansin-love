@@ -47,6 +47,7 @@ export default function AdminNotificationsPage() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- initial fetch on mount; the loader owns the state it sets
     void load();
   }, [load]);
 

@@ -1,12 +1,13 @@
 'use client';
 
+import { errMsg } from '@/lib/errors';
 import dynamic from 'next/dynamic';
 import { TILE_IMAGE, supabaseImage } from '@/lib/images/supabaseImage';
 
 import React, { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, MapPin, Save, UserCheck, ShieldCheck, Camera, Loader2, Plus, X } from 'lucide-react';
+import { MapPin, Save, ShieldCheck, Camera, Loader2, Plus, X } from 'lucide-react';
 import { BackButton } from '@/components/BackButton';
 import { supabase } from '@/lib/supabase/client';
 import { resolveCountry } from '@/lib/countries';
@@ -31,35 +32,6 @@ import { useStepUp } from '@/components/verify/useStepUp';
 const UpgradeModal = dynamic(() => import('@/components/UpgradeModal'), { ssr: false });
 
 
-
-function cleanHeightForDb(input: string): string | null {
-  if (!input || !input.trim()) return null;
-  const raw = input.trim();
-
-  // If already matches "XXX cm", return trimmed
-  const cmMatch = raw.match(/^(\d{2,3})\s*cm$/i);
-  if (cmMatch) return `${cmMatch[1]} cm`;
-
-  // If user entered just numbers (e.g. 165 or 170)
-  const numOnlyMatch = raw.match(/^(\d{2,3})$/);
-  if (numOnlyMatch) return `${numOnlyMatch[1]} cm`;
-
-  // If user entered imperial like 5'5", 5ft 5, 5'5
-  const imperialMatch = raw.match(/^(\d)['’fts]+(\d{1,2})["”ins]*$/i);
-  if (imperialMatch) {
-    const feet = parseInt(imperialMatch[1], 10);
-    const inches = parseInt(imperialMatch[2], 10);
-    const totalInches = feet * 12 + inches;
-    const cm = Math.round(totalInches * 2.54);
-    return `${cm} cm`;
-  }
-
-  // Fallback: extract any 2-3 digit number found
-  const anyNum = raw.match(/(\d{2,3})/);
-  if (anyNum) return `${anyNum[1]} cm`;
-
-  return null;
-}
 
 export default function EditProfilePage() {
   const router = useRouter();
@@ -193,8 +165,8 @@ export default function EditProfilePage() {
           text: result.message || 'Location verified successfully! Badge awarded.',
         });
       }
-    } catch (err: any) {
-      setStatusMsg({ type: 'error', text: err.message || 'Verification failed.' });
+    } catch (err) {
+      setStatusMsg({ type: 'error', text: errMsg(err) || 'Verification failed.' });
     } finally {
       setVerifyingLocation(false);
     }
@@ -268,8 +240,8 @@ export default function EditProfilePage() {
         }
       }
       setStatusMsg({ type: 'success', text: 'Photo uploaded successfully!' });
-    } catch (err: any) {
-      setStatusMsg({ type: 'error', text: err.message || 'Photo upload failed.' });
+    } catch (err) {
+      setStatusMsg({ type: 'error', text: errMsg(err) || 'Photo upload failed.' });
     } finally {
       setUploadingIdx(null);
       e.target.value = '';
@@ -300,9 +272,9 @@ export default function EditProfilePage() {
       if (!res.ok) throw new Error(data.error || 'Failed to set avatar.');
       if (Array.isArray(data.photos)) setPhotos(data.photos);
       setStatusMsg({ type: 'success', text: 'Primary avatar updated!' });
-    } catch (err: any) {
+    } catch (err) {
       setPhotos(previousPhotos);
-      setStatusMsg({ type: 'error', text: err.message || 'Failed to set avatar.' });
+      setStatusMsg({ type: 'error', text: errMsg(err) || 'Failed to set avatar.' });
     }
   };
 
@@ -406,8 +378,8 @@ export default function EditProfilePage() {
       setTimeout(() => {
         router.push('/profile');
       }, 1000);
-    } catch (err: any) {
-      setStatusMsg({ type: 'error', text: err.message || 'Failed to update profile.' });
+    } catch (err) {
+      setStatusMsg({ type: 'error', text: errMsg(err) || 'Failed to update profile.' });
     } finally {
       setSaving(false);
     }

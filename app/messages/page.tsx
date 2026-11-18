@@ -1,9 +1,11 @@
 'use client';
 
+import type { DbRow } from '@/lib/dbRows';
+import type { RealtimeChannel, RealtimePostgresChangesPayload } from '@supabase/supabase-js';
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { Check, Mail, MessageCircle, Search, ShieldCheck, Trash2 } from 'lucide-react';
+import { Check, Mail, MessageCircle, Search, Trash2 } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { ReputationBadge } from '@/components/ReputationBadge';
 import { SwipeableRow } from '@/components/SwipeableRow';
@@ -136,7 +138,7 @@ export default function MessagesPage() {
           { lastMessage: string; lastMessageAt: string; messageId: string; unreadCount: number }
         >();
 
-        for (const m of msgs as any[]) {
+        for (const m of msgs as DbRow[]) {
           if (m.is_quarantined && m.sender_id !== userId) continue;
           const partnerId = m.sender_id === userId ? m.receiver_id : m.sender_id;
           if (!partnerId || String(partnerId).startsWith('00000000')) continue;
@@ -172,13 +174,13 @@ export default function MessagesPage() {
           .select('id, display_name, full_name, username, avatar_url, reputation_score')
           .in('id', partnerIds);
 
-        const profileMap = new Map((profilesData || []).map((p: any) => [p.id, p]));
+        const profileMap = new Map((profilesData || []).map((p: DbRow) => [p.id, p]));
 
         const formatted: ConversationItem[] = partnerIds
           .filter((partnerId) => profileMap.has(partnerId))
           .map((partnerId) => {
             const info = partnerMap.get(partnerId)!;
-            const partner = profileMap.get(partnerId) as any;
+            const partner = profileMap.get(partnerId) as DbRow | undefined;
             const cleanName = publicName(partner);
 
             return {
@@ -210,7 +212,7 @@ export default function MessagesPage() {
 
   useEffect(() => {
     const isMountedRef = { current: true };
-    let channel: any = null;
+    let channel: RealtimeChannel | null = null;
 
     async function init() {
       // Local session read (no network round trip); RLS still scopes every query to this member.
@@ -229,9 +231,9 @@ export default function MessagesPage() {
       const channelName = 'user_inbox_' + user.id;
       channel = supabase
         .channel(channelName)
-        .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, (payload: any) => {
+        .on('postgres_changes', { event: '*', schema: 'public', table: 'messages' }, (payload: RealtimePostgresChangesPayload<DbRow>) => {
           if (!isMountedRef.current) return;
-          const row = (payload.new || payload.old) as any;
+          const row = (payload.new || payload.old) as DbRow | undefined;
           if (row && (row.sender_id === user.id || row.receiver_id === user.id)) {
             loadConversations(user.id, isMountedRef);
           }

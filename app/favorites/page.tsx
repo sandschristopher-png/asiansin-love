@@ -1,5 +1,6 @@
 'use client';
 
+import type { DbRow } from '@/lib/dbRows';
 import React, { useEffect, useState, useMemo } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -171,8 +172,8 @@ function getLocationLabel(p: ProfileCardData): string {
 }
 
 
-let memorySparksCache: any = null;
-function getInitialSparksState(): any {
+let memorySparksCache: DbRow | null = null;
+function getInitialSparksState(): DbRow | null {
   // Memory cache only: survives SPA navigation, safe during hydration.
   // sessionStorage restore happens in the mount useEffect below.
   if (memorySparksCache) return JSON.parse(JSON.stringify(memorySparksCache));
@@ -264,6 +265,7 @@ export default function SparksPage() {
       if (raw) {
         const parsed: CachedSparksState = JSON.parse(raw);
         if (parsed && Array.isArray(parsed.sparked)) {
+          // eslint-disable-next-line react-hooks/set-state-in-effect -- restores the session cache after mount (hydration-safe)
           setUserGender(parsed.userGender || 'male');
           setIsPlus(Boolean(parsed.isPlus));
           setSparkedList(parsed.sparked || []);
@@ -322,12 +324,12 @@ export default function SparksPage() {
         const unwrap = <T,>(r: PromiseSettledResult<T>): T | null =>
           r.status === 'fulfilled' ? r.value : null;
 
-        const outSparkRows: any[] = (unwrap(outSparksRes)?.data as any[]) ?? [];
+        const outSparkRows: DbRow[] = (unwrap(outSparksRes)?.data as DbRow[]) ?? [];
 for (const [label, res] of [['outgoing', outSparksRes], ['incoming', inSparksRes]] as const) {
   if (res.status === 'rejected') console.warn(`Sparks load failed (${label}):`, res.reason);
   else if (res.value.error) console.warn(`Sparks query error (${label}):`, res.value.error.message, res.value.error.code);
 }
-        const inSparkRows: any[] = (unwrap(inSparksRes)?.data as any[]) ?? [];
+        const inSparkRows: DbRow[] = (unwrap(inSparksRes)?.data as DbRow[]) ?? [];
 
         const outIds: string[] = Array.from(new Set<string>(
           outSparkRows.map((r) => r.receiver_id).filter((x): x is string => typeof x === 'string')
@@ -561,7 +563,7 @@ for (const [label, res] of [['outgoing', outSparksRes], ['incoming', inSparksRes
           </div>
           {activeTab === 'sparked_you' && recentInboundCount >= 15 && (
             <div className="mt-3.5 mb-1 mx-auto max-w-md px-3.5 py-2.5 rounded-xl bg-[#E8E6F1]/60 border border-[#8574B7]/20 text-center">
-              <p className="text-[12px] font-semibold text-[#8574B7]">You're getting a lot of attention - {recentInboundCount} sparks in the last 48 hours</p>
+              <p className="text-[12px] font-semibold text-[#8574B7]">You&apos;re getting a lot of attention - {recentInboundCount} sparks in the last 48 hours</p>
               <p className="text-[11px] text-[#413B5E]/75 mt-0.5">Best matches first - profiles with photos and verification rise to the top</p>
             </div>
           )}
