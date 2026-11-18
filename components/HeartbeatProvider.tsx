@@ -10,25 +10,31 @@ const HEARTBEAT_MS = 2 * 60 * 1000;
 export default function HeartbeatProvider() {
   useEffect(() => {
     let first = true;
-    const sendHeartbeat = () => {
-      if (document.visibilityState === "visible") {
-        // The first ping of this session also lets the server notice a login from a new country.
-        const headers: Record<string, string> = first ? { "x-session-start": "1" } : {};
-        first = false;
-        fetch("/api/user/heartbeat", { method: "POST", headers }).catch(() => {
-          // Fail silently on network drops
-        });
-      }
+    let cancelled = false;
+    const sendHeartbeat = async () => {
+      if (document.visibilityState !== "visible") return;
+      // Signed-out visitors have nothing to report (the route would answer 401): read the local session first, no
+      // network round trip. This also keeps the one-time session-start flag for the first ping that can use it.
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      if (!session || cancelled) return;
+      // The first ping of this session also lets the server notice a login from a new country.
+      const headers: Record<string, string> = first ? { "x-session-start": "1" } : {};
+      first = false;
+      fetch("/api/user/heartbeat", { method: "POST", headers }).catch(() => {
+        // Fail silently on network drops
+      });
     };
 
     // Ping once on mount, then every 2 minutes while visible
-    sendHeartbeat();
-    const interval = setInterval(sendHeartbeat, HEARTBEAT_MS);
-    window.addEventListener("focus", sendHeartbeat);
-    document.addEventListener("visibilitychange", sendHeartbeat);
+    const ping = () => void sendHeartbeat();
+    ping();
+    const interval = setInterval(ping, HEARTBEAT_MS);
+    window.addEventListener("focus", ping);
+    document.addEventListener("visibilitychange", ping);
 
     // Live presence: everyone listens; only members with "Show active status" on are tracked.
-    let cancelled = false;
     (async () => {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user || cancelled) return;
@@ -44,8 +50,8 @@ export default function HeartbeatProvider() {
     return () => {
       cancelled = true;
       clearInterval(interval);
-      window.removeEventListener("focus", sendHeartbeat);
-      document.removeEventListener("visibilitychange", sendHeartbeat);
+      window.removeEventListener("focus", ping);
+      document.removeEventListener("visibilitychange", ping);
       leavePresence();
     };
   }, []);
