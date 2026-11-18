@@ -32,6 +32,11 @@ ok('a diagonal tilt does not count as a pure turn', !hp.poseReached('turn_left',
 ok('the member neutral pose is respected (looking slightly down at rest)', hp.poseReached('look_down', at(0.5, 0.66), hp.poseRatios(face(0.5, 0.6))) === true);
 ok('progress runs 0..1', hp.poseProgress('turn_left', neutral, neutral) === 0 && hp.poseProgress('turn_left', at(0.58, 0.55), neutral) === 1 && hp.poseProgress('turn_left', at(0.46, 0.55), neutral) === 0);
 ok('missing landmarks give no ratios', hp.poseRatios([]) === null && hp.poseRatios(null) === null);
+// Forgiveness on real phones: a hold that has started survives jitter just under the line, but never a real return.
+ok('a started hold keeps going slightly under the threshold', !hp.poseReached('turn_left', at(0.545, 0.55), neutral) && hp.poseReached('turn_left', at(0.545, 0.55), neutral, hp.HOLD_KEEP_SLACK));
+ok('relaxed hold still needs a real turn', !hp.poseReached('turn_left', at(0.51, 0.55), neutral, hp.HOLD_KEEP_SLACK));
+ok('the starting pose must be roughly frontal', hp.neutralIsFrontal(at(0.5, 0.55)) && hp.neutralIsFrontal(at(0.53, 0.55)) && !hp.neutralIsFrontal(at(0.6, 0.55)) && !hp.neutralIsFrontal(at(0.4, 0.55)));
+ok('grace is shorter than the hold, so it cannot fake one', hp.LOST_GRACE_MS < rules.MIN_HOLD_MS);
 
 // Challenge rules
 let seed = 7;

@@ -18,7 +18,7 @@ import {
 import Image from 'next/image';
 import { useLocale } from '@/components/i18n/LocaleProvider';
 import { haptic } from '@/lib/haptics';
-import { poseRatios, poseReached, type PoseRatios, type StepUpPose } from '@/lib/headPose';
+import { HOLD_KEEP_SLACK, LOST_GRACE_MS, neutralIsFrontal, poseRatios, poseReached, type PoseRatios, type StepUpPose } from '@/lib/headPose';
 import { MIN_HOLD_MS } from '@/lib/verify/stepUpRules';
 import { FACE_MIN_CONFIDENCE } from '@/lib/faceGateMessages';
 import type { TKey } from '@/lib/i18n';
@@ -244,6 +244,7 @@ export function StepUpFlow({ open, reason, photo, onClose, onResult }: Props) {
       const neutralSamples: PoseRatios[] = [];
       let poseIdx = -1;
       let holdStart: number | null = null;
+      let lastReachedAt = 0;
       const log: { pose: StepUpPose; holdMs: number }[] = [];
       const frames: Blob[] = [];
       let busy = false;
@@ -271,7 +272,7 @@ export function StepUpFlow({ open, reason, photo, onClose, onResult }: Props) {
 
           if (poseIdx === -1) {
             // Neutral: one face, looking at the camera, steady for NEUTRAL_MS.
-            if (!ratios) {
+            if (!ratios || !neutralIsFrontal(ratios)) {
               neutralSince = null;
               neutralSamples.length = 0;
               return;
@@ -294,7 +295,12 @@ export function StepUpFlow({ open, reason, photo, onClose, onResult }: Props) {
           }
 
           const target = sequence[poseIdx];
-          if (!ratios || !neutral || !poseReached(target, ratios, neutral)) {
+          // Once the hold has started, a slightly relaxed threshold keeps it alive (jitter around the line must
+          // not restart it) and a brief dropout (a blink, one lost frame) is forgiven for LOST_GRACE_MS.
+          const reached = !!ratios && !!neutral && poseReached(target, ratios, neutral, holdStart === null ? 1 : HOLD_KEEP_SLACK);
+          if (reached) lastReachedAt = now;
+          if (!reached) {
+            if (holdStart !== null && now - lastReachedAt <= LOST_GRACE_MS) return;
             holdStart = null;
             setProgress(0);
             return;

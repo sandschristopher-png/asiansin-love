@@ -63,7 +63,7 @@ export default function VerifyPage() {
   const icons = [ScanFace, ShieldCheck, Lock];
 
   return (
-    <main className="min-h-screen bg-white text-[#413B5E] flex flex-col justify-start">
+    <main className="min-h-[100dvh] bg-white text-[#413B5E] flex flex-col justify-start">
       {element}
       <div className="flex items-center justify-between pt-3 pb-4 border-b border-[#D0CDE1] px-4">
         <button
