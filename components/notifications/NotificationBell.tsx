@@ -39,7 +39,9 @@ export function NotificationBell() {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const panelRef = useRef<HTMLDivElement>(null);
   const openRef = useRef(false);
-  openRef.current = open;
+  useEffect(() => {
+    openRef.current = open;
+  }, [open]);
 
   const loadPanel = useCallback(async () => {
     const res = await fetch(FRESH_URL, { cache: 'no-store' }).catch(() => null);

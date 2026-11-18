@@ -91,6 +91,24 @@ const Chip = ({ tone, children }: { tone: 'good' | 'bad' | 'neutral'; children: 
 const nameOf = (p: { username?: string | null; id: string }) =>
   p.username ? `@${p.username}` : `Member ${p.id.slice(0, 8)}`;
 
+// Module scope on purpose: a component declared inside the page is a new type every render, so React would
+// unmount and remount these on each state change.
+function SectionTitle({ icon, title, count }: { icon: React.ReactNode; title: string; count: number }) {
+  return (
+    <div className="flex items-center justify-between">
+      <h2 className="flex items-center gap-2 text-sm font-semibold text-[#413B5E]" style={{ fontFamily: 'var(--font-brand)' }}>
+        {icon}
+        {title}
+      </h2>
+      <span className="px-2 py-0.5 rounded-full bg-[#E8E6F1]/60 text-[#8574B7] text-[11px] font-semibold">{count}</span>
+    </div>
+  );
+}
+
+function Empty({ text }: { text: string }) {
+  return <p className="p-5 text-center text-xs text-slate-600 bg-white rounded-2xl border border-[#D0CDE1]">{text}</p>;
+}
+
 export default function AdminVerificationsPage() {
   const [identity, setIdentity] = useState<IdentityItem[]>([]);
   const [avatars, setAvatars] = useState<AvatarItem[]>([]);
@@ -185,20 +203,6 @@ export default function AdminVerificationsPage() {
       </div>
     );
   };
-
-  const SectionTitle = ({ icon, title, count }: { icon: React.ReactNode; title: string; count: number }) => (
-    <div className="flex items-center justify-between">
-      <h2 className="flex items-center gap-2 text-sm font-semibold text-[#413B5E]" style={{ fontFamily: 'var(--font-brand)' }}>
-        {icon}
-        {title}
-      </h2>
-      <span className="px-2 py-0.5 rounded-full bg-[#E8E6F1]/60 text-[#8574B7] text-[11px] font-semibold">{count}</span>
-    </div>
-  );
-
-  const Empty = ({ text }: { text: string }) => (
-    <p className="p-5 text-center text-xs text-slate-600 bg-white rounded-2xl border border-[#D0CDE1]">{text}</p>
-  );
 
   return (
     <div className="text-[#413B5E]">
