@@ -1,4 +1,3 @@
-import { errMsg } from '@/lib/errors';
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient as createSessionClient } from '@/lib/supabase/server';
 
@@ -32,6 +31,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true });
   } catch (err) {
-    return NextResponse.json({ error: errMsg(err) }, { status: 500 });
+    console.error('[api/push/unsubscribe] unexpected error:', err);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

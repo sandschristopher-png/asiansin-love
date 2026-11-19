@@ -1,5 +1,4 @@
 
-import { errMsg } from '@/lib/errors';
 import { NextResponse } from 'next/server';
 import { createClient as createSessionClient } from '@/lib/supabase/server';
 
@@ -77,6 +76,7 @@ export async function GET(req: Request) {
       label: `${remaining} of 5 new chats left today`,
     });
   } catch (err) {
-    return NextResponse.json({ error: errMsg(err) }, { status: 500 });
+    console.error('[api/messages/quota] unexpected error:', err);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }

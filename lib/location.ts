@@ -22,36 +22,6 @@ export function formatVerifiedDate(dateString?: string | null): string {
   if (diffDays < 30) return `${diffDays} days ago`;
   return date.toLocaleDateString();
 }
-
-// Distance computation using Haversine formula
-export function getDistanceLabel(
-  lat1?: number | null,
-  lon1?: number | null,
-  lat2?: number | null,
-  lon2?: number | null
-): string | null {
-  if (!lat1 || !lon1 || !lat2 || !lon2) return null;
-
-  const R = 6371; // km
-  const dLat = ((lat2 - lat1) * Math.PI) / 180;
-  const dLon = ((lon2 - lon1) * Math.PI) / 180;
-  const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-    Math.cos((lat1 * Math.PI) / 180) *
-      Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLon / 2) *
-      Math.sin(dLon / 2);
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-  const rawKm = R * c;
-  if (rawKm < 1) return '< 1 km away';
-  if (rawKm < 10) return `${rawKm.toFixed(1)} km away`;
-  if (rawKm > 1000) {
-    const miles = Math.round(rawKm * 0.621371);
-    return `${miles.toLocaleString()} mi away`;
-  }
-  return `${Math.round(rawKm)} km away`;
-}
-
 // Capture GPS & reverse-geocode via Nominatim
 export async function captureCurrentLocation(): Promise<{
   success: boolean;

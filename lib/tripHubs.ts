@@ -53,12 +53,6 @@ export function isoToday(days = 0): string {
   return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
 }
 
-const DAY_MS = 86_400_000;
-const dayNumber = (iso: string) => {
-  const [y, m, d] = iso.split('-').map(Number);
-  return Math.round(Date.UTC(y, (m || 1) - 1, d || 1) / DAY_MS);
-};
-
 function monthDay(iso: string) {
   const [y, m, d] = iso.split('-').map(Number);
   return `${new Date(Date.UTC(y, (m || 1) - 1, d || 1)).toLocaleDateString('en-US', { month: 'short', timeZone: 'UTC' })} ${d}`;
@@ -81,20 +75,4 @@ export function tripPhase(trip: { arrival: string; departure: string }, today = 
   if (trip.departure < today) return 'past';
   if (trip.arrival <= today) return 'now';
   return 'upcoming';
-}
-
-/** "In Manila now" / "Arriving tomorrow" / "Arriving in 6 days" (for the manager's status pill). */
-export function tripStatusLabel(trip: { city: string; arrival: string; departure: string }, today = isoToday()): string {
-  const phase = tripPhase(trip, today);
-  if (phase === 'now') return `In ${trip.city} now`;
-  if (phase === 'past') return 'Ended';
-  const days = dayNumber(trip.arrival) - dayNumber(today);
-  return days <= 1 ? 'Arriving tomorrow' : `Arriving in ${days} days`;
-}
-
-/** Discover card / profile label: "In Manila now" or "Visiting Manila · Nov 18 – Dec 2". */
-export function tripBadgeLabel(trip: TripBrief, today = isoToday()): string {
-  return tripPhase(trip, today) === 'now'
-    ? `In ${trip.city} now`
-    : `Visiting ${trip.city} · ${formatRange(trip.arrival, trip.departure)}`;
 }

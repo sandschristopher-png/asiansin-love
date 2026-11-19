@@ -1,5 +1,4 @@
 
-import { errMsg } from '@/lib/errors';
 import { NextResponse, after } from 'next/server';
 import { notifyAdmins } from '@/lib/adminNotify';
 import exifr from 'exifr';
@@ -275,7 +274,7 @@ export async function POST(req: Request) {
   } catch (err) {
     console.error('Error in /api/photos/upload:', err);
     return NextResponse.json(
-      { error: errMsg(err) || 'Internal server error processing photo' },
+      { error: 'Internal server error processing photo' },
       { status: 500 }
     );
   }

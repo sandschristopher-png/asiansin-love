@@ -1,4 +1,3 @@
-import { errMsg } from '@/lib/errors';
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 
@@ -19,6 +18,7 @@ export async function POST(req: Request) {
     const status = data?.ok ? 200 : data?.error === 'not_authenticated' ? 401 : 400;
     return NextResponse.json(data, { status });
   } catch (err) {
-    return NextResponse.json({ ok: false, error: errMsg(err) || 'server_error' }, { status: 500 });
+    console.error('[api/users/change-username] unexpected error:', err);
+    return NextResponse.json({ ok: false, error: 'server_error' }, { status: 500 });
   }
 }

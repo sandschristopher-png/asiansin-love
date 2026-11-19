@@ -1,4 +1,3 @@
-import { errMsg } from '@/lib/errors';
 import { createClient } from '@/lib/supabase/server'
 import { createClient as createServiceClient } from '@supabase/supabase-js'
 import { NextResponse, after } from 'next/server'
@@ -6,6 +5,8 @@ import { checkVelocity } from '@/lib/verify/riskFlags'
 import { sendPushToUser } from '@/lib/pushSender'
 import { titleForRecipient } from '@/lib/notificationTitles'
 import { FREE_DAILY_SPARKS } from '@/lib/plusPlans'
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
 
 // POST { targetUserId, action?: 'spark' | 'toggle' }
 //   Writes public.sparks (sender_id = me, receiver_id = target); /favorites "You Sparked" reads
@@ -25,7 +26,8 @@ export async function POST(req: Request) {
     const body = await req.json().catch(() => ({}))
     const targetUserId: unknown = body?.targetUserId
     const action: 'spark' | 'toggle' = body?.action === 'toggle' ? 'toggle' : 'spark'
-    if (typeof targetUserId !== 'string' || !targetUserId || targetUserId === user.id) {
+    // A real member id only: the value is also used inside a PostgREST filter below, so anything else is refused.
+    if (typeof targetUserId !== 'string' || !UUID_RE.test(targetUserId) || targetUserId === user.id) {
       return NextResponse.json({ error: 'Invalid target user' }, { status: 400 })
     }
 
@@ -144,7 +146,8 @@ export async function POST(req: Request) {
 
     return NextResponse.json({ success: true, sparked: true, is_mutual: !!mutual, mutual: !!mutual })
   } catch (err) {
-    return NextResponse.json({ error: errMsg(err) }, { status: 500 })
+    console.error('[api/spark] unexpected error:', err)
+    return NextResponse.json({ error: 'Something went wrong. Please try again.' }, { status: 500 })
   }
 }
 

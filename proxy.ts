@@ -9,22 +9,32 @@ const PROTECTED_PREFIXES = [
 ];
 
 /** Signed-out request for a protected page -> /login?returnTo=<that page>. */
-function loginRedirect(request: NextRequest) {
+function loginUrl(request: NextRequest): URL {
   const url = new URL('/login', request.url);
   const back = safeReturnTo(request.nextUrl.pathname + request.nextUrl.search);
   if (back) url.searchParams.set('returnTo', back);
-  return NextResponse.redirect(url);
+  return url;
 }
 
 /** Value = the member's id once profiles.onboarding_completed is confirmed true. */
 const ONBOARDED_COOKIE = 'ail_onb';
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   let response = NextResponse.next({
     request: {
       headers: request.headers,
     },
   });
+
+  /**
+   * A redirect that carries any session cookies Supabase refreshed during this request. A bare redirect would drop
+   * them, and the rotated refresh token would be lost on the very next page.
+   */
+  const redirectTo = (dest: URL | string) => {
+    const redirect = NextResponse.redirect(dest instanceof URL ? dest : new URL(dest, request.url));
+    response.cookies.getAll().forEach((c) => redirect.cookies.set(c));
+    return redirect;
+  };
 
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || '';
   const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || '';
@@ -100,12 +110,12 @@ export async function middleware(request: NextRequest) {
     const onboarded = await isOnboarded(user.id);
 
     if (isOnboarding && onboarded) {
-      const redirect = NextResponse.redirect(new URL('/discover', request.url));
+      const redirect = redirectTo('/discover');
       redirect.cookies.set(ONBOARDED_COOKIE, user.id, { path: '/', httpOnly: true, sameSite: 'lax', maxAge: 60 * 60 * 24 * 30 });
       return redirect;
     }
     if (isProtectedRoute && !onboarded) {
-      return NextResponse.redirect(new URL('/onboarding', request.url));
+      return redirectTo('/onboarding');
     }
   }
 
@@ -118,13 +128,13 @@ export async function middleware(request: NextRequest) {
   if (!user) {
     // Protected route while signed out: sign in first, then come straight back.
     if (isProtectedRoute) {
-      return loginRedirect(request);
+      return redirectTo(loginUrl(request));
     }
 
     // Root '/' while signed out
     if (pathname === '/') {
       if (hasVisitedBefore) {
-        return NextResponse.redirect(new URL('/login', request.url));
+        return redirectTo('/login');
       }
       // First-time visitor: show HeroLanding at '/' and mark cookie for next visit
       response.cookies.set('ail_returning', '1', {
@@ -165,9 +175,7 @@ export async function middleware(request: NextRequest) {
     const dest = (await isOnboarded(user.id))
       ? safeReturnTo(request.nextUrl.searchParams.get('returnTo')) || '/discover'
       : '/onboarding';
-    const redirect = NextResponse.redirect(new URL(dest, request.url));
-    response.cookies.getAll().forEach((c) => redirect.cookies.set(c));
-    return redirect;
+    return redirectTo(dest);
   }
 
   return response;

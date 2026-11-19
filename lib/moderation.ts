@@ -185,11 +185,6 @@ export function detectContactSharing(text: string): ContactCheck {
 
 /** Patterns kept for callers that test raw text directly; detectContactSharing is the full check. */
 export const CONTACT_DETECTION_PATTERNS: RegExp[] = [...CONTACT_PLATFORM_PATTERNS, ...CONTACT_LINK_PATTERNS, EMAIL_RE];
-
-export function hasContactSharingIntent(text: string): boolean {
-  return detectContactSharing(text).detected;
-}
-
 // ---------------------------------------------------------------------------
 // Substantive-conversation gate (contact sharing unlocks after 3 messages each)
 // ---------------------------------------------------------------------------

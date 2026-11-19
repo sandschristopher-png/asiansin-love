@@ -1,5 +1,4 @@
 import type { DbRow } from '@/lib/dbRows';
-import { errMsg } from '@/lib/errors';
 import { NextResponse } from 'next/server';
 import { createServerSupabaseClient } from '@/lib/supabase/server';
 import { createClient } from '@supabase/supabase-js';
@@ -421,7 +420,8 @@ export async function GET(req: Request) {
       profiles,
     });
   } catch (err) {
-    return NextResponse.json({ error: errMsg(err) || 'Failed to load discover feed' }, { status: 500 });
+    console.error('[api/discover] unexpected error:', err);
+    return NextResponse.json({ error: 'Failed to load discover feed' }, { status: 500 });
   }
 }
 

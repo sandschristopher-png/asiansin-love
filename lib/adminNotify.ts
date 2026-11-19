@@ -18,7 +18,6 @@ import { DEFAULT_LOCALE, isLocale, type Locale } from '@/lib/i18n/config';
  */
 export type AdminAlertKind = 'verification' | 'photo' | 'report' | 'moderation' | 'appeal' | 'review';
 
-
 /** Where each alert opens inside the admin console. */
 export const ADMIN_QUEUE_HREF: Record<AdminAlertKind, string> = {
   verification: '/admin/verifications',
@@ -42,12 +41,6 @@ const TITLE_KIND: Partial<Record<AdminAlertKind, TitleKind>> = {
   report: 'adminReport',
   moderation: 'adminModeration',
 };
-
-/** Ids of every active staff member (moderator / super_admin, per lib/adminRoles adminRoleOf). */
-export async function staffIds(db: SupabaseClient = service()): Promise<string[]> {
-  return (await staffMembers(db)).map((s) => s.id);
-}
-
 /** Active staff with their saved language, so each admin's alert is composed in it. */
 async function staffMembers(db: SupabaseClient): Promise<{ id: string; locale: Locale }[]> {
   // '*': is_banned is optional across environments (as in lib/adminAuth.ts).

@@ -46,9 +46,6 @@ export const PLUS_PLANS: readonly PlusPlan[] = [
 ];
 
 export const DEFAULT_PLUS_PLAN: PlusPlanId = '3m';
-
-export const isPlusPlanId = (v: unknown): v is PlusPlanId => v === '1m' || v === '3m' || v === '6m';
-
 export const plusPlan = (id: PlusPlanId): PlusPlan => PLUS_PLANS.find((p) => p.id === id) ?? PLUS_PLANS[0];
 
 /** Free daily Sparks, for display. Enforced by public.get_spark_allowance: keep the two in sync. */

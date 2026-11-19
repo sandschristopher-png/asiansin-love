@@ -47,6 +47,8 @@ type Step = 'intro' | 'tips' | 'camera' | 'reviewing' | 'passed' | 'failed' | 'm
 const HOLD_TARGET_MS = MIN_HOLD_MS + 250;
 const NEUTRAL_MS = 700;
 const TICK_MS = 66;
+/** This many failing ticks in a row (camera or model broken) end the check instead of spinning silently. */
+const MAX_FRAME_FAULTS = 8;
 const CHECK_TIMEOUT_MS = 75_000;
 const FRAME_WIDTH = 480;
 
@@ -248,15 +250,19 @@ export function StepUpFlow({ open, reason, photo, onClose, onResult }: Props) {
       const log: { pose: StepUpPose; holdMs: number }[] = [];
       const frames: Blob[] = [];
       let busy = false;
+      let faults = 0;
 
       const timer = window.setInterval(async () => {
-        if (busy) return;
         if (cancelRef.current || !streamRef.current) return window.clearInterval(timer);
+        // The overall timeout is checked before the busy guard, so a frame read that never returns cannot hold the
+        // screen forever.
         if (performance.now() - began > CHECK_TIMEOUT_MS) {
           window.clearInterval(timer);
           return fail('stepup.expired');
         }
+        if (busy) return;
         busy = true;
+        let tickFailed = false;
         try {
           // The straight-photo path: as soon as the straight frame exists, send just that (after the 4 s minimum).
           if (accessRef.current && neutralBlob) {
@@ -285,7 +291,9 @@ export function StepUpFlow({ open, reason, photo, onClose, onResult }: Props) {
                 yaw: neutralSamples.reduce((s, r) => s + r.yaw, 0) / neutralSamples.length,
                 pitch: neutralSamples.reduce((s, r) => s + r.pitch, 0) / neutralSamples.length,
               };
-              neutralBlob = await frameOf(video);
+              const grabbed = await frameOf(video);
+              if (!grabbed) return; // could not grab a frame yet: try again on the next tick
+              neutralBlob = grabbed;
               poseIdx = 0;
               holdStart = null;
               setIndex(0);
@@ -320,11 +328,22 @@ export function StepUpFlow({ open, reason, photo, onClose, onResult }: Props) {
             if (poseIdx >= sequence.length) {
               window.clearInterval(timer);
               if (neutralBlob) void submit(token, log, neutralBlob, frames);
+              else fail('stepup.startFailed');
             } else {
               setIndex(poseIdx);
             }
           }
+        } catch (frameError) {
+          // One bad frame is skipped; a run of them means the camera or the model is broken: stop and say so.
+          tickFailed = true;
+          console.error('[step-up] frame error', frameError);
+          faults += 1;
+          if (faults >= MAX_FRAME_FAULTS) {
+            window.clearInterval(timer);
+            fail('stepup.startFailed');
+          }
         } finally {
+          if (!tickFailed) faults = 0;
           busy = false;
         }
       }, TICK_MS);

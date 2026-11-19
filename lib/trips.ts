@@ -1,5 +1,5 @@
 import { supabase } from '@/lib/supabase/client';
-import { formatRange, isoToday } from '@/lib/tripHubs';
+import { isoToday } from '@/lib/tripHubs';
 
 export { MAX_DAYS_AHEAD, MAX_NOTE_LEN, MAX_TRIP_DAYS, MAX_UPCOMING_TRIPS } from '@/lib/tripHubs';
 
@@ -42,9 +42,4 @@ export async function fetchUpcomingTrips(userId: string): Promise<Trip[]> {
   } catch {
     return [];
   }
-}
-
-/** "Nov 18 – Dec 2" for a trip row. */
-export function formatTripRange(start: string, end: string): string {
-  return formatRange(start, end);
 }

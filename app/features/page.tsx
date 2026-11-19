@@ -39,8 +39,8 @@ const features = [
   },
   {
     icon: BadgeCheck,
-    title: "Pose-Verified Profiles",
-    desc: "Catfishes and stolen internet photos are eliminated through real-time camera gesture checks. Meet the exact person you see on screen.",
+    title: "Selfie-Verified Profiles",
+    desc: "Catfishes and stolen internet photos are eliminated through a live camera check where members turn their head on request. Meet the exact person you see on screen.",
   },
   {
     icon: FileCheck,

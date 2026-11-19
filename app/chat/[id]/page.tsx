@@ -926,6 +926,16 @@ export default function ChatConversationPage() {
             .catch(() => {});
         }
       })
+      .subscribe((status) => {
+        if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
+          console.error('[chat] Channel error:', status);
+        }
+      });
+
+    // Reactions get a channel of their own: if that table is ever unavailable (its migration not run yet), live
+    // messages above must keep working.
+    const reactionsChannel = supabase
+      .channel(channelName + '_reactions')
       // Reactions: the other member's heart / thumbs up / laugh / fire appears here without a refresh.
       .on('postgres_changes', { event: '*', schema: 'public', table: 'message_reactions' }, (payload) => {
         if (!isMounted) return;
@@ -939,13 +949,14 @@ export default function ChatConversationPage() {
       })
       .subscribe((status) => {
         if (status === 'CHANNEL_ERROR' || status === 'TIMED_OUT') {
-          console.error('[chat] Channel error:', status);
+          console.warn('[chat] live reactions unavailable:', status);
         }
       });
 
     return () => {
       isMounted = false;
       supabase.removeChannel(channel);
+      supabase.removeChannel(reactionsChannel);
     };
   }, [resolvedTargetUuid, currentUserId]);
 

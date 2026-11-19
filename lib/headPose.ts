@@ -14,8 +14,8 @@
  *                                      FRAME_WIDTH (captured frame size), camera constraints in begin().
  *   lib/verify/stepUpRules.ts          MIN_HOLD_MS, MIN_TOTAL_MS, MAX_HOLD_MS, TOKEN_TTL_MS, MAX_ATTEMPTS_PER_HOUR
  *                                      (what the server accepts; HOLD_TARGET_MS must stay above MIN_HOLD_MS).
- *   lib/faceGate.ts + faceGateMessages MIN_FACE_WIDTH, FACE_HEIGHT, FACE_MIN_CONFIDENCE: face size and detector
- *                                      confidence for finding the face at all.
+ *   lib/faceGate.ts + faceGateMessages MIN_FACE_WIDTH, MIN_SECOND_FACE_WIDTH, FACE_MIN_CONFIDENCE: face size and
+ *                                      detector confidence for finding the face at all.
  * After a live phone test, change these and run `npm run stepup:test`.
  */
 export type StepUpPose = 'turn_left' | 'turn_right' | 'look_up' | 'look_down';

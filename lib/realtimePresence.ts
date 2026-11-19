@@ -31,6 +31,11 @@ export function joinPresence(userId: string, { track }: { track: boolean }) {
   });
 }
 
+/** True while the presence channel is joined (so callers can skip a redundant join). */
+export function presenceActive(): boolean {
+  return channel !== null;
+}
+
 export function leavePresence() {
   if (!channel) return;
   supabase.removeChannel(channel);

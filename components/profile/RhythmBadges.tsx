@@ -1,19 +1,5 @@
 import React from 'react';
 import { rhythmOption, RHYTHM_FIELDS, type RhythmField, type RhythmOption } from '@/lib/rhythm';
-import { ReputationBadge } from '@/components/ReputationBadge';
-
-/** Reputation pill ("[Shield] 98%", tier-colored); kept for existing callers. */
-export function RepBadge({
-  score,
-  onClick,
-  className = '',
-}: {
-  score: number;
-  onClick?: () => void;
-  className?: string;
-}) {
-  return <ReputationBadge score={score} onClick={onClick} className={className} />;
-}
 
 /** Small pill for a rhythm value (reply pace, relocation, timeline). Renders nothing when unset. */
 export function RhythmPill({
