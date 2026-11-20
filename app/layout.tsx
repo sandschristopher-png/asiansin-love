@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from 'next';
+import Script from 'next/script';
 
 import PwaRegister from "@/components/PwaRegister";
 
@@ -125,6 +126,29 @@ export default function RootLayout({
           dangerouslySetInnerHTML={{
             __html:
               "window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();window.__ailInstallEvent=e;});",
+          }}
+        />
+        {/* Travelpayouts Drive AI. The loader below is the snippet from the Travelpayouts dashboard, unchanged: it
+            creates an async <script data-cmp-ab="2"> for tpembars.com and appends it to <head>. afterInteractive runs it
+            after the page has hydrated, so it can never hold up the first paint or the app itself. The attributes on
+            the wrapper are the snippet's own. */}
+        <Script
+          id="travelpayouts-drive"
+          strategy="afterInteractive"
+          data-noptimize="1"
+          data-cfasync="false"
+          data-wpfc-render="false"
+          data-no-defer="1"
+          data-cmp-ab="2"
+          {...{ nowprocket: '', 'seraph-accel-crit': '1' }}
+          dangerouslySetInnerHTML={{
+            __html: `(function () {
+      var script = document.createElement("script");
+      script.async = 1;
+      script.setAttribute("data-cmp-ab","2");
+      script.src = 'https://tpembars.com/NjA0MjM2.js?t=604236';
+      document.head.appendChild(script);
+  })();`,
           }}
         />
       </head>
