@@ -67,7 +67,9 @@ const grant = ccb.decideEffect({ eventType: 'NewSaleSuccess', subscriptionId: '7
 ok('new sale grants', grant.kind === 'grant' && grant.subscriptionId === '7');
 ok('new sale period end from renewal date', grant.kind === 'grant' && grant.periodEnd.toISOString() === '2026-12-20T00:00:00.000Z');
 ok('renewal grants', ccb.decideEffect({ eventType: 'RenewalSuccess', subscriptionId: '7' }, NOW).kind === 'grant');
-ok('upgrade grants', ccb.decideEffect({ eventType: 'Upgrades', subscriptionId: '8' }, NOW).kind === 'grant');
+ok('upgrade grants', ccb.decideEffect({ eventType: 'UpgradeSuccess', subscriptionId: '8' }, NOW).kind === 'grant');
+ok('reactivation grants', ccb.decideEffect({ eventType: 'UserReactivation', subscriptionId: '7' }, NOW).kind === 'grant');
+ok('old Upgrades name is ignored', ccb.decideEffect({ eventType: 'Upgrades', subscriptionId: '8' }, NOW).kind === 'ignore');
 ok('cancellation keeps access', ccb.decideEffect({ eventType: 'Cancellation', subscriptionId: '7' }, NOW).kind === 'cancel');
 ok('expiration revokes as expired', ccb.decideEffect({ eventType: 'Expiration', subscriptionId: '7' }, NOW).status === 'expired');
 ok('chargeback revokes', ccb.decideEffect({ eventType: 'Chargeback', subscriptionId: '7' }, NOW).status === 'chargeback');

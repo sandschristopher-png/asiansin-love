@@ -13,7 +13,7 @@ import { timingSafeEqual } from 'crypto';
 export const CCBILL_MAX_BODY_BYTES = 64 * 1024;
 
 /** A grant or renewal: Plus is on until the period end. */
-export const CCBILL_GRANT_EVENTS = ['NewSaleSuccess', 'RenewalSuccess', 'Upgrades'] as const;
+export const CCBILL_GRANT_EVENTS = ['NewSaleSuccess', 'RenewalSuccess', 'UpgradeSuccess', 'UserReactivation'] as const;
 /** Auto-renew turned off: Plus stays on until the paid period ends. */
 export const CCBILL_CANCEL_EVENTS = ['Cancellation'] as const;
 /** Access ends at once. Maps each event to the stored subscription status. */
