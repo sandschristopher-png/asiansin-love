@@ -300,8 +300,8 @@ export default function SparksPage() {
           supabaseClient.from('sparks').select('sender_id, created_at').eq('receiver_id', user.id).order('created_at', { ascending: false })
         ]);
 
-        // Server-side gated fetch — no client-side bypass possible
-        const resp = await fetch('/api/sparks/gated');
+        // Server-side gated fetch — no client-side bypass possible. Bounded so a hung request can't keep the skeleton up.
+        const resp = await fetch('/api/sparks/gated', { signal: AbortSignal.timeout(15000) });
         // Sparked You / Visited are gated (Plus for men, free for women). "You Sparked" and
         // "Mutual" are the member's own sparks and always load, whatever the gate says.
         let sparkedYou: ProfileCardData[] = [];
@@ -384,6 +384,8 @@ for (const [label, res] of [['outgoing', outSparksRes], ['incoming', inSparksRes
         } catch {}
       } catch (err) {
         console.error('Error loading Sparks:', err);
+      } finally {
+        // Always resolve the loading state (success, early return, or error) so no tab stays on skeletons.
         if (isMounted) setLoading(false);
       }
     }

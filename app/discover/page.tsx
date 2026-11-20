@@ -1037,11 +1037,10 @@ function DiscoverContent() {
               const isLiked = state === 'like';
               const displayName = profile.username || profile.name || 'Member';
               const cityPart = profile.location ? profile.location.split(',')[0].trim() : '';
+              // Grid cards show the city only ("Manila", not "Manila, Philippines"); the full
+              // "City, Country" stays on the profile view. Falls back to country when no city is set.
               const countryPart = profile.country || '';
-              const formattedLocation =
-                cityPart && countryPart && cityPart.toLowerCase() !== countryPart.toLowerCase()
-                  ? `${cityPart}, ${countryPart}`
-                  : cityPart || countryPart || 'Unknown';
+              const formattedLocation = cityPart || countryPart || 'Unknown';
               return (
                 <div
                   key={profile.id}

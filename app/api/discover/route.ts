@@ -47,6 +47,12 @@ const OPTIONAL_COLUMN_RE = /reply_pace|is_travel_mode_active|visiting_|is_day_on
 
 export const dynamic = 'force-dynamic';
 
+/**
+ * Test and developer accounts that must never appear in the public Discover feed (lowercase).
+ * Matched against username and display name. Add new test handles here.
+ */
+const DISCOVER_HIDDEN_USERNAMES = new Set<string>(['bobby', '55555', 'ail2']);
+
 function normalizeGenderValue(raw?: string | null): 'female' | 'male' | 'female' | 'male' | 'male' {
   const val = String(raw || '').toLowerCase().trim().replace(/[\s-]+/g, '_');
   if (['male', 'male', 'male', 'm', 'guy', 'guys'].includes(val)) return 'male';
@@ -299,9 +305,11 @@ export async function GET(req: Request) {
         if (row.hide_profile) return false; // Settings > Hide my profile
         if (countryParam && !countryMatches(resolveCountry(row.city, row.country), countryParam)) return false;
 
-        // Evict seed/test profiles by name
+        // Evict seed/test/developer profiles by name so general members and reviewers only see real profiles
         const lowerName = String(row.username || '').toLowerCase().trim();
-        if (lowerName === 'bobby') return false;
+        if (DISCOVER_HIDDEN_USERNAMES.has(lowerName)) return false;
+        const lowerDisplay = String(row.display_name || '').toLowerCase().trim();
+        if (DISCOVER_HIDDEN_USERNAMES.has(lowerDisplay)) return false;
 
         // Require at least one real (non-placeholder) photo
         const isPlaceholder = (u: unknown) =>
