@@ -80,7 +80,7 @@ function getPhoto(p: ProfileCardData): string {
   return '';
 }
 
-/** Gallery for the card carousel: the photos array (avatar first if it is not in it), de-duplicated. */
+/** A member's photos, the main one first (avatar first if it is not in the array), de-duplicated. Cards show only the first. */
 function getPhotos(p: ProfileCardData): string[] {
   const isReal = (u: unknown): u is string => typeof u === 'string' && u.trim() !== '' && !u.endsWith('.svg');
   const list = [...(Array.isArray(p.photos) ? p.photos : [])].filter(isReal);
@@ -509,8 +509,8 @@ for (const [label, res] of [['outgoing', outSparksRes], ['incoming', inSparksRes
               const publicName = getPublicName(person);
               const age = getAge(person);
               const photo = shouldBlur ? '/placeholder-avatar.svg' : getPhoto(person);
-              // Locked (blurred) cards never load the member's real photos.
-              const gallery = shouldBlur ? [] : getPhotos(person);
+              // One hero photo per card (no swiping, dots or counter). Locked (blurred) cards never load the member's real photos.
+              const gallery = shouldBlur ? [] : getPhotos(person).slice(0, 1);
               const location = getLocationLabel(person);
               const rep = person.reputation_score ?? 100;
               return (
@@ -520,13 +520,13 @@ for (const [label, res] of [['outgoing', outSparksRes], ['incoming', inSparksRes
                   className="group relative isolate aspect-[3/4] rounded-2xl overflow-hidden bg-white border border-[#D0CDE1]/60 shadow-xs hover:shadow-md cursor-pointer active:scale-[0.98] transition-all duration-300"
                 >
                   {gallery.length > 0 ? (
-                    // Scroll-snap carousel (edge-resized WebP); a tap falls through to the card's onClick.
+                    // One edge-resized WebP; a tap falls through to the card's onClick.
                     <PhotoCarousel photos={gallery} alt={publicName} priority={idx < 2} className="absolute inset-0" />
                   ) : (
                     <SparkCardPhoto src={photo} name={publicName} className={`object-cover ${shouldBlur ? 'blur-md scale-110' : ''}`} />
                   )}
                   {/* Same overlay layout as Discover cards (top-left Reputation, top-right heart). */}
-                  {!shouldBlur && <ReputationBadge score={rep} variant="frosted" size="xs" className={`absolute ${gallery.length > 1 ? 'top-5' : 'top-2.5'} left-2.5 z-20`} />}
+                  {!shouldBlur && <ReputationBadge score={rep} variant="frosted" size="xs" className="absolute top-2.5 left-2.5 z-20" />}
                   {/* Same bare heart as Discover: white stroke keys it against dark hair and backgrounds.
                       Filled once the viewer has sparked this member (Sent, Mutual), outline otherwise. */}
                   <span aria-hidden className="absolute top-3 right-3 z-30 p-1.5 pointer-events-none">

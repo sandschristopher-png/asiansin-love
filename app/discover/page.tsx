@@ -5,7 +5,7 @@ import { createPortal } from 'react-dom';
 import Link from 'next/link';
 import VerifiedBadge from '@/components/VerifiedBadge';
 import { useSearchParams, useRouter } from 'next/navigation';
-import { Camera, Compass, Search, X as XIcon, SlidersHorizontal, RotateCcw, MapPin } from 'lucide-react';
+import { Compass, Search, X as XIcon, SlidersHorizontal, RotateCcw, MapPin } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { INTENT_OPTIONS, normalizeIntent } from '@/lib/intents';
 import { CHILDREN_FILTERS, ENGLISH_LEVEL_OPTIONS, RELATIONSHIP_INTENT_FILTERS, discoverQuery } from '@/lib/discoverFilters';
@@ -178,29 +178,24 @@ function DiscoverCardPhotoCarousel({
     (p): p is string => typeof p === 'string' && p.trim().length > 0 && p !== '/placeholder-avatar.svg'
   );
   const uniqueList = Array.from(new Set(rawList));
-  const displayPhotos = uniqueList.length > 0 ? uniqueList : [avatarUrl || '/placeholder-avatar.svg'];
-  const hasMultiple = displayPhotos.length > 1;
+  // Grid cards show one hero photo only (the main one): no swiping, dots or photo counter. The rest of the
+  // gallery lives on the profile.
+  const heroPhoto = uniqueList[0] ?? (avatarUrl || '/placeholder-avatar.svg');
 
   return (
     <div className="relative block h-full w-full overflow-hidden bg-white select-none">
-      {/* Native scroll-snap swiping; tap opens the profile (desktop: arrow buttons change photo). */}
+      {/* A tap opens the profile. */}
       <PhotoCarousel
-        photos={displayPhotos}
+        photos={[heroPhoto]}
         alt={name}
         href={'/profile/' + profileId}
         priority={priority}
         placeholders={placeholders}
         className="absolute inset-0 z-0"
       />
-      {hasMultiple && (
-        <span className="absolute bottom-2.5 right-2.5 z-20 inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-black/60 text-white text-[10px] font-semibold pointer-events-none">
-          <Camera className="w-3 h-3" />
-          {displayPhotos.length}
-        </span>
-      )}
-      {/* Below the photo dots when there are several photos. right-12 keeps the top-right corner
-          free for the Spark heart: badges wrap to a second row instead of sliding under it. */}
-      <div className={`absolute ${hasMultiple ? 'top-5' : 'top-2.5'} left-2.5 right-12 flex flex-wrap items-center gap-1.5 z-20 pointer-events-none`}>
+      {/* right-12 keeps the top-right corner free for the Spark heart: badges wrap to a second row instead of
+          sliding under it. */}
+      <div className="absolute top-2.5 left-2.5 right-12 flex flex-wrap items-center gap-1.5 z-20 pointer-events-none">
         <ReputationBadge score={repScore} variant="frosted" size="xs" />
         <NewMemberPill createdAt={createdAt} />
         {online ? (
