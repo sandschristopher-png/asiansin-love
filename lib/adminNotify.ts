@@ -1,3 +1,5 @@
+import { photosOnFile } from '@/lib/adminPhotos';
+import type { DbRow } from '@/lib/dbRows';
 import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { ADMIN_TYPE_PREFIX, adminRoleOf, isStaff } from '@/lib/adminRoles';
 export { ADMIN_TYPE_LIKE, ADMIN_TYPE_PREFIX } from '@/lib/adminRoles';
@@ -124,14 +126,16 @@ export async function notifyAdmins({ kind, title, description, ref, actorId }: A
 export async function pendingQueueCounts(db: SupabaseClient = service()) {
   const [v, p, r] = await Promise.all([
     db.from('profiles').select('id', { count: 'exact', head: true }).eq('verification_status', 'pending'),
+    // Rows, not a head count: empty accounts (no photo on file) are not waiting for anything (lib/adminPhotos.ts).
     db
       .from('profiles')
-      .select('id', { count: 'exact', head: true })
-      .or('photo_review_status.eq.pending,avatar_status.eq.pending_review'),
+      .select('id, avatar_url, photos')
+      .or('photo_review_status.eq.pending,avatar_status.eq.pending_review')
+      .limit(500),
     db.from('user_reports').select('id', { count: 'exact', head: true }).eq('status', 'pending'),
   ]);
   const verifications = v.count ?? 0;
-  const photos = p.count ?? 0;
+  const photos = (p.data ?? []).filter((row: DbRow) => photosOnFile(row).length > 0).length;
   const reports = r.count ?? 0;
   return { verifications, photos, reports, total: verifications + photos + reports };
 }

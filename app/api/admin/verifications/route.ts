@@ -121,6 +121,7 @@ export async function GET() {
         .from('profiles')
         .select('id, username, avatar_url, gender')
         .eq('avatar_status', 'pending_review')
+        .not('avatar_url', 'is', null) // an empty account has no main photo to review
         .limit(50),
       admin
         .from('user_reports')
@@ -147,7 +148,7 @@ export async function GET() {
 
     return NextResponse.json({
       identity,
-      avatars: avatarRes.data || [],
+      avatars: (avatarRes.data || []).filter((a) => typeof a.avatar_url === 'string' && a.avatar_url.trim() !== ''),
       // Reports are informational here; a missing table should not break the review queue.
       reports: reportsRes.error ? [] : reportsRes.data || [],
     });

@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useEffect, useRef, useState, useSyncExternalStore } from 'react';
-import { createPortal } from 'react-dom';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Camera, Loader2, Plus } from 'lucide-react';
 import { useActionToast } from '@/components/ActionToast';
@@ -45,13 +44,6 @@ function markSeen() {
 export default function MomentsPage() {
   const { t } = useLocale();
   const reduceMotion = useReducedMotion();
-  // The floating button is portaled to <body>: the route transition wraps the page in a transformed
-  // element, and a fixed child of a transformed parent scrolls with the page instead of staying put.
-  const mounted = useSyncExternalStore(
-    () => () => {},
-    () => true,
-    () => false
-  );
   const showToast = useActionToast();
   // Cached first page: read live on the client and null on the server, so a hard reload hydrates cleanly.
   const cached = useSyncExternalStore(
@@ -218,10 +210,22 @@ export default function MomentsPage() {
   return (
     <main className="min-h-[100dvh] w-full bg-white pb-[calc(8rem+env(safe-area-inset-bottom,0px))] text-[#413B5E]">
       <div className="mx-auto w-full max-w-[480px] px-4 pt-3">
-        <p className="text-xs leading-relaxed text-slate-600">{t('moments.subtitle')}</p>
+        {/* Header row: the subtitle on the left, the compact Post Moment pill on the right. It sits in the page
+            flow (never floating), so it cannot cover a caption. /moments is members-only, so it is always there. */}
+        <div className="flex items-start justify-between gap-3">
+          <p className="min-w-0 flex-1 text-xs leading-relaxed text-slate-600">{t('moments.subtitle')}</p>
+          <motion.button
+            type="button"
+            onClick={() => openComposer(null)}
+            whileTap={reduceMotion ? undefined : { scale: 0.97 }}
+            className="inline-flex h-9 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full bg-[#8574B7] px-4 text-xs font-medium leading-none text-white transition-colors hover:bg-[#534377]"
+          >
+            <Plus className="h-3.5 w-3.5" aria-hidden />
+            {t('moments.post')}
+          </motion.button>
+        </div>
 
-        {/* Today's Prompt: the card itself opens the composer on this prompt. The floating "+ Post Moment"
-            button stays the one visible button; /moments is members-only, so the page always has it. */}
+        {/* Today's Prompt: the card itself opens the composer on this prompt. */}
         <button
           type="button"
           onClick={() => openComposer(todaysPrompt)}
@@ -274,24 +278,6 @@ export default function MomentsPage() {
           )}
         </div>
       </div>
-
-      {/* Pinned thumb-zone button: fixed on screen, a full-width 480px track that ignores taps with the
-          button docked at its right edge, 88px above the bottom edge so it clears the nav pill. */}
-      {mounted &&
-        createPortal(
-          <div className="pointer-events-none fixed bottom-[calc(5.5rem+env(safe-area-inset-bottom,0px))] left-1/2 z-40 flex w-full max-w-[480px] -translate-x-1/2 justify-end px-4">
-            <motion.button
-              type="button"
-              onClick={() => openComposer(null)}
-              whileTap={reduceMotion ? undefined : { scale: 0.97 }}
-              className="pointer-events-auto inline-flex h-12 items-center gap-1.5 rounded-full bg-[#8574B7] px-5 text-[13px] font-medium leading-snug text-white shadow-[0_8px_24px_rgba(133,116,183,0.45)] transition-colors hover:bg-[#534377]"
-            >
-              <Plus className="h-4 w-4" aria-hidden />
-              {t('moments.post')}
-            </motion.button>
-          </div>,
-          document.body
-        )}
 
       {stepUp.element}
       {composing && (

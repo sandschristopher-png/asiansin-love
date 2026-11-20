@@ -1,6 +1,8 @@
 // app/api/admin/photos/route.ts  (staff only)
-//   GET  -> members whose photos await review (photo_review_status 'pending', else avatar_status 'pending_review')
+//   GET  -> members whose photos await review (photo_review_status 'pending', else avatar_status 'pending_review'),
+//           leaving out empty accounts: a member with no photo on file has nothing to review
 //   POST { userId, action: 'approve' | 'reject' | 'verify' | 'unverify', removePhotos?, reason?, points? }
+import { photosOnFile } from '@/lib/adminPhotos';
 import type { DbRow } from '@/lib/dbRows';
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyAdminCaller } from '@/lib/adminAuth';
@@ -11,6 +13,9 @@ export const dynamic = 'force-dynamic';
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const PENALTY_STEPS = [0, 5, 10, 20];
+/** The queue shows this many members. More are read first so empty accounts cannot crowd real ones out. */
+const QUEUE_LIMIT = 60;
+const QUEUE_SCAN = 300;
 
 function ageOf(p: DbRow): number | null {
   if (typeof p.age === 'number') return p.age;
@@ -33,34 +38,34 @@ export async function GET() {
     .select('*')
     .or('photo_review_status.eq.pending,avatar_status.eq.pending_review')
     .order('updated_at', { ascending: false })
-    .limit(60);
+    .limit(QUEUE_SCAN);
   if (error && MISSING_ADMIN_COLUMNS_RE.test(error.message)) {
     ({ data: rows, error } = await admin
       .from('profiles')
       .select('*')
       .eq('avatar_status', 'pending_review')
       .order('updated_at', { ascending: false })
-      .limit(60));
+      .limit(QUEUE_SCAN));
   }
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
 
-  return NextResponse.json({
-    members: (rows || []).map((p) => {
-      const photos: string[] = Array.isArray(p.photos) ? p.photos.filter((u: unknown) => typeof u === 'string') : [];
-      if (p.avatar_url && !photos.includes(p.avatar_url)) photos.unshift(p.avatar_url);
-      return {
-        id: p.id,
-        name: String(p.username || `Member ${String(p.id).slice(0, 8)}`).replace(/^@/, ''),
-        age: ageOf(p),
-        location: [p.city, p.country].filter(Boolean).join(', ') || null,
-        avatarUrl: p.avatar_url || null,
-        photos,
-        uploadedAt: p.updated_at || p.created_at || null,
-        reputation: typeof p.reputation_score === 'number' ? p.reputation_score : 100,
-        isVerified: p.is_verified === true || p.verification_status === 'verified',
-      };
-    }),
-  });
+  const members = (rows || [])
+    .map((p) => ({ p, photos: photosOnFile(p) }))
+    .filter(({ photos }) => photos.length > 0)
+    .slice(0, QUEUE_LIMIT)
+    .map(({ p, photos }) => ({
+      id: p.id,
+      name: String(p.username || `Member ${String(p.id).slice(0, 8)}`).replace(/^@/, ''),
+      age: ageOf(p),
+      location: [p.city, p.country].filter(Boolean).join(', ') || null,
+      avatarUrl: p.avatar_url || null,
+      photos,
+      uploadedAt: p.updated_at || p.created_at || null,
+      reputation: typeof p.reputation_score === 'number' ? p.reputation_score : 100,
+      isVerified: p.is_verified === true || p.verification_status === 'verified',
+    }));
+
+  return NextResponse.json({ members });
 }
 
 export async function POST(req: NextRequest) {
