@@ -273,7 +273,7 @@ export default function PublicProfilePage() {
         <button
           type="button"
           onClick={() => router.back()}
-          className="px-4 py-2 rounded-xl bg-[#8574B7] text-white text-xs font-medium"
+          className="px-4 py-2 rounded-xl bg-[#726E97] text-white text-xs font-medium"
         >
           Go Back
         </button>
@@ -358,30 +358,30 @@ export default function PublicProfilePage() {
     ? createPortal(
         isOwnProfile ? (
           // Your own profile: no Spark or Message (they would point at yourself), one way to your editor instead.
-          <aside className="fixed bottom-3.5 left-1/2 -translate-x-1/2 w-[calc(100%-1.75rem)] max-w-[390px] z-[90] bg-white/95 border border-[#D0CDE1] shadow-[0_12px_36px_rgba(102,93,150,0.18),0_2px_8px_rgba(0,0,0,0.04)] rounded-full p-1.5">
+          <aside className="fixed bottom-3.5 left-1/2 -translate-x-1/2 w-[calc(100%-1.75rem)] max-w-[390px] z-[90] bg-white/95 border border-[#D0CDE1] shadow-[0_12px_36px_rgba(82, 78, 117,0.18),0_2px_8px_rgba(0,0,0,0.04)] rounded-full p-1.5">
             <Link
               href="/profile"
-              className="flex h-11 w-full items-center justify-center gap-1.5 rounded-full bg-[#8574B7] px-4 text-xs font-medium text-white shadow-md shadow-[#8574B7]/25 transition hover:bg-[#534377] active:scale-98"
+              className="flex h-11 w-full items-center justify-center gap-1.5 rounded-full bg-[#726E97] px-4 text-xs font-medium text-white shadow-md shadow-[#726E97]/25 transition hover:bg-[#524E75] active:scale-98"
             >
               <Pencil className="h-4 w-4" aria-hidden />
               <span>{t('profile.editProfile')}</span>
             </Link>
           </aside>
         ) : (
-        <aside className="fixed bottom-3.5 left-1/2 -translate-x-1/2 w-[calc(100%-1.75rem)] max-w-[390px] z-[90] bg-white/95 border border-[#D0CDE1] shadow-[0_12px_36px_rgba(102,93,150,0.18),0_2px_8px_rgba(0,0,0,0.04)] rounded-full p-1.5">
+        <aside className="fixed bottom-3.5 left-1/2 -translate-x-1/2 w-[calc(100%-1.75rem)] max-w-[390px] z-[90] bg-white/95 border border-[#D0CDE1] shadow-[0_12px_36px_rgba(82, 78, 117,0.18),0_2px_8px_rgba(0,0,0,0.04)] rounded-full p-1.5">
           <div className="grid grid-cols-2 gap-2">
             <button
               type="button"
               onClick={handleToggleSpark}
               className={`flex h-11 w-full items-center justify-center gap-1.5 rounded-full border text-xs font-medium transition active:scale-95 cursor-pointer ${
                 isSparked
-                  ? 'border-[#8574B7]/30 bg-[#E8E6F1]/60 text-[#8574B7]'
-                  : 'border-[#D0CDE1] bg-white text-[#413B5E] hover:bg-[#E8E6F1]/70'
+                  ? 'border-[#726E97]/30 bg-[#EAE9F2]/60 text-[#726E97]'
+                  : 'border-[#D0CDE1] bg-white text-[#413B5E] hover:bg-[#EAE9F2]/70'
               }`}
             >
               <Heart
                 strokeWidth={2}
-                className={`h-4 w-4 ${isSparked ? 'text-[#8574B7] fill-[#8574B7]' : 'text-slate-600'}`}
+                className={`h-4 w-4 ${isSparked ? 'text-[#726E97] fill-[#726E97]' : 'text-slate-600'}`}
               />
               <span>{isSparked ? 'Sparked' : 'Spark'}</span>
             </button>
@@ -389,7 +389,7 @@ export default function PublicProfilePage() {
             <button
               type="button"
               onClick={() => router.push(`/chat/${targetUserId}`)}
-              className="flex h-11 w-full items-center justify-center gap-1.5 rounded-full bg-[#8574B7] px-4 text-xs font-medium text-white shadow-md shadow-[#8574B7]/25 transition hover:bg-[#413B5E] active:scale-98 cursor-pointer"
+              className="flex h-11 w-full items-center justify-center gap-1.5 rounded-full bg-[#726E97] px-4 text-xs font-medium text-white shadow-md shadow-[#726E97]/25 transition hover:bg-[#413B5E] active:scale-98 cursor-pointer"
             >
               <MessageCircle className="h-4 w-4" />
               <span>Message</span>
@@ -404,7 +404,7 @@ export default function PublicProfilePage() {
   return (
     <div className="relative flex-1 w-full bg-white text-[#413B5E] font-sans">
       {toastMsg && (
-        <div className="fixed top-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[400px] z-[100] px-4 py-2.5 rounded-2xl bg-white/95 border border-[#D0CDE1] text-[#413B5E] text-xs font-semibold text-center shadow-[0_12px_32px_rgba(102,93,150,0.18)]">
+        <div className="fixed top-4 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-[400px] z-[100] px-4 py-2.5 rounded-2xl bg-white/95 border border-[#D0CDE1] text-[#413B5E] text-xs font-semibold text-center shadow-[0_12px_32px_rgba(82, 78, 117,0.18)]">
           {toastMsg}
         </div>
       )}
@@ -457,9 +457,9 @@ export default function PublicProfilePage() {
                           text: `Meet ${displayName} on Meet in Asia.`,
                         });
                       }}
-                      className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs font-medium text-[#413B5E] transition hover:bg-[#E8E6F1]/40"
+                      className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs font-medium text-[#413B5E] transition hover:bg-[#EAE9F2]/40"
                     >
-                      <Share2 className="h-4 w-4 text-[#8574B7]" />
+                      <Share2 className="h-4 w-4 text-[#726E97]" />
                       Share Profile
                     </button>
                     <button
@@ -468,7 +468,7 @@ export default function PublicProfilePage() {
                         setShowMenu(false);
                         setReportOpen(true);
                       }}
-                      className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs font-medium text-[#413B5E] transition hover:bg-[#E8E6F1]/40"
+                      className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-xs font-medium text-[#413B5E] transition hover:bg-[#EAE9F2]/40"
                     >
                       <ShieldAlert className="h-4 w-4 text-amber-500" />
                       Report Profile
@@ -511,7 +511,7 @@ export default function PublicProfilePage() {
             {isVerified && <VerifiedBadge size="md" showText />}
           </div>
           <div className="flex items-center gap-1.5 text-xs font-medium text-[#413B5E]/75">
-            <MapPin className="h-3.5 w-3.5 text-[#8574B7] shrink-0" />
+            <MapPin className="h-3.5 w-3.5 text-[#726E97] shrink-0" />
             <span className="truncate">{displayLocation}</span>
           </div>
           <div className="flex items-center gap-2 flex-wrap">
@@ -548,18 +548,18 @@ export default function PublicProfilePage() {
                   <div
                     key={item.tag_id}
                     onClick={isOwnProfile ? undefined : () => router.push(`/chat/${targetUserId}`)}
-                    className={`group rounded-2xl border border-[#D0CDE1] bg-white p-3.5 transition ${isOwnProfile ? '' : 'cursor-pointer hover:border-[#8574B7]/50'}`}
+                    className={`group rounded-2xl border border-[#D0CDE1] bg-white p-3.5 transition ${isOwnProfile ? '' : 'cursor-pointer hover:border-[#726E97]/50'}`}
                   >
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         {(() => {
                           const Icon = interestIconOrDefault(item.label);
-                          return <Icon className="w-4 h-4 text-[#8574B7] shrink-0" aria-hidden />;
+                          return <Icon className="w-4 h-4 text-[#726E97] shrink-0" aria-hidden />;
                         })()}
                         <span className="text-xs font-semibold text-[#413B5E]">{item.label}</span>
                       </div>
                       {!isOwnProfile && (
-                        <span className="text-[11px] font-semibold text-[#8574B7]">
+                        <span className="text-[11px] font-semibold text-[#726E97]">
                           <span className="inline-flex items-center gap-1">Reply <MessageCircle className="w-3 h-3" aria-hidden /></span>
                         </span>
                       )}
@@ -582,7 +582,7 @@ export default function PublicProfilePage() {
               icon={<Tag className="w-3.5 h-3.5" />}
               aside={
                 sharedInterests.length > 0 ? (
-                  <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#8574B7]/10 text-[#8574B7] font-medium shrink-0">
+                  <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#726E97]/10 text-[#726E97] font-medium shrink-0">
                     {sharedInterests.length} in common
                   </span>
                 ) : undefined
@@ -663,7 +663,7 @@ export default function PublicProfilePage() {
                   document.querySelector('[data-profile-hero]')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }}
                 aria-label={`Show photo ${idx + 1}`}
-                className={`relative aspect-[4/5] rounded-2xl overflow-hidden bg-white border ${idx === currentPhotoIdx ? 'border-[#8574B7]' : 'border-[#D0CDE1]'}`}
+                className={`relative aspect-[4/5] rounded-2xl overflow-hidden bg-white border ${idx === currentPhotoIdx ? 'border-[#726E97]' : 'border-[#D0CDE1]'}`}
               >
                 <CardPhoto src={supabaseImage(url, { width: 320, height: 400, quality: 70, resize: 'cover' })} alt="" placeholder={placeholders[url] ?? null} className="object-cover" />
               </button>

@@ -81,7 +81,7 @@ const Chip = ({ tone, children }: { tone: 'good' | 'bad' | 'neutral'; children: 
         ? 'bg-emerald-50 border-emerald-200 text-emerald-700'
         : tone === 'bad'
           ? 'bg-red-50 border-red-200 text-red-700'
-          : 'bg-[#E8E6F1]/60 border-[#D0CDE1] text-[#8574B7]'
+          : 'bg-[#EAE9F2]/60 border-[#D0CDE1] text-[#726E97]'
     }`}
   >
     {children}
@@ -101,7 +101,7 @@ function SectionTitle({ icon, title, count }: { icon: React.ReactNode; title: st
         {icon}
         {title}
       </h2>
-      <span className="px-2 py-0.5 rounded-full bg-[#E8E6F1]/60 text-[#8574B7] text-[11px] font-semibold">{count}</span>
+      <span className="px-2 py-0.5 rounded-full bg-[#EAE9F2]/60 text-[#726E97] text-[11px] font-semibold">{count}</span>
     </div>
   );
 }
@@ -212,7 +212,7 @@ export default function AdminVerificationsPage() {
         <header className="space-y-3">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="p-2 bg-[#E8E6F1]/60 border border-[#D0CDE1] rounded-xl text-[#8574B7]">
+              <div className="p-2 bg-[#EAE9F2]/60 border border-[#D0CDE1] rounded-xl text-[#726E97]">
                 <BadgeCheck className="w-4 h-4" />
               </div>
               <div>
@@ -225,7 +225,7 @@ export default function AdminVerificationsPage() {
             <button
               onClick={() => load()}
               disabled={loading}
-              className="p-2.5 rounded-xl bg-white border border-[#D0CDE1] hover:bg-[#E8E6F1]/70 text-[#413B5E]/75 disabled:opacity-50"
+              className="p-2.5 rounded-xl bg-white border border-[#D0CDE1] hover:bg-[#EAE9F2]/70 text-[#413B5E]/75 disabled:opacity-50"
               aria-label="Refresh queue"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
@@ -250,7 +250,7 @@ export default function AdminVerificationsPage() {
 
         {loading ? (
           <div className="p-12 text-center text-[#413B5E]/75 flex flex-col items-center gap-3 bg-white rounded-2xl border border-[#D0CDE1]">
-            <Loader2 className="w-7 h-7 animate-spin text-[#8574B7]" />
+            <Loader2 className="w-7 h-7 animate-spin text-[#726E97]" />
             <p className="text-xs">Loading review queue...</p>
           </div>
         ) : error ? (
@@ -265,7 +265,7 @@ export default function AdminVerificationsPage() {
           <>
             {/* Identity verifications */}
             <section className="space-y-3">
-              <SectionTitle icon={<BadgeCheck className="w-4 h-4 text-[#8574B7]" />} title="Identity verification" count={identity.length} />
+              <SectionTitle icon={<BadgeCheck className="w-4 h-4 text-[#726E97]" />} title="Identity verification" count={identity.length} />
               {identity.length === 0 ? (
                 <Empty text="All verifications caught up" />
               ) : (
@@ -275,7 +275,7 @@ export default function AdminVerificationsPage() {
                       {item.avatar_url ? (
                         <img src={item.avatar_url} alt="" className="w-11 h-11 rounded-full object-cover border border-[#D0CDE1]" />
                       ) : (
-                        <div className="w-11 h-11 rounded-full bg-[#E8E6F1]/60" />
+                        <div className="w-11 h-11 rounded-full bg-[#EAE9F2]/60" />
                       )}
                       <div className="min-w-0">
                         <p className="text-sm font-semibold truncate">
@@ -324,13 +324,13 @@ export default function AdminVerificationsPage() {
                                   {item.avatar_url ? (
                                     <img src={item.avatar_url} alt="Profile photo" className="w-full aspect-[4/3] object-cover rounded-xl border border-[#D0CDE1]" />
                                   ) : (
-                                    <div className="w-full aspect-[4/3] rounded-xl bg-[#E8E6F1]/60" />
+                                    <div className="w-full aspect-[4/3] rounded-xl bg-[#EAE9F2]/60" />
                                   )}
                                   <figcaption className="text-[10px] text-center text-slate-600">Main photo</figcaption>
                                 </figure>
                                 {pose && (
                                   <figure className="space-y-1">
-                                    <img src={pose.image} alt={pose.label} className="w-full aspect-[4/3] object-contain rounded-xl border border-[#D0CDE1] bg-[#E8E6F1]/60" />
+                                    <img src={pose.image} alt={pose.label} className="w-full aspect-[4/3] object-contain rounded-xl border border-[#D0CDE1] bg-[#EAE9F2]/60" />
                                     <figcaption className="text-[10px] text-center text-slate-600 leading-tight">Requested: {pose.label}</figcaption>
                                   </figure>
                                 )}
@@ -349,7 +349,7 @@ export default function AdminVerificationsPage() {
                                 {item.avatar_url ? (
                                   <img src={item.avatar_url} alt="Profile photo" className="w-full aspect-[3/4] object-cover rounded-xl border border-[#D0CDE1]" />
                                 ) : (
-                                  <div className="w-full aspect-[3/4] rounded-xl bg-[#E8E6F1]/60" />
+                                  <div className="w-full aspect-[3/4] rounded-xl bg-[#EAE9F2]/60" />
                                 )}
                                 <figcaption className="text-[10px] text-center text-slate-600">Main photo</figcaption>
                               </figure>
@@ -363,7 +363,7 @@ export default function AdminVerificationsPage() {
                               ))}
                               {pose && (
                                 <figure className="space-y-1">
-                                  <img src={pose.image} alt={pose.label} className="w-full aspect-[3/4] object-contain rounded-xl border border-[#D0CDE1] bg-[#E8E6F1]/60" />
+                                  <img src={pose.image} alt={pose.label} className="w-full aspect-[3/4] object-contain rounded-xl border border-[#D0CDE1] bg-[#EAE9F2]/60" />
                                   <figcaption className="text-[10px] text-center text-slate-600 leading-tight">{pose.label}</figcaption>
                                 </figure>
                               )}
@@ -400,14 +400,14 @@ export default function AdminVerificationsPage() {
                               </div>
                               {review.summary && (
                                 <p className="flex items-start gap-1.5 text-[11px] text-[#413B5E]">
-                                  <ScanFace className="w-3.5 h-3.5 text-[#8574B7] shrink-0 mt-0.5" />
+                                  <ScanFace className="w-3.5 h-3.5 text-[#726E97] shrink-0 mt-0.5" />
                                   <span>{review.summary}</span>
                                 </p>
                               )}
                             </div>
                           ) : sub.ai ? (
                             <div className="flex items-start gap-2 text-[11px] bg-white border border-[#D0CDE1] rounded-xl p-2.5 text-[#413B5E]">
-                              <ScanFace className="w-3.5 h-3.5 text-[#8574B7] shrink-0 mt-0.5" />
+                              <ScanFace className="w-3.5 h-3.5 text-[#726E97] shrink-0 mt-0.5" />
                               <span>
                                 AI pre-check: {sub.ai.isSafe ? 'safe' : 'NOT safe'},{' '}
                                 {sub.ai.poseMatchesPrompt ? 'pose matches' : 'pose does NOT match'}.{' '}
@@ -429,7 +429,7 @@ export default function AdminVerificationsPage() {
                       onChange={(e) => setRejectReasons((prev) => ({ ...prev, [item.id]: e.target.value }))}
                       maxLength={300}
                       placeholder="Rejection reason (optional, sent to the member)"
-                      className="w-full px-3 py-2 rounded-xl bg-white border border-[#D0CDE1] text-xs text-[#413B5E] placeholder:text-[#413B5E]/55 focus:outline-none focus:border-[#8574B7]"
+                      className="w-full px-3 py-2 rounded-xl bg-white border border-[#D0CDE1] text-xs text-[#413B5E] placeholder:text-[#413B5E]/55 focus:outline-none focus:border-[#726E97]"
                     />
 
                     <ActionButtons kind="identity" userId={item.id} labels={['Approve Identity', 'Reject']} />
@@ -440,7 +440,7 @@ export default function AdminVerificationsPage() {
 
             {/* Main photos */}
             <section className="space-y-3">
-              <SectionTitle icon={<ImageIcon className="w-4 h-4 text-[#8574B7]" />} title="Main photos" count={avatars.length} />
+              <SectionTitle icon={<ImageIcon className="w-4 h-4 text-[#726E97]" />} title="Main photos" count={avatars.length} />
               {avatars.length === 0 ? (
                 <Empty text="No main photos waiting for review." />
               ) : (
@@ -452,7 +452,7 @@ export default function AdminVerificationsPage() {
                           <img src={a.avatar_url} alt="Main photo" className="w-full aspect-[4/5] object-cover rounded-xl" />
                         </a>
                       ) : (
-                        <div className="w-full aspect-[4/5] rounded-xl bg-[#E8E6F1]/60" />
+                        <div className="w-full aspect-[4/5] rounded-xl bg-[#EAE9F2]/60" />
                       )}
                       <p className="text-xs font-semibold truncate">{nameOf(a)}</p>
                       <ActionButtons kind="avatar" userId={a.id} />
@@ -480,7 +480,7 @@ export default function AdminVerificationsPage() {
                     </div>
                     <p className="text-[#413B5E]">
                       Reported:{' '}
-                      <a href={`/profile/${r.reported_id}`} className="font-mono text-[#8574B7] underline">
+                      <a href={`/profile/${r.reported_id}`} className="font-mono text-[#726E97] underline">
                         {r.reported_id.slice(0, 8)}
                       </a>{' '}
                       · by <span className="font-mono">{r.reporter_id.slice(0, 8)}</span>

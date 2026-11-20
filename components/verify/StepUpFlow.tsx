@@ -96,7 +96,7 @@ function Illustration() {
   // 16:9 slot for the custom manga art that replaces it later.
   return (
     <div className="flex aspect-video w-full items-center justify-center rounded-2xl bg-[#F6F4FB]" aria-hidden>
-      <ScanFace className="h-12 w-12 text-[#8574B7]/60" strokeWidth={1.5} />
+      <ScanFace className="h-12 w-12 text-[#726E97]/60" strokeWidth={1.5} />
     </div>
   );
 }
@@ -365,7 +365,7 @@ export function StepUpFlow({ open, reason, photo, onClose, onResult }: Props) {
     onClose();
   };
 
-  const primary = 'flex h-12 w-full items-center justify-center rounded-full bg-[#8574B7] text-sm font-semibold text-white transition hover:bg-[#534377] active:scale-[0.99] disabled:opacity-60';
+  const primary = 'flex h-12 w-full items-center justify-center rounded-full bg-[#726E97] text-sm font-semibold text-white transition hover:bg-[#524E75] active:scale-[0.99] disabled:opacity-60';
 
   const bullets: Array<[React.ComponentType<{ className?: string }>, TKey]> = [
     [ScanFace, 'stepup.introBullet1'],
@@ -390,7 +390,7 @@ export function StepUpFlow({ open, reason, photo, onClose, onResult }: Props) {
             {intro
               ? bullets.map(([Icon, key]) => (
                   <li key={key} className="flex items-start gap-3">
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#F6F4FB] text-[#8574B7]">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#F6F4FB] text-[#726E97]">
                       <Icon className="h-4.5 w-4.5" aria-hidden />
                     </span>
                     <span className="pt-1.5 text-sm leading-snug text-[#413B5E]">{t(key)}</span>
@@ -398,7 +398,7 @@ export function StepUpFlow({ open, reason, photo, onClose, onResult }: Props) {
                 ))
               : (['stepup.tip1', 'stepup.tip2', 'stepup.tip3'] as const).map((key) => (
                   <li key={key} className="flex items-start gap-3">
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#F6F4FB] text-[#8574B7]">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#F6F4FB] text-[#726E97]">
                       <Check className="h-4.5 w-4.5" aria-hidden />
                     </span>
                     <span className="pt-1.5 text-sm leading-snug text-[#413B5E]">{t(key)}</span>
@@ -436,7 +436,7 @@ export function StepUpFlow({ open, reason, photo, onClose, onResult }: Props) {
                   setStraight(true);
                   setHelp(false);
                 }}
-                className="mt-3 block w-full rounded-xl border-t border-[#E6E2F0] pt-3 text-left text-xs font-semibold text-[#8574B7] hover:text-[#534377]"
+                className="mt-3 block w-full rounded-xl border-t border-[#E6E2F0] pt-3 text-left text-xs font-semibold text-[#726E97] hover:text-[#524E75]"
               >
                 {t('stepup.accessibility')}
               </button>
@@ -446,29 +446,29 @@ export function StepUpFlow({ open, reason, photo, onClose, onResult }: Props) {
         <div className="flex flex-1 flex-col items-center justify-center px-6">
           <div ref={viewRef} className="relative aspect-square w-full max-w-[320px]">
             {/* Front-camera preview, mirrored like a mirror: turning to your left fills the LEFT arc. */}
-            <div className="absolute inset-[7%] overflow-hidden rounded-full bg-[#E8E6F1]">
+            <div className="absolute inset-[7%] overflow-hidden rounded-full bg-[#EAE9F2]">
               <video ref={videoRef} playsInline muted autoPlay className="h-full w-full -scale-x-100 object-cover" />
             </div>
             <svg viewBox="0 0 100 100" className="pointer-events-none absolute inset-0 h-full w-full" aria-hidden>
-              <circle cx="50" cy="50" r={R} fill="none" stroke="#E8E6F1" strokeWidth="2.2" />
+              <circle cx="50" cy="50" r={R} fill="none" stroke="#EAE9F2" strokeWidth="2.2" />
               {active && (
                 <>
                   <path d={arcPath(ARC_ANGLE[active])} fill="none" stroke="#D0CDE1" strokeWidth="3.6" strokeLinecap="round" />
                   <path
                     d={arcPath(ARC_ANGLE[active])}
                     fill="none"
-                    stroke="#8574B7"
+                    stroke="#726E97"
                     strokeWidth="3.6"
                     strokeLinecap="round"
                     strokeDasharray={`${ARC_LEN * progress} ${ARC_LEN}`}
                   />
                 </>
               )}
-              {!active && <circle cx="50" cy="50" r={R} fill="none" stroke="#8574B7" strokeWidth="3.6" strokeLinecap="round" strokeDasharray={`${2 * Math.PI * R * progress} ${2 * Math.PI * R}`} transform="rotate(-90 50 50)" />}
+              {!active && <circle cx="50" cy="50" r={R} fill="none" stroke="#726E97" strokeWidth="3.6" strokeLinecap="round" strokeDasharray={`${2 * Math.PI * R * progress} ${2 * Math.PI * R}`} transform="rotate(-90 50 50)" />}
             </svg>
             {active && Arrow && (
               <span
-                className="absolute flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-[#8574B7] text-white shadow-md ring-4 ring-white"
+                className="absolute flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-[#726E97] text-white shadow-md ring-4 ring-white"
                 style={{ left: `${polar(ARC_ANGLE[active])[0]}%`, top: `${polar(ARC_ANGLE[active])[1]}%` }}
               >
                 <Arrow className="h-5 w-5" strokeWidth={2.5} aria-hidden />
@@ -501,19 +501,19 @@ export function StepUpFlow({ open, reason, photo, onClose, onResult }: Props) {
   } else if (step === 'reviewing') {
     body = (
       <div className="flex h-full flex-col items-center justify-center bg-white px-8 text-center">
-        <Loader2 className="h-9 w-9 animate-spin text-[#8574B7]" aria-hidden />
+        <Loader2 className="h-9 w-9 animate-spin text-[#726E97]" aria-hidden />
         <p className="mt-5 text-base font-semibold text-[#413B5E]">{t('stepup.reviewing')}</p>
       </div>
     );
   } else {
     const result =
       step === 'passed'
-        ? { icon: <CheckCircle2 className="h-12 w-12 text-[#8574B7]" aria-hidden />, title: t('stepup.passedTitle'), text: t('stepup.passedBody') }
+        ? { icon: <CheckCircle2 className="h-12 w-12 text-[#726E97]" aria-hidden />, title: t('stepup.passedTitle'), text: t('stepup.passedBody') }
         : step === 'failed'
-          ? { icon: <ScanFace className="h-12 w-12 text-[#8574B7]" aria-hidden />, title: t('stepup.failedTitle'), text: t('stepup.failedBody', { count: retriesLeft }) }
+          ? { icon: <ScanFace className="h-12 w-12 text-[#726E97]" aria-hidden />, title: t('stepup.failedTitle'), text: t('stepup.failedBody', { count: retriesLeft }) }
           : step === 'manual'
-            ? { icon: <ShieldCheck className="h-12 w-12 text-[#8574B7]" aria-hidden />, title: t('stepup.manualTitle'), text: t('stepup.manualBody') }
-            : { icon: <ScanFace className="h-12 w-12 text-[#8574B7]" aria-hidden />, title: t('stepup.introTitle'), text: error ? t(error) : '' };
+            ? { icon: <ShieldCheck className="h-12 w-12 text-[#726E97]" aria-hidden />, title: t('stepup.manualTitle'), text: t('stepup.manualBody') }
+            : { icon: <ScanFace className="h-12 w-12 text-[#726E97]" aria-hidden />, title: t('stepup.introTitle'), text: error ? t(error) : '' };
     body = (
       <div className="flex h-full flex-col items-center justify-center bg-white px-8 text-center">
         {result.icon}

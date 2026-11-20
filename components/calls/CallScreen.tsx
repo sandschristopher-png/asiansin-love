@@ -44,7 +44,7 @@ function DockButton({
     light: 'bg-white text-[#413B5E] border border-[#D0CDE1] hover:bg-[#F6F4FB]',
     ink: 'bg-[#413B5E] text-white border border-[#413B5E]',
     end: 'bg-rose-600 hover:bg-rose-700 text-white border border-rose-600',
-    accept: 'bg-[#8574B7] hover:bg-[#534377] text-white border border-[#8574B7]',
+    accept: 'bg-[#726E97] hover:bg-[#524E75] text-white border border-[#726E97]',
     decline: 'bg-white text-[#413B5E] border border-[#D0CDE1] hover:bg-[#F6F4FB]',
   };
   return (
@@ -118,11 +118,11 @@ export function CallScreen({ snap, actions }: { snap: CallSnapshot; actions: Act
         <div className="relative h-28 w-28">
           {ringing && (
             <>
-              <span aria-hidden className="ail-call-ring absolute inset-0 rounded-full bg-[#8574B7]/40" />
-              <span aria-hidden className="ail-call-ring ail-call-ring-late absolute inset-0 rounded-full bg-[#8574B7]/40" />
+              <span aria-hidden className="ail-call-ring absolute inset-0 rounded-full bg-[#726E97]/40" />
+              <span aria-hidden className="ail-call-ring ail-call-ring-late absolute inset-0 rounded-full bg-[#726E97]/40" />
             </>
           )}
-          <div className="relative h-28 w-28 overflow-hidden rounded-full border-2 border-white bg-[#E8E6F1] shadow-[0_10px_30px_rgba(133,116,183,0.28)]">
+          <div className="relative h-28 w-28 overflow-hidden rounded-full border-2 border-white bg-[#EAE9F2] shadow-[0_10px_30px_rgba(114, 110, 151,0.28)]">
             <Image src={peer.avatar} alt={peer.name} fill sizes="112px" className="object-cover" priority />
           </div>
         </div>
@@ -215,7 +215,7 @@ export function ReturnToCallBar({ snap, onReturn, topClass }: { snap: CallSnapsh
     <button
       type="button"
       onClick={onReturn}
-      className={`absolute inset-x-0 ${topClass} z-[450] flex h-9 items-center justify-center gap-2 bg-[#8574B7] px-4 text-xs font-semibold text-white transition hover:bg-[#534377]`}
+      className={`absolute inset-x-0 ${topClass} z-[450] flex h-9 items-center justify-center gap-2 bg-[#726E97] px-4 text-xs font-semibold text-white transition hover:bg-[#524E75]`}
     >
       <Phone className="h-3.5 w-3.5" aria-hidden />
       <span className="tabular-nums">{t('call.returnToCall', { time })}</span>

@@ -483,8 +483,8 @@ export default function MyProfilePage() {
               <img src={supabaseImage(currentImg, DETAIL_IMAGE)} alt={username} className="w-full h-full object-cover pointer-events-none" draggable={false} />
             </div>
           ) : (
-            <Link href="/profile/edit" className="flex flex-col items-center justify-center text-[#8574B7] p-6 text-center">
-              <div className="w-14 h-14 rounded-2xl bg-[#E8E6F1]/60 flex items-center justify-center mb-2">
+            <Link href="/profile/edit" className="flex flex-col items-center justify-center text-[#726E97] p-6 text-center">
+              <div className="w-14 h-14 rounded-2xl bg-[#EAE9F2]/60 flex items-center justify-center mb-2">
                 <Camera className="w-7 h-7" />
               </div>
               <span className="text-sm font-semibold text-[#413B5E]">Add Your Profile Photos</span>
@@ -529,8 +529,8 @@ export default function MyProfilePage() {
               {photoList.map((url, idx) => (
                 <div
                   key={url}
-                  className={`relative w-20 aspect-[3/4] shrink-0 rounded-xl overflow-hidden bg-[#E8E6F1]/60 border ${
-                    idx === 0 ? 'border-[#8574B7] ring-2 ring-[#8574B7]/30' : 'border-[#D0CDE1]'
+                  className={`relative w-20 aspect-[3/4] shrink-0 rounded-xl overflow-hidden bg-[#EAE9F2]/60 border ${
+                    idx === 0 ? 'border-[#726E97] ring-2 ring-[#726E97]/30' : 'border-[#D0CDE1]'
                   }`}
                 >
                   {/* Tap a photo to make it Main: it moves to the front now, and is saved with Save Profile. */}
@@ -547,7 +547,7 @@ export default function MyProfilePage() {
                     <img src={supabaseImage(url, TILE_IMAGE)} alt="" className="w-full h-full object-cover" />
                   </button>
                   {idx === 0 && (
-                    <span className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded-full bg-[#8574B7]/90 text-white text-[9px] font-semibold">
+                    <span className="absolute bottom-1 left-1 px-1.5 py-0.5 rounded-full bg-[#726E97]/90 text-white text-[9px] font-semibold">
                       Main
                     </span>
                   )}
@@ -583,7 +583,7 @@ export default function MyProfilePage() {
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-2xl bg-white border border-[#D0CDE1] text-sm font-medium text-[#413B5E] focus:outline-none focus:border-[#8574B7] focus:ring-2 focus:ring-[#8574B7]/15"
+                className="w-full px-4 py-2.5 rounded-2xl bg-white border border-[#D0CDE1] text-sm font-medium text-[#413B5E] focus:outline-none focus:border-[#726E97] focus:ring-2 focus:ring-[#726E97]/15"
               />
             </div>
             <div className="grid grid-cols-[96px_1fr] gap-3">
@@ -593,7 +593,7 @@ export default function MyProfilePage() {
                   type="number"
                   value={age}
                   onChange={(e) => setAge(Number(e.target.value))}
-                  className="w-full px-4 py-2.5 rounded-2xl bg-white border border-[#D0CDE1] text-sm font-medium text-[#413B5E] focus:outline-none focus:border-[#8574B7] focus:ring-2 focus:ring-[#8574B7]/15"
+                  className="w-full px-4 py-2.5 rounded-2xl bg-white border border-[#D0CDE1] text-sm font-medium text-[#413B5E] focus:outline-none focus:border-[#726E97] focus:ring-2 focus:ring-[#726E97]/15"
                 />
               </div>
               <div>
@@ -606,7 +606,7 @@ export default function MyProfilePage() {
                     setLocation(e.target.value);
                     setLocationSource('self_reported');
                   }}
-                  className="w-full min-w-0 text-ellipsis overflow-hidden px-3.5 py-2.5 rounded-2xl bg-white border border-[#D0CDE1] text-[13px] font-medium text-[#413B5E] focus:outline-none focus:border-[#8574B7] focus:ring-2 focus:ring-[#8574B7]/15"
+                  className="w-full min-w-0 text-ellipsis overflow-hidden px-3.5 py-2.5 rounded-2xl bg-white border border-[#D0CDE1] text-[13px] font-medium text-[#413B5E] focus:outline-none focus:border-[#726E97] focus:ring-2 focus:ring-[#726E97]/15"
                 />
               </div>
             </div>
@@ -629,7 +629,7 @@ export default function MyProfilePage() {
                   setLocError(res.error);
                 }
               }}
-              className="w-full py-2.5 px-3 rounded-2xl bg-[#E8E6F1]/60 border border-[#8574B7]/25 hover:bg-[#E8E6F1]/60 text-xs font-medium text-[#8574B7] flex items-center justify-center gap-1.5 transition"
+              className="w-full py-2.5 px-3 rounded-2xl bg-[#EAE9F2]/60 border border-[#726E97]/25 hover:bg-[#EAE9F2]/60 text-xs font-medium text-[#726E97] flex items-center justify-center gap-1.5 transition"
             >
               {isLocating ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Navigation className="w-3.5 h-3.5" />}
               <span>{isLocating ? 'Detecting GPS...' : 'Auto-Detect City with GPS'}</span>
@@ -651,7 +651,7 @@ export default function MyProfilePage() {
                 {verificationStatus === 'verified' && <VerifiedBadge size="md" showText />}
               </div>
               <div className="flex items-center gap-1.5 mt-0.5">
-                <MapPin className="w-3.5 h-3.5 text-[#8574B7] shrink-0" />
+                <MapPin className="w-3.5 h-3.5 text-[#726E97] shrink-0" />
                 <p className="text-xs font-medium text-[#413B5E]/75 truncate">
                   {location || 'Location not set'}
                 </p>
@@ -687,16 +687,16 @@ export default function MyProfilePage() {
         {verificationStatus !== 'verified' && verificationStatus !== 'pending' && (
           <Link
             href="/verify"
-            className="w-full p-3.5 rounded-2xl bg-[#E8E6F1]/50 border border-[#8574B7]/20 flex items-center justify-between hover:bg-[#E8E6F1]/70 transition shadow-2xs"
+            className="w-full p-3.5 rounded-2xl bg-[#EAE9F2]/50 border border-[#726E97]/20 flex items-center justify-between hover:bg-[#EAE9F2]/70 transition shadow-2xs"
           >
             <div className="flex items-center gap-2.5">
-              <ShieldAlert className="w-4 h-4 text-[#8574B7] shrink-0" />
+              <ShieldAlert className="w-4 h-4 text-[#726E97] shrink-0" />
               <div>
                 <p className="text-xs font-semibold text-[#413B5E]">Verify your profile</p>
                 <p className="text-[11px] text-[#413B5E]/75">Free for every member. Verified profiles get more replies.</p>
               </div>
             </div>
-            <span className="text-xs font-semibold text-[#8574B7]">Verify &rarr;</span>
+            <span className="text-xs font-semibold text-[#726E97]">Verify &rarr;</span>
           </Link>
         )}
 
@@ -708,7 +708,7 @@ export default function MyProfilePage() {
                 type="button"
                 onClick={() => setVoiceModalOpen(true)}
                 aria-label="Re-record voice intro"
-                className="w-8 h-8 rounded-full text-[#B8B3D1] hover:text-[#413B5E] hover:bg-[#E8E6F1]/40 flex items-center justify-center transition-colors"
+                className="w-8 h-8 rounded-full text-[#B8B3D1] hover:text-[#413B5E] hover:bg-[#EAE9F2]/40 flex items-center justify-center transition-colors"
               >
                 <Mic className="w-3.5 h-3.5" />
               </button>
@@ -716,15 +716,15 @@ export default function MyProfilePage() {
                 type="button"
                 onClick={removeVoiceIntro}
                 aria-label="Remove voice intro"
-                className="w-8 h-8 rounded-full text-[#B8B3D1] hover:text-[#413B5E] hover:bg-[#E8E6F1]/40 flex items-center justify-center transition-colors"
+                className="w-8 h-8 rounded-full text-[#B8B3D1] hover:text-[#413B5E] hover:bg-[#EAE9F2]/40 flex items-center justify-center transition-colors"
               >
                 <Trash2 className="w-3.5 h-3.5" />
               </button>
             </div>
           </VoicePlayer>
         ) : (
-          <div className="p-5 rounded-3xl border-2 border-dashed border-[#8574B7]/30 bg-[#E8E6F1]/40 text-center space-y-2">
-            <div className="w-11 h-11 mx-auto rounded-2xl bg-[#8574B7]/10 text-[#8574B7] flex items-center justify-center">
+          <div className="p-5 rounded-3xl border-2 border-dashed border-[#726E97]/30 bg-[#EAE9F2]/40 text-center space-y-2">
+            <div className="w-11 h-11 mx-auto rounded-2xl bg-[#726E97]/10 text-[#726E97] flex items-center justify-center">
               <Mic className="w-5 h-5" />
             </div>
             <h3 className="text-sm font-semibold text-[#413B5E]">Add a 20-Second Voice Intro</h3>
@@ -734,7 +734,7 @@ export default function MyProfilePage() {
             <button
               type="button"
               onClick={() => setVoiceModalOpen(true)}
-              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-[#8574B7] text-white text-xs font-medium shadow-sm active:scale-95 transition"
+              className="inline-flex items-center gap-1.5 px-5 py-2.5 rounded-full bg-[#726E97] text-white text-xs font-medium shadow-sm active:scale-95 transition"
             >
               <Mic className="w-3.5 h-3.5" /> Record Voice Intro
             </button>
@@ -756,7 +756,7 @@ export default function MyProfilePage() {
                     setCurrentPhotoIdx(0);
                     setIsEditing(false);
                   }}
-                  className="h-full flex-1 rounded-2xl bg-white border border-[#D0CDE1] text-xs font-medium text-[#413B5E]/85 hover:bg-[#E8E6F1]/40 transition flex items-center justify-center shadow-xs cursor-pointer active:scale-[0.99]"
+                  className="h-full flex-1 rounded-2xl bg-white border border-[#D0CDE1] text-xs font-medium text-[#413B5E]/85 hover:bg-[#EAE9F2]/40 transition flex items-center justify-center shadow-xs cursor-pointer active:scale-[0.99]"
                 >
                   Cancel
                 </button>
@@ -764,7 +764,7 @@ export default function MyProfilePage() {
                   type="button"
                   onClick={handleSave}
                   disabled={saving}
-                  className="h-full flex-1 rounded-2xl bg-[#8574B7] hover:bg-[#534377] text-white text-xs font-medium shadow-sm transition flex items-center justify-center gap-1.5 disabled:opacity-50 cursor-pointer active:scale-[0.99]"
+                  className="h-full flex-1 rounded-2xl bg-[#726E97] hover:bg-[#524E75] text-white text-xs font-medium shadow-sm transition flex items-center justify-center gap-1.5 disabled:opacity-50 cursor-pointer active:scale-[0.99]"
                 >
                   {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />}
                   <span>{saving ? 'Saving...' : 'Save Profile'}</span>
@@ -776,9 +776,9 @@ export default function MyProfilePage() {
               <button
                 type="button"
                 onClick={() => setIsEditing(true)}
-                className="h-full w-full rounded-2xl bg-white border border-[#D0CDE1] text-xs font-medium text-[#413B5E] hover:bg-[#E8E6F1]/40 transition flex items-center justify-center gap-2 shadow-xs cursor-pointer active:scale-[0.99]"
+                className="h-full w-full rounded-2xl bg-white border border-[#D0CDE1] text-xs font-medium text-[#413B5E] hover:bg-[#EAE9F2]/40 transition flex items-center justify-center gap-2 shadow-xs cursor-pointer active:scale-[0.99]"
               >
-                <Edit3 className="w-3.5 h-3.5 text-[#8574B7]" />
+                <Edit3 className="w-3.5 h-3.5 text-[#726E97]" />
                 <span>Edit Profile Details</span>
               </button>
             )}
@@ -804,7 +804,7 @@ export default function MyProfilePage() {
                 aria-invalid={bioRejected}
                 placeholder="Share your passions, daily life, and what makes you smile..."
                 className={`w-full p-3.5 rounded-2xl bg-white border text-base sm:text-sm text-[#413B5E] leading-relaxed placeholder-[#413B5E]/55 focus:outline-none focus:bg-white resize-none ${
-                  bioRejected ? 'border-amber-500 ring-2 ring-amber-500/20' : 'border-[#D0CDE1] focus:border-[#8574B7]'
+                  bioRejected ? 'border-amber-500 ring-2 ring-amber-500/20' : 'border-[#D0CDE1] focus:border-[#726E97]'
                 }`}
               />
               {bioRejected && (
@@ -837,8 +837,8 @@ export default function MyProfilePage() {
                       className={
                         'px-3 py-1.5 rounded-xl text-xs font-medium border transition ' +
                         (selected
-                          ? 'bg-[#8574B7] border-[#8574B7] text-white shadow-2xs'
-                          : 'bg-white border-[#D0CDE1] text-[#413B5E]/85 hover:bg-[#E8E6F1]/70')
+                          ? 'bg-[#726E97] border-[#726E97] text-white shadow-2xs'
+                          : 'bg-white border-[#D0CDE1] text-[#413B5E]/85 hover:bg-[#EAE9F2]/70')
                       }
                     >
                       {tag}
@@ -866,7 +866,7 @@ export default function MyProfilePage() {
             title="What I'm Looking For"
             aside={
               !isEditing ? (
-                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#E8E6F1]/60 text-[#8574B7]">Goals</span>
+                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#EAE9F2]/60 text-[#726E97]">Goals</span>
               ) : undefined
             }
           >
@@ -877,7 +877,7 @@ export default function MyProfilePage() {
                   onChange={(e) => setLookingFor(e.target.value.slice(0, 200))}
                   rows={3}
                   placeholder="Describe the partner and relationship you are looking for..."
-                  className="w-full px-4 pt-3 pb-7 rounded-2xl bg-white border border-[#D0CDE1] text-xs sm:text-sm text-[#413B5E] leading-relaxed placeholder-[#413B5E]/55 focus:outline-none focus:bg-white focus:border-[#8574B7] resize-none"
+                  className="w-full px-4 pt-3 pb-7 rounded-2xl bg-white border border-[#D0CDE1] text-xs sm:text-sm text-[#413B5E] leading-relaxed placeholder-[#413B5E]/55 focus:outline-none focus:bg-white focus:border-[#726E97] resize-none"
                 />
                 <span className="absolute right-3 bottom-2 text-xs text-slate-600 pointer-events-none">
                   {lookingFor.length}/200
@@ -925,7 +925,7 @@ export default function MyProfilePage() {
                           className={
                             'px-3 py-1.5 rounded-xl border text-xs font-medium transition cursor-pointer ' +
                             (selected
-                              ? 'bg-[#8574B7] text-white border-[#8574B7]'
+                              ? 'bg-[#726E97] text-white border-[#726E97]'
                               : 'bg-white text-[#413B5E]/85 border-[#D0CDE1]')
                           }
                         >
@@ -958,7 +958,7 @@ export default function MyProfilePage() {
                     value={profession}
                     onChange={(e) => setProfession(e.target.value)}
                     placeholder="e.g. Nurse, Engineer"
-                    className="px-3 py-1.5 rounded-xl bg-white border border-[#D0CDE1] text-xs font-semibold text-[#413B5E] focus:outline-none focus:border-[#8574B7]"
+                    className="px-3 py-1.5 rounded-xl bg-white border border-[#D0CDE1] text-xs font-semibold text-[#413B5E] focus:outline-none focus:border-[#726E97]"
                   />
                 ) : (
                   <span className="font-semibold text-[#413B5E]">{profession || 'Not specified'}</span>

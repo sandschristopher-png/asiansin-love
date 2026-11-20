@@ -146,7 +146,7 @@ export function Navbar() {
             {profile && profile.is_plus !== true && pathname !== '/upgrade' && pathname !== '/plus' && (
               <Link
                 href="/plus"
-                className="mr-1 inline-flex h-7 items-center rounded-full border border-[#8574B7] px-3 text-xs font-semibold text-[#8574B7] hover:bg-[#8574B7]/10 transition-colors"
+                className="mr-1 inline-flex h-7 items-center rounded-full border border-[#726E97] px-3 text-xs font-semibold text-[#726E97] hover:bg-[#726E97]/10 transition-colors"
               >
                 Upgrade
               </Link>
@@ -157,7 +157,7 @@ export function Navbar() {
           ) : !authLoading && !IN_APP_PREFIXES.some((p) => pathname === p || pathname?.startsWith(p + '/')) ? (
             <Link
               href="/login"
-              className="px-4 py-1.5 rounded-full bg-[#8574B7] hover:bg-[#534377] text-white text-xs font-medium tracking-wide transition shadow-sm"
+              className="px-4 py-1.5 rounded-full bg-[#726E97] hover:bg-[#524E75] text-white text-xs font-medium tracking-wide transition shadow-sm"
             >
               Sign In
             </Link>
@@ -191,17 +191,17 @@ export function Navbar() {
             className="w-full max-w-md p-4 pb-6 rounded-t-3xl bg-white shadow-xl"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-[#E8E6F1]" />
+            <div className="mx-auto mb-4 h-1 w-10 rounded-full bg-[#EAE9F2]" />
             <div className="space-y-1">
               <button
                 onClick={() => setProfileMenuOpen(false)}
-                className="w-full text-left px-4 py-3 rounded-xl hover:bg-[#E8E6F1]/40 transition-colors text-[#413B5E]"
+                className="w-full text-left px-4 py-3 rounded-xl hover:bg-[#EAE9F2]/40 transition-colors text-[#413B5E]"
               >
                 Report Profile
               </button>
               <button
                 onClick={() => setProfileMenuOpen(false)}
-                className="w-full text-left px-4 py-3 rounded-xl hover:bg-[#E8E6F1]/40 transition-colors text-[#413B5E]"
+                className="w-full text-left px-4 py-3 rounded-xl hover:bg-[#EAE9F2]/40 transition-colors text-[#413B5E]"
               >
                 Block User
               </button>
@@ -211,14 +211,14 @@ export function Navbar() {
                   // Native share sheet on phones, share drawer on desktop (previously did nothing there).
                   void share({ title: 'Profile on Meet in Asia', text: 'Have a look at this profile on Meet in Asia.' });
                 }}
-                className="w-full text-left px-4 py-3 rounded-xl hover:bg-[#E8E6F1]/40 transition-colors text-[#413B5E]"
+                className="w-full text-left px-4 py-3 rounded-xl hover:bg-[#EAE9F2]/40 transition-colors text-[#413B5E]"
               >
                 Share Profile
               </button>
             </div>
             <button
               onClick={() => setProfileMenuOpen(false)}
-              className="mt-3 w-full py-3 rounded-xl bg-[#E8E6F1]/60 text-[#413B5E]/80 font-medium hover:bg-[#E8E6F1] transition-colors"
+              className="mt-3 w-full py-3 rounded-xl bg-[#EAE9F2]/60 text-[#413B5E]/80 font-medium hover:bg-[#EAE9F2] transition-colors"
             >
               Cancel
             </button>

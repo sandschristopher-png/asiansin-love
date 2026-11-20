@@ -88,7 +88,7 @@ export function VoiceRecordModal({
             onClick={onClose}
             disabled={saving}
             aria-label="Close"
-            className="p-1.5 rounded-full text-[#413B5E]/75 hover:bg-[#E8E6F1]/70 transition"
+            className="p-1.5 rounded-full text-[#413B5E]/75 hover:bg-[#EAE9F2]/70 transition"
           >
             <X className="w-4 h-4" />
           </button>
@@ -103,7 +103,7 @@ export function VoiceRecordModal({
                 type="button"
                 onClick={() => setPrompt(p)}
                 className={`text-left px-3.5 py-2 rounded-xl border text-xs font-medium transition ${
-                  prompt === p ? 'border-[#8574B7] bg-[#E8E6F1]/60 text-[#413B5E]' : 'border-[#D0CDE1] text-[#413B5E]/85'
+                  prompt === p ? 'border-[#726E97] bg-[#EAE9F2]/60 text-[#413B5E]' : 'border-[#D0CDE1] text-[#413B5E]/85'
                 }`}
               >
                 {p}
@@ -116,11 +116,11 @@ export function VoiceRecordModal({
           <div className="space-y-2">
             <div className="flex items-center gap-[3px] h-10 px-1" aria-hidden>
               {rec.levels.map((l, i) => (
-                <span key={i} className="flex-1 rounded-full bg-[#8574B7] transition-[height] duration-75" style={{ height: `${Math.round(l * 100)}%` }} />
+                <span key={i} className="flex-1 rounded-full bg-[#726E97] transition-[height] duration-75" style={{ height: `${Math.round(l * 100)}%` }} />
               ))}
             </div>
-            <div className="h-1.5 rounded-full bg-[#E8E6F1]/60 overflow-hidden">
-              <div className="h-full rounded-full bg-[#8574B7] transition-[width] duration-100" style={{ width: `${progress}%` }} />
+            <div className="h-1.5 rounded-full bg-[#EAE9F2]/60 overflow-hidden">
+              <div className="h-full rounded-full bg-[#726E97] transition-[width] duration-100" style={{ width: `${progress}%` }} />
             </div>
             <div className="flex items-center justify-between text-[11px] text-[#413B5E]/75">
               <span className="inline-flex items-center gap-1.5 font-semibold text-red-500">
@@ -154,7 +154,7 @@ export function VoiceRecordModal({
                   rec.start();
                 }}
                 disabled={saving}
-                className="h-11 rounded-full border border-[#D0CDE1] text-[#8574B7] text-xs font-medium inline-flex items-center justify-center gap-1.5 disabled:opacity-50"
+                className="h-11 rounded-full border border-[#D0CDE1] text-[#726E97] text-xs font-medium inline-flex items-center justify-center gap-1.5 disabled:opacity-50"
               >
                 <RotateCcw className="w-3.5 h-3.5" /> Re-record
               </button>
@@ -162,7 +162,7 @@ export function VoiceRecordModal({
                 type="button"
                 onClick={save}
                 disabled={saving || tooShort}
-                className="h-11 rounded-full bg-[#8574B7] text-white text-xs font-medium inline-flex items-center justify-center gap-1.5 disabled:opacity-50"
+                className="h-11 rounded-full bg-[#726E97] text-white text-xs font-medium inline-flex items-center justify-center gap-1.5 disabled:opacity-50"
               >
                 {saving ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Check className="w-3.5 h-3.5" />} Save intro
               </button>
@@ -177,7 +177,7 @@ export function VoiceRecordModal({
               buzz();
               rec.start();
             }}
-            className="w-full h-11 rounded-full bg-[#8574B7] text-white text-xs font-medium inline-flex items-center justify-center gap-1.5"
+            className="w-full h-11 rounded-full bg-[#726E97] text-white text-xs font-medium inline-flex items-center justify-center gap-1.5"
           >
             <Mic className="w-3.5 h-3.5" /> Start recording
           </button>

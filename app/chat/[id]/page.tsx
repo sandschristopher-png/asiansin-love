@@ -1332,10 +1332,10 @@ export default function ChatConversationPage() {
 
           {isInitialLoading ? (
             <div className="flex items-center gap-2.5 animate-pulse">
-              <div className="w-10 h-10 rounded-full bg-[#E8E6F1]/60" />
+              <div className="w-10 h-10 rounded-full bg-[#EAE9F2]/60" />
               <div className="space-y-1.5">
-                <div className="w-24 h-3.5 bg-[#E8E6F1]/60 rounded-full" />
-                <div className="w-16 h-2.5 bg-[#E8E6F1]/60 rounded-full" />
+                <div className="w-24 h-3.5 bg-[#EAE9F2]/60 rounded-full" />
+                <div className="w-16 h-2.5 bg-[#EAE9F2]/60 rounded-full" />
               </div>
             </div>
           ) : (
@@ -1343,7 +1343,7 @@ export default function ChatConversationPage() {
               href={'/profile/' + (resolvedTargetUuid || rawParam)}
               className="flex items-center gap-2.5 min-w-0 group"
             >
-              <div className="relative w-10 h-10 rounded-full overflow-hidden border border-[#D0CDE1] shrink-0 bg-[#E8E6F1]/60">
+              <div className="relative w-10 h-10 rounded-full overflow-hidden border border-[#D0CDE1] shrink-0 bg-[#EAE9F2]/60">
                 <Image
                   src={targetInfo.avatar}
                   alt={targetInfo.name || 'Member'}
@@ -1355,7 +1355,7 @@ export default function ChatConversationPage() {
               <div className="flex flex-col min-w-0">
                 <span className="flex items-center gap-1 min-w-0">
                   <span
-                    className="text-[15px] font-semibold text-[#413B5E] group-hover:text-[#8574B7] transition leading-tight truncate"
+                    className="text-[15px] font-semibold text-[#413B5E] group-hover:text-[#726E97] transition leading-tight truncate"
                     style={{ fontFamily: 'var(--font-brand)' }}
                   >
                     {targetInfo.name || 'Member'}
@@ -1378,7 +1378,7 @@ export default function ChatConversationPage() {
               title={t('call.phoneLabel')}
               aria-disabled={!callReady}
               className={`w-9 h-9 flex items-center justify-center rounded-full transition active:scale-95 cursor-pointer ${
-                callReady ? 'text-[#8574B7] hover:text-[#534377] hover:bg-[#F6F4FB]' : 'text-[#413B5E]/35 hover:bg-[#F6F4FB]'
+                callReady ? 'text-[#726E97] hover:text-[#524E75] hover:bg-[#F6F4FB]' : 'text-[#413B5E]/35 hover:bg-[#F6F4FB]'
               }`}
             >
               {callStarting ? <Loader2 className="w-[18px] h-[18px] animate-spin" /> : <Phone className="w-[18px] h-[18px]" />}
@@ -1398,10 +1398,10 @@ export default function ChatConversationPage() {
               title={t('chat.menu.safety')}
               aria-haspopup="dialog"
               aria-expanded={gateOpen}
-              className={`relative w-9 h-9 flex items-center justify-center text-[#413B5E] hover:bg-[#F6F4FB] rounded-full transition cursor-pointer ${shieldShake ? 'ail-shake text-[#8574B7]' : ''}`}
+              className={`relative w-9 h-9 flex items-center justify-center text-[#413B5E] hover:bg-[#F6F4FB] rounded-full transition cursor-pointer ${shieldShake ? 'ail-shake text-[#726E97]' : ''}`}
             >
               <ShieldCheck className="w-5 h-5" strokeWidth={1.75} />
-              {showGate && <span aria-hidden className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-[#8574B7] ring-2 ring-white" />}
+              {showGate && <span aria-hidden className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-[#726E97] ring-2 ring-white" />}
             </button>
           )}
           {!isInitialLoading && (
@@ -1431,7 +1431,7 @@ export default function ChatConversationPage() {
               <button type="button" onClick={closeCallPopovers} className="h-10 rounded-full border border-[#D0CDE1] bg-white text-xs font-semibold text-[#413B5E] transition hover:bg-[#F6F4FB]">
                 {t('call.confirmCancel')}
               </button>
-              <button type="button" onClick={confirmCall} className="h-10 rounded-full bg-[#8574B7] text-xs font-semibold text-white transition hover:bg-[#534377]">
+              <button type="button" onClick={confirmCall} className="h-10 rounded-full bg-[#726E97] text-xs font-semibold text-white transition hover:bg-[#524E75]">
                 {t('call.confirmCall')}
               </button>
             </div>
@@ -1459,7 +1459,7 @@ export default function ChatConversationPage() {
             >
               <ShieldCheck className="h-4 w-4 text-slate-600" aria-hidden />
               <span className="flex-1">{t('chat.menu.reputation')}</span>
-              <span className="text-xs font-semibold tabular-nums text-[#8574B7]">{targetInfo.rep}%</span>
+              <span className="text-xs font-semibold tabular-nums text-[#726E97]">{targetInfo.rep}%</span>
             </button>
           </div>
         )}
@@ -1468,13 +1468,13 @@ export default function ChatConversationPage() {
             divider so it never reads as a stuck page-loading bar. */}
         {!isInitialLoading && gateUnlocked && gateLockedOnOpen && (
           // The moment it opens: a brief "Unlocked" that fades by itself (no timer state needed).
-          <span className="ail-gate-done pointer-events-none absolute right-3.5 top-full z-10 mt-2 inline-flex h-6 items-center gap-1 rounded-full bg-[#8574B7] px-2.5 text-[11px] font-semibold text-white shadow-[0_4px_12px_rgba(133,116,183,0.35)]">
+          <span className="ail-gate-done pointer-events-none absolute right-3.5 top-full z-10 mt-2 inline-flex h-6 items-center gap-1 rounded-full bg-[#726E97] px-2.5 text-[11px] font-semibold text-white shadow-[0_4px_12px_rgba(114, 110, 151,0.35)]">
             <Check className="h-2.5 w-2.5" strokeWidth={3} aria-hidden />
             {t('chat.gate.unlocked')}
           </span>
         )}
         {gateOpen && (
-          <div role="dialog" aria-label={t('chat.menu.safety')} className="ail-pop-in absolute right-3 top-full z-30 mt-1.5 w-[280px] origin-top-right rounded-2xl border border-[#8574B7]/25 bg-white p-3.5 shadow-[0_14px_36px_rgba(133,116,183,0.22),0_2px_8px_rgba(65,59,94,0.06)]">
+          <div role="dialog" aria-label={t('chat.menu.safety')} className="ail-pop-in absolute right-3 top-full z-30 mt-1.5 w-[280px] origin-top-right rounded-2xl border border-[#726E97]/25 bg-white p-3.5 shadow-[0_14px_36px_rgba(114, 110, 151,0.22),0_2px_8px_rgba(65,59,94,0.06)]">
             {/* Floats over the thread (absolute: it takes no space, so the bubbles below never move). */}
             <button
               type="button"
@@ -1498,8 +1498,8 @@ export default function ChatConversationPage() {
                         <span className="truncate">{row.label}</span>
                         <span className="tabular-nums text-slate-600">{row.count}/{CONTACT_UNLOCK_TURNS}</span>
                       </div>
-                      <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-[#E8E6F1]">
-                        <div className="h-full rounded-full bg-[#8574B7] transition-[width] duration-500 ease-out" style={{ width: `${(row.count / CONTACT_UNLOCK_TURNS) * 100}%` }} />
+                      <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-[#EAE9F2]">
+                        <div className="h-full rounded-full bg-[#726E97] transition-[width] duration-500 ease-out" style={{ width: `${(row.count / CONTACT_UNLOCK_TURNS) * 100}%` }} />
                       </div>
                     </div>
                   ))}
@@ -1517,7 +1517,7 @@ export default function ChatConversationPage() {
                 setGateOpen(false);
                 setShowReportModal(true);
               }}
-              className={`flex w-full items-center gap-2.5 text-left text-sm text-[#413B5E] transition hover:text-[#8574B7] ${
+              className={`flex w-full items-center gap-2.5 text-left text-sm text-[#413B5E] transition hover:text-[#726E97] ${
                 showGate ? 'mt-3 rounded-xl border-t border-[#E6E2F0] px-1 pt-3' : 'py-1 pr-8'
               }`}
             >
@@ -1541,24 +1541,24 @@ export default function ChatConversationPage() {
         {isInitialLoading ? (
           <div className="space-y-4 py-4 animate-pulse">
             <div className="flex items-end gap-2">
-              <div className="w-6 h-6 rounded-full bg-[#E8E6F1]/60 shrink-0" />
+              <div className="w-6 h-6 rounded-full bg-[#EAE9F2]/60 shrink-0" />
               <div className="w-48 h-10 bg-white rounded-2xl rounded-bl-xs border border-[#D0CDE1]" />
             </div>
             <div className="flex justify-end">
-              <div className="w-52 h-11 bg-[#8574B7]/20 rounded-2xl rounded-br-xs" />
+              <div className="w-52 h-11 bg-[#726E97]/20 rounded-2xl rounded-br-xs" />
             </div>
             <div className="flex items-end gap-2">
-              <div className="w-6 h-6 rounded-full bg-[#E8E6F1]/60 shrink-0" />
+              <div className="w-6 h-6 rounded-full bg-[#EAE9F2]/60 shrink-0" />
               <div className="w-40 h-9 bg-white rounded-2xl rounded-bl-xs border border-[#D0CDE1]" />
             </div>
           </div>
         ) : (
           <>
             {showIcebreaker && icebreakerPrompt && messages.length > 0 && messages.length < 3 && (
-              <div className="mb-3 p-3.5 rounded-2xl bg-white border border-[#D0CDE1] shadow-[0_2px_10px_rgba(102,93,150,0.05)] space-y-2">
+              <div className="mb-3 p-3.5 rounded-2xl bg-white border border-[#D0CDE1] shadow-[0_2px_10px_rgba(82, 78, 117,0.05)] space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-[#8574B7]">
-                    <Lightbulb className="w-3.5 h-3.5 text-[#8574B7]" />
+                  <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-[#726E97]">
+                    <Lightbulb className="w-3.5 h-3.5 text-[#726E97]" />
                     <span>Conversation Starter</span>
                   </span>
                   <button
@@ -1576,7 +1576,7 @@ export default function ChatConversationPage() {
                 <button
                   type="button"
                   onClick={() => void sendStarter(icebreakerPrompt)}
-                  className="text-[11px] font-medium text-[#8574B7] hover:underline cursor-pointer"
+                  className="text-[11px] font-medium text-[#726E97] hover:underline cursor-pointer"
                 >
                   Tap to send this starter &rarr;
                 </button>
@@ -1599,8 +1599,8 @@ export default function ChatConversationPage() {
             )}
 
             {showSafetyNotice && (
-              <div className="mb-3 p-3 rounded-2xl bg-[#E8E6F1]/60 border border-[#D0CDE1] text-xs text-[#8574B7] flex items-start gap-2.5">
-                <ShieldAlert className="w-4 h-4 text-[#8574B7] shrink-0 mt-0.5" />
+              <div className="mb-3 p-3 rounded-2xl bg-[#EAE9F2]/60 border border-[#D0CDE1] text-xs text-[#726E97] flex items-start gap-2.5">
+                <ShieldAlert className="w-4 h-4 text-[#726E97] shrink-0 mt-0.5" />
                 <p className="leading-relaxed">
                   <strong className="font-semibold">Safety Gate:</strong> Contact details and voice notes unlock after 3 substantive replies from both members.
                 </p>
@@ -1609,7 +1609,7 @@ export default function ChatConversationPage() {
 
             {messages.length === 0 ? (
               <div className="py-16 text-center space-y-2">
-                <div className="w-12 h-12 rounded-full overflow-hidden mx-auto border border-[#D0CDE1] bg-[#E8E6F1]/60 relative">
+                <div className="w-12 h-12 rounded-full overflow-hidden mx-auto border border-[#D0CDE1] bg-[#EAE9F2]/60 relative">
                   <Image
                     src={targetInfo.avatar}
                     alt={targetInfo.name || 'Member'}
@@ -1645,7 +1645,7 @@ export default function ChatConversationPage() {
                         key={chip.label}
                         type="button"
                         onClick={() => void sendStarter(chip.text)}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#E8E6F1]/60 border border-[#D0CDE1] text-[#8574B7] text-[11.5px] font-medium hover:bg-[#E8E6F1]/60 active:scale-95 transition"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#EAE9F2]/60 border border-[#D0CDE1] text-[#726E97] text-[11.5px] font-medium hover:bg-[#EAE9F2]/60 active:scale-95 transition"
                       >
                         <Lightbulb className="w-3 h-3" />
                         {chip.label}
@@ -1709,7 +1709,7 @@ export default function ChatConversationPage() {
                     {pillsBefore}
                     {showDateHeader && (
                       <div className="flex justify-center my-1.5 select-none">
-                        <span className="px-3 py-0.5 rounded-full bg-[#E8E6F1]/60 text-slate-600 text-[10px] font-semibold tracking-wide">
+                        <span className="px-3 py-0.5 rounded-full bg-[#EAE9F2]/60 text-slate-600 text-[10px] font-semibold tracking-wide">
                           {currentDayLabel}
                         </span>
                       </div>
@@ -1726,7 +1726,7 @@ export default function ChatConversationPage() {
                         {!isMe && (
                           <div className="w-6 h-6 shrink-0">
                             {!isSameSenderAsNext ? (
-                              <div className="relative w-6 h-6 rounded-full overflow-hidden border border-[#D0CDE1] bg-[#E8E6F1]/60">
+                              <div className="relative w-6 h-6 rounded-full overflow-hidden border border-[#D0CDE1] bg-[#EAE9F2]/60">
                                 <Image
                                   src={targetInfo.avatar}
                                   alt={targetInfo.name}
@@ -1752,15 +1752,15 @@ export default function ChatConversationPage() {
                               : undefined
                           }
                           className={
-                            // Quiet bubbles: roomy padding, one radius, no shadow. Mine #8574B7 with white text; theirs borderless #F6F4FB.
+                            // Quiet bubbles: roomy padding, one radius, no shadow. Mine #726E97 with white text; theirs borderless #F6F4FB.
                             'px-4 py-3 text-[14px] leading-[1.5] break-words select-text transition-opacity rounded-2xl ' +
                             (isRealId ? 'cursor-pointer relative group/msg ' : '') +
                             (msg.pending ? 'opacity-75 ' : msg.failed ? 'opacity-60 ' : 'opacity-100 ') +
-                            (isMe ? 'bg-[#8574B7] text-white' : 'bg-[#F6F4FB] text-[#413B5E]')
+                            (isMe ? 'bg-[#726E97] text-white' : 'bg-[#F6F4FB] text-[#413B5E]')
                           }
                         >
                           {msg.moment && (
-                            <span className="relative mb-2 block h-36 w-28 overflow-hidden rounded-xl border border-[#D0CDE1]/60 bg-[#E8E6F1]/50">
+                            <span className="relative mb-2 block h-36 w-28 overflow-hidden rounded-xl border border-[#D0CDE1]/60 bg-[#EAE9F2]/50">
                               <Image src={msg.moment.imageUrl} alt={t('moments.attachedAlt')} fill sizes="112px" className="object-cover" />
                             </span>
                           )}
@@ -1779,7 +1779,7 @@ export default function ChatConversationPage() {
                               <span className="block mt-1.5 pt-1.5 border-t border-[#D0CDE1] italic text-[#413B5E]">
                                 {translations[msg.id]?.text}
                               </span>
-                              <span className="mt-1.5 inline-flex items-center px-1.5 py-0.5 rounded-md bg-[#E8E6F1]/60 text-[9.5px] font-semibold not-italic text-[#8574B7]">
+                              <span className="mt-1.5 inline-flex items-center px-1.5 py-0.5 rounded-md bg-[#EAE9F2]/60 text-[9.5px] font-semibold not-italic text-[#726E97]">
                                 Translated
                               </span>
                             </span>
@@ -1801,7 +1801,7 @@ export default function ChatConversationPage() {
                           <span className={'mb-0.5 flex shrink-0 flex-col gap-px text-[10px] leading-tight text-slate-500 select-none ' + (isMe ? 'items-end' : 'items-start')}>
                             {isMe && !msg.pending && isPlus && (
                               msg.read ? (
-                                <span className="inline-flex items-center gap-0.5 font-medium text-[#8574B7]">
+                                <span className="inline-flex items-center gap-0.5 font-medium text-[#726E97]">
                                   <CheckCheck className="h-3 w-3" aria-hidden />
                                   {t('chat.read')}
                                 </span>
@@ -1819,7 +1819,7 @@ export default function ChatConversationPage() {
                             onClick={() => setReportMessageId(msg.id)}
                             aria-label={t('report.messageTitle')}
                             title={t('report.messageTitle')}
-                            className="mb-1 hidden h-7 w-7 shrink-0 items-center justify-center rounded-full text-slate-400 opacity-0 transition hover:bg-[#F6F4FB] hover:text-[#8574B7] focus-visible:opacity-100 [@media(hover:hover)]:flex [@media(hover:hover)]:group-hover/row:opacity-100"
+                            className="mb-1 hidden h-7 w-7 shrink-0 items-center justify-center rounded-full text-slate-400 opacity-0 transition hover:bg-[#F6F4FB] hover:text-[#726E97] focus-visible:opacity-100 [@media(hover:hover)]:flex [@media(hover:hover)]:group-hover/row:opacity-100"
                           >
                             <Flag className="h-3.5 w-3.5" aria-hidden />
                           </button>
@@ -1851,7 +1851,7 @@ export default function ChatConversationPage() {
                         if (msg.failed) {
                           parts.push(<span key="f" className="text-red-600 font-semibold">Not delivered</span>);
                           parts.push(
-                            <button key="r" type="button" onClick={() => retryMessage(msg)} className="font-medium text-[#8574B7] hover:underline">
+                            <button key="r" type="button" onClick={() => retryMessage(msg)} className="font-medium text-[#726E97] hover:underline">
                               Retry
                             </button>
                           );
@@ -1878,7 +1878,7 @@ export default function ChatConversationPage() {
                               type="button"
                               onClick={() => toggleTranslation(msg)}
                               disabled={translations[msg.id]?.loading}
-                              className="font-medium text-[#8574B7] hover:underline cursor-pointer disabled:opacity-60 inline-flex items-center gap-1"
+                              className="font-medium text-[#726E97] hover:underline cursor-pointer disabled:opacity-60 inline-flex items-center gap-1"
                             >
                               {translations[msg.id]?.loading && <Loader2 className="w-2.5 h-2.5 animate-spin" />}
                               {translations[msg.id]?.loading ? 'Translating...' : translations[msg.id]?.showing ? 'Translated · Show original' : 'Translate'}
@@ -1888,7 +1888,7 @@ export default function ChatConversationPage() {
                         // Free senders see timestamps only; one quiet prompt under the latest message.
                         if (isMe && !isPlus && msg.id === lastOwnMessageId) {
                           parts.push(
-                            <Link key="plus" href="/plus?feature=receipts" className="font-medium text-[#8574B7] hover:underline">
+                            <Link key="plus" href="/plus?feature=receipts" className="font-medium text-[#726E97] hover:underline">
                               {t('plus.page.receiptsPrompt')}
                             </Link>
                           );
@@ -1917,7 +1917,7 @@ export default function ChatConversationPage() {
                 <span className="inline-flex items-center gap-1 rounded-2xl bg-[#F6F4FB] px-4 py-3.5">
                   <span className="sr-only">typing...</span>
                   {[0, 1, 2].map((i) => (
-                    <span key={i} aria-hidden className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#8574B7]/60" style={{ animationDelay: `${i * 160}ms` }} />
+                    <span key={i} aria-hidden className="h-1.5 w-1.5 animate-pulse rounded-full bg-[#726E97]/60" style={{ animationDelay: `${i * 160}ms` }} />
                   ))}
                 </span>
               </div>
@@ -1931,7 +1931,7 @@ export default function ChatConversationPage() {
         <button
           type="button"
           onClick={() => scrollToBottom('smooth')}
-          className="absolute bottom-16 left-1/2 -translate-x-1/2 z-30 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#8574B7] text-white text-xs font-medium shadow-lg hover:bg-[#413B5E] transition cursor-pointer"
+          className="absolute bottom-16 left-1/2 -translate-x-1/2 z-30 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full bg-[#726E97] text-white text-xs font-medium shadow-lg hover:bg-[#413B5E] transition cursor-pointer"
         >
           <span>New message</span>
           <ArrowDown className="w-3.5 h-3.5" />
@@ -1940,10 +1940,10 @@ export default function ChatConversationPage() {
 
       {/* Restricted account: the composer gives way to the identity prompt (step-up check) */}
       {reverification.required && (
-        <div className="shrink-0 w-full border-t border-[#8574B7]/20 bg-[#F6F4FB] p-4 pb-[max(1rem,env(safe-area-inset-bottom))] text-center z-20">
+        <div className="shrink-0 w-full border-t border-[#726E97]/20 bg-[#F6F4FB] p-4 pb-[max(1rem,env(safe-area-inset-bottom))] text-center z-20">
           <p className="text-sm font-semibold text-[#413B5E]">{t('stepup.lockedTitle')}</p>
           <p className="mt-1 text-xs leading-relaxed text-[#413B5E]/75">{t('stepup.lockedBody')}</p>
-          <button type="button" onClick={confirmIdentity} className="mt-3 flex h-11 w-full items-center justify-center rounded-full bg-[#8574B7] text-sm font-semibold text-white transition hover:bg-[#534377]">
+          <button type="button" onClick={confirmIdentity} className="mt-3 flex h-11 w-full items-center justify-center rounded-full bg-[#726E97] text-sm font-semibold text-white transition hover:bg-[#524E75]">
             {t('stepup.continue')}
           </button>
         </div>
@@ -1953,15 +1953,15 @@ export default function ChatConversationPage() {
       <div className={`shrink-0 w-full bg-white/95 backdrop-blur-md border-t border-[#D0CDE1] px-3 pt-2.5 pb-[max(0.75rem,env(safe-area-inset-bottom))] z-20 ${reverification.required ? 'hidden' : ''}`}>
         {cooldownSeconds > 0 ? (
           // A calm nudge, not an error: what happened, how it opens up, when the next message can go.
-          <div role="status" className="p-3.5 rounded-2xl bg-[#FAF9FC] border border-[#8574B7]/25 flex flex-col gap-2.5 text-center">
+          <div role="status" className="p-3.5 rounded-2xl bg-[#FAF9FC] border border-[#726E97]/25 flex flex-col gap-2.5 text-center">
             <div className="flex items-center justify-center gap-1.5 text-[13px] font-semibold leading-snug text-[#413B5E]">
-              <Clock className="w-4 h-4 shrink-0 text-[#8574B7]" aria-hidden />
+              <Clock className="w-4 h-4 shrink-0 text-[#726E97]" aria-hidden />
               <span>{t('chat.cooldownTitle', { n: 5 })}</span>
             </div>
             <p className="text-xs leading-relaxed text-slate-600">{t('chat.cooldownBody', { time: formatTimer(cooldownSeconds) })}</p>
             <Link
               href="/plus?feature=conversations"
-              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-full bg-[#8574B7] hover:bg-[#534377] text-white font-medium text-xs shadow-sm transition"
+              className="w-full flex items-center justify-center gap-2 py-2.5 rounded-full bg-[#726E97] hover:bg-[#524E75] text-white font-medium text-xs shadow-sm transition"
             >
               <Zap className="w-3.5 h-3.5 fill-current" aria-hidden />
               {t('chat.cooldownCta')}
@@ -1987,7 +1987,7 @@ export default function ChatConversationPage() {
                   </span>
                   <span className="flex-1 flex items-center gap-[2px] h-5 min-w-0 overflow-hidden" aria-hidden>
                     {voice.levels.map((l, i) => (
-                      <span key={i} className="flex-1 rounded-full bg-[#8574B7]" style={{ height: `${Math.round(l * 100)}%` }} />
+                      <span key={i} className="flex-1 rounded-full bg-[#726E97]" style={{ height: `${Math.round(l * 100)}%` }} />
                     ))}
                   </span>
                 </>
@@ -2016,7 +2016,7 @@ export default function ChatConversationPage() {
                 onClick={sendVoiceNote}
                 disabled={voiceSending || !voice.blob}
                 aria-label="Send voice note"
-                className="w-9 h-9 rounded-full bg-[#8574B7] hover:bg-[#413B5E] text-white flex items-center justify-center shrink-0 disabled:opacity-40"
+                className="w-9 h-9 rounded-full bg-[#726E97] hover:bg-[#413B5E] text-white flex items-center justify-center shrink-0 disabled:opacity-40"
               >
                 {voiceSending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4 translate-x-[0.5px]" />}
               </button>
@@ -2024,7 +2024,7 @@ export default function ChatConversationPage() {
           </div>
         ) : (
           <form onSubmit={handleSendMessage} className="flex items-end gap-2">
-            <div className="flex-1 bg-white border border-[#D0CDE1] focus-within:border-[#8574B7] focus-within:bg-white focus-within:ring-2 focus-within:ring-[#8574B7]/15 rounded-3xl px-3.5 py-2 transition-all flex items-center">
+            <div className="flex-1 bg-white border border-[#D0CDE1] focus-within:border-[#726E97] focus-within:bg-white focus-within:ring-2 focus-within:ring-[#726E97]/15 rounded-3xl px-3.5 py-2 transition-all flex items-center">
               <textarea
                 ref={textareaRef}
                 rows={1}
@@ -2047,7 +2047,7 @@ export default function ChatConversationPage() {
                   title={voiceAllowed ? `Record a voice note (up to ${VOICE_NOTE_MAX_MS / 1000}s)` : undefined}
                   className={`w-10 h-10 rounded-full border flex items-center justify-center transition cursor-pointer active:scale-95 ${
                     voiceAllowed
-                      ? 'border-[#D0CDE1] bg-[#E8E6F1]/60 text-[#8574B7] hover:bg-[#E8E6F1]/60'
+                      ? 'border-[#D0CDE1] bg-[#EAE9F2]/60 text-[#726E97] hover:bg-[#EAE9F2]/60'
                       : 'border-[#D0CDE1] bg-white text-[#D0CDE1]'
                   }`}
                 >
@@ -2056,7 +2056,7 @@ export default function ChatConversationPage() {
                 {!voiceAllowed && (
                   <span
                     aria-hidden
-                    className="pointer-events-none absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-white text-[#8574B7] rounded-full flex items-center justify-center shadow-xs border border-[#D0CDE1]"
+                    className="pointer-events-none absolute -bottom-0.5 -right-0.5 w-3.5 h-3.5 bg-white text-[#726E97] rounded-full flex items-center justify-center shadow-xs border border-[#D0CDE1]"
                   >
                     <Lock className="w-2 h-2" strokeWidth={3} />
                   </span>
@@ -2067,7 +2067,7 @@ export default function ChatConversationPage() {
               type="submit"
               disabled={!inputText.trim()}
               aria-label="Send message"
-              className="w-10 h-10 rounded-full bg-[#8574B7] hover:bg-[#534377] active:scale-90 disabled:opacity-35 text-white flex items-center justify-center transition-all shadow-xs shrink-0 cursor-pointer"
+              className="w-10 h-10 rounded-full bg-[#726E97] hover:bg-[#524E75] active:scale-90 disabled:opacity-35 text-white flex items-center justify-center transition-all shadow-xs shrink-0 cursor-pointer"
             >
               <Send className="w-[18px] h-[18px] translate-x-[0.5px]" />
             </button>

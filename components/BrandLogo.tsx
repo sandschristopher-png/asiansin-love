@@ -23,7 +23,7 @@ const SIZE_CLASS: Record<BrandLogoSize, string> = {
 };
 
 /**
- * Typographic logo only, two-tone: "Meet in" in ink #413B5E, "Asia" in brand purple #8574B7,
+ * Typographic logo only, two-tone: "Meet in" in ink #413B5E, "Asia" in brand purple #726E97,
  * Plus Jakarta Sans (font-brand) 600. White on dark surfaces. No icon, box, gradient or shadow.
  */
 export function BrandLogo({ className = '', href = '/discover', size = 'md', textSize = '', onDark = false }: BrandLogoProps) {
@@ -38,7 +38,7 @@ export function BrandLogo({ className = '', href = '/discover', size = 'md', tex
       aria-label="Meet in Asia"
     >
       <span>Meet in&nbsp;</span>
-      <span className={onDark ? undefined : 'text-[#8574B7]'}>Asia</span>
+      <span className={onDark ? undefined : 'text-[#726E97]'}>Asia</span>
     </span>
   );
 

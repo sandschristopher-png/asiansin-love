@@ -27,7 +27,7 @@ export function PushPermissionCard({ onAllow, onClose }: { onAllow: () => void; 
         onClick={(e) => e.stopPropagation()}
         className="w-full max-w-[380px] border border-[#D0CDE1] bg-white rounded-2xl p-5 shadow-brand-sm [transform:translate3d(0,0,0)] will-change-transform ail-modal-pop"
       >
-        <div className="w-11 h-11 rounded-2xl bg-[#E8E6F1]/70 text-[#8574B7] flex items-center justify-center">
+        <div className="w-11 h-11 rounded-2xl bg-[#EAE9F2]/70 text-[#726E97] flex items-center justify-center">
           <BellRing className="w-5 h-5" aria-hidden />
         </div>
         <h2 id="push-card-title" className="mt-3 text-base font-semibold text-[#413B5E]">
@@ -45,14 +45,14 @@ export function PushPermissionCard({ onAllow, onClose }: { onAllow: () => void; 
           <button
             type="button"
             onClick={onClose}
-            className="flex-1 h-11 rounded-full border border-[#D0CDE1] bg-white text-sm font-medium text-[#413B5E] hover:bg-[#E8E6F1]/30 transition-colors"
+            className="flex-1 h-11 rounded-full border border-[#D0CDE1] bg-white text-sm font-medium text-[#413B5E] hover:bg-[#EAE9F2]/30 transition-colors"
           >
             {t('settings.notNow')}
           </button>
           <button
             type="button"
             onClick={onAllow}
-            className="flex-1 h-11 rounded-full bg-[#8574B7] hover:bg-[#413B5E] text-sm font-medium text-white transition-colors"
+            className="flex-1 h-11 rounded-full bg-[#726E97] hover:bg-[#413B5E] text-sm font-medium text-white transition-colors"
           >
             {t('settings.allow')}
           </button>

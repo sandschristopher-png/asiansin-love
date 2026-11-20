@@ -181,9 +181,9 @@ function PlusHubContent() {
     <div className="relative isolate flex-1 w-full min-h-screen bg-white text-[#413B5E] overflow-hidden">
       {/* Layered breathing aura on the white canvas (same as the auth screens). */}
       <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div className="w-[30rem] h-[30rem] rounded-full bg-[#E8E6F1]/70 blur-3xl animate-pulse pointer-events-none absolute -top-24 -left-24" />
+        <div className="w-[30rem] h-[30rem] rounded-full bg-[#EAE9F2]/70 blur-3xl animate-pulse pointer-events-none absolute -top-24 -left-24" />
         <div className="w-[26rem] h-[26rem] rounded-full bg-[#D0CDE1]/45 blur-3xl animate-pulse pointer-events-none absolute top-1/3 -right-20 [animation-delay:1.5s]" />
-        <div className="w-96 h-96 rounded-full bg-[#E8E6F1]/50 blur-3xl animate-pulse pointer-events-none absolute -bottom-20 left-1/4 [animation-delay:3s]" />
+        <div className="w-96 h-96 rounded-full bg-[#EAE9F2]/50 blur-3xl animate-pulse pointer-events-none absolute -bottom-20 left-1/4 [animation-delay:3s]" />
       </div>
 
       <div className="relative z-10 px-4 pt-3 pb-[calc(8.5rem+env(safe-area-inset-bottom))] space-y-6">
@@ -204,10 +204,10 @@ function PlusHubContent() {
           <PlusBadge />
           <h1 className="text-[34px] leading-[1.15] font-semibold tracking-tight text-[#413B5E]">{t('plus.page.headline')}</h1>
           <p className="text-sm leading-relaxed text-slate-600">{t('plus.page.subtext')}</p>
-          <ul className="rounded-2xl bg-[#FAF9FC] border border-[#8574B7]/25 px-4 py-3.5 space-y-2.5">
+          <ul className="rounded-2xl bg-[#FAF9FC] border border-[#726E97]/25 px-4 py-3.5 space-y-2.5">
             {BANNER.map((key) => (
               <li key={key} className="flex items-start gap-2.5 text-[13px] font-medium leading-snug text-[#413B5E]">
-                <span className="mt-px w-4 h-4 shrink-0 rounded-full bg-[#8574B7]/15 text-[#8574B7] flex items-center justify-center">
+                <span className="mt-px w-4 h-4 shrink-0 rounded-full bg-[#726E97]/15 text-[#726E97] flex items-center justify-center">
                   <Check className="w-3 h-3" strokeWidth={3} aria-hidden />
                 </span>
                 {t(key)}
@@ -231,12 +231,12 @@ function PlusHubContent() {
                   onClick={() => setSelectedPlan(p.id)}
                   className={`text-left flex flex-col gap-1 ${
                     active
-                      ? 'bg-white border-2 border-[#8574B7] rounded-2xl p-3.5 shadow-brand-md relative'
+                      ? 'bg-white border-2 border-[#726E97] rounded-2xl p-3.5 shadow-brand-md relative'
                       : 'relative bg-white/90 backdrop-blur-md border border-[#D0CDE1] rounded-2xl p-3.5 shadow-brand-sm hover:border-[#B8B3D1] transition-all text-[#413B5E]'
                   }`}
                 >
                   {p.badge && (
-                    <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-semibold leading-none text-white bg-[#8574B7] px-2.5 py-1 rounded-full shadow-brand-sm">
+                    <span className="absolute -top-2.5 left-1/2 -translate-x-1/2 whitespace-nowrap text-[10px] font-semibold leading-none text-white bg-[#726E97] px-2.5 py-1 rounded-full shadow-brand-sm">
                       {t(BADGE_LABEL[p.badge])}
                     </span>
                   )}
@@ -248,7 +248,7 @@ function PlusHubContent() {
                   {p.months > 1 && (
                     <span className="text-[10px] leading-snug text-slate-600">{t('plus.page.billedEveryN', { n: p.months })}</span>
                   )}
-                  {savePct(p.savings) && <span className="text-[11px] font-semibold leading-snug text-[#8574B7]">{savePct(p.savings)}</span>}
+                  {savePct(p.savings) && <span className="text-[11px] font-semibold leading-snug text-[#726E97]">{savePct(p.savings)}</span>}
                 </button>
               );
             })}
@@ -259,8 +259,8 @@ function PlusHubContent() {
           <p className="text-xs leading-relaxed text-slate-600">{t('plus.page.billing3', { email: SUPPORT_EMAIL })}</p>
         )}
         {isPlus && (
-          <section className="rounded-2xl bg-[#FAF9FC] border border-[#8574B7]/25 px-4 py-4 flex items-start gap-3">
-            <span className="w-9 h-9 shrink-0 rounded-full bg-[#8574B7]/15 text-[#8574B7] flex items-center justify-center">
+          <section className="rounded-2xl bg-[#FAF9FC] border border-[#726E97]/25 px-4 py-4 flex items-start gap-3">
+            <span className="w-9 h-9 shrink-0 rounded-full bg-[#726E97]/15 text-[#726E97] flex items-center justify-center">
               <CheckCircle2 className="w-5 h-5" aria-hidden />
             </span>
             <div className="min-w-0">
@@ -270,7 +270,7 @@ function PlusHubContent() {
               <p className="mt-1 text-xs leading-relaxed text-slate-600">{t('plus.page.activeBody')}</p>
               <p className="mt-2 text-xs leading-relaxed text-slate-600">
                 {t('plus.page.billingSupport')}{' '}
-                <a href={`mailto:${SUPPORT_EMAIL}`} className="font-medium text-[#8574B7] underline underline-offset-4">
+                <a href={`mailto:${SUPPORT_EMAIL}`} className="font-medium text-[#726E97] underline underline-offset-4">
                   {SUPPORT_EMAIL}
                 </a>
               </p>
@@ -284,7 +284,7 @@ function PlusHubContent() {
           <div className="grid grid-cols-[1.1fr_1fr_1.1fr] text-[11px] font-semibold tracking-wider text-slate-600 uppercase border-b border-[#D0CDE1]">
             <span className="px-3.5 py-3 leading-snug">{t('plus.page.colFeature')}</span>
             <span className="px-2 py-3 leading-snug">{t('plus.page.colFree')}</span>
-            <span className="px-2.5 py-3 leading-snug bg-[#8574B7]/[0.07] border-l border-[#8574B7]/20 normal-case tracking-normal">
+            <span className="px-2.5 py-3 leading-snug bg-[#726E97]/[0.07] border-l border-[#726E97]/20 normal-case tracking-normal">
               <PlusBadge />
             </span>
           </div>
@@ -297,17 +297,17 @@ function PlusHubContent() {
                 id={`plus-row-${row.id}`}
                 className={`grid grid-cols-[1.1fr_1fr_1.1fr] text-[#413B5E] ${last ? '' : 'border-b border-[#D0CDE1]/40'}`}
               >
-                <span className={`px-3.5 py-3 text-[12px] font-semibold leading-snug ${hi ? 'bg-[#8574B7]/10' : ''}`}>{t(row.label)}</span>
-                <span className={`px-2 py-3 text-[11.5px] text-slate-600 flex items-start gap-1.5 leading-snug ${hi ? 'bg-[#8574B7]/10' : ''}`}>
+                <span className={`px-3.5 py-3 text-[12px] font-semibold leading-snug ${hi ? 'bg-[#726E97]/10' : ''}`}>{t(row.label)}</span>
+                <span className={`px-2 py-3 text-[11.5px] text-slate-600 flex items-start gap-1.5 leading-snug ${hi ? 'bg-[#726E97]/10' : ''}`}>
                   <FreeMark mark={row.freeMark} label={row.freeMark === 'no' ? t('plus.page.notIncluded') : t('plus.page.included')} />
                   <span>{t(row.free.key, row.free.vars)}</span>
                 </span>
                 <span
-                  className={`px-2.5 py-3 text-[11.5px] flex items-start gap-1.5 leading-snug bg-[#8574B7]/[0.07] border-l border-[#8574B7]/20 ${
-                    row.exclusive ? 'font-semibold text-[#534377]' : 'font-medium'
+                  className={`px-2.5 py-3 text-[11.5px] flex items-start gap-1.5 leading-snug bg-[#726E97]/[0.07] border-l border-[#726E97]/20 ${
+                    row.exclusive ? 'font-semibold text-[#524E75]' : 'font-medium'
                   }`}
                 >
-                  <Check className="w-3.5 h-3.5 mt-px shrink-0 text-[#8574B7]" strokeWidth={2.5} aria-label={t('plus.page.included')} />
+                  <Check className="w-3.5 h-3.5 mt-px shrink-0 text-[#726E97]" strokeWidth={2.5} aria-label={t('plus.page.included')} />
                   <span>{t(row.plus.key, row.plus.vars)}</span>
                 </span>
               </div>
@@ -336,7 +336,7 @@ function PlusHubContent() {
             </ul>
             <p className="text-xs text-slate-600">
               {t('plus.page.fullDetails')}{' '}
-              <Link href="/terms" className="font-medium text-[#8574B7] underline underline-offset-4">
+              <Link href="/terms" className="font-medium text-[#726E97] underline underline-offset-4">
                 {t('settings.terms')}
               </Link>
             </p>
@@ -344,7 +344,7 @@ function PlusHubContent() {
         </section>
 
         {/* Always visible, signed in or not: the policies behind the price and how to reach support. */}
-        <nav className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 pt-1 text-[11px] font-semibold text-[#8574B7]">
+        <nav className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 pt-1 text-[11px] font-semibold text-[#726E97]">
           <Link href="/terms" className="hover:underline">{t('plus.page.legalTerms')}</Link>
           <Link href="/terms#refunds" className="hover:underline">{t('plus.page.legalRefunds')}</Link>
           <Link href="/terms#cancellation" className="hover:underline">{t('plus.page.legalCancel')}</Link>
@@ -361,11 +361,11 @@ function PlusHubContent() {
       {mounted && createPortal(
       <div className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] z-50 bg-white/95 backdrop-blur-md border-t border-[#D0CDE1] p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
         {isLoadingSubscription ? (
-          <div aria-hidden className="h-12 w-full rounded-full bg-[#E8E6F1] animate-pulse" />
+          <div aria-hidden className="h-12 w-full rounded-full bg-[#EAE9F2] animate-pulse" />
         ) : isPlus ? (
           <p className="text-center text-xs leading-relaxed text-slate-600">
             {t('plus.page.billingSupport')}{' '}
-            <a href={`mailto:${SUPPORT_EMAIL}`} className="font-medium text-[#8574B7] underline underline-offset-4">
+            <a href={`mailto:${SUPPORT_EMAIL}`} className="font-medium text-[#726E97] underline underline-offset-4">
               {SUPPORT_EMAIL}
             </a>
           </p>
@@ -375,7 +375,7 @@ function PlusHubContent() {
             <div className="flex items-center gap-2.5">
               <Link
                 href="/discover"
-                className="h-12 px-6 rounded-full border border-[#D0CDE1] bg-white text-[#413B5E] hover:bg-[#E8E6F1]/30 text-sm font-medium transition-colors flex items-center justify-center shrink-0"
+                className="h-12 px-6 rounded-full border border-[#D0CDE1] bg-white text-[#413B5E] hover:bg-[#EAE9F2]/30 text-sm font-medium transition-colors flex items-center justify-center shrink-0"
               >
                 {t('plus.page.keepFree')}
               </Link>
@@ -383,7 +383,7 @@ function PlusHubContent() {
                 <button
                   type="button"
                   onClick={handleSubscribe}
-                  className="flex-1 min-w-0 h-12 px-6 rounded-full bg-[#8574B7] hover:bg-[#534377] text-white font-medium text-sm shadow-brand-glow transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
+                  className="flex-1 min-w-0 h-12 px-6 rounded-full bg-[#726E97] hover:bg-[#524E75] text-white font-medium text-sm shadow-brand-glow transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
                 >
                   {t('plus.upgrade')} · {plan.total}
                 </button>
@@ -392,7 +392,7 @@ function PlusHubContent() {
                   type="button"
                   disabled
                   aria-disabled="true"
-                  className="flex-1 min-w-0 h-12 px-6 rounded-full bg-[#E8E6F1] text-[#413B5E]/60 font-medium text-sm cursor-not-allowed flex items-center justify-center whitespace-nowrap"
+                  className="flex-1 min-w-0 h-12 px-6 rounded-full bg-[#EAE9F2] text-[#413B5E]/60 font-medium text-sm cursor-not-allowed flex items-center justify-center whitespace-nowrap"
                 >
                   {t('plus.page.comingSoon')}
                 </button>

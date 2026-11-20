@@ -9,7 +9,7 @@ const BULLET_RE = /^\s*(?:[-*•])\s+/;
 function withLinks(text: string, keyBase: string): React.ReactNode[] {
   return text.split(URL_RE).map((part, i) =>
     i % 2 === 1 ? (
-      <a key={`${keyBase}-a${i}`} href={part} target="_blank" rel="noopener noreferrer" className="text-[#8574B7] underline underline-offset-2 hover:text-[#534377] transition-colors">
+      <a key={`${keyBase}-a${i}`} href={part} target="_blank" rel="noopener noreferrer" className="text-[#726E97] underline underline-offset-2 hover:text-[#524E75] transition-colors">
         {part}
       </a>
     ) : (

@@ -103,7 +103,7 @@ export function ReportModal({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="pt-2.5 shrink-0" aria-hidden>
-          <div className="w-10 h-1 rounded-full bg-[#E8E6F1] mx-auto mb-2" />
+          <div className="w-10 h-1 rounded-full bg-[#EAE9F2] mx-auto mb-2" />
         </div>
         <div className="flex items-start justify-between gap-3 px-5 pb-3 border-b border-[#D0CDE1] shrink-0">
           <div className="min-w-0">
@@ -115,7 +115,7 @@ export function ReportModal({
           <button
             type="button"
             onClick={onClose}
-            className="w-8 h-8 rounded-full flex items-center justify-center text-slate-600 hover:bg-[#E8E6F1]/70 shrink-0"
+            className="w-8 h-8 rounded-full flex items-center justify-center text-slate-600 hover:bg-[#EAE9F2]/70 shrink-0"
             aria-label={t('common.close')}
           >
             <X className="w-4 h-4" />
@@ -134,16 +134,16 @@ export function ReportModal({
                   aria-checked={selected}
                   onClick={() => setCategory(c.id)}
                   className={`w-full flex items-center gap-3 rounded-2xl border px-3.5 py-3 text-left text-[13px] leading-snug transition ${
-                    selected ? 'border-[#8574B7] bg-[#8574B7]/5 text-[#413B5E] font-medium' : 'border-[#D0CDE1] text-[#413B5E] hover:bg-[#E8E6F1]/40'
+                    selected ? 'border-[#726E97] bg-[#726E97]/5 text-[#413B5E] font-medium' : 'border-[#D0CDE1] text-[#413B5E] hover:bg-[#EAE9F2]/40'
                   }`}
                 >
                   <span
                     aria-hidden
                     className={`w-4 h-4 rounded-full border-2 shrink-0 flex items-center justify-center ${
-                      selected ? 'border-[#8574B7]' : 'border-[#D0CDE1]'
+                      selected ? 'border-[#726E97]' : 'border-[#D0CDE1]'
                     }`}
                   >
-                    {selected && <span className="w-2 h-2 rounded-full bg-[#8574B7]" />}
+                    {selected && <span className="w-2 h-2 rounded-full bg-[#726E97]" />}
                   </span>
                   <span>{t(c.label)}</span>
                 </button>
@@ -157,7 +157,7 @@ export function ReportModal({
             maxLength={300}
             rows={3}
             placeholder={t('report.details')}
-            className="w-full p-3 rounded-2xl bg-white border border-[#D0CDE1] text-base sm:text-xs text-[#413B5E] placeholder:text-[#413B5E]/55 focus:outline-none focus:border-[#8574B7] resize-none"
+            className="w-full p-3 rounded-2xl bg-white border border-[#D0CDE1] text-base sm:text-xs text-[#413B5E] placeholder:text-[#413B5E]/55 focus:outline-none focus:border-[#726E97] resize-none"
           />
 
           {error && (
@@ -172,7 +172,7 @@ export function ReportModal({
             type="button"
             onClick={submit}
             disabled={!category || submitting}
-            className="w-full inline-flex items-center justify-center gap-2 bg-[#8574B7] text-white rounded-xl py-2.5 font-medium text-sm hover:bg-[#534377] transition disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full inline-flex items-center justify-center gap-2 bg-[#726E97] text-white rounded-xl py-2.5 font-medium text-sm hover:bg-[#524E75] transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {submitting && <Loader2 className="w-4 h-4 animate-spin" />}
             {t('report.submit')}

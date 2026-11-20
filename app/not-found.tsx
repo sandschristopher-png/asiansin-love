@@ -32,7 +32,7 @@ export default function NotFound() {
         </p>
         <Link
           href="/discover"
-          className="mt-8 inline-flex w-full max-w-sm items-center justify-center rounded-full bg-[#8574B7] py-3.5 text-sm font-semibold text-white transition-colors hover:bg-[#534377] active:scale-95"
+          className="mt-8 inline-flex w-full max-w-sm items-center justify-center rounded-full bg-[#726E97] py-3.5 text-sm font-semibold text-white transition-colors hover:bg-[#524E75] active:scale-95"
         >
           Back to Discover
         </Link>

@@ -65,12 +65,12 @@ export default async function CityLandingPage({ params }: { params: Promise<{ ci
       {/* Soft lavender aura in the mid and lower canvas; the header stays pure white. */}
       <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden -z-10">
         <div className="absolute top-[38%] -right-24 w-[28rem] h-[28rem] rounded-full bg-[#D0CDE1]/40 blur-3xl" />
-        <div className="absolute top-[62%] -left-28 w-[30rem] h-[30rem] rounded-full bg-[#E8E6F1]/60 blur-3xl" />
+        <div className="absolute top-[62%] -left-28 w-[30rem] h-[30rem] rounded-full bg-[#EAE9F2]/60 blur-3xl" />
       </div>
 
       <header className="px-5 pt-6 flex items-center justify-between max-w-xl mx-auto">
         <BrandLogo href="/" size="sm" />
-        <Link href="/login" className="text-xs font-medium text-[#8574B7] hover:text-[#413B5E] transition-colors">
+        <Link href="/login" className="text-xs font-medium text-[#726E97] hover:text-[#413B5E] transition-colors">
           Sign in
         </Link>
       </header>
@@ -78,13 +78,13 @@ export default async function CityLandingPage({ params }: { params: Promise<{ ci
       <div className="max-w-xl mx-auto px-5 pb-[calc(3rem+env(safe-area-inset-bottom))]">
         {/* Hero */}
         <section className="pt-10 pb-8 text-center">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-[#D0CDE1] bg-[#E8E6F1]/50 px-3 py-1 text-[11px] font-semibold tracking-wide text-[#8574B7] shadow-brand-sm">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-[#D0CDE1] bg-[#EAE9F2]/50 px-3 py-1 text-[11px] font-semibold tracking-wide text-[#726E97] shadow-brand-sm">
             <ShieldCheck className="w-3.5 h-3.5" aria-hidden />
             {city.heroBadge}
           </span>
           <h1 className="mt-5 text-3xl sm:text-4xl font-semibold tracking-tight leading-[1.15]">
             {city.heroHeadline}{' '}
-            <span className="bg-gradient-to-r from-[#8574B7] via-[#9A93BC] to-[#B8B3D1] bg-clip-text text-transparent">
+            <span className="bg-gradient-to-r from-[#726E97] via-[#9A93BC] to-[#B8B3D1] bg-clip-text text-transparent">
               {city.heroHighlight}
             </span>
           </h1>
@@ -119,7 +119,7 @@ export default async function CityLandingPage({ params }: { params: Promise<{ ci
               const Icon = INSIGHT_ICONS[i % INSIGHT_ICONS.length];
               return (
                 <article key={insight.title} className="flex gap-3 rounded-2xl border border-[#D0CDE1]/60 bg-white p-4 shadow-brand-sm">
-                  <span className="w-9 h-9 shrink-0 rounded-xl bg-[#E8E6F1]/70 text-[#8574B7] flex items-center justify-center">
+                  <span className="w-9 h-9 shrink-0 rounded-xl bg-[#EAE9F2]/70 text-[#726E97] flex items-center justify-center">
                     <Icon className="w-4 h-4" aria-hidden />
                   </span>
                   <div>
@@ -156,7 +156,7 @@ export default async function CityLandingPage({ params }: { params: Promise<{ ci
           <p className="mt-2 text-sm text-[#413B5E]/75">Free to join. Selfie verification is free for every member.</p>
           <Link
             href="/signup"
-            className="mt-5 inline-flex h-12 px-8 rounded-full bg-[#8574B7] hover:bg-[#534377] text-white text-sm font-medium shadow-brand-glow transition-colors items-center justify-center"
+            className="mt-5 inline-flex h-12 px-8 rounded-full bg-[#726E97] hover:bg-[#524E75] text-white text-sm font-medium shadow-brand-glow transition-colors items-center justify-center"
           >
             Create your free profile
           </Link>

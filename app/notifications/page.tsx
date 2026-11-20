@@ -62,7 +62,7 @@ export default function NotificationsPage() {
       {items === null ? (
         <div aria-hidden className="flex flex-col gap-2">
           {[0, 1, 2, 3].map((i) => (
-            <div key={i} className="h-14 rounded-2xl bg-[#E8E6F1]/60 animate-pulse" />
+            <div key={i} className="h-14 rounded-2xl bg-[#EAE9F2]/60 animate-pulse" />
           ))}
         </div>
       ) : items.length === 0 ? (
@@ -88,7 +88,7 @@ export default function NotificationsPage() {
                 await load(items[items.length - 1]?.created_at);
                 setLoadingMore(false);
               }}
-              className="w-full h-11 rounded-full border border-[#8574B7] text-sm font-medium text-[#8574B7] hover:bg-[#8574B7]/10 disabled:opacity-50 transition-colors"
+              className="w-full h-11 rounded-full border border-[#726E97] text-sm font-medium text-[#726E97] hover:bg-[#726E97]/10 disabled:opacity-50 transition-colors"
             >
               {t('nav.loadMore')}
             </button>

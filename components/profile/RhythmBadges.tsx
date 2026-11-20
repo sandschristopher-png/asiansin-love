@@ -18,7 +18,7 @@ export function RhythmPill({
   const tone =
     variant === 'glass'
       ? 'bg-black/35 border-white/25 text-white'
-      : 'bg-[#E8E6F1]/60 border-[#D0CDE1] text-[#8574B7]';
+      : 'bg-[#EAE9F2]/60 border-[#D0CDE1] text-[#726E97]';
   return (
     <span
       className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border text-[10px] font-semibold whitespace-nowrap ${tone} ${className}`}
@@ -41,7 +41,7 @@ export function CardPrimaryTag({ sharedCount, replyPace }: { sharedCount: number
   const Icon = rhythm?.icon;
   return (
     <span className="inline-flex max-w-full items-center gap-1 whitespace-nowrap rounded-full border border-slate-200/50 bg-white/90 px-2 py-1 text-[11px] font-medium leading-none text-slate-700 backdrop-blur-sm">
-      {Icon && <Icon className="w-3 h-3 shrink-0 text-[#8574B7]" aria-hidden />}
+      {Icon && <Icon className="w-3 h-3 shrink-0 text-[#726E97]" aria-hidden />}
       <span className="truncate">{label}</span>
     </span>
   );
@@ -62,15 +62,15 @@ export function InCommonCard({ items, compact = false }: { items: string[]; comp
     );
   }
   return (
-    <div className="p-3 rounded-2xl bg-[#E8E6F1]/60 border border-[#8574B7]/30 space-y-2">
-      <p className="text-xs font-semibold text-[#8574B7]">
+    <div className="p-3 rounded-2xl bg-[#EAE9F2]/60 border border-[#726E97]/30 space-y-2">
+      <p className="text-xs font-semibold text-[#726E97]">
         {items.length} in common
       </p>
       <div className="flex flex-wrap gap-1.5">
         {items.map((item) => (
           <span
             key={item}
-            className="px-2.5 py-1 rounded-full bg-white border border-[#8574B7]/30 text-[11px] font-semibold text-[#8574B7]"
+            className="px-2.5 py-1 rounded-full bg-white border border-[#726E97]/30 text-[11px] font-semibold text-[#726E97]"
           >
             {item}
           </span>
@@ -107,8 +107,8 @@ export function RhythmSelector({
               aria-pressed={active}
               className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium transition active:scale-95 ${
                 active
-                  ? 'bg-[#8574B7] border-[#8574B7] text-white'
-                  : 'bg-white border-[#D0CDE1] text-[#413B5E] hover:bg-[#E8E6F1]/70'
+                  ? 'bg-[#726E97] border-[#726E97] text-white'
+                  : 'bg-white border-[#D0CDE1] text-[#413B5E] hover:bg-[#EAE9F2]/70'
               }`}
             >
               <o.icon className="w-3.5 h-3.5 shrink-0" aria-hidden />

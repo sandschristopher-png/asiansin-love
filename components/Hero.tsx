@@ -19,7 +19,7 @@ export function SignInPrompt() {
   return (
     <p className="text-sm text-slate-600">
       {m.auth.memberPrompt}{' '}
-      <Link href="/login" className="font-medium text-[#8574B7] hover:text-[#534377] underline-offset-4 hover:underline transition-colors">
+      <Link href="/login" className="font-medium text-[#726E97] hover:text-[#524E75] underline-offset-4 hover:underline transition-colors">
         {m.auth.signIn}
       </Link>
     </p>
@@ -42,7 +42,7 @@ export default function Hero() {
             wall recoloured to the brand lavender. It is 2000x1493 (about 4:3), so the 4:3 card shows all of it
             and the heart stays centred. Nothing is drawn over her face, and no name, age or profile badge, so it
             can never read as a real member. */}
-        <FadeIn className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl bg-[#E8E6F1]/50 shadow-[0_8px_30px_rgba(65,59,94,0.12)]">
+        <FadeIn className="relative aspect-[4/3] w-full overflow-hidden rounded-3xl bg-[#EAE9F2]/50 shadow-[0_8px_30px_rgba(65,59,94,0.12)]">
           <Image
             src="/hero-heart-lavender.jpg"
             alt={m.hero.imageAlt}
@@ -56,7 +56,7 @@ export default function Hero() {
 
         <h1 className="mt-4 w-full text-[26px] font-semibold tracking-tight leading-tight text-[#413B5E] break-words">
           <span className="block">{m.hero.line1}</span>
-          <span className="block text-[#8574B7]">{m.hero.line2}</span>
+          <span className="block text-[#726E97]">{m.hero.line2}</span>
           <span className="block">{m.hero.line3}</span>
         </h1>
 
@@ -67,7 +67,7 @@ export default function Hero() {
           <TapButton>
             <Link
               href="/signup"
-              className="relative w-full h-12 inline-flex items-center justify-center rounded-full bg-[#8574B7] hover:bg-[#534377] text-white font-medium text-sm transition-colors duration-200"
+              className="relative w-full h-12 inline-flex items-center justify-center rounded-full bg-[#726E97] hover:bg-[#524E75] text-white font-medium text-sm transition-colors duration-200"
             >
               {m.hero.join}
               <LinkSpinner />

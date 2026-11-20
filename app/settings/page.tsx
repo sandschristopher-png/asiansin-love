@@ -58,7 +58,7 @@ const SettingRow = ({
   on: boolean;
   onClick: () => void;
 }) => (
-  <div className="flex items-center justify-between p-3 rounded-2xl hover:bg-[#E8E6F1]/40 transition">
+  <div className="flex items-center justify-between p-3 rounded-2xl hover:bg-[#EAE9F2]/40 transition">
     <div className="flex items-center gap-3 pr-4">
       <div className="w-8 h-8 rounded-xl bg-white text-[#413B5E]/85 flex items-center justify-center shrink-0">
         {icon}
@@ -229,7 +229,7 @@ export default function SettingsHubPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-white flex items-center justify-center">
-        <Loader2 className="w-7 h-7 animate-spin text-[#8574B7]" />
+        <Loader2 className="w-7 h-7 animate-spin text-[#726E97]" />
       </div>
     );
   }
@@ -243,7 +243,7 @@ export default function SettingsHubPage() {
         <button
           type="button"
           onClick={() => router.push('/profile')}
-          className="w-8 h-8 rounded-full flex items-center justify-center text-[#413B5E]/85 hover:text-[#413B5E] hover:bg-[#E8E6F1]/70 transition cursor-pointer"
+          className="w-8 h-8 rounded-full flex items-center justify-center text-[#413B5E]/85 hover:text-[#413B5E] hover:bg-[#EAE9F2]/70 transition cursor-pointer"
           aria-label={t('settings.back')}
         >
           <ArrowLeft className="w-4 h-4" />
@@ -260,13 +260,13 @@ export default function SettingsHubPage() {
         {/* Plus entry point, first thing in Settings. Nothing renders until the status is known, so a
             Plus member never sees the upsell flash by. */}
         {isSubscribed === false && (
-          <section className="rounded-3xl bg-[#FAF9FC] border border-[#8574B7]/25 p-4 shadow-2xs">
+          <section className="rounded-3xl bg-[#FAF9FC] border border-[#726E97]/25 p-4 shadow-2xs">
             <PlusBadge />
             <p className="mt-2 text-lg font-semibold leading-[1.2] text-[#413B5E]">{t('plus.page.headline')}</p>
             <ul className="mt-3 space-y-2">
               {(['plus.page.banner1', 'plus.page.banner2', 'plus.page.banner3', 'plus.page.banner4'] as const).map((key) => (
                 <li key={key} className="flex items-start gap-2.5 text-xs font-medium leading-snug text-[#413B5E]">
-                  <span className="mt-px w-4 h-4 shrink-0 rounded-full bg-[#8574B7]/15 text-[#8574B7] flex items-center justify-center">
+                  <span className="mt-px w-4 h-4 shrink-0 rounded-full bg-[#726E97]/15 text-[#726E97] flex items-center justify-center">
                     <Check className="w-3 h-3" strokeWidth={3} aria-hidden />
                   </span>
                   {t(key)}
@@ -275,7 +275,7 @@ export default function SettingsHubPage() {
             </ul>
             <Link
               href="/plus"
-              className="mt-4 w-full h-11 rounded-full bg-[#8574B7] hover:bg-[#534377] text-white text-sm font-medium transition-colors active:scale-[0.99] flex items-center justify-center"
+              className="mt-4 w-full h-11 rounded-full bg-[#726E97] hover:bg-[#524E75] text-white text-sm font-medium transition-colors active:scale-[0.99] flex items-center justify-center"
             >
               {t('plus.upgrade')}
             </Link>
@@ -284,10 +284,10 @@ export default function SettingsHubPage() {
         {isSubscribed === true && (
           <Link
             href="/plus"
-            className="flex items-center justify-between gap-3 rounded-3xl bg-[#FAF9FC] border border-[#8574B7]/25 p-4 shadow-2xs hover:bg-[#E8E6F1]/40 transition-colors"
+            className="flex items-center justify-between gap-3 rounded-3xl bg-[#FAF9FC] border border-[#726E97]/25 p-4 shadow-2xs hover:bg-[#EAE9F2]/40 transition-colors"
           >
             <div className="flex min-w-0 items-center gap-3">
-              <span className="w-9 h-9 shrink-0 rounded-full bg-[#8574B7]/15 text-[#8574B7] flex items-center justify-center">
+              <span className="w-9 h-9 shrink-0 rounded-full bg-[#726E97]/15 text-[#726E97] flex items-center justify-center">
                 <CheckCircle2 className="w-5 h-5" aria-hidden />
               </span>
               <div className="min-w-0">
@@ -315,14 +315,14 @@ export default function SettingsHubPage() {
         {/* CARD 1: ACCOUNT & TRUST */}
         <div className="rounded-3xl bg-white border border-[#D0CDE1] p-2 shadow-2xs space-y-1">
           <div className="px-3 pt-2 pb-1">
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-[#8574B7]">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-[#726E97]">
               {t('settings.accountTrust')}
             </span>
           </div>
 
           <Link
             href="/verify"
-            className="flex items-center justify-between p-3 rounded-2xl hover:bg-[#E8E6F1]/40 transition cursor-pointer"
+            className="flex items-center justify-between p-3 rounded-2xl hover:bg-[#EAE9F2]/40 transition cursor-pointer"
           >
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
@@ -338,10 +338,10 @@ export default function SettingsHubPage() {
 
           <Link
             href="/profile/reputation"
-            className="flex items-center justify-between p-3 rounded-2xl hover:bg-[#E8E6F1]/40 transition cursor-pointer"
+            className="flex items-center justify-between p-3 rounded-2xl hover:bg-[#EAE9F2]/40 transition cursor-pointer"
           >
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-[#E8E6F1]/60 text-[#8574B7] flex items-center justify-center">
+              <div className="w-8 h-8 rounded-xl bg-[#EAE9F2]/60 text-[#726E97] flex items-center justify-center">
                 <Lock className="w-4 h-4" />
               </div>
               <div>
@@ -356,7 +356,7 @@ export default function SettingsHubPage() {
         {/* CARD 2: PRIVACY & DISCRETION */}
         <div className="rounded-3xl bg-white border border-[#D0CDE1] p-2 shadow-2xs space-y-1">
           <div className="px-3 pt-2 pb-1">
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-[#8574B7]">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-[#726E97]">
               {t('settings.privacyDiscretion')}
             </span>
           </div>
@@ -394,7 +394,7 @@ export default function SettingsHubPage() {
         {/* CARD 3: NOTIFICATIONS */}
         <div className="rounded-3xl bg-white border border-[#D0CDE1] p-2 shadow-2xs space-y-1">
           <div className="px-3 pt-2 pb-1">
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-[#8574B7]">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-[#726E97]">
               {t('settings.notifications')}
             </span>
           </div>
@@ -427,14 +427,14 @@ export default function SettingsHubPage() {
         {/* CARD 4: SAFETY & SUPPORT */}
         <div className="rounded-3xl bg-white border border-[#D0CDE1] p-2 shadow-2xs space-y-1">
           <div className="px-3 pt-2 pb-1">
-            <span className="text-[10px] font-semibold uppercase tracking-wider text-[#8574B7]">
+            <span className="text-[10px] font-semibold uppercase tracking-wider text-[#726E97]">
               {t('settings.safetySupport')}
             </span>
           </div>
 
           <Link
             href="/standards"
-            className="flex items-center justify-between p-3 rounded-2xl hover:bg-[#E8E6F1]/40 transition cursor-pointer"
+            className="flex items-center justify-between p-3 rounded-2xl hover:bg-[#EAE9F2]/40 transition cursor-pointer"
           >
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-xl bg-white text-[#413B5E]/85 flex items-center justify-center">
@@ -456,7 +456,7 @@ export default function SettingsHubPage() {
             <Link
               key={row.href}
               href={row.href}
-              className="flex items-center justify-between p-3 rounded-2xl hover:bg-[#E8E6F1]/40 transition cursor-pointer"
+              className="flex items-center justify-between p-3 rounded-2xl hover:bg-[#EAE9F2]/40 transition cursor-pointer"
             >
               <div className="flex items-center gap-3">
                 <div className="w-8 h-8 rounded-xl bg-white text-[#413B5E]/85 flex items-center justify-center">
@@ -477,10 +477,10 @@ export default function SettingsHubPage() {
           <div className="rounded-3xl bg-white border border-[#D0CDE1] p-2 shadow-2xs">
             <a
               href={`mailto:${SUPPORT_EMAIL}`}
-              className="w-full flex items-center justify-between p-3 rounded-2xl hover:bg-[#E8E6F1]/40 transition cursor-pointer text-left"
+              className="w-full flex items-center justify-between p-3 rounded-2xl hover:bg-[#EAE9F2]/40 transition cursor-pointer text-left"
             >
               <div className="flex items-center gap-3">
-                <div className="w-8 h-8 rounded-xl bg-[#E8E6F1]/60 text-[#8574B7] flex items-center justify-center">
+                <div className="w-8 h-8 rounded-xl bg-[#EAE9F2]/60 text-[#726E97] flex items-center justify-center">
                   <Mail className="w-4 h-4" />
                 </div>
                 <div>
@@ -499,7 +499,7 @@ export default function SettingsHubPage() {
             type="button"
             onClick={handleLogout}
             disabled={loggingOut}
-            className="w-full flex items-center justify-between p-3 rounded-2xl hover:bg-[#E8E6F1]/40 transition cursor-pointer text-left"
+            className="w-full flex items-center justify-between p-3 rounded-2xl hover:bg-[#EAE9F2]/40 transition cursor-pointer text-left"
           >
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-xl bg-red-50 text-red-600 flex items-center justify-center">
@@ -510,7 +510,7 @@ export default function SettingsHubPage() {
                 <p className="text-[11px] text-[#413B5E]/75">{t('settings.logOutSub')}</p>
               </div>
             </div>
-            {loggingOut && <Loader2 className="w-4 h-4 animate-spin text-[#8574B7]" />}
+            {loggingOut && <Loader2 className="w-4 h-4 animate-spin text-[#726E97]" />}
           </button>
 
           <div className="my-1 border-t border-[#D0CDE1]" />
@@ -569,7 +569,7 @@ export default function SettingsHubPage() {
                 disabled={deletingAccount}
                 autoComplete="off"
                 spellCheck={false}
-                className="w-full mt-4 px-3 py-2.5 rounded-xl border border-[#D0CDE1] bg-white text-xs text-[#413B5E] placeholder:text-[#413B5E]/55 focus:outline-none focus:border-[#8574B7] transition"
+                className="w-full mt-4 px-3 py-2.5 rounded-xl border border-[#D0CDE1] bg-white text-xs text-[#413B5E] placeholder:text-[#413B5E]/55 focus:outline-none focus:border-[#726E97] transition"
               />
 
               <div className="mt-4 space-y-2">
@@ -593,7 +593,7 @@ export default function SettingsHubPage() {
                   type="button"
                   disabled={deletingAccount}
                   onClick={() => setShowDeleteModal(false)}
-                  className="w-full py-2.5 rounded-xl bg-white hover:bg-[#E8E6F1]/60 text-[#413B5E]/75 hover:text-[#413B5E] font-medium text-xs transition cursor-pointer"
+                  className="w-full py-2.5 rounded-xl bg-white hover:bg-[#EAE9F2]/60 text-[#413B5E]/75 hover:text-[#413B5E] font-medium text-xs transition cursor-pointer"
                 >
                   {t('common.cancel')}
                 </button>

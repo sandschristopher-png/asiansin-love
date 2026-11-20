@@ -60,7 +60,7 @@ export default function ForgotPasswordPage() {
 
         {sentTo ? (
           <div className="text-center space-y-3">
-            <div className="w-14 h-14 mx-auto rounded-2xl bg-[#E8E6F1]/60 border border-[#D0CDE1] text-[#8574B7] flex items-center justify-center">
+            <div className="w-14 h-14 mx-auto rounded-2xl bg-[#EAE9F2]/60 border border-[#D0CDE1] text-[#726E97] flex items-center justify-center">
               <CheckCircle2 className="w-7 h-7" />
             </div>
             <h1 className="text-xl font-semibold text-[#413B5E] tracking-tight">Check your inbox</h1>
@@ -80,7 +80,7 @@ export default function ForgotPasswordPage() {
               type="button"
               disabled={cooldown > 0 || isLoading}
               onClick={() => void send(sentTo)}
-              className="w-full h-11 rounded-full border border-[#D0CDE1] bg-white text-sm font-medium text-[#413B5E] hover:bg-[#E8E6F1]/30 transition-colors disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2"
+              className="w-full h-11 rounded-full border border-[#D0CDE1] bg-white text-sm font-medium text-[#413B5E] hover:bg-[#EAE9F2]/30 transition-colors disabled:opacity-60 disabled:cursor-not-allowed inline-flex items-center justify-center gap-2"
             >
               {isLoading && <Loader2 className="w-4 h-4 animate-spin" />}
               {cooldown > 0 ? `Resend link in ${cooldown}s` : 'Resend link'}
@@ -91,7 +91,7 @@ export default function ForgotPasswordPage() {
                 setSentTo(null);
                 setError(null);
               }}
-              className="text-xs font-medium text-[#8574B7] hover:underline"
+              className="text-xs font-medium text-[#726E97] hover:underline"
             >
               Use a different email
             </button>
@@ -119,7 +119,7 @@ export default function ForgotPasswordPage() {
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="you@example.com"
-                  className="w-full h-12 pl-10 pr-4 rounded-full bg-white border border-[#D0CDE1] text-base sm:text-sm text-[#413B5E] placeholder:text-[#413B5E]/40 focus:outline-none focus:border-[#8574B7] focus:ring-2 focus:ring-[#8574B7]/30 transition"
+                  className="w-full h-12 pl-10 pr-4 rounded-full bg-white border border-[#D0CDE1] text-base sm:text-sm text-[#413B5E] placeholder:text-[#413B5E]/40 focus:outline-none focus:border-[#726E97] focus:ring-2 focus:ring-[#726E97]/30 transition"
                 />
               </div>
             </div>
@@ -133,7 +133,7 @@ export default function ForgotPasswordPage() {
             <button
               type="submit"
               disabled={isLoading || !email.trim() || cooldown > 0}
-              className="w-full h-12 rounded-full bg-[#8574B7] hover:bg-[#534377] text-white text-sm font-medium flex items-center justify-center gap-2 shadow-brand-glow active:scale-[0.99] transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
+              className="w-full h-12 rounded-full bg-[#726E97] hover:bg-[#524E75] text-white text-sm font-medium flex items-center justify-center gap-2 shadow-brand-glow active:scale-[0.99] transition cursor-pointer disabled:opacity-60 disabled:cursor-not-allowed"
             >
               {isLoading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4" />}
               <span>{isLoading ? 'Sending...' : 'Send Reset Link'}</span>
@@ -144,7 +144,7 @@ export default function ForgotPasswordPage() {
         <div className="pt-2 text-center text-xs text-[#413B5E]/75 border-t border-[#D0CDE1]">
           <span className="inline-block pt-3">
             Remembered your password?{' '}
-            <Link href="/login" className="font-medium text-[#8574B7] hover:underline">
+            <Link href="/login" className="font-medium text-[#726E97] hover:underline">
               Sign in
             </Link>
           </span>

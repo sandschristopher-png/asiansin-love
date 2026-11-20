@@ -33,7 +33,7 @@ export function TraitIcebreakers({
   if (shown.length === 0) return null;
 
   return (
-    <div className="rounded-2xl border border-[#D0CDE1] bg-[#E8E6F1]/30 backdrop-blur-md p-4 text-center shadow-xs">
+    <div className="rounded-2xl border border-[#D0CDE1] bg-[#EAE9F2]/30 backdrop-blur-md p-4 text-center shadow-xs">
       <p className="text-xs font-semibold text-[#413B5E]">
         {hasCommon ? 'You Both Have in Common' : `Ask ${theirName?.trim() || 'Them'} About`}
       </p>
@@ -50,9 +50,9 @@ export function TraitIcebreakers({
                   : `I saw on your profile that you enjoy ${trait}. What got you into it?`
               )
             }
-            className="inline-flex items-center gap-1.5 border border-[#D0CDE1] bg-white px-3 py-1.5 text-xs font-medium text-[#413B5E] shadow-2xs hover:border-[#8574B7] hover:bg-[#8574B7]/5 active:scale-95 transition-all cursor-pointer rounded-full"
+            className="inline-flex items-center gap-1.5 border border-[#D0CDE1] bg-white px-3 py-1.5 text-xs font-medium text-[#413B5E] shadow-2xs hover:border-[#726E97] hover:bg-[#726E97]/5 active:scale-95 transition-all cursor-pointer rounded-full"
           >
-            <span className="w-1.5 h-1.5 rounded-full bg-[#8574B7]" aria-hidden />
+            <span className="w-1.5 h-1.5 rounded-full bg-[#726E97]" aria-hidden />
             {trait}
           </button>
         ))}

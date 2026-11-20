@@ -7,9 +7,9 @@
 // everywhere. The mark is the deep-ink "M" on a light tile with a solid brand-purple dot at the
 // upper-right shoulder.
 //
-//   tile    #FAF9FC, border #E8E6F1, corner radius 22% of the tile
+//   tile    #FAF9FC, border #EAE9F2, corner radius 22% of the tile
 //   "M"     #413B5E (Plus Jakarta Sans ExtraBold outline)
-//   dot     #8574B7
+//   dot     #726E97
 //
 // Every icon is the standalone M except public/google-oauth-logo.png, which is the 512x512 consent
 // screen lockup: the M tile above the "Meet in Asia" wordmark (same font, also path outlines) on flat
@@ -28,9 +28,9 @@ const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const out = (rel) => path.join(ROOT, rel);
 
 const TILE = '#FAF9FC';
-const BORDER = '#E8E6F1';
+const BORDER = '#EAE9F2';
 const INK = '#413B5E';
-const PURPLE = '#8574B7';
+const PURPLE = '#726E97';
 
 const fontBuf = readFileSync(out('scripts/fonts/PlusJakartaSans-ExtraBold.ttf'));
 const font = opentype.parse(fontBuf.buffer.slice(fontBuf.byteOffset, fontBuf.byteOffset + fontBuf.byteLength));

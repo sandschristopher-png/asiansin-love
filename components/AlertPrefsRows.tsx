@@ -10,7 +10,7 @@ function Toggle({ on }: { on: boolean }) {
   return (
     <span aria-hidden className="relative inline-flex h-6 w-11 shrink-0 rounded-full overflow-hidden">
       <span className="absolute inset-0 bg-[#D0CDE1]" />
-      <span className={`absolute inset-0 bg-[#8574B7] transition-opacity duration-200 motion-reduce:transition-none ${on ? 'opacity-100' : 'opacity-0'}`} />
+      <span className={`absolute inset-0 bg-[#726E97] transition-opacity duration-200 motion-reduce:transition-none ${on ? 'opacity-100' : 'opacity-0'}`} />
       <span className={`absolute top-0.5 left-0.5 h-5 w-5 rounded-full bg-white shadow-brand-sm transition-transform duration-200 motion-reduce:transition-none ${on ? 'translate-x-5' : 'translate-x-0'}`} />
     </span>
   );
@@ -49,7 +49,7 @@ export function AlertPrefsRows() {
     setBrowser(true);
   };
 
-  const rowCls = 'w-full flex items-center justify-between gap-3 p-3 rounded-2xl hover:bg-[#E8E6F1]/40 transition cursor-pointer text-left';
+  const rowCls = 'w-full flex items-center justify-between gap-3 p-3 rounded-2xl hover:bg-[#EAE9F2]/40 transition cursor-pointer text-left';
   return (
     <>
       <button
@@ -60,7 +60,7 @@ export function AlertPrefsRows() {
         className={rowCls}
       >
         <span className="flex items-center gap-3 min-w-0">
-          <span className="w-8 h-8 rounded-xl bg-[#E8E6F1]/60 text-[#8574B7] flex items-center justify-center shrink-0">
+          <span className="w-8 h-8 rounded-xl bg-[#EAE9F2]/60 text-[#726E97] flex items-center justify-center shrink-0">
             <BellRing className="w-4 h-4" />
           </span>
           <span className="min-w-0">

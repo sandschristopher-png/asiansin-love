@@ -350,7 +350,7 @@ export default function MessagesPage() {
               onClick={() => setActiveTab('all')}
               className={
                 'px-3 py-1 rounded-full text-xs font-medium transition cursor-pointer ' +
-                (activeTab === 'all' ? 'bg-[#8574B7] text-white shadow-2xs' : 'text-[#413B5E]/85 hover:text-[#413B5E]')
+                (activeTab === 'all' ? 'bg-[#726E97] text-white shadow-2xs' : 'text-[#413B5E]/85 hover:text-[#413B5E]')
               }
             >
               All
@@ -360,7 +360,7 @@ export default function MessagesPage() {
               onClick={() => setActiveTab('unread')}
               className={
                 'px-3 py-1 rounded-full text-xs font-medium transition cursor-pointer ' +
-                (activeTab === 'unread' ? 'bg-[#8574B7] text-white shadow-2xs' : 'text-[#413B5E]/85 hover:text-[#413B5E]')
+                (activeTab === 'unread' ? 'bg-[#726E97] text-white shadow-2xs' : 'text-[#413B5E]/85 hover:text-[#413B5E]')
               }
             >
               Unread
@@ -368,7 +368,7 @@ export default function MessagesPage() {
           </div>
         </div>
 
-        <div className="w-full px-3.5 py-2 bg-white border border-[#D0CDE1]/60 focus-within:border-[#8574B7] focus-within:ring-2 focus-within:ring-[#8574B7]/15 rounded-full transition-all flex items-center gap-2.5">
+        <div className="w-full px-3.5 py-2 bg-white border border-[#D0CDE1]/60 focus-within:border-[#726E97] focus-within:ring-2 focus-within:ring-[#726E97]/15 rounded-full transition-all flex items-center gap-2.5">
           <Search className="w-4 h-4 text-slate-600 shrink-0 pointer-events-none" />
           <input
             type="text"
@@ -409,7 +409,7 @@ export default function MessagesPage() {
             </div>
           ) : filteredConversations.length === 0 ? (
             <div className="bg-white border border-[#D0CDE1]/60 rounded-3xl px-4 py-8 shadow-[0_2px_12px_rgba(0,0,0,0.03)] text-center space-y-3">
-              <div className="w-11 h-11 bg-[#E8E6F1]/60 text-[#8574B7] rounded-2xl flex items-center justify-center mx-auto">
+              <div className="w-11 h-11 bg-[#EAE9F2]/60 text-[#726E97] rounded-2xl flex items-center justify-center mx-auto">
                 <MessageCircle className="w-5 h-5" />
               </div>
               <div className="space-y-1">
@@ -422,7 +422,7 @@ export default function MessagesPage() {
               </div>
               <Link
                 href="/discover"
-                className="inline-block px-5 py-2.5 rounded-full bg-[#8574B7] text-white text-xs font-medium hover:bg-[#413B5E] transition"
+                className="inline-block px-5 py-2.5 rounded-full bg-[#726E97] text-white text-xs font-medium hover:bg-[#413B5E] transition"
               >
                 Explore Discover Feed
               </Link>
@@ -455,8 +455,8 @@ export default function MessagesPage() {
                 href={'/chat/' + conv.recipientId}
                 draggable={false}
                 className={
-                  'flex items-center gap-3.5 pl-3.5 pr-12 py-3 bg-white border rounded-2xl transition-colors hover:bg-[#E8E6F1]/40 ' +
-                  (isUnread(conv) ? 'border-[#8574B7]/40' : 'border-[#D0CDE1]/60')
+                  'flex items-center gap-3.5 pl-3.5 pr-12 py-3 bg-white border rounded-2xl transition-colors hover:bg-[#EAE9F2]/40 ' +
+                  (isUnread(conv) ? 'border-[#726E97]/40' : 'border-[#D0CDE1]/60')
                 }
               >
                 <div className="relative w-12 h-12 shrink-0">
@@ -482,7 +482,7 @@ export default function MessagesPage() {
                       <span
                         className={
                           'text-[10.5px] shrink-0 ' +
-                          (isUnread(conv) ? 'text-[#8574B7] font-semibold' : 'text-slate-600')
+                          (isUnread(conv) ? 'text-[#726E97] font-semibold' : 'text-slate-600')
                         }
                       >
                         {formatConversationTimestamp(conv.lastMessageAt)}
@@ -499,11 +499,11 @@ export default function MessagesPage() {
                       {conv.lastMessage}
                     </p>
                     {conv.unreadCount > 0 ? (
-                      <span className="min-w-[18px] h-[18px] px-1.5 rounded-full bg-[#8574B7] text-white text-[10px] font-semibold flex items-center justify-center shrink-0">
+                      <span className="min-w-[18px] h-[18px] px-1.5 rounded-full bg-[#726E97] text-white text-[10px] font-semibold flex items-center justify-center shrink-0">
                         {conv.unreadCount}
                       </span>
                     ) : conv.markedUnread ? (
-                      <span className="w-2.5 h-2.5 rounded-full bg-[#8574B7] shrink-0" aria-label="Marked unread" />
+                      <span className="w-2.5 h-2.5 rounded-full bg-[#726E97] shrink-0" aria-label="Marked unread" />
                     ) : null}
                   </div>
                 </div>

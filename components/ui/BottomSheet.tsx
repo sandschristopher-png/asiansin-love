@@ -30,7 +30,7 @@ export function BottomSheet({ title, onClose, children }: { title: string; onClo
             type="button"
             onClick={onClose}
             aria-label="Close"
-            className="p-1.5 rounded-full text-slate-600 hover:bg-[#E8E6F1]/70 transition"
+            className="p-1.5 rounded-full text-slate-600 hover:bg-[#EAE9F2]/70 transition"
           >
             <X className="w-4 h-4" />
           </button>

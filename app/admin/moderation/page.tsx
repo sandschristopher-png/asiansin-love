@@ -151,7 +151,7 @@ export default function AdminModerationPage() {
             <button
               onClick={() => fetchQuarantinedMessages()}
               disabled={loading}
-              className="p-2.5 rounded-xl bg-white border border-[#D0CDE1] hover:bg-[#E8E6F1]/70 text-[#413B5E] transition disabled:opacity-50"
+              className="p-2.5 rounded-xl bg-white border border-[#D0CDE1] hover:bg-[#EAE9F2]/70 text-[#413B5E] transition disabled:opacity-50"
               aria-label="Refresh queue"
             >
               <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
@@ -167,7 +167,7 @@ export default function AdminModerationPage() {
               placeholder="Filter by keyword or username..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full h-10 pl-9 pr-4 bg-white border border-[#D0CDE1] rounded-xl text-sm placeholder:text-[#413B5E]/55 focus:outline-none focus:border-[#8574B7] text-[#413B5E]"
+              className="w-full h-10 pl-9 pr-4 bg-white border border-[#D0CDE1] rounded-xl text-sm placeholder:text-[#413B5E]/55 focus:outline-none focus:border-[#726E97] text-[#413B5E]"
             />
           </div>
         </header>
@@ -201,7 +201,7 @@ export default function AdminModerationPage() {
         {/* Status / Message List */}
         {loading ? (
           <div className="p-12 text-center text-[#413B5E]/75 flex flex-col items-center gap-3 bg-white rounded-2xl border border-[#D0CDE1]">
-            <Loader2 className="w-7 h-7 animate-spin text-[#8574B7]" />
+            <Loader2 className="w-7 h-7 animate-spin text-[#726E97]" />
             <p className="text-xs">Loading pending items...</p>
           </div>
         ) : error ? (
@@ -283,7 +283,7 @@ export default function AdminModerationPage() {
           {/* Drawer Body */}
           <div className="relative w-full max-w-[480px] mx-auto bg-white border-t border-[#D0CDE1] rounded-t-3xl max-h-[85dvh] overflow-y-auto p-5 space-y-5 shadow-2xl z-10 animate-in slide-in-from-bottom duration-200">
             {/* Sheet Grab Handle on Mobile */}
-            <div className="w-10 h-1 bg-[#E8E6F1]/60 rounded-full mx-auto" />
+            <div className="w-10 h-1 bg-[#EAE9F2]/60 rounded-full mx-auto" />
 
             <div className="flex items-center justify-between pb-2 border-b border-[#D0CDE1]">
               <div className="flex items-center gap-2">
@@ -293,7 +293,7 @@ export default function AdminModerationPage() {
               <button
                 onClick={() => setActiveMessage(null)}
                 aria-label="Close"
-                className="p-1.5 rounded-full text-[#413B5E]/75 hover:text-[#413B5E] hover:bg-[#E8E6F1]/70 transition"
+                className="p-1.5 rounded-full text-[#413B5E]/75 hover:text-[#413B5E] hover:bg-[#EAE9F2]/70 transition"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -345,7 +345,7 @@ export default function AdminModerationPage() {
                     { value: 100, label: '-100 pts (Immediate account freeze)' },
                   ]}
                   menuClassName="w-full"
-                  className="bg-white border border-[#D0CDE1] rounded-xl px-3 py-2.5 text-xs text-[#413B5E] focus:outline-none focus-visible:border-[#8574B7]"
+                  className="bg-white border border-[#D0CDE1] rounded-xl px-3 py-2.5 text-xs text-[#413B5E] focus:outline-none focus-visible:border-[#726E97]"
                 />
               </div>
 
@@ -358,7 +358,7 @@ export default function AdminModerationPage() {
                   onChange={(e) => setReviewNotes(e.target.value)}
                   placeholder="Reason for releasing or confirming..."
                   rows={2}
-                  className="w-full bg-white border border-[#D0CDE1] rounded-xl p-2.5 text-xs text-[#413B5E] placeholder:text-[#413B5E]/55 focus:outline-none focus:border-[#8574B7] resize-none"
+                  className="w-full bg-white border border-[#D0CDE1] rounded-xl p-2.5 text-xs text-[#413B5E] placeholder:text-[#413B5E]/55 focus:outline-none focus:border-[#726E97] resize-none"
                 />
               </div>
             </div>

@@ -20,16 +20,16 @@ import type { TKey } from '@/lib/i18n';
 
 /** Google / LINE / Email: one shared pill so the three read as a single stack. */
 const PILL =
-  'relative h-12 w-full px-4 rounded-full border border-[#D0CDE1] bg-white/90 backdrop-blur-sm text-sm font-medium text-[#413B5E] shadow-brand-sm hover:border-[#B8B3D1] hover:bg-[#E8E6F1]/30 hover:shadow-brand-md transition-all flex items-center justify-center gap-3 select-none disabled:opacity-60 disabled:cursor-not-allowed';
+  'relative h-12 w-full px-4 rounded-full border border-[#D0CDE1] bg-white/90 backdrop-blur-sm text-sm font-medium text-[#413B5E] shadow-brand-sm hover:border-[#B8B3D1] hover:bg-[#EAE9F2]/30 hover:shadow-brand-md transition-all flex items-center justify-center gap-3 select-none disabled:opacity-60 disabled:cursor-not-allowed';
 /** Icon slot pinned to one left guide line, so logos line up while labels stay centered. */
 const PILL_ICON = 'absolute left-4 sm:left-5 w-5 h-5 flex items-center justify-center shrink-0 pointer-events-none';
 /** LINE keeps the shared pill but hovers in LINE green instead of brand violet. */
 const PILL_LINE = PILL.replace('hover:border-[#B8B3D1]', 'hover:border-[#06C755]/40');
 const PILL_LABEL = 'text-sm font-medium text-[#413B5E] tracking-tight';
 const INPUT =
-  'h-12 w-full rounded-full border border-[#D0CDE1] bg-white px-4 text-base sm:text-sm text-[#413B5E] focus:border-[#8574B7] focus:ring-2 focus:ring-[#B8B3D1]/30 focus:outline-none placeholder:text-[#413B5E]/40 transition';
+  'h-12 w-full rounded-full border border-[#D0CDE1] bg-white px-4 text-base sm:text-sm text-[#413B5E] focus:border-[#726E97] focus:ring-2 focus:ring-[#B8B3D1]/30 focus:outline-none placeholder:text-[#413B5E]/40 transition';
 const PRIMARY =
-  'h-12 w-full rounded-full bg-[#8574B7] hover:bg-[#534377] text-white font-medium text-sm shadow-brand-glow transition-colors flex items-center justify-center gap-2 active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed';
+  'h-12 w-full rounded-full bg-[#726E97] hover:bg-[#524E75] text-white font-medium text-sm shadow-brand-glow transition-colors flex items-center justify-center gap-2 active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed';
 
 const GoogleIcon = () => (
   <svg className="w-4 h-4" viewBox="0 0 24 24" aria-hidden="true">
@@ -202,12 +202,12 @@ export function AuthScreen({ mode, audience = 'western' }: { mode: 'login' | 'si
           <motion.div
             animate={{ x: [0, 40, -15, 0], y: [0, 25, 10, 0], scale: [1, 1.06, 0.95, 1] }}
             transition={{ duration: 4.8, repeat: Infinity, ease: 'easeInOut' }}
-            className="w-[30rem] h-[30rem] rounded-full bg-[#E8E6F1]/60 blur-3xl pointer-events-none absolute top-[55%] -left-28 will-change-transform"
+            className="w-[30rem] h-[30rem] rounded-full bg-[#EAE9F2]/60 blur-3xl pointer-events-none absolute top-[55%] -left-28 will-change-transform"
           />
           <motion.div
             animate={{ x: [0, 30, -30, 0], y: [0, -18, 12, 0], scale: [1, 1.08, 0.94, 1] }}
             transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-            className="w-96 h-96 rounded-full bg-[#E8E6F1]/45 blur-3xl pointer-events-none absolute -bottom-16 left-1/3 will-change-transform"
+            className="w-96 h-96 rounded-full bg-[#EAE9F2]/45 blur-3xl pointer-events-none absolute -bottom-16 left-1/3 will-change-transform"
           />
         </div>
       </MotionConfig>
@@ -217,9 +217,9 @@ export function AuthScreen({ mode, audience = 'western' }: { mode: 'login' | 'si
         <div className="fixed top-4 inset-x-0 z-50 flex justify-center px-4 pointer-events-none">
           <div
             role="alert"
-            className="pointer-events-auto w-full max-w-[380px] flex items-start gap-2.5 rounded-2xl bg-white/95 border border-[#8574B7]/50 px-3.5 py-3 text-xs font-medium text-[#413B5E] shadow-[0_8px_24px_rgba(65,59,94,0.10)]"
+            className="pointer-events-auto w-full max-w-[380px] flex items-start gap-2.5 rounded-2xl bg-white/95 border border-[#726E97]/50 px-3.5 py-3 text-xs font-medium text-[#413B5E] shadow-[0_8px_24px_rgba(65,59,94,0.10)]"
           >
-            <AlertCircle className="w-4 h-4 shrink-0 text-[#8574B7] mt-px" aria-hidden />
+            <AlertCircle className="w-4 h-4 shrink-0 text-[#726E97] mt-px" aria-hidden />
             <span className="flex-1 leading-relaxed">{error}</span>
             <button type="button" onClick={() => setError(null)} aria-label="Dismiss" className="shrink-0 -m-1 p-1 text-slate-600 hover:text-[#413B5E]">
               <X className="w-3.5 h-3.5" />
@@ -240,7 +240,7 @@ export function AuthScreen({ mode, audience = 'western' }: { mode: 'login' | 'si
             instead of against the top edge, and the whole sign-in stack still fits one screen down to 360x640. */}
         <div aria-hidden className="h-[clamp(1.25rem,5.5dvh,4rem)] [@media(max-height:650px)]:h-5 [@media(min-height:760px)]:h-[clamp(3rem,10dvh,7rem)] shrink-0" />
         <div className="text-center">
-          <span className="block text-[11px] font-semibold tracking-[0.25em] uppercase text-[#8574B7] mb-2 text-center">
+          <span className="block text-[11px] font-semibold tracking-[0.25em] uppercase text-[#726E97] mb-2 text-center">
             {mode === 'login' ? t('auth.welcomeBack') : t('auth.welcome')}
           </span>
           <div className="flex justify-center">
@@ -256,7 +256,7 @@ export function AuthScreen({ mode, audience = 'western' }: { mode: 'login' | 'si
             <div className="flex flex-col gap-3 w-full" aria-busy={!!busy}>
               <button type="button" className={PILL} onClick={() => oauth('google')} disabled={!!busy}>
                 <span className={PILL_ICON}>
-                  {busy === 'google' ? <Loader2 className="w-4 h-4 animate-spin text-[#8574B7]" /> : <GoogleIcon />}
+                  {busy === 'google' ? <Loader2 className="w-4 h-4 animate-spin text-[#726E97]" /> : <GoogleIcon />}
                 </span>
                 <span className={PILL_LABEL}>{t('auth.continueGoogle')}</span>
               </button>
@@ -304,7 +304,7 @@ export function AuthScreen({ mode, audience = 'western' }: { mode: 'login' | 'si
                     Send sign-in link
                   </button>
                   {mode === 'login' && (
-                    <button type="button" onClick={() => setStep('password')} className="block mx-auto text-xs font-medium text-[#8574B7] hover:underline">
+                    <button type="button" onClick={() => setStep('password')} className="block mx-auto text-xs font-medium text-[#726E97] hover:underline">
                       Use a password instead
                     </button>
                   )}
@@ -314,13 +314,13 @@ export function AuthScreen({ mode, audience = 'western' }: { mode: 'login' | 'si
               {step === 'sent' && (
                 <div className="space-y-3">
                   <div className="rounded-2xl bg-white border border-[#D0CDE1] p-4 text-center">
-                    <MailCheck className="w-6 h-6 mx-auto text-[#8574B7]" aria-hidden />
+                    <MailCheck className="w-6 h-6 mx-auto text-[#726E97]" aria-hidden />
                     <p className="mt-2 text-sm font-semibold text-[#413B5E]">Check your inbox</p>
                     <p className="mt-1 text-xs text-slate-600 leading-relaxed">
                       We sent a sign-in link to <span className="font-semibold text-[#413B5E] break-all">{cleanEmail}</span>. Tap it on this device to sign in.
                     </p>
                   </div>
-                  <button type="button" onClick={() => sendLink()} disabled={!!busy} className="block mx-auto text-xs font-medium text-[#8574B7] hover:underline disabled:opacity-50">
+                  <button type="button" onClick={() => sendLink()} disabled={!!busy} className="block mx-auto text-xs font-medium text-[#726E97] hover:underline disabled:opacity-50">
                     Resend email
                   </button>
                 </div>
@@ -354,7 +354,7 @@ export function AuthScreen({ mode, audience = 'western' }: { mode: 'login' | 'si
                     Sign in
                   </button>
                   <div className="flex items-center justify-between text-xs font-semibold">
-                    <button type="button" onClick={() => setStep('email')} className="text-[#8574B7] hover:underline">
+                    <button type="button" onClick={() => setStep('email')} className="text-[#726E97] hover:underline">
                       Email me a link instead
                     </button>
                     <Link href="/forgot-password" className="text-slate-600 hover:text-[#413B5E]">
@@ -372,14 +372,14 @@ export function AuthScreen({ mode, audience = 'western' }: { mode: 'login' | 'si
           {mode === 'login' ? (
             <>
               <span className="text-xs font-medium text-slate-600">{t('auth.newTo')}</span>{' '}
-              <Link href={authHref('/signup', returnTo)} className="text-xs font-medium text-[#8574B7] hover:text-[#534377] transition-colors">
+              <Link href={authHref('/signup', returnTo)} className="text-xs font-medium text-[#726E97] hover:text-[#524E75] transition-colors">
                 {t('auth.createAccount')}
               </Link>
             </>
           ) : (
             <>
               <span className="text-xs font-medium text-slate-600">{t('auth.memberPrompt')}</span>{' '}
-              <Link href={authHref('/login', returnTo)} className="text-xs font-medium text-[#8574B7] hover:text-[#534377] transition-colors">
+              <Link href={authHref('/login', returnTo)} className="text-xs font-medium text-[#726E97] hover:text-[#524E75] transition-colors">
                 {t('auth.signIn')}
               </Link>
             </>
@@ -391,13 +391,13 @@ export function AuthScreen({ mode, audience = 'western' }: { mode: 'login' | 'si
           {sp}
           {t('auth.legalLead')}
           {sp}
-          <Link href="/terms" className="text-slate-600 underline hover:text-[#8574B7] transition-colors">
+          <Link href="/terms" className="text-slate-600 underline hover:text-[#726E97] transition-colors">
             {t('auth.terms')}
           </Link>
           {sp}
           {t('auth.legalAnd')}
           {sp}
-          <Link href="/privacy" className="text-slate-600 underline hover:text-[#8574B7] transition-colors">
+          <Link href="/privacy" className="text-slate-600 underline hover:text-[#726E97] transition-colors">
             {t('auth.privacy')}
           </Link>
           {t('auth.legalTail')}

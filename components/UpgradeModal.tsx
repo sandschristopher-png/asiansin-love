@@ -81,14 +81,14 @@ export default function UpgradeModal({
         {/* Dismiss Button */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 z-20 w-8 h-8 rounded-full bg-[#E8E6F1]/60 hover:bg-[#E8E6F1] text-slate-600 hover:text-[#413B5E]/85 flex items-center justify-center transition active:scale-95 cursor-pointer"
+          className="absolute top-4 right-4 z-20 w-8 h-8 rounded-full bg-[#EAE9F2]/60 hover:bg-[#EAE9F2] text-slate-600 hover:text-[#413B5E]/85 flex items-center justify-center transition active:scale-95 cursor-pointer"
           aria-label="Close"
         >
           <X className="w-4 h-4" />
         </button>
 
         {/* Brand mark: Lucide icon in a soft squircle (no illustrations) */}
-        <div className="w-14 h-14 rounded-2xl bg-[#8574B7]/10 flex items-center justify-center text-[#8574B7] mx-auto mt-2 mb-3">
+        <div className="w-14 h-14 rounded-2xl bg-[#726E97]/10 flex items-center justify-center text-[#726E97] mx-auto mt-2 mb-3">
           <Zap className="w-6 h-6 fill-current" strokeWidth={1.75} />
         </div>
 
@@ -106,7 +106,7 @@ export default function UpgradeModal({
         {/* Feature List */}
         <div className="space-y-2 mb-4">
           <div className="flex items-center gap-3 p-2.5 rounded-xl bg-white border border-[#D0CDE1] text-left">
-            <div className="w-7 h-7 rounded-lg bg-white border border-[#D0CDE1] text-[#8574B7] flex items-center justify-center shrink-0 shadow-2xs">
+            <div className="w-7 h-7 rounded-lg bg-white border border-[#D0CDE1] text-[#726E97] flex items-center justify-center shrink-0 shadow-2xs">
               <Infinity className="w-4 h-4" />
             </div>
             <div>
@@ -116,7 +116,7 @@ export default function UpgradeModal({
           </div>
 
           <div className="flex items-center gap-3 p-2.5 rounded-xl bg-white border border-[#D0CDE1] text-left">
-            <div className="w-7 h-7 rounded-lg bg-white border border-[#D0CDE1] text-[#8574B7] flex items-center justify-center shrink-0 shadow-2xs">
+            <div className="w-7 h-7 rounded-lg bg-white border border-[#D0CDE1] text-[#726E97] flex items-center justify-center shrink-0 shadow-2xs">
               <Compass className="w-4 h-4" />
             </div>
             <div>
@@ -126,7 +126,7 @@ export default function UpgradeModal({
           </div>
 
           <div className="flex items-center gap-3 p-2.5 rounded-xl bg-white border border-[#D0CDE1] text-left">
-            <div className="w-7 h-7 rounded-lg bg-white border border-[#D0CDE1] text-[#8574B7] flex items-center justify-center shrink-0 shadow-2xs">
+            <div className="w-7 h-7 rounded-lg bg-white border border-[#D0CDE1] text-[#726E97] flex items-center justify-center shrink-0 shadow-2xs">
               <TrendingUp className="w-4 h-4" />
             </div>
             <div>
@@ -144,16 +144,16 @@ export default function UpgradeModal({
               onClick={() => setSelectedTier('6m')}
               className={`relative rounded-xl p-2 text-left border transition cursor-pointer flex flex-col justify-between ${
                 selectedTier === '6m'
-                  ? 'border-[#8574B7] bg-[#E8E6F1]/50 ring-1 ring-[#8574B7] shadow-xs'
+                  ? 'border-[#726E97] bg-[#EAE9F2]/50 ring-1 ring-[#726E97] shadow-xs'
                   : 'border-[#D0CDE1] bg-white hover:border-[#D0CDE1]'
               }`}
             >
-              <span className="absolute -top-2 left-1/2 -translate-x-1/2 bg-[#8574B7] text-white text-[8px] font-semibold px-1.5 py-0.5 rounded-full uppercase tracking-wider whitespace-nowrap">
+              <span className="absolute -top-2 left-1/2 -translate-x-1/2 bg-[#726E97] text-white text-[8px] font-semibold px-1.5 py-0.5 rounded-full uppercase tracking-wider whitespace-nowrap">
                 Save 47%
               </span>
               <div className="pt-0.5">
                 <div className="text-[10px] font-semibold text-[#413B5E]">6 Mo</div>
-                <div className="text-[9px] text-[#8574B7] font-semibold">Best Value</div>
+                <div className="text-[9px] text-[#726E97] font-semibold">Best Value</div>
               </div>
               <div className="mt-1 pt-1 border-t border-[#D0CDE1]">
                 <div className="text-xs font-semibold text-[#413B5E]">$7.99<span className="text-[9px] font-normal text-[#413B5E]/75">/mo</span></div>
@@ -168,7 +168,7 @@ export default function UpgradeModal({
               onClick={() => setSelectedTier('1m')}
               className={`relative rounded-xl p-2 text-left border transition cursor-pointer flex flex-col justify-between ${
                 selectedTier === '1m'
-                  ? 'border-[#8574B7] bg-[#E8E6F1]/50 ring-1 ring-[#8574B7] shadow-xs'
+                  ? 'border-[#726E97] bg-[#EAE9F2]/50 ring-1 ring-[#726E97] shadow-xs'
                   : 'border-[#D0CDE1] bg-white hover:border-[#D0CDE1]'
               }`}
             >
@@ -186,7 +186,7 @@ export default function UpgradeModal({
           {PLUS_CHECKOUT_ENABLED ? (
             <button
               onClick={() => handleCheckout(selectedTier)}
-              className="w-full py-3 rounded-2xl bg-[#8574B7] hover:bg-[#534377] active:bg-[#534377] text-white font-medium text-xs tracking-wider uppercase shadow-md shadow-[#8574B7]/20 transition active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer mb-2"
+              className="w-full py-3 rounded-2xl bg-[#726E97] hover:bg-[#524E75] active:bg-[#524E75] text-white font-medium text-xs tracking-wider uppercase shadow-md shadow-[#726E97]/20 transition active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer mb-2"
             >
               <span>
                 Upgrade to Plus • {selectedTier === '6m' ? '$47.99 / 6 mo' : '$14.99/mo'}
@@ -199,13 +199,13 @@ export default function UpgradeModal({
                 type="button"
                 disabled
                 aria-disabled="true"
-                className="w-full py-3 rounded-2xl bg-[#E8E6F1] text-[#413B5E]/60 font-medium text-xs tracking-wider uppercase cursor-not-allowed flex items-center justify-center mb-2"
+                className="w-full py-3 rounded-2xl bg-[#EAE9F2] text-[#413B5E]/60 font-medium text-xs tracking-wider uppercase cursor-not-allowed flex items-center justify-center mb-2"
               >
                 {t('plus.page.comingSoon')}
               </button>
               <IceNotice className="mb-1.5">{t('plus.page.upgradesOpening')}</IceNotice>
               <p className="mb-2 text-center text-[11px] text-slate-600">
-                <Link href="/plus" className="font-semibold text-[#8574B7] underline underline-offset-4">
+                <Link href="/plus" className="font-semibold text-[#726E97] underline underline-offset-4">
                   {t('plus.page.billingTitle')}
                 </Link>
               </p>
@@ -213,7 +213,7 @@ export default function UpgradeModal({
           )}
 
           {notice && (
-            <p role="status" className="mb-2 rounded-xl bg-[#FAF9FC] border border-[#8574B7]/25 px-3 py-2 text-[11px] font-medium leading-snug text-[#413B5E] text-center">
+            <p role="status" className="mb-2 rounded-xl bg-[#FAF9FC] border border-[#726E97]/25 px-3 py-2 text-[11px] font-medium leading-snug text-[#413B5E] text-center">
               {notice}
             </p>
           )}

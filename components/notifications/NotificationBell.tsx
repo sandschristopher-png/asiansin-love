@@ -119,7 +119,7 @@ export function NotificationBell() {
         aria-label={unread > 0 ? `${t('nav.notifications')}, ${unread} unread` : t('nav.notifications')}
         aria-haspopup="dialog"
         aria-expanded={open}
-        className="w-9 h-9 flex items-center justify-center rounded-full bg-[#E8E6F1]/70 text-[#8574B7] transition-opacity hover:opacity-90 relative"
+        className="w-9 h-9 flex items-center justify-center rounded-full bg-[#EAE9F2]/70 text-[#726E97] transition-opacity hover:opacity-90 relative"
       >
         <Bell className="w-5 h-5" aria-hidden />
         <CountChip count={unread} label={`${unread} unread`} className="absolute -top-1 -right-1" />
@@ -137,7 +137,7 @@ export function NotificationBell() {
               type="button"
               onClick={markAll}
               disabled={!items?.some((n) => tinted.has(n.id) || !n.is_read)}
-              className="text-xs font-medium text-[#8574B7] hover:text-[#534377] disabled:opacity-40 transition-colors"
+              className="text-xs font-medium text-[#726E97] hover:text-[#524E75] disabled:opacity-40 transition-colors"
             >
               {t('nav.markAllRead')}
             </button>
@@ -145,8 +145,8 @@ export function NotificationBell() {
           <div className="max-h-[360px] overflow-y-auto overscroll-contain flex flex-col gap-2 px-2 pb-2">
             {items === null ? (
               <div aria-hidden className="px-1.5 flex flex-col gap-2">
-                <div className="h-9 rounded-xl bg-[#E8E6F1]/60 animate-pulse" />
-                <div className="h-9 rounded-xl bg-[#E8E6F1]/60 animate-pulse" />
+                <div className="h-9 rounded-xl bg-[#EAE9F2]/60 animate-pulse" />
+                <div className="h-9 rounded-xl bg-[#EAE9F2]/60 animate-pulse" />
               </div>
             ) : items.length === 0 ? (
               <p className="px-1.5 py-2 text-xs text-[#413B5E]/70">{t('nav.noNotifications')}</p>
@@ -168,7 +168,7 @@ export function NotificationBell() {
           <Link
             href="/notifications"
             onClick={() => setOpen(false)}
-            className="block text-center text-xs font-medium text-[#8574B7] hover:text-[#534377] py-2 border-t border-[#D0CDE1]/50 transition-colors"
+            className="block text-center text-xs font-medium text-[#726E97] hover:text-[#524E75] py-2 border-t border-[#D0CDE1]/50 transition-colors"
           >
             {t('nav.seeAll')}
           </Link>

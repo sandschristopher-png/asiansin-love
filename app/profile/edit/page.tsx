@@ -417,7 +417,7 @@ export default function EditProfilePage() {
                 <Camera className="w-4 h-4 text-[#D0CDE1]" />
                 Profile Photos ({photos.length}/6)
               </h2>
-              <p className="text-[11px] text-[#E8E6F1]/50">
+              <p className="text-[11px] text-[#EAE9F2]/50">
                 Upload up to 6 photos. Slot 1 is your primary avatar shown across the app.
               </p>
             </div>
@@ -442,14 +442,14 @@ export default function EditProfilePage() {
                     />
 
                     {isPrimary ? (
-                      <div className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full bg-[#8574B7]/90 text-white text-[9px] font-medium shadow-sm">
+                      <div className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full bg-[#726E97]/90 text-white text-[9px] font-medium shadow-sm">
                         Primary
                       </div>
                     ) : (
                       <button
                         type="button"
                         onClick={() => handleSetPrimary(slotIdx)}
-                        className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full bg-black/60 text-white hover:bg-[#8574B7] text-[9px] font-medium transition"
+                        className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-full bg-black/60 text-white hover:bg-[#726E97] text-[9px] font-medium transition"
                       >
                         Make Primary
                       </button>
@@ -486,10 +486,10 @@ export default function EditProfilePage() {
                     <Loader2 className="w-5 h-5 text-[#D0CDE1] animate-spin" />
                   ) : (
                     <>
-                      <div className="w-8 h-8 rounded-full bg-[#FFFFFF] border border-[#D0CDE1] flex items-center justify-center text-[#E8E6F1]/50 group-hover:text-[#413B5E] group-hover:border-[#D0CDE1] mb-1.5 transition">
+                      <div className="w-8 h-8 rounded-full bg-[#FFFFFF] border border-[#D0CDE1] flex items-center justify-center text-[#EAE9F2]/50 group-hover:text-[#413B5E] group-hover:border-[#D0CDE1] mb-1.5 transition">
                         <Plus className="w-4 h-4" />
                       </div>
-                      <span className="text-[10px] font-medium text-[#E8E6F1]/50 group-hover:text-[#413B5E]">
+                      <span className="text-[10px] font-medium text-[#EAE9F2]/50 group-hover:text-[#413B5E]">
                         {slotIdx === 0 ? 'Add Primary' : 'Add Photo'}
                       </span>
                     </>
@@ -509,7 +509,7 @@ export default function EditProfilePage() {
             {initialHasUsername ? (
               <div className="flex items-center justify-between">
                 <span className="font-mono text-sm text-[#413B5E] font-medium">{username}</span>
-                <button type="button" onClick={() => setShowUpgradeModal(true)} className="text-xs px-2.5 py-1 rounded-lg bg-[#E8E6F1]/60 border border-[#D0CDE1] text-[#8574B7] hover:bg-[#E8E6F1]/70 transition flex items-center gap-1.5 font-medium cursor-pointer" title="Change handle with Plus"><span>Handle Locked</span><PlusBadge size="profile" /></button>
+                <button type="button" onClick={() => setShowUpgradeModal(true)} className="text-xs px-2.5 py-1 rounded-lg bg-[#EAE9F2]/60 border border-[#D0CDE1] text-[#726E97] hover:bg-[#EAE9F2]/70 transition flex items-center gap-1.5 font-medium cursor-pointer" title="Change handle with Plus"><span>Handle Locked</span><PlusBadge size="profile" /></button>
               </div>
             ) : (
               <div>
@@ -612,14 +612,14 @@ export default function EditProfilePage() {
                 onChange={(v) => setFormData({ ...formData, relationship_goal: v })}
                 options={['Marriage', 'Serious Relationship', 'Long-Term Dating', 'Casual Dating'].map((v) => ({ value: v, label: v }))}
                 menuClassName="w-full"
-                className="px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#B8B3D1]/35 text-[#413B5E] text-sm focus:outline-none focus-visible:border-[#8574B7]"
+                className="px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#B8B3D1]/35 text-[#413B5E] text-sm focus:outline-none focus-visible:border-[#726E97]"
               />
             </div>
           </div>
 
           {/* Relationship Timeline */}
           <div className="pt-2 border-t border-[#B8B3D1]/20 space-y-3">
-            <h3 className="text-xs font-semibold text-[#8574B7] uppercase tracking-wider flex items-center gap-1.5">
+            <h3 className="text-xs font-semibold text-[#726E97] uppercase tracking-wider flex items-center gap-1.5">
               Relationship Timeline
             </h3>
             <RhythmSelectors value={rhythm} onChange={setRhythm} />
@@ -635,7 +635,7 @@ export default function EditProfilePage() {
                   onChange={(v) => setFormData({ ...formData, marital_status: v })}
                   options={['Never Married', 'Divorced', 'Widowed', 'Separated'].map((v) => ({ value: v, label: v }))}
                   menuClassName="w-full"
-                  className="px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#B8B3D1]/35 text-[#413B5E] text-sm focus:outline-none focus-visible:border-[#8574B7]"
+                  className="px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#B8B3D1]/35 text-[#413B5E] text-sm focus:outline-none focus-visible:border-[#726E97]"
                 />
               </div>
             </div>
@@ -663,7 +663,7 @@ export default function EditProfilePage() {
                   type="button"
                   onClick={handleVerifyLocation}
                   disabled={verifyingLocation}
-                  className="text-[11px] font-medium text-[#8574B7] hover:underline shrink-0"
+                  className="text-[11px] font-medium text-[#726E97] hover:underline shrink-0"
                 >
                   {verifyingLocation ? 'Checking...' : 'Re-verify'}
                 </button>
@@ -671,7 +671,7 @@ export default function EditProfilePage() {
             ) : (
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div className="flex items-start sm:items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-full bg-[#E8E6F1]/60 text-[#8574B7] flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
+                  <div className="w-8 h-8 rounded-full bg-[#EAE9F2]/60 text-[#726E97] flex items-center justify-center shrink-0 mt-0.5 sm:mt-0">
                     <MapPin className="w-4 h-4" />
                   </div>
                   <div>
@@ -688,7 +688,7 @@ export default function EditProfilePage() {
                   type="button"
                   onClick={handleVerifyLocation}
                   disabled={verifyingLocation}
-                  className="px-4 py-2 rounded-xl bg-[#8574B7] hover:bg-[#8574B7] text-white text-xs font-medium flex items-center justify-center gap-1.5 transition active:scale-95 disabled:opacity-50 shrink-0 shadow-xs"
+                  className="px-4 py-2 rounded-xl bg-[#726E97] hover:bg-[#726E97] text-white text-xs font-medium flex items-center justify-center gap-1.5 transition active:scale-95 disabled:opacity-50 shrink-0 shadow-xs"
                 >
                   {verifyingLocation ? (
                     <>
@@ -723,7 +723,7 @@ export default function EditProfilePage() {
                   onChange={(v) => setFormData({ ...formData, wants_kids: v })}
                   options={['Wants children', 'Open to children', 'Does not want children', 'Not sure yet'].map((v) => ({ value: v, label: v }))}
                   menuClassName="w-full"
-                  className="px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#B8B3D1]/35 text-[#413B5E] text-sm focus:outline-none focus-visible:border-[#8574B7]"
+                  className="px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#B8B3D1]/35 text-[#413B5E] text-sm focus:outline-none focus-visible:border-[#726E97]"
                 />
               </div>
 
@@ -737,7 +737,7 @@ export default function EditProfilePage() {
                   onChange={(v) => setFormData({ ...formData, has_kids: v })}
                   options={['No', 'Yes, living with me', 'Yes, not living with me'].map((v) => ({ value: v, label: v }))}
                   menuClassName="w-full"
-                  className="px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#B8B3D1]/35 text-[#413B5E] text-sm focus:outline-none focus-visible:border-[#8574B7]"
+                  className="px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#B8B3D1]/35 text-[#413B5E] text-sm focus:outline-none focus-visible:border-[#726E97]"
                 />
               </div>
 
@@ -751,7 +751,7 @@ export default function EditProfilePage() {
                   onChange={(v) => setFormData({ ...formData, living_situation: v })}
                   options={['Lives independently', 'Lives with family', 'Lives with roommates'].map((v) => ({ value: v, label: v }))}
                   menuClassName="w-full"
-                  className="px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#B8B3D1]/35 text-[#413B5E] text-sm focus:outline-none focus-visible:border-[#8574B7]"
+                  className="px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#B8B3D1]/35 text-[#413B5E] text-sm focus:outline-none focus-visible:border-[#726E97]"
                 />
               </div>
 
@@ -772,7 +772,7 @@ export default function EditProfilePage() {
 
           {/* Lifestyle & Background */}
           <div className="pt-2 border-t border-[#B8B3D1]/20 space-y-3">
-            <h3 className="text-xs font-semibold text-[#8574B7] uppercase tracking-wider flex items-center gap-1.5">
+            <h3 className="text-xs font-semibold text-[#726E97] uppercase tracking-wider flex items-center gap-1.5">
               Lifestyle & Background
             </h3>
 
@@ -789,7 +789,7 @@ export default function EditProfilePage() {
                 onChange={setEnglishLevel}
                 options={[{ value: '', label: 'Prefer not to say' }, ...ENGLISH_LEVEL_OPTIONS.map((o) => ({ value: o.value, label: o.label }))]}
                 menuClassName="w-full"
-                className="px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#B8B3D1]/35 text-[#413B5E] text-sm focus:outline-none focus-visible:border-[#8574B7]"
+                className="px-4 py-2.5 rounded-xl bg-[#FFFFFF] border border-[#B8B3D1]/35 text-[#413B5E] text-sm focus:outline-none focus-visible:border-[#726E97]"
               />
             </div>
 
@@ -835,7 +835,7 @@ export default function EditProfilePage() {
           <button
             type="submit"
             disabled={saving || contactInvalid}
-            className="w-full py-3.5 rounded-2xl bg-[#8574B7] hover:bg-[#9A93BC] text-white font-medium text-sm shadow-lg shadow-[#8574B7]/40 transition active:scale-[0.99] disabled:opacity-50 flex items-center justify-center gap-2"
+            className="w-full py-3.5 rounded-2xl bg-[#726E97] hover:bg-[#9A93BC] text-white font-medium text-sm shadow-lg shadow-[#726E97]/40 transition active:scale-[0.99] disabled:opacity-50 flex items-center justify-center gap-2"
           >
             <Save className="w-4 h-4" />
             <span>{saving ? 'Saving Changes...' : 'Save Profile'}</span>

@@ -89,7 +89,7 @@ export function MyTrips({ userId, isPlus }: { userId: string | null | undefined;
             type="button"
             onClick={() => setSheet({ trip: null })}
             disabled={atLimit}
-            className="shrink-0 inline-flex h-8 items-center gap-1 rounded-full bg-[#8574B7] px-3 text-xs font-medium text-white transition-colors hover:bg-[#534377] disabled:cursor-not-allowed disabled:opacity-50"
+            className="shrink-0 inline-flex h-8 items-center gap-1 rounded-full bg-[#726E97] px-3 text-xs font-medium text-white transition-colors hover:bg-[#524E75] disabled:cursor-not-allowed disabled:opacity-50"
           >
             <Plus className="w-3.5 h-3.5" aria-hidden />
             {t('travel.card.add')}
@@ -119,7 +119,7 @@ export function MyTrips({ userId, isPlus }: { userId: string | null | undefined;
                       </p>
                     </div>
                     <span
-                      className="shrink-0 rounded-full bg-[#8574B7]/15 px-2 py-0.5 text-[10px] font-semibold leading-none text-[#8574B7]"
+                      className="shrink-0 rounded-full bg-[#726E97]/15 px-2 py-0.5 text-[10px] font-semibold leading-none text-[#726E97]"
                       suppressHydrationWarning
                     >
                       {tripStatusText({ city: trip.destination_city, arrival: trip.start_date, departure: trip.end_date }, t, isoToday())}
@@ -130,7 +130,7 @@ export function MyTrips({ userId, isPlus }: { userId: string | null | undefined;
                     <button
                       type="button"
                       onClick={() => setSheet({ trip })}
-                      className="inline-flex items-center gap-1 text-xs font-medium text-[#8574B7] transition-colors hover:text-[#534377]"
+                      className="inline-flex items-center gap-1 text-xs font-medium text-[#726E97] transition-colors hover:text-[#524E75]"
                     >
                       <Pencil className="w-3.5 h-3.5" aria-hidden />
                       {t('travel.card.edit')}
@@ -180,7 +180,7 @@ export function MyTrips({ userId, isPlus }: { userId: string | null | undefined;
           <Link
             href="/plus?feature=trips"
             aria-label={t('travel.planner.upgrade')}
-            className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-full border border-[#8574B7] bg-white text-sm font-medium text-[#8574B7] transition-colors hover:bg-[#8574B7]/10 active:scale-95"
+            className="inline-flex h-11 w-full items-center justify-center gap-2 rounded-full border border-[#726E97] bg-white text-sm font-medium text-[#726E97] transition-colors hover:bg-[#726E97]/10 active:scale-95"
           >
             <span>{t('travel.card.upgradeTo')}</span>
             <span aria-hidden="true">

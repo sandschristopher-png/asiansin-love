@@ -96,7 +96,7 @@ export function EditHighlightsModal({
         onClick={(e) => e.stopPropagation()}
       >
         <div className="pt-2.5 shrink-0 sm:hidden" aria-hidden>
-          <div className="w-10 h-1 rounded-full bg-[#E8E6F1] mx-auto mb-1" />
+          <div className="w-10 h-1 rounded-full bg-[#EAE9F2] mx-auto mb-1" />
         </div>
         <div className="flex items-center justify-between px-5 pt-4 pb-3 border-b border-[#D0CDE1] shrink-0">
           <h3 className="text-sm font-semibold text-[#413B5E]">
@@ -105,7 +105,7 @@ export function EditHighlightsModal({
           <button
             type="button"
             onClick={onClose}
-            className="rounded-full p-1.5 text-[#413B5E]/75 hover:bg-[#E8E6F1]/70 transition-colors"
+            className="rounded-full p-1.5 text-[#413B5E]/75 hover:bg-[#EAE9F2]/70 transition-colors"
           >
             <X className="h-4 w-4" />
           </button>
@@ -139,8 +139,8 @@ export function EditHighlightsModal({
                     type="button"
                     onClick={() => toggleHighlight(item.tag_id)}
                     className={'inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition-colors ' + (isSelected
-                      ? 'bg-[#8574B7] text-white shadow-xs'
-                      : 'border border-[#D0CDE1] bg-white text-[#413B5E]/85 hover:border-[#8574B7]/50')}
+                      ? 'bg-[#726E97] text-white shadow-xs'
+                      : 'border border-[#D0CDE1] bg-white text-[#413B5E]/85 hover:border-[#726E97]/50')}
                   >
                     {isSelected && <Check className="h-3 w-3" />}
                     {item.label}
@@ -177,7 +177,7 @@ export function EditHighlightsModal({
                         maxLength={120}
                         onChange={(e) => handleStoryChange(item.tag_id, e.target.value)}
                         placeholder={`Why do you love ${item.label}? (e.g., favorite spots, habits)`}
-                        className="w-full rounded-lg border border-[#D0CDE1] bg-white px-3 py-2 text-xs text-[#413B5E] outline-none focus:border-[#8574B7] transition-colors"
+                        className="w-full rounded-lg border border-[#D0CDE1] bg-white px-3 py-2 text-xs text-[#413B5E] outline-none focus:border-[#726E97] transition-colors"
                       />
                     </div>
                   );
@@ -190,7 +190,7 @@ export function EditHighlightsModal({
             <button
               type="submit"
               disabled={isSaving}
-              className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-[#8574B7] py-2.5 text-xs font-medium text-white shadow-xs transition hover:bg-[#8574B7] disabled:opacity-50"
+              className="inline-flex w-full items-center justify-center gap-1.5 rounded-xl bg-[#726E97] py-2.5 text-xs font-medium text-white shadow-xs transition hover:bg-[#726E97] disabled:opacity-50"
             >
               {isSaving ? (
                 <>

@@ -74,7 +74,7 @@ export function MomentCard({
       className="rounded-[20px] border border-[#E6E2F0] bg-white p-3"
     >
       <header className="flex items-center gap-3 px-1 pb-3">
-        <Link href={`/profile/${author.id}`} className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full border border-[#D0CDE1] bg-[#E8E6F1]/60">
+        <Link href={`/profile/${author.id}`} className="relative h-10 w-10 shrink-0 overflow-hidden rounded-full border border-[#D0CDE1] bg-[#EAE9F2]/60">
           {author.avatarUrl ? (
             <Image src={supabaseImage(author.avatarUrl, AVATAR_IMAGE)} alt={author.username} fill sizes="40px" className="object-cover" />
           ) : null}
@@ -87,17 +87,17 @@ export function MomentCard({
             </Link>
             {author.verified && <VerifiedBadge size="sm" />}
             {author.founding && (
-              <span className="inline-flex items-center rounded-md bg-[#8574B7]/15 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-[#8574B7]">
+              <span className="inline-flex items-center rounded-md bg-[#726E97]/15 px-1.5 py-0.5 text-[10px] font-semibold leading-none text-[#726E97]">
                 {t('moments.founding')}
               </span>
             )}
           </div>
           <p className="mt-0.5 flex items-center gap-1 text-[11px] leading-snug text-slate-600">
-            <MapPin className="h-3 w-3 shrink-0 text-[#8574B7]" aria-hidden />
+            <MapPin className="h-3 w-3 shrink-0 text-[#726E97]" aria-hidden />
             <span className="truncate">{moment.country ? `${moment.city}, ${moment.country}` : moment.city}</span>
             {moment.locationVerified && (
               <span className="inline-flex shrink-0" title={t('moments.locationVerified')}>
-                <LocateFixed className="h-3 w-3 text-[#8574B7]" aria-hidden />
+                <LocateFixed className="h-3 w-3 text-[#726E97]" aria-hidden />
                 <span className="sr-only">{t('moments.locationVerified')}</span>
               </span>
             )}
@@ -111,7 +111,7 @@ export function MomentCard({
             onClick={() => setMenuOpen((v) => !v)}
             aria-label={t('moments.menu')}
             aria-expanded={menuOpen}
-            className="flex h-8 w-8 items-center justify-center rounded-full text-slate-600 transition-colors hover:bg-[#E8E6F1]/70"
+            className="flex h-8 w-8 items-center justify-center rounded-full text-slate-600 transition-colors hover:bg-[#EAE9F2]/70"
           >
             <MoreHorizontal className="h-4 w-4" />
           </button>
@@ -138,9 +138,9 @@ export function MomentCard({
                     setMenuOpen(false);
                     onReport(moment);
                   }}
-                  className="flex w-full items-center gap-2 px-3.5 py-2.5 text-left text-[13px] leading-snug text-[#413B5E] hover:bg-[#E8E6F1]/50"
+                  className="flex w-full items-center gap-2 px-3.5 py-2.5 text-left text-[13px] leading-snug text-[#413B5E] hover:bg-[#EAE9F2]/50"
                 >
-                  <Flag className="h-3.5 w-3.5 text-[#8574B7]" aria-hidden />
+                  <Flag className="h-3.5 w-3.5 text-[#726E97]" aria-hidden />
                   {t('moments.reportMoment')}
                 </button>
               )}
@@ -149,7 +149,7 @@ export function MomentCard({
         </div>
       </header>
 
-      <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl bg-[#E8E6F1]/50">
+      <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl bg-[#EAE9F2]/50">
         <Image src={moment.imageUrl} alt={vibeLabel || t('moments.attachedAlt')} fill sizes="(max-width: 480px) 100vw, 440px" preload={priority} className="object-cover" />
         {vibeLabel && (
           <span className="absolute left-3 top-3 inline-flex items-center rounded-full bg-white/75 px-3 py-1.5 text-[11px] font-semibold leading-none text-[#413B5E] backdrop-blur-md">
@@ -161,11 +161,11 @@ export function MomentCard({
       {(moment.sharedVibe || moment.prompt || moment.caption) && (
         <div className="px-1 pt-3">
           {moment.sharedVibe && (
-            <span className="mb-2 inline-flex items-center rounded-md bg-[#F6F4FB] px-1.5 py-0.5 text-[10px] font-semibold leading-none text-[#8574B7]">
+            <span className="mb-2 inline-flex items-center rounded-md bg-[#F6F4FB] px-1.5 py-0.5 text-[10px] font-semibold leading-none text-[#726E97]">
               {t('moments.sharedVibe')}
             </span>
           )}
-          {moment.prompt && <p className="text-xs font-medium leading-snug text-[#8574B7]">{t(`moments.prompt.${moment.prompt}` as TKey)}</p>}
+          {moment.prompt && <p className="text-xs font-medium leading-snug text-[#726E97]">{t(`moments.prompt.${moment.prompt}` as TKey)}</p>}
           {moment.caption && <p className={`text-sm leading-relaxed text-[#413B5E] break-words ${moment.prompt ? 'mt-1' : ''}`}>{moment.caption}</p>}
         </div>
       )}
@@ -177,9 +177,9 @@ export function MomentCard({
           onClick={() => onLike(moment)}
           aria-pressed={moment.likedByMe}
           aria-label={moment.likedByMe ? t('moments.liked') : t('moments.like')}
-          className="inline-flex h-10 items-center gap-1.5 rounded-full border border-[#D0CDE1] bg-white px-4 text-[13px] font-medium text-[#413B5E] transition-colors hover:bg-[#E8E6F1]/40"
+          className="inline-flex h-10 items-center gap-1.5 rounded-full border border-[#D0CDE1] bg-white px-4 text-[13px] font-medium text-[#413B5E] transition-colors hover:bg-[#EAE9F2]/40"
         >
-          <Heart className={`h-4 w-4 transition-colors ${moment.likedByMe ? 'fill-[#8574B7] text-[#8574B7]' : 'text-slate-600'}`} aria-hidden />
+          <Heart className={`h-4 w-4 transition-colors ${moment.likedByMe ? 'fill-[#726E97] text-[#726E97]' : 'text-slate-600'}`} aria-hidden />
           <span className="tabular-nums">{moment.likesCount}</span>
         </motion.button>
         {!moment.isMine && (
@@ -187,7 +187,7 @@ export function MomentCard({
             type="button"
             whileTap={reduce ? undefined : { scale: 0.98 }}
             onClick={() => onSpark(moment)}
-            className="inline-flex h-10 min-w-0 flex-1 items-center justify-center gap-2 rounded-full bg-[#8574B7] px-5 text-[13px] font-medium leading-snug text-white transition-colors hover:bg-[#534377]"
+            className="inline-flex h-10 min-w-0 flex-1 items-center justify-center gap-2 rounded-full bg-[#726E97] px-5 text-[13px] font-medium leading-snug text-white transition-colors hover:bg-[#524E75]"
           >
             <Zap className="h-4 w-4 shrink-0 fill-current" aria-hidden />
             <span className="truncate">{t('moments.spark')}</span>

@@ -33,7 +33,7 @@ export default function CitiesIndexPage() {
     <main className="min-h-[100dvh] bg-white text-[#413B5E] overflow-x-hidden">
       <header className="px-5 pt-6 flex items-center justify-between max-w-xl mx-auto">
         <BrandLogo href="/" size="sm" />
-        <Link href="/login" className="text-xs font-medium text-[#8574B7] hover:text-[#413B5E] transition-colors">
+        <Link href="/login" className="text-xs font-medium text-[#726E97] hover:text-[#413B5E] transition-colors">
           Sign in
         </Link>
       </header>
@@ -41,7 +41,7 @@ export default function CitiesIndexPage() {
       <div className="max-w-xl mx-auto px-4 pb-[calc(3rem+env(safe-area-inset-bottom))]">
         <nav aria-label="Breadcrumb" className="pt-6 text-xs text-slate-600">
           <ol className="flex items-center gap-1.5">
-            <li><Link href="/" className="hover:text-[#8574B7]">Meet in Asia</Link></li>
+            <li><Link href="/" className="hover:text-[#726E97]">Meet in Asia</Link></li>
             <li aria-hidden>/</li>
             <li aria-current="page" className="text-[#413B5E] font-medium">Cities</li>
           </ol>
@@ -49,7 +49,7 @@ export default function CitiesIndexPage() {
 
         <section className="pt-8 pb-6">
           <h1 className="text-3xl font-semibold tracking-tight leading-[1.15]">
-            Dating in <span className="text-[#8574B7]">Asia&apos;s cities</span>
+            Dating in <span className="text-[#726E97]">Asia&apos;s cities</span>
           </h1>
           <p className="mt-4 text-sm leading-relaxed text-[#413B5E]/75">
             Pick a city for local dating tips, the areas people choose for a first meeting, and answers to common questions.
@@ -69,7 +69,7 @@ export default function CitiesIndexPage() {
                   <li key={c.slug}>
                     <Link
                       href={cityHref(c.slug)}
-                      className="block rounded-2xl border border-[#D0CDE1]/60 bg-white p-4 shadow-sm hover:border-[#8574B7]/40 transition-colors"
+                      className="block rounded-2xl border border-[#D0CDE1]/60 bg-white p-4 shadow-sm hover:border-[#726E97]/40 transition-colors"
                     >
                       <span className="block text-sm font-semibold text-[#413B5E]">{c.name}</span>
                       <span className="mt-0.5 block text-xs text-slate-600">{c.country}</span>

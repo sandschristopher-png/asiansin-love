@@ -29,9 +29,9 @@ export function timeAgo(iso: string | null | undefined): string {
 export function AdminAvatar({ url, name, size = 40 }: { url: string | null; name: string; size?: number }) {
   return url ? (
     // eslint-disable-next-line @next/next/no-img-element
-    <img src={url} alt={name} width={size} height={size} className="rounded-full object-cover shrink-0 bg-[#E8E6F1]/60" style={{ width: size, height: size }} />
+    <img src={url} alt={name} width={size} height={size} className="rounded-full object-cover shrink-0 bg-[#EAE9F2]/60" style={{ width: size, height: size }} />
   ) : (
-    <span className="rounded-full shrink-0 bg-[#E8E6F1]/60 flex items-center justify-center text-[#8574B7]" style={{ width: size, height: size }}>
+    <span className="rounded-full shrink-0 bg-[#EAE9F2]/60 flex items-center justify-center text-[#726E97]" style={{ width: size, height: size }}>
       <UserRound className="w-1/2 h-1/2" aria-hidden />
     </span>
   );
@@ -65,7 +65,7 @@ export function Notice({ kind, children }: { kind: 'error' | 'success'; children
 export function EmptyState({ icon: Icon, title, body }: { icon: React.ComponentType<{ className?: string }>; title: string; body: string }) {
   return (
     <div className="rounded-2xl border border-dashed border-[#D0CDE1] bg-white py-14 px-6 text-center">
-      <Icon className="w-8 h-8 mx-auto text-[#8574B7]" />
+      <Icon className="w-8 h-8 mx-auto text-[#726E97]" />
       <p className="mt-3 font-semibold text-[#413B5E]">{title}</p>
       <p className="mt-1 text-sm text-[#413B5E]/75">{body}</p>
     </div>
@@ -74,7 +74,7 @@ export function EmptyState({ icon: Icon, title, body }: { icon: React.ComponentT
 
 export function Loading() {
   return (
-    <div className="py-16 flex justify-center text-[#8574B7]">
+    <div className="py-16 flex justify-center text-[#726E97]">
       <Loader2 className="w-6 h-6 animate-spin" aria-label="Loading" />
     </div>
   );
@@ -106,14 +106,14 @@ export function BottomSheet({
       <button type="button" className="absolute inset-0 bg-black/40 backdrop-blur-sm" aria-label="Close" onClick={onClose} />
       <div className="relative w-full max-w-[480px] mx-auto max-h-[85dvh] rounded-t-3xl bg-white shadow-xl flex flex-col">
         <div className="pt-2.5 pb-1 flex justify-center" aria-hidden>
-          <span className="w-10 h-1 rounded-full bg-[#E8E6F1]/60" />
+          <span className="w-10 h-1 rounded-full bg-[#EAE9F2]/60" />
         </div>
         <header className="flex items-start justify-between gap-3 px-4 pb-3 border-b border-[#D0CDE1]">
           <div className="min-w-0">
             <p className="text-sm font-semibold text-[#413B5E]">{title}</p>
             {subtitle && <p className="text-[11px] text-[#413B5E]/75 truncate">{subtitle}</p>}
           </div>
-          <button type="button" onClick={onClose} className="p-1.5 -mr-1.5 rounded-lg hover:bg-[#E8E6F1]/40" aria-label="Close">
+          <button type="button" onClick={onClose} className="p-1.5 -mr-1.5 rounded-lg hover:bg-[#EAE9F2]/40" aria-label="Close">
             <X className="w-4 h-4 text-[#413B5E]/75" />
           </button>
         </header>
@@ -126,8 +126,8 @@ export function BottomSheet({
 
 type BtnTone = 'primary' | 'neutral' | 'danger' | 'warn';
 const TONES: Record<BtnTone, string> = {
-  primary: 'bg-[#8574B7] hover:bg-[#534377] text-white border-transparent',
-  neutral: 'bg-white text-[#413B5E] border-[#D0CDE1] hover:bg-[#E8E6F1]/40',
+  primary: 'bg-[#726E97] hover:bg-[#524E75] text-white border-transparent',
+  neutral: 'bg-white text-[#413B5E] border-[#D0CDE1] hover:bg-[#EAE9F2]/40',
   danger: 'bg-red-600 text-white border-transparent hover:bg-red-700',
   warn: 'bg-amber-50 text-amber-800 border-amber-200 hover:bg-amber-100',
 };

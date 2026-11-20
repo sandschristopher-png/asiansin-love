@@ -74,7 +74,7 @@ export function SparkMomentSheet({
   return (
     <BottomSheet title={t('moments.sparkTitle')} onClose={onClose}>
       <div className="mt-4 flex items-start gap-3">
-        <div className="relative h-32 w-[6.4rem] shrink-0 overflow-hidden rounded-2xl border border-[#D0CDE1] bg-[#E8E6F1]/50">
+        <div className="relative h-32 w-[6.4rem] shrink-0 overflow-hidden rounded-2xl border border-[#D0CDE1] bg-[#EAE9F2]/50">
           <Image src={moment.imageUrl} alt={t('moments.attachedAlt')} fill sizes="104px" className="object-cover" />
         </div>
         <div className="min-w-0 flex-1">
@@ -88,7 +88,7 @@ export function SparkMomentSheet({
         maxLength={300}
         onChange={(e) => setText(e.target.value)}
         placeholder={t('moments.sparkPlaceholder')}
-        className="mt-4 w-full resize-none rounded-xl border border-[#D0CDE1] bg-white px-3.5 py-2.5 text-sm text-[#413B5E] placeholder:text-slate-400 focus:border-[#8574B7] focus:outline-none"
+        className="mt-4 w-full resize-none rounded-xl border border-[#D0CDE1] bg-white px-3.5 py-2.5 text-sm text-[#413B5E] placeholder:text-slate-400 focus:border-[#726E97] focus:outline-none"
       />
       {error && (
         <p role="alert" className="mt-3 rounded-xl bg-red-50 px-3 py-2 text-xs font-medium leading-relaxed text-red-600">
@@ -99,7 +99,7 @@ export function SparkMomentSheet({
         type="button"
         onClick={send}
         disabled={busy}
-        className="mt-4 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#8574B7] text-sm font-medium text-white transition-colors hover:bg-[#534377] disabled:opacity-60"
+        className="mt-4 inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#726E97] text-sm font-medium text-white transition-colors hover:bg-[#524E75] disabled:opacity-60"
       >
         {busy ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <Zap className="h-4 w-4 fill-current" aria-hidden />}
         {t('moments.sparkSend')}

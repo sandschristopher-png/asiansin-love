@@ -57,7 +57,7 @@ export function KineticCityTicker({ audience = 'western' }: { audience?: HeroAud
             animate={{ y: 0, opacity: 1 }}
             exit={{ y: -shift, opacity: 0 }}
             transition={transition}
-            className={`absolute inset-0 flex items-center justify-center text-[#8574B7] ${word}`}
+            className={`absolute inset-0 flex items-center justify-center text-[#726E97] ${word}`}
           >
             {current}
           </motion.span>

@@ -15,13 +15,13 @@ export function CityHeroCtas() {
     <div className="mt-7 flex flex-row justify-center gap-3">
       <Link
         href="/signup"
-        className="flex h-12 items-center justify-center whitespace-nowrap rounded-full bg-[#8574B7] px-8 text-sm font-medium text-white transition-colors hover:bg-[#534377]"
+        className="flex h-12 items-center justify-center whitespace-nowrap rounded-full bg-[#726E97] px-8 text-sm font-medium text-white transition-colors hover:bg-[#524E75]"
       >
         Join free
       </Link>
       <Link
         href="/login"
-        className="flex h-12 items-center justify-center whitespace-nowrap rounded-full border border-[#D0CDE1] bg-white px-8 text-sm font-medium text-[#413B5E] transition-colors hover:bg-[#E8E6F1]/30"
+        className="flex h-12 items-center justify-center whitespace-nowrap rounded-full border border-[#D0CDE1] bg-white px-8 text-sm font-medium text-[#413B5E] transition-colors hover:bg-[#EAE9F2]/30"
       >
         Sign in
       </Link>
@@ -47,7 +47,7 @@ export function VisitingSoonCallout({ cityName }: { cityName: string }) {
               </p>
               <Link
                 href="/plus?feature=trips"
-                className="mt-3 inline-flex h-9 items-center rounded-full bg-[#8574B7] px-4 text-xs font-medium text-white transition-colors hover:bg-[#534377]"
+                className="mt-3 inline-flex h-9 items-center rounded-full bg-[#726E97] px-4 text-xs font-medium text-white transition-colors hover:bg-[#524E75]"
               >
                 See Meet in Asia Plus
               </Link>
@@ -63,7 +63,7 @@ export function VisitingSoonCallout({ cityName }: { cityName: string }) {
 export function ExploreCities({ currentSlug }: { currentSlug: string }) {
   const others = PUBLISHED_CITIES.filter((c) => c.region === 'Southeast Asia' && c.slug !== currentSlug);
   const pill =
-    'inline-flex rounded-full border border-[#D0CDE1] bg-white px-3 py-1.5 text-xs font-medium text-[#8574B7] transition-colors hover:bg-[#E8E6F1]/40';
+    'inline-flex rounded-full border border-[#D0CDE1] bg-white px-3 py-1.5 text-xs font-medium text-[#726E97] transition-colors hover:bg-[#EAE9F2]/40';
   return (
     <section className="py-8 border-t border-[#D0CDE1]/60" aria-labelledby="explore-cities-heading">
       <h2 id="explore-cities-heading" className="text-base font-semibold tracking-tight">Explore other cities</h2>

@@ -64,14 +64,14 @@ export function MutualSparkModal({
         <div className="w-full flex flex-col gap-2 mt-5">
           <Link
             href={chatHref}
-            className="w-full py-3 px-4 rounded-full bg-[#8574B7] hover:bg-[#413B5E] text-white text-xs font-medium shadow-md transition flex items-center justify-center"
+            className="w-full py-3 px-4 rounded-full bg-[#726E97] hover:bg-[#413B5E] text-white text-xs font-medium shadow-md transition flex items-center justify-center"
           >
             Send First Message
           </Link>
           <button
             type="button"
             onClick={onClose}
-            className="w-full py-2.5 px-4 rounded-full text-xs font-medium text-[#413B5E]/75 hover:text-[#413B5E] hover:bg-[#E8E6F1]/70 transition cursor-pointer"
+            className="w-full py-2.5 px-4 rounded-full text-xs font-medium text-[#413B5E]/75 hover:text-[#413B5E] hover:bg-[#EAE9F2]/70 transition cursor-pointer"
           >
             Keep Browsing
           </button>

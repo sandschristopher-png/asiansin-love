@@ -9,7 +9,7 @@ export interface ShareData {
   text: string;
 }
 
-const ICON = 'w-5 h-5 text-[#8574B7]';
+const ICON = 'w-5 h-5 text-[#726E97]';
 
 /**
  * Desktop share sheet (phones use the native share sheet instead; see useShare): WhatsApp,
@@ -81,7 +81,7 @@ export function ShareDrawer({ url, title, text, onClose }: ShareData & { onClose
             href={t.href}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex flex-col items-center justify-center gap-2 p-3 rounded-2xl border border-slate-200 bg-white hover:bg-[#8574B7]/5 hover:border-[#8574B7]/30 transition-colors"
+            className="flex flex-col items-center justify-center gap-2 p-3 rounded-2xl border border-slate-200 bg-white hover:bg-[#726E97]/5 hover:border-[#726E97]/30 transition-colors"
           >
             {t.icon}
             <span className="text-xs font-medium text-[#413B5E]">{t.name}</span>
@@ -102,7 +102,7 @@ export function ShareDrawer({ url, title, text, onClose }: ShareData & { onClose
         <button
           type="button"
           onClick={copy}
-          className="shrink-0 h-8 px-4 rounded-full bg-[#8574B7] hover:bg-[#534377] text-white text-xs font-medium transition-colors"
+          className="shrink-0 h-8 px-4 rounded-full bg-[#726E97] hover:bg-[#524E75] text-white text-xs font-medium transition-colors"
         >
           {copied ? 'Copied' : 'Copy link'}
         </button>

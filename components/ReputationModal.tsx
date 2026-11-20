@@ -44,12 +44,12 @@ export default function ReputationModal({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Pull Handle */}
-        <div className="w-10 h-1 bg-[#E8E6F1] rounded-full mx-auto -mt-1 mb-1 shrink-0" />
+        <div className="w-10 h-1 bg-[#EAE9F2] rounded-full mx-auto -mt-1 mb-1 shrink-0" />
 
         {/* Header */}
         <div className="flex items-start justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-[#E8E6F1]/60 border border-[#D0CDE1] flex items-center justify-center text-[#8574B7] shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-[#EAE9F2]/60 border border-[#D0CDE1] flex items-center justify-center text-[#726E97] shrink-0">
               <ShieldCheck className="w-5 h-5" />
             </div>
             <div>
@@ -60,7 +60,7 @@ export default function ReputationModal({
           <button
             type="button"
             onClick={onClose}
-            className="p-1 rounded-full text-slate-600 hover:text-[#413B5E]/85 hover:bg-[#E8E6F1]/60 transition cursor-pointer"
+            className="p-1 rounded-full text-slate-600 hover:text-[#413B5E]/85 hover:bg-[#EAE9F2]/60 transition cursor-pointer"
             aria-label="Close"
           >
             <X className="w-4 h-4" />
@@ -70,7 +70,7 @@ export default function ReputationModal({
         {/* Current Standing Card */}
         <div className="p-3 rounded-xl bg-white border border-[#D0CDE1] flex items-center justify-between">
           <div className="space-y-0.5">
-            <span className="text-[9px] font-semibold uppercase tracking-wider text-[#8574B7]">Current Standing</span>
+            <span className="text-[9px] font-semibold uppercase tracking-wider text-[#726E97]">Current Standing</span>
             <p className="text-xs text-[#413B5E]/85 font-medium">
               {score >= 90 ? 'Unblemished: Exemplary standing' : 'Good standing: Active member'}
             </p>
@@ -113,7 +113,7 @@ export default function ReputationModal({
           <button
             type="button"
             onClick={onClose}
-            className="w-full py-2.5 rounded-full bg-[#8574B7] hover:bg-[#413B5E] text-white text-xs font-medium transition text-center cursor-pointer shadow-xs active:scale-[0.98]"
+            className="w-full py-2.5 rounded-full bg-[#726E97] hover:bg-[#413B5E] text-white text-xs font-medium transition text-center cursor-pointer shadow-xs active:scale-[0.98]"
           >
             Understood
           </button>

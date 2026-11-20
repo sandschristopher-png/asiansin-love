@@ -64,7 +64,7 @@ function PhotoCard({ member, onDone }: { member: PendingMember; onDone: (id: str
               {member.name}
               {member.age !== null && <span className="font-normal text-[#413B5E]/75">, {member.age}</span>}
             </span>
-            {verified && <BadgeCheck className="w-4 h-4 shrink-0 text-[#8574B7]" aria-label="Verified" />}
+            {verified && <BadgeCheck className="w-4 h-4 shrink-0 text-[#726E97]" aria-label="Verified" />}
           </p>
           <p className="text-xs text-[#413B5E]/75 flex items-center gap-1 min-w-0">
             {member.location && <MapPin className="w-3 h-3 shrink-0" aria-hidden />}
@@ -120,7 +120,7 @@ function PhotoCard({ member, onDone }: { member: PendingMember; onDone: (id: str
             onChange={(e) => setReason(e.target.value)}
             maxLength={200}
             placeholder="Reason shown to the member (optional)"
-            className="w-full h-10 rounded-xl border border-[#D0CDE1] bg-white px-3 text-sm outline-none focus:border-[#8574B7]"
+            className="w-full h-10 rounded-xl border border-[#D0CDE1] bg-white px-3 text-sm outline-none focus:border-[#726E97]"
           />
           <div className="flex flex-wrap items-center gap-2">
             <label className="text-xs text-[#413B5E]/75" htmlFor={`pen-${member.id}`}>

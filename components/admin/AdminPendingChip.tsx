@@ -15,7 +15,7 @@ export function CountChip({ count, className = '', label }: { count: number; cla
   return (
     <span
       aria-label={label ?? `${count} pending`}
-      className={`inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-[#8574B7] text-white text-[10px] font-semibold leading-none shadow-[0_1px_3px_rgba(65,59,94,0.25)] ${className}`}
+      className={`inline-flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-[#726E97] text-white text-[10px] font-semibold leading-none shadow-[0_1px_3px_rgba(65,59,94,0.25)] ${className}`}
     >
       {count > 99 ? '99+' : count}
     </span>
@@ -64,7 +64,7 @@ export function AdminConsoleSettingsRow({ label, sub }: { label: string; sub: st
   if (!staff) return null;
   return (
     <div className="rounded-3xl bg-white border border-[#D0CDE1] p-2 shadow-2xs">
-      <Link href="/admin/notifications" className="flex items-center justify-between p-3 rounded-2xl hover:bg-[#E8E6F1]/40 transition cursor-pointer">
+      <Link href="/admin/notifications" className="flex items-center justify-between p-3 rounded-2xl hover:bg-[#EAE9F2]/40 transition cursor-pointer">
         <div className="flex items-center gap-3 min-w-0">
           <div className="w-8 h-8 rounded-xl bg-white text-[#413B5E]/85 flex items-center justify-center shrink-0">
             <ShieldAlert className="w-4 h-4" />

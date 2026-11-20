@@ -45,15 +45,15 @@ export function LanguageSheet({ onClose, onChanged }: { onClose: () => void; onC
                 onClick={() => choose(l)}
                 disabled={pending !== null}
                 lang={HTML_LANG[l]}
-                className={`flex w-full min-h-12 items-center justify-between gap-3 border-b border-slate-100 px-1 py-3 text-left text-[15px] transition-colors last:border-b-0 hover:bg-[#8574B7]/5 disabled:opacity-60 ${
-                  active ? 'font-semibold text-[#8574B7]' : 'font-medium text-[#413B5E]'
+                className={`flex w-full min-h-12 items-center justify-between gap-3 border-b border-slate-100 px-1 py-3 text-left text-[15px] transition-colors last:border-b-0 hover:bg-[#726E97]/5 disabled:opacity-60 ${
+                  active ? 'font-semibold text-[#726E97]' : 'font-medium text-[#413B5E]'
                 }`}
               >
                 <span className="min-w-0 truncate">{LOCALE_LABELS[l]}</span>
                 {pending === l ? (
-                  <Loader2 className="h-4 w-4 shrink-0 animate-spin text-[#8574B7]" aria-hidden />
+                  <Loader2 className="h-4 w-4 shrink-0 animate-spin text-[#726E97]" aria-hidden />
                 ) : active ? (
-                  <Check className="h-4 w-4 shrink-0 text-[#8574B7]" strokeWidth={2.5} aria-hidden />
+                  <Check className="h-4 w-4 shrink-0 text-[#726E97]" strokeWidth={2.5} aria-hidden />
                 ) : null}
               </button>
             </li>
@@ -78,7 +78,7 @@ export function LanguagePill({ full = false, className = '' }: { full?: boolean;
         onClick={() => setOpen(true)}
         aria-haspopup="dialog"
         aria-label={`${t('common.language')}: ${LOCALE_LABELS[locale]}`}
-        className={`inline-flex h-9 items-center gap-1.5 rounded-full px-2.5 text-xs font-semibold text-slate-600 transition-colors hover:text-[#413B5E] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8574B7] ${className}`}
+        className={`inline-flex h-9 items-center gap-1.5 rounded-full px-2.5 text-xs font-semibold text-slate-600 transition-colors hover:text-[#413B5E] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#726E97] ${className}`}
       >
         <Globe className="h-4 w-4 shrink-0" aria-hidden />
         <span lang={HTML_LANG[locale]}>{full ? LOCALE_LABELS[locale] : locale.toUpperCase()}</span>

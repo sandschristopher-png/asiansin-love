@@ -24,17 +24,17 @@ export function SafetyBanner({ kind, onReport }: { kind: string; onReport: () =>
   const key = TEXT[kind];
   if (!key) return null;
   return (
-    <div role="note" className="mt-1.5 ml-8 max-w-[84%] rounded-2xl border border-[#8574B7]/25 bg-[#FAF9FC] px-3 py-2.5">
+    <div role="note" className="mt-1.5 ml-8 max-w-[84%] rounded-2xl border border-[#726E97]/25 bg-[#FAF9FC] px-3 py-2.5">
       <div className="flex items-start gap-2">
-        <ShieldAlert className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#8574B7]" aria-hidden />
+        <ShieldAlert className="mt-0.5 h-3.5 w-3.5 shrink-0 text-[#726E97]" aria-hidden />
         <p className="text-[11.5px] leading-relaxed text-[#413B5E]">{t(key)}</p>
       </div>
       <button
         type="button"
         onClick={onReport}
-        className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-[#D0CDE1] bg-white px-3 py-1.5 text-[11px] font-medium leading-snug text-[#413B5E] transition-colors hover:bg-[#E8E6F1]/50"
+        className="mt-2 inline-flex items-center gap-1.5 rounded-full border border-[#D0CDE1] bg-white px-3 py-1.5 text-[11px] font-medium leading-snug text-[#413B5E] transition-colors hover:bg-[#EAE9F2]/50"
       >
-        <Flag className="h-3 w-3 text-[#8574B7]" aria-hidden />
+        <Flag className="h-3 w-3 text-[#726E97]" aria-hidden />
         {t('report.messageTitle')}
       </button>
     </div>

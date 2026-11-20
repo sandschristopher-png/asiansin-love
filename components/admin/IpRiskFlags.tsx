@@ -48,7 +48,7 @@ export function IpRiskFlags() {
           <li key={f.user_id} className="rounded-xl border border-[#D0CDE1]/70 p-3 text-xs">
             <p className="font-semibold text-[#413B5E]">
               @{f.member?.username || 'member'}{' '}
-              <span className={`ml-1 rounded-md px-1.5 py-0.5 text-[10px] font-semibold ${f.tier === 'high' ? 'bg-red-50 text-red-700' : 'bg-[#8574B7]/15 text-[#8574B7]'}`}>
+              <span className={`ml-1 rounded-md px-1.5 py-0.5 text-[10px] font-semibold ${f.tier === 'high' ? 'bg-red-50 text-red-700' : 'bg-[#726E97]/15 text-[#726E97]'}`}>
                 {f.tier === 'high' ? 'High risk' : f.tier === 'vpn' ? 'VPN' : 'Country mismatch'}
               </span>
               {f.member?.is_verified ? <span className="ml-1 font-normal text-slate-600">verified</span> : <span className="ml-1 font-normal text-slate-600">not verified</span>}

@@ -219,7 +219,7 @@ const GROUPS: Group[] = [UNIVERSAL, LOCAL, ABROAD, REGIONAL];
 
 export default function SafetyBlueprintPage() {
   return (
-    <div className="min-h-screen w-full bg-white text-[#413B5E] font-sans antialiased selection:bg-[#8574B7]/15 selection:text-[#413B5E]">
+    <div className="min-h-screen w-full bg-white text-[#413B5E] font-sans antialiased selection:bg-[#726E97]/15 selection:text-[#413B5E]">
 
       {/* Main Content */}
       <main className="max-w-4xl mx-auto px-6 py-12 md:py-16 space-y-14">
@@ -237,13 +237,13 @@ export default function SafetyBlueprintPage() {
         {GROUPS.map(({ icon: GroupIcon, label, blurb, topics }) => (
           <section key={label} className="space-y-4">
             <div className="flex items-start gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-[#8574B7]/10 text-[#8574B7] flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-2xl bg-[#726E97]/10 text-[#726E97] flex items-center justify-center shrink-0">
                 <GroupIcon className="w-5 h-5" />
               </div>
               <div>
                 <div className="flex items-center gap-2.5">
                   <h2 className="font-brand text-xl font-semibold text-[#413B5E]">{label}</h2>
-                  <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-[#8574B7]/10 text-[#8574B7] whitespace-nowrap shrink-0">
+                  <span className="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-[#726E97]/10 text-[#726E97] whitespace-nowrap shrink-0">
                     {topics.length} topics
                   </span>
                 </div>
@@ -260,7 +260,7 @@ export default function SafetyBlueprintPage() {
         ))}
 
         {/* Action Card */}
-        <div className="rounded-3xl bg-[#8574B7]/[0.06] p-8 text-center space-y-4">
+        <div className="rounded-3xl bg-[#726E97]/[0.06] p-8 text-center space-y-4">
           <h2 className="font-brand text-2xl font-semibold text-[#413B5E]">
             Spot a suspicious profile or a request for funds?
           </h2>
@@ -270,7 +270,7 @@ export default function SafetyBlueprintPage() {
           <div className="pt-2">
             <Link
               href="/discover"
-              className="inline-flex items-center justify-center h-12 px-8 rounded-full bg-[#8574B7] hover:bg-[#534377] text-white text-sm font-medium tracking-tight transition-all active:scale-95 shadow-sm"
+              className="inline-flex items-center justify-center h-12 px-8 rounded-full bg-[#726E97] hover:bg-[#524E75] text-white text-sm font-medium tracking-tight transition-all active:scale-95 shadow-sm"
             >
               Return to Community
             </Link>

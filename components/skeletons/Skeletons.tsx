@@ -36,7 +36,7 @@ export function DiscoverSkeleton() {
           </div>
         </div>
         <div className="flex items-center gap-2 overflow-hidden border-b border-black/5 py-2">
-          <div className="h-7 w-12 shrink-0 rounded-full bg-[#8574B7]/20 ail-shimmer" />
+          <div className="h-7 w-12 shrink-0 rounded-full bg-[#726E97]/20 ail-shimmer" />
           <div className={`h-7 w-16 shrink-0 rounded-full ${SHIMMER}`} />
           <div className={`h-7 w-20 shrink-0 rounded-full ${SHIMMER}`} />
           <div className={`h-7 w-14 shrink-0 rounded-full ${SHIMMER}`} />
@@ -54,7 +54,7 @@ export function SparksSkeleton() {
   return (
     <div className="min-h-[100dvh] w-full bg-white px-4 pt-3" aria-busy="true" aria-label="Loading Sparks">
       <div className="flex items-center gap-2 pb-3">
-        <div className="h-8 w-24 rounded-full bg-[#8574B7]/20 ail-shimmer" />
+        <div className="h-8 w-24 rounded-full bg-[#726E97]/20 ail-shimmer" />
         <div className={`h-8 w-24 rounded-full ${SHIMMER}`} />
         <div className={`h-8 w-20 rounded-full ${SHIMMER}`} />
       </div>
@@ -105,21 +105,21 @@ export function ChatSkeleton() {
           <div className={`h-12 w-48 rounded-2xl ${SHIMMER}`} />
         </div>
         <div className="flex justify-end">
-          <div className="h-12 w-52 rounded-2xl bg-[#8574B7]/15 ail-shimmer" />
+          <div className="h-12 w-52 rounded-2xl bg-[#726E97]/15 ail-shimmer" />
         </div>
         <div className="flex items-end gap-2">
           <div className={`h-6 w-6 shrink-0 rounded-full ${SHIMMER}`} />
           <div className={`h-10 w-40 rounded-2xl ${SHIMMER}`} />
         </div>
         <div className="flex justify-end">
-          <div className="h-10 w-36 rounded-2xl bg-[#8574B7]/15 ail-shimmer" />
+          <div className="h-10 w-36 rounded-2xl bg-[#726E97]/15 ail-shimmer" />
         </div>
       </div>
       <div className="shrink-0 border-t border-[#D0CDE1] px-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] pt-2.5">
         <div className="flex items-end gap-2">
           <div className={`h-11 flex-1 rounded-3xl ${SHIMMER}`} />
           <div className={`h-10 w-10 shrink-0 rounded-full ${SHIMMER}`} />
-          <div className="h-10 w-10 shrink-0 rounded-full bg-[#8574B7]/20 ail-shimmer" />
+          <div className="h-10 w-10 shrink-0 rounded-full bg-[#726E97]/20 ail-shimmer" />
         </div>
       </div>
     </div>
@@ -157,7 +157,7 @@ export function VerifySkeleton() {
             <div className={`h-4 flex-1 rounded-full ${SHIMMER}`} />
           </div>
         ))}
-        <div className="h-12 w-full rounded-full bg-[#8574B7]/20 ail-shimmer" />
+        <div className="h-12 w-full rounded-full bg-[#726E97]/20 ail-shimmer" />
       </div>
     </div>
   );

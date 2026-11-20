@@ -103,7 +103,7 @@ function VerifyContent() {
         ) : (
           <div className="space-y-4">
             <div className="text-center space-y-2">
-              <div className="w-12 h-12 mx-auto rounded-2xl bg-[#E8E6F1] border border-[#D0CDE1] text-[#9A93BC] flex items-center justify-center">
+              <div className="w-12 h-12 mx-auto rounded-2xl bg-[#EAE9F2] border border-[#D0CDE1] text-[#9A93BC] flex items-center justify-center">
                 <MailCheck className="w-6 h-6" aria-hidden />
               </div>
               <h1 className="text-2xl font-semibold text-[#413B5E] tracking-tight">Verify Your Email</h1>

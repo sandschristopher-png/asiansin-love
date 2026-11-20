@@ -25,10 +25,10 @@ export function AppLanguageRow() {
         type="button"
         onClick={() => setOpen(true)}
         aria-haspopup="dialog"
-        className="flex w-full items-center justify-between gap-3 rounded-2xl p-3 text-left transition hover:bg-[#E8E6F1]/40"
+        className="flex w-full items-center justify-between gap-3 rounded-2xl p-3 text-left transition hover:bg-[#EAE9F2]/40"
       >
         <div className="flex min-w-0 items-center gap-3">
-          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[#E8E6F1]/60 text-[#8574B7]">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-[#EAE9F2]/60 text-[#726E97]">
             <Globe className="h-4 w-4" aria-hidden />
           </div>
           <div className="min-w-0">
@@ -36,7 +36,7 @@ export function AppLanguageRow() {
             <p className="text-[11px] text-[#413B5E]/75">{t('settings.appLanguageHint')}</p>
           </div>
         </div>
-        <span className="inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-[#8574B7]" lang={HTML_LANG[locale]}>
+        <span className="inline-flex shrink-0 items-center gap-1 text-xs font-semibold text-[#726E97]" lang={HTML_LANG[locale]}>
           {LOCALE_LABELS[locale]}
           <ChevronRight className="h-4 w-4 text-slate-600" aria-hidden />
         </span>

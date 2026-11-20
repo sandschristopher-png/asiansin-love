@@ -12,7 +12,7 @@ import { SEA_LOCATIONS } from '@/lib/seaLocations';
 import type { TKey } from '@/lib/i18n';
 
 const FIELD =
-  'w-full rounded-xl border border-[#D0CDE1] bg-white px-3.5 py-2.5 text-sm text-[#413B5E] placeholder:text-slate-400 focus:border-[#8574B7] focus:outline-none';
+  'w-full rounded-xl border border-[#D0CDE1] bg-white px-3.5 py-2.5 text-sm text-[#413B5E] placeholder:text-slate-400 focus:border-[#726E97] focus:outline-none';
 /** A request, or the whole submit, that has not finished by then shows an error and frees the button. */
 const SUBMIT_TIMEOUT_MS = 20_000;
 /** Resizing a photo should take well under a second; a file the browser cannot decode must not hang. */
@@ -194,7 +194,7 @@ export function MomentComposer({
             </>
           ) : (
             <>
-              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#8574B7]/15 text-[#8574B7]">
+              <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#726E97]/15 text-[#726E97]">
                 <Camera className="h-5 w-5" aria-hidden />
               </span>
               <span className="min-w-0">
@@ -214,7 +214,7 @@ export function MomentComposer({
                 id="moment-city"
                 value={city}
                 onChange={(e) => setCity(e.target.value as MomentCity)}
-                className="h-11 w-full appearance-none rounded-xl border border-[#E6E2F0] bg-white pl-4 pr-10 text-sm text-[#413B5E] focus:border-[#8574B7] focus:outline-none"
+                className="h-11 w-full appearance-none rounded-xl border border-[#E6E2F0] bg-white pl-4 pr-10 text-sm text-[#413B5E] focus:border-[#726E97] focus:outline-none"
               >
                 {SEA_LOCATIONS.map((loc) => (
                   <optgroup key={loc.country} label={loc.country}>
@@ -234,13 +234,13 @@ export function MomentComposer({
               disabled={locating}
               aria-label={t('moments.useLocation')}
               title={t('moments.useLocation')}
-              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#E6E2F0] bg-white text-[#8574B7] transition-colors hover:bg-[#E8E6F1]/50 disabled:opacity-60"
+              className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl border border-[#E6E2F0] bg-white text-[#726E97] transition-colors hover:bg-[#EAE9F2]/50 disabled:opacity-60"
             >
               {locating ? <Loader2 className="h-4 w-4 animate-spin" aria-hidden /> : <LocateFixed className="h-4 w-4" aria-hidden />}
             </button>
           </div>
           {fix && fix.city === city && (
-            <p className="mt-1.5 flex items-center gap-1 text-[11px] font-medium leading-snug text-[#8574B7]">
+            <p className="mt-1.5 flex items-center gap-1 text-[11px] font-medium leading-snug text-[#726E97]">
               <LocateFixed className="h-3 w-3" aria-hidden />
               {t('moments.locationVerified')}
             </p>
@@ -260,7 +260,7 @@ export function MomentComposer({
                   aria-checked={on}
                   onClick={() => setVibe(tg)}
                   className={`rounded-full px-3.5 py-2 text-xs font-medium leading-snug transition-colors ${
-                    on ? 'bg-[#8574B7] text-white' : 'bg-[#8574B7]/[0.08] text-[#413B5E] hover:bg-[#8574B7]/[0.15]'
+                    on ? 'bg-[#726E97] text-white' : 'bg-[#726E97]/[0.08] text-[#413B5E] hover:bg-[#726E97]/[0.15]'
                   }`}
                 >
                   {t(`moments.vibe.${tg}` as TKey)}
@@ -282,7 +282,7 @@ export function MomentComposer({
                   aria-pressed={on}
                   onClick={() => setPrompt(on ? null : pr)}
                   className={`rounded-full border px-3.5 py-2 text-left text-xs font-medium leading-snug transition-colors ${
-                    on ? 'border-[#8574B7] bg-[#8574B7] text-white' : 'border-[#E6E2F0] bg-white text-[#413B5E] hover:bg-[#F6F4FB]'
+                    on ? 'border-[#726E97] bg-[#726E97] text-white' : 'border-[#E6E2F0] bg-white text-[#413B5E] hover:bg-[#F6F4FB]'
                   }`}
                 >
                   {t(`moments.prompt.${pr}` as TKey)}
@@ -307,12 +307,12 @@ export function MomentComposer({
         </div>
 
         {error && (
-          <p ref={errorRef} role="alert" className="rounded-xl border border-[#8574B7]/40 bg-[#F6F4FB] px-3.5 py-3 text-xs font-medium leading-relaxed text-[#413B5E]">
+          <p ref={errorRef} role="alert" className="rounded-xl border border-[#726E97]/40 bg-[#F6F4FB] px-3.5 py-3 text-xs font-medium leading-relaxed text-[#413B5E]">
             {error}
             {needsVerify && (
               <>
                 {' '}
-                <Link href="/verify" className="font-semibold text-[#8574B7] underline underline-offset-2">
+                <Link href="/verify" className="font-semibold text-[#726E97] underline underline-offset-2">
                   {t('settings.identityVerification')}
                 </Link>
               </>
@@ -325,7 +325,7 @@ export function MomentComposer({
         <button
           type="submit"
           disabled={!blob || !vibe || busy}
-          className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#8574B7] text-sm font-medium text-white transition-colors hover:bg-[#534377] disabled:cursor-not-allowed disabled:opacity-50"
+          className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#726E97] text-sm font-medium text-white transition-colors hover:bg-[#524E75] disabled:cursor-not-allowed disabled:opacity-50"
         >
           {busy && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
           {busy ? t('moments.publishing') : t('moments.publish')}

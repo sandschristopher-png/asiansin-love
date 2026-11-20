@@ -218,7 +218,7 @@ export default function MomentsPage() {
             type="button"
             onClick={() => openComposer(null)}
             whileTap={reduceMotion ? undefined : { scale: 0.97 }}
-            className="inline-flex h-9 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full bg-[#8574B7] px-4 text-xs font-medium leading-none text-white transition-colors hover:bg-[#534377]"
+            className="inline-flex h-9 shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full bg-[#726E97] px-4 text-xs font-medium leading-none text-white transition-colors hover:bg-[#524E75]"
           >
             <Plus className="h-3.5 w-3.5" aria-hidden />
             {t('moments.post')}
@@ -229,9 +229,9 @@ export default function MomentsPage() {
         <button
           type="button"
           onClick={() => openComposer(todaysPrompt)}
-          className="mt-4 block w-full rounded-[20px] border border-[#E6E2F0] bg-[#F6F4FB] p-4 text-left transition-colors hover:border-[#8574B7]/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#8574B7]"
+          className="mt-4 block w-full rounded-[20px] border border-[#E6E2F0] bg-[#F6F4FB] p-4 text-left transition-colors hover:border-[#726E97]/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#726E97]"
         >
-          <span className="block text-[11px] font-semibold uppercase leading-none tracking-wider text-[#8574B7]">{t('moments.todaysPrompt')}</span>
+          <span className="block text-[11px] font-semibold uppercase leading-none tracking-wider text-[#726E97]">{t('moments.todaysPrompt')}</span>
           <span className="mt-2.5 block text-base font-semibold leading-snug text-[#413B5E]">{t(`moments.prompt.${todaysPrompt}` as TKey)}</span>
         </button>
 
@@ -244,7 +244,7 @@ export default function MomentsPage() {
             </p>
           ) : items.length === 0 ? (
             <div className="rounded-3xl border border-slate-200 px-4 py-10 text-center">
-              <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-2xl bg-[#E8E6F1]/60 text-[#8574B7]">
+              <span className="mx-auto flex h-11 w-11 items-center justify-center rounded-2xl bg-[#EAE9F2]/60 text-[#726E97]">
                 <Camera className="h-5 w-5" aria-hidden />
               </span>
               <h2 className="mt-3 text-sm font-semibold leading-snug text-[#413B5E]">{t('moments.emptyTitle')}</h2>
@@ -270,7 +270,7 @@ export default function MomentsPage() {
               type="button"
               onClick={() => void loadMore()}
               disabled={loadingMore}
-              className="mx-auto flex h-11 items-center justify-center gap-2 rounded-full border border-[#D0CDE1] bg-white px-6 text-[13px] font-medium text-[#413B5E] transition-colors hover:bg-[#E8E6F1]/40 disabled:opacity-60"
+              className="mx-auto flex h-11 items-center justify-center gap-2 rounded-full border border-[#D0CDE1] bg-white px-6 text-[13px] font-medium text-[#413B5E] transition-colors hover:bg-[#EAE9F2]/40 disabled:opacity-60"
             >
               {loadingMore && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
               {t('moments.loadMore')}

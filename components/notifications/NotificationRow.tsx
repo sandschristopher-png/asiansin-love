@@ -48,7 +48,7 @@ export const NOTIF_GROUP_LABEL = 'px-1 py-2 text-xs font-medium uppercase tracki
 
 /**
  * One notification row (bell panel and /notifications): circular actor avatar, single-line title,
- * time ago, unread dot; `highlighted` rows get the #8574B7/10 tint.
+ * time ago, unread dot; `highlighted` rows get the #726E97/10 tint.
  */
 export function NotificationRow({
   n,
@@ -68,7 +68,7 @@ export function NotificationRow({
       onClick={() => onOpen(n)}
       className={`flex items-center gap-2.5 px-3.5 py-2 transition-colors ${
         variant === 'card' ? 'rounded-2xl border border-[#D0CDE1]' : 'rounded-xl'
-      } ${highlighted ? 'bg-[#8574B7]/10' : variant === 'card' ? 'bg-white hover:bg-[#8574B7]/5' : 'hover:bg-[#8574B7]/5'}`}
+      } ${highlighted ? 'bg-[#726E97]/10' : variant === 'card' ? 'bg-white hover:bg-[#726E97]/5' : 'hover:bg-[#726E97]/5'}`}
     >
       {n.actor?.avatar_url ? (
         // eslint-disable-next-line @next/next/no-img-element
@@ -77,10 +77,10 @@ export function NotificationRow({
           alt=""
           width={36}
           height={36}
-          className="w-9 h-9 rounded-full object-cover shrink-0 bg-[#E8E6F1]/60"
+          className="w-9 h-9 rounded-full object-cover shrink-0 bg-[#EAE9F2]/60"
         />
       ) : (
-        <span className="w-9 h-9 rounded-full shrink-0 bg-[#E8E6F1]/70 text-[#8574B7] flex items-center justify-center">
+        <span className="w-9 h-9 rounded-full shrink-0 bg-[#EAE9F2]/70 text-[#726E97] flex items-center justify-center">
           <Megaphone className="w-4 h-4" aria-hidden />
         </span>
       )}
@@ -88,7 +88,7 @@ export function NotificationRow({
         <span className="block text-[13px] font-medium text-[#413B5E] truncate">{n.title || n.description || 'Notification'}</span>
         <span className="block text-[11px] text-[#413B5E]/60">{timeAgo(n.created_at)}</span>
       </span>
-      {highlighted && <span aria-label="Unread" className="w-2 h-2 rounded-full bg-[#8574B7] shrink-0" />}
+      {highlighted && <span aria-label="Unread" className="w-2 h-2 rounded-full bg-[#726E97] shrink-0" />}
     </Link>
   );
 }

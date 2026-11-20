@@ -33,9 +33,9 @@ type Props<T extends string | number> = {
 const MENU =
   'absolute z-50 min-w-full bg-white rounded-xl border border-slate-200 shadow-lg py-1.5 overflow-hidden';
 const ITEM =
-  'w-full px-3.5 py-2.5 text-sm text-left text-slate-700 font-normal transition-colors duration-150 cursor-pointer flex items-center justify-between gap-3 hover:bg-[#8574B7]/10 hover:text-[#413B5E] hover:font-medium';
-const ITEM_ACTIVE = 'bg-[#8574B7]/10 text-[#413B5E] font-medium';
-const ITEM_SELECTED = 'bg-[#8574B7]/15 text-[#8574B7] font-semibold hover:bg-[#8574B7]/15 hover:text-[#8574B7] hover:font-semibold';
+  'w-full px-3.5 py-2.5 text-sm text-left text-slate-700 font-normal transition-colors duration-150 cursor-pointer flex items-center justify-between gap-3 hover:bg-[#726E97]/10 hover:text-[#413B5E] hover:font-medium';
+const ITEM_ACTIVE = 'bg-[#726E97]/10 text-[#413B5E] font-medium';
+const ITEM_SELECTED = 'bg-[#726E97]/15 text-[#726E97] font-semibold hover:bg-[#726E97]/15 hover:text-[#726E97] hover:font-semibold';
 
 /**
  * Brand-themed replacement for native <select>, whose OS popup highlights in system blue.

@@ -12,7 +12,7 @@ export function SoftLaunchNotice({ className = '' }: { className?: string }) {
   const { t } = useLocale();
   return (
     <div className={`flex justify-center ${className}`}>
-      <span className="inline-flex items-center rounded-full border border-[#8574B7]/25 bg-[#8574B7]/10 px-3 py-1.5 text-[11px] font-semibold leading-snug text-[#8574B7]">
+      <span className="inline-flex items-center rounded-full border border-[#726E97]/25 bg-[#726E97]/10 px-3 py-1.5 text-[11px] font-semibold leading-snug text-[#726E97]">
         {t('launch.badge')}
       </span>
     </div>

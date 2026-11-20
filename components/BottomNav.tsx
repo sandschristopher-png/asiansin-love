@@ -149,7 +149,7 @@ export function BottomNav() {
         isKeyboardOpen ? 'translate-y-24 opacity-0 pointer-events-none' : 'translate-y-0 opacity-100'
       }`}
     >
-      <nav className="bg-white/95 border border-[#D0CDE1] shadow-[0_12px_36px_rgba(102,93,150,0.14),0_2px_8px_rgba(0,0,0,0.04)] rounded-full px-2 py-1.5 flex items-center justify-around select-none">
+      <nav className="bg-white/95 border border-[#D0CDE1] shadow-[0_12px_36px_rgba(82, 78, 117,0.14),0_2px_8px_rgba(0,0,0,0.04)] rounded-full px-2 py-1.5 flex items-center justify-around select-none">
         {navItems.map((item) => {
           const active = isActive(item.href);
           const Icon = item.icon;
@@ -164,7 +164,7 @@ export function BottomNav() {
               className={`relative flex-1 flex flex-col items-center justify-center py-1 px-2 rounded-2xl transition-all duration-200 ease-out active:scale-95 select-none cursor-pointer ${
                 active 
                   ? 'text-[#413B5E]'
-                  : 'text-[#B8B3D1] hover:text-[#8574B7] transition-colors'
+                  : 'text-[#B8B3D1] hover:text-[#726E97] transition-colors'
               }`}
               aria-label={item.label}
             >
@@ -174,7 +174,7 @@ export function BottomNav() {
                   strokeWidth={active ? 2.3 : 1.75} 
                 />
                 {item.dot && !active && (
-                  <span aria-hidden className="absolute -top-0.5 -right-1.5 h-2 w-2 rounded-full bg-[#8574B7] ring-2 ring-white" />
+                  <span aria-hidden className="absolute -top-0.5 -right-1.5 h-2 w-2 rounded-full bg-[#726E97] ring-2 ring-white" />
                 )}
                 {Boolean(item.badge && item.badge > 0) && (() => {
                   // Never clipped: one digit is a circle, "10".."99" and "99+" widen the pill instead.

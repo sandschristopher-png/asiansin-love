@@ -7,7 +7,7 @@ import React from 'react';
  *              never put it on a button or link, and keep the inner card white.
  *   IceNotice  the calm pill for "Upgrades opening shortly": ice wash #EBF3FF, muted blue text #3B66A8 (5.1:1).
  *
- * Primary buttons, links and active states stay brand purple (#8574B7). To revert the test, replace <IceFrame>
+ * Primary buttons, links and active states stay brand purple (#726E97). To revert the test, replace <IceFrame>
  * with its children and <IceNotice> with a plain paragraph; nothing else depends on them.
  */
 export function IceFrame({

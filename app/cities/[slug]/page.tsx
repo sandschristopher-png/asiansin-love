@@ -95,7 +95,7 @@ export default async function CityPage({ params }: Params) {
 
       <header className="px-5 pt-6 flex items-center justify-between max-w-xl mx-auto">
         <BrandLogo href="/" size="sm" />
-        <Link href="/login" className="text-xs font-medium text-[#8574B7] hover:text-[#413B5E] transition-colors">
+        <Link href="/login" className="text-xs font-medium text-[#726E97] hover:text-[#413B5E] transition-colors">
           Sign in
         </Link>
       </header>
@@ -103,9 +103,9 @@ export default async function CityPage({ params }: Params) {
       <div className="max-w-xl mx-auto px-4 pb-[calc(3rem+env(safe-area-inset-bottom))]">
         <nav aria-label="Breadcrumb" className="pt-6 text-xs text-slate-600">
           <ol className="flex flex-wrap items-center gap-1.5">
-            <li><Link href="/" className="hover:text-[#8574B7]">Meet in Asia</Link></li>
+            <li><Link href="/" className="hover:text-[#726E97]">Meet in Asia</Link></li>
             <li aria-hidden>/</li>
-            <li><Link href="/cities" className="hover:text-[#8574B7]">Cities</Link></li>
+            <li><Link href="/cities" className="hover:text-[#726E97]">Cities</Link></li>
             <li aria-hidden>/</li>
             <li aria-current="page" className="text-[#413B5E] font-medium">{city.name}</li>
           </ol>
@@ -113,13 +113,13 @@ export default async function CityPage({ params }: Params) {
 
         {/* Hero */}
         <section className="pt-8 pb-8 text-center">
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-[#D0CDE1] bg-[#E8E6F1]/50 px-3 py-1 text-[11px] font-semibold tracking-wide text-[#8574B7]">
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-[#D0CDE1] bg-[#EAE9F2]/50 px-3 py-1 text-[11px] font-semibold tracking-wide text-[#726E97]">
             <MapPin className="w-3.5 h-3.5" aria-hidden />
             {city.country} · {city.region}
           </span>
           <h1 className="mt-5 text-3xl sm:text-4xl font-semibold tracking-tight leading-[1.15]">
             Meet singles in{' '}
-            <span className="text-[#8574B7]">{city.name}</span>
+            <span className="text-[#726E97]">{city.name}</span>
           </h1>
           <p className="mt-4 text-sm leading-relaxed text-[#413B5E]/75">{city.heroTagline}</p>
           <CityHeroCtas />
@@ -142,7 +142,7 @@ export default async function CityPage({ params }: Params) {
           <ul className="mt-4 space-y-3">
             {city.datingCultureTips.map((tip) => (
               <li key={tip} className="flex gap-3 rounded-2xl border border-[#D0CDE1]/60 bg-white p-4">
-                <Lightbulb className="mt-0.5 w-4 h-4 shrink-0 text-[#8574B7]" aria-hidden />
+                <Lightbulb className="mt-0.5 w-4 h-4 shrink-0 text-[#726E97]" aria-hidden />
                 <p className="text-sm leading-relaxed text-[#413B5E]/80">{tip}</p>
               </li>
             ))}
@@ -154,7 +154,7 @@ export default async function CityPage({ params }: Params) {
           <h2 id="spots-heading" className="text-xl font-semibold tracking-tight">First-date areas in {city.name}</h2>
           <ul className="mt-4 flex flex-wrap gap-2">
             {city.firstDateSpots.map((spot) => (
-              <li key={spot} className="rounded-full border border-[#D0CDE1] bg-white px-3 py-1.5 text-xs font-medium text-[#8574B7]">
+              <li key={spot} className="rounded-full border border-[#D0CDE1] bg-white px-3 py-1.5 text-xs font-medium text-[#726E97]">
                 {spot}
               </li>
             ))}
@@ -165,7 +165,7 @@ export default async function CityPage({ params }: Params) {
         <section className="py-8 border-t border-[#D0CDE1]/60" aria-labelledby="trust-heading">
           <h2 id="trust-heading" className="text-xl font-semibold tracking-tight">How members are checked</h2>
           <div className="mt-4 flex gap-3 rounded-2xl border border-[#D0CDE1]/60 bg-white p-4">
-            <ShieldCheck className="mt-0.5 w-4 h-4 shrink-0 text-[#8574B7]" aria-hidden />
+            <ShieldCheck className="mt-0.5 w-4 h-4 shrink-0 text-[#726E97]" aria-hidden />
             <p className="text-sm leading-relaxed text-[#413B5E]/80">
               Verification is a free, optional selfie check. Reputation scores are public on every profile, messages are
               screened for scams and off-platform pressure, and reports are reviewed by the team.

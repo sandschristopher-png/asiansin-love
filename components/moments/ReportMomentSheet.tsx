@@ -68,11 +68,11 @@ export function ReportMomentSheet({
               aria-checked={on}
               onClick={() => setReason(r.id)}
               className={`flex w-full items-center gap-3 rounded-2xl border px-3.5 py-3 text-left text-[13px] leading-snug transition ${
-                on ? 'border-[#8574B7] bg-[#8574B7]/5 font-medium text-[#413B5E]' : 'border-[#D0CDE1] text-[#413B5E] hover:bg-[#E8E6F1]/40'
+                on ? 'border-[#726E97] bg-[#726E97]/5 font-medium text-[#413B5E]' : 'border-[#D0CDE1] text-[#413B5E] hover:bg-[#EAE9F2]/40'
               }`}
             >
-              <span aria-hidden className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2 ${on ? 'border-[#8574B7]' : 'border-[#D0CDE1]'}`}>
-                {on && <span className="h-2 w-2 rounded-full bg-[#8574B7]" />}
+              <span aria-hidden className={`flex h-4 w-4 shrink-0 items-center justify-center rounded-full border-2 ${on ? 'border-[#726E97]' : 'border-[#D0CDE1]'}`}>
+                {on && <span className="h-2 w-2 rounded-full bg-[#726E97]" />}
               </span>
               <span>{t(r.label)}</span>
             </button>
@@ -88,7 +88,7 @@ export function ReportMomentSheet({
         type="button"
         onClick={submit}
         disabled={!reason || busy}
-        className="mt-4 inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-[#8574B7] text-sm font-medium text-white transition-colors hover:bg-[#534377] disabled:cursor-not-allowed disabled:opacity-50"
+        className="mt-4 inline-flex h-11 w-full items-center justify-center gap-2 rounded-full bg-[#726E97] text-sm font-medium text-white transition-colors hover:bg-[#524E75] disabled:cursor-not-allowed disabled:opacity-50"
       >
         {busy && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}
         {t('report.submit')}

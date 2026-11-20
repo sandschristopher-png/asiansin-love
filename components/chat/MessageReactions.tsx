@@ -63,7 +63,7 @@ export function ReactionBar({
                 onPick(key);
               }}
               className={`flex h-7 w-7 items-center justify-center rounded-full transition active:scale-90 ${
-                on ? 'bg-[#F6F4FB] text-[#8574B7]' : 'text-[#413B5E]/60 hover:bg-[#F6F4FB] hover:text-[#8574B7]'
+                on ? 'bg-[#F6F4FB] text-[#726E97]' : 'text-[#413B5E]/60 hover:bg-[#F6F4FB] hover:text-[#726E97]'
               }`}
             >
               <Icon className={`h-4 w-4 ${on && key === 'heart' ? 'fill-current' : ''}`} strokeWidth={1.75} />
@@ -97,7 +97,7 @@ export function ReactionPills({ tally, onToggle }: { tally: ReactionTally[]; onT
               onToggle(reaction);
             }}
             className={`inline-flex h-[22px] min-w-[22px] items-center justify-center gap-0.5 rounded-full border px-1.5 text-[10.5px] font-semibold tabular-nums transition active:scale-90 ${
-              mine ? 'border-[#8574B7]/35 bg-[#EFEBF9] text-[#8574B7]' : 'border-[#E6E2F0] bg-[#F6F4FB] text-[#413B5E]/70 hover:text-[#8574B7]'
+              mine ? 'border-[#726E97]/35 bg-[#EFEBF9] text-[#726E97]' : 'border-[#E6E2F0] bg-[#F6F4FB] text-[#413B5E]/70 hover:text-[#726E97]'
             }`}
           >
             <Icon className={`h-3 w-3 ${reaction === 'heart' ? 'fill-current' : ''}`} strokeWidth={2} />

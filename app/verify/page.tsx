@@ -69,13 +69,13 @@ export default function VerifyPage() {
         <button
           type="button"
           onClick={() => router.back()}
-          className="h-10 w-10 rounded-2xl bg-white border border-[#D0CDE1] text-[#413B5E] hover:bg-[#E8E6F1]/70 flex items-center justify-center active:scale-95 transition shadow-xs"
+          className="h-10 w-10 rounded-2xl bg-white border border-[#D0CDE1] text-[#413B5E] hover:bg-[#EAE9F2]/70 flex items-center justify-center active:scale-95 transition shadow-xs"
           aria-label={t('verify.back')}
         >
           <ArrowLeft className="w-5 h-5 text-[#413B5E]" />
         </button>
         <div className="flex items-center gap-2 min-w-0">
-          <ShieldCheck className="w-5 h-5 text-[#8574B7] shrink-0" />
+          <ShieldCheck className="w-5 h-5 text-[#726E97] shrink-0" />
           <h1 className="text-xl font-medium text-[#413B5E] truncate">{t('verify.title')}</h1>
         </div>
         <div className="w-10" />
@@ -83,17 +83,17 @@ export default function VerifyPage() {
 
       {view === 'loading' && (
         <div className="p-6 text-center" role="status" aria-label={t('verify.title')}>
-          <Loader2 className="w-8 h-8 text-[#8574B7] animate-spin mx-auto" />
+          <Loader2 className="w-8 h-8 text-[#726E97] animate-spin mx-auto" />
         </div>
       )}
 
       {view === 'needPhoto' && (
         <div className="rounded-3xl bg-white border border-[#D0CDE1] p-8 text-center space-y-4 shadow-sm mx-4 mt-4">
-          <div className="h-16 w-16 mx-auto rounded-full bg-[#F6F4FB] border border-[#D0CDE1] text-[#8574B7] flex items-center justify-center">
+          <div className="h-16 w-16 mx-auto rounded-full bg-[#F6F4FB] border border-[#D0CDE1] text-[#726E97] flex items-center justify-center">
             <AlertCircle className="w-8 h-8" />
           </div>
           <p className="text-sm text-[#413B5E]/75 leading-relaxed">{t('verify.needPhoto')}</p>
-          <button type="button" onClick={() => router.push('/profile/edit')} className="text-xs font-medium text-[#8574B7] hover:text-[#413B5E] transition">
+          <button type="button" onClick={() => router.push('/profile/edit')} className="text-xs font-medium text-[#726E97] hover:text-[#413B5E] transition">
             {t('verify.addPhoto')}
           </button>
         </div>
@@ -116,7 +116,7 @@ export default function VerifyPage() {
         <div className="mx-4 mt-4 space-y-4 pb-28">
           {alreadyVerified && (
             <div role="note" className="flex items-start gap-2 p-3 rounded-2xl bg-[#F6F4FB] border border-[#E6E2F0] text-xs text-[#413B5E]/85 leading-relaxed">
-              <ShieldCheck className="w-4 h-4 text-[#8574B7] shrink-0 mt-0.5" aria-hidden />
+              <ShieldCheck className="w-4 h-4 text-[#726E97] shrink-0 mt-0.5" aria-hidden />
               <span>{t('verify.alreadyVerified')}</span>
             </div>
           )}
@@ -127,7 +127,7 @@ export default function VerifyPage() {
                 const Icon = icons[i];
                 return (
                   <li key={key} className="flex items-start gap-3">
-                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#F6F4FB] text-[#8574B7]">
+                    <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[#F6F4FB] text-[#726E97]">
                       <Icon className="h-4 w-4" aria-hidden />
                     </span>
                     <span className="pt-1.5 text-sm leading-snug text-[#413B5E]">{t(key)}</span>
@@ -138,7 +138,7 @@ export default function VerifyPage() {
             <button
               type="button"
               onClick={() => void begin()}
-              className="w-full h-12 rounded-full bg-[#8574B7] hover:bg-[#534377] text-white text-sm font-semibold flex items-center justify-center active:scale-[0.99] transition"
+              className="w-full h-12 rounded-full bg-[#726E97] hover:bg-[#524E75] text-white text-sm font-semibold flex items-center justify-center active:scale-[0.99] transition"
             >
               {t('stepup.start')}
             </button>

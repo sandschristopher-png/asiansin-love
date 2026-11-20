@@ -18,8 +18,8 @@ import {
 } from '@/lib/lifestyle';
 
 const PILL = 'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-semibold transition cursor-pointer';
-const PILL_ON = 'bg-[#8574B7] text-white border-[#8574B7]';
-const PILL_OFF = 'bg-white text-[#413B5E]/85 border-[#D0CDE1] hover:border-[#8574B7]/50';
+const PILL_ON = 'bg-[#726E97] text-white border-[#726E97]';
+const PILL_OFF = 'bg-white text-[#413B5E]/85 border-[#D0CDE1] hover:border-[#726E97]/50';
 
 /** Searchable multi-select over the preset language list. */
 export function LanguagePicker({
@@ -47,7 +47,7 @@ export function LanguagePicker({
       {value.length > 0 && (
         <div className="flex flex-wrap gap-1.5">
           {value.map((v) => (
-            <span key={v} className="inline-flex items-center gap-1 pl-3 pr-2 py-1 rounded-full bg-[#E8E6F1]/60 border border-[#D0CDE1] text-xs font-semibold text-[#8574B7]">
+            <span key={v} className="inline-flex items-center gap-1 pl-3 pr-2 py-1 rounded-full bg-[#EAE9F2]/60 border border-[#D0CDE1] text-xs font-semibold text-[#726E97]">
               {languageLabel(v)}
               <button type="button" onClick={() => onChange(value.filter((x) => x !== v))} aria-label={`Remove ${v}`} className="hover:text-red-600">
                 <X className="w-3 h-3" />
@@ -64,7 +64,7 @@ export function LanguagePicker({
           onChange={(e) => setQuery(e.target.value)}
           placeholder={full ? `Up to ${max} languages` : placeholder}
           disabled={full}
-          className="w-full pl-8 pr-3 py-2 rounded-2xl bg-white border border-[#D0CDE1] text-base sm:text-xs font-medium text-[#413B5E] focus:outline-none focus:border-[#8574B7] disabled:opacity-60"
+          className="w-full pl-8 pr-3 py-2 rounded-2xl bg-white border border-[#D0CDE1] text-base sm:text-xs font-medium text-[#413B5E] focus:outline-none focus:border-[#726E97] disabled:opacity-60"
         />
       </div>
       {!full && (
@@ -80,7 +80,7 @@ export function LanguagePicker({
                   onChange([...value, l.value]);
                   setQuery('');
                 }}
-                className="w-full text-left px-3 py-2 text-xs font-medium text-[#413B5E] hover:bg-[#E8E6F1]/70"
+                className="w-full text-left px-3 py-2 text-xs font-medium text-[#413B5E] hover:bg-[#EAE9F2]/70"
               >
                 {l.label}
               </button>
@@ -141,7 +141,7 @@ export function HeightInput({ valueCm, onChange }: { valueCm: number | null; onC
         onClick={() => setOpen((v) => !v)}
         aria-haspopup="listbox"
         aria-expanded={open}
-        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-[#D0CDE1] text-base sm:text-xs font-medium text-[#413B5E] hover:bg-[#E8E6F1]/40 transition-colors cursor-pointer"
+        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-[#D0CDE1] text-base sm:text-xs font-medium text-[#413B5E] hover:bg-[#EAE9F2]/40 transition-colors cursor-pointer"
       >
         <Ruler className="w-3.5 h-3.5 text-slate-600" aria-hidden />
         {current ?? 'Select height'}
@@ -150,7 +150,7 @@ export function HeightInput({ valueCm, onChange }: { valueCm: number | null; onC
       <button
         type="button"
         onClick={() => setUnit(unit === 'ft' ? 'cm' : 'ft')}
-        className="px-2 py-1.5 rounded-xl text-[11px] font-medium text-[#8574B7] hover:bg-[#E8E6F1]/70"
+        className="px-2 py-1.5 rounded-xl text-[11px] font-medium text-[#726E97] hover:bg-[#EAE9F2]/70"
         aria-label={`Switch to ${unit === 'ft' ? 'centimeters' : 'feet and inches'}`}
       >
         {unit === 'ft' ? 'cm' : 'ft/in'}
@@ -169,8 +169,8 @@ export function HeightInput({ valueCm, onChange }: { valueCm: number | null; onC
               onChange(null);
               setOpen(false);
             }}
-            className={`px-3.5 py-2 text-sm cursor-pointer transition-colors flex items-center justify-between hover:bg-[#E8E6F1]/40 border-l-2 ${
-              !valueCm ? 'bg-[#E8E6F1]/70 text-[#413B5E] font-semibold border-[#8574B7]' : 'text-slate-600 border-transparent'
+            className={`px-3.5 py-2 text-sm cursor-pointer transition-colors flex items-center justify-between hover:bg-[#EAE9F2]/40 border-l-2 ${
+              !valueCm ? 'bg-[#EAE9F2]/70 text-[#413B5E] font-semibold border-[#726E97]' : 'text-slate-600 border-transparent'
             }`}
           >
             Prefer not to say
@@ -186,8 +186,8 @@ export function HeightInput({ valueCm, onChange }: { valueCm: number | null; onC
                   onChange(o.cm);
                   setOpen(false);
                 }}
-                className={`px-3.5 py-2 text-sm text-[#413B5E] cursor-pointer transition-colors flex items-center justify-between hover:bg-[#E8E6F1]/40 border-l-2 ${
-                  selected ? 'bg-[#E8E6F1]/70 text-[#413B5E] font-semibold border-[#8574B7]' : 'border-transparent'
+                className={`px-3.5 py-2 text-sm text-[#413B5E] cursor-pointer transition-colors flex items-center justify-between hover:bg-[#EAE9F2]/40 border-l-2 ${
+                  selected ? 'bg-[#EAE9F2]/70 text-[#413B5E] font-semibold border-[#726E97]' : 'border-transparent'
                 }`}
               >
                 <span>{o.label}</span>
@@ -249,12 +249,12 @@ export function LifestyleBadges({ values, heightCm, className = '' }: { values: 
   return (
     <div className={`flex flex-wrap gap-1.5 ${className}`}>
       {heightCm ? (
-        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#E8E6F1]/60 border border-[#D0CDE1] text-xs font-semibold text-[#8574B7]">
+        <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#EAE9F2]/60 border border-[#D0CDE1] text-xs font-semibold text-[#726E97]">
           <Ruler className="w-3 h-3" aria-hidden /> {formatHeight(heightCm)}
         </span>
       ) : null}
       {chips.map((o) => (
-        <span key={o.label} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#E8E6F1]/60 border border-[#D0CDE1] text-xs font-semibold text-[#8574B7]">
+        <span key={o.label} className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#EAE9F2]/60 border border-[#D0CDE1] text-xs font-semibold text-[#726E97]">
           <o.icon className="w-3 h-3" aria-hidden /> {o.label}
         </span>
       ))}

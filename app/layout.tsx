@@ -108,7 +108,7 @@ export const viewport: Viewport = {
   // Android Chrome: the page shrinks above the on-screen keyboard (so 100dvh screens keep their composer in view).
   interactiveWidget: 'resizes-content',
   // Brand purple for the browser toolbar and the installed app's title bar.
-  themeColor: '#8574B7',
+  themeColor: '#726E97',
 };
 
 export default function RootLayout({
@@ -128,7 +128,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="font-sans bg-slate-100 text-[#413B5E] h-full selection:bg-[#8574B7] selection:text-white antialiased overflow-hidden">
+      <body className="font-sans bg-slate-100 text-[#413B5E] h-full selection:bg-[#726E97] selection:text-white antialiased overflow-hidden">
         {/* App language for every route: starts in English, then adopts the member's saved language. */}
         <LocaleProvider>
           <LayoutShell>{children}</LayoutShell>

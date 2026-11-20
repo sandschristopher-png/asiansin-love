@@ -86,8 +86,8 @@ export function NotificationToast({
         onClick={() => onOpen(toast)}
         className={`${leaving ? 'ail-toast-out pointer-events-none' : 'ail-toast-in pointer-events-auto'} w-[94%] max-w-sm rounded-2xl p-3 border flex items-center gap-3 cursor-pointer active:scale-[0.98] transition-transform ${
           mutual
-            ? 'bg-[#8574B7] border-[#8574B7] shadow-[0_14px_34px_rgba(133,116,183,0.35)]'
-            : 'bg-white border-[#8574B7]/25 shadow-[0_14px_34px_rgba(133,116,183,0.22),0_2px_8px_rgba(65,59,94,0.06)]'
+            ? 'bg-[#726E97] border-[#726E97] shadow-[0_14px_34px_rgba(114, 110, 151,0.35)]'
+            : 'bg-white border-[#726E97]/25 shadow-[0_14px_34px_rgba(114, 110, 151,0.22),0_2px_8px_rgba(65,59,94,0.06)]'
         }`}
       >
         <span className="relative shrink-0">
@@ -96,12 +96,12 @@ export function NotificationToast({
             alt=""
             width={48}
             height={48}
-            className={`w-12 h-12 rounded-full object-cover bg-[#F6F4FB] ring-2 ${mutual ? 'ring-white/60' : 'ring-[#8574B7]/20'}`}
+            className={`w-12 h-12 rounded-full object-cover bg-[#F6F4FB] ring-2 ${mutual ? 'ring-white/60' : 'ring-[#726E97]/20'}`}
           />
           <span
             aria-hidden
             className={`absolute -bottom-0.5 -right-0.5 flex h-5 w-5 items-center justify-center rounded-full ring-2 ${
-              mutual ? 'bg-white text-[#8574B7] ring-[#8574B7]' : 'bg-[#8574B7] text-white ring-white'
+              mutual ? 'bg-white text-[#726E97] ring-[#726E97]' : 'bg-[#726E97] text-white ring-white'
             }`}
           >
             <Icon className={`h-3 w-3 ${toast.kind === 'spark' || mutual ? 'fill-current' : ''}`} strokeWidth={2.25} />

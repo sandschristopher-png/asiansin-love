@@ -137,7 +137,7 @@ export function HeaderActions({ action }: { action?: HeaderAction }) {
 
   const displayName = profile?.username || 'Member';
   const ActionIcon = action?.icon;
-  const rowCls = 'flex items-center gap-3 px-4 h-11 text-sm text-[#413B5E] hover:bg-[#E8E6F1]/40 transition-colors';
+  const rowCls = 'flex items-center gap-3 px-4 h-11 text-sm text-[#413B5E] hover:bg-[#EAE9F2]/40 transition-colors';
 
   return (
     <div className="relative flex items-center gap-1">
@@ -147,7 +147,7 @@ export function HeaderActions({ action }: { action?: HeaderAction }) {
           onClick={action.onClick}
           aria-label={action.label}
           title={action.label}
-          className="w-9 h-9 rounded-full flex items-center justify-center text-[#8574B7] hover:bg-[#E8E6F1]/70 transition-colors"
+          className="w-9 h-9 rounded-full flex items-center justify-center text-[#726E97] hover:bg-[#EAE9F2]/70 transition-colors"
         >
           <ActionIcon className="w-5 h-5" />
         </button>
@@ -160,7 +160,7 @@ export function HeaderActions({ action }: { action?: HeaderAction }) {
           aria-label="Open account menu"
           aria-haspopup="menu"
           aria-expanded={menuOpen}
-          className="w-9 h-9 flex items-center justify-center rounded-full bg-[#E8E6F1]/70 text-[#8574B7] transition-opacity hover:opacity-90"
+          className="w-9 h-9 flex items-center justify-center rounded-full bg-[#EAE9F2]/70 text-[#726E97] transition-opacity hover:opacity-90"
         >
           {profile?.avatar_url ? (
             // eslint-disable-next-line @next/next/no-img-element
@@ -182,11 +182,11 @@ export function HeaderActions({ action }: { action?: HeaderAction }) {
                   <CreditCard className="w-4 h-4 text-slate-600" aria-hidden />
                   {/* Profile not loaded yet: neutral placeholder, never "Upgrade" to a Plus member. */}
                   {!profile ? (
-                    <span aria-hidden className="h-3 w-24 rounded-full bg-[#E8E6F1]/70 animate-pulse" />
+                    <span aria-hidden className="h-3 w-24 rounded-full bg-[#EAE9F2]/70 animate-pulse" />
                   ) : isPlusProfile(profile) ? 'Membership' : 'Upgrade to Plus'}
                 </span>
                 {!profile ? null : isPlusProfile(profile) ? (
-                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#8574B7]/10 border border-[#8574B7]/20 text-[#8574B7]">Active</span>
+                  <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#726E97]/10 border border-[#726E97]/20 text-[#726E97]">Active</span>
                 ) : (
                   <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-white border border-[#D0CDE1] text-slate-600">Upgrade</span>
                 )}

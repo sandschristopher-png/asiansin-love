@@ -28,7 +28,7 @@ export function ProfileSection({
       {(title || aside) && (
         <div className="flex items-center justify-between gap-2">
           <h2
-            className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#8574B7]"
+            className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#726E97]"
             style={{ fontFamily: 'var(--font-brand)' }}
           >
             {icon}
@@ -44,11 +44,11 @@ export function ProfileSection({
 
 /** The soft lavender tag used for Interests, Lifestyle and Languages, so all three read as one family. */
 export const PROFILE_TAG =
-  'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#E8E6F1]/60 border border-[#D0CDE1] text-xs font-semibold text-[#8574B7]';
+  'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#EAE9F2]/60 border border-[#D0CDE1] text-xs font-semibold text-[#726E97]';
 
 /** The same tag with a purple edge: an interest you share with the person looking. */
 export const PROFILE_TAG_SHARED =
-  'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#8574B7]/10 border border-[#8574B7] text-xs font-semibold text-[#8574B7]';
+  'inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-[#726E97]/10 border border-[#726E97] text-xs font-semibold text-[#726E97]';
 
 /** "100% Reputation" in the badge row under the location. Tapping it opens the "What's this?" explanation. */
 export function ReputationPill({ score }: { score: number }) {

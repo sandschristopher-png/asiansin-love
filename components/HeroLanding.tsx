@@ -47,7 +47,7 @@ function LandingBody() {
     <LandingMotion>
     <div
       lang={HTML_LANG[locale]}
-      className="font-sans w-full min-h-[100dvh] bg-white overflow-x-clip text-[#413B5E] selection:bg-[#8574B7]/15 selection:text-[#8574B7]"
+      className="font-sans w-full min-h-[100dvh] bg-white overflow-x-clip text-[#413B5E] selection:bg-[#726E97]/15 selection:text-[#726E97]"
     >
       {/* Frosted header, same treatment as Discover: content scrolls under the blurred glass. */}
       <header className="sticky top-0 z-50 w-full bg-white/75 backdrop-blur-md supports-[backdrop-filter]:bg-white/75 border-b border-[#E5E0F2]/80 pt-[env(safe-area-inset-top,0px)]">
@@ -71,7 +71,7 @@ function LandingBody() {
           <div className="mt-6 space-y-3">
             {STEP_KEYS.map(({ step, key }) => (
               <Reveal key={step} className="flex flex-col items-center gap-1.5 rounded-3xl border border-slate-200 bg-white p-5 text-center">
-                <span className="font-brand text-sm font-semibold tabular-nums text-[#8574B7]">{step}</span>
+                <span className="font-brand text-sm font-semibold tabular-nums text-[#726E97]">{step}</span>
                 <div className="min-w-0 w-full break-words">
                   <h3 className="text-[15px] font-semibold text-[#413B5E] leading-snug">{m.steps[key].title}</h3>
                   <p className="mt-1 text-[13px] text-slate-600 leading-relaxed">{m.steps[key].desc}</p>
@@ -85,12 +85,12 @@ function LandingBody() {
         <section className="py-8 space-y-3">
           {FEATURES.map(({ key, src }) => (
             <Reveal key={key} className="flex flex-col items-center gap-3 rounded-3xl border border-slate-200 bg-white p-4 text-center">
-              <div className="relative w-full h-40 overflow-hidden rounded-2xl bg-[#E8E6F1]/40">
+              <div className="relative w-full h-40 overflow-hidden rounded-2xl bg-[#EAE9F2]/40">
                 {src ? (
                   <Image src={src} alt={m.features[key].alt} fill sizes="(max-width: 448px) 100vw, 408px" className="object-contain object-center select-none pointer-events-none" />
                 ) : (
-                  <div className="w-full h-full bg-[#E8E6F1] flex items-center justify-center" role="img" aria-label={m.features[key].alt}>
-                    <AudioLines className="w-11 h-11 text-[#8574B7]" strokeWidth={1.75} aria-hidden />
+                  <div className="w-full h-full bg-[#EAE9F2] flex items-center justify-center" role="img" aria-label={m.features[key].alt}>
+                    <AudioLines className="w-11 h-11 text-[#726E97]" strokeWidth={1.75} aria-hidden />
                   </div>
                 )}
               </div>
@@ -110,7 +110,7 @@ function LandingBody() {
             <TapButton>
               <Link
                 href="/signup"
-                className="relative w-full h-12 inline-flex items-center justify-center rounded-full bg-[#8574B7] hover:bg-[#534377] text-white font-medium text-sm transition-colors duration-200"
+                className="relative w-full h-12 inline-flex items-center justify-center rounded-full bg-[#726E97] hover:bg-[#524E75] text-white font-medium text-sm transition-colors duration-200"
               >
                 {m.hero.join}
                 <LinkSpinner />
@@ -123,17 +123,17 @@ function LandingBody() {
         {/* Footer: rendered by the public landing page only, never inside the signed-in app. */}
         <footer className="pb-8 pt-4 text-center text-xs text-slate-600">
           <nav className="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 font-medium text-[#413B5E]">
-            <Link className="hover:text-[#8574B7] transition-colors" href="/safety">{m.footer.safety}</Link>
+            <Link className="hover:text-[#726E97] transition-colors" href="/safety">{m.footer.safety}</Link>
             <span className="text-[#D0CDE1]" aria-hidden="true">•</span>
-            <Link className="hover:text-[#8574B7] transition-colors" href="/terms">{m.footer.terms}</Link>
+            <Link className="hover:text-[#726E97] transition-colors" href="/terms">{m.footer.terms}</Link>
             <span className="text-[#D0CDE1]" aria-hidden="true">•</span>
-            <Link className="hover:text-[#8574B7] transition-colors" href="/privacy">{m.footer.privacy}</Link>
+            <Link className="hover:text-[#726E97] transition-colors" href="/privacy">{m.footer.privacy}</Link>
             <span className="text-[#D0CDE1]" aria-hidden="true">•</span>
-            <Link className="hover:text-[#8574B7] transition-colors" href="/terms#refunds">{m.footer.refunds}</Link>
+            <Link className="hover:text-[#726E97] transition-colors" href="/terms#refunds">{m.footer.refunds}</Link>
             <span className="text-[#D0CDE1]" aria-hidden="true">•</span>
-            <Link className="hover:text-[#8574B7] transition-colors" href="/terms#cancellation">{m.footer.cancellation}</Link>
+            <Link className="hover:text-[#726E97] transition-colors" href="/terms#cancellation">{m.footer.cancellation}</Link>
             <span className="text-[#D0CDE1]" aria-hidden="true">•</span>
-            <Link className="hover:text-[#8574B7] transition-colors" href="/contact">{m.footer.contact}</Link>
+            <Link className="hover:text-[#726E97] transition-colors" href="/contact">{m.footer.contact}</Link>
           </nav>
           <p className="mt-2 text-[11px] text-slate-600">© {new Date().getFullYear()} Meet in Asia</p>
         </footer>

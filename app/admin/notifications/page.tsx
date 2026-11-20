@@ -70,7 +70,7 @@ export default function AdminNotificationsPage() {
 
       <div className="rounded-2xl border border-[#D0CDE1] bg-white divide-y divide-[#D0CDE1] mb-5">
         {QUEUES.map((q) => (
-          <Link key={q.key} href={q.href} className="flex items-center justify-between px-4 h-12 text-sm text-[#413B5E] hover:bg-[#E8E6F1]/40 transition-colors">
+          <Link key={q.key} href={q.href} className="flex items-center justify-between px-4 h-12 text-sm text-[#413B5E] hover:bg-[#EAE9F2]/40 transition-colors">
             <span>{q.label}</span>
             <span className="flex items-center gap-2">
               {counts ? (
@@ -91,7 +91,7 @@ export default function AdminNotificationsPage() {
           {items.map((n) => (
             <li
               key={n.id}
-              className={`rounded-2xl border border-[#D0CDE1] p-3 flex items-center gap-3 ${n.is_read ? 'bg-white opacity-70' : 'bg-[#8574B7]/10'}`}
+              className={`rounded-2xl border border-[#D0CDE1] p-3 flex items-center gap-3 ${n.is_read ? 'bg-white opacity-70' : 'bg-[#726E97]/10'}`}
             >
               <AdminAvatar url={n.actor?.avatar_url ?? null} name={n.actor?.username || 'Member'} size={36} />
               <Link href={n.link_url || '/admin'} className="min-w-0 flex-1">

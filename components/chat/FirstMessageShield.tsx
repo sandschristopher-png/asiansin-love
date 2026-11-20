@@ -16,7 +16,7 @@ export function FirstMessageShield({ senderName }: { senderName: string }) {
             {senderName} mentioned an external app or number. Commercial accounts and scammers often rush to move
             conversations off-platform. For your safety, we recommend getting to know each other on Meet in Asia first.
           </p>
-          <Link href="/safety" className="mt-1 inline-block text-[11px] font-medium text-[#8574B7] hover:underline">
+          <Link href="/safety" className="mt-1 inline-block text-[11px] font-medium text-[#726E97] hover:underline">
             Read Safety Blueprint &rarr;
           </Link>
         </div>

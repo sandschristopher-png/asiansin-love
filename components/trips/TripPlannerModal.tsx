@@ -15,7 +15,7 @@ import { MAX_DAYS_AHEAD, MAX_NOTE_LEN, MAX_TRIP_DAYS, TRIP_HUBS, isoToday } from
 import type { Trip } from '@/lib/trips';
 
 const FIELD =
-  'w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#D0CDE1] text-sm text-[#413B5E] placeholder:text-slate-400 focus:outline-none focus:border-[#8574B7]';
+  'w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#D0CDE1] text-sm text-[#413B5E] placeholder:text-slate-400 focus:outline-none focus:border-[#726E97]';
 const LABEL = 'block text-[11px] font-semibold uppercase tracking-wider text-slate-600 mb-1.5';
 
 /**
@@ -74,7 +74,7 @@ export function TripPlannerModal({
         <div className="mt-6 flex flex-col items-center gap-3">
           <Link
             href="/plus?feature=trips"
-            className="w-full h-12 inline-flex items-center justify-center rounded-full bg-[#8574B7] hover:bg-[#534377] text-white text-sm font-medium transition-colors active:scale-95"
+            className="w-full h-12 inline-flex items-center justify-center rounded-full bg-[#726E97] hover:bg-[#524E75] text-white text-sm font-medium transition-colors active:scale-95"
           >
             {t('travel.planner.upgrade')}
           </Link>
@@ -172,7 +172,7 @@ export function TripPlannerModal({
         <button
           type="submit"
           disabled={saving || !ready}
-          className="w-full h-11 inline-flex items-center justify-center gap-2 rounded-full bg-[#8574B7] hover:bg-[#534377] text-white text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full h-11 inline-flex items-center justify-center gap-2 rounded-full bg-[#726E97] hover:bg-[#524E75] text-white text-sm font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {saving && <Loader2 className="w-4 h-4 animate-spin" aria-hidden />}
           {saving ? t('travel.planner.saving') : trip ? t('travel.planner.saveChanges') : t('travel.planner.addButton')}

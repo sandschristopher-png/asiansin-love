@@ -129,7 +129,7 @@ export function PrivateNotesCard({ targetId }: { targetId: string }) {
           type="button"
           onClick={() => setOpen(true)}
           aria-label="Add a private note. Only you can see this."
-          className="flex w-full items-center gap-1.5 text-left text-xs font-semibold text-[#8574B7]"
+          className="flex w-full items-center gap-1.5 text-left text-xs font-semibold text-[#726E97]"
         >
           <Plus className="h-3.5 w-3.5 shrink-0" aria-hidden />
           <span>Private note</span>
@@ -145,7 +145,7 @@ export function PrivateNotesCard({ targetId }: { targetId: string }) {
         <h3 id="private-notes-title" className="text-sm font-semibold text-[#413B5E]">
           Private Notes
         </h3>
-        <span className="inline-flex items-center gap-1 rounded-full border border-[#D0CDE1] bg-[#E8E6F1]/50 px-2 py-0.5 text-[10.5px] font-medium text-[#8574B7]">
+        <span className="inline-flex items-center gap-1 rounded-full border border-[#D0CDE1] bg-[#EAE9F2]/50 px-2 py-0.5 text-[10.5px] font-medium text-[#726E97]">
           <Lock className="w-3 h-3" aria-hidden />
           Only you can see this
         </span>
@@ -168,7 +168,7 @@ export function PrivateNotesCard({ targetId }: { targetId: string }) {
         rows={3}
         placeholder="Travel plans, shared interests, things to ask next time"
         aria-label="Private note about this member"
-        className="mt-3 w-full min-h-[84px] resize-y rounded-xl border border-[#D0CDE1] bg-[#E8E6F1]/20 px-3 py-2 text-base sm:text-[13px] leading-relaxed text-[#413B5E] placeholder:text-[#413B5E]/40 focus:outline-none focus:border-[#8574B7] focus:ring-2 focus:ring-[#8574B7]/30"
+        className="mt-3 w-full min-h-[84px] resize-y rounded-xl border border-[#D0CDE1] bg-[#EAE9F2]/20 px-3 py-2 text-base sm:text-[13px] leading-relaxed text-[#413B5E] placeholder:text-[#413B5E]/40 focus:outline-none focus:border-[#726E97] focus:ring-2 focus:ring-[#726E97]/30"
       />
       <p className="mt-1 h-4 text-right text-[10.5px] font-medium text-slate-600" aria-live="polite">
         {status === 'saving' ? 'Saving...' : status === 'saved' ? 'Saved' : status === 'error' ? 'Kept on this device. Will retry.' : ''}
