@@ -1,3 +1,4 @@
+import { IceFrame } from '@/components/ui/IceFrame';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound, permanentRedirect } from 'next/navigation';
@@ -150,9 +151,10 @@ export default async function CityPage({ params }: Params) {
         {/* Visiting Soon callout (hub cities only) */}
         {isTripHub && (
           <section className="py-2" aria-labelledby="travel-heading">
-            <div className="rounded-2xl border border-[#8574B7]/25 bg-[#FAF9FC] p-4">
+            <IceFrame>
+            <div className="rounded-2xl bg-white p-4">
               <div className="flex items-start gap-3">
-                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#8574B7]/10 text-[#8574B7]">
+                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#EBF3FF] text-[#3B66A8]">
                   <Plane className="w-4 h-4" aria-hidden />
                 </span>
                 <div>
@@ -167,6 +169,7 @@ export default async function CityPage({ params }: Params) {
                 </div>
               </div>
             </div>
+            </IceFrame>
           </section>
         )}
 

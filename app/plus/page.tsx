@@ -1,5 +1,6 @@
 'use client';
 
+import { IceFrame, IceNotice } from '@/components/ui/IceFrame';
 import { PLUS_CHECKOUT_ENABLED } from '@/lib/billing/plusCheckout';
 import React, { useEffect, useState, useSyncExternalStore, Suspense } from 'react';
 import { createPortal } from 'react-dom';
@@ -217,7 +218,8 @@ function PlusHubContent() {
 
         {/* Plans (free members) or the active state (Plus members) */}
         {showFreeOffer && (
-          <section aria-label={t('plus.choosePlan')} className="grid grid-cols-3 gap-2 pt-1" role="radiogroup">
+          <IceFrame>
+          <section aria-label={t('plus.choosePlan')} className="grid grid-cols-3 gap-2 rounded-2xl bg-white px-2.5 pb-2.5 pt-4" role="radiogroup">
             {PLUS_PLANS.map((p) => {
               const active = p.id === selectedPlan;
               return (
@@ -251,6 +253,7 @@ function PlusHubContent() {
               );
             })}
           </section>
+          </IceFrame>
         )}
         {showFreeOffer && (
           <p className="text-xs leading-relaxed text-slate-600">{t('plus.page.billing3', { email: SUPPORT_EMAIL })}</p>
@@ -364,11 +367,7 @@ function PlusHubContent() {
           </p>
         ) : (
           <div className="space-y-2">
-            {!PLUS_CHECKOUT_ENABLED && (
-              <p role="status" className="text-center text-[11px] font-medium leading-snug text-slate-600">
-                {t('plus.page.upgradesOpening')}
-              </p>
-            )}
+            {!PLUS_CHECKOUT_ENABLED && <IceNotice>{t('plus.page.upgradesOpening')}</IceNotice>}
             <div className="flex items-center gap-2.5">
               <Link
                 href="/discover"

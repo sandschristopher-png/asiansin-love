@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { IceFrame, IceNotice } from '@/components/ui/IceFrame';
 import { PLUS_CHECKOUT_ENABLED } from '@/lib/billing/plusCheckout';
 import React, { useState } from 'react';
 import { useLocale } from '@/components/i18n/LocaleProvider';
@@ -70,10 +71,12 @@ export default function UpgradeModal({
       className="fixed inset-0 z-[250] flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-in fade-in duration-150"
       onClick={onClose}
     >
-      <div
-        className="relative isolate overflow-hidden w-full max-w-[360px] bg-white rounded-3xl border border-[#D0CDE1]/60 shadow-2xl p-5 text-[#413B5E] animate-in zoom-in-95 duration-150 flex flex-col no-scrollbar"
+      <IceFrame
+        radius="1.5rem"
+        className="w-full max-w-[360px] shadow-2xl animate-in zoom-in-95 duration-150"
         onClick={(e) => e.stopPropagation()}
       >
+      <div className="relative isolate overflow-hidden w-full bg-white rounded-3xl border border-[#D0CDE1]/60 p-5 text-[#413B5E] flex flex-col no-scrollbar">
         <AmbientAurora layer="card" />
         {/* Dismiss Button */}
         <button
@@ -200,9 +203,7 @@ export default function UpgradeModal({
               >
                 {t('plus.page.comingSoon')}
               </button>
-              <p role="status" className="mb-1 text-center text-[11px] font-medium leading-snug text-slate-600">
-                {t('plus.page.upgradesOpening')}
-              </p>
+              <IceNotice className="mb-1.5">{t('plus.page.upgradesOpening')}</IceNotice>
               <p className="mb-2 text-center text-[11px] text-slate-600">
                 <Link href="/plus" className="font-semibold text-[#8574B7] underline underline-offset-4">
                   {t('plus.page.billingTitle')}
@@ -227,6 +228,7 @@ export default function UpgradeModal({
         </button>
 
       </div>
+      </IceFrame>
     </div>
   );
 }

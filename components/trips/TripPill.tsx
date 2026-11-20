@@ -27,7 +27,7 @@ export function TripPill({ trips }: { trips: Trip[] }) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex max-w-full items-center gap-1.5 rounded-full bg-[#8574B7]/15 px-3 py-1 text-xs font-semibold text-[#8574B7] hover:bg-[#8574B7]/25 transition-colors"
+        className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-[#DCEBFF] bg-[#EBF3FF] px-3 py-1 text-xs font-semibold text-[#3B66A8] hover:bg-[#DCEBFF] transition-colors"
       >
         <Plane className="w-3.5 h-3.5 shrink-0" aria-hidden />
         <span className="truncate" suppressHydrationWarning>
