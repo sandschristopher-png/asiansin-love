@@ -1,5 +1,5 @@
 import React from 'react';
-import { Award, MapPin } from 'lucide-react';
+import { Award, BadgeCheck } from 'lucide-react';
 
 const NEW_MEMBER_MS = 7 * 24 * 60 * 60 * 1000;
 
@@ -22,14 +22,17 @@ export function NewMemberPill({ createdAt, className = '' }: { createdAt: string
   );
 }
 
-/** GPS-confirmed location (public badge; same look on your own and other members' profiles). */
+/**
+ * GPS-confirmed location (public badge; same look on your own and other members' profiles). It carries a check badge,
+ * not a pin: the pin already sits on the city line above it, so the two never stack.
+ */
 export function VerifiedLocationBadge({ title, className = '' }: { title?: string; className?: string }) {
   return (
     <span
       title={title}
       className={`inline-flex items-center gap-1.5 rounded-full border border-[#D0CDE1] bg-[#EAE9F2]/50 px-2.5 py-0.5 text-xs font-medium text-[#413B5E] shadow-brand-sm whitespace-nowrap ${className}`}
     >
-      <MapPin className="text-[#726E97] h-3.5 w-3.5" aria-hidden />
+      <BadgeCheck className="text-[#726E97] h-3.5 w-3.5" aria-hidden />
       Verified Location
     </span>
   );
