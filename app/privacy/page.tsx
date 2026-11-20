@@ -74,14 +74,43 @@ const sections: LegalSection[] = [
     title: 'Who we share data with',
     body: (
       <>
-        <p>We do not sell your personal data. We share it only with service providers that help us run Meet in Asia:</p>
+        <p>We do not sell your personal data. We share it only with service providers and partners that help us run Meet in Asia:</p>
         <ul>
           <li>Supabase: database, authentication and file storage.</li>
           <li>Vercel: hosting.</li>
           <li>Our payment processor: payments and billing.</li>
           <li>Google (Gemini): verification pre-screening and the optional in-chat Translate feature.</li>
+          <li>Travelpayouts (Drive AI): travel offers on our public pages only (see the next section).</li>
         </ul>
         <p>We may also disclose information when the law requires it or to protect members from serious harm or fraud.</p>
+      </>
+    ),
+  },
+  {
+    title: 'Third-party travel monetization and analytics',
+    body: (
+      <>
+        <p>
+          On certain public-facing pages of Meet in Asia (such as our landing page, city guides and travel resources), we use
+          automated affiliate technology provided by Travelpayouts (Drive AI) to display relevant travel and transportation
+          offers.
+        </p>
+        <ul>
+          <li>
+            <strong>Data collected:</strong> when you visit our public pages, this third-party script may collect standard
+            technical routing information, such as the public page URL you are viewing, browser type and general traffic data,
+            to serve contextual recommendations.
+          </li>
+          <li>
+            <strong>Scope and privacy protection:</strong> this script is strictly restricted to public pages and is{' '}
+            <strong>never</strong> loaded, executed or permitted on private member areas, user profiles or private messaging
+            chats (/chat, /profile, /discover, etc.), so your private messages and account activity are never exposed to it.
+          </li>
+          <li>
+            <strong>Opting out:</strong> you can prevent third-party analytics and affiliate tracking scripts from running by
+            enabling standard tracking protection, ad-blocking extensions or strict privacy modes in your browser.
+          </li>
+        </ul>
       </>
     ),
   },
