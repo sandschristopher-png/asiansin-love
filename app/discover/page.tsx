@@ -30,9 +30,7 @@ import {
   countryMatches,
 } from '@/lib/constants/countries';
 import { HeightRangeSlider } from '@/components/filters/HeightRangeSlider';
-import { LanguagePicker } from '@/components/profile/LifestyleFields';
 import { HEIGHT_MAX_CM, HEIGHT_MIN_CM } from '@/lib/lifestyle';
-import { readLanguages } from '@/lib/constants/languages';
 import { ReputationBadge } from '@/components/ReputationBadge';
 import { PlusBadge } from '@/components/ui/PlusBadge';
 import { hapticWarning } from '@/lib/haptics';
@@ -335,7 +333,6 @@ function DiscoverContent() {
   const [draftCountry, setDraftCountry] = useState<string>(ALL_COUNTRIES_VALUE);
   const [draftIntents, setDraftIntents] = useState<string[]>([]);
   const [draftHeight, setDraftHeight] = useState<[number, number]>([HEIGHT_MIN_CM, HEIGHT_MAX_CM]);
-  const [draftLanguages, setDraftLanguages] = useState<string[]>([]);
   const [draftHabits, setDraftHabits] = useState<string[]>([]);
   const [draftVerifiedOnly, setDraftVerifiedOnly] = useState<boolean>(false);
   const [draftActiveNowOnly, setDraftActiveNowOnly] = useState<boolean>(false);
@@ -348,7 +345,6 @@ function DiscoverContent() {
   const [draftMode, setDraftMode] = useState<DiscoveryModeId>('all');
   const [selectedIntents, setSelectedIntents] = useState<string[]>([]);
   const [heightRange, setHeightRange] = useState<[number, number]>([HEIGHT_MIN_CM, HEIGHT_MAX_CM]);
-  const [selectedLanguages, setSelectedLanguages] = useState<string[]>([]);
   const [selectedHabits, setSelectedHabits] = useState<string[]>([]);
   const heightNarrowed = heightRange[0] > HEIGHT_MIN_CM || heightRange[1] < HEIGHT_MAX_CM;
   const [verifiedOnly, setVerifiedOnly] = useState<boolean>(false);
@@ -425,7 +421,6 @@ function DiscoverContent() {
       setDraftCountry(selectedCountry);
       setDraftIntents(selectedIntents);
       setDraftHeight(heightRange);
-      setDraftLanguages(selectedLanguages);
       setDraftHabits(selectedHabits);
       setDraftVerifiedOnly(verifiedOnly);
       setDraftActiveNowOnly(activeNowOnly);
@@ -443,7 +438,7 @@ function DiscoverContent() {
     return () => {
       document.body.style.overflow = '';
     };
-  }, [filtersOpen, minAge, maxAge, selectedCountry, selectedIntents, heightRange, selectedLanguages, selectedHabits, verifiedOnly, activeNowOnly, hideContacted, sparkedMeOnly, selectedTimeline, selectedChildren, selectedEnglish, selectedHub, discoveryMode]);
+  }, [filtersOpen, minAge, maxAge, selectedCountry, selectedIntents, heightRange, selectedHabits, verifiedOnly, activeNowOnly, hideContacted, sparkedMeOnly, selectedTimeline, selectedChildren, selectedEnglish, selectedHub, discoveryMode]);
 
   useEffect(() => {
     const handleMutualMatch = (e: Event) => {
@@ -708,7 +703,6 @@ function DiscoverContent() {
     if (minAge > DEFAULT_MIN_AGE || maxAge < DEFAULT_MAX_AGE) count++;
     if (selectedIntents.length) count++;
     if (heightNarrowed) count++;
-    if (selectedLanguages.length) count++;
     if (selectedHabits.length) count++;
     if (verifiedOnly) count++;
     if (activeNowOnly) count++;
@@ -720,7 +714,7 @@ function DiscoverContent() {
     if (selectedHub) count++;
     if (discoveryMode !== 'all') count++;
     return count;
-  }, [selectedCountry, minAge, maxAge, selectedIntents, heightNarrowed, selectedLanguages, selectedHabits, verifiedOnly, activeNowOnly, hideContacted, sparkedMeOnly, selectedTimeline, selectedChildren, selectedEnglish, selectedHub, discoveryMode]);
+  }, [selectedCountry, minAge, maxAge, selectedIntents, heightNarrowed, selectedHabits, verifiedOnly, activeNowOnly, hideContacted, sparkedMeOnly, selectedTimeline, selectedChildren, selectedEnglish, selectedHub, discoveryMode]);
 
   const hasActiveFilters = activeFiltersCount > 0;
 
@@ -730,7 +724,6 @@ function DiscoverContent() {
     setSelectedCountry(ALL_COUNTRIES_VALUE);
     setSelectedIntents([]);
     setHeightRange([HEIGHT_MIN_CM, HEIGHT_MAX_CM]);
-    setSelectedLanguages([]);
     setSelectedHabits([]);
     setMinAge(DEFAULT_MIN_AGE);
     setMaxAge(DEFAULT_MAX_AGE);
@@ -782,7 +775,6 @@ function DiscoverContent() {
     setSelectedCountry(draftCountry);
     setSelectedIntents(draftIntents);
     setHeightRange(draftHeight);
-    setSelectedLanguages(draftLanguages);
     setSelectedHabits(draftHabits);
     setVerifiedOnly(draftVerifiedOnly);
     setActiveNowOnly(draftActiveNowOnly);
@@ -801,7 +793,6 @@ function DiscoverContent() {
     setDraftCountry(ALL_COUNTRIES_VALUE);
     setDraftIntents([]);
     setDraftHeight([HEIGHT_MIN_CM, HEIGHT_MAX_CM]);
-    setDraftLanguages([]);
     setDraftHabits([]);
     setDraftMinAge(DEFAULT_MIN_AGE);
     setDraftMaxAge(DEFAULT_MAX_AGE);
@@ -847,8 +838,6 @@ function DiscoverContent() {
       // Height: unknown heights only drop out once the range is narrowed.
       const h = profile.heightCm ?? null;
       const matchesHeight = !heightNarrowed || (h !== null && h >= heightRange[0] && h <= heightRange[1]);
-      const matchesLanguage =
-        selectedLanguages.length === 0 || readLanguages(profile.languages).some((l) => selectedLanguages.includes(l));
       const life = profile.lifestyle || {};
       const matchesHabits = selectedHabits.every((id) => HABIT_FILTERS.find((hf) => hf.id === id)?.test(life) ?? true);
       const matchesVerified = !verifiedOnly || profile.verified;
@@ -866,7 +855,6 @@ function DiscoverContent() {
         matchesAge &&
         matchesIntent &&
         matchesHeight &&
-        matchesLanguage &&
         matchesHabits &&
         matchesVerified &&
         matchesOnline &&
@@ -889,7 +877,7 @@ function DiscoverContent() {
       return 0;
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps -- isNearViewer is recreated each render from viewerPlace and currentUserCoords, both listed
-  }, [profiles, cardActions, currentUserCoords, selectedCountry, countryOptions, searchQuery, minAge, maxAge, selectedIntents, heightNarrowed, heightRange, selectedLanguages, selectedHabits, verifiedOnly, activeNowOnly, discoveryMode, presentIds, viewerPlace]);
+  }, [profiles, cardActions, currentUserCoords, selectedCountry, countryOptions, searchQuery, minAge, maxAge, selectedIntents, heightNarrowed, heightRange, selectedHabits, verifiedOnly, activeNowOnly, discoveryMode, presentIds, viewerPlace]);
 
   const isDefaultFeed = activeFiltersCount === 0 && !searchQuery.trim();
 
@@ -1386,13 +1374,6 @@ function DiscoverContent() {
                         Height
                       </label>
                       <HeightRangeSlider min={HEIGHT_MIN_CM} max={HEIGHT_MAX_CM} value={draftHeight} onChange={setDraftHeight} />
-                    </div>
-
-                    <div>
-                      <label className="text-[11px] font-semibold text-[#413B5E]/75 uppercase tracking-wider block mb-2">
-                        Speaks
-                      </label>
-                      <LanguagePicker value={draftLanguages} onChange={setDraftLanguages} max={6} placeholder="Search languages" />
                     </div>
 
                     <div>
