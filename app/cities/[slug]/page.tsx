@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { notFound } from 'next/navigation';
+import { notFound, permanentRedirect } from 'next/navigation';
 import { MapPin, Plane, ShieldCheck, Lightbulb } from 'lucide-react';
 import { BrandLogo } from '@/components/BrandLogo';
-import { CITY_SLUGS, getCity, type City } from '@/lib/cities';
+import { CITY_SLUGS, cityHref, getCity, isRootHub, type City } from '@/lib/cities';
 import { SITE_URL } from '@/lib/seo/cityData';
 import { TRIP_HUBS } from '@/lib/tripHubs';
 
@@ -21,7 +21,8 @@ type Params = { params: Promise<{ slug: string }> };
 export async function generateMetadata({ params }: Params): Promise<Metadata> {
   const { slug } = await params;
   const city = getCity(slug);
-  if (!city) return {};
+  // Root hubs and held cities are not indexed on /cities/[slug].
+  if (!city || !city.published || isRootHub(city.slug)) return {};
   const url = `${SITE_URL}/cities/${city.slug}`;
   return {
     title: { absolute: city.metaTitle },
@@ -78,11 +79,15 @@ function faqJsonLd(city: City) {
 export default async function CityPage({ params }: Params) {
   const { slug } = await params;
   const city = getCity(slug);
-  if (!city) notFound();
+  if (!city || !city.published) notFound();
+  // The five overlapping cities canonicalize to the root hub (/manila, /cebu, ...).
+  if (isRootHub(city.slug)) permanentRedirect(cityHref(city.slug));
 
   // Visiting Soon only lists the hub cities in lib/tripHubs.ts; never advertise it for the others.
   const isTripHub = TRIP_HUBS.some((h) => h.city === city.name);
-  const nearby = city.nearbySlugs.map((s) => getCity(s)).filter((c): c is City => Boolean(c));
+  const nearby = city.nearbySlugs
+    .map((s) => getCity(s))
+    .filter((c): c is City => Boolean(c && c.published));
 
   return (
     <main className="min-h-[100dvh] bg-white text-[#413B5E] overflow-x-hidden">
@@ -222,7 +227,7 @@ export default async function CityPage({ params }: Params) {
             <ul className="mt-3 flex flex-wrap gap-2">
               {nearby.map((c) => (
                 <li key={c.slug}>
-                  <Link href={`/cities/${c.slug}`} className="inline-flex rounded-full border border-[#D0CDE1] bg-white px-3 py-1.5 text-xs font-medium text-[#8574B7] hover:bg-[#E8E6F1]/40 transition-colors">
+                  <Link href={cityHref(c.slug)} className="inline-flex rounded-full border border-[#D0CDE1] bg-white px-3 py-1.5 text-xs font-medium text-[#8574B7] hover:bg-[#E8E6F1]/40 transition-colors">
                     {c.name}
                   </Link>
                 </li>

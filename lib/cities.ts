@@ -33,6 +33,11 @@ export interface City {
   faqs: CityFaq[];
   /** Other city slugs for internal links (3 to 4). */
   nearbySlugs: string[];
+  /**
+   * false holds the page back: it is left out of generateStaticParams, /cities, nearby links and the
+   * sitemap until the product expands beyond Southeast Asia.
+   */
+  published: boolean;
   /** Date the copy was last changed (YYYY-MM-DD), used for the sitemap lastModified. */
   updated: string;
 }
@@ -75,6 +80,7 @@ export const CITIES: City[] = [
       },
     ],
     nearbySlugs: ['cebu', 'singapore', 'kuala-lumpur'],
+    published: true,
     updated: UPDATED,
   },
   {
@@ -112,6 +118,7 @@ export const CITIES: City[] = [
       },
     ],
     nearbySlugs: ['manila', 'singapore', 'bangkok'],
+    published: true,
     updated: UPDATED,
   },
   {
@@ -149,6 +156,7 @@ export const CITIES: City[] = [
       },
     ],
     nearbySlugs: ['chiang-mai', 'phuket', 'phnom-penh', 'siem-reap'],
+    published: true,
     updated: UPDATED,
   },
   {
@@ -186,6 +194,7 @@ export const CITIES: City[] = [
       },
     ],
     nearbySlugs: ['bangkok', 'chiang-mai', 'kuala-lumpur'],
+    published: true,
     updated: UPDATED,
   },
   {
@@ -223,6 +232,7 @@ export const CITIES: City[] = [
       },
     ],
     nearbySlugs: ['bangkok', 'phuket', 'siem-reap'],
+    published: true,
     updated: UPDATED,
   },
   {
@@ -260,6 +270,7 @@ export const CITIES: City[] = [
       },
     ],
     nearbySlugs: ['hanoi', 'phnom-penh', 'bangkok'],
+    published: true,
     updated: UPDATED,
   },
   {
@@ -297,6 +308,7 @@ export const CITIES: City[] = [
       },
     ],
     nearbySlugs: ['ho-chi-minh-city', 'siem-reap', 'bangkok'],
+    published: true,
     updated: UPDATED,
   },
   {
@@ -334,6 +346,7 @@ export const CITIES: City[] = [
       },
     ],
     nearbySlugs: ['siem-reap', 'ho-chi-minh-city', 'bangkok'],
+    published: true,
     updated: UPDATED,
   },
   {
@@ -371,6 +384,7 @@ export const CITIES: City[] = [
       },
     ],
     nearbySlugs: ['phnom-penh', 'bangkok', 'hanoi'],
+    published: true,
     updated: UPDATED,
   },
   {
@@ -408,6 +422,7 @@ export const CITIES: City[] = [
       },
     ],
     nearbySlugs: ['seoul', 'taipei', 'singapore'],
+    published: false,
     updated: UPDATED,
   },
   {
@@ -445,6 +460,7 @@ export const CITIES: City[] = [
       },
     ],
     nearbySlugs: ['tokyo', 'taipei', 'singapore'],
+    published: false,
     updated: UPDATED,
   },
   {
@@ -482,6 +498,7 @@ export const CITIES: City[] = [
       },
     ],
     nearbySlugs: ['tokyo', 'seoul', 'singapore'],
+    published: false,
     updated: UPDATED,
   },
   {
@@ -519,6 +536,7 @@ export const CITIES: City[] = [
       },
     ],
     nearbySlugs: ['kuala-lumpur', 'manila', 'taipei'],
+    published: true,
     updated: UPDATED,
   },
   {
@@ -556,15 +574,40 @@ export const CITIES: City[] = [
       },
     ],
     nearbySlugs: ['singapore', 'manila', 'bangkok'],
+    published: true,
     updated: UPDATED,
   },
 ];
 
-export const CITY_SLUGS: string[] = CITIES.map((c) => c.slug);
+/**
+ * Cities whose canonical page is the root-level hub (/cebu, /manila, ...) in app/(marketing)/[city].
+ * They keep their copy here for the directory, but /cities/[slug] permanently redirects to the hub,
+ * and every link and sitemap entry points at the hub.
+ */
+export const ROOT_HUB_SLUGS = ['manila', 'cebu', 'bangkok', 'phnom-penh', 'kuala-lumpur'] as const;
 
+export function isRootHub(slug: string): boolean {
+  return (ROOT_HUB_SLUGS as readonly string[]).includes(slug);
+}
+
+/** Cities that are live: published and not a root hub (these get their own /cities/[slug] page). */
+export const CITY_PAGE_CITIES: City[] = CITIES.filter((c) => c.published && !isRootHub(c.slug));
+
+/** Slugs for generateStaticParams on /cities/[slug]. */
+export const CITY_SLUGS: string[] = CITY_PAGE_CITIES.map((c) => c.slug);
+
+/** Every published city, in directory order (root hubs included). */
+export const PUBLISHED_CITIES: City[] = CITIES.filter((c) => c.published);
+
+/** Canonical URL path for a city: the root hub for the five overlapping cities, /cities/[slug] otherwise. */
+export function cityHref(slug: string): string {
+  return isRootHub(slug) ? `/${slug}` : `/cities/${slug}`;
+}
+
+/** Looks up a city by slug (published or not). */
 export function getCity(slug: string): City | undefined {
   return CITIES.find((c) => c.slug === slug);
 }
 
-/** Latest content update across every city (sitemap lastModified for the index). */
-export const CITIES_UPDATED = CITIES.reduce((latest, c) => (c.updated > latest ? c.updated : latest), UPDATED);
+/** Latest content update across published cities (sitemap lastModified for the index). */
+export const CITIES_UPDATED = PUBLISHED_CITIES.reduce((latest, c) => (c.updated > latest ? c.updated : latest), UPDATED);

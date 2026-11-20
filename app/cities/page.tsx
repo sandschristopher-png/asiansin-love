@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BrandLogo } from '@/components/BrandLogo';
-import { CITIES, type City } from '@/lib/cities';
+import { PUBLISHED_CITIES, cityHref, type City } from '@/lib/cities';
 import { SITE_URL } from '@/lib/seo/cityData';
 
 const TITLE = 'Dating Cities in Asia | Meet in Asia';
@@ -56,7 +56,7 @@ export default function CitiesIndexPage() {
         </section>
 
         {REGIONS.map((region) => {
-          const cities = CITIES.filter((c) => c.region === region);
+          const cities = PUBLISHED_CITIES.filter((c) => c.region === region);
           if (cities.length === 0) return null;
           return (
             <section key={region} className="py-6 border-t border-[#D0CDE1]/60" aria-labelledby={`region-${region.replace(/\s+/g, '-').toLowerCase()}`}>
@@ -67,7 +67,7 @@ export default function CitiesIndexPage() {
                 {cities.map((c) => (
                   <li key={c.slug}>
                     <Link
-                      href={`/cities/${c.slug}`}
+                      href={cityHref(c.slug)}
                       className="block rounded-2xl border border-[#D0CDE1]/60 bg-white p-4 shadow-sm hover:border-[#8574B7]/40 transition-colors"
                     >
                       <span className="block text-sm font-semibold text-[#413B5E]">{c.name}</span>

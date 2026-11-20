@@ -1,6 +1,6 @@
 import type { MetadataRoute } from 'next';
 import { CITY_SEO_DATA, SITE_URL } from '@/lib/seo/cityData';
-import { CITIES, CITIES_UPDATED } from '@/lib/cities';
+import { CITY_PAGE_CITIES, CITIES_UPDATED, cityHref } from '@/lib/cities';
 
 /** Legacy keyword pages (app/dating/[slug]) that still render. cebu / manila / bangkok /
  *  cambodia / khmer-dating 301 to the city hubs (next.config.ts), so they are not listed. */
@@ -37,8 +37,8 @@ export default function sitemap(): MetadataRoute.Sitemap {
   // City directory and its pages (lib/cities.ts). lastModified is the copy's own update date.
   const cityPages: MetadataRoute.Sitemap = [
     { url: `${SITE_URL}/cities`, lastModified: new Date(CITIES_UPDATED), changeFrequency: 'weekly', priority: 0.8 },
-    ...CITIES.map((city) => ({
-      url: `${SITE_URL}/cities/${city.slug}`,
+    ...CITY_PAGE_CITIES.map((city) => ({
+      url: `${SITE_URL}${cityHref(city.slug)}`,
       lastModified: new Date(city.updated),
       changeFrequency: 'weekly' as const,
       priority: 0.8,
