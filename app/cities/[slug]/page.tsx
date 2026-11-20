@@ -87,9 +87,6 @@ export default async function CityPage({ params }: Params) {
 
   // Visiting Soon only lists the hub cities in lib/tripHubs.ts; never advertise it for the others.
   const isTripHub = TRIP_HUBS.some((h) => h.city === city.name);
-  const nearby = city.nearbySlugs
-    .map((s) => getCity(s))
-    .filter((c): c is City => Boolean(c && c.published));
 
   return (
     <main className="min-h-[100dvh] bg-white text-[#413B5E] overflow-x-hidden">
@@ -188,25 +185,6 @@ export default async function CityPage({ params }: Params) {
             ))}
           </dl>
         </section>
-
-        {/* Nearby */}
-        {nearby.length > 0 && (
-          <section className="py-8 border-t border-[#D0CDE1]/60" aria-labelledby="nearby-heading">
-            <h2 id="nearby-heading" className="text-base font-semibold tracking-tight">Nearby cities</h2>
-            <ul className="mt-3 flex flex-wrap gap-2">
-              {nearby.map((c) => (
-                <li key={c.slug}>
-                  <Link href={cityHref(c.slug)} className="inline-flex rounded-full border border-[#D0CDE1] bg-white px-3 py-1.5 text-xs font-medium text-[#8574B7] hover:bg-[#E8E6F1]/40 transition-colors">
-                    {c.name}
-                  </Link>
-                </li>
-              ))}
-            </ul>
-            <p className="mt-4 text-xs text-slate-600">
-              <Link href="/cities" className="font-medium text-[#8574B7] hover:text-[#413B5E]">All cities</Link>
-            </p>
-          </section>
-        )}
 
         <ExploreCities currentSlug={city.slug} />
 

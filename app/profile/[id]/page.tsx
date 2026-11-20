@@ -38,7 +38,7 @@ import { resolveCountry } from '@/lib/countries';
 import { rhythmOption, sharedTraits } from '@/lib/rhythm';
 import { scoreOf } from '@/lib/reputation';
 import { InCommonCard, RhythmPill } from '@/components/profile/RhythmBadges';
-import RepScoreCard from '@/components/RepScoreCard';
+import { ProfileSection, ReputationPill, PROFILE_TAG, PROFILE_TAG_SHARED } from '@/components/profile/ProfileLayout';
 import { PrivateNotesCard } from '@/components/profile/PrivateNotesCard';
 import { useActionToast } from '@/components/ActionToast';
 import { interestIcon, interestIconOrDefault } from '@/lib/interestIcons';
@@ -514,12 +514,11 @@ export default function PublicProfilePage() {
             <MapPin className="h-3.5 w-3.5 text-[#8574B7] shrink-0" />
             <span className="truncate">{displayLocation}</span>
           </div>
-          {(profile.location_source === 'gps_verified' || dayOneNumber) && (
-            <div className="flex items-center gap-2 flex-wrap">
-              {profile.location_source === 'gps_verified' && <VerifiedLocationBadge />}
-              <DayOneBadge number={dayOneNumber} />
-            </div>
-          )}
+          <div className="flex items-center gap-2 flex-wrap">
+            {profile.location_source === 'gps_verified' && <VerifiedLocationBadge />}
+            <ReputationPill score={scoreOf(profile.reputation_score)} />
+            <DayOneBadge number={dayOneNumber} />
+          </div>
           <MemberTrips userId={profile.id} />
         </section>
 
@@ -528,178 +527,129 @@ export default function PublicProfilePage() {
           <VoicePlayer src={profile.voice_intro_url} title={`Hear ${displayName} say hello`} />
         )}
 
-        {/* 3. REPUTATION */}
-        <RepScoreCard score={scoreOf(profile.reputation_score)} />
+        {/* 3. FLAT PROFILE SURFACE: one continuous white surface, sections divided by hairlines (no stacked cards) */}
+        <div>
+          {/* ABOUT ME (with things in common) */}
+          <ProfileSection title="About Me">
+            <InCommonCard items={inCommon} />
+            <p className="text-xs sm:text-sm text-[#413B5E] leading-relaxed whitespace-pre-line">
+              {profile.bio || 'Looking for something genuine and sincere.'}
+            </p>
+          </ProfileSection>
 
-        {/* 4. ABOUT ME (with things in common) */}
-        <section className="p-4 rounded-3xl bg-white border border-[#D0CDE1] shadow-2xs space-y-2">
-          <h2
-            className="text-xs font-semibold uppercase tracking-wider text-[#8574B7]"
-            style={{ fontFamily: 'var(--font-brand)' }}
-          >
-            About Me
-          </h2>
-          <InCommonCard items={inCommon} />
-          <p className="text-xs sm:text-sm text-[#413B5E] leading-relaxed whitespace-pre-line">
-            {profile.bio || 'Looking for something genuine and sincere.'}
-          </p>
-        </section>
-
-        {/* 4b. PRIVATE NOTES: only the viewer can read them (hidden on your own profile) */}
-        <PrivateNotesCard targetId={targetUserId} />
-
-        {/* 5. HIGHLIGHTS & MINI-STORIES */}
-        {highlights.length > 0 && (
-          <section className="p-4 rounded-3xl bg-white border border-[#D0CDE1] shadow-2xs space-y-3">
-            <div className="flex items-center justify-between">
-              <h2
-                className="text-xs font-semibold uppercase tracking-wider text-[#8574B7]"
-                style={{ fontFamily: 'var(--font-brand)' }}
-              >
-                Highlights &amp; Stories
-              </h2>
-              {!isOwnProfile && <span className="text-[10px] font-medium text-slate-600">Tap to reply</span>}
-            </div>
-
-            <div className="grid gap-2.5">
-              {highlights.map((item) => (
-                <div
-                  key={item.tag_id}
-                  onClick={isOwnProfile ? undefined : () => router.push(`/chat/${targetUserId}`)}
-                  className={`group rounded-2xl border border-[#D0CDE1] bg-white p-3.5 transition ${isOwnProfile ? '' : 'cursor-pointer hover:border-[#8574B7]/50'}`}
-                >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      {(() => {
-                        const Icon = interestIconOrDefault(item.label);
-                        return <Icon className="w-4 h-4 text-[#8574B7] shrink-0" aria-hidden />;
-                      })()}
-                      <span className="text-xs font-semibold text-[#413B5E]">{item.label}</span>
+          {/* HIGHLIGHTS & MINI-STORIES (the stories stay tappable cards) */}
+          {highlights.length > 0 && (
+            <ProfileSection
+              title="Highlights & Stories"
+              aside={!isOwnProfile ? <span className="text-[10px] font-medium text-slate-600">Tap to reply</span> : undefined}
+            >
+              <div className="grid gap-2.5">
+                {highlights.map((item) => (
+                  <div
+                    key={item.tag_id}
+                    onClick={isOwnProfile ? undefined : () => router.push(`/chat/${targetUserId}`)}
+                    className={`group rounded-2xl border border-[#D0CDE1] bg-white p-3.5 transition ${isOwnProfile ? '' : 'cursor-pointer hover:border-[#8574B7]/50'}`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        {(() => {
+                          const Icon = interestIconOrDefault(item.label);
+                          return <Icon className="w-4 h-4 text-[#8574B7] shrink-0" aria-hidden />;
+                        })()}
+                        <span className="text-xs font-semibold text-[#413B5E]">{item.label}</span>
+                      </div>
+                      {!isOwnProfile && (
+                        <span className="text-[11px] font-semibold text-[#8574B7]">
+                          <span className="inline-flex items-center gap-1">Reply <MessageCircle className="w-3 h-3" aria-hidden /></span>
+                        </span>
+                      )}
                     </div>
-                    {!isOwnProfile && (
-                      <span className="text-[11px] font-semibold text-[#8574B7]">
-                        <span className="inline-flex items-center gap-1">Reply <MessageCircle className="w-3 h-3" aria-hidden /></span>
-                      </span>
+                    {item.story && (
+                      <p className="mt-1.5 text-xs leading-relaxed text-[#413B5E]/85 italic">
+                        “{item.story}”
+                      </p>
                     )}
                   </div>
-                  {item.story && (
-                    <p className="mt-1.5 text-xs leading-relaxed text-[#413B5E]/85 italic">
-                      “{item.story}”
-                    </p>
-                  )}
-                </div>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* 6. INTERESTS & HOBBIES */}
-        {targetInterests.length > 0 && (
-          <section className="p-4 rounded-3xl bg-white border border-[#D0CDE1] shadow-2xs space-y-3">
-            <div className="flex items-center justify-between gap-2">
-              <h2
-                className="flex items-center gap-1.5 text-xs font-semibold uppercase tracking-wider text-[#8574B7]"
-                style={{ fontFamily: 'var(--font-brand)' }}
-              >
-                <Tag className="w-3.5 h-3.5" />
-                Interests &amp; Hobbies
-              </h2>
-              {sharedInterests.length > 0 && (
-                <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#8574B7]/10 text-[#8574B7] font-medium shrink-0">
-                  {sharedInterests.length} in common
-                </span>
-              )}
-            </div>
-
-            <div className="flex flex-wrap gap-1.5 pt-1">
-              {targetInterests.map((tag) => {
-                const isShared = sharedInterests.some(
-                  (s) => s.toLowerCase() === String(tag).toLowerCase()
-                );
-                const Icon = interestIcon(tag);
-                return (
-                  <span
-                    key={tag}
-                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-medium transition ${
-                      isShared
-                        ? 'border-[#8574B7] text-[#8574B7] bg-[#8574B7]/5'
-                        : 'border-transparent bg-white text-[#413B5E]'
-                    }`}
-                  >
-                    {Icon && <Icon className="w-3.5 h-3.5 shrink-0" aria-hidden />}
-                    <span>{tag}</span>
-                  </span>
-                );
-              })}
-            </div>
-          </section>
-        )}
-
-        {/* 7. WHAT I'M LOOKING FOR & MY RHYTHM */}
-        {(lookingForText || profile.reply_pace || relocationReadiness || timelineIntent) && (
-          <section className="p-4 rounded-3xl bg-white border border-[#D0CDE1] shadow-2xs space-y-2">
-            <h2
-              className="text-xs font-semibold uppercase tracking-wider text-[#8574B7]"
-              style={{ fontFamily: 'var(--font-brand)' }}
-            >
-              What I&apos;m Looking For
-            </h2>
-            {lookingForText && (
-              <p className="text-xs sm:text-sm font-semibold text-[#413B5E]">{lookingForText}</p>
-            )}
-            {(profile.reply_pace || relocationReadiness || timelineIntent) && (
-              <div className="flex flex-wrap gap-1.5 pt-0.5">
-                <RhythmPill field="reply_pace" value={profile.reply_pace} className="text-[11px] px-2.5 py-1" />
-                <RhythmPill field="relocation_readiness" value={profile.relocation_readiness} className="text-[11px] px-2.5 py-1" />
-                <RhythmPill field="timeline_intent" value={profile.timeline_intent} className="text-[11px] px-2.5 py-1" />
+                ))}
               </div>
-            )}
-          </section>
-        )}
+            </ProfileSection>
+          )}
 
-        {/* 8. VITALS, LIFESTYLE & LANGUAGES */}
-        {vitals.length > 0 && (
-          <section className="p-4 rounded-3xl bg-white border border-[#D0CDE1] shadow-2xs space-y-3">
-            <h2
-              className="text-xs font-semibold uppercase tracking-wider text-[#8574B7]"
-              style={{ fontFamily: 'var(--font-brand)' }}
+          {/* INTERESTS & HOBBIES */}
+          {targetInterests.length > 0 && (
+            <ProfileSection
+              title="Interests & Hobbies"
+              icon={<Tag className="w-3.5 h-3.5" />}
+              aside={
+                sharedInterests.length > 0 ? (
+                  <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#8574B7]/10 text-[#8574B7] font-medium shrink-0">
+                    {sharedInterests.length} in common
+                  </span>
+                ) : undefined
+              }
             >
-              Vitals &amp; Lifestyle
-            </h2>
-            <LifestyleBadges values={lifestyleBadges} />
-            <div className="divide-y divide-[#D0CDE1] text-xs">
-              {vitals.map((item) => (
-                <div key={item.label} className="flex items-center justify-between py-2.5 first:pt-1 last:pb-0">
-                  <span className="font-medium text-[#413B5E]/75">{item.label}</span>
-                  <span className="font-semibold text-[#413B5E]">{item.value}</span>
+              <div className="flex flex-wrap gap-1.5">
+                {targetInterests.map((tag) => {
+                  const isShared = sharedInterests.some((s) => s.toLowerCase() === String(tag).toLowerCase());
+                  const Icon = interestIcon(tag);
+                  return (
+                    <span key={tag} className={isShared ? PROFILE_TAG_SHARED : PROFILE_TAG}>
+                      {Icon && <Icon className="w-3.5 h-3.5 shrink-0" aria-hidden />}
+                      <span>{tag}</span>
+                    </span>
+                  );
+                })}
+              </div>
+            </ProfileSection>
+          )}
+
+          {/* LOOKING FOR & RHYTHM */}
+          {(lookingForText || profile.reply_pace || relocationReadiness || timelineIntent) && (
+            <ProfileSection title={isOwnProfile ? "What I'm Looking For" : "What They're Looking For"}>
+              {lookingForText && (
+                <p className="text-xs sm:text-sm font-semibold text-[#413B5E]">{lookingForText}</p>
+              )}
+              {(profile.reply_pace || relocationReadiness || timelineIntent) && (
+                <div className="flex flex-wrap gap-1.5 pt-0.5">
+                  <RhythmPill field="reply_pace" value={profile.reply_pace} className="text-[11px] px-2.5 py-1" />
+                  <RhythmPill field="relocation_readiness" value={profile.relocation_readiness} className="text-[11px] px-2.5 py-1" />
+                  <RhythmPill field="timeline_intent" value={profile.timeline_intent} className="text-[11px] px-2.5 py-1" />
                 </div>
-              ))}
-            </div>
-          </section>
-        )}
+              )}
+            </ProfileSection>
+          )}
 
-        {/* 8b. LANGUAGES SPOKEN */}
-        {languagesList.length > 0 && (
-          <section className="p-4 rounded-3xl bg-white border border-[#D0CDE1] shadow-2xs space-y-2.5">
-            <h2
-              className="text-xs font-semibold uppercase tracking-wider text-[#8574B7] flex items-center gap-1.5"
-              style={{ fontFamily: 'var(--font-brand)' }}
-            >
-              <Languages className="w-4 h-4 text-[#8574B7]" />
-              <span>Languages Spoken</span>
-            </h2>
-            <div className="flex flex-wrap gap-1.5">
-              {languagesList.map((lang) => (
-                <span
-                  key={languageLabel(lang)}
-                  className="px-3 py-1 rounded-full bg-white border border-[#D0CDE1] text-xs font-semibold text-[#413B5E]"
-                >
-                  {lang}
-                </span>
-              ))}
-            </div>
-          </section>
-        )}
+          {/* VITALS & LIFESTYLE */}
+          {vitals.length > 0 && (
+            <ProfileSection title="Vitals & Lifestyle">
+              <LifestyleBadges values={lifestyleBadges} />
+              <div className="divide-y divide-gray-100 text-xs">
+                {vitals.map((item) => (
+                  <div key={item.label} className="flex items-center justify-between py-2.5 first:pt-1 last:pb-0">
+                    <span className="font-medium text-[#413B5E]/75">{item.label}</span>
+                    <span className="font-semibold text-[#413B5E]">{item.value}</span>
+                  </div>
+                ))}
+              </div>
+            </ProfileSection>
+          )}
+
+          {/* LANGUAGES SPOKEN */}
+          {languagesList.length > 0 && (
+            <ProfileSection title="Languages Spoken" icon={<Languages className="w-3.5 h-3.5" />}>
+              <div className="flex flex-wrap gap-1.5">
+                {languagesList.map((lang) => (
+                  <span key={languageLabel(lang)} className={PROFILE_TAG}>
+                    {lang}
+                  </span>
+                ))}
+              </div>
+            </ProfileSection>
+          )}
+
+          {/* PRIVATE NOTE: a compact row near the bottom, only the viewer can read it (hidden on your own profile) */}
+          <PrivateNotesCard targetId={targetUserId} />
+        </div>
 
         {/* 9. PHOTO GALLERY */}
         {hasMultiplePhotos && (

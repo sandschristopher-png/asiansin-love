@@ -31,7 +31,7 @@ import { setCachedSubscription } from '@/lib/subscriptionStatus';
 import { createPortal } from 'react-dom';
 import { useHideBottomNav } from '@/lib/bottomNavStore';
 import { adminRoleOf } from '@/lib/adminRoles';
-import RepScoreCard from '@/components/RepScoreCard';
+import { ProfileSection, ReputationPill, PROFILE_TAG } from '@/components/profile/ProfileLayout';
 import { ProfileHighlightsEditorRow } from '@/components/ProfileHighlightsEditorRow';
 import { VoicePlayer } from '@/components/VoicePlayer';
 import { MyTrips } from '@/components/trips/ProfileTrips';
@@ -666,17 +666,16 @@ export default function MyProfilePage() {
             )}
           </div>
 
-          {/* Trust row: Verified Location + Day 1 cohort */}
-          {(locationSource === 'gps_verified' || dayOneNumber) && (
-            <div className="flex items-center gap-2 flex-wrap">
-              {locationSource === 'gps_verified' && (
-                <VerifiedLocationBadge
-                  title={locationVerifiedAt ? 'Location confirmed ' + formatVerifiedDate(locationVerifiedAt) : 'Location confirmed'}
-                />
-              )}
-              <DayOneBadge number={dayOneNumber} />
-            </div>
-          )}
+          {/* Badge row: Verified Location, Reputation (tap for "What's this?") and the Day 1 cohort */}
+          <div className="flex items-center gap-2 flex-wrap">
+            {locationSource === 'gps_verified' && (
+              <VerifiedLocationBadge
+                title={locationVerifiedAt ? 'Location confirmed ' + formatVerifiedDate(locationVerifiedAt) : 'Location confirmed'}
+              />
+            )}
+            <ReputationPill score={repScore ?? 100} />
+            <DayOneBadge number={dayOneNumber} />
+          </div>
 
           </div>
         )}
@@ -743,9 +742,6 @@ export default function MyProfilePage() {
         )}
         {voiceModalOpen && <VoiceRecordModal open onClose={() => setVoiceModalOpen(false)} onSaved={setVoiceIntroUrl} />}
 
-        {/* 2. REPUTATION */}
-        <RepScoreCard score={repScore ?? 100} />
-
         {/* Edit / Save Action Bar */}
           <div className={`w-full flex items-stretch gap-2.5 ${isEditing ? '' : 'h-12'}`}>
             {isEditing ? (
@@ -789,313 +785,266 @@ export default function MyProfilePage() {
           </div>
 
 
-        {/* ABOUT ME */}
-        <div className="p-5 rounded-3xl bg-white border border-[#D0CDE1] shadow-xs space-y-2.5">
-          <div className="flex items-center justify-between">
-            <span
-              className="text-xs font-semibold text-[#8574B7] uppercase tracking-wider"
-              style={{ fontFamily: 'var(--font-brand)' }}
-            >
-              About Me
-            </span>
-            {isEditing && (
-              <span className="text-[11px] font-medium text-slate-600">{bio.length}/500</span>
-            )}
-          </div>
-          {isEditing ? (
-            <>
-            <textarea
-              value={bio}
-              onChange={(e) => {
-                setBio(e.target.value.slice(0, 500));
-                if (bioRejected) setBioRejected(false);
-              }}
-              rows={4}
-              aria-invalid={bioRejected}
-              placeholder="Share your passions, daily life, and what makes you smile..."
-              className={`w-full p-3.5 rounded-2xl bg-white border text-base sm:text-sm text-[#413B5E] leading-relaxed placeholder-[#413B5E]/55 focus:outline-none focus:bg-white resize-none ${
-                bioRejected ? 'border-amber-500 ring-2 ring-amber-500/20' : 'border-[#D0CDE1] focus:border-[#8574B7]'
-              }`}
-            />
-            {bioRejected && (
-              <p className="text-[11px] font-medium text-amber-700">
-                Remove links, social handles, phone numbers, emails and payment apps. You can trade contact details in chat once you have matched.
+        {/* FLAT PROFILE SURFACE: one continuous white surface, sections divided by hairlines (no stacked cards) */}
+        <div>
+          {/* ABOUT ME */}
+          <ProfileSection
+            title="About Me"
+            aside={isEditing ? <span className="text-[11px] font-medium text-slate-600">{bio.length}/500</span> : undefined}
+          >
+            {isEditing ? (
+              <>
+              <textarea
+                value={bio}
+                onChange={(e) => {
+                  setBio(e.target.value.slice(0, 500));
+                  if (bioRejected) setBioRejected(false);
+                }}
+                rows={4}
+                aria-invalid={bioRejected}
+                placeholder="Share your passions, daily life, and what makes you smile..."
+                className={`w-full p-3.5 rounded-2xl bg-white border text-base sm:text-sm text-[#413B5E] leading-relaxed placeholder-[#413B5E]/55 focus:outline-none focus:bg-white resize-none ${
+                  bioRejected ? 'border-amber-500 ring-2 ring-amber-500/20' : 'border-[#D0CDE1] focus:border-[#8574B7]'
+                }`}
+              />
+              {bioRejected && (
+                <p className="text-[11px] font-medium text-amber-700">
+                  Remove links, social handles, phone numbers, emails and payment apps. You can trade contact details in chat once you have matched.
+                </p>
+              )}
+              </>
+            ) : (
+              <p className="text-xs sm:text-sm text-[#413B5E] leading-relaxed">
+                {bio || <span className="text-slate-600 italic">No bio written yet.</span>}
               </p>
             )}
-            </>
-          ) : (
-            <p className="text-xs sm:text-sm text-[#413B5E] leading-relaxed">
-              {bio || <span className="text-slate-600 italic">No bio written yet.</span>}
-            </p>
-          )}
-        </div>
+          </ProfileSection>
 
-        {/* PROFILE HIGHLIGHTS */}
-        <ProfileHighlightsEditorRow />
+          {/* PROFILE HIGHLIGHTS */}
+          <ProfileHighlightsEditorRow />
 
-        {/* INTERESTS & HOBBIES */}
-        <div className="p-5 rounded-3xl bg-white border border-[#D0CDE1] shadow-xs space-y-3">
-          <div className="flex items-center justify-between">
-            <span
-              className="text-xs font-semibold text-[#8574B7] uppercase tracking-wider"
-              style={{ fontFamily: 'var(--font-brand)' }}
-            >
-              Interests &amp; Hobbies
-            </span>
-          </div>
-
-          {isEditing ? (
-            <div className="flex flex-wrap gap-1.5">
-              {HOBBY_TAGS.map((tag) => {
-                const selected = interests.includes(tag);
-                return (
-                  <button
-                    key={tag}
-                    type="button"
-                    onClick={() => toggleHobby(tag)}
-                    className={
-                      'px-3 py-1.5 rounded-xl text-xs font-medium border transition ' +
-                      (selected
-                        ? 'bg-[#8574B7] border-[#8574B7] text-white shadow-2xs'
-                        : 'bg-white border-[#D0CDE1] text-[#413B5E]/85 hover:bg-[#E8E6F1]/70')
-                    }
-                  >
-                    {tag}
-                  </button>
-                );
-              })}
-            </div>
-          ) : (
-            <div className="flex flex-wrap gap-1.5">
-              {interests.length > 0 ? (
-                interests.map((tag) => (
-                  <span
-                    key={tag}
-                    className="px-3 py-1 rounded-full bg-[#E8E6F1]/60 border border-[#8574B7]/25 text-xs font-semibold text-[#8574B7]"
-                  >
-                    {tag}
-                  </span>
-                ))
-              ) : (
-                <span className="text-xs text-slate-600 italic">Tap Edit Profile Details to add your hobbies.</span>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* WHAT THEY'RE LOOKING FOR */}
-        <div className="p-5 rounded-3xl bg-white border border-[#D0CDE1] shadow-xs space-y-2.5">
-          <div className="flex items-center justify-between">
-            <span
-              className="text-xs font-semibold text-[#8574B7] uppercase tracking-wider"
-              style={{ fontFamily: 'var(--font-brand)' }}
-            >
-              What They&apos;re Looking For
-            </span>
-            {!isEditing && (
-              <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#E8E6F1]/60 text-[#8574B7]">
-                Goals
-              </span>
+          {/* INTERESTS & HOBBIES */}
+          <ProfileSection title="Interests & Hobbies">
+            {isEditing ? (
+              <div className="flex flex-wrap gap-1.5">
+                {HOBBY_TAGS.map((tag) => {
+                  const selected = interests.includes(tag);
+                  return (
+                    <button
+                      key={tag}
+                      type="button"
+                      onClick={() => toggleHobby(tag)}
+                      className={
+                        'px-3 py-1.5 rounded-xl text-xs font-medium border transition ' +
+                        (selected
+                          ? 'bg-[#8574B7] border-[#8574B7] text-white shadow-2xs'
+                          : 'bg-white border-[#D0CDE1] text-[#413B5E]/85 hover:bg-[#E8E6F1]/70')
+                      }
+                    >
+                      {tag}
+                    </button>
+                  );
+                })}
+              </div>
+            ) : (
+              <div className="flex flex-wrap gap-1.5">
+                {interests.length > 0 ? (
+                  interests.map((tag) => (
+                    <span key={tag} className={PROFILE_TAG}>
+                      {tag}
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-xs text-slate-600 italic">Tap Edit Profile Details to add your hobbies.</span>
+                )}
+              </div>
             )}
-          </div>
-          {isEditing ? (
-            <div className="relative">
-              <textarea
-                value={lookingFor}
-                onChange={(e) => setLookingFor(e.target.value.slice(0, 200))}
-                rows={3}
-                placeholder="Describe the partner and relationship you are looking for..."
-                className="w-full px-4 pt-3 pb-7 rounded-2xl bg-white border border-[#D0CDE1] text-xs sm:text-sm text-[#413B5E] leading-relaxed placeholder-[#413B5E]/55 focus:outline-none focus:bg-white focus:border-[#8574B7] resize-none"
+          </ProfileSection>
+
+          {/* WHAT I'M LOOKING FOR */}
+          <ProfileSection
+            title="What I'm Looking For"
+            aside={
+              !isEditing ? (
+                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#E8E6F1]/60 text-[#8574B7]">Goals</span>
+              ) : undefined
+            }
+          >
+            {isEditing ? (
+              <div className="relative">
+                <textarea
+                  value={lookingFor}
+                  onChange={(e) => setLookingFor(e.target.value.slice(0, 200))}
+                  rows={3}
+                  placeholder="Describe the partner and relationship you are looking for..."
+                  className="w-full px-4 pt-3 pb-7 rounded-2xl bg-white border border-[#D0CDE1] text-xs sm:text-sm text-[#413B5E] leading-relaxed placeholder-[#413B5E]/55 focus:outline-none focus:bg-white focus:border-[#8574B7] resize-none"
+                />
+                <span className="absolute right-3 bottom-2 text-xs text-slate-600 pointer-events-none">
+                  {lookingFor.length}/200
+                </span>
+              </div>
+            ) : (
+              <p className="text-xs sm:text-sm text-[#413B5E] leading-relaxed">
+                {lookingFor ? toIntentLabel(lookingFor) : <span className="text-slate-600 italic">No preferences added yet.</span>}
+              </p>
+            )}
+          </ProfileSection>
+
+          {/* MY RHYTHM (reply pace, relocation, timeline) */}
+          <ProfileSection title="My Rhythm">
+            {isEditing ? (
+              <RhythmSelectors value={rhythm} onChange={setRhythm} />
+            ) : rhythm.reply_pace || rhythm.relocation_readiness || rhythm.timeline_intent ? (
+              <div className="flex flex-wrap gap-1.5">
+                <RhythmPill field="reply_pace" value={rhythm.reply_pace} className="text-[11px] px-2.5 py-1" />
+                <RhythmPill field="relocation_readiness" value={rhythm.relocation_readiness} className="text-[11px] px-2.5 py-1" />
+                <RhythmPill field="timeline_intent" value={rhythm.timeline_intent} className="text-[11px] px-2.5 py-1" />
+              </div>
+            ) : (
+              <p className="text-xs text-slate-600 italic">
+                Tap Edit Profile Details to show how you message, relocation plans and your timeline.
+              </p>
+            )}
+          </ProfileSection>
+
+          {/* VITALS & LIFESTYLE */}
+          <ProfileSection title="Vitals & Lifestyle" className="space-y-4">
+            <div className="space-y-3.5 pt-1 text-xs">
+              {/* Future Plans (3-Chip Picker in Edit Mode) */}
+              <div className="flex items-center justify-between gap-2 pb-3 border-b border-gray-100">
+                <span className="font-semibold text-[#413B5E]/75">Future Plans</span>
+                {isEditing ? (
+                  <div className="flex flex-wrap items-center gap-1.5">
+                    {INTENT_CHIP_OPTIONS.map((chip) => {
+                      const selected = intent === chip.value;
+                      return (
+                        <button
+                          key={chip.value}
+                          type="button"
+                          onClick={() => setIntent(chip.value)}
+                          className={
+                            'px-3 py-1.5 rounded-xl border text-xs font-medium transition cursor-pointer ' +
+                            (selected
+                              ? 'bg-[#8574B7] text-white border-[#8574B7]'
+                              : 'bg-white text-[#413B5E]/85 border-[#D0CDE1]')
+                          }
+                        >
+                          {chip.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <span className="font-semibold text-[#413B5E]">{toIntentLabel(intent) || 'Not specified'}</span>
+                )}
+              </div>
+
+              {/* Height */}
+              <div className="flex items-center justify-between gap-2 pb-3 border-b border-gray-100">
+                <span className="font-semibold text-[#413B5E]/75">Height</span>
+                {isEditing ? (
+                  <HeightInput valueCm={heightCm} onChange={setHeightCm} />
+                ) : (
+                  <span className="font-semibold text-[#413B5E]">{formatHeight(heightCm) || 'Not specified'}</span>
+                )}
+              </div>
+
+              {/* Occupation */}
+              <div className="flex items-center justify-between gap-2 pb-3 border-b border-gray-100">
+                <span className="font-semibold text-[#413B5E]/75">Occupation</span>
+                {isEditing ? (
+                  <input
+                    type="text"
+                    value={profession}
+                    onChange={(e) => setProfession(e.target.value)}
+                    placeholder="e.g. Nurse, Engineer"
+                    className="px-3 py-1.5 rounded-xl bg-white border border-[#D0CDE1] text-xs font-semibold text-[#413B5E] focus:outline-none focus:border-[#8574B7]"
+                  />
+                ) : (
+                  <span className="font-semibold text-[#413B5E]">{profession || 'Not specified'}</span>
+                )}
+              </div>
+
+              {/* Marital Status */}
+              <div className="flex items-center justify-between gap-2 pb-3 border-b border-gray-100">
+                <span className="font-semibold text-[#413B5E]/75">Marital Status</span>
+                {isEditing ? (
+                  <SelectSheet
+                    label="Marital Status"
+                    value={maritalStatus}
+                    options={MARITAL_OPTIONS}
+                    onChange={setMaritalStatus}
+                  />
+                ) : (
+                  <span className="font-semibold text-[#413B5E]">{maritalStatus || 'Not specified'}</span>
+                )}
+              </div>
+
+              {/* Religion */}
+              <div className="flex items-center justify-between gap-2 pb-3 border-b border-gray-100">
+                <span className="font-semibold text-[#413B5E]/75">Beliefs</span>
+                {isEditing ? (
+                  <SelectSheet
+                    label="Beliefs"
+                    value={religion}
+                    options={RELIGION_OPTIONS}
+                    onChange={setReligion}
+                  />
+                ) : (
+                  <span className="font-semibold text-[#413B5E]">{religion || 'Not specified'}</span>
+                )}
+              </div>
+
+              {/* Relocation */}
+              <div className="flex items-center justify-between gap-2">
+                <span className="font-semibold text-[#413B5E]/75">Relocation</span>
+                {isEditing ? (
+                  <SelectSheet
+                    label="Relocation"
+                    value={relocation}
+                    options={RELOCATION_OPTIONS}
+                    onChange={setRelocation}
+                  />
+                ) : (
+                  <span className="font-semibold text-[#413B5E]">{relocation || 'Not specified'}</span>
+                )}
+              </div>
+            </div>
+          </ProfileSection>
+
+          {/* LANGUAGES SPOKEN */}
+          <ProfileSection title="Languages Spoken" icon={<Languages className="w-3.5 h-3.5" />}>
+            {isEditing ? (
+              <LanguagePicker
+                value={currentLanguages}
+                onChange={(next) => setUserLanguages(next.join(', '))}
               />
-              <span className="absolute right-3 bottom-2 text-xs text-slate-600 pointer-events-none">
-                {lookingFor.length}/200
-              </span>
-            </div>
-          ) : (
-            <p className="text-xs sm:text-sm text-[#413B5E] leading-relaxed">
-              {lookingFor ? toIntentLabel(lookingFor) : <span className="text-slate-600 italic">No preferences added yet.</span>}
-            </p>
-          )}
-        </div>
+            ) : (
+              <div className="flex flex-wrap gap-1.5">
+                {currentLanguages.length > 0 ? (
+                  currentLanguages.map((lang) => (
+                    <span key={lang} className={PROFILE_TAG}>
+                      {languageLabel(lang)}
+                    </span>
+                  ))
+                ) : (
+                  <span className="text-xs text-slate-600">English</span>
+                )}
+              </div>
+            )}
+          </ProfileSection>
 
-        {/* MY RHYTHM (reply pace, relocation, timeline) */}
-        <div className="p-5 rounded-3xl bg-white border border-[#D0CDE1] shadow-xs space-y-2.5">
-          <h3 className="block text-xs font-semibold text-[#8574B7] uppercase tracking-wider leading-normal">
-            My Rhythm
-          </h3>
-          {isEditing ? (
-            <RhythmSelectors value={rhythm} onChange={setRhythm} />
-          ) : rhythm.reply_pace || rhythm.relocation_readiness || rhythm.timeline_intent ? (
-            <div className="flex flex-wrap gap-1.5">
-              <RhythmPill field="reply_pace" value={rhythm.reply_pace} className="text-[11px] px-2.5 py-1" />
-              <RhythmPill field="relocation_readiness" value={rhythm.relocation_readiness} className="text-[11px] px-2.5 py-1" />
-              <RhythmPill field="timeline_intent" value={rhythm.timeline_intent} className="text-[11px] px-2.5 py-1" />
-            </div>
-          ) : (
-            <p className="text-xs text-slate-600 italic">
-              Tap Edit Profile Details to show how you message, relocation plans and your timeline.
-            </p>
-          )}
-        </div>
-
-        {/* VITALS & LIFESTYLE */}
-        <div className="p-5 rounded-3xl bg-white border border-[#D0CDE1] shadow-xs space-y-4">
-          <h3
-            className="text-xs font-semibold text-[#8574B7] uppercase tracking-wider"
-            style={{ fontFamily: 'var(--font-brand)' }}
-          >
-            Vitals &amp; Lifestyle
-          </h3>
-
-          <div className="space-y-3.5 pt-1 text-xs">
-            {/* Future Plans (3-Chip Picker in Edit Mode) */}
-            <div className="flex items-center justify-between gap-2 pb-3 border-b border-[#D0CDE1]">
-              <span className="font-semibold text-[#413B5E]/75">Future Plans</span>
-              {isEditing ? (
-                <div className="flex flex-wrap items-center gap-1.5">
-                  {INTENT_CHIP_OPTIONS.map((chip) => {
-                    const selected = intent === chip.value;
-                    return (
-                      <button
-                        key={chip.value}
-                        type="button"
-                        onClick={() => setIntent(chip.value)}
-                        className={
-                          'px-3 py-1.5 rounded-xl border text-xs font-medium transition cursor-pointer ' +
-                          (selected
-                            ? 'bg-[#8574B7] text-white border-[#8574B7]'
-                            : 'bg-white text-[#413B5E]/85 border-[#D0CDE1]')
-                        }
-                      >
-                        {chip.label}
-                      </button>
-                    );
-                  })}
-                </div>
-              ) : (
-                <span className="font-semibold text-[#413B5E]">{toIntentLabel(intent) || 'Not specified'}</span>
-              )}
-            </div>
-
-            {/* Height */}
-            <div className="flex items-center justify-between gap-2 pb-3 border-b border-[#D0CDE1]">
-              <span className="font-semibold text-[#413B5E]/75">Height</span>
-              {isEditing ? (
-                <HeightInput valueCm={heightCm} onChange={setHeightCm} />
-              ) : (
-                <span className="font-semibold text-[#413B5E]">{formatHeight(heightCm) || 'Not specified'}</span>
-              )}
-            </div>
-
-            {/* Occupation */}
-            <div className="flex items-center justify-between gap-2 pb-3 border-b border-[#D0CDE1]">
-              <span className="font-semibold text-[#413B5E]/75">Occupation</span>
-              {isEditing ? (
-                <input
-                  type="text"
-                  value={profession}
-                  onChange={(e) => setProfession(e.target.value)}
-                  placeholder="e.g. Nurse, Engineer"
-                  className="px-3 py-1.5 rounded-xl bg-white border border-[#D0CDE1] text-xs font-semibold text-[#413B5E] focus:outline-none focus:border-[#8574B7]"
-                />
-              ) : (
-                <span className="font-semibold text-[#413B5E]">{profession || 'Not specified'}</span>
-              )}
-            </div>
-
-            {/* Marital Status */}
-            <div className="flex items-center justify-between gap-2 pb-3 border-b border-[#D0CDE1]">
-              <span className="font-semibold text-[#413B5E]/75">Marital Status</span>
-              {isEditing ? (
-                <SelectSheet
-                  label="Marital Status"
-                  value={maritalStatus}
-                  options={MARITAL_OPTIONS}
-                  onChange={setMaritalStatus}
-                />
-              ) : (
-                <span className="font-semibold text-[#413B5E]">{maritalStatus || 'Not specified'}</span>
-              )}
-            </div>
-
-            {/* Religion */}
-            <div className="flex items-center justify-between gap-2 pb-3 border-b border-[#D0CDE1]">
-              <span className="font-semibold text-[#413B5E]/75">Beliefs</span>
-              {isEditing ? (
-                <SelectSheet
-                  label="Beliefs"
-                  value={religion}
-                  options={RELIGION_OPTIONS}
-                  onChange={setReligion}
-                />
-              ) : (
-                <span className="font-semibold text-[#413B5E]">{religion || 'Not specified'}</span>
-              )}
-            </div>
-
-            {/* Relocation */}
-            <div className="flex items-center justify-between gap-2">
-              <span className="font-semibold text-[#413B5E]/75">Relocation</span>
-              {isEditing ? (
-                <SelectSheet
-                  label="Relocation"
-                  value={relocation}
-                  options={RELOCATION_OPTIONS}
-                  onChange={setRelocation}
-                />
-              ) : (
-                <span className="font-semibold text-[#413B5E]">{relocation || 'Not specified'}</span>
-              )}
-            </div>
-          </div>
-        </div>
-
-        {/* LANGUAGES SPOKEN */}
-        <div className="p-5 rounded-3xl bg-white border border-[#D0CDE1] shadow-xs space-y-3">
-          <h3
-            className="text-xs font-semibold text-[#8574B7] uppercase tracking-wider flex items-center gap-1.5"
-            style={{ fontFamily: 'var(--font-brand)' }}
-          >
-            <Languages className="w-4 h-4 text-[#8574B7]" />
-            <span>Languages Spoken</span>
-          </h3>
-
-          {isEditing ? (
-            <LanguagePicker
-              value={currentLanguages}
-              onChange={(next) => setUserLanguages(next.join(', '))}
-            />
-          ) : (
-            <div className="flex flex-wrap gap-1.5">
-              {currentLanguages.length > 0 ? (
-                currentLanguages.map((lang) => (
-                  <span
-                    key={lang}
-                    className="px-3 py-1 rounded-full bg-white border border-[#D0CDE1] text-xs font-semibold text-[#413B5E]"
-                  >
-                    {languageLabel(lang)}
-                  </span>
-                ))
-              ) : (
-                <span className="text-xs text-slate-600">English</span>
-              )}
-            </div>
-          )}
-        </div>
-
-        {/* LIFESTYLE */}
-        <div className="p-5 rounded-3xl bg-white border border-[#D0CDE1] shadow-xs space-y-3">
-          <h3 className="text-xs font-semibold text-[#8574B7] uppercase tracking-wider" style={{ fontFamily: 'var(--font-brand)' }}>
-            Lifestyle
-          </h3>
-          {isEditing ? (
-            <LifestylePills values={lifestyle} onChange={(field, value) => setLifestyle((prev) => ({ ...prev, [field]: value }))} />
-          ) : (
-            <LifestyleBadges values={lifestyle} />
-          )}
-          {!isEditing && !LIFESTYLE_KEYS.some((k) => lifestyle[k]) && (
-            <p className="text-xs text-slate-600">Add your lifestyle in Edit to help matches get to know you.</p>
-          )}
+          {/* LIFESTYLE */}
+          <ProfileSection title="Lifestyle">
+            {isEditing ? (
+              <LifestylePills values={lifestyle} onChange={(field, value) => setLifestyle((prev) => ({ ...prev, [field]: value }))} />
+            ) : (
+              <LifestyleBadges values={lifestyle} />
+            )}
+            {!isEditing && !LIFESTYLE_KEYS.some((k) => lifestyle[k]) && (
+              <p className="text-xs text-slate-600">Add your lifestyle in Edit to help matches get to know you.</p>
+            )}
+          </ProfileSection>
         </div>
 
       </main>

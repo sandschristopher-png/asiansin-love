@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useEffect, useRef, useState } from 'react';
-import { Lock } from 'lucide-react';
+import { Lock, Plus } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 
 const MAX_NOTE_CHARS = 2000;
@@ -37,6 +37,9 @@ export function PrivateNotesCard({ targetId }: { targetId: string }) {
   const [note, setNote] = useState('');
   const [status, setStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const [ready, setReady] = useState(false);
+  // Collapsed to one compact row until the member taps it, or a note is already saved (then it opens by itself).
+  const [open, setOpen] = useState(false);
+  const textRef = useRef<HTMLTextAreaElement>(null);
   const savedRef = useRef('');
   const keyRef = useRef<string | null>(null);
   const uidRef = useRef<string | null>(null);
@@ -80,7 +83,10 @@ export function PrivateNotesCard({ targetId }: { targetId: string }) {
 
       // 1. Instant: the local copy.
       const cached = readCache(key);
-      if (cached) setNote(cached.note);
+      if (cached) {
+        setNote(cached.note);
+        if (cached.note.trim()) setOpen(true);
+      }
       setReady(true);
 
       // 2. The server copy wins unless the local one has edits that never reached it.
@@ -97,6 +103,7 @@ export function PrivateNotesCard({ targetId }: { targetId: string }) {
         void persist(cached.note); // push the offline edit
       } else {
         setNote(server);
+        if (server.trim()) setOpen(true);
         writeCache(key, { note: server, synced: true });
       }
     })();
@@ -108,10 +115,32 @@ export function PrivateNotesCard({ targetId }: { targetId: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- persist only reads refs and targetId
   }, [targetId]);
 
+  // Tapping the collapsed row opens the note and puts the cursor in it.
+  useEffect(() => {
+    if (open) textRef.current?.focus();
+  }, [open]);
+
   if (!ready) return null; // signed out, or your own profile
 
+  if (!open) {
+    return (
+      <section className="border-b border-gray-100 py-4">
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          aria-label="Add a private note. Only you can see this."
+          className="flex w-full items-center gap-1.5 text-left text-xs font-semibold text-[#8574B7]"
+        >
+          <Plus className="h-3.5 w-3.5 shrink-0" aria-hidden />
+          <span>Private note</span>
+          <span className="font-medium text-slate-600">· Only you can see this</span>
+        </button>
+      </section>
+    );
+  }
+
   return (
-    <section className="rounded-2xl border border-[#D0CDE1]/60 bg-white p-4 shadow-brand-sm" aria-labelledby="private-notes-title">
+    <section className="border-b border-gray-100 py-5" aria-labelledby="private-notes-title">
       <div className="flex items-center justify-between gap-3">
         <h3 id="private-notes-title" className="text-sm font-semibold text-[#413B5E]">
           Private Notes
@@ -122,6 +151,7 @@ export function PrivateNotesCard({ targetId }: { targetId: string }) {
         </span>
       </div>
       <textarea
+        ref={textRef}
         value={note}
         onChange={(e) => {
           const value = e.target.value.slice(0, MAX_NOTE_CHARS);
