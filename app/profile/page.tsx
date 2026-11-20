@@ -3,10 +3,12 @@
 import type { DbRow } from '@/lib/dbRows';
 import dynamic from 'next/dynamic';
 import { DETAIL_IMAGE, TILE_IMAGE, supabaseImage } from '@/lib/images/supabaseImage';
+import { DETAIL_PHOTO_SIZES } from '@/components/CardPhoto';
+import { PhotoCarousel } from '@/components/cards/PhotoCarousel';
 import VerifiedBadge from '@/components/VerifiedBadge';
 
 import { captureCurrentLocation, formatVerifiedDate } from '@/lib/location';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import {
@@ -133,8 +135,6 @@ export default function MyProfilePage() {
   // (becomes Main) locally; Save sends it to /api/profile/photo, Cancel restores this order.
   const [savedPhotos, setSavedPhotos] = useState<string[]>(() => initialProfile?.photos ?? []);
   const [currentPhotoIdx, setCurrentPhotoIdx] = useState(0);
-  const touchStartX = useRef<number | null>(null);
-  const justSwiped = useRef(false);
   const [age, setAge] = useState<number>(() => initialProfile?.age ?? 25);
   const [location, setLocation] = useState<string>(() => initialProfile?.location ?? '');
   const [locationSource, setLocationSource] = useState<'gps_verified' | 'self_reported'>(() => initialProfile?.locationSource ?? 'self_reported');
@@ -428,7 +428,6 @@ export default function MyProfilePage() {
 
   const photoList = Array.isArray(photos) && photos.length > 0 ? photos : avatarUrl ? [avatarUrl] : [];
   const currentImg = photoList[currentPhotoIdx] || avatarUrl;
-  const hasMultiple = photoList.length > 1;
 
   return (
     <div className="flex-1 flex flex-col w-full bg-white text-[#413B5E] font-sans">
@@ -451,37 +450,18 @@ export default function MyProfilePage() {
         {/* Framed 4:5 Portrait Card */}
         <div className="relative aspect-[4/5] w-full rounded-3xl overflow-hidden bg-white border border-[#D0CDE1] flex items-center justify-center select-none shadow-xs">
           {currentImg ? (
-            <div
-              className="w-full h-full cursor-pointer"
-              onClick={(e) => {
-                if (justSwiped.current) return;
-                const rect = e.currentTarget.getBoundingClientRect();
-                const isLeft = e.clientX - rect.left < rect.width / 2;
-                setCurrentPhotoIdx((prev) =>
-                  isLeft
-                    ? (prev - 1 + photoList.length) % Math.max(photoList.length, 1)
-                    : (prev + 1) % Math.max(photoList.length, 1)
-                );
-              }}
-              onTouchStart={(e) => { touchStartX.current = e.touches[0].clientX; }}
-              onTouchEnd={(e) => {
-                const startX = touchStartX.current;
-                if (startX == null) return;
-                const dx = e.changedTouches[0].clientX - startX;
-                if (Math.abs(dx) > 40) {
-                  justSwiped.current = true;
-                  setTimeout(() => { justSwiped.current = false; }, 400);
-                  setCurrentPhotoIdx((prev) =>
-                    dx > 0
-                      ? (prev - 1 + photoList.length) % Math.max(photoList.length, 1)
-                      : (prev + 1) % Math.max(photoList.length, 1)
-                  );
-                }
-                touchStartX.current = null;
-              }}
-            >
-              <img src={supabaseImage(currentImg, DETAIL_IMAGE)} alt={username} className="w-full h-full object-cover pointer-events-none" draggable={false} />
-            </div>
+            // The same swipe / tap / arrow-key carousel as other members' profiles: smooth glide, no tap lockout.
+            <PhotoCarousel
+              photos={photoList.length > 0 ? photoList : [currentImg]}
+              alt={username}
+              sizes={DETAIL_PHOTO_SIZES}
+              edge={DETAIL_IMAGE}
+              priority
+              tapNavigation="always"
+              index={currentPhotoIdx}
+              onIndexChange={setCurrentPhotoIdx}
+              imgClassName="object-cover pointer-events-none"
+            />
           ) : (
             <Link href="/profile/edit" className="flex flex-col items-center justify-center text-[#726E97] p-6 text-center">
               <div className="w-14 h-14 rounded-2xl bg-[#EAE9F2]/60 flex items-center justify-center mb-2">
@@ -508,18 +488,6 @@ export default function MyProfilePage() {
             <span>{photoList.length > 0 ? photoList.length : 'Add'}</span>
           </Link>
 
-          {hasMultiple && (
-            <div className="absolute bottom-4 left-0 right-0 flex justify-center gap-1.5 z-10">
-              {photoList.map((_, idx) => (
-                <button
-                  key={idx}
-                  type="button"
-                  onClick={() => setCurrentPhotoIdx(idx)}
-                  className={'h-1.5 rounded-full transition-all ' + (idx === currentPhotoIdx ? 'w-6 bg-white' : 'w-1.5 bg-white/50')}
-                />
-              ))}
-            </div>
-          )}
         </div>
 
         {/* Photo gallery (edit mode): delete badges, 1-photo minimum */}
