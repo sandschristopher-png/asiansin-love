@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from 'next';
-import Script from 'next/script';
 
 import PwaRegister from "@/components/PwaRegister";
+import { TravelpayoutsDrive } from '@/components/TravelpayoutsDrive';
 
 import { Inter, Noto_Sans_Khmer, Noto_Sans_Thai, Plus_Jakarta_Sans } from 'next/font/google';
 import './globals.css';
@@ -128,29 +128,8 @@ export default function RootLayout({
               "window.addEventListener('beforeinstallprompt',function(e){e.preventDefault();window.__ailInstallEvent=e;});",
           }}
         />
-        {/* Travelpayouts Drive AI. The loader below is the snippet from the Travelpayouts dashboard, unchanged: it
-            creates an async <script data-cmp-ab="2"> for tpembars.com and appends it to <head>. afterInteractive runs it
-            after the page has hydrated, so it can never hold up the first paint or the app itself. The attributes on
-            the wrapper are the snippet's own. */}
-        <Script
-          id="travelpayouts-drive"
-          strategy="afterInteractive"
-          data-noptimize="1"
-          data-cfasync="false"
-          data-wpfc-render="false"
-          data-no-defer="1"
-          data-cmp-ab="2"
-          {...{ nowprocket: '', 'seraph-accel-crit': '1' }}
-          dangerouslySetInnerHTML={{
-            __html: `(function () {
-      var script = document.createElement("script");
-      script.async = 1;
-      script.setAttribute("data-cmp-ab","2");
-      script.src = 'https://tpembars.com/NjA0MjM2.js?t=604236';
-      document.head.appendChild(script);
-  })();`,
-          }}
-        />
+        {/* Travelpayouts Drive AI: public pages only, never the signed-in app (components/TravelpayoutsDrive.tsx). */}
+        <TravelpayoutsDrive />
       </head>
       <body className="font-sans bg-slate-100 text-[#413B5E] h-full selection:bg-[#726E97] selection:text-white antialiased overflow-hidden">
         {/* App language for every route: starts in English, then adopts the member's saved language. */}

@@ -16,7 +16,8 @@
     "stepup:test": "node scripts/test-stepup.mjs",
     "billing:test": "node scripts/test-ccbill.mjs",
     "landing:test": "node scripts/test-landing-geo.mjs",
-    "gate:test": "node scripts/test-message-gate.mjs"
+    "gate:test": "node scripts/test-message-gate.mjs",
+    "tp:test": "node scripts/test-tp-scope.mjs"
   },
   "dependencies": {
     "@google/genai": "^2.24.0",
