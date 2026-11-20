@@ -481,6 +481,17 @@ function DiscoverContent() {
             setViewerAvatar(v.avatarUrl ?? null);
             setSeekingGender(v.gender === 'male' ? 'female' : v.gender === 'female' ? 'male' : null);
             setViewerIsPlus(v.isPlus === true);
+            // /discover?visiting=<hub city> (from the city pages): Plus members land on that city's visitors; the
+            // filter is a Plus feature (the server ignores it otherwise), so everyone else is shown what it is.
+            const wantHub = (new URLSearchParams(window.location.search).get('visiting') || '').trim();
+            if (wantHub && HUB_FILTER_OPTIONS.some((o) => o.value === wantHub)) {
+              if (v.isPlus === true) {
+                setSelectedHub(wantHub);
+              } else {
+                router.replace('/plus?feature=hub');
+                return;
+              }
+            }
           }
           if (Array.isArray(payload.favoriteIds)) {
             setCardActions((prev) => {

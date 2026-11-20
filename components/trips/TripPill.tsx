@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Plane } from 'lucide-react';
 import { useLocale } from '@/components/i18n/LocaleProvider';
 import { TripDrawer } from '@/components/trips/TripDrawer';
 import { type Trip } from '@/lib/trips';
@@ -27,9 +26,8 @@ export function TripPill({ trips }: { trips: Trip[] }) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex max-w-full items-center gap-1.5 rounded-full border border-[#DCEBFF] bg-[#EBF3FF] px-3 py-1 text-xs font-semibold text-[#3B66A8] hover:bg-[#DCEBFF] transition-colors"
+        className="inline-flex max-w-full items-center rounded-full border border-[#726E97]/20 bg-[#EAE9F2] px-3 py-1 text-xs font-semibold text-[#524E75] hover:border-[#726E97]/40 transition-colors"
       >
-        <Plane className="w-3.5 h-3.5 shrink-0" aria-hidden />
         <span className="truncate" suppressHydrationWarning>
           {label}
         </span>

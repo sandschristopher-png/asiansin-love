@@ -27,7 +27,7 @@ import { supabase } from '@/lib/supabase/client';
 import { VoicePlayer } from '@/components/VoicePlayer';
 import { ageOf } from '@/lib/age';
 import { useShare } from '@/components/share/useShare';
-import { MemberTrips } from '@/components/trips/ProfileTrips';
+import { MemberTrips } from '@/components/VisitingSoonSection';
 import { CardPhoto, DETAIL_PHOTO_SIZES } from '@/components/CardPhoto';
 import { PhotoCarousel } from '@/components/cards/PhotoCarousel';
 import { DETAIL_IMAGE, supabaseImage } from '@/lib/images/supabaseImage';

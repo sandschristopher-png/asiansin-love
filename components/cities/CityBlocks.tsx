@@ -51,6 +51,15 @@ export function VisitingSoonCallout({ cityName }: { cityName: string }) {
               >
                 See Meet in Asia Plus
               </Link>
+              <p className="mt-2.5 text-xs text-[#413B5E]/75">
+                Plus member?{' '}
+                <Link
+                  href={`/discover?visiting=${encodeURIComponent(cityName)}`}
+                  className="font-medium text-[#726E97] underline underline-offset-4 transition-colors hover:text-[#524E75]"
+                >
+                  Browse members visiting {cityName}
+                </Link>
+              </p>
             </div>
           </div>
         </div>

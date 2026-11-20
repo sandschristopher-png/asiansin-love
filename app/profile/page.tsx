@@ -34,7 +34,7 @@ import { adminRoleOf } from '@/lib/adminRoles';
 import { ProfileSection, ReputationPill, PROFILE_TAG } from '@/components/profile/ProfileLayout';
 import { ProfileHighlightsEditorRow } from '@/components/ProfileHighlightsEditorRow';
 import { VoicePlayer } from '@/components/VoicePlayer';
-import { MyTrips } from '@/components/trips/ProfileTrips';
+import { MyTrips } from '@/components/VisitingSoonSection';
 import { DayOneBadge, NewMemberPill, VerifiedLocationBadge } from '@/components/profile/TrustBadges';
 import { isTrustedVoiceIntroUrl } from '@/lib/audio';
 import { BIO_REJECTION_MESSAGE } from '@/lib/moderation/textFilter';

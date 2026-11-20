@@ -14,8 +14,10 @@ import { validateProfileContent } from '@/lib/moderation';
 import { MAX_DAYS_AHEAD, MAX_NOTE_LEN, MAX_TRIP_DAYS, TRIP_HUBS, isoToday } from '@/lib/tripHubs';
 import type { Trip } from '@/lib/trips';
 
+// Pill fields (destination, dates); the note is multi-line, so it keeps rounded corners instead of a pill.
 const FIELD =
-  'w-full px-3.5 py-2.5 rounded-xl bg-white border border-[#D0CDE1] text-sm text-[#413B5E] placeholder:text-slate-400 focus:outline-none focus:border-[#726E97]';
+  'w-full px-4 py-2.5 rounded-full bg-white border border-[#D0CDE1] text-sm text-[#413B5E] placeholder:text-slate-400 focus:outline-none focus:border-[#726E97]';
+const FIELD_AREA = FIELD.replace('rounded-full', 'rounded-2xl');
 const LABEL = 'block text-[11px] font-semibold uppercase tracking-wider text-slate-600 mb-1.5';
 
 /**
@@ -159,7 +161,7 @@ export function TripPlannerModal({
             onChange={(e) => setNote(e.target.value)}
             aria-invalid={!noteCheck.isValid}
             placeholder={t('travel.planner.notePlaceholder')}
-            className={`${FIELD} resize-none ${noteCheck.isValid ? '' : 'border-red-400 focus:border-red-500'}`}
+            className={`${FIELD_AREA} resize-none ${noteCheck.isValid ? '' : 'border-red-400 focus:border-red-500'}`}
           />
           <div className="mt-1 flex items-start justify-between gap-3">
             {noteCheck.isValid ? <span /> : <p className="text-xs text-red-600 font-medium" role="alert">{noteMessage}</p>}

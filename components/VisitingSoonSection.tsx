@@ -119,7 +119,7 @@ export function MyTrips({ userId, isPlus }: { userId: string | null | undefined;
                       </p>
                     </div>
                     <span
-                      className="shrink-0 rounded-full bg-[#726E97]/15 px-2 py-0.5 text-[10px] font-semibold leading-none text-[#726E97]"
+                      className="shrink-0 rounded-full border border-[#726E97]/20 bg-[#EAE9F2] px-2 py-0.5 text-[10px] font-semibold leading-none text-[#524E75]"
                       suppressHydrationWarning
                     >
                       {tripStatusText({ city: trip.destination_city, arrival: trip.start_date, departure: trip.end_date }, t, isoToday())}
