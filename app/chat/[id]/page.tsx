@@ -1319,7 +1319,6 @@ export default function ChatConversationPage() {
   // Unlock progress for the header indicator: each side's count (capped at the target) and how far along both are.
   const gateMine = Math.min(liveGate.senderSubstantiveCount, CONTACT_UNLOCK_TURNS);
   const gateTheirs = Math.min(liveGate.receiverSubstantiveCount, CONTACT_UNLOCK_TURNS);
-  const gateProgress = (gateMine + gateTheirs) / (2 * CONTACT_UNLOCK_TURNS);
   const showGate = !isInitialLoading && !gateUnlocked;
 
   return (
@@ -1327,7 +1326,7 @@ export default function ChatConversationPage() {
       {/* Room for the slim "Return to call" bar pinned above the header while the call screen is minimized */}
       {call.inCall && call.minimized && call.phase !== 'incoming' && <div className="h-9 shrink-0" aria-hidden />}
       {/* Sticky Header */}
-      <header className="relative flex items-center justify-between px-3.5 pb-2.5 pt-[calc(0.625rem+env(safe-area-inset-top,0px))] bg-white/95 backdrop-blur-md border-b border-[#D0CDE1] shrink-0 z-20">
+      <header className="relative flex items-center justify-between px-3.5 pb-2.5 pt-[calc(0.625rem+env(safe-area-inset-top,0px))] bg-white/95 backdrop-blur-md border-b border-gray-100 shrink-0 z-20">
         <div className="flex items-center gap-2 min-w-0">
           <BackButton fallback="/messages" variant="plain" className="-ml-1.5" />
 
@@ -1465,15 +1464,8 @@ export default function ChatConversationPage() {
           </div>
         )}
 
-        {/* Unlock progress: a thin bar along the header's lower edge, a small pill on it, and a drawer with the
-            detail. It replaces the banner that used to sit above the message box. */}
-        {showGate && (
-          <>
-            <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-[2px] bg-[#E8E6F1]">
-              <div className="h-full rounded-r-full bg-[#8574B7] transition-[width] duration-500 ease-out" style={{ width: `${Math.round(gateProgress * 100)}%` }} />
-            </div>
-          </>
-        )}
+        {/* Unlock progress lives in the shield popover below (labeled bars per member); the header edge stays a plain
+            divider so it never reads as a stuck page-loading bar. */}
         {!isInitialLoading && gateUnlocked && gateLockedOnOpen && (
           // The moment it opens: a brief "Unlocked" that fades by itself (no timer state needed).
           <span className="ail-gate-done pointer-events-none absolute right-3.5 top-full z-10 mt-2 inline-flex h-6 items-center gap-1 rounded-full bg-[#8574B7] px-2.5 text-[11px] font-semibold text-white shadow-[0_4px_12px_rgba(133,116,183,0.35)]">
@@ -1514,6 +1506,11 @@ export default function ChatConversationPage() {
                 </div>
               </>
             ) : null}
+            {(callUnlock === 'few_messages' || callUnlock === 'unverified') && (
+              <p className={`text-[11.5px] leading-relaxed text-slate-600 ${showGate ? 'mt-3' : 'pr-7'}`}>
+                {callUnlock === 'unverified' ? t('call.unverifiedTip') : t('call.lockedTip')}
+              </p>
+            )}
             <button
               type="button"
               onClick={() => {
