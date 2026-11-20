@@ -4,7 +4,7 @@ import type { HeaderProfile } from '@/lib/headerProfileStore';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { User, Settings, LogOut, ShieldAlert, Megaphone, CreditCard } from 'lucide-react';
+import { User, Settings, LogOut, ShieldAlert, Megaphone, CreditCard, ChevronDown } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { hardSignOut } from '@/lib/hardSignOut';
 import { isPlusProfile } from '@/lib/plus';
@@ -158,16 +158,25 @@ export function HeaderActions({ action }: { action?: HeaderAction }) {
           type="button"
           onClick={() => setMenuOpen((o) => !o)}
           aria-label="Open account menu"
+          title="Account menu"
           aria-haspopup="menu"
           aria-expanded={menuOpen}
-          className="w-9 h-9 flex items-center justify-center rounded-full bg-[#EAE9F2]/70 text-[#726E97] transition-opacity hover:opacity-90"
+          // A pill, not a bare photo: the chevron says "this opens a menu", and it turns over (with a soft fill) while open.
+          className={`flex h-9 items-center gap-0.5 rounded-full pr-1.5 text-[#726E97] transition-colors hover:bg-[#EAE9F2] ${menuOpen ? 'bg-[#EAE9F2]' : ''}`}
         >
-          {profile?.avatar_url ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={supabaseImage(profile.avatar_url, AVATAR_IMAGE)} alt="" width={36} height={36} className="w-9 h-9 rounded-full object-cover" />
-          ) : (
-            <User className="w-5 h-5" aria-hidden />
-          )}
+          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#EAE9F2]/70 ring-1 ring-[#726E97]/20">
+            {profile?.avatar_url ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={supabaseImage(profile.avatar_url, AVATAR_IMAGE)} alt="" width={36} height={36} className="w-9 h-9 rounded-full object-cover" />
+            ) : (
+              <User className="w-5 h-5" aria-hidden />
+            )}
+          </span>
+          <ChevronDown
+            className={`h-3.5 w-3.5 transition-transform duration-200 motion-reduce:transition-none ${menuOpen ? 'rotate-180 text-[#524E75]' : ''}`}
+            strokeWidth={2.25}
+            aria-hidden
+          />
         </button>
         {menuOpen && (
           // Account actions only; notifications live in the bell panel.
