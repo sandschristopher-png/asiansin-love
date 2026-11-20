@@ -1,3 +1,4 @@
+import { CityFooterLinks } from '@/components/CityFooterLinks';
 import { IceFrame } from '@/components/ui/IceFrame';
 import type { Metadata } from 'next';
 import Link from 'next/link';
@@ -241,6 +242,10 @@ export default async function CityPage({ params }: Params) {
             </p>
           </section>
         )}
+
+        <footer className="pt-8 border-t border-[#D0CDE1]/60 text-center">
+          <CityFooterLinks />
+        </footer>
       </div>
     </main>
   );

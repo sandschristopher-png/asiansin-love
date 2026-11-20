@@ -73,7 +73,9 @@
     "safety": "Keamanan",
     "terms": "Ketentuan",
     "privacy": "Privasi",
-    "contact": "Kontak"
+    "contact": "Kontak",
+    "refunds": "Kebijakan pengembalian dana",
+    "cancellation": "Pembatalan"
   },
   "common": {
     "language": "Bahasa",
@@ -369,7 +371,10 @@
       "legalRefunds": "Kebijakan pengembalian dana",
       "legalCancel": "Pembatalan",
       "legalPrivacy": "Privasi",
-      "legalSupport": "Dukungan"
+      "legalSupport": "Dukungan",
+      "supportSla": "Kami membalas permintaan dukungan dalam 24–48 jam kerja.",
+      "cancelPortal": "Kamu juga bisa membatalkan penagihan berulang kapan saja melalui portal dukungan pelanggan CCBill di {url}, atau dengan mengirim email ke dukungan sebelum tanggal perpanjangan berikutnya.",
+      "descriptor": "Tagihan akan muncul di laporan tagihanmu atas nama pemroses pembayaran resmi kami, CCBill."
     }
   },
   "messages": {

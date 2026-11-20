@@ -129,6 +129,10 @@ function LandingBody() {
             <span className="text-[#D0CDE1]" aria-hidden="true">•</span>
             <Link className="hover:text-[#8574B7] transition-colors" href="/privacy">{m.footer.privacy}</Link>
             <span className="text-[#D0CDE1]" aria-hidden="true">•</span>
+            <Link className="hover:text-[#8574B7] transition-colors" href="/terms#refunds">{m.footer.refunds}</Link>
+            <span className="text-[#D0CDE1]" aria-hidden="true">•</span>
+            <Link className="hover:text-[#8574B7] transition-colors" href="/terms#cancellation">{m.footer.cancellation}</Link>
+            <span className="text-[#D0CDE1]" aria-hidden="true">•</span>
             <Link className="hover:text-[#8574B7] transition-colors" href="/contact">{m.footer.contact}</Link>
           </nav>
           <p className="mt-2 text-[11px] text-slate-600">© {new Date().getFullYear()} Meet in Asia</p>

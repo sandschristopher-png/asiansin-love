@@ -73,7 +73,9 @@
     "safety": "安全",
     "terms": "条款",
     "privacy": "隐私",
-    "contact": "联系我们"
+    "contact": "联系我们",
+    "refunds": "退款政策",
+    "cancellation": "取消订阅"
   },
   "common": {
     "language": "语言",
@@ -369,7 +371,10 @@
       "legalRefunds": "退款政策",
       "legalCancel": "取消订阅",
       "legalPrivacy": "隐私",
-      "legalSupport": "支持"
+      "legalSupport": "支持",
+      "supportSla": "我们会在 24–48 个工作小时内回复支持请求。",
+      "cancelPortal": "您也可以在下次续订日期之前，随时通过 CCBill 客户支持门户（{url}）或发送邮件联系支持团队来取消定期扣费。",
+      "descriptor": "扣款将以我们授权的支付处理商 CCBill 的名义显示在您的账单上。"
     }
   },
   "messages": {

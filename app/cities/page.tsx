@@ -1,3 +1,4 @@
+import { CityFooterLinks } from '@/components/CityFooterLinks';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BrandLogo } from '@/components/BrandLogo';
@@ -80,6 +81,10 @@ export default function CitiesIndexPage() {
             </section>
           );
         })}
+
+        <footer className="pt-8 border-t border-[#D0CDE1]/60 text-center">
+          <CityFooterLinks />
+        </footer>
       </div>
     </main>
   );

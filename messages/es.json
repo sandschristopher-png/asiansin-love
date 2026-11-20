@@ -73,7 +73,9 @@
     "safety": "Seguridad",
     "terms": "Términos",
     "privacy": "Privacidad",
-    "contact": "Contacto"
+    "contact": "Contacto",
+    "refunds": "Política de reembolsos",
+    "cancellation": "Cancelación"
   },
   "common": {
     "language": "Idioma",
@@ -369,7 +371,10 @@
       "legalRefunds": "Política de reembolsos",
       "legalCancel": "Cancelación",
       "legalPrivacy": "Privacidad",
-      "legalSupport": "Soporte"
+      "legalSupport": "Soporte",
+      "supportSla": "Respondemos a las solicitudes de soporte en un plazo de 24 a 48 horas hábiles.",
+      "cancelPortal": "También puedes cancelar la facturación recurrente en cualquier momento en el portal de atención al cliente de CCBill, en {url}, o escribiendo a soporte antes de tu próxima fecha de renovación.",
+      "descriptor": "Los cargos aparecerán en tu estado de cuenta a nombre de nuestro procesador de pagos autorizado, CCBill."
     }
   },
   "messages": {

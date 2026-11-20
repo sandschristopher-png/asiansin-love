@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { LegalPage, type LegalSection } from '@/components/LegalPage';
+import { SUPPORT_RESPONSE_EN } from '@/lib/support';
 
 export const metadata: Metadata = {
   title: 'Contact',
@@ -13,11 +14,14 @@ const sections: LegalSection[] = [
   {
     title: 'Support',
     body: (
-      <p>
-        Questions about your account, verification or Plus: email{' '}
-        <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>. Include the email you signed up with so we can find your
-        account.
-      </p>
+      <>
+        <p>
+          Questions about your account, verification or Plus: email{' '}
+          <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a>. Include the email you signed up with so we can find your
+          account.
+        </p>
+        <p>{SUPPORT_RESPONSE_EN}</p>
+      </>
     ),
   },
   {

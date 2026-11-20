@@ -73,7 +73,9 @@
     "safety": "An toàn",
     "terms": "Điều khoản",
     "privacy": "Quyền riêng tư",
-    "contact": "Liên hệ"
+    "contact": "Liên hệ",
+    "refunds": "Chính sách hoàn tiền",
+    "cancellation": "Hủy gói"
   },
   "common": {
     "language": "Ngôn ngữ",
@@ -369,7 +371,10 @@
       "legalRefunds": "Chính sách hoàn tiền",
       "legalCancel": "Hủy gói",
       "legalPrivacy": "Quyền riêng tư",
-      "legalSupport": "Hỗ trợ"
+      "legalSupport": "Hỗ trợ",
+      "supportSla": "Chúng tôi phản hồi yêu cầu hỗ trợ trong vòng 24–48 giờ làm việc.",
+      "cancelPortal": "Bạn cũng có thể hủy thanh toán định kỳ bất cứ lúc nào qua cổng hỗ trợ khách hàng của CCBill tại {url}, hoặc gửi email cho bộ phận hỗ trợ trước ngày gia hạn tiếp theo.",
+      "descriptor": "Khoản phí sẽ hiển thị trên sao kê của bạn dưới tên đơn vị xử lý thanh toán được ủy quyền của chúng tôi, CCBill."
     }
   },
   "messages": {

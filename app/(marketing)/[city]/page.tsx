@@ -1,3 +1,4 @@
+import { CityFooterLinks } from '@/components/CityFooterLinks';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -179,11 +180,7 @@ export default async function CityLandingPage({ params }: { params: Promise<{ ci
           >
             Create your free profile
           </Link>
-          <p className="mt-6 text-[11px] text-slate-600">
-            Members must be 18 or older. <Link href="/terms" className="underline underline-offset-4">Terms</Link> ·{' '}
-            <Link href="/privacy" className="underline underline-offset-4">Privacy</Link> ·{' '}
-            <Link href="/safety" className="underline underline-offset-4">Safety</Link>
-          </p>
+          <CityFooterLinks className="mt-6" />
         </section>
       </div>
     </main>

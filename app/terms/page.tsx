@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { LegalPage, type LegalSection } from '@/components/LegalPage';
+import { CCBILL_SUPPORT_URL, SUPPORT_RESPONSE_EN } from '@/lib/support';
 
 export const metadata: Metadata = {
   title: 'Terms of Service',
@@ -84,6 +85,7 @@ const sections: LegalSection[] = [
           Subscriptions <strong>renew automatically</strong> at the end of each period until you cancel. Taxes may apply.
           Prices can change; any change applies from your next renewal and we will tell you before it does.
         </p>
+        <p>Charges will appear on your billing statement under our authorized payment processor, CCBill.</p>
       </>
     ),
   },
@@ -93,10 +95,23 @@ const sections: LegalSection[] = [
     body: (
       <>
         <p>
-          <strong>Cancel anytime</strong> by emailing support@meetin.asia (Settings shows the same address). Cancelling stops
-          future renewals; you keep Plus until the end of the period you already paid for.
+          <strong>Cancel anytime</strong> before your next renewal date, in either of two ways:
         </p>
-        <p>Please cancel before you delete your account.</p>
+        <ul>
+          <li>
+            Through CCBill&apos;s customer support portal at{' '}
+            <a href={CCBILL_SUPPORT_URL} target="_blank" rel="noopener noreferrer">
+              support.ccbill.com
+            </a>
+            .
+          </li>
+          <li>By emailing support@meetin.asia (Settings shows the same address).</li>
+        </ul>
+        <p>
+          Cancelling stops future renewals; you keep Plus until the end of the period you already paid for. Please cancel
+          before you delete your account.
+        </p>
+        <p>{SUPPORT_RESPONSE_EN}</p>
       </>
     ),
   },
@@ -104,10 +119,18 @@ const sections: LegalSection[] = [
     id: 'refunds',
     title: 'Refunds',
     body: (
-      <p>
-        Payments are non-refundable except where the law requires otherwise. For a question about a charge, email
-        support@meetin.asia from the address you signed up with.
-      </p>
+      <>
+        <p>Payments are non-refundable except where the law requires otherwise.</p>
+        <p>
+          Accidental charges, duplicate billing and technical billing errors are reviewed on a case-by-case basis when they
+          are reported promptly to support. Email support@meetin.asia from the address you signed up with and include the
+          date and amount of the charge.
+        </p>
+        <p>
+          If you have a billing issue, please contact support first so we can resolve it before you start a chargeback or
+          dispute with your bank or card issuer. {SUPPORT_RESPONSE_EN}
+        </p>
+      </>
     ),
   },
   {
