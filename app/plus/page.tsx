@@ -12,7 +12,7 @@ import { isPlusProfile } from '@/lib/plus';
 import { PlusBadge } from '@/components/ui/PlusBadge';
 import { useLocale } from '@/components/i18n/LocaleProvider';
 import { useActionToast } from '@/components/ActionToast';
-import { SUPPORT_EMAIL, CCBILL_SUPPORT_URL } from '@/lib/support';
+import { SUPPORT_EMAIL } from '@/lib/support';
 import type { TKey } from '@/lib/i18n';
 import { getCachedSubscription, setCachedSubscription } from '@/lib/subscriptionStatus';
 import { TRIP_HUBS } from '@/lib/tripHubs';
@@ -85,22 +85,6 @@ function FreeMark({ mark, label }: { mark: Mark; label: string }) {
   if (mark === 'all') return <Check className="w-3.5 h-3.5 mt-px shrink-0 text-slate-600" strokeWidth={2.5} aria-label={label} />;
   if (mark === 'partial') return <Minus className="w-3.5 h-3.5 mt-px shrink-0 text-slate-400" strokeWidth={2.5} aria-hidden />;
   return <X className="w-3.5 h-3.5 mt-px shrink-0 text-[#413B5E]/30" strokeWidth={2.5} aria-label={label} />;
-}
-
-/** A translated sentence with one link inside it: the template carries LINK_TOKEN where the link goes. */
-const LINK_TOKEN = '\u0001';
-function TextWithLink({ text, href, label }: { text: string; href: string; label: string }) {
-  const [before, after] = text.split(LINK_TOKEN);
-  if (after === undefined) return <>{text}</>;
-  return (
-    <>
-      {before}
-      <a href={href} target="_blank" rel="noopener noreferrer" className="font-medium text-[#8574B7] underline underline-offset-4">
-        {label}
-      </a>
-      {after}
-    </>
-  );
 }
 
 function Drawer({ title, children, open = false }: { title: string; children: React.ReactNode; open?: boolean }) {
@@ -290,9 +274,6 @@ function PlusHubContent() {
                   {SUPPORT_EMAIL}
                 </a>
               </p>
-              <p className="mt-1 text-xs leading-relaxed text-slate-600">
-                <TextWithLink text={t('plus.page.cancelPortal', { url: LINK_TOKEN })} href={CCBILL_SUPPORT_URL} label="support.ccbill.com" />
-              </p>
               <p className="mt-1 text-xs leading-relaxed text-slate-600">{t('plus.page.supportSla')}</p>
             </div>
           </section>
@@ -350,9 +331,6 @@ function PlusHubContent() {
               <li>{t('plus.page.billing2', { p1: plusPlan('1m').total, p3: plusPlan('3m').total, p6: plusPlan('6m').total })}</li>
               <li>{t('plus.page.descriptor')}</li>
               <li>{t('plus.page.billing3', { email: SUPPORT_EMAIL })}</li>
-              <li>
-                <TextWithLink text={t('plus.page.cancelPortal', { url: LINK_TOKEN })} href={CCBILL_SUPPORT_URL} label="support.ccbill.com" />
-              </li>
               <li>{t('plus.page.supportSla')}</li>
               <li>{t('plus.page.billing4')}</li>
             </ul>

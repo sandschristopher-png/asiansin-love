@@ -373,8 +373,7 @@
       "legalPrivacy": "Privasi",
       "legalSupport": "Sokongan",
       "supportSla": "Kami membalas permintaan sokongan dalam masa 24–48 jam bekerja.",
-      "cancelPortal": "Anda juga boleh membatalkan pengebilan berulang pada bila-bila masa melalui portal sokongan pelanggan CCBill di {url}, atau dengan menghantar e-mel kepada sokongan sebelum tarikh pembaharuan anda yang seterusnya.",
-      "descriptor": "Caj akan dipaparkan pada penyata bil anda di bawah pemproses pembayaran sah kami, CCBill."
+      "descriptor": "Caj akan dipaparkan pada penyata bil anda di bawah pemproses pembayaran sah kami."
     }
   },
   "messages": {

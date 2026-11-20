@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { LegalPage, type LegalSection } from '@/components/LegalPage';
-import { CCBILL_SUPPORT_URL, SUPPORT_RESPONSE_EN } from '@/lib/support';
+import { SUPPORT_RESPONSE_EN } from '@/lib/support';
 
 export const metadata: Metadata = {
   title: 'Terms of Service',
@@ -85,7 +85,7 @@ const sections: LegalSection[] = [
           Subscriptions <strong>renew automatically</strong> at the end of each period until you cancel. Taxes may apply.
           Prices can change; any change applies from your next renewal and we will tell you before it does.
         </p>
-        <p>Charges will appear on your billing statement under our authorized payment processor, CCBill.</p>
+        <p>Charges will appear on your billing statement under our authorized payment processor.</p>
       </>
     ),
   },
@@ -95,21 +95,9 @@ const sections: LegalSection[] = [
     body: (
       <>
         <p>
-          <strong>Cancel anytime</strong> before your next renewal date, in either of two ways:
-        </p>
-        <ul>
-          <li>
-            Through CCBill&apos;s customer support portal at{' '}
-            <a href={CCBILL_SUPPORT_URL} target="_blank" rel="noopener noreferrer">
-              support.ccbill.com
-            </a>
-            .
-          </li>
-          <li>By emailing support@meetin.asia (Settings shows the same address).</li>
-        </ul>
-        <p>
-          Cancelling stops future renewals; you keep Plus until the end of the period you already paid for. Please cancel
-          before you delete your account.
+          <strong>Cancel anytime</strong> before your next renewal date by emailing support@meetin.asia (Settings shows the
+          same address). Cancelling stops future renewals; you keep Plus until the end of the period you already paid for.
+          Please cancel before you delete your account.
         </p>
         <p>{SUPPORT_RESPONSE_EN}</p>
       </>

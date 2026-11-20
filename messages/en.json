@@ -373,8 +373,7 @@
       "legalPrivacy": "Privacy",
       "legalSupport": "Support",
       "supportSla": "We respond to support requests within 24–48 business hours.",
-      "cancelPortal": "You can also cancel recurring billing anytime through CCBill's customer support portal at {url}, or by emailing support before your next renewal date.",
-      "descriptor": "Charges will appear on your billing statement under our authorized payment processor, CCBill."
+      "descriptor": "Charges will appear on your billing statement under our authorized payment processor."
     }
   },
   "messages": {

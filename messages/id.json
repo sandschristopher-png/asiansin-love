@@ -373,8 +373,7 @@
       "legalPrivacy": "Privasi",
       "legalSupport": "Dukungan",
       "supportSla": "Kami membalas permintaan dukungan dalam 24–48 jam kerja.",
-      "cancelPortal": "Kamu juga bisa membatalkan penagihan berulang kapan saja melalui portal dukungan pelanggan CCBill di {url}, atau dengan mengirim email ke dukungan sebelum tanggal perpanjangan berikutnya.",
-      "descriptor": "Tagihan akan muncul di laporan tagihanmu atas nama pemroses pembayaran resmi kami, CCBill."
+      "descriptor": "Tagihan akan muncul di laporan tagihanmu atas nama pemroses pembayaran resmi kami."
     }
   },
   "messages": {

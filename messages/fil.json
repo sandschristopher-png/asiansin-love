@@ -373,8 +373,7 @@
       "legalPrivacy": "Privacy",
       "legalSupport": "Suporta",
       "supportSla": "Sumasagot kami sa mga kahilingan sa suporta sa loob ng 24–48 oras ng negosyo.",
-      "cancelPortal": "Maaari mo ring kanselahin ang paulit-ulit na pagsingil anumang oras sa customer support portal ng CCBill sa {url}, o sa pag-email sa suporta bago ang susunod mong petsa ng renewal.",
-      "descriptor": "Lalabas ang mga singil sa iyong billing statement sa ilalim ng aming awtorisadong payment processor, ang CCBill."
+      "descriptor": "Lalabas ang mga singil sa iyong billing statement sa ilalim ng aming awtorisadong payment processor."
     }
   },
   "messages": {
