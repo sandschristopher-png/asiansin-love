@@ -166,9 +166,11 @@ function VisitorsList({ visitors, onOpen }: { visitors: ProfileCardData[]; onOpe
   );
 }
 
+/** City only ("Manila", not "Manila, Philippines"), like the Discover cards; the country when no city is set. */
 function getLocationLabel(p: ProfileCardData): string {
-  const parts = [p.city, p.country].filter((x) => x && String(x).trim());
-  return parts.length > 0 ? parts.join(', ') : 'Southeast Asia';
+  const city = p.city ? String(p.city).trim() : '';
+  const country = p.country ? String(p.country).trim() : '';
+  return city || country || 'Southeast Asia';
 }
 
 
@@ -183,11 +185,13 @@ function getInitialSparksState(): DbRow | null {
 const STATE_CTA_CLASS =
   'inline-flex items-center justify-center gap-2 rounded-full px-5 py-2 text-xs font-semibold text-white bg-[#8574B7] hover:bg-[#534377] active:scale-95 transition-all';
 
-/** 1..99, then "99+"; nothing for zero. */
-const formatBadgeCount = (count: number) => {
-  if (!count || count <= 0) return null;
-  return count > 99 ? '99+' : count.toString();
-};
+/** Tab pills carry their label only: no counts, so the row stays the same width as activity grows. */
+const SPARK_TABS: { id: SparkTab; label: string }[] = [
+  { id: 'sparked', label: 'Sent' },
+  { id: 'sparked_you', label: 'Received' },
+  { id: 'mutual', label: 'Mutual' },
+  { id: 'visited', label: 'Visitors' },
+];
 
 /**
  * Shared empty / paywall state for every Sparks tab, matching Discover's: a Lucide line icon in a
@@ -394,13 +398,6 @@ for (const [label, res] of [['outgoing', outSparksRes], ['incoming', inSparksRes
     return () => { isMounted = false; };
   }, []);
 
-  const tabs: { id: SparkTab; label: string; count: number }[] = useMemo(() => [
-    { id: 'sparked', label: 'Sent', count: sparkedList.length },
-    { id: 'sparked_you', label: 'Received', count: sparkedYouList.length },
-    { id: 'mutual', label: 'Mutual', count: mutualList.length },
-    { id: 'visited', label: 'Visitors', count: visitedList.length }
-  ], [sparkedList.length, sparkedYouList.length, mutualList.length, visitedList.length]);
-
   // Members the viewer has sparked: their cards show a filled heart in every tab.
   const sparkedIds = useMemo(() => new Set(sparkedList.map((p) => p.id)), [sparkedList]);
 
@@ -446,7 +443,7 @@ for (const [label, res] of [['outgoing', outSparksRes], ['incoming', inSparksRes
             scroll area (the Navbar sits outside it), so cards never show through above the bar. */}
         <div className="sticky top-0 z-30 bg-white/80 backdrop-blur-md -mx-3.5 mb-2 pt-1.5">
           <div className="flex items-center gap-2 overflow-x-auto no-scrollbar [scrollbar-width:none] [&::-webkit-scrollbar]:hidden pt-4 pb-2 px-3.5" role="tablist">
-            {tabs.map((t) => {
+            {SPARK_TABS.map((t) => {
               const active = activeTab === t.id;
               return (
                 <button
@@ -455,20 +452,11 @@ for (const [label, res] of [['outgoing', outSparksRes], ['incoming', inSparksRes
                   role="tab"
                   aria-selected={active}
                   onClick={() => setActiveTab(t.id)}
-                  className={`inline-flex items-center gap-1 relative whitespace-nowrap shrink-0 transition-all active:scale-95 cursor-pointer text-xs px-3 py-1.5 rounded-full ${
+                  className={`inline-flex items-center whitespace-nowrap shrink-0 transition-all active:scale-95 cursor-pointer text-xs px-3 py-1.5 rounded-full ${
                     active ? 'bg-[#8574B7] text-white font-medium' : 'bg-[#8574B7]/[0.08] text-[#413B5E] font-medium hover:bg-[#8574B7]/[0.15]'
                   }`}
                 >
                   <span>{t.label}</span>
-                  {Boolean(formatBadgeCount(t.count)) && (
-                    <span
-                      className={`inline-flex items-center justify-center min-w-[16px] h-4 px-1 rounded-full text-[9.5px] font-semibold leading-none tabular-nums ${
-                        active ? 'bg-white/20 text-white' : 'bg-[#8574B7]/15 text-[#8574B7]'
-                      }`}
-                    >
-                      {formatBadgeCount(t.count)}
-                    </span>
-                  )}
                 </button>
               );
             })}
