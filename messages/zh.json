@@ -361,7 +361,15 @@
       "rowPrivate": "隐私模式",
       "rowGhost": "幽灵模式",
       "cellGhost": "浏览不留痕迹",
-      "billingSupport": "如需取消 Plus 或咨询账单问题，请发送邮件至"
+      "billingSupport": "如需取消 Plus 或咨询账单问题，请发送邮件至",
+      "comingSoon": "即将推出",
+      "upgradesOpening": "升级即将开放",
+      "billedEveryN": "每 {n} 个月扣费一次",
+      "legalTerms": "条款",
+      "legalRefunds": "退款政策",
+      "legalCancel": "取消订阅",
+      "legalPrivacy": "隐私",
+      "legalSupport": "支持"
     }
   },
   "messages": {

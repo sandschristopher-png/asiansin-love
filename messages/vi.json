@@ -361,7 +361,15 @@
       "rowPrivate": "Chế độ riêng tư",
       "rowGhost": "Chế độ ẩn danh",
       "cellGhost": "Xem hồ sơ mà không để lại dấu vết",
-      "billingSupport": "Để hủy Plus hoặc hỏi về thanh toán, hãy gửi email tới"
+      "billingSupport": "Để hủy Plus hoặc hỏi về thanh toán, hãy gửi email tới",
+      "comingSoon": "Sắp ra mắt",
+      "upgradesOpening": "Nâng cấp sẽ sớm mở",
+      "billedEveryN": "Thanh toán mỗi {n} tháng",
+      "legalTerms": "Điều khoản",
+      "legalRefunds": "Chính sách hoàn tiền",
+      "legalCancel": "Hủy gói",
+      "legalPrivacy": "Quyền riêng tư",
+      "legalSupport": "Hỗ trợ"
     }
   },
   "messages": {

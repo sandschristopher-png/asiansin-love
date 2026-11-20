@@ -361,7 +361,15 @@
       "rowPrivate": "Private Mode",
       "rowGhost": "Ghost Mode",
       "cellGhost": "Browse without leaving a footprint",
-      "billingSupport": "To cancel Plus or ask about billing, email"
+      "billingSupport": "To cancel Plus or ask about billing, email",
+      "comingSoon": "Coming soon",
+      "upgradesOpening": "Upgrades opening shortly",
+      "billedEveryN": "Billed every {n} months",
+      "legalTerms": "Terms",
+      "legalRefunds": "Refund policy",
+      "legalCancel": "Cancellation",
+      "legalPrivacy": "Privacy",
+      "legalSupport": "Support"
     }
   },
   "messages": {

@@ -361,7 +361,15 @@
       "rowPrivate": "プライベートモード",
       "rowGhost": "ゴーストモード",
       "cellGhost": "足跡を残さずに閲覧",
-      "billingSupport": "Plusの解約や請求のご相談は、次のアドレスまでメールしてください:"
+      "billingSupport": "Plusの解約や請求のご相談は、次のアドレスまでメールしてください:",
+      "comingSoon": "近日公開",
+      "upgradesOpening": "アップグレードはまもなく開始します",
+      "billedEveryN": "{n}か月ごとに請求",
+      "legalTerms": "利用規約",
+      "legalRefunds": "返金ポリシー",
+      "legalCancel": "解約",
+      "legalPrivacy": "プライバシー",
+      "legalSupport": "サポート"
     }
   },
   "messages": {

@@ -361,7 +361,15 @@
       "rowPrivate": "Mod Peribadi",
       "rowGhost": "Mod Hantu",
       "cellGhost": "Layari tanpa meninggalkan kesan",
-      "billingSupport": "Untuk membatalkan Plus atau bertanya tentang pengebilan, e-mel"
+      "billingSupport": "Untuk membatalkan Plus atau bertanya tentang pengebilan, e-mel",
+      "comingSoon": "Akan datang",
+      "upgradesOpening": "Naik taraf akan dibuka tidak lama lagi",
+      "billedEveryN": "Dibil setiap {n} bulan",
+      "legalTerms": "Terma",
+      "legalRefunds": "Dasar bayaran balik",
+      "legalCancel": "Pembatalan",
+      "legalPrivacy": "Privasi",
+      "legalSupport": "Sokongan"
     }
   },
   "messages": {

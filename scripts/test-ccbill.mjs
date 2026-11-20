@@ -2,6 +2,7 @@
 import { loadLib } from './lib/load-ts.mjs';
 
 const ccb = await loadLib('billing/ccbill');
+const checkout = await loadLib('billing/plusCheckout');
 let passed = 0;
 const failures = [];
 const ok = (name, cond, detail = '') => (cond ? passed++ : failures.push(`${name}${detail ? ` -> ${detail}` : ''}`));
@@ -89,6 +90,14 @@ ok('pass-through UUID read', ccb.passThroughUserId({ 'X-userId': UUID }) === UUI
 ok('pass-through lowercase key read', ccb.passThroughUserId({ 'x-userId': UUID }) === UUID);
 ok('pass-through non-UUID rejected', ccb.passThroughUserId({ 'X-userId': 'bob' }) === null);
 ok('pass-through missing', ccb.passThroughUserId({}) === null);
+
+// --- Plus checkout flag ----------------------------------------------------------
+ok('checkout is off when the flag is unset', checkout.plusCheckoutEnabled(undefined) === false);
+ok('checkout is off for an empty flag', checkout.plusCheckoutEnabled('') === false);
+ok('checkout is off for "false"', checkout.plusCheckoutEnabled('false') === false);
+ok('checkout is off for "1" and "yes"', checkout.plusCheckoutEnabled('1') === false && checkout.plusCheckoutEnabled('yes') === false);
+ok('checkout is off for "TRUE" (exact match only)', checkout.plusCheckoutEnabled('TRUE') === false && checkout.plusCheckoutEnabled(' true') === false);
+ok('checkout is on only for "true"', checkout.plusCheckoutEnabled('true') === true);
 
 console.log(`ccbill: ${passed} passed, ${failures.length} failed`);
 if (failures.length) {

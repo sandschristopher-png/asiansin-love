@@ -361,7 +361,15 @@
       "rowPrivate": "Mode Privat",
       "rowGhost": "Mode Hantu",
       "cellGhost": "Jelajahi tanpa meninggalkan jejak",
-      "billingSupport": "Untuk membatalkan Plus atau bertanya soal penagihan, kirim email ke"
+      "billingSupport": "Untuk membatalkan Plus atau bertanya soal penagihan, kirim email ke",
+      "comingSoon": "Segera hadir",
+      "upgradesOpening": "Upgrade segera dibuka",
+      "billedEveryN": "Ditagih setiap {n} bulan",
+      "legalTerms": "Ketentuan",
+      "legalRefunds": "Kebijakan pengembalian dana",
+      "legalCancel": "Pembatalan",
+      "legalPrivacy": "Privasi",
+      "legalSupport": "Dukungan"
     }
   },
   "messages": {

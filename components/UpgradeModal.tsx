@@ -1,5 +1,7 @@
 'use client';
 
+import Link from 'next/link';
+import { PLUS_CHECKOUT_ENABLED } from '@/lib/billing/plusCheckout';
 import React, { useState } from 'react';
 import { useLocale } from '@/components/i18n/LocaleProvider';
 import { AmbientAurora } from '@/components/ui/AmbientAurora';
@@ -54,11 +56,12 @@ export default function UpgradeModal({
   };
 
   const handleCheckout = (planId: string = '1m') => {
+    if (!PLUS_CHECKOUT_ENABLED) return; // the button is disabled ("Coming soon"); nothing to start
     if (onSelectPlan) {
       onSelectPlan(planId);
       return;
     }
-    // Checkout is paused while payments move to a new processor: explain, never redirect or error.
+    // Checkout switch is on but no checkout link is wired yet: explain, never redirect or error.
     setNotice(t('plus.page.paymentsSoon'));
   };
 
@@ -176,16 +179,37 @@ export default function UpgradeModal({
             </button>
           </div>
 
-          {/* Primary CTA Button */}
-          <button
-            onClick={() => handleCheckout(selectedTier)}
-            className="w-full py-3 rounded-2xl bg-[#8574B7] hover:bg-[#534377] active:bg-[#534377] text-white font-medium text-xs tracking-wider uppercase shadow-md shadow-[#8574B7]/20 transition active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer mb-2"
-          >
-            <span>
-              Upgrade to Plus • {selectedTier === '6m' ? '$47.99 / 6 mo' : '$14.99/mo'}
-            </span>
-            <ArrowRight className="w-3.5 h-3.5" />
-          </button>
+          {/* Primary CTA Button: "Coming soon" until NEXT_PUBLIC_PLUS_CHECKOUT_ENABLED=true */}
+          {PLUS_CHECKOUT_ENABLED ? (
+            <button
+              onClick={() => handleCheckout(selectedTier)}
+              className="w-full py-3 rounded-2xl bg-[#8574B7] hover:bg-[#534377] active:bg-[#534377] text-white font-medium text-xs tracking-wider uppercase shadow-md shadow-[#8574B7]/20 transition active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer mb-2"
+            >
+              <span>
+                Upgrade to Plus • {selectedTier === '6m' ? '$47.99 / 6 mo' : '$14.99/mo'}
+              </span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </button>
+          ) : (
+            <>
+              <button
+                type="button"
+                disabled
+                aria-disabled="true"
+                className="w-full py-3 rounded-2xl bg-[#E8E6F1] text-[#413B5E]/60 font-medium text-xs tracking-wider uppercase cursor-not-allowed flex items-center justify-center mb-2"
+              >
+                {t('plus.page.comingSoon')}
+              </button>
+              <p role="status" className="mb-1 text-center text-[11px] font-medium leading-snug text-slate-600">
+                {t('plus.page.upgradesOpening')}
+              </p>
+              <p className="mb-2 text-center text-[11px] text-slate-600">
+                <Link href="/plus" className="font-semibold text-[#8574B7] underline underline-offset-4">
+                  {t('plus.page.billingTitle')}
+                </Link>
+              </p>
+            </>
+          )}
 
           {notice && (
             <p role="status" className="mb-2 rounded-xl bg-[#FAF9FC] border border-[#8574B7]/25 px-3 py-2 text-[11px] font-medium leading-snug text-[#413B5E] text-center">

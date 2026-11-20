@@ -361,7 +361,15 @@
       "rowPrivate": "Modo privado",
       "rowGhost": "Modo fantasma",
       "cellGhost": "Navega sin dejar rastro",
-      "billingSupport": "Para cancelar Plus o consultar sobre la facturación, escribe a"
+      "billingSupport": "Para cancelar Plus o consultar sobre la facturación, escribe a",
+      "comingSoon": "Próximamente",
+      "upgradesOpening": "Las mejoras abrirán en breve",
+      "billedEveryN": "Se cobra cada {n} meses",
+      "legalTerms": "Términos",
+      "legalRefunds": "Política de reembolsos",
+      "legalCancel": "Cancelación",
+      "legalPrivacy": "Privacidad",
+      "legalSupport": "Soporte"
     }
   },
   "messages": {

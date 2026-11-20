@@ -361,7 +361,15 @@
       "rowPrivate": "비공개 모드",
       "rowGhost": "고스트 모드",
       "cellGhost": "흔적을 남기지 않고 둘러보기",
-      "billingSupport": "Plus 해지나 결제 문의는 다음 주소로 이메일을 보내 주세요:"
+      "billingSupport": "Plus 해지나 결제 문의는 다음 주소로 이메일을 보내 주세요:",
+      "comingSoon": "곧 제공됩니다",
+      "upgradesOpening": "업그레이드가 곧 열립니다",
+      "billedEveryN": "{n}개월마다 결제",
+      "legalTerms": "이용약관",
+      "legalRefunds": "환불 정책",
+      "legalCancel": "구독 취소",
+      "legalPrivacy": "개인정보",
+      "legalSupport": "고객지원"
     }
   },
   "messages": {

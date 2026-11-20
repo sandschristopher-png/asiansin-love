@@ -4,7 +4,7 @@ import { LegalPage, type LegalSection } from '@/components/LegalPage';
 
 export const metadata: Metadata = {
   title: 'Terms of Service',
-  description: 'The rules for using Meet in Asia (Meet in Asia): eligibility, conduct, content, Plus billing and cancellation.',
+  description: 'The rules for using Meet in Asia: eligibility, conduct, content, Plus billing, cancellation and refunds.',
 };
 
 const sections: LegalSection[] = [
@@ -70,6 +70,7 @@ const sections: LegalSection[] = [
     ),
   },
   {
+    id: 'plus-billing',
     title: 'Plus subscriptions and billing',
     body: (
       <>
@@ -83,12 +84,30 @@ const sections: LegalSection[] = [
           Subscriptions <strong>renew automatically</strong> at the end of each period until you cancel. Taxes may apply.
           Prices can change; any change applies from your next renewal and we will tell you before it does.
         </p>
+      </>
+    ),
+  },
+  {
+    id: 'cancellation',
+    title: 'Cancellation',
+    body: (
+      <>
         <p>
           <strong>Cancel anytime</strong> by emailing support@meetin.asia (Settings shows the same address). Cancelling stops
-          future renewals; you keep Plus until the end of the period you already paid for. Payments are non-refundable except
-          where the law requires otherwise. Please cancel before you delete your account.
+          future renewals; you keep Plus until the end of the period you already paid for.
         </p>
+        <p>Please cancel before you delete your account.</p>
       </>
+    ),
+  },
+  {
+    id: 'refunds',
+    title: 'Refunds',
+    body: (
+      <p>
+        Payments are non-refundable except where the law requires otherwise. For a question about a charge, email
+        support@meetin.asia from the address you signed up with.
+      </p>
     ),
   },
   {
@@ -131,8 +150,8 @@ const sections: LegalSection[] = [
     title: 'Changes to these terms',
     body: (
       <p>
-        We may update these terms. If a change is significant we will let you know in the app. Continuing to use Asians in
-        Love after a change means you accept the updated terms. Read how we handle your data in our{' '}
+        We may update these terms. If a change is significant we will let you know in the app. Continuing to use Meet in Asia
+        after a change means you accept the updated terms. Read how we handle your data in our{' '}
         <Link href="/privacy">Privacy Policy</Link>.
       </p>
     ),
@@ -147,7 +166,7 @@ export default function TermsPage() {
       updated="November 2026"
       intro={
         <p>
-          These terms are an agreement between you and Meet in Asia (Meet in Asia). By creating an account or using the
+          These terms are an agreement between you and Meet in Asia. By creating an account or using the
           service, you agree to them.
         </p>
       }

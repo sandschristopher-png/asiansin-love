@@ -1,5 +1,6 @@
 'use client';
 
+import { PLUS_CHECKOUT_ENABLED } from '@/lib/billing/plusCheckout';
 import React, { useEffect, useState, useSyncExternalStore, Suspense } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
@@ -85,9 +86,9 @@ function FreeMark({ mark, label }: { mark: Mark; label: string }) {
   return <X className="w-3.5 h-3.5 mt-px shrink-0 text-[#413B5E]/30" strokeWidth={2.5} aria-label={label} />;
 }
 
-function Drawer({ title, children }: { title: string; children: React.ReactNode }) {
+function Drawer({ title, children, open = false }: { title: string; children: React.ReactNode; open?: boolean }) {
   return (
-    <details className="group rounded-2xl bg-white border border-[#D0CDE1] shadow-sm px-4 py-3">
+    <details open={open} className="group rounded-2xl bg-white border border-[#D0CDE1] shadow-sm px-4 py-3">
       <summary className="cursor-pointer list-none flex items-center justify-between gap-2 text-sm font-semibold text-[#413B5E]">
         {title}
         <ChevronDown className="w-4 h-4 text-slate-600 transition-transform group-open:rotate-180" />
@@ -160,7 +161,11 @@ function PlusHubContent() {
     return () => window.clearTimeout(timer);
   }, [highlightRow]);
 
-  /** Checkout is paused while payments move to a new processor; say so, never redirect or error. */
+  /**
+   * Only reachable when NEXT_PUBLIC_PLUS_CHECKOUT_ENABLED=true (otherwise the button is the disabled "Coming soon" one).
+   * The CCBill checkout redirect goes here: it must pass the member's id as X-userId so the webhook can grant Plus.
+   * Until that link exists this says so instead of redirecting or erroring.
+   */
   function handleSubscribe() {
     showActionToast(t('plus.page.paymentsSoon'), 'info');
   }
@@ -238,11 +243,17 @@ function PlusHubContent() {
                   <span className="text-[10px] leading-snug text-slate-600">
                     {p.months > 1 ? t('plus.perMonth', { price: p.perMonth }) : t('plus.billedMonthly')}
                   </span>
+                  {p.months > 1 && (
+                    <span className="text-[10px] leading-snug text-slate-600">{t('plus.page.billedEveryN', { n: p.months })}</span>
+                  )}
                   {savePct(p.savings) && <span className="text-[11px] font-semibold leading-snug text-[#8574B7]">{savePct(p.savings)}</span>}
                 </button>
               );
             })}
           </section>
+        )}
+        {showFreeOffer && (
+          <p className="text-xs leading-relaxed text-slate-600">{t('plus.page.billing3', { email: SUPPORT_EMAIL })}</p>
         )}
         {isPlus && (
           <section className="rounded-2xl bg-[#FAF9FC] border border-[#8574B7]/25 px-4 py-4 flex items-start gap-3">
@@ -310,7 +321,7 @@ function PlusHubContent() {
               </div>
             ))}
           </Drawer>
-          <Drawer title={t('plus.page.billingTitle')}>
+          <Drawer title={t('plus.page.billingTitle')} open>
             <ul className="space-y-2 list-disc pl-4 text-xs text-slate-600 leading-relaxed">
               <li>{t('plus.page.billing1')}</li>
               <li>{t('plus.page.billing2', { p1: plusPlan('1m').total, p3: plusPlan('3m').total, p6: plusPlan('6m').total })}</li>
@@ -325,6 +336,17 @@ function PlusHubContent() {
             </p>
           </Drawer>
         </section>
+
+        {/* Always visible, signed in or not: the policies behind the price and how to reach support. */}
+        <nav className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1.5 pt-1 text-[11px] font-semibold text-[#8574B7]">
+          <Link href="/terms" className="hover:underline">{t('plus.page.legalTerms')}</Link>
+          <Link href="/terms#refunds" className="hover:underline">{t('plus.page.legalRefunds')}</Link>
+          <Link href="/terms#cancellation" className="hover:underline">{t('plus.page.legalCancel')}</Link>
+          <Link href="/privacy" className="hover:underline">{t('plus.page.legalPrivacy')}</Link>
+          <a href={`mailto:${SUPPORT_EMAIL}`} className="hover:underline">
+            {t('plus.page.legalSupport')}: {SUPPORT_EMAIL}
+          </a>
+        </nav>
 
       </div>
 
@@ -341,21 +363,38 @@ function PlusHubContent() {
             </a>
           </p>
         ) : (
-          <div className="flex items-center gap-2.5">
-            <Link
-              href="/discover"
-              className="h-12 px-6 rounded-full border border-[#D0CDE1] bg-white text-[#413B5E] hover:bg-[#E8E6F1]/30 text-sm font-medium transition-colors flex items-center justify-center shrink-0"
-            >
-              {t('plus.page.keepFree')}
-            </Link>
-            {/* Card payments are being moved to a new processor: the button explains instead of redirecting. */}
-            <button
-              type="button"
-              onClick={handleSubscribe}
-              className="flex-1 min-w-0 h-12 px-6 rounded-full bg-[#8574B7] hover:bg-[#534377] text-white font-medium text-sm shadow-brand-glow transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
-            >
-              {t('plus.upgrade')} · {plan.total}
-            </button>
+          <div className="space-y-2">
+            {!PLUS_CHECKOUT_ENABLED && (
+              <p role="status" className="text-center text-[11px] font-medium leading-snug text-slate-600">
+                {t('plus.page.upgradesOpening')}
+              </p>
+            )}
+            <div className="flex items-center gap-2.5">
+              <Link
+                href="/discover"
+                className="h-12 px-6 rounded-full border border-[#D0CDE1] bg-white text-[#413B5E] hover:bg-[#E8E6F1]/30 text-sm font-medium transition-colors flex items-center justify-center shrink-0"
+              >
+                {t('plus.page.keepFree')}
+              </Link>
+              {PLUS_CHECKOUT_ENABLED ? (
+                <button
+                  type="button"
+                  onClick={handleSubscribe}
+                  className="flex-1 min-w-0 h-12 px-6 rounded-full bg-[#8574B7] hover:bg-[#534377] text-white font-medium text-sm shadow-brand-glow transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
+                >
+                  {t('plus.upgrade')} · {plan.total}
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  disabled
+                  aria-disabled="true"
+                  className="flex-1 min-w-0 h-12 px-6 rounded-full bg-[#E8E6F1] text-[#413B5E]/60 font-medium text-sm cursor-not-allowed flex items-center justify-center whitespace-nowrap"
+                >
+                  {t('plus.page.comingSoon')}
+                </button>
+              )}
+            </div>
           </div>
         )}
       </div>,

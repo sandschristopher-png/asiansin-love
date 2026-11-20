@@ -361,7 +361,15 @@
       "rowPrivate": "មុខងារឯកជន",
       "rowGhost": "មុខងារអ្នកលួចមើល",
       "cellGhost": "មើលដោយមិនទុកដាន",
-      "billingSupport": "ដើម្បីលុបចោល Plus ឬសួរអំពីការគិតលុយ សូមផ្ញើអ៊ីមែលទៅ"
+      "billingSupport": "ដើម្បីលុបចោល Plus ឬសួរអំពីការគិតលុយ សូមផ្ញើអ៊ីមែលទៅ",
+      "comingSoon": "ឆាប់ៗនេះ",
+      "upgradesOpening": "ការដំឡើងកម្រិតនឹងបើកក្នុងពេលឆាប់ៗ",
+      "billedEveryN": "បង់ប្រាក់រៀងរាល់ {n} ខែ",
+      "legalTerms": "លក្ខខណ្ឌ",
+      "legalRefunds": "គោលការណ៍សងប្រាក់វិញ",
+      "legalCancel": "ការបោះបង់",
+      "legalPrivacy": "ឯកជនភាព",
+      "legalSupport": "ជំនួយ"
     }
   },
   "messages": {

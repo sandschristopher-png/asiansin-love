@@ -361,7 +361,15 @@
       "rowPrivate": "Private Mode",
       "rowGhost": "Ghost Mode",
       "cellGhost": "Mag-browse nang walang iniiwang bakas",
-      "billingSupport": "Para magkansela ng Plus o magtanong tungkol sa billing, mag-email sa"
+      "billingSupport": "Para magkansela ng Plus o magtanong tungkol sa billing, mag-email sa",
+      "comingSoon": "Malapit na",
+      "upgradesOpening": "Malapit nang magbukas ang mga upgrade",
+      "billedEveryN": "Sinisingil kada {n} buwan",
+      "legalTerms": "Mga Tuntunin",
+      "legalRefunds": "Patakaran sa refund",
+      "legalCancel": "Pagkansela",
+      "legalPrivacy": "Privacy",
+      "legalSupport": "Suporta"
     }
   },
   "messages": {

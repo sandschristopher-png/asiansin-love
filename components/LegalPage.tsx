@@ -3,6 +3,8 @@ import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 
 export interface LegalSection {
+  /** Optional anchor, so other pages can link straight to the section (for example /terms#refunds). */
+  id?: string;
   title: string;
   body: React.ReactNode;
 }
@@ -50,7 +52,7 @@ export function LegalPage({
         </div>
 
         {sections.map((s, i) => (
-          <section key={s.title} className="p-4 rounded-3xl bg-white border border-[#D0CDE1] space-y-2">
+          <section key={s.title} id={s.id} className="scroll-mt-16 p-4 rounded-3xl bg-white border border-[#D0CDE1] space-y-2">
             <h2 className="text-[13px] font-semibold text-[#413B5E]">
               {i + 1}. {s.title}
             </h2>
