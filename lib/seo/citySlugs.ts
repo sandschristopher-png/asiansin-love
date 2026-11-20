@@ -6,6 +6,8 @@
 export const CITY_PAGE_SLUGS = ['cebu', 'manila', 'bangkok', 'phnom-penh', 'kuala-lumpur'] as const;
 
 export function isCityPagePath(pathname: string | null | undefined): boolean {
-  const slug = (pathname || '').replace(/^\/+|\/+$/g, '');
-  return (CITY_PAGE_SLUGS as readonly string[]).includes(slug);
+  const path = (pathname || '').replace(/^\/+|\/+$/g, '');
+  // /cities index and /cities/[slug] pages (lib/cities.ts) are marketing pages too.
+  if (path === 'cities' || path.startsWith('cities/')) return true;
+  return (CITY_PAGE_SLUGS as readonly string[]).includes(path);
 }
