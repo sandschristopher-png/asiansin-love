@@ -1,9 +1,9 @@
+import { CityHeroCtas, ExploreCities, VisitingSoonCallout } from '@/components/cities/CityBlocks';
 import { CityFooterLinks } from '@/components/CityFooterLinks';
-import { IceFrame } from '@/components/ui/IceFrame';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound, permanentRedirect } from 'next/navigation';
-import { MapPin, Plane, ShieldCheck, Lightbulb } from 'lucide-react';
+import { MapPin, ShieldCheck, Lightbulb } from 'lucide-react';
 import { BrandLogo } from '@/components/BrandLogo';
 import { CITY_SLUGS, cityHref, getCity, isRootHub, type City } from '@/lib/cities';
 import { SITE_URL } from '@/lib/seo/cityData';
@@ -125,20 +125,7 @@ export default async function CityPage({ params }: Params) {
             <span className="text-[#8574B7]">{city.name}</span>
           </h1>
           <p className="mt-4 text-sm leading-relaxed text-[#413B5E]/75">{city.heroTagline}</p>
-          <div className="mt-7 flex flex-col sm:flex-row gap-3 justify-center">
-            <Link
-              href="/signup"
-              className="h-12 px-8 rounded-full bg-[#8574B7] hover:bg-[#534377] text-white text-sm font-medium transition-colors flex items-center justify-center"
-            >
-              Create your free profile
-            </Link>
-            <Link
-              href="/login"
-              className="h-12 px-6 rounded-full border border-[#D0CDE1] bg-white text-[#413B5E] text-sm font-medium hover:bg-[#E8E6F1]/30 transition-colors flex items-center justify-center"
-            >
-              Sign in to browse {city.name}
-            </Link>
-          </div>
+          <CityHeroCtas />
         </section>
 
         {/* Intro */}
@@ -150,29 +137,7 @@ export default async function CityPage({ params }: Params) {
         </section>
 
         {/* Visiting Soon callout (hub cities only) */}
-        {isTripHub && (
-          <section className="py-2" aria-labelledby="travel-heading">
-            <IceFrame>
-            <div className="rounded-2xl bg-white p-4">
-              <div className="flex items-start gap-3">
-                <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#EBF3FF] text-[#3B66A8]">
-                  <Plane className="w-4 h-4" aria-hidden />
-                </span>
-                <div>
-                  <h2 id="travel-heading" className="text-sm font-semibold">Travelling to {city.name}?</h2>
-                  <p className="mt-1 text-xs leading-relaxed text-[#413B5E]/75">
-                    Plus members can add a Visiting Soon trip with arrival and departure dates, so people in {city.name} see
-                    you before you land.
-                  </p>
-                  <Link href="/plus?feature=trips" className="mt-3 inline-flex h-9 items-center rounded-full bg-[#8574B7] px-4 text-xs font-medium text-white hover:bg-[#534377] transition-colors">
-                    See Meet in Asia Plus
-                  </Link>
-                </div>
-              </div>
-            </div>
-            </IceFrame>
-          </section>
-        )}
+        {isTripHub && <VisitingSoonCallout cityName={city.name} />}
 
         {/* Tips */}
         <section className="py-8 border-t border-[#D0CDE1]/60" aria-labelledby="tips-heading">
@@ -242,6 +207,8 @@ export default async function CityPage({ params }: Params) {
             </p>
           </section>
         )}
+
+        <ExploreCities currentSlug={city.slug} />
 
         <footer className="pt-8 border-t border-[#D0CDE1]/60 text-center">
           <CityFooterLinks />

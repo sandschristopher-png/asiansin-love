@@ -32,11 +32,6 @@ export interface CitySEOData {
     avgResponseTime: string;
     verifiedRate: string;
   };
-  searchThemes: {
-    heading: string;
-    description: string;
-    searchTags: string[];
-  };
   culturalInsights: {
     title: string;
     description: string;
@@ -73,12 +68,6 @@ export const CITY_SEO_DATA: Record<string, CitySEOData> = {
     heroHighlight: 'Filipina Singles in Cebu',
     heroSubhead:
       'Meet educated, family-oriented singles in Cebu who are looking for meaningful relationships, lasting companionship, and genuine partnerships built on mutual respect.',
-    searchThemes: {
-      heading: 'Meaningful Relationships & Dating in Cebu',
-      description:
-        'Connect with educated, family-oriented Filipina singles looking for genuine companionship and cross-cultural dating based on mutual respect.',
-      searchTags: ['Filipina Singles', 'Cebu Dating', 'Serious Relationships', 'Philippines Dating', 'Meet Singles'],
-    },
     culturalInsights: [
       {
         title: 'Family Values and Genuine Intent',
@@ -137,12 +126,6 @@ export const CITY_SEO_DATA: Record<string, CitySEOData> = {
     heroHighlight: 'Filipina Singles in Manila',
     heroSubhead:
       'Meet educated, ambitious, and caring singles across Metro Manila who are looking for authentic, long-term relationships.',
-    searchThemes: {
-      heading: 'Meaningful Relationships & Dating in Manila',
-      description:
-        'Meet singles across Bonifacio Global City (BGC), Makati, and Quezon City who want genuine companionship and cross-cultural dating based on mutual respect.',
-      searchTags: ['Filipina Singles', 'Manila Dating', 'Serious Relationships', 'Philippines Dating', 'Meet Singles'],
-    },
     culturalInsights: [
       {
         title: 'Career-Driven and Cultured',
@@ -191,11 +174,6 @@ export const CITY_SEO_DATA: Record<string, CitySEOData> = {
     heroHeadline: 'Meet',
     heroHighlight: 'Thai Singles in Bangkok',
     heroSubhead: 'Start a genuine connection with family-oriented singles in Bangkok who are looking for serious dating and lasting partnerships.',
-    searchThemes: {
-      heading: 'Serious Dating and Genuine Partnerships in Bangkok',
-      description: 'Bangkok is a vibrant hub of singles who value respect, kindness, and long-term commitment across cultures.',
-      searchTags: ['Thai Dating', 'Thai Singles', 'Bangkok Dating', 'Serious Relationships', 'Verified Singles'],
-    },
     culturalInsights: [
       {
         title: 'Respect and Calm Hearts',
@@ -251,11 +229,6 @@ export const CITY_SEO_DATA: Record<string, CitySEOData> = {
     heroHighlight: 'Cambodian Singles in Phnom Penh',
     heroSubhead:
       'Discover the warmth, family devotion, and sincere relationship intent of singles in Cambodia’s bustling capital.',
-    searchThemes: {
-      heading: 'Serious Dating and Genuine Partnerships in Phnom Penh',
-      description: 'Meet sincere, family-minded singles who value honesty and respect. Build a meaningful connection in the Kingdom of Wonder.',
-      searchTags: ['Cambodian Singles', 'Khmer Dating', 'Phnom Penh Singles', 'Serious Relationships', 'Verified Singles'],
-    },
     culturalInsights: [
       {
         title: 'Respect and Sincerity',
@@ -310,12 +283,6 @@ export const CITY_SEO_DATA: Record<string, CitySEOData> = {
     heroHighlight: 'Singles in Kuala Lumpur',
     heroSubhead:
       'Connect with worldly, multilingual professionals seeking meaningful international relationships in Malaysia’s vibrant capital.',
-    searchThemes: {
-      heading: 'Modern Cross-Cultural Dating in Kuala Lumpur',
-      description:
-        'Discover educated professionals, world travelers, and multilingual singles across KLCC, Bangsar, and Mont Kiara who value serious companionship.',
-      searchTags: ['KL Singles', 'Kuala Lumpur Dating', 'Asian Singles', 'Serious Relationships', 'Verified Singles'],
-    },
     culturalInsights: [
       {
         title: 'Multilingual and Highly Educated',

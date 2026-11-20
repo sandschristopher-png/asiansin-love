@@ -1,3 +1,5 @@
+import { CityHeroCtas, ExploreCities, VisitingSoonCallout } from '@/components/cities/CityBlocks';
+import { TRIP_HUBS } from '@/lib/tripHubs';
 import { CityFooterLinks } from '@/components/CityFooterLinks';
 import type { Metadata } from 'next';
 import Link from 'next/link';
@@ -53,6 +55,9 @@ export default async function CityLandingPage({ params }: { params: Promise<{ ci
   const city = getCityData(slug);
   if (!city) notFound();
 
+  // Visiting Soon only lists the hub cities in lib/tripHubs.ts; never advertise it for the others.
+  const isTripHub = TRIP_HUBS.some((h) => h.city === city.cityName);
+
   return (
     <main className="relative isolate min-h-[100dvh] w-full overflow-hidden bg-white text-[#413B5E] font-sans">
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: cityPageJsonLd(city) }} />
@@ -84,20 +89,7 @@ export default async function CityLandingPage({ params }: { params: Promise<{ ci
             </span>
           </h1>
           <p className="mt-4 text-sm leading-relaxed text-[#413B5E]/75 max-w-md mx-auto">{city.heroSubhead}</p>
-          <div className="mt-7 flex flex-col sm:flex-row gap-3 justify-center">
-            <Link
-              href="/signup"
-              className="h-12 px-8 rounded-full bg-[#8574B7] hover:bg-[#534377] text-white text-sm font-medium shadow-brand-glow transition-colors flex items-center justify-center"
-            >
-              Create your free profile
-            </Link>
-            <Link
-              href="/login"
-              className="h-12 px-6 rounded-full border border-[#D0CDE1] bg-white text-[#413B5E] text-sm font-medium hover:bg-[#E8E6F1]/30 transition-colors flex items-center justify-center"
-            >
-              I already have an account
-            </Link>
-          </div>
+          <CityHeroCtas />
           {city.localStats && (
             <dl className="mt-8 grid grid-cols-3 gap-2">
               {[
@@ -114,20 +106,8 @@ export default async function CityLandingPage({ params }: { params: Promise<{ ci
           )}
         </section>
 
-        {/* Search themes */}
-        <section className="py-8 border-t border-[#D0CDE1]/60" aria-labelledby="themes-heading">
-          <h2 id="themes-heading" className="text-xl font-semibold tracking-tight">
-            {city.searchThemes.heading}
-          </h2>
-          <p className="mt-2 text-sm leading-relaxed text-[#413B5E]/75">{city.searchThemes.description}</p>
-          <ul className="mt-4 flex flex-wrap gap-2">
-            {city.searchThemes.searchTags.map((tag) => (
-              <li key={tag} className="rounded-full border border-[#D0CDE1] bg-white px-3 py-1 text-xs font-medium text-[#8574B7]">
-                {tag}
-              </li>
-            ))}
-          </ul>
-        </section>
+        {/* Visiting Soon callout (hub cities only) */}
+        {isTripHub && <VisitingSoonCallout cityName={city.cityName} />}
 
         {/* Cultural insights */}
         <section className="py-8 border-t border-[#D0CDE1]/60" aria-labelledby="insights-heading">
@@ -180,8 +160,13 @@ export default async function CityLandingPage({ params }: { params: Promise<{ ci
           >
             Create your free profile
           </Link>
-          <CityFooterLinks className="mt-6" />
         </section>
+
+        <ExploreCities currentSlug={city.slug} />
+
+        <footer className="pt-8 border-t border-[#D0CDE1]/60 text-center">
+          <CityFooterLinks />
+        </footer>
       </div>
     </main>
   );
