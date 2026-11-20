@@ -16,7 +16,6 @@ import { saveProfileFields } from '@/lib/profileApi';
 import { useActionToast } from '@/components/ActionToast';
 import { compressPhoto } from '@/lib/utils/imageCompressor';
 import { BIO_REJECTION_MESSAGE } from '@/lib/moderation/textFilter';
-import { isPlusProfile } from '@/lib/plus';
 import { HeightInput, LanguagePicker, LifestylePills } from '@/components/profile/LifestyleFields';
 import { ENGLISH_LEVEL_OPTIONS, isEnglishLevel } from '@/lib/discoverFilters';
 import { readLanguages } from '@/lib/constants/languages';
@@ -53,9 +52,6 @@ export default function EditProfilePage() {
   const [rhythm, setRhythm] = useState<RhythmValues>(EMPTY_RHYTHM);
   const showActionToast = useActionToast();
   const [bioRejected, setBioRejected] = useState(false);
-  // "Visiting:" travel notice (Plus)
-  const [isPlus, setIsPlus] = useState(false);
-  const [travel, setTravel] = useState({ active: false, city: '', country: '', dates: '' });
   const [formData, setFormData] = useState({
     full_name: '',
     age: '',
@@ -95,13 +91,6 @@ export default function EditProfilePage() {
 
       if (data) {
         setRhythm(rhythmFromRow(data));
-        setIsPlus(isPlusProfile(data));
-        setTravel({
-          active: data.is_travel_mode_active === true,
-          city: data.visiting_city || '',
-          country: data.visiting_country || '',
-          dates: data.visiting_dates || '',
-        });
         setFormData({
           full_name: data.display_name || data.full_name || '',
           age: data.age ? String(data.age) : '',
@@ -344,14 +333,6 @@ export default function EditProfilePage() {
         wants_kids: formData.wants_kids,
         has_kids: formData.has_kids,
         ...lifestyle,
-        ...(isPlus
-          ? {
-              visiting_city: travel.city.trim(),
-              visiting_country: travel.country.trim(),
-              visiting_dates: travel.dates.trim(),
-              is_travel_mode_active: travel.active && Boolean(travel.city.trim()),
-            }
-          : {}),
       });
       if (!saved.ok) {
         if (saved.field === 'bio') {
@@ -849,62 +830,6 @@ export default function EditProfilePage() {
                 : t('moderation.bioHelper')}
             </p>
             {!bioCheck.isValid && <p className="text-xs text-red-600 font-medium mt-1" role="alert">{profileContentMessage(bioCheck, t)}</p>}
-          </div>
-
-          {/* Upcoming travel notice (Plus) */}
-          <div className="p-4 rounded-2xl bg-white border border-[#B8B3D1]/35 space-y-3">
-            <div className="flex items-start justify-between gap-3">
-              <div>
-                <h3 className="text-xs font-semibold text-[#8574B7] uppercase tracking-wider">Upcoming Travel Notice</h3>
-                <p className="text-[11px] text-slate-600 mt-0.5">
-                  Show a &ldquo;Visiting:&rdquo; badge on Discover and your profile before your trip.
-                </p>
-              </div>
-              {isPlus ? (
-                <button
-                  type="button"
-                  role="switch"
-                  aria-checked={travel.active}
-                  aria-label="Travel notice"
-                  onClick={() => setTravel((t) => ({ ...t, active: !t.active }))}
-                  className={'w-10 h-6 rounded-full transition-colors relative shrink-0 ' + (travel.active ? 'bg-[#8574B7]' : 'bg-[#E8E6F1]')}
-                >
-                  <span className={'absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-all ' + (travel.active ? 'left-5' : 'left-1')} />
-                </button>
-              ) : (
-                <Link href="/plus" className="shrink-0" aria-label="Unlock with Plus">
-                  <PlusBadge size="profile" />
-                </Link>
-              )}
-            </div>
-            {isPlus && (
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
-                <input
-                  type="text"
-                  value={travel.city}
-                  maxLength={80}
-                  onChange={(e) => setTravel((t) => ({ ...t, city: e.target.value }))}
-                  placeholder="City (e.g. Cebu)"
-                  className="w-full px-4 py-2.5 rounded-xl bg-white border border-[#B8B3D1]/35 text-[#413B5E] text-base sm:text-sm focus:outline-none focus:border-[#B8B3D1]"
-                />
-                <input
-                  type="text"
-                  value={travel.country}
-                  maxLength={80}
-                  onChange={(e) => setTravel((t) => ({ ...t, country: e.target.value }))}
-                  placeholder="Country"
-                  className="w-full px-4 py-2.5 rounded-xl bg-white border border-[#B8B3D1]/35 text-[#413B5E] text-base sm:text-sm focus:outline-none focus:border-[#B8B3D1]"
-                />
-                <input
-                  type="text"
-                  value={travel.dates}
-                  maxLength={40}
-                  onChange={(e) => setTravel((t) => ({ ...t, dates: e.target.value }))}
-                  placeholder="When (e.g. December 2026)"
-                  className="w-full px-4 py-2.5 rounded-xl bg-white border border-[#B8B3D1]/35 text-[#413B5E] text-base sm:text-sm focus:outline-none focus:border-[#B8B3D1]"
-                />
-              </div>
-            )}
           </div>
 
           <button

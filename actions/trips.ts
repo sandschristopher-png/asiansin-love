@@ -61,8 +61,13 @@ const fail = (error: string, code: NonNullable<ActionResponse['code']>): ActionR
 
 type Clean = { city: string; country: string; start: string; end: string; note: string | null };
 
-/** Shared validation for create and update; returns the cleaned values or the error to show. */
-function validateTrip(input: TripInput): Clean | ActionResponse<never> {
+/**
+ * Shared validation for create and update; returns the cleaned values or the error to show.
+ * `storedStart` is the arrival date already saved on the trip (update only). An unchanged arrival
+ * may already be in the past, which is how an in-progress trip can be edited; a new arrival date
+ * must still be today or later. The departure date may never be in the past either way.
+ */
+function validateTrip(input: TripInput, storedStart?: string): Clean | ActionResponse<never> {
   const country = hubCountry(input?.destinationCity);
   if (!country) return fail('Choose a destination from the list.', 'INVALID_INPUT');
 
@@ -71,8 +76,12 @@ function validateTrip(input: TripInput): Clean | ActionResponse<never> {
   if (start === null || end === null) return fail('Choose valid arrival and departure dates.', 'INVALID_DATES');
   // One day of slack: a member west of UTC can still pick their own "today".
   const today = todayUtcMs();
-  if (start < today - DAY_MS) return fail('The arrival date cannot be in the past.', 'INVALID_DATES');
-  if (start > today + MAX_DAYS_AHEAD * DAY_MS) return fail('Trips can be scheduled up to 6 months ahead.', 'INVALID_DATES');
+  const startUnchanged = storedStart !== undefined && input.startDate === storedStart;
+  if (!startUnchanged) {
+    if (start < today - DAY_MS) return fail('The arrival date cannot be in the past.', 'INVALID_DATES');
+    if (start > today + MAX_DAYS_AHEAD * DAY_MS) return fail('Trips can be scheduled up to 6 months ahead.', 'INVALID_DATES');
+  }
+  if (end < today - DAY_MS) return fail('The departure date cannot be in the past.', 'INVALID_DATES');
   if (end < start) return fail('The departure date must be on or after the arrival date.', 'INVALID_DATES');
   if (end - start > MAX_TRIP_DAYS * DAY_MS) return fail(`A single trip can last up to ${MAX_TRIP_DAYS} days.`, 'INVALID_DATES');
 
@@ -161,7 +170,20 @@ export async function updateTrip(tripId: string, input: TripInput): Promise<Acti
   if (!auth.ok) return auth.error;
   const { supabase, user } = auth;
 
-  const clean = validateTrip(input);
+  // The saved arrival date decides whether an in-progress trip's start may stay where it is.
+  const { data: stored, error: storedError } = await supabase
+    .from('user_trips')
+    .select('start_date')
+    .eq('id', tripId)
+    .eq('user_id', user.id)
+    .maybeSingle();
+  if (storedError) {
+    console.error('[trips] lookup failed', storedError.message);
+    return fail('Could not update your trip. Please try again.', 'DB_ERROR');
+  }
+  if (!stored) return fail('Trip not found.', 'NOT_FOUND');
+
+  const clean = validateTrip(input, String(stored.start_date));
   if ('success' in clean) return clean;
 
   const patch: Record<string, unknown> = {

@@ -26,7 +26,6 @@ import {
 import { supabase } from '@/lib/supabase/client';
 import { VoicePlayer } from '@/components/VoicePlayer';
 import { ageOf } from '@/lib/age';
-import { VisitingBadge } from '@/components/VisitingBadge';
 import { useShare } from '@/components/share/useShare';
 import { MemberTrips } from '@/components/trips/ProfileTrips';
 import { CardPhoto, DETAIL_PHOTO_SIZES } from '@/components/CardPhoto';
@@ -304,10 +303,6 @@ export default function PublicProfilePage() {
   const placeholders: Record<string, string> =
     profile.photo_placeholders && typeof profile.photo_placeholders === 'object' ? profile.photo_placeholders : {};
   const dayOneNumber: number | null = profile.is_day_one && Number.isInteger(profile.day_one_number) ? profile.day_one_number : null;
-  const travel =
-    profile.is_travel_mode_active && profile.is_plus && profile.visiting_city
-      ? { city: profile.visiting_city, country: profile.visiting_country ?? null, dates: profile.visiting_dates ?? null }
-      : null;
   const isOnline = profile.show_active_status !== false && getPresenceStatus(profile.last_active).isOnline;
   const hasMultiplePhotos = photoList.length > 1;
 
@@ -525,7 +520,6 @@ export default function PublicProfilePage() {
               <DayOneBadge number={dayOneNumber} />
             </div>
           )}
-          <VisitingBadge travel={travel} />
           <MemberTrips userId={profile.id} />
         </section>
 

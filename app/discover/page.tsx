@@ -17,7 +17,6 @@ import { CardPrimaryTag } from '@/components/profile/RhythmBadges';
 import { SparkHeartButton } from '@/components/SparkHeartButton';
 import { PhotoCarousel } from '@/components/cards/PhotoCarousel';
 import { useActionToast } from '@/components/ActionToast';
-import { VisitingBadge, type TravelNotice } from '@/components/VisitingBadge';
 import { TripBadge } from '@/components/trips/TripBadge';
 import { useLocale } from '@/components/i18n/LocaleProvider';
 import type { TKey } from '@/lib/i18n';
@@ -119,7 +118,6 @@ export interface ProfileItem {
   lastActive?: string | null;
   languages?: string | string[] | null;
   replyPace?: string | null;
-  travel?: TravelNotice | null;
   dayOneNumber?: number | null;
   photoPlaceholders?: Record<string, string>;
   heightCm?: number | null;
@@ -1067,14 +1065,13 @@ function DiscoverContent() {
                   {/* Soft scrim at the base of the photo so the white name / city text stays legible. */}
                   <div aria-hidden className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/80 via-black/35 to-transparent pointer-events-none z-20" />
                   <div className="absolute bottom-0 inset-x-0 pt-10 pb-3 px-3 z-[25] pointer-events-none">
-                    {(profile.trip || profile.travel || isTrustedVoiceIntroUrl(profile.voiceIntroUrl)) && (
+                    {(profile.trip || isTrustedVoiceIntroUrl(profile.voiceIntroUrl)) && (
                       <div className="mb-1.5 flex flex-col items-start gap-1 pr-7 pointer-events-auto">
                         {/* Tap-to-play only; never autoplays */}
                         {isTrustedVoiceIntroUrl(profile.voiceIntroUrl) && (
                           <AudioPill src={profile.voiceIntroUrl} label="Voice" size="sm" />
                         )}
-                        {/* A Visiting Soon trip replaces the older single travel notice. */}
-                        {profile.trip ? <TripBadge trip={profile.trip} variant="glass" /> : <VisitingBadge travel={profile.travel} variant="glass" />}
+                        {profile.trip && <TripBadge trip={profile.trip} variant="glass" />}
                       </div>
                     )}
                     <Link href={'/profile/' + profile.id} className="block min-w-0 pointer-events-auto">

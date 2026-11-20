@@ -34,7 +34,6 @@ import { adminRoleOf } from '@/lib/adminRoles';
 import RepScoreCard from '@/components/RepScoreCard';
 import { ProfileHighlightsEditorRow } from '@/components/ProfileHighlightsEditorRow';
 import { VoicePlayer } from '@/components/VoicePlayer';
-import { VisitingBadge, type TravelNotice } from '@/components/VisitingBadge';
 import { MyTrips } from '@/components/trips/ProfileTrips';
 import { DayOneBadge, NewMemberPill, VerifiedLocationBadge } from '@/components/profile/TrustBadges';
 import { isTrustedVoiceIntroUrl } from '@/lib/audio';
@@ -170,7 +169,6 @@ export default function MyProfilePage() {
   const [voiceModalOpen, setVoiceModalOpen] = useState(false);
   const [dayOneNumber, setDayOneNumber] = useState<number | null>(() => initialProfile?.dayOneNumber ?? null);
   const [createdAt, setCreatedAt] = useState<string | null>(() => initialProfile?.createdAt ?? null);
-  const [travel, setTravel] = useState<TravelNotice | null>(() => initialProfile?.travel ?? null);
   // Trip planner: own id and the raw is_plus flag (what actions/trips.ts and RLS check).
   const [myId, setMyId] = useState<string | null>(null);
   const [hasPlusFlag, setHasPlusFlag] = useState(false);
@@ -235,13 +233,8 @@ export default function MyProfilePage() {
         setLifestyle(nextLifestyle);
         setVoiceIntroUrl(data.voice_intro_url ?? null);
         const nextDayOne: number | null = data.is_day_one && Number.isInteger(data.day_one_number) ? data.day_one_number : null;
-        const nextTravel: TravelNotice | null =
-          data.is_travel_mode_active && data.visiting_city
-            ? { city: data.visiting_city, country: data.visiting_country ?? null, dates: data.visiting_dates ?? null }
-            : null;
         setDayOneNumber(nextDayOne);
         setCreatedAt(data.created_at ?? null);
-        setTravel(nextTravel);
         if (data.avatar_url) setAvatarUrl(data.avatar_url);
         if (data.verification_status) {
           setVerificationStatus(data.verification_status);
@@ -286,7 +279,6 @@ export default function MyProfilePage() {
             lifestyle: Object.fromEntries(LIFESTYLE_KEYS.map((k) => [k, readLifestyle(k, data[k])])),
             dayOneNumber: nextDayOne,
             createdAt: data.created_at ?? null,
-            travel: nextTravel,
           });
       }
       setLoading(false);
@@ -686,8 +678,6 @@ export default function MyProfilePage() {
             </div>
           )}
 
-          {/* Upcoming travel notice (Plus) */}
-          <VisitingBadge travel={travel} />
           </div>
         )}
 

@@ -13,7 +13,6 @@ import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 import { createClient as createSessionClient } from '@/lib/supabase/server';
 import { evaluateBioModeration, validateProfileContent } from '@/lib/moderation';
-import { BIO_REJECTION_MESSAGE, validateBio } from '@/lib/moderation/textFilter';
 import { PROFILE_BLOCK_MESSAGE } from '@/lib/moderation/profileModerator';
 import {
   chargeProfileViolations,
@@ -24,8 +23,6 @@ import {
 } from '@/lib/moderation/profilePenalty';
 import { isRhythmValue, RHYTHM_FIELDS, type RhythmField } from '@/lib/rhythm';
 import { resolveCountry } from '@/lib/countries';
-import { canonicalCountry } from '@/lib/constants/countries';
-import { isPlusProfile } from '@/lib/plus';
 import { isEnglishLevel } from '@/lib/discoverFilters';
 import { normalizeLanguages } from '@/lib/constants/languages';
 import {
@@ -231,38 +228,6 @@ export async function PATCH(req: Request) {
     updates[key] = v as string | null;
   }
 
-  // "Visiting:" travel notice (Plus). Columns from 20261108_release_features.sql.
-  const travelKeys = ['visiting_city', 'visiting_country', 'visiting_dates', 'is_travel_mode_active'];
-  if (travelKeys.some((k) => k in body)) {
-    for (const [key, max, label] of [
-      ['visiting_city', 80, 'Destination city'],
-      ['visiting_country', 80, 'Destination country'],
-      ['visiting_dates', 40, 'Travel dates'],
-    ] as const) {
-      if (!(key in body)) continue;
-      const v = body[key];
-      if (v === null || v === '') {
-        updates[key] = null;
-        continue;
-      }
-      if (typeof v !== 'string') return bad(`${label} must be text.`, key);
-      const text = v.trim();
-      if (text.length > max) return bad(`${label} can be up to ${max} characters.`, key);
-      if (!validateBio(text).ok) return bad(`${label}: ${BIO_REJECTION_MESSAGE}`, key);
-      updates[key] = key === 'visiting_country' ? canonicalCountry(text) : text;
-    }
-    if ('is_travel_mode_active' in body) {
-      const on = body.is_travel_mode_active === true;
-      if (on) {
-        const { data: me } = await service.from('profiles').select('*').eq('id', userId).maybeSingle();
-        if (!isPlusProfile(me)) return bad('Travel notice is an Plus feature.', 'is_travel_mode_active', 403);
-        const city = 'visiting_city' in updates ? updates.visiting_city : me?.visiting_city;
-        if (!city) return bad('Add the city you are visiting first.', 'visiting_city');
-      }
-      updates.is_travel_mode_active = on;
-    }
-  }
-
   if (Object.keys(updates).length === 0) {
     return NextResponse.json({ success: true });
   }
@@ -295,9 +260,6 @@ export async function PATCH(req: Request) {
     }
   }
 
-  if (error && /visiting_|is_travel_mode_active/.test(error.message)) {
-    return NextResponse.json({ error: 'Travel notice is not available yet. Please try again later.' }, { status: 503 });
-  }
   if (error) {
     console.error('[api/profile] update failed:', error.message);
     return NextResponse.json({ error: 'Could not save your profile.' }, { status: 500 });

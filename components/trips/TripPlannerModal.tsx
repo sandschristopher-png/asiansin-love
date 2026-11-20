@@ -55,6 +55,9 @@ export function TripPlannerModal({
   const noteMessage = profileContentMessage(noteCheck, t);
   const today = isoToday();
   const latestStart = isoToday(MAX_DAYS_AHEAD);
+  // An in-progress trip keeps its saved arrival (already past); the browser must not block that.
+  const arrivalMin = trip?.start_date && trip.start_date < today ? trip.start_date : today;
+  const departureMin = startDate && startDate > today ? startDate : today;
   const tooLong = Boolean(startDate && endDate && endDate >= startDate && (Date.parse(endDate) - Date.parse(startDate)) / 86_400_000 > MAX_TRIP_DAYS);
   const ready = Boolean(city && startDate && endDate && endDate >= startDate && !tooLong && noteCheck.isValid);
 
@@ -129,7 +132,7 @@ export function TripPlannerModal({
               id="trip-start"
               type="date"
               value={startDate}
-              min={today}
+              min={arrivalMin}
               max={latestStart}
               onChange={(e) => {
                 setStartDate(e.target.value);
@@ -141,7 +144,7 @@ export function TripPlannerModal({
           </div>
           <div>
             <label htmlFor="trip-end" className={LABEL}>{t('travel.planner.departure')}</label>
-            <input id="trip-end" type="date" value={endDate} min={startDate || today} onChange={(e) => setEndDate(e.target.value)} required className={FIELD} />
+            <input id="trip-end" type="date" value={endDate} min={departureMin} onChange={(e) => setEndDate(e.target.value)} required className={FIELD} />
           </div>
         </div>
         {tooLong && <p className="text-xs text-red-600 font-medium -mt-1.5">{t('travel.planner.tooLong', { n: MAX_TRIP_DAYS })}</p>}

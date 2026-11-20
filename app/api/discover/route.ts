@@ -5,7 +5,7 @@ import { createClient } from '@supabase/supabase-js';
 import { resolveCountry } from '@/lib/countries';
 import { publicName } from '@/lib/publicName';
 import { getPresenceStatus } from '@/lib/presence';
-import { canonicalCountry, countryMatches } from '@/lib/constants/countries';
+import { countryMatches } from '@/lib/constants/countries';
 import { readLanguages } from '@/lib/constants/languages';
 import { LIFESTYLE_KEYS, readHeightCm, readLifestyle } from '@/lib/lifestyle';
 import { sharedTraits } from '@/lib/rhythm';
@@ -40,10 +40,10 @@ const DISCOVER_COLUMNS = [
 /** Rhythm badge column from 20261106_reputation_rhythm.sql; the feed falls back without it. */
 const RHYTHM_COLUMNS = 'reply_pace';
 /** Travel notice, Day 1 badge and blur previews from 20261108_release_features.sql (optional). */
-const RELEASE_COLUMNS = 'is_travel_mode_active, visiting_city, visiting_country, visiting_dates, is_day_one, day_one_number, photo_placeholders';
+const RELEASE_COLUMNS = 'is_day_one, day_one_number, photo_placeholders';
 /** Lifestyle badges from 20261109_lifestyle_attributes.sql (optional). */
 const LIFESTYLE_COLUMNS = 'tattoos, piercings, fitness_rhythm';
-const OPTIONAL_COLUMN_RE = /reply_pace|is_travel_mode_active|visiting_|is_day_one|day_one_number|photo_placeholders|tattoos|piercings|fitness_rhythm/;
+const OPTIONAL_COLUMN_RE = /reply_pace|is_day_one|day_one_number|photo_placeholders|tattoos|piercings|fitness_rhythm/;
 
 export const dynamic = 'force-dynamic';
 
@@ -387,14 +387,6 @@ export async function GET(req: Request) {
           replyPace: row.reply_pace || null,
           // Nearest active / upcoming trip (Plus members only): "In Manila now" or "Visiting Manila: Nov 18 - Dec 2".
           trip: row.is_plus ? tripByUser.get(row.id) ?? null : null,
-          travel:
-            row.is_travel_mode_active === true && row.is_plus && row.visiting_city
-              ? {
-                  city: String(row.visiting_city),
-                  country: row.visiting_country ? canonicalCountry(row.visiting_country) : null,
-                  dates: row.visiting_dates || null,
-                }
-              : null,
           dayOneNumber: row.is_day_one === true && Number.isInteger(row.day_one_number) ? row.day_one_number : null,
           photoPlaceholders:
             row.photo_placeholders && typeof row.photo_placeholders === 'object' ? row.photo_placeholders : {},
