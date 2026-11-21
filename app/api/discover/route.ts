@@ -10,6 +10,7 @@ import { readLanguages } from '@/lib/constants/languages';
 import { LIFESTYLE_KEYS, readHeightCm, readLifestyle } from '@/lib/lifestyle';
 import { sharedTraits } from '@/lib/rhythm';
 import { hubCountry, type TripBrief } from '@/lib/tripHubs';
+import { cityInHub, hubPlaceNames } from '@/lib/metroAreas';
 import { isPlusProfile } from '@/lib/plus';
 import {
   CHILDREN_CLAUSES,
@@ -229,7 +230,8 @@ export async function GET(req: Request) {
         .from('user_trips')
         .select('user_id')
         .eq('is_active', true)
-        .eq('destination_city', visitingHub)
+        // The hub's whole metro area: a trip filed under Makati or Mandaue still counts for Manila or Cebu City.
+        .in('destination_city', hubPlaceNames(visitingHub))
         .gte('end_date', tripsFrom)
         .limit(1000);
       visitingIds = Array.from(
@@ -288,7 +290,7 @@ export async function GET(req: Request) {
         .order('start_date', { ascending: true })
         .limit(2000);
       for (const r of (tripRows as { user_id: string; destination_city: string; destination_country: string; start_date: string; end_date: string }[] | null) || []) {
-        if (visitingHub && r.destination_city !== visitingHub) continue;
+        if (visitingHub && !cityInHub(r.destination_city, visitingHub)) continue;
         if (!tripByUser.has(r.user_id)) {
           tripByUser.set(r.user_id, { city: r.destination_city, country: r.destination_country || null, arrival: r.start_date, departure: r.end_date });
         }

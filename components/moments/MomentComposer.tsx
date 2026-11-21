@@ -32,7 +32,8 @@ export function MomentComposer({
   onPosted,
   onReverificationRequired,
 }: {
-  defaultCity: MomentCity;
+  /** The member's own city (trip, profile or live position), or null when none is known yet: nothing is preselected then. */
+  defaultCity: MomentCity | null;
   /** A prompt to start on (the Today's Prompt card). */
   initialPrompt?: MomentPrompt | null;
   onClose: () => void;
@@ -42,7 +43,9 @@ export function MomentComposer({
 }) {
   const { t } = useLocale();
   const [blob, setBlob] = useState<Blob | null>(null);
-  const [city, setCity] = useState<MomentCity>(defaultCity);
+  // What the member chose by hand or by "use my location"; until then the default (which can arrive late) shows.
+  const [picked, setCity] = useState<MomentCity | null>(null);
+  const city: MomentCity | '' = picked ?? defaultCity ?? '';
   const [vibe, setVibe] = useState<VibeTag | null>(null);
   const [prompt, setPrompt] = useState<MomentPrompt | null>(initialPrompt);
   const [locating, setLocating] = useState(false);
@@ -130,7 +133,7 @@ export function MomentComposer({
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!blob || !vibe || busy) return;
+    if (!blob || !vibe || !city || busy) return;
     setBusy(true);
     setError(null);
     setNeedsVerify(false);
@@ -216,6 +219,12 @@ export function MomentComposer({
                 onChange={(e) => setCity(e.target.value as MomentCity)}
                 className="h-11 w-full appearance-none rounded-xl border border-[#E6E2F0] bg-white pl-4 pr-10 text-sm text-[#413B5E] focus:border-[#726E97] focus:outline-none"
               >
+                {/* No known city yet: nothing is preselected, the member picks one or taps "use my location". */}
+                {!city && (
+                  <option value="" disabled>
+                    {t('moments.city')}
+                  </option>
+                )}
                 {SEA_LOCATIONS.map((loc) => (
                   <optgroup key={loc.country} label={loc.country}>
                     {loc.cities.map((c) => (
@@ -324,7 +333,7 @@ export function MomentComposer({
             scrolling; it then expands to the 4:5 preview the feed will show. */}
         <button
           type="submit"
-          disabled={!blob || !vibe || busy}
+          disabled={!blob || !vibe || !city || busy}
           className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-full bg-[#726E97] text-sm font-medium text-white transition-colors hover:bg-[#524E75] disabled:cursor-not-allowed disabled:opacity-50"
         >
           {busy && <Loader2 className="h-4 w-4 animate-spin" aria-hidden />}

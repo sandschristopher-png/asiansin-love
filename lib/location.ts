@@ -1,4 +1,5 @@
 import { errMsg } from '@/lib/errors';
+import { pickCity } from '@/lib/geoCity';
 import { supabase } from '@/lib/supabase/client';
 
 export interface LocationData {
@@ -39,20 +40,14 @@ export async function captureCurrentLocation(): Promise<{
           const { latitude, longitude } = pos.coords;
 
           const res = await fetch(
-            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=10&addressdetails=1`,
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}&zoom=12&addressdetails=1`,
             { headers: { 'Accept-Language': 'en' } }
           );
           const geo = await res.json();
           const addr = geo.address || {};
 
-          const city =
-            addr.city ||
-            addr.town ||
-            addr.municipality ||
-            addr.village ||
-            addr.county ||
-            addr.state ||
-            'Unknown';
+          // The exact city or municipality (Taguig, Makati, Las Vegas), never a region or county.
+          const city = pickCity(addr);
           const country = addr.country || 'Unknown';
 
           const { data: { user } } = await supabase.auth.getUser();

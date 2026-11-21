@@ -80,18 +80,15 @@ export async function POST(req: NextRequest) {
     // Test overrides exist ONLY in local development.
     const isDev = process.env.NODE_ENV === 'development';
     let detectedCountryCode = req.headers.get('x-vercel-ip-country')?.toUpperCase() || null;
-    let detectedCity = req.headers.get('x-vercel-ip-city')
+    const detectedCity = req.headers.get('x-vercel-ip-city')
       ? decodeURIComponent(req.headers.get('x-vercel-ip-city')!)
       : null;
 
     if (isDev && !detectedCountryCode) {
       const testCountry = req.headers.get('x-test-country');
-      detectedCountryCode = testCountry
-        ? testCountry.toUpperCase()
-        : normalizeCountry(profile.country) === 'United States'
-          ? 'US'
-          : 'PH';
-      detectedCity = detectedCity || (detectedCountryCode === 'US' ? 'Los Angeles' : 'Manila');
+      // Local development has no edge headers: assume the member's own declared country, and never
+      // invent a city (the profile keeps the city it already has).
+      detectedCountryCode = testCountry ? testCountry.toUpperCase() : declaredCode ?? 'PH';
     }
 
     if (!detectedCountryCode) {

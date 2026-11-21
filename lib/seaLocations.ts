@@ -1,9 +1,11 @@
 /**
  * Southeast Asia locations a Moment can be posted from, grouped by country. The database check on
  * moments.city (20261125_moments_vibes.sql) lists exactly these cities; scripts/test-moments-config.mjs
- * fails if the two drift. Names stay as written in every language. No imports, so server and client
- * code can both use it.
+ * fails if the two drift. Names stay as written in every language. Only imports the pure metro-area
+ * table, so server and client code can both use it.
  */
+import { metroHubOf } from '@/lib/metroAreas';
+
 export const SEA_LOCATIONS = [
   { country: 'Philippines', cities: ['Manila', 'Cebu', 'Davao', 'Angeles / Clark', 'Iloilo', 'Bacolod', 'Dumaguete', 'Palawan', 'Boracay', 'Baguio', 'Subic'] },
   { country: 'Thailand', cities: ['Bangkok', 'Chiang Mai', 'Phuket', 'Pattaya', 'Krabi', 'Koh Samui', 'Hua Hin', 'Chiang Rai'] },
@@ -102,6 +104,13 @@ export function matchSeaCity(raw: string | null | undefined): SeaCity | null {
   if (text.length < 2) return null;
   if (ALIASES[text]) return ALIASES[text];
   for (const city of SEA_CITIES) if (city.toLowerCase() === text) return city;
+  // A municipality inside a metro area ("Taguig", "Mandaue") lands on its hub's Moments city.
+  const hub = metroHubOf(text);
+  if (hub) {
+    const hubKey = hub.toLowerCase();
+    const sea = ALIASES[hubKey] ?? SEA_CITIES.find((c) => c.toLowerCase() === hubKey);
+    if (sea) return sea;
+  }
   for (const [alias, city] of Object.entries(ALIASES)) if (text.includes(alias)) return city;
   for (const city of SEA_CITIES) if (text.length > 3 && (text.includes(city.toLowerCase()) || city.toLowerCase().includes(text))) return city;
   return null;

@@ -7,6 +7,7 @@ import VerifiedBadge from '@/components/VerifiedBadge';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { Compass, Search, X as XIcon, SlidersHorizontal, RotateCcw, MapPin } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
+import { cityInHub, metroHubOf, placeMatchesQuery } from '@/lib/metroAreas';
 import { INTENT_OPTIONS, normalizeIntent } from '@/lib/intents';
 import { CHILDREN_FILTERS, ENGLISH_LEVEL_OPTIONS, RELATIONSHIP_INTENT_FILTERS, discoverQuery } from '@/lib/discoverFilters';
 import { ActionType, getLocalCardActions, persistCardAction } from '@/lib/interactions';
@@ -835,7 +836,8 @@ function DiscoverContent() {
       const matchesCountry = countryMatches(profile.country, selectedCountry, countryOptions);
       const q = searchQuery.toLowerCase().trim();
       const searchableName = (profile.username || profile.name || '').toLowerCase();
-      const matchesQuery = !q || searchableName.includes(q) || profile.location.toLowerCase().includes(q);
+      // The card shows the exact city; a search for the hub ("Manila") also finds the members in its metro area.
+      const matchesQuery = !q || searchableName.includes(q) || profile.location.toLowerCase().includes(q) || placeMatchesQuery(cityOf(profile), q);
       const matchesAge = profile.age >= minAge && profile.age <= maxAge;
       const matchesIntent =
         selectedIntents.length === 0 ||
@@ -868,8 +870,9 @@ function DiscoverContent() {
       );
     }).sort((x, y) => {
       if (discoveryMode === 'near_me') {
-        // Same city first, then closest; members without coordinates go last.
-        const sameCity = (p: ProfileItem) => (viewerPlace?.city && cityOf(p) === viewerPlace.city.trim().toLowerCase() ? 0 : 1);
+        // Same city first, then the same metro area (Taguig beside Makati), then closest; members without coordinates go last.
+        const sameCity = (p: ProfileItem) =>
+          !viewerPlace?.city ? 2 : cityOf(p) === viewerPlace.city.trim().toLowerCase() ? 0 : metroHubOf(viewerPlace.city) && cityInHub(cityOf(p), metroHubOf(viewerPlace.city)) ? 1 : 2;
         if (sameCity(x) !== sameCity(y)) return sameCity(x) - sameCity(y);
         const d = (p: ProfileItem) =>
           currentUserCoords && p.latitude != null && p.longitude != null

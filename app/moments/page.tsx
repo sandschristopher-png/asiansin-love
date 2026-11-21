@@ -17,7 +17,7 @@ import { useStepUp } from '@/components/verify/useStepUp';
 import { useReverification } from '@/lib/useReverification';
 import { mergeRefresh, type MomentEdit } from '@/lib/momentsMerge';
 import { MOMENTS_SEEN_EVENT, MOMENTS_SEEN_KEY, promptOfDay, type MomentCity, type MomentItem, type MomentPrompt } from '@/lib/moments';
-import { matchSeaCity } from '@/lib/seaLocations';
+import { matchSeaCity, nearestSeaCity } from '@/lib/seaLocations';
 import { supabase } from '@/lib/supabase/client';
 import { fetchUpcomingTrips, localIsoDate } from '@/lib/trips';
 import type { TKey } from '@/lib/i18n';
@@ -68,7 +68,8 @@ export default function MomentsPage() {
   const [todaysPrompt] = useState<MomentPrompt>(() => promptOfDay());
   const [sparkTarget, setSparkTarget] = useState<MomentItem | null>(null);
   const [reportTarget, setReportTarget] = useState<MomentItem | null>(null);
-  const [homeCity, setHomeCity] = useState<MomentCity>('Manila');
+  /** The city the composer opens on: the member's trip, profile or live position; null until one is known (no default city). */
+  const [homeCity, setHomeCity] = useState<MomentCity | null>(null);
 
   const [reloadKey, setReloadKey] = useState(0);
 
@@ -146,9 +147,31 @@ export default function MomentsPage() {
         if (active) setHomeCity(tripCity);
         return;
       }
-      const { data } = await supabase.from('profiles').select('city').eq('id', user.id).maybeSingle();
-      const hub = matchSeaCity(data?.city);
-      if (hub && active) setHomeCity(hub);
+      const { data } = await supabase.from('profiles').select('city, latitude, longitude').eq('id', user.id).maybeSingle();
+      // Profile city first (a metro municipality such as Taguig lands on Manila), then the profile's coordinates.
+      const lat = data?.latitude == null ? NaN : Number(data.latitude);
+      const lng = data?.longitude == null ? NaN : Number(data.longitude);
+      const hub = matchSeaCity(data?.city) ?? nearestSeaCity(lat, lng)?.city ?? null;
+      if (hub) {
+        if (active) setHomeCity(hub);
+        return;
+      }
+      // Nothing on the profile: use the device's live position, but only when location is already allowed
+      // (opening Moments never raises a permission prompt). Otherwise the composer asks the member to choose.
+      try {
+        const permission = await navigator.permissions?.query({ name: 'geolocation' });
+        if (permission?.state !== 'granted' || !navigator.geolocation) return;
+        navigator.geolocation.getCurrentPosition(
+          (pos) => {
+            const near = nearestSeaCity(pos.coords.latitude, pos.coords.longitude);
+            if (near && active) setHomeCity(near.city);
+          },
+          () => {},
+          { enableHighAccuracy: false, timeout: 8000, maximumAge: 600000 }
+        );
+      } catch {
+        // Permissions API unavailable: no live default.
+      }
     })();
     return () => {
       active = false;

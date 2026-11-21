@@ -14,7 +14,8 @@ import {
   ShieldCheck,
   Trash2,
   Plus,
-  Shield
+  Shield,
+  ChevronDown
 } from 'lucide-react';
 import { captureCurrentLocation } from '@/lib/location';
 import { supabase } from '@/lib/supabase/client';
@@ -91,7 +92,7 @@ export default function OnboardingPage() {
 
   // Step 3: Location (GPS first, manual fallback, NOT location-verified)
   const [city, setCity] = useState('');
-  const [country, setCountry] = useState('Philippines');
+  const [country, setCountry] = useState('');
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
   const [gpsCaptured, setGpsCaptured] = useState(false);
@@ -808,7 +809,14 @@ export default function OnboardingPage() {
                     onChange={setCountry}
                     options={COUNTRIES.map((c) => ({ value: c, label: c }))}
                     menuClassName="w-full"
-                    className="px-3.5 py-2.5 rounded-xl bg-white border border-[#D0CDE1] text-xs font-medium text-[#413B5E] focus:outline-none focus-visible:border-[#726E97]"
+                    className="w-full flex items-center justify-between gap-2 text-left px-3.5 py-2.5 rounded-xl bg-white border border-[#D0CDE1] text-xs font-medium text-[#413B5E] focus:outline-none focus-visible:border-[#726E97]"
+                    // No default country: GPS or the member fills it in (an empty field shows the prompt).
+                    renderTrigger={(selected, open) => (
+                      <>
+                        <span className={`truncate ${selected ? '' : 'text-[#413B5E]/55'}`}>{selected?.label ?? 'Select country'}</span>
+                        <ChevronDown className={`w-4 h-4 shrink-0 text-slate-500 transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden />
+                      </>
+                    )}
                   />
                 </div>
 

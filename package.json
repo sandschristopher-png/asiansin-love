@@ -18,7 +18,8 @@
     "landing:test": "node scripts/test-landing-geo.mjs",
     "gate:test": "node scripts/test-message-gate.mjs",
     "tp:test": "node scripts/test-tp-scope.mjs",
-    "carousel:test": "node scripts/test-carousel.mjs"
+    "carousel:test": "node scripts/test-carousel.mjs",
+    "location:test": "node scripts/test-location.mjs"
   },
   "dependencies": {
     "@google/genai": "^2.24.0",
