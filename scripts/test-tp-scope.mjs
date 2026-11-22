@@ -19,11 +19,9 @@ for (const p of [
   ok(`kept off: ${p}`, tpScriptAllowed(p) === false);
 }
 
-// The Travel Hub lists members when signed in, so the script runs there for signed-out visitors only.
-ok('travel hub: signed out loads it', tpScriptAllowed('/travel', false) === true && tpScriptAllowed('/travel/', false) === true);
-ok('travel hub: signed in is kept off', tpScriptAllowed('/travel', true) === false);
-ok('travel hub: unknown state counts as signed in', tpScriptAllowed('/travel') === false);
-ok('signed-out flag does not open the app', tpScriptAllowed('/discover', false) === false && tpScriptAllowed('/profile/abc', false) === false);
+// The Travel Hub loads it for everyone, signed in or not, so its partner links convert.
+ok('travel hub loads it', tpScriptAllowed('/travel') === true && tpScriptAllowed('/travel/') === true);
+ok('a sub-page of the travel hub is not the hub', tpScriptAllowed('/travel/anything') === false);
 
 // Near misses and odd input.
 ok('a sub-page of a hub is not a hub', tpScriptAllowed('/cebu/anything') === false);

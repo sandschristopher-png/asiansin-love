@@ -27,7 +27,7 @@ export function CardGridSkeleton({ count = 6 }: { count?: number }) {
 export function DiscoverSkeleton() {
   return (
     <div className="min-h-full w-full bg-white" aria-busy="true" aria-label="Loading discover feed">
-      <main className="mx-auto w-full max-w-[480px] px-4 pb-36 pt-2 min-[480px]:px-8">
+      <main className="mx-auto w-full max-w-[480px] px-4 pb-36 pt-2">
         <div className="flex items-center justify-between py-2">
           <div className={`h-7 w-32 rounded-lg ${SHIMMER}`} />
           <div className="flex items-center gap-2">

@@ -59,9 +59,9 @@ export default function TravelPage() {
         <h2 id="travel-hubs" className={sectionTitle}>
           Explore hubs
         </h2>
-        <ul className="no-scrollbar -mx-4 flex gap-2 overflow-x-auto px-4 pb-1">
+        <ul className="flex flex-wrap gap-2">
           {EXPLORE_HUBS.map((h) => (
-            <li key={h.hub} className="shrink-0">
+            <li key={h.hub}>
               <Link
                 href={visitingHref(h.hub)}
                 className="inline-flex h-9 items-center whitespace-nowrap rounded-full border border-[#D0CDE1] bg-white px-4 text-sm font-medium text-[#726E97] transition-colors hover:bg-[#EAE9F2]/50 active:scale-95"
@@ -92,18 +92,18 @@ export default function TravelPage() {
         </ul>
       </section>
 
-      <section aria-labelledby="travel-essentials" className="space-y-3 border-t border-[#D0CDE1]/70 pt-6">
+      <section aria-labelledby="travel-essentials" className="space-y-3">
         <h2 id="travel-essentials" className={sectionTitle}>
           Travel essentials
         </h2>
-        <ul className="divide-y divide-[#D0CDE1]/70">
+        <ul className="space-y-4">
           {ESSENTIALS.map((e) => (
             <li key={e.label}>
               <a
                 href={e.href}
                 target="_blank"
                 rel="sponsored noopener noreferrer"
-                className="flex items-center justify-between gap-3 py-3 text-[#413B5E] transition-colors hover:text-[#726E97]"
+                className="flex items-center justify-between gap-3 text-[#413B5E] transition-colors hover:text-[#726E97]"
               >
                 <span>
                   <span className="block text-sm font-semibold">{e.label}</span>

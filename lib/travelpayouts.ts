@@ -9,17 +9,14 @@ import { ROOT_HUB_SLUGS } from '@/lib/cities';
  *   /cities, /cities/[slug] the city directory and city pages
  *   /manila, /cebu, ...     the root city hubs
  *   /safety                 the safety guide
- *   /travel                 the Travel Hub, for signed-out visitors only (signed in, it lists members and their
- *                           profile links, so the script stays off it)
+ *   /travel                 the Travel Hub, signed in or not, so its Flights, Hotels and eSIMs links convert for everyone
  *
  * components/TravelpayoutsDrive.tsx is the only user of this rule.
  */
-export function tpScriptAllowed(pathname: string | null | undefined, signedIn = true): boolean {
+export function tpScriptAllowed(pathname: string | null | undefined): boolean {
   if (!pathname) return false;
   const path = pathname.length > 1 ? pathname.replace(/\/+$/, '') : pathname;
-  // Signed in (or not yet known, which counts as signed in): the Travel Hub shows members, so no script.
-  if (path === '/travel') return !signedIn;
-  if (path === '/' || path === '/cities' || path === '/safety') return true;
+  if (path === '/' || path === '/cities' || path === '/safety' || path === '/travel') return true;
   if (/^\/cities\/[^/]+$/.test(path)) return true;
   return (ROOT_HUB_SLUGS as readonly string[]).some((slug) => path === `/${slug}`);
 }

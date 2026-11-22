@@ -1,4 +1,5 @@
 import { CityFooterLinks } from '@/components/CityFooterLinks';
+import { PublicOnly } from '@/components/cities/MemberAware';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BrandLogo } from '@/components/BrandLogo';
@@ -31,12 +32,15 @@ const REGIONS: City['region'][] = ['Southeast Asia', 'East Asia'];
 export default function CitiesIndexPage() {
   return (
     <main className="min-h-[100dvh] bg-white text-[#413B5E] overflow-x-hidden">
-      <header className="px-5 pt-6 flex items-center justify-between max-w-xl mx-auto">
-        <BrandLogo href="/" size="sm" />
-        <Link href="/login" className="text-xs font-medium text-[#726E97] hover:text-[#413B5E] transition-colors">
-          Sign in
-        </Link>
-      </header>
+      {/* Signed-in members get the app's own header and tab bar instead (components/LayoutShell). */}
+      <PublicOnly>
+        <header className="px-5 pt-6 flex items-center justify-between max-w-xl mx-auto">
+          <BrandLogo href="/" size="sm" />
+          <Link href="/login" className="text-xs font-medium text-[#726E97] hover:text-[#413B5E] transition-colors">
+            Sign in
+          </Link>
+        </header>
+      </PublicOnly>
 
       <div className="max-w-xl mx-auto px-4 pb-[calc(3rem+env(safe-area-inset-bottom))]">
         <nav aria-label="Breadcrumb" className="pt-6 text-xs text-slate-600">

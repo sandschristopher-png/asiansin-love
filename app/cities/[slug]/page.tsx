@@ -1,4 +1,5 @@
 import { CityHeroCtas, ExploreCities, VisitingSoonCallout } from '@/components/cities/CityBlocks';
+import { PublicOnly } from '@/components/cities/MemberAware';
 import { CityFooterLinks } from '@/components/CityFooterLinks';
 import type { Metadata } from 'next';
 import Link from 'next/link';
@@ -93,12 +94,15 @@ export default async function CityPage({ params }: Params) {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(breadcrumbJsonLd(city)) }} />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: jsonLd(faqJsonLd(city)) }} />
 
-      <header className="px-5 pt-6 flex items-center justify-between max-w-xl mx-auto">
-        <BrandLogo href="/" size="sm" />
-        <Link href="/login" className="text-xs font-medium text-[#726E97] hover:text-[#413B5E] transition-colors">
-          Sign in
-        </Link>
-      </header>
+      {/* Signed-in members get the app's own header and tab bar instead (components/LayoutShell). */}
+      <PublicOnly>
+        <header className="px-5 pt-6 flex items-center justify-between max-w-xl mx-auto">
+          <BrandLogo href="/" size="sm" />
+          <Link href="/login" className="text-xs font-medium text-[#726E97] hover:text-[#413B5E] transition-colors">
+            Sign in
+          </Link>
+        </header>
+      </PublicOnly>
 
       <div className="max-w-xl mx-auto px-4 pb-[calc(3rem+env(safe-area-inset-bottom))]">
         <nav aria-label="Breadcrumb" className="pt-6 text-xs text-slate-600">
@@ -122,7 +126,9 @@ export default async function CityPage({ params }: Params) {
             <span className="text-[#726E97]">{city.name}</span>
           </h1>
           <p className="mt-4 text-sm leading-relaxed text-[#413B5E]/75">{city.heroTagline}</p>
-          <CityHeroCtas />
+          <PublicOnly>
+            <CityHeroCtas />
+          </PublicOnly>
         </section>
 
         {/* Intro */}

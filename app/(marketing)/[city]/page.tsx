@@ -1,6 +1,7 @@
 import { CityHeroCtas, ExploreCities, VisitingSoonCallout } from '@/components/cities/CityBlocks';
 import { TRIP_HUBS } from '@/lib/tripHubs';
 import { CityFooterLinks } from '@/components/CityFooterLinks';
+import { PublicOnly } from '@/components/cities/MemberAware';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
@@ -68,12 +69,15 @@ export default async function CityLandingPage({ params }: { params: Promise<{ ci
         <div className="absolute top-[62%] -left-28 w-[30rem] h-[30rem] rounded-full bg-[#EAE9F2]/60 blur-3xl" />
       </div>
 
-      <header className="px-5 pt-6 flex items-center justify-between max-w-xl mx-auto">
-        <BrandLogo href="/" size="sm" />
-        <Link href="/login" className="text-xs font-medium text-[#726E97] hover:text-[#413B5E] transition-colors">
-          Sign in
-        </Link>
-      </header>
+      {/* Signed-in members get the app's own header and tab bar instead (components/LayoutShell). */}
+      <PublicOnly>
+        <header className="px-5 pt-6 flex items-center justify-between max-w-xl mx-auto">
+          <BrandLogo href="/" size="sm" />
+          <Link href="/login" className="text-xs font-medium text-[#726E97] hover:text-[#413B5E] transition-colors">
+            Sign in
+          </Link>
+        </header>
+      </PublicOnly>
 
       <div className="max-w-xl mx-auto px-5 pb-[calc(3rem+env(safe-area-inset-bottom))]">
         {/* Hero */}
@@ -89,7 +93,9 @@ export default async function CityLandingPage({ params }: { params: Promise<{ ci
             </span>
           </h1>
           <p className="mt-4 text-sm leading-relaxed text-[#413B5E]/75 max-w-md mx-auto">{city.heroSubhead}</p>
-          <CityHeroCtas />
+          <PublicOnly>
+            <CityHeroCtas />
+          </PublicOnly>
           {city.localStats && (
             <dl className="mt-8 grid grid-cols-3 gap-2">
               {[

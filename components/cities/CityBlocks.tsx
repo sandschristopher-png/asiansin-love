@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { Plane } from 'lucide-react';
 import { IceFrame } from '@/components/ui/IceFrame';
+import { HideForPlus } from '@/components/cities/MemberAware';
 import { PUBLISHED_CITIES, cityHref } from '@/lib/cities';
 
 /**
@@ -45,12 +46,14 @@ export function VisitingSoonCallout({ cityName }: { cityName: string }) {
                 Plus members can add a Visiting Soon trip with arrival and departure dates, so people in {cityName} see you
                 before you land.
               </p>
-              <Link
-                href="/plus?feature=trips"
-                className="mt-3 inline-flex h-9 items-center rounded-full bg-[#726E97] px-4 text-xs font-medium text-white transition-colors hover:bg-[#524E75]"
-              >
-                See Meet in Asia Plus
-              </Link>
+              <HideForPlus>
+                <Link
+                  href="/plus?feature=trips"
+                  className="mt-3 inline-flex h-9 items-center rounded-full bg-[#726E97] px-4 text-xs font-medium text-white transition-colors hover:bg-[#524E75]"
+                >
+                  See Meet in Asia Plus
+                </Link>
+              </HideForPlus>
               <p className="mt-2.5 text-xs text-[#413B5E]/75">
                 Plus member?{' '}
                 <Link

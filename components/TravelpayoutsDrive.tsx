@@ -1,9 +1,8 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { usePathname } from 'next/navigation';
 import Script from 'next/script';
-import { supabase } from '@/lib/supabase/client';
 import { tpScriptAllowed } from '@/lib/travelpayouts';
 
 /** True once the vendor loader has been added to this document. Module state: it lives exactly as long as the page. */
@@ -22,20 +21,7 @@ let loaded = false;
  */
 export function TravelpayoutsDrive() {
   const pathname = usePathname();
-  // Only the Travel Hub depends on who is looking (signed out: allowed; signed in: it lists members). Unknown counts as
-  // signed in, so the script never starts before the session is read.
-  const [signedIn, setSignedIn] = useState(true);
-  useEffect(() => {
-    if (pathname?.replace(/\/+$/, '') !== '/travel') return;
-    let cancelled = false;
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      if (!cancelled) setSignedIn(Boolean(session));
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [pathname]);
-  const allowed = tpScriptAllowed(pathname, signedIn);
+  const allowed = tpScriptAllowed(pathname);
 
   useEffect(() => {
     if (allowed) {

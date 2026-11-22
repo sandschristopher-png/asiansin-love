@@ -12,6 +12,7 @@ import { ActionToastProvider } from '@/components/ActionToast';
 import { DesktopQrHandoff } from '@/components/DesktopQrHandoff';
 import { AppShell } from '@/components/layout/AppShell';
 import { CallProvider } from '@/components/calls/CallProvider';
+import { useMemberState } from '@/lib/useMemberState';
 
 /** Wraps the in-app frame in the call provider; marketing, auth and admin routes get no calling. */
 function CallShell({ enabled, children }: { enabled: boolean; children: React.ReactNode }) {
@@ -20,6 +21,7 @@ function CallShell({ enabled, children }: { enabled: boolean; children: React.Re
 
 export function LayoutShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const member = useMemberState();
   // The scrolling column outlives every route, so it would carry one tab's scroll position into the next.
   const scrollRef = useRef<HTMLDivElement>(null);
   const tabRoot = '/' + (pathname?.split('/')[1] ?? '');
@@ -36,7 +38,9 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
     pathname?.startsWith('/onboarding') ||
     pathname?.startsWith('/verify') ||
     pathname?.startsWith('/auth/') ||
-    isCityPagePath(pathname); // SEO city landing pages (/cebu, /manila, ...)
+    // SEO city landing pages (/cebu, /manila, ...): public chrome for visitors, the app's own header and tab bar once
+    // signed in (the first render, and the server's, is always the public one).
+    (isCityPagePath(pathname) && member.status !== 'in');
 
   const cleanPath = pathname?.replace(/\/+$/, '') || '';
   const isPublicProfile =
