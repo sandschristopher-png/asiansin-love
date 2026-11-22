@@ -90,7 +90,7 @@ export function Navbar() {
   return (
     // Frosted glass. On Discover the header is transparent: the filter bar below extends up behind it and
     // draws ONE frosted surface for both (two stacked backdrop blurs always leave a seam where they meet).
-    <header className={`sticky top-0 z-50 w-full ${pathname === '/discover' ? 'bg-transparent' : 'bg-white/75 backdrop-blur-md supports-[backdrop-filter]:bg-white/75'}`}>
+    <header className={`sticky top-0 z-50 w-full ${pathname === '/discover' ? 'bg-transparent' : 'bg-white'}`}>
       <div className="max-w-[480px] mx-auto px-4 h-14 flex items-center justify-between relative">
         <div className={`flex items-center gap-2 ${pageTitle ? 'min-w-0' : 'shrink-0'}`}>
           <div
@@ -185,7 +185,7 @@ export function Navbar() {
       {shareSheet}
       {profileMenuOpen && (
         <div
-          className="fixed inset-0 z-[100] flex items-end justify-center bg-black/40 backdrop-blur-sm"
+          className="fixed inset-0 z-[100] flex items-end justify-center bg-black/40"
           onClick={() => setProfileMenuOpen(false)}
         >
           <div

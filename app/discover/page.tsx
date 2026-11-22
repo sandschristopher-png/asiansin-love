@@ -147,7 +147,7 @@ const HABIT_FILTERS: { id: string; label: string; test: (l: Record<string, strin
   { id: 'active', label: 'Active lifestyle', test: (l) => ['daily_workouts', 'walks_and_hiking', 'weekend_warrior'].includes(l.fitness_rhythm) },
 ];
 const FILTER_CHIP =
-  'py-1.5 px-3.5 rounded-full border text-xs font-medium transition-all cursor-pointer active:scale-95 ';
+  'py-1.5 px-3.5 rounded-full border text-xs font-medium transition-colors cursor-pointer active:scale-95 ';
 const FILTER_CHIP_ON = 'bg-[#726E97] text-white border-[#726E97] shadow-2xs';
 const FILTER_CHIP_OFF = 'bg-white text-[#413B5E] border-[#D0CDE1] hover:border-[#726E97]/40';
 const toggleIn = (list: string[], v: string) => (list.includes(v) ? list.filter((x) => x !== v) : [...list, v]);
@@ -933,10 +933,10 @@ function DiscoverContent() {
             the frosted bar meets the frosted header edge to edge as one surface. It also extends up behind
             the transparent Navbar (-mt-14 / pt-16 = header height + its own py-2), so header and filters are
             one frosted layer with no seam. */}
-        <section aria-label="Search and Filters" className="sticky top-0 -mt-14 z-30 w-[calc(100%+2rem)] -mx-4 px-4 pt-16 pb-2 flex items-center gap-3 bg-white/75 backdrop-blur-md supports-[backdrop-filter]:bg-white/75 border-b border-slate-200/60">
+        <section aria-label="Search and Filters" className="sticky top-0 -mt-14 z-30 w-[calc(100%+2rem)] -mx-4 px-4 pt-16 pb-2 flex items-center gap-3 bg-white/95 border-b border-slate-200/60">
           <div className={`flex items-center gap-1.5 ${searchOpen || searchQuery ? 'flex-1 min-w-0' : 'hidden'}`}>
             {searchOpen || searchQuery ? (
-              <div className={`flex-1 min-w-0 h-9 flex items-center gap-1 bg-white border border-[#D0CDE1] focus-within:border-[#726E97] rounded-full pl-3 pr-2 shadow-2xs transition-all ${searchAnimating ? 'animate-[slideIn_200ms_cubic-bezier(0.16,1,0.3,1)]' : ''} ${searchClosing ? 'animate-[slideOut_180ms_ease-in_forwards]' : ''}`}>
+              <div className={`flex-1 min-w-0 h-9 flex items-center gap-1 bg-white border border-[#D0CDE1] focus-within:border-[#726E97] rounded-full pl-3 pr-2 shadow-2xs transition-colors ${searchAnimating ? 'animate-[slideIn_200ms_cubic-bezier(0.16,1,0.3,1)]' : ''} ${searchClosing ? 'animate-[slideOut_180ms_ease-in_forwards]' : ''}`}>
                 <Search className="w-3.5 h-3.5 text-slate-600 shrink-0" />
                 <input
                   autoFocus
@@ -992,7 +992,7 @@ function DiscoverContent() {
                     className={`shrink-0 whitespace-nowrap flex items-center transition-colors ${
                       active
                         ? 'bg-[#726E97] text-white text-xs font-medium px-4 py-1.5 rounded-full shadow-xs border border-transparent'
-                        : 'border border-[#D0CDE1] bg-white text-[#413B5E] text-xs font-medium px-3.5 py-1.5 rounded-full hover:border-[#726E97]/40 hover:bg-[#726E97]/5 hover:text-[#413B5E] transition-all'
+                        : 'border border-[#D0CDE1] bg-white text-[#413B5E] text-xs font-medium px-3.5 py-1.5 rounded-full hover:border-[#726E97]/40 hover:bg-[#726E97]/5 hover:text-[#413B5E] transition-colors'
                     }`}
                     
                   >
@@ -1009,7 +1009,7 @@ function DiscoverContent() {
                   type="button"
                   onClick={() => setSearchOpen(true)}
                   aria-label="Search profiles"
-                  className="w-7 h-7 rounded-full flex items-center justify-center text-[#413B5E]/75 hover:text-[#413B5E] hover:bg-[#EAE9F2]/40 active:scale-95 transition-all cursor-pointer"
+                  className="w-7 h-7 rounded-full flex items-center justify-center text-[#413B5E]/75 hover:text-[#413B5E] hover:bg-[#EAE9F2]/40 active:scale-95 transition-colors cursor-pointer"
                 >
                   <Search className="w-3.5 h-3.5" />
                 </button>
@@ -1018,7 +1018,7 @@ function DiscoverContent() {
                   type="button"
                   onClick={() => setFiltersOpen(true)}
                   aria-label="Filter preferences"
-                  className="relative w-7 h-7 rounded-full flex items-center justify-center text-[#413B5E]/75 hover:text-[#413B5E] hover:bg-[#EAE9F2]/40 active:scale-95 transition-all cursor-pointer"
+                  className="relative w-7 h-7 rounded-full flex items-center justify-center text-[#413B5E]/75 hover:text-[#413B5E] hover:bg-[#EAE9F2]/40 active:scale-95 transition-colors cursor-pointer"
                 >
                   <SlidersHorizontal className="w-3.5 h-3.5" />
                   {hasActiveFilters && (
@@ -1063,7 +1063,7 @@ function DiscoverContent() {
               return (
                 <div
                   key={profile.id}
-                  className={`group relative isolate rounded-2xl overflow-hidden aspect-[3/4] w-full bg-white border border-[#D0CDE1]/40 shadow-brand-sm hover:shadow-brand-md transition-shadow select-none`}
+                  className={`group relative isolate rounded-2xl overflow-hidden aspect-[3/4] w-full bg-white border border-[#D0CDE1]/40 select-none`}
                 >
                   <DiscoverCardPhotoCarousel
                     profileId={profile.id}
@@ -1513,7 +1513,7 @@ function DiscoverContent() {
                             type="button"
                             onClick={() => setDraftMode(mode.id)}
                             className={
-                              'py-1.5 px-3.5 rounded-full border text-xs font-medium transition-all cursor-pointer active:scale-95 ' +
+                              'py-1.5 px-3.5 rounded-full border text-xs font-medium transition-colors cursor-pointer active:scale-95 ' +
                               (draftMode === mode.id
                                 ? 'bg-[#726E97] text-white border-[#726E97] shadow-2xs'
                                 : 'bg-white text-[#413B5E] border-[#D0CDE1] hover:border-[#726E97]/40')
@@ -1555,7 +1555,7 @@ function DiscoverContent() {
                             {row.plus && <PlusBadge size="profile" />}
                           </span>
                           <span className={'w-10 h-6 rounded-full transition-colors relative shrink-0 ' + (row.value ? 'bg-[#726E97]' : 'bg-[#EAE9F2]')}>
-                            <span className={'absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-all ' + (row.value ? 'left-5' : 'left-1')} />
+                            <span className={'absolute top-1 left-1 w-4 h-4 rounded-full bg-white shadow transition-transform ' + (row.value ? 'translate-x-4' : 'translate-x-0')} />
                           </span>
                         </button>
                       ))}
@@ -1577,7 +1577,7 @@ function DiscoverContent() {
                     <button
                       type="button"
                       onClick={applyFilters}
-                      className="flex-1 py-2.5 rounded-full bg-[#726E97] hover:bg-[#524E75] text-white text-xs font-medium shadow-xs active:scale-[0.98] transition-all cursor-pointer"
+                      className="flex-1 py-2.5 rounded-full bg-[#726E97] hover:bg-[#524E75] text-white text-xs font-medium shadow-xs active:scale-[0.98] transition-colors cursor-pointer"
                     >
                       {t('discover.apply')}
                     </button>

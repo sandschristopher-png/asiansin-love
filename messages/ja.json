@@ -412,9 +412,11 @@
     },
     "menu": {
       "reputation": "評価",
-      "safety": "安全とモデレーション"
+      "safety": "安全とモデレーション",
+      "report": "メンバーを報告"
     },
-    "read": "既読"
+    "read": "既読",
+    "safetyTip": "会うまでは、やり取りをMeet in Asia内にとどめてください。お金を送ったり、金融情報を共有したりしないでください。このメンバーを報告するには、右上のメニューを使ってください。"
   },
   "notif": {
     "message": "{name}さんからメッセージが届きました",
@@ -435,7 +437,7 @@
     "memberTitle": "メンバーを通報",
     "titleFor": "{name}を通報",
     "sub": "通報は秘密として扱われます。コミュニティの安全のため、すべての通報を確認します。",
-    "reasonFinancial": "お金の要求・金銭詐欺",
+    "reasonFinancial": "金銭の要求・お金をねだる",
     "reasonSolicitation": "性的勧誘・エスコート",
     "reasonAdult": "アダルトコンテンツの販売・スパムリンク",
     "reasonHarassment": "嫌がらせ・不適切な行為",
@@ -521,7 +523,20 @@
     "locateDenied": "位置情報を取得できませんでした。ブラウザで位置情報を許可するか、リストから都市を選んでください。",
     "locateOutside": "現在地が東南アジア外のため、都市を確認できません。リストから選んでください。",
     "errTimeout": "時間がかかりすぎています。接続を確認して、もう一度お試しください。",
-    "errUnavailable": "現在は投稿できません。しばらくしてからもう一度お試しください。"
+    "errUnavailable": "現在は投稿できません。しばらくしてからもう一度お試しください。",
+    "placeLabel": "スポット（任意）",
+    "placePlaceholder": "スポットを追加：カフェ、屋台、展望台",
+    "errPlace": "このスポットは投稿できません。リンク、ID、番号を入れず、場所の名前だけにしてください。",
+    "placeDirections": "{place}への行き方",
+    "navHow": "移動手段",
+    "navWalk": "徒歩",
+    "navDrive": "車",
+    "navTransit": "公共交通",
+    "openGoogle": "Googleマップで開く",
+    "openApple": "Appleマップで開く",
+    "guideTag": "ローカルガイド",
+    "guidesFilter": "ローカルガイドのスポット",
+    "guidesEmpty": "読み込み済みの投稿に、ローカルガイドのスポットはまだありません。さらに読み込むか、フィルターを外してください。"
   },
   "call": {
     "title": "音声通話",

@@ -412,9 +412,11 @@
     },
     "menu": {
       "reputation": "Reputación",
-      "safety": "Seguridad y moderación"
+      "safety": "Seguridad y moderación",
+      "report": "Denunciar al miembro"
     },
-    "read": "Leído"
+    "read": "Leído",
+    "safetyTip": "Mantén la conversación en Meet in Asia hasta que se conozcan. Nunca envíes dinero ni compartas datos financieros. Para denunciar a este miembro, usa el menú de arriba a la derecha."
   },
   "notif": {
     "message": "{name} te envió un mensaje",
@@ -435,7 +437,7 @@
     "memberTitle": "Denunciar al miembro",
     "titleFor": "Denunciar a {name}",
     "sub": "Las denuncias son confidenciales. Revisamos cada una para proteger a la comunidad.",
-    "reasonFinancial": "Pide dinero / estafa financiera",
+    "reasonFinancial": "Solicitud de dinero / pide dinero",
     "reasonSolicitation": "Solicitud sexual / escorting",
     "reasonAdult": "Venta de contenido adulto / enlaces spam",
     "reasonHarassment": "Acoso o comportamiento inapropiado",
@@ -521,7 +523,20 @@
     "locateDenied": "No pudimos obtener tu ubicación. Permite el acceso a la ubicación en el navegador o elige una ciudad de la lista.",
     "locateOutside": "Tu ubicación no está en el Sudeste Asiático, así que no podemos confirmar una ciudad. Elige una de la lista.",
     "errTimeout": "Esto está tardando demasiado. Revisa tu conexión e inténtalo de nuevo.",
-    "errUnavailable": "No se puede publicar en este momento. Inténtalo de nuevo en un rato."
+    "errUnavailable": "No se puede publicar en este momento. Inténtalo de nuevo en un rato.",
+    "placeLabel": "Lugar (opcional)",
+    "placePlaceholder": "Añade un lugar: café, puesto de comida, mirador",
+    "errPlace": "Ese lugar no se puede publicar. Usa solo el nombre del lugar, sin enlaces, usuarios ni números.",
+    "placeDirections": "Cómo llegar a {place}",
+    "navHow": "¿Cómo vas a llegar?",
+    "navWalk": "A pie",
+    "navDrive": "Coche",
+    "navTransit": "Transporte público",
+    "openGoogle": "Abrir en Google Maps",
+    "openApple": "Abrir en Apple Maps",
+    "guideTag": "Guía local",
+    "guidesFilter": "Lugares de guías locales",
+    "guidesEmpty": "Aún no hay lugares de guías locales entre lo cargado. Carga más o quita el filtro."
   },
   "call": {
     "title": "Llamada de voz",

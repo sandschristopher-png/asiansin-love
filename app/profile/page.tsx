@@ -28,6 +28,8 @@ import {
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { INTENT_OPTIONS, normalizeIntent, intentLabel } from '@/lib/intents';
+import { HOBBY_TAGS } from '@/lib/interests';
+import { STRIKE_MESSAGES, isHiddenFromFeeds } from '@/lib/moderation/strikeRules';
 import { PlusBadge } from '@/components/ui/PlusBadge';
 import { isPlusProfile } from '@/lib/plus';
 import { setCachedSubscription } from '@/lib/subscriptionStatus';
@@ -63,28 +65,6 @@ const RELIGION_OPTIONS = ['Catholic', 'Christian', 'Buddhist', 'Muslim', 'Spirit
 const MARITAL_OPTIONS = ['Never Married', 'Divorced', 'Widowed', 'Separated'];
 const RELOCATION_OPTIONS = ['Can Relocate', 'Open to Either', 'Cannot Relocate', 'Other'];
 
-const HOBBY_TAGS = [
-  'Cooking & Food',
-  'Beach & Ocean',
-  'Island Hopping',
-  'Family First',
-  'Travel',
-  'Movies & Cinema',
-  'Music & Karaoke',
-  'Fitness & Gym',
-  'Health & Wellness',
-  'Coffee & Cafes',
-  'Hiking & Outdoors',
-  'Faith & Church',
-  'Homebody',
-  'Nightlife & Bars',
-  'Shopping & Malls',
-  'Photography',
-  'Pets & Animals',
-  'Mobile Gaming & Esports',
-  'Art & Design',
-  'Business & Career'
-];
 
 
 // --- IN-MEMORY & SESSION PROFILE CACHE (ELIMINATES ROUTE FLASH) ---
@@ -146,6 +126,8 @@ export default function MyProfilePage() {
   const [bio, setBio] = useState<string>(() => initialProfile?.bio ?? '');
   const [rhythm, setRhythm] = useState<RhythmValues>(() => rhythmFromRow(initialProfile));
   const [saveError, setSaveError] = useState<string | null>(null);
+  // Strike 2 (20261202): visibility is paused and text editing locked until this time.
+  const [holdActive, setHoldActive] = useState(false);
   const [bioRejected, setBioRejected] = useState(false);
   const [lookingFor, setLookingFor] = useState<string>(() => initialProfile?.lookingFor ?? '');
   const [interests, setInterests] = useState<string[]>(() => initialProfile?.interests ?? []);
@@ -215,6 +197,7 @@ export default function MyProfilePage() {
         if (data.relocation) setRelocation(data.relocation);
         if (data.languages) setUserLanguages(readLanguages(data.languages).join(', '));
         setIsPlus(isPlusProfile(data));
+        setHoldActive(isHiddenFromFeeds(data));
         setCachedSubscription(isPlusProfile(data));
         setIsSuperAdmin(adminRoleOf(data) === 'super_admin');
         setPhotoPending(
@@ -428,6 +411,11 @@ export default function MyProfilePage() {
   return (
     <div className="flex-1 flex flex-col w-full bg-white text-[#413B5E] font-sans">
       <main className="flex-1 w-full px-4 pt-4 pb-[calc(8rem+env(safe-area-inset-bottom,0px))] space-y-5">
+        {holdActive && (
+          <div role="alert" className="p-3.5 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 text-xs font-semibold leading-relaxed">
+            {STRIKE_MESSAGES[2]}
+          </div>
+        )}
         {saveError && (
           <div className="p-3.5 rounded-2xl bg-red-50 border border-red-200 text-red-700 text-xs font-semibold flex items-start justify-between gap-3">
             <span>{saveError}</span>
@@ -837,16 +825,32 @@ export default function MyProfilePage() {
             )}
           </ProfileSection>
 
-          {/* WHAT I'M LOOKING FOR */}
-          <ProfileSection
-            title="What I'm Looking For"
-            aside={
-              !isEditing ? (
-                <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-[#EAE9F2]/60 text-[#726E97]">Goals</span>
-              ) : undefined
-            }
-          >
+          {/* LOOKING FOR: the one intent (five pills), then an optional note */}
+          <ProfileSection title="Looking For">
             {isEditing ? (
+              <>
+              <div role="radiogroup" aria-label="Looking for" className="flex flex-wrap gap-2">
+                {INTENT_CHIP_OPTIONS.map((chip) => {
+                  const selected = intent === chip.value;
+                  return (
+                    <button
+                      key={chip.value}
+                      type="button"
+                      role="radio"
+                      aria-checked={selected}
+                      onClick={() => setIntent(chip.value)}
+                      className={
+                        'px-3.5 py-1.5 rounded-full border text-xs font-medium transition active:scale-95 cursor-pointer ' +
+                        (selected
+                          ? 'bg-[#726E97] text-white border-[#726E97]'
+                          : 'bg-white text-[#413B5E]/85 border-[#D0CDE1] hover:bg-[#EAE9F2]/70')
+                      }
+                    >
+                      {chip.label}
+                    </button>
+                  );
+                })}
+              </div>
               <div className="relative">
                 <textarea
                   value={lookingFor}
@@ -859,10 +863,17 @@ export default function MyProfilePage() {
                   {lookingFor.length}/200
                 </span>
               </div>
+              </>
             ) : (
-              <p className="text-xs sm:text-sm text-[#413B5E] leading-relaxed">
-                {lookingFor ? toIntentLabel(lookingFor) : <span className="text-slate-600 italic">No preferences added yet.</span>}
-              </p>
+              <div className="space-y-2">
+                {toIntentLabel(intent) ? <span className={PROFILE_TAG}>{toIntentLabel(intent)}</span> : null}
+                {lookingFor && !normalizeIntent(lookingFor) ? (
+                  <p className="text-xs sm:text-sm text-[#413B5E] leading-relaxed">{lookingFor}</p>
+                ) : null}
+                {!toIntentLabel(intent) && !lookingFor ? (
+                  <p className="text-xs text-slate-600 italic">No preferences added yet.</p>
+                ) : null}
+              </div>
             )}
           </ProfileSection>
 
@@ -886,37 +897,8 @@ export default function MyProfilePage() {
           {/* VITALS & LIFESTYLE */}
           <ProfileSection title="Vitals & Lifestyle" className="space-y-4">
             <div className="space-y-3.5 pt-1 text-xs">
-              {/* Future Plans (3-Chip Picker in Edit Mode) */}
-              <div className="flex items-center justify-between gap-2 pb-3 border-b border-gray-100">
-                <span className="font-semibold text-[#413B5E]/75">Future Plans</span>
-                {isEditing ? (
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    {INTENT_CHIP_OPTIONS.map((chip) => {
-                      const selected = intent === chip.value;
-                      return (
-                        <button
-                          key={chip.value}
-                          type="button"
-                          onClick={() => setIntent(chip.value)}
-                          className={
-                            'px-3 py-1.5 rounded-xl border text-xs font-medium transition cursor-pointer ' +
-                            (selected
-                              ? 'bg-[#726E97] text-white border-[#726E97]'
-                              : 'bg-white text-[#413B5E]/85 border-[#D0CDE1]')
-                          }
-                        >
-                          {chip.label}
-                        </button>
-                      );
-                    })}
-                  </div>
-                ) : (
-                  <span className="font-semibold text-[#413B5E]">{toIntentLabel(intent) || 'Not specified'}</span>
-                )}
-              </div>
-
               {/* Height */}
-              <div className="flex items-center justify-between gap-2 pb-3 border-b border-gray-100">
+              <div className="flex items-center justify-between gap-2 pb-3 border-b border-[#F3F4F6]">
                 <span className="font-semibold text-[#413B5E]/75">Height</span>
                 {isEditing ? (
                   <HeightInput valueCm={heightCm} onChange={setHeightCm} />
@@ -926,7 +908,7 @@ export default function MyProfilePage() {
               </div>
 
               {/* Occupation */}
-              <div className="flex items-center justify-between gap-2 pb-3 border-b border-gray-100">
+              <div className="flex items-center justify-between gap-2 pb-3 border-b border-[#F3F4F6]">
                 <span className="font-semibold text-[#413B5E]/75">Occupation</span>
                 {isEditing ? (
                   <input
@@ -942,7 +924,7 @@ export default function MyProfilePage() {
               </div>
 
               {/* Marital Status */}
-              <div className="flex items-center justify-between gap-2 pb-3 border-b border-gray-100">
+              <div className="flex items-center justify-between gap-2 pb-3 border-b border-[#F3F4F6]">
                 <span className="font-semibold text-[#413B5E]/75">Marital Status</span>
                 {isEditing ? (
                   <SelectSheet
@@ -957,7 +939,7 @@ export default function MyProfilePage() {
               </div>
 
               {/* Religion */}
-              <div className="flex items-center justify-between gap-2 pb-3 border-b border-gray-100">
+              <div className="flex items-center justify-between gap-2 pb-3 border-b border-[#F3F4F6]">
                 <span className="font-semibold text-[#413B5E]/75">Beliefs</span>
                 {isEditing ? (
                   <SelectSheet

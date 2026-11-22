@@ -24,6 +24,7 @@ import {
 import { isRhythmValue, RHYTHM_FIELDS, type RhythmField } from '@/lib/rhythm';
 import { resolveCountry } from '@/lib/countries';
 import { isEnglishLevel } from '@/lib/discoverFilters';
+import { enforceSolicitation } from '@/lib/moderation/solicitationEnforce';
 import { normalizeLanguages } from '@/lib/constants/languages';
 import {
   HEIGHT_MAX_CM,
@@ -49,8 +50,8 @@ const TEXT_FIELDS: Record<string, { max: number; screen?: boolean; label: string
   looking_for: { max: 200, screen: true, label: '"What I\'m looking for"' },
   occupation: { max: 80, screen: true, label: 'Occupation' },
   profession: { max: 80, screen: true, label: 'Occupation' },
-  relationship_intent: { max: 60, label: 'Future plans' },
-  intentions: { max: 60, label: 'Future plans' },
+  relationship_intent: { max: 60, label: 'Looking for' },
+  intentions: { max: 60, label: 'Looking for' },
   relationship_goal: { max: 60, label: 'Relationship goal' },
   religion: { max: 60, label: 'Beliefs' },
   marital_status: { max: 60, label: 'Marital status' },
@@ -94,6 +95,14 @@ export async function PATCH(req: Request) {
   if (editing.length) {
     const { data: row } = await service.from('profiles').select(editing.join(', ')).eq('id', userId).maybeSingle();
     stored = (row as Record<string, unknown> | null) || {};
+  }
+
+  // Three strikes for transactional, bill-paying and payment-rail text (supabase/migrations/20261202): a strike is
+  // recorded and the save refused before anything is written; a member in the 24-hour hold cannot edit text at all.
+  if (SCREENED_KEYS.some((k) => k in body)) {
+    const texts = SCREENED_KEYS.map((k) => body[k]).filter((v): v is string => typeof v === 'string' && v.trim().length > 0);
+    const blocked = await enforceSolicitation(service, supabase, userId, texts);
+    if (blocked) return NextResponse.json(blocked.body, { status: blocked.status });
   }
 
   /** Mask contact details, block payment / commercial terms, then the conduct (slur) check. */

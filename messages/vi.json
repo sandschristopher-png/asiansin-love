@@ -412,9 +412,11 @@
     },
     "menu": {
       "reputation": "Uy tín",
-      "safety": "An toàn & Kiểm duyệt"
+      "safety": "An toàn & Kiểm duyệt",
+      "report": "Báo cáo thành viên"
     },
-    "read": "Đã xem"
+    "read": "Đã xem",
+    "safetyTip": "Hãy giữ cuộc trò chuyện trên Meet in Asia cho đến khi hai người gặp nhau. Không bao giờ gửi tiền hay chia sẻ thông tin tài chính. Để báo cáo thành viên này, hãy dùng menu ở góc trên bên phải."
   },
   "notif": {
     "message": "{name} đã gửi cho bạn một tin nhắn",
@@ -435,7 +437,7 @@
     "memberTitle": "Báo cáo thành viên",
     "titleFor": "Báo cáo {name}",
     "sub": "Báo cáo được giữ bí mật. Chúng tôi xem xét mọi báo cáo để bảo vệ an toàn cộng đồng.",
-    "reasonFinancial": "Xin tiền / lừa đảo tài chính",
+    "reasonFinancial": "Xin tiền / đòi hỗ trợ tài chính",
     "reasonSolicitation": "Mời gọi mua bán dâm / escort",
     "reasonAdult": "Bán nội dung người lớn / liên kết spam",
     "reasonHarassment": "Quấy rối hoặc hành vi không phù hợp",
@@ -521,7 +523,20 @@
     "locateDenied": "Không thể lấy vị trí của bạn. Hãy cho phép truy cập vị trí trong trình duyệt hoặc chọn một thành phố trong danh sách.",
     "locateOutside": "Vị trí của bạn không ở Đông Nam Á nên chúng tôi không thể xác nhận thành phố. Hãy chọn từ danh sách.",
     "errTimeout": "Đang mất quá nhiều thời gian. Hãy kiểm tra kết nối và thử lại.",
-    "errUnavailable": "Hiện chưa thể đăng. Vui lòng thử lại sau ít phút."
+    "errUnavailable": "Hiện chưa thể đăng. Vui lòng thử lại sau ít phút.",
+    "placeLabel": "Địa điểm (tùy chọn)",
+    "placePlaceholder": "Thêm địa điểm: quán cà phê, hàng ăn vặt, điểm ngắm cảnh",
+    "errPlace": "Không thể đăng địa điểm này. Chỉ ghi tên nơi chốn, không kèm liên kết, tài khoản hay số.",
+    "placeDirections": "Chỉ đường đến {place}",
+    "navHow": "Bạn đi bằng gì?",
+    "navWalk": "Đi bộ",
+    "navDrive": "Lái xe",
+    "navTransit": "Phương tiện công cộng",
+    "openGoogle": "Mở trong Google Maps",
+    "openApple": "Mở trong Apple Maps",
+    "guideTag": "Hướng dẫn viên địa phương",
+    "guidesFilter": "Địa điểm từ hướng dẫn viên địa phương",
+    "guidesEmpty": "Chưa có địa điểm từ hướng dẫn viên địa phương trong phần đã tải. Hãy tải thêm hoặc tắt bộ lọc."
   },
   "call": {
     "title": "Cuộc gọi thoại",

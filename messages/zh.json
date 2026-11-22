@@ -412,9 +412,11 @@
     },
     "menu": {
       "reputation": "信誉",
-      "safety": "安全与审核"
+      "safety": "安全与审核",
+      "report": "举报该成员"
     },
-    "read": "已读"
+    "read": "已读",
+    "safetyTip": "在见面之前，请继续在 Meet in Asia 内聊天。切勿转账或透露财务信息。如需举报该成员，请使用右上角的菜单。"
   },
   "notif": {
     "message": "{name}给你发了一条消息",
@@ -435,7 +437,7 @@
     "memberTitle": "举报会员",
     "titleFor": "举报 {name}",
     "sub": "举报内容严格保密。我们会审核每一条举报，以保护社区安全。",
-    "reasonFinancial": "索要钱财 / 金融诈骗",
+    "reasonFinancial": "索要钱财 / 金钱请求",
     "reasonSolicitation": "性交易招揽 / 陪侍",
     "reasonAdult": "出售成人内容 / 垃圾链接",
     "reasonHarassment": "骚扰或不当行为",
@@ -521,7 +523,20 @@
     "locateDenied": "无法获取你的位置。请在浏览器中允许位置访问，或从列表中选择城市。",
     "locateOutside": "你的位置不在东南亚，无法确认城市。请从列表中选择。",
     "errTimeout": "耗时过长。请检查网络连接后重试。",
-    "errUnavailable": "目前暂时无法发布。请稍后再试。"
+    "errUnavailable": "目前暂时无法发布。请稍后再试。",
+    "placeLabel": "地点（可选）",
+    "placePlaceholder": "添加地点：咖啡馆、街边小吃、观景点",
+    "errPlace": "无法发布该地点。请只填写地点名称，不要包含链接、账号或号码。",
+    "placeDirections": "前往{place}的路线",
+    "navHow": "出行方式",
+    "navWalk": "步行",
+    "navDrive": "驾车",
+    "navTransit": "公共交通",
+    "openGoogle": "在 Google 地图中打开",
+    "openApple": "在 Apple 地图中打开",
+    "guideTag": "本地向导",
+    "guidesFilter": "本地向导推荐的地点",
+    "guidesEmpty": "已加载的内容里还没有本地向导的地点。请加载更多，或关闭筛选。"
   },
   "call": {
     "title": "语音通话",

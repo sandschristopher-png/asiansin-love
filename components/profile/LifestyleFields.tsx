@@ -97,17 +97,10 @@ export function LanguagePicker({
  * native <select> popups, whose OS listbox highlights in Windows blue.
  */
 export function HeightInput({ valueCm, onChange }: { valueCm: number | null; onChange: (cm: number | null) => void }) {
-  const [unit, setUnit] = useState<'ft' | 'cm'>('ft');
   const [open, setOpen] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
 
   const options = useMemo(() => {
-    if (unit === 'cm') {
-      return Array.from({ length: HEIGHT_MAX_CM - HEIGHT_MIN_CM + 1 }, (_, i) => {
-        const cm = HEIGHT_MIN_CM + i;
-        return { cm, label: `${cm} cm` };
-      });
-    }
     // One row per inch in range: 4'7" ... 7'2"
     const first = Math.ceil(HEIGHT_MIN_CM / 2.54);
     const last = Math.floor(HEIGHT_MAX_CM / 2.54);
@@ -117,11 +110,10 @@ export function HeightInput({ valueCm, onChange }: { valueCm: number | null; onC
       const inches = total % 12;
       return { cm: clampCm(feetInchesToCm(feet, inches)), label: `${feet}' ${inches}"` };
     });
-  }, [unit]);
+  }, []);
 
   const isSelected = (cm: number) => {
     if (!valueCm) return false;
-    if (unit === 'cm') return Math.round(valueCm) === cm;
     const a = cmToFeetInches(valueCm);
     const b = cmToFeetInches(cm);
     return a.feet === b.feet && a.inches === b.inches;
@@ -132,7 +124,7 @@ export function HeightInput({ valueCm, onChange }: { valueCm: number | null; onC
   useEffect(() => {
     if (!open) return;
     listRef.current?.querySelector('[aria-selected="true"]')?.scrollIntoView({ block: 'center' });
-  }, [open, unit]);
+  }, [open]);
 
   return (
     <div className="flex items-center gap-1.5 flex-wrap justify-end">
@@ -146,14 +138,6 @@ export function HeightInput({ valueCm, onChange }: { valueCm: number | null; onC
         <Ruler className="w-3.5 h-3.5 text-slate-600" aria-hidden />
         {current ?? 'Select height'}
         <ChevronDown className={`w-3.5 h-3.5 text-slate-600 transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden />
-      </button>
-      <button
-        type="button"
-        onClick={() => setUnit(unit === 'ft' ? 'cm' : 'ft')}
-        className="px-2 py-1.5 rounded-xl text-[11px] font-medium text-[#726E97] hover:bg-[#EAE9F2]/70"
-        aria-label={`Switch to ${unit === 'ft' ? 'centimeters' : 'feet and inches'}`}
-      >
-        {unit === 'ft' ? 'cm' : 'ft/in'}
       </button>
       {open && (
         <div
@@ -191,7 +175,7 @@ export function HeightInput({ valueCm, onChange }: { valueCm: number | null; onC
                 }`}
               >
                 <span>{o.label}</span>
-                {unit === 'ft' && <span className="text-[11px] text-slate-600">{o.cm} cm</span>}
+                <span className="text-[11px] text-slate-600">{o.cm} cm</span>
               </div>
             );
           })}

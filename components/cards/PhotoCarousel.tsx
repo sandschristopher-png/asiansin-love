@@ -263,8 +263,8 @@ export function PhotoCarousel({
           {photos.map((_, i) => (
             <span
               key={i}
-              className={`h-1.5 rounded-full shadow-[0_0_2px_rgba(0,0,0,0.45)] transition-all duration-200 motion-reduce:transition-none ${
-                i === shown ? 'w-3 bg-white' : 'w-1.5 bg-white/50'
+              className={`h-1.5 w-1.5 rounded-full bg-white shadow-[0_0_2px_rgba(0,0,0,0.45)] transition-[transform,opacity] duration-200 motion-reduce:transition-none ${
+                i === shown ? 'scale-x-[2] opacity-100' : 'opacity-50'
               }`}
             />
           ))}

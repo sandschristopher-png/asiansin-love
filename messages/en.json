@@ -412,9 +412,11 @@
     },
     "menu": {
       "reputation": "Reputation",
-      "safety": "Safety & Moderation"
+      "safety": "Safety & Moderation",
+      "report": "Report member"
     },
-    "read": "Read"
+    "read": "Read",
+    "safetyTip": "Keep the conversation on Meet in Asia until you have met. Never send money or share financial details. To report this member, use the menu at the top right."
   },
   "notif": {
     "message": "{name} sent you a message",
@@ -435,7 +437,7 @@
     "memberTitle": "Report member",
     "titleFor": "Report {name}",
     "sub": "Reports are confidential. We review every report to protect community safety.",
-    "reasonFinancial": "Asking for money / financial scam",
+    "reasonFinancial": "Financial solicitation / asking for money",
     "reasonSolicitation": "Sex solicitation / escorting",
     "reasonAdult": "Selling adult content / spam links",
     "reasonHarassment": "Harassment or inappropriate behavior",
@@ -521,7 +523,20 @@
     "locateDenied": "We couldn't get your location. Allow location access in your browser, or pick a city from the list.",
     "locateOutside": "Your location isn't in Southeast Asia, so we can't confirm a city. Pick one from the list.",
     "errTimeout": "This is taking too long. Check your connection and try again.",
-    "errUnavailable": "Posting isn't available right now. Please try again in a little while."
+    "errUnavailable": "Posting isn't available right now. Please try again in a little while.",
+    "placeLabel": "Spot (optional)",
+    "placePlaceholder": "Add a spot: cafe, street food stall, viewpoint",
+    "errPlace": "That spot can't be posted. Use just the place name, without links, handles or numbers.",
+    "placeDirections": "Directions to {place}",
+    "navHow": "How are you getting there?",
+    "navWalk": "Walk",
+    "navDrive": "Drive",
+    "navTransit": "Transit",
+    "openGoogle": "Open in Google Maps",
+    "openApple": "Open in Apple Maps",
+    "guideTag": "Local guide",
+    "guidesFilter": "Local guide spots",
+    "guidesEmpty": "No spots from local guides in what is loaded yet. Load more, or turn the filter off."
   },
   "call": {
     "title": "Voice Call",

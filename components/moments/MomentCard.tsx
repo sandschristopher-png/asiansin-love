@@ -3,6 +3,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Flag, Heart, LocateFixed, MapPin, MoreHorizontal, Trash2, Zap } from 'lucide-react';
 import VerifiedBadge from '@/components/VerifiedBadge';
@@ -10,6 +11,9 @@ import { useLocale } from '@/components/i18n/LocaleProvider';
 import { supabaseImage, AVATAR_IMAGE } from '@/lib/images/supabaseImage';
 import type { MomentItem } from '@/lib/moments';
 import type { TKey } from '@/lib/i18n';
+
+// Only opened on a tap: kept out of the feed's first bundle.
+const MomentPlaceSheet = dynamic(() => import('@/components/moments/MomentPlaceSheet').then((m) => m.MomentPlaceSheet), { ssr: false });
 
 /** "3 hours ago" in the member's language. */
 function ago(iso: string, locale: string): string {
@@ -53,6 +57,7 @@ export function MomentCard({
   const { t, locale } = useLocale();
   const reduce = useReducedMotion();
   const [menuOpen, setMenuOpen] = useState(false);
+  const [placeOpen, setPlaceOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -152,11 +157,30 @@ export function MomentCard({
       <div className="relative aspect-[4/5] w-full overflow-hidden rounded-2xl bg-[#EAE9F2]/50">
         <Image src={moment.imageUrl} alt={vibeLabel || t('moments.attachedAlt')} fill sizes="(max-width: 480px) 100vw, 440px" preload={priority} className="object-cover" />
         {vibeLabel && (
-          <span className="absolute left-3 top-3 inline-flex items-center rounded-full bg-white/75 px-3 py-1.5 text-[11px] font-semibold leading-none text-[#413B5E] backdrop-blur-md">
+          <span className="absolute left-3 top-3 inline-flex items-center rounded-full bg-white/90 px-3 py-1.5 text-[11px] font-semibold leading-none text-[#413B5E]">
             {vibeLabel}
           </span>
         )}
       </div>
+
+      {moment.place && (
+        <div className="flex flex-wrap items-center gap-2 px-1 pt-3">
+          <button
+            type="button"
+            onClick={() => setPlaceOpen(true)}
+            aria-label={t('moments.placeDirections', { place: moment.place })}
+            className="inline-flex h-8 max-w-full items-center gap-1.5 rounded-full border border-[#726E97]/25 bg-[#EAE9F2] px-3 text-xs font-semibold text-[#524E75] transition-colors hover:border-[#726E97]/50 active:scale-95"
+          >
+            <MapPin className="h-3.5 w-3.5 shrink-0" aria-hidden />
+            <span className="truncate">{moment.place}</span>
+          </button>
+          {moment.author.localGuide && (
+            <span className="inline-flex h-6 items-center rounded-full border border-[#D0CDE1] bg-white px-2.5 text-[11px] font-semibold text-[#726E97]">
+              {t('moments.guideTag')}
+            </span>
+          )}
+        </div>
+      )}
 
       {(moment.sharedVibe || moment.prompt || moment.caption) && (
         <div className="px-1 pt-3">
@@ -194,6 +218,7 @@ export function MomentCard({
           </motion.button>
         )}
       </div>
+      {placeOpen && moment.place && <MomentPlaceSheet place={moment.place} city={moment.city} onClose={() => setPlaceOpen(false)} />}
     </motion.article>
   );
 }

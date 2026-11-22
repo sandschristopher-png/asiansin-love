@@ -412,9 +412,11 @@
     },
     "menu": {
       "reputation": "Reputasyon",
-      "safety": "Kaligtasan at Moderasyon"
+      "safety": "Kaligtasan at Moderasyon",
+      "report": "I-report ang member"
     },
-    "read": "Nabasa"
+    "read": "Nabasa",
+    "safetyTip": "Manatili sa Meet in Asia ang usapan hanggang sa magkita kayo. Huwag magpadala ng pera o magbahagi ng detalye sa pananalapi. Para i-report ang member na ito, gamitin ang menu sa kanang itaas."
   },
   "notif": {
     "message": "Nagpadala sa iyo ng mensahe si {name}",
@@ -435,7 +437,7 @@
     "memberTitle": "I-report ang miyembro",
     "titleFor": "I-report si {name}",
     "sub": "Kumpidensyal ang mga report. Sinusuri namin ang bawat report para protektahan ang komunidad.",
-    "reasonFinancial": "Humihingi ng pera / panloloko sa pera",
+    "reasonFinancial": "Paghingi ng pera / pangongolekta ng pera",
     "reasonSolicitation": "Alok na sex / escorting",
     "reasonAdult": "Nagbebenta ng adult content / spam na link",
     "reasonHarassment": "Panliligalig o hindi angkop na asal",
@@ -521,7 +523,20 @@
     "locateDenied": "Hindi namin makuha ang iyong lokasyon. Payagan ang access sa lokasyon sa browser, o pumili ng lungsod sa listahan.",
     "locateOutside": "Wala ka sa Southeast Asia, kaya hindi namin makumpirma ang lungsod. Pumili sa listahan.",
     "errTimeout": "Masyadong matagal ito. Suriin ang iyong koneksyon at subukang muli.",
-    "errUnavailable": "Hindi available ang pag-post ngayon. Pakisubukang muli mamaya."
+    "errUnavailable": "Hindi available ang pag-post ngayon. Pakisubukang muli mamaya.",
+    "placeLabel": "Lugar (opsyonal)",
+    "placePlaceholder": "Magdagdag ng lugar: cafe, street food, tanawin",
+    "errPlace": "Hindi mapo-post ang lugar na iyon. Pangalan lang ng lugar, walang link, handle o numero.",
+    "placeDirections": "Direksyon papunta sa {place}",
+    "navHow": "Paano ka pupunta?",
+    "navWalk": "Lakad",
+    "navDrive": "Sasakyan",
+    "navTransit": "Pampublikong sasakyan",
+    "openGoogle": "Buksan sa Google Maps",
+    "openApple": "Buksan sa Apple Maps",
+    "guideTag": "Lokal na gabay",
+    "guidesFilter": "Lugar ng lokal na gabay",
+    "guidesEmpty": "Wala pang lugar mula sa lokal na gabay sa mga na-load. Mag-load pa o patayin ang filter."
   },
   "call": {
     "title": "Tawag na Boses",

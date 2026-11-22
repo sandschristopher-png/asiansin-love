@@ -412,9 +412,11 @@
     },
     "menu": {
       "reputation": "Reputasi",
-      "safety": "Keamanan & Moderasi"
+      "safety": "Keamanan & Moderasi",
+      "report": "Laporkan anggota"
     },
-    "read": "Dibaca"
+    "read": "Dibaca",
+    "safetyTip": "Tetaplah mengobrol di Meet in Asia sampai kalian bertemu. Jangan pernah mengirim uang atau membagikan data keuangan. Untuk melaporkan anggota ini, gunakan menu di kanan atas."
   },
   "notif": {
     "message": "{name} mengirimimu pesan",
@@ -435,7 +437,7 @@
     "memberTitle": "Laporkan anggota",
     "titleFor": "Laporkan {name}",
     "sub": "Laporan bersifat rahasia. Kami meninjau setiap laporan untuk menjaga keamanan komunitas.",
-    "reasonFinancial": "Meminta uang / penipuan finansial",
+    "reasonFinancial": "Meminta uang / permintaan keuangan",
     "reasonSolicitation": "Penawaran seks / escort",
     "reasonAdult": "Menjual konten dewasa / tautan spam",
     "reasonHarassment": "Pelecehan atau perilaku tidak pantas",
@@ -521,7 +523,20 @@
     "locateDenied": "Kami tidak bisa mendapatkan lokasimu. Izinkan akses lokasi di browser, atau pilih kota dari daftar.",
     "locateOutside": "Lokasimu tidak berada di Asia Tenggara, jadi kami tidak bisa memastikan kota. Pilih dari daftar.",
     "errTimeout": "Ini memakan waktu terlalu lama. Periksa koneksimu dan coba lagi.",
-    "errUnavailable": "Posting belum tersedia saat ini. Silakan coba lagi sebentar lagi."
+    "errUnavailable": "Posting belum tersedia saat ini. Silakan coba lagi sebentar lagi.",
+    "placeLabel": "Tempat (opsional)",
+    "placePlaceholder": "Tambah tempat: kafe, warung jajanan, titik pandang",
+    "errPlace": "Tempat itu tidak bisa diposting. Gunakan nama tempat saja, tanpa tautan, akun, atau nomor.",
+    "placeDirections": "Petunjuk arah ke {place}",
+    "navHow": "Bagaimana kamu ke sana?",
+    "navWalk": "Jalan kaki",
+    "navDrive": "Berkendara",
+    "navTransit": "Transportasi umum",
+    "openGoogle": "Buka di Google Maps",
+    "openApple": "Buka di Apple Maps",
+    "guideTag": "Pemandu lokal",
+    "guidesFilter": "Tempat dari pemandu lokal",
+    "guidesEmpty": "Belum ada tempat dari pemandu lokal di yang dimuat. Muat lebih banyak, atau matikan filter."
   },
   "call": {
     "title": "Panggilan Suara",

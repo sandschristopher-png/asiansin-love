@@ -412,9 +412,11 @@
     },
     "menu": {
       "reputation": "평판",
-      "safety": "안전 및 신고"
+      "safety": "안전 및 신고",
+      "report": "회원 신고"
     },
-    "read": "읽음"
+    "read": "읽음",
+    "safetyTip": "만나기 전까지는 대화를 Meet in Asia 안에서 이어가세요. 돈을 보내거나 금융 정보를 공유하지 마세요. 이 회원을 신고하려면 오른쪽 위 메뉴를 사용하세요."
   },
   "notif": {
     "message": "{name}님이 메시지를 보냈어요",
@@ -435,7 +437,7 @@
     "memberTitle": "회원 신고",
     "titleFor": "{name} 신고",
     "sub": "신고는 비밀이 보장됩니다. 커뮤니티 안전을 위해 모든 신고를 검토합니다.",
-    "reasonFinancial": "금전 요구 / 금융 사기",
+    "reasonFinancial": "금전 요구 / 돈을 요청함",
     "reasonSolicitation": "성매매 권유 / 에스코트",
     "reasonAdult": "성인 콘텐츠 판매 / 스팸 링크",
     "reasonHarassment": "괴롭힘 또는 부적절한 행동",
@@ -521,7 +523,20 @@
     "locateDenied": "위치를 가져오지 못했어요. 브라우저에서 위치 접근을 허용하거나 목록에서 도시를 선택해 주세요.",
     "locateOutside": "현재 위치가 동남아시아가 아니라서 도시를 확인할 수 없어요. 목록에서 선택해 주세요.",
     "errTimeout": "시간이 너무 오래 걸리고 있어요. 연결을 확인하고 다시 시도해 주세요.",
-    "errUnavailable": "지금은 게시할 수 없어요. 잠시 후 다시 시도해 주세요."
+    "errUnavailable": "지금은 게시할 수 없어요. 잠시 후 다시 시도해 주세요.",
+    "placeLabel": "장소 (선택)",
+    "placePlaceholder": "장소 추가: 카페, 길거리 음식, 전망대",
+    "errPlace": "이 장소는 게시할 수 없어요. 링크, 아이디, 숫자 없이 장소 이름만 적어 주세요.",
+    "placeDirections": "{place} 길찾기",
+    "navHow": "이동 방법",
+    "navWalk": "도보",
+    "navDrive": "자동차",
+    "navTransit": "대중교통",
+    "openGoogle": "Google 지도에서 열기",
+    "openApple": "Apple 지도에서 열기",
+    "guideTag": "현지 가이드",
+    "guidesFilter": "현지 가이드 추천 장소",
+    "guidesEmpty": "불러온 글에는 아직 현지 가이드 장소가 없어요. 더 불러오거나 필터를 꺼 주세요."
   },
   "call": {
     "title": "음성 통화",

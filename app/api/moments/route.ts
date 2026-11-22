@@ -17,6 +17,11 @@ import { decideMessageOutcome } from '@/lib/reputation';
 import { toList } from '@/lib/rhythm';
 import { countryOfCity } from '@/lib/seaLocations';
 import { verifyLocationToken } from '@/lib/momentLocation';
+import { enforceSolicitation } from '@/lib/moderation/solicitationEnforce';
+import { normalizeIntent } from '@/lib/intents';
+import { cleanPlace } from '@/lib/momentPlace';
+import { validateProfileContent } from '@/lib/moderation';
+import { isHiddenFromFeeds } from '@/lib/moderation/strikeRules';
 import { LEGACY_ACTIVITY_VIBE, MAX_CAPTION, MAX_MOMENT_BYTES, MOMENT_BUCKET, isMomentCity, isMomentPrompt, isVibeTag, sharesVibe, type MomentItem } from '@/lib/moments';
 
 export const runtime = 'nodejs';
@@ -37,6 +42,8 @@ function matchesImageSignature(buf: Buffer, mime: string): boolean {
 const BASE_COLUMNS = 'id, user_id, image_url, aspect_ratio, caption, city, likes_count, created_at';
 const FULL_COLUMNS = `${BASE_COLUMNS}, vibe_tag, prompt_question, location_verified`;
 const LEGACY_COLUMNS = `${BASE_COLUMNS}, activity_tag`;
+/** Plus the optional spot (20261203_moments_place.sql). */
+const PLACE_COLUMNS = `${FULL_COLUMNS}, place_name`;
 
 interface MomentRow {
   id: string;
@@ -51,6 +58,7 @@ interface MomentRow {
   prompt_question?: string | null;
   location_verified?: boolean | null;
   activity_tag?: string | null;
+  place_name?: string | null;
 }
 
 /**
@@ -135,7 +143,9 @@ export async function GET(req: Request) {
 
   // Full query first; if 20261125_moments_vibes.sql has not been run (or PostgREST has not reloaded its
   // schema yet) retry with the original columns, and if even those are missing show an empty feed.
-  let result = await run(FULL_COLUMNS);
+  let result = await run(PLACE_COLUMNS);
+  // Before 20261203_moments_place.sql the spot column is missing: quietly use the vibes query.
+  if (result.error && isFeedSchemaMismatch(result.error)) result = await run(FULL_COLUMNS);
   if (result.error) {
     console.error('[moments:get]', result.error);
     if (isFeedSchemaMismatch(result.error)) {
@@ -154,24 +164,33 @@ export async function GET(req: Request) {
   const momentIds = page.map((m) => m.id);
 
   // Authors and this member's likes both need the page's ids, so they run together; the viewer is already done.
-  const [{ data: authors }, { data: likes }, { data: viewer }] = await Promise.all([
+  const [{ data: authors }, { data: likes }, { data: viewer }, { data: strikeRows }] = await Promise.all([
     authorIds.length
       ? supabase
           .from('profiles')
-          .select('id, username, age, birthdate, avatar_url, is_verified, verification_status, is_day_one')
+          .select('id, username, age, birthdate, avatar_url, is_verified, verification_status, is_day_one, relationship_intent')
           .in('id', authorIds)
       : Promise.resolve({ data: [] as Record<string, unknown>[] }),
     momentIds.length
       ? supabase.from('moment_likes').select('moment_id').eq('user_id', user.id).in('moment_id', momentIds)
       : Promise.resolve({ data: [] as { moment_id: string }[] }),
     viewerPromise,
+    // Strike state (20261202): a failure, for example before the migration, just hides nobody.
+    authorIds.length
+      ? supabase.from('profiles').select('id, visibility_status, edit_locked_until').in('id', authorIds)
+      : Promise.resolve({ data: [] as Record<string, unknown>[] }),
   ]);
+  const hiddenAuthors = new Set(
+    ((strikeRows || []) as { id: string; visibility_status?: string | null; edit_locked_until?: string | null }[])
+      .filter((r) => r.id !== user.id && isHiddenFromFeeds(r))
+      .map((r) => r.id)
+  );
   const myInterests = toList(viewer?.interests);
   const byAuthor = new Map((authors || []).map((a: Record<string, unknown>) => [a.id as string, a]));
   const liked = new Set((likes || []).map((l: { moment_id: string }) => l.moment_id));
 
   const moments: MomentItem[] = page
-    .filter((m) => byAuthor.has(m.user_id))
+    .filter((m) => byAuthor.has(m.user_id) && !hiddenAuthors.has(m.user_id))
     .map((m) => {
       const a = byAuthor.get(m.user_id)! as Record<string, unknown>;
       // Rows from before the vibes migration only have the old activity tag: map it onto a vibe.
@@ -189,6 +208,7 @@ export async function GET(req: Request) {
         likesCount: m.likes_count,
         likedByMe: liked.has(m.id),
         locationVerified: m.location_verified === true,
+        place: typeof m.place_name === 'string' && m.place_name ? m.place_name : null,
         sharedVibe: m.user_id !== user.id && vibe !== null && sharesVibe(myInterests, vibe),
         createdAt: m.created_at,
         isMine: m.user_id === user.id,
@@ -199,6 +219,7 @@ export async function GET(req: Request) {
           avatarUrl: (a.avatar_url as string | null) ?? null,
           verified: a.is_verified === true || a.verification_status === 'verified',
           founding: a.is_day_one === true,
+          localGuide: normalizeIntent(a.relationship_intent) === 'local_guide',
         },
       };
     });
@@ -244,6 +265,7 @@ async function createMoment(req: Request) {
   const promptRaw = form.get('prompt');
   const prompt = promptRaw === null || promptRaw === '' ? null : promptRaw;
   const city = form.get('city');
+  const place = cleanPlace(form.get('place'));
   const locationToken = typeof form.get('locationToken') === 'string' ? String(form.get('locationToken')) : '';
 
   if (!isVibeTag(vibeTag) || !isMomentCity(city) || (prompt !== null && !isMomentPrompt(prompt)) || caption.length > MAX_CAPTION) {
@@ -265,6 +287,16 @@ async function createMoment(req: Request) {
   // Held for review after a zero-tolerance hit (account_freezes is server-only).
   const { data: freeze } = await admin.from('account_freezes').select('user_id').eq('user_id', user.id).is('cleared_at', null).maybeSingle();
   if (freeze) return NextResponse.json({ error: 'Your account is under review.', code: 'ACCOUNT_UNDER_REVIEW' }, { status: 403 });
+
+  // Three strikes for transactional, bill-paying and payment-rail captions; a removed member or one in the 24-hour hold
+  // cannot post at all (supabase/migrations/20261202).
+  const strike = await enforceSolicitation(admin, session, user.id, [caption, place].filter(Boolean));
+  if (strike) return NextResponse.json(strike.body, { status: strike.status });
+
+  // The spot is public text too: no links, handles or phone numbers.
+  if (place && !validateProfileContent(place).isValid) {
+    return NextResponse.json({ error: "This spot can't be posted.", code: 'MOMENT_PLACE_REJECTED' }, { status: 422 });
+  }
 
   // Caption screening: the same dictionary and reputation numbers as chat. A public caption never
   // publishes with a warning, so anything but a clean result is refused.
@@ -338,6 +370,12 @@ async function createMoment(req: Request) {
     console.error('[moments:post] create failed:', rpcError);
     if (isSchemaMismatch(rpcError)) return unavailable();
     return NextResponse.json({ error: 'Could not post.', code: 'DB_ERROR' }, { status: 500 });
+  }
+
+  // The optional spot goes on separately, so a database that has not run 20261203 still posts the Moment.
+  if (place && id) {
+    const { error: placeError } = await admin.from('moments').update({ place_name: place }).eq('id', id as string);
+    if (placeError) console.error('[moments:post] spot not saved:', placeError.message);
   }
 
   return NextResponse.json({ success: true, id });

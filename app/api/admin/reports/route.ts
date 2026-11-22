@@ -11,12 +11,12 @@ export const runtime = 'nodejs';
 export const dynamic = 'force-dynamic';
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
-const PENALTY_STEPS = [5, 10, 20];
+const PENALTY_STEPS = [5, 10, 20, 25];
 
 /** Current categories (app/api/reports) plus legacy reason values. */
 const REASON_LABEL: Record<string, string> = {
   commercial_solicitation: 'Commercial solicitation',
-  financial_scam: 'Financial fraud',
+  financial_scam: 'Financial solicitation / asking for money',
   off_platform_steering: 'Off-platform push',
   inappropriate_content: 'Harassment / abusive language',
   harassment: 'Harassment / abusive language',
@@ -145,7 +145,7 @@ export async function POST(req: NextRequest) {
 
     if (action === 'penalize') {
       const points = Number(body.points);
-      if (!PENALTY_STEPS.includes(points)) return NextResponse.json({ error: 'Choose 5, 10 or 20 points.' }, { status: 400 });
+      if (!PENALTY_STEPS.includes(points)) return NextResponse.json({ error: 'Choose 5, 10, 20 or 25 points.' }, { status: 400 });
       const score = await adjustReputation(admin, report.reported_id, -points);
       if (score === null) return NextResponse.json({ error: 'Could not update reputation.' }, { status: 500 });
       await logModeration(admin, {

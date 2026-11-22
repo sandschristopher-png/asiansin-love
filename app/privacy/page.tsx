@@ -137,6 +137,10 @@ const sections: LegalSection[] = [
           profile and messages, and removes your photos, voice recordings and verification selfies from storage.
         </p>
         <p>
+          The full steps, including how to ask us to delete an account you cannot sign in to, are on our{' '}
+          <Link href="/delete-account">account deletion page</Link>.
+        </p>
+        <p>
           We may keep limited records (such as moderation and payment records) where the law requires it or to stop banned
           scammers from returning. You can also edit or remove most profile details at any time from your profile.
         </p>

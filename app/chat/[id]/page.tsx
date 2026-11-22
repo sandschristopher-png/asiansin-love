@@ -1,5 +1,6 @@
 'use client';
 
+import { STRIKE_MESSAGES } from '@/lib/moderation/strikeRules';
 import type { DbRow } from '@/lib/dbRows';
 import dynamic from 'next/dynamic';
 import VerifiedBadge from '@/components/VerifiedBadge';
@@ -184,6 +185,8 @@ export default function ChatConversationPage() {
     verified: false,
   });
   const [myRep, setMyRep] = useState(100);
+  // The other member was removed after repeated violations (20261202): the thread stays, with a neutral notice.
+  const [targetRemoved, setTargetRemoved] = useState(false);
   const [sharedInterests, setSharedInterests] = useState<string[]>([]);
   const [myTraits, setMyTraits] = useState<string[]>([]);
   const [theirTraits, setTheirTraits] = useState<string[]>([]);
@@ -724,6 +727,17 @@ export default function ChatConversationPage() {
           replyPace: null,
           verified: profData.is_verified === true || profData.verification_status === 'verified',
         });
+
+        // Strike state arrives with 20261202_solicitation_strikes.sql: read on its own so a missing column cannot break
+        // the main profile query above.
+        supabase
+          .from('profiles')
+          .select('visibility_status')
+          .eq('id', targetUuid)
+          .maybeSingle()
+          .then(({ data: state, error: stateError }) => {
+            if (isMounted && !stateError && state?.visibility_status === 'banned') setTargetRemoved(true);
+          });
 
         // Rhythm badge column arrives with 20261106_reputation_rhythm.sql; a missing column must not
         // break the main profile query, so it is read separately.
@@ -1461,6 +1475,18 @@ export default function ChatConversationPage() {
               <span className="flex-1">{t('chat.menu.reputation')}</span>
               <span className="text-xs font-semibold tabular-nums text-[#726E97]">{targetInfo.rep}%</span>
             </button>
+            <button
+              type="button"
+              role="menuitem"
+              onClick={() => {
+                closeCallPopovers();
+                setShowReportModal(true);
+              }}
+              className="flex w-full items-center gap-2.5 rounded-xl px-3 py-2.5 text-left text-sm text-[#413B5E] transition hover:bg-[#F6F4FB]"
+            >
+              <ShieldAlert className="h-4 w-4 text-slate-600" aria-hidden />
+              <span className="flex-1">{t('chat.menu.report')}</span>
+            </button>
           </div>
         )}
 
@@ -1499,7 +1525,7 @@ export default function ChatConversationPage() {
                         <span className="tabular-nums text-slate-600">{row.count}/{CONTACT_UNLOCK_TURNS}</span>
                       </div>
                       <div className="mt-1 h-1.5 overflow-hidden rounded-full bg-[#EAE9F2]">
-                        <div className="h-full rounded-full bg-[#726E97] transition-[width] duration-500 ease-out" style={{ width: `${(row.count / CONTACT_UNLOCK_TURNS) * 100}%` }} />
+                        <div className="h-full origin-left rounded-full bg-[#726E97] transition-transform duration-500 ease-out" style={{ transform: `scaleX(${Math.min(1, row.count / CONTACT_UNLOCK_TURNS)})` }} />
                       </div>
                     </div>
                   ))}
@@ -1511,19 +1537,9 @@ export default function ChatConversationPage() {
                 {callUnlock === 'unverified' ? t('call.unverifiedTip') : t('call.lockedTip')}
               </p>
             )}
-            <button
-              type="button"
-              onClick={() => {
-                setGateOpen(false);
-                setShowReportModal(true);
-              }}
-              className={`flex w-full items-center gap-2.5 text-left text-sm text-[#413B5E] transition hover:text-[#726E97] ${
-                showGate ? 'mt-3 rounded-xl border-t border-[#E6E2F0] px-1 pt-3' : 'py-1 pr-8'
-              }`}
-            >
-              <ShieldAlert className="h-4 w-4 text-slate-600" aria-hidden />
-              {t('chat.menu.safety')}
-            </button>
+            {!showGate && callUnlock !== 'few_messages' && callUnlock !== 'unverified' && (
+              <p className="pr-7 text-[11.5px] leading-relaxed text-slate-600">{t('chat.safetyTip')}</p>
+            )}
           </div>
         )}
       </header>
@@ -1580,6 +1596,12 @@ export default function ChatConversationPage() {
                 >
                   Tap to send this starter &rarr;
                 </button>
+              </div>
+            )}
+
+            {targetRemoved && (
+              <div role="status" className="mb-3 rounded-2xl bg-[#F6F4FB] p-3 text-center text-xs font-medium text-[#413B5E]">
+                {STRIKE_MESSAGES[3]}
               </div>
             )}
 

@@ -158,8 +158,8 @@ export function AudioPill({
           aria-valuenow={Math.round(progress * 100)}
         >
           <span
-            className={`absolute inset-y-0 left-0 rounded-full transition-[width] duration-200 ease-linear ${onBrand ? 'bg-white' : 'bg-[#726E97]'}`}
-            style={{ width: `${progress * 100}%` }}
+            className={`absolute inset-0 origin-left rounded-full transition-transform duration-200 ease-linear ${onBrand ? 'bg-white' : 'bg-[#726E97]'}`}
+            style={{ transform: `scaleX(${Math.min(1, Math.max(0, progress))})` }}
           />
         </span>
         </span>

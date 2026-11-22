@@ -27,6 +27,7 @@ const PUBLIC_ROUTES = [
   // Legal reading pages: no floating nav over the text. (/safety keeps the tab bar for signed-in members.)
   '/terms',
   '/privacy',
+  '/delete-account',
   '/standards',
   '/pricing'
 ];

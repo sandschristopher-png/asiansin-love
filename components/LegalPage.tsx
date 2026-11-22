@@ -13,6 +13,7 @@ const LEGAL_LINKS = [
   { href: '/terms', label: 'Terms' },
   { href: '/privacy', label: 'Privacy' },
   { href: '/safety', label: 'Safety' },
+  { href: '/delete-account', label: 'Delete account' },
 ];
 
 /** Static legal / policy page inside the 480px app column (Terms, Privacy, Safety). */

@@ -31,6 +31,8 @@ import { ageOf } from '@/lib/age';
 import { useShare } from '@/components/share/useShare';
 import { MemberTrips } from '@/components/VisitingSoonSection';
 import { CardPhoto, DETAIL_PHOTO_SIZES } from '@/components/CardPhoto';
+import { intentLabel, normalizeIntent } from '@/lib/intents';
+import { uniqueTags } from '@/lib/interests';
 import { PhotoCarousel } from '@/components/cards/PhotoCarousel';
 import { DETAIL_IMAGE, supabaseImage } from '@/lib/images/supabaseImage';
 import { DayOneBadge, NewMemberPill, VerifiedLocationBadge } from '@/components/profile/TrustBadges';
@@ -40,7 +42,7 @@ import { resolveCountry } from '@/lib/countries';
 import { rhythmOption, sharedTraits } from '@/lib/rhythm';
 import { scoreOf } from '@/lib/reputation';
 import { InCommonCard, RhythmPill } from '@/components/profile/RhythmBadges';
-import { ProfileSection, ReputationPill, PROFILE_TAG, PROFILE_TAG_SHARED } from '@/components/profile/ProfileLayout';
+import { ProfileSection, ReputationPill, PROFILE_TAG } from '@/components/profile/ProfileLayout';
 import { PrivateNotesCard } from '@/components/profile/PrivateNotesCard';
 import { useActionToast } from '@/components/ActionToast';
 import { interestIcon, interestIconOrDefault } from '@/lib/interestIcons';
@@ -68,19 +70,6 @@ interface HighlightRow {
   story: string;
 }
 
-
-function formatIntent(val: unknown): string {
-  if (!val) return '';
-  const raw = String(val).trim();
-  const map: Record<string, string> = {
-    marriage: 'Marriage & Long-Term Partner',
-    serious_relationship: 'Long-Term Relationship',
-    long_term: 'Long-Term Relationship',
-    casual: 'Casual Dating',
-    friendship: 'Friendship & Connection',
-  };
-  return map[raw.toLowerCase()] || raw.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
-}
 
 export default function PublicProfilePage() {
   const { t } = useLocale();
@@ -329,14 +318,21 @@ export default function PublicProfilePage() {
   // Your own profile: no Spark, Message, reply prompts or "in common" (you would be comparing yourself with yourself).
   const isOwnProfile = typeof viewerId === 'string' && viewerId === String(profile.id ?? targetUserId);
 
-  const targetInterests: string[] = Array.isArray(profile.interests) ? profile.interests : [];
+  const targetInterests: string[] = uniqueTags(Array.isArray(profile.interests) ? profile.interests : []);
   const sharedInterests = isOwnProfile
     ? []
     : targetInterests.filter((tag) => viewerInterests.some((v) => v.toLowerCase() === String(tag).toLowerCase()));
 
-  const lookingForText = formatIntent(
-    profile.looking_for || profile.relationship_goal || profile.relationship_intent || profile.intentions
-  );
+  // Looking For: the one intent pill (older profiles hold older values; normalizeIntent maps them), then an optional
+  // note. A note that is only an old intent label ("Serious Relationship") is the pill, not a second line of text.
+  const lookingForRaw = String(profile.looking_for ?? '').trim();
+  const intentValue =
+    normalizeIntent(profile.relationship_intent || profile.intentions || profile.relationship_goal) || normalizeIntent(lookingForRaw);
+  const intentText = intentLabel(intentValue);
+  const lookingForNote = lookingForRaw && !normalizeIntent(lookingForRaw) ? lookingForRaw : '';
+
+  // Shared interests show once, in the "in common" card; the Interests section lists the rest.
+  const otherInterests = targetInterests.filter((tag) => !sharedInterests.some((s) => s.toLowerCase() === tag.toLowerCase()));
 
   const parsedLanguages = readLanguages(profile.languages);
   const languagesList: string[] = parsedLanguages.length > 0 ? parsedLanguages : ['English'];
@@ -352,7 +348,6 @@ export default function PublicProfilePage() {
   const timelineIntent = rhythmOption('timeline_intent', profile.timeline_intent);
 
   const vitals = [
-    { label: 'Future Plans', value: formatIntent(profile.relationship_intent || profile.relationship_goal) },
     { label: 'Occupation', value: profile.occupation || profile.profession },
     { label: 'Marital Status', value: profile.marital_status },
     { label: 'Beliefs', value: profile.religion },
@@ -599,24 +594,13 @@ export default function PublicProfilePage() {
           )}
 
           {/* INTERESTS & HOBBIES */}
-          {targetInterests.length > 0 && (
-            <ProfileSection
-              title="Interests & Hobbies"
-              icon={<Tag className="w-3.5 h-3.5" />}
-              aside={
-                sharedInterests.length > 0 ? (
-                  <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#726E97]/10 text-[#726E97] font-medium shrink-0">
-                    {sharedInterests.length} in common
-                  </span>
-                ) : undefined
-              }
-            >
+          {otherInterests.length > 0 && (
+            <ProfileSection title="Interests & Hobbies" icon={<Tag className="w-3.5 h-3.5" />}>
               <div className="flex flex-wrap gap-1.5">
-                {targetInterests.map((tag) => {
-                  const isShared = sharedInterests.some((s) => s.toLowerCase() === String(tag).toLowerCase());
+                {otherInterests.map((tag) => {
                   const Icon = interestIcon(tag);
                   return (
-                    <span key={tag} className={isShared ? PROFILE_TAG_SHARED : PROFILE_TAG}>
+                    <span key={tag} className={PROFILE_TAG}>
                       {Icon && <Icon className="w-3.5 h-3.5 shrink-0" aria-hidden />}
                       <span>{tag}</span>
                     </span>
@@ -627,10 +611,11 @@ export default function PublicProfilePage() {
           )}
 
           {/* LOOKING FOR & RHYTHM */}
-          {(lookingForText || profile.reply_pace || relocationReadiness || timelineIntent) && (
-            <ProfileSection title={isOwnProfile ? "What I'm Looking For" : "What They're Looking For"}>
-              {lookingForText && (
-                <p className="text-xs sm:text-sm font-semibold text-[#413B5E]">{lookingForText}</p>
+          {(intentText || lookingForNote || profile.reply_pace || relocationReadiness || timelineIntent) && (
+            <ProfileSection title="Looking For">
+              {intentText && <span className={PROFILE_TAG}>{intentText}</span>}
+              {lookingForNote && (
+                <p className="text-xs sm:text-sm text-[#413B5E] leading-relaxed">{lookingForNote}</p>
               )}
               {(profile.reply_pace || relocationReadiness || timelineIntent) && (
                 <div className="flex flex-wrap gap-1.5 pt-0.5">
@@ -646,7 +631,7 @@ export default function PublicProfilePage() {
           {vitals.length > 0 && (
             <ProfileSection title="Vitals & Lifestyle">
               <LifestyleBadges values={lifestyleBadges} />
-              <div className="divide-y divide-gray-100 text-xs">
+              <div className="divide-y divide-[#F3F4F6] text-xs">
                 {vitals.map((item) => (
                   <div key={item.label} className="flex items-center justify-between py-2.5 first:pt-1 last:pb-0">
                     <span className="font-medium text-[#413B5E]/75">{item.label}</span>

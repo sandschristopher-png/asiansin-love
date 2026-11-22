@@ -96,7 +96,7 @@ html, body {
   scroll-behavior: smooth;
   -webkit-overflow-scrolling: touch;
   /* Top-level views scroll and rubber-band like a normal mobile page; inner panes opt out with .smooth-scroll. */
-  overscroll-behavior-y: auto;
+  overscroll-behavior-y: none;
 }
 
 /* No 300 ms tap delay and no double-tap zoom on anything you can press. */
@@ -496,3 +496,13 @@ nextjs-portal,
 
 /* Blurred placeholder -> photo cross-fade for slow connections. */
 .ail-photo-fade { transition: opacity 360ms ease-out; }
+
+/* ail-reduce-all: whoever asks the system for less motion gets none, whatever class an animation came from. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

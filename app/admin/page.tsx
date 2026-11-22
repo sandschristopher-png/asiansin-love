@@ -170,8 +170,8 @@ function ReportCard({
       {showPenalty && (
         <div className="mt-2 rounded-xl bg-amber-50/70 border border-amber-100 p-2.5">
           <p className="text-xs text-amber-800 mb-2">Deduct reputation from {report.reported?.name || 'this member'}</p>
-          <div className="grid grid-cols-3 gap-2">
-            {[5, 10, 20].map((p) => (
+          <div className="grid grid-cols-4 gap-2">
+            {[5, 10, 20, 25].map((p) => (
               <AdminButton key={p} size="lg" tone="warn" onClick={() => act('penalize', p)} busy={busy === `penalize${p}`} disabled={!!busy}>
                 -{p}%
               </AdminButton>

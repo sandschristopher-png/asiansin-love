@@ -1,15 +1,13 @@
 'use client';
 
 import React, { useEffect, useRef, useState, useSyncExternalStore } from 'react';
+import dynamic from 'next/dynamic';
 import { motion, useReducedMotion } from 'framer-motion';
 import { Camera, Loader2, Plus } from 'lucide-react';
 import { useActionToast } from '@/components/ActionToast';
 import { useLocale } from '@/components/i18n/LocaleProvider';
 import { MomentCard } from '@/components/moments/MomentCard';
-import { MomentComposer } from '@/components/moments/MomentComposer';
 import { MomentSkeleton } from '@/components/moments/MomentSkeleton';
-import { ReportMomentSheet } from '@/components/moments/ReportMomentSheet';
-import { SparkMomentSheet } from '@/components/moments/SparkMomentSheet';
 import { localizeError } from '@/lib/i18n/errors';
 import { clearMomentsCache, readMomentsCache, writeMomentsCache, type MomentsFeed } from '@/lib/momentsCache';
 import { haptic } from '@/lib/haptics';
@@ -21,6 +19,11 @@ import { matchSeaCity, nearestSeaCity } from '@/lib/seaLocations';
 import { supabase } from '@/lib/supabase/client';
 import { fetchUpcomingTrips, localIsoDate } from '@/lib/trips';
 import type { TKey } from '@/lib/i18n';
+
+// The composer (photo preparation included) and both sheets only open on a tap: kept out of the first bundle.
+const MomentComposer = dynamic(() => import('@/components/moments/MomentComposer').then((m) => m.MomentComposer), { ssr: false });
+const ReportMomentSheet = dynamic(() => import('@/components/moments/ReportMomentSheet').then((m) => m.ReportMomentSheet), { ssr: false });
+const SparkMomentSheet = dynamic(() => import('@/components/moments/SparkMomentSheet').then((m) => m.SparkMomentSheet), { ssr: false });
 
 /** Marks the feed as seen so the nav tab's dot clears (BottomNav listens for the event). */
 function markSeen() {
@@ -63,6 +66,9 @@ export default function MomentsPage() {
   const [loadingMore, setLoadingMore] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [composing, setComposing] = useState(false);
+  /** Show only spots tagged by Local Guides (filters the cards already loaded; "Load more" keeps adding to them). */
+  const [guidesOnly, setGuidesOnly] = useState(false);
+  const shown = guidesOnly ? items.filter((m) => m.place && m.author.localGuide) : items;
   /** The prompt the composer opens on: today's when started from the card, none from the button. */
   const [composerPrompt, setComposerPrompt] = useState<MomentPrompt | null>(null);
   const [todaysPrompt] = useState<MomentPrompt>(() => promptOfDay());
@@ -258,6 +264,19 @@ export default function MomentsPage() {
           <span className="mt-2.5 block text-base font-semibold leading-snug text-[#413B5E]">{t(`moments.prompt.${todaysPrompt}` as TKey)}</span>
         </button>
 
+        <div className="mt-4">
+          <button
+            type="button"
+            aria-pressed={guidesOnly}
+            onClick={() => setGuidesOnly((v) => !v)}
+            className={`inline-flex h-8 items-center rounded-full border px-3.5 text-xs font-medium transition-colors active:scale-95 ${
+              guidesOnly ? 'border-[#726E97] bg-[#726E97] text-white' : 'border-[#D0CDE1] bg-white text-[#726E97] hover:bg-[#EAE9F2]/50'
+            }`}
+          >
+            {t('moments.guidesFilter')}
+          </button>
+        </div>
+
         <div className="mt-4 space-y-4" aria-busy={showSkeleton}>
           {showSkeleton ? (
             <MomentSkeleton />
@@ -274,7 +293,9 @@ export default function MomentsPage() {
               <p className="mx-auto mt-1 max-w-xs text-xs leading-relaxed text-slate-600">{t('moments.emptyBody')}</p>
             </div>
           ) : (
-            items.map((m, i) => (
+            shown.length === 0 ? (
+              <p className="rounded-2xl bg-[#F6F4FB] px-4 py-6 text-center text-xs leading-relaxed text-slate-600">{t('moments.guidesEmpty')}</p>
+            ) : shown.map((m, i) => (
               <MomentCard
                 key={m.id}
                 moment={m}

@@ -10,6 +10,7 @@ import { readLanguages } from '@/lib/constants/languages';
 import { LIFESTYLE_KEYS, readHeightCm, readLifestyle } from '@/lib/lifestyle';
 import { sharedTraits } from '@/lib/rhythm';
 import { type TripBrief } from '@/lib/tripHubs';
+import { isHiddenFromFeeds } from '@/lib/moderation/strikeRules';
 import { visitingFilterAllowed } from '@/lib/travelHub';
 import { cityInHub, hubPlaceNames } from '@/lib/metroAreas';
 import { isPlusProfile } from '@/lib/plus';
@@ -286,6 +287,23 @@ export async function GET(req: Request) {
       return NextResponse.json({ error: error.message }, { status: 500 });
     }
 
+    // Strike state (20261202): held members (while the 24-hour hold runs) and removed members never appear. A failure,
+    // for example before the migration, hides nobody.
+    const hiddenIds = new Set<string>();
+    {
+      const ids = (allRows || []).map((r: DbRow) => r.id).filter((id: unknown): id is string => typeof id === 'string');
+      for (let i = 0; i < ids.length; i += 100) {
+        const { data: states, error: stateError } = await serviceClient
+          .from('profiles')
+          .select('id, visibility_status, edit_locked_until')
+          .in('id', ids.slice(i, i + 100));
+        if (stateError) break;
+        for (const s of (states || []) as { id: string; visibility_status?: string | null; edit_locked_until?: string | null }[]) {
+          if (isHiddenFromFeeds(s)) hiddenIds.add(s.id);
+        }
+      }
+    }
+
     // Each member's nearest active or upcoming trip, attached below so cards render final on the
     // first frame. One query for every upcoming trip (Plus members hold at most 3 each); a failure
     // (for example before the user_trips migration) just means no trip badges.
@@ -308,6 +326,7 @@ export async function GET(req: Request) {
 
     const profiles = (allRows || [])
       .filter((row: DbRow) => {
+        if (hiddenIds.has(row.id)) return false;
         if (visitingHub && (!row.is_plus || !tripByUser.has(row.id))) return false;
         if (user && row.id === user.id) return false;
         if (blockedUserIds.has(row.id)) return false;
@@ -378,7 +397,7 @@ export async function GET(req: Request) {
           // (The client also ORs in live Realtime Presence.)
           online: row.show_active_status !== false && getPresenceStatus(row.last_active).isOnline,
           lastActive: row.show_active_status !== false ? row.last_active || null : null,
-          intent: row.relationship_intent || row.intentions || row.relationship_goal || row.intent || 'Marriage',
+          intent: row.relationship_intent || row.intentions || row.relationship_goal || row.intent || '',
           looking_for: row.looking_for || row.intentions || row.relationship_intent || 'Serious Relationship',
           bio: row.bio || '',
           occupation: row.occupation || row.profession || '',
@@ -404,7 +423,8 @@ export async function GET(req: Request) {
         };
       });
 
-    profiles.sort((a, b) => (b.is_plus ? 1 : 0) - (a.is_plus ? 1 : 0));
+    // Plus first, then by reputation: lower-reputation profiles rank lower (ties keep the newest-first order).
+    profiles.sort((a, b) => (b.is_plus ? 1 : 0) - (a.is_plus ? 1 : 0) || b.repScore - a.repScore);
 
     return NextResponse.json({
       viewer: viewerProfile

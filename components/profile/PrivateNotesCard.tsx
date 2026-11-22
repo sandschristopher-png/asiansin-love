@@ -129,7 +129,7 @@ export function PrivateNotesCard({ targetId }: { targetId: string }) {
 
   if (!open) {
     return (
-      <section className="border-b border-gray-100 py-4">
+      <section className="py-4">
         <button
           type="button"
           onClick={() => {
@@ -148,7 +148,7 @@ export function PrivateNotesCard({ targetId }: { targetId: string }) {
   }
 
   return (
-    <section className="border-b border-gray-100 py-5" aria-labelledby="private-notes-title">
+    <section className="py-6" aria-labelledby="private-notes-title">
       <div className="flex items-center justify-between gap-3">
         <h3 id="private-notes-title" className="text-sm font-semibold text-[#413B5E]">
           Private Notes

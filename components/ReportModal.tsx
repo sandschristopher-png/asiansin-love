@@ -18,8 +18,8 @@ const MESSAGE_REASONS: { id: string; label: TKey }[] = [
 
 /** Reasons offered when reporting a member from their profile or the chat menu. */
 const MEMBER_REASONS: { id: string; label: TKey }[] = [
-  { id: 'commercial_solicitation', label: 'report.reasonCommercial' },
   { id: 'financial_scam', label: 'report.reasonFinancial' },
+  { id: 'commercial_solicitation', label: 'report.reasonCommercial' },
   { id: 'off_platform_steering', label: 'report.reasonOffPlatform' },
   { id: 'inappropriate_content', label: 'report.reasonHarassment' },
   { id: 'fake_profile', label: 'report.reasonFake' },

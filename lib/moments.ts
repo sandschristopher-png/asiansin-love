@@ -102,6 +102,8 @@ export interface MomentItem {
   sharedVibe: boolean;
   /** The city was confirmed from the author's GPS fix when they posted. */
   locationVerified: boolean;
+  /** Optional spot the author tagged ("Kapitolyo night market"): opens in an external maps app. Absent on older cached items. */
+  place?: string | null;
   createdAt: string;
   isMine: boolean;
   author: {
@@ -111,5 +113,7 @@ export interface MomentItem {
     avatarUrl: string | null;
     verified: boolean;
     founding: boolean;
+    /** The author's "Looking for" is Local Guide: their tagged spots are recommendations. */
+    localGuide?: boolean;
   };
 }

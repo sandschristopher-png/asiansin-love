@@ -20,6 +20,7 @@ import {
 import { captureCurrentLocation } from '@/lib/location';
 import { supabase } from '@/lib/supabase/client';
 import { INTENT_OPTIONS } from '@/lib/intents';
+import { HOBBY_TAGS } from '@/lib/interests';
 import { resolveCountry } from '@/lib/countries';
 import { evaluateBioModeration } from '@/lib/moderation';
 import { saveBioAndRhythm } from '@/lib/profileApi';
@@ -45,11 +46,6 @@ const HEIGHT_OPTIONS = [
   '6\'4" (193 cm)', '6\'5" (196 cm)', '6\'6" (198 cm)', '6\'7" (201 cm)'
 ];
 
-const HOBBY_TAGS = [
-  'Cooking & Food', 'Beach & Ocean', 'Family First', 'Travel', 'Movies & Cinema',
-  'Music & Karaoke', 'Fitness & Gym', 'Coffee & Cafes', 'Nature Walks', 'Faith & Church',
-  'Homebody', 'Photography', 'Pets & Animals', 'Gaming', 'Art & Design', 'Entrepreneurship'
-];
 
 const COUNTRIES = [
   'Philippines', 'Thailand', 'Vietnam', 'Indonesia', 'Cambodia', 'Malaysia',

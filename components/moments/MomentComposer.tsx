@@ -2,11 +2,12 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
-import { Camera, ChevronDown, Loader2, LocateFixed } from 'lucide-react';
+import { Camera, ChevronDown, Loader2, LocateFixed, MapPin } from 'lucide-react';
 import { BottomSheet } from '@/components/ui/BottomSheet';
 import { useLocale } from '@/components/i18n/LocaleProvider';
 import { localizeError } from '@/lib/i18n/errors';
 import { prepareMomentPhoto } from '@/lib/images/momentPhoto';
+import { MAX_PLACE } from '@/lib/momentPlace';
 import { MAX_CAPTION, MOMENT_PROMPTS, VIBE_TAGS, type MomentCity, type MomentPrompt, type VibeTag } from '@/lib/moments';
 import { SEA_LOCATIONS } from '@/lib/seaLocations';
 import type { TKey } from '@/lib/i18n';
@@ -52,6 +53,7 @@ export function MomentComposer({
   /** A server-checked GPS fix for one city; only counts while that city is still selected. */
   const [fix, setFix] = useState<{ city: MomentCity; token: string } | null>(null);
   const [caption, setCaption] = useState('');
+  const [place, setPlace] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [needsVerify, setNeedsVerify] = useState(false);
@@ -143,6 +145,7 @@ export function MomentComposer({
       const form = new FormData();
       form.append('image', new File([blob], 'moment', { type: blob.type }));
       form.append('caption', caption.trim());
+      if (place.trim()) form.append('place', place.trim());
       form.append('vibeTag', vibe);
       if (prompt) form.append('prompt', prompt);
       form.append('city', city);
@@ -160,6 +163,9 @@ export function MomentComposer({
           setError(t('moments.errVerify'));
         } else if (code === 'MOMENT_RATE_LIMIT') setError(t('moments.errRate'));
         else if (code === 'MOMENT_CAPTION_REJECTED' || code === 'SAFETY_BLOCKED') setError(t('moments.errCaption'));
+        else if (code === 'MOMENT_PLACE_REJECTED') setError(t('moments.errPlace'));
+        // Strike warnings, the 24-hour hold and a removed account arrive as ready-to-show sentences.
+        else if (code === 'SOLICITATION_STRIKE' || code === 'EDIT_LOCKED' || code === 'ACCOUNT_REMOVED') setError(String(data?.error || t('moments.errCaption')));
         else if (code === 'MOMENT_LOW_REPUTATION') setError(t('moments.errReputation'));
         else if (code === 'ACCOUNT_UNDER_REVIEW') setError(t('moments.errFrozen'));
         else if (code === 'MOMENTS_UNAVAILABLE') setError(t('moments.errUnavailable'));
@@ -191,7 +197,7 @@ export function MomentComposer({
             <>
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src={preview} alt="" className="absolute inset-0 h-full w-full object-cover" />
-              <span className="absolute right-3 top-3 rounded-full bg-white/80 px-3.5 py-1.5 text-[11px] font-semibold leading-none text-[#413B5E] backdrop-blur-md">
+              <span className="absolute right-3 top-3 rounded-full bg-white/90 px-3.5 py-1.5 text-[11px] font-semibold leading-none text-[#413B5E]">
                 {t('moments.changePhoto')}
               </span>
             </>
@@ -313,6 +319,21 @@ export function MomentComposer({
           <p className="mt-1 text-right text-[11px] tabular-nums text-slate-500">
             {caption.length}/{MAX_CAPTION}
           </p>
+        </div>
+
+        <div>
+          <label className="relative block">
+            <MapPin className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" aria-hidden />
+            <input
+              type="text"
+              value={place}
+              maxLength={MAX_PLACE}
+              onChange={(e) => setPlace(e.target.value)}
+              placeholder={t('moments.placePlaceholder')}
+              aria-label={t('moments.placeLabel')}
+              className={`${FIELD} pl-10`}
+            />
+          </label>
         </div>
 
         {error && (

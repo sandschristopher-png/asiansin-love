@@ -5,11 +5,11 @@ import { reputationTokens } from '@/lib/utils/reputation';
 
 /**
  * Shared pieces of the flat member profile (/profile and /profile/[id]): sections sit on one continuous white
- * surface, separated by hairlines instead of stacked bordered cards. Cards are kept only for distinct interactive
+ * surface, separated by vertical space alone (no hairlines, no stacked bordered cards). Cards are kept only for distinct interactive
  * blocks (Visiting Soon trips, Voice Intro, Highlights stories).
  */
 
-/** One profile section: small purple title, content, hairline underneath. */
+/** One profile section: small purple title and content, 24px of space above and below. */
 export function ProfileSection({
   title,
   icon,
@@ -24,7 +24,7 @@ export function ProfileSection({
   className?: string;
 }) {
   return (
-    <section className={`space-y-3 border-b border-gray-100 py-5 ${className}`}>
+    <section className={`space-y-3 py-6 ${className}`}>
       {(title || aside) && (
         <div className="flex items-center justify-between gap-2">
           <h2

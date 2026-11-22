@@ -368,7 +368,7 @@ export default function MessagesPage() {
           </div>
         </div>
 
-        <div className="w-full px-3.5 py-2 bg-white border border-[#D0CDE1]/60 focus-within:border-[#726E97] focus-within:ring-2 focus-within:ring-[#726E97]/15 rounded-full transition-all flex items-center gap-2.5">
+        <div className="w-full px-3.5 py-2 bg-white border border-[#D0CDE1]/60 focus-within:border-[#726E97] focus-within:ring-2 focus-within:ring-[#726E97]/15 rounded-full transition-colors flex items-center gap-2.5">
           <Search className="w-4 h-4 text-slate-600 shrink-0 pointer-events-none" />
           <input
             type="text"
@@ -398,7 +398,7 @@ export default function MessagesPage() {
           {loading ? (
             <div className="space-y-2" aria-busy="true" aria-label="Loading conversations">
               {Array.from({ length: 6 }).map((_, i) => (
-                <div key={i} className="flex items-center gap-3 p-3 rounded-3xl bg-white border border-[#D0CDE1]/60 shadow-[0_2px_12px_rgba(0,0,0,0.03)]">
+                <div key={i} className="flex items-center gap-3 p-3 rounded-3xl bg-white border border-[#D0CDE1]/60">
                   <div className="w-12 h-12 rounded-full ail-shimmer shrink-0" />
                   <div className="flex-1 space-y-2">
                     <div className="h-3 w-1/3 rounded-full ail-shimmer" />
@@ -408,7 +408,7 @@ export default function MessagesPage() {
               ))}
             </div>
           ) : filteredConversations.length === 0 ? (
-            <div className="bg-white border border-[#D0CDE1]/60 rounded-3xl px-4 py-8 shadow-[0_2px_12px_rgba(0,0,0,0.03)] text-center space-y-3">
+            <div className="bg-white border border-[#D0CDE1]/60 rounded-3xl px-4 py-8 text-center space-y-3">
               <div className="w-11 h-11 bg-[#EAE9F2]/60 text-[#726E97] rounded-2xl flex items-center justify-center mx-auto">
                 <MessageCircle className="w-5 h-5" />
               </div>
@@ -463,6 +463,10 @@ export default function MessagesPage() {
                   <img
                     src={supabaseImage(conv.avatarUrl, AVATAR_IMAGE)}
                     alt={conv.name}
+                    width={48}
+                    height={48}
+                    loading="lazy"
+                    decoding="async"
                     className="rounded-full object-cover w-12 h-12 border border-[#D0CDE1]/60"
                   />
                 </div>

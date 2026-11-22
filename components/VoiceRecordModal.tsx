@@ -116,11 +116,11 @@ export function VoiceRecordModal({
           <div className="space-y-2">
             <div className="flex items-center gap-[3px] h-10 px-1" aria-hidden>
               {rec.levels.map((l, i) => (
-                <span key={i} className="flex-1 rounded-full bg-[#726E97] transition-[height] duration-75" style={{ height: `${Math.round(l * 100)}%` }} />
+                <span key={i} className="h-full flex-1 rounded-full bg-[#726E97] transition-transform duration-75" style={{ transform: `scaleY(${Math.max(0.04, Math.min(1, l))})` }} />
               ))}
             </div>
             <div className="h-1.5 rounded-full bg-[#EAE9F2]/60 overflow-hidden">
-              <div className="h-full rounded-full bg-[#726E97] transition-[width] duration-100" style={{ width: `${progress}%` }} />
+              <div className="h-full origin-left rounded-full bg-[#726E97] transition-transform duration-100" style={{ transform: `scaleX(${Math.min(1, Math.max(0, progress / 100))})` }} />
             </div>
             <div className="flex items-center justify-between text-[11px] text-[#413B5E]/75">
               <span className="inline-flex items-center gap-1.5 font-semibold text-red-500">
