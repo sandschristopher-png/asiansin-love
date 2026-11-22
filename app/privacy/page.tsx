@@ -80,7 +80,7 @@ const sections: LegalSection[] = [
           <li>Vercel: hosting.</li>
           <li>Our payment processor: payments and billing.</li>
           <li>Google (Gemini): verification pre-screening and the optional in-chat Translate feature.</li>
-          <li>Travelpayouts (Drive AI): travel offers on our public pages only (see the next section).</li>
+          <li>Travelpayouts (Drive AI): travel offers on our public pages and the Travel Hub (see the next section).</li>
         </ul>
         <p>We may also disclose information when the law requires it or to protect members from serious harm or fraud.</p>
       </>
@@ -91,9 +91,10 @@ const sections: LegalSection[] = [
     body: (
       <>
         <p>
-          On certain public-facing pages of Meet in Asia (such as our landing page, city guides and travel resources), we use
-          automated affiliate technology provided by Travelpayouts (Drive AI) to display relevant travel and transportation
-          offers.
+          On certain public-facing pages of Meet in Asia (such as our landing page, city guides and travel resources), and on
+          the Travel Hub (/travel), we use automated affiliate technology provided by Travelpayouts (Drive AI) to display
+          relevant travel and transportation offers, and to turn the flight, hotel and eSIM links on those pages into partner
+          links.
         </p>
         <ul>
           <li>
@@ -102,7 +103,9 @@ const sections: LegalSection[] = [
             to serve contextual recommendations.
           </li>
           <li>
-            <strong>Scope and privacy protection:</strong> this script is strictly restricted to public pages and is{' '}
+            <strong>Scope and privacy protection:</strong> this script runs only on our public pages and on the Travel Hub
+            (/travel). On the Travel Hub it also runs when you are signed in, and that page can show members with upcoming
+            trips, so the script can see that page&apos;s address and what it displays, as on any page it runs on. It is{' '}
             <strong>never</strong> loaded, executed or permitted on private member areas, user profiles or private messaging
             chats (/chat, /profile, /discover, etc.), so your private messages and account activity are never exposed to it.
           </li>

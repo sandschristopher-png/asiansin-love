@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { ArrowUpRight } from 'lucide-react';
+import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import { TravelHubMember } from '@/components/travel/TravelHubMember';
 import { EXPLORE_HUBS, visitingHref } from '@/lib/travelHub';
 import { SITE_URL } from '@/lib/seo/cityData';
@@ -26,13 +26,10 @@ export const metadata: Metadata = {
   twitter: { card: 'summary_large_image', title: TITLE, description: DESCRIPTION, images: ['/Landing-Woman.png'] },
 };
 
+// The hubs above already name the cities; the individual guides live one tap away on /cities.
 const GUIDES = [
-  { name: 'Manila', note: 'Philippines', href: '/manila' },
-  { name: 'Cebu', note: 'Philippines', href: '/cebu' },
-  { name: 'Bangkok', note: 'Thailand', href: '/bangkok' },
-  { name: 'Phnom Penh', note: 'Cambodia', href: '/phnom-penh' },
-  { name: 'Kuala Lumpur', note: 'Malaysia', href: '/kuala-lumpur' },
-  { name: 'Safety blueprint', note: 'Meeting safely', href: '/safety' },
+  { label: 'City guides', note: 'Manila, Cebu, Bangkok, and more', href: '/cities' },
+  { label: 'Safety blueprint', note: 'Meeting safely', href: '/safety' },
 ] as const;
 
 // Plain outbound links, no tracking ids of our own: Travelpayouts Drive converts them for signed-out visitors
@@ -75,17 +72,20 @@ export default function TravelPage() {
 
       <section aria-labelledby="travel-guides" className="space-y-3">
         <h2 id="travel-guides" className={sectionTitle}>
-          City guides and safety
+          Guides
         </h2>
-        <ul className="grid grid-cols-2 gap-3">
+        <ul className="space-y-4">
           {GUIDES.map((g) => (
             <li key={g.href}>
               <Link
                 href={g.href}
-                className="block h-full rounded-2xl border border-[#D0CDE1] bg-white p-4 transition-colors hover:bg-[#EAE9F2]/30"
+                className="flex items-center justify-between gap-3 text-[#413B5E] transition-colors hover:text-[#726E97]"
               >
-                <span className="block text-sm font-semibold text-[#413B5E]">{g.name}</span>
-                <span className="mt-0.5 block text-xs text-slate-600">{g.note}</span>
+                <span>
+                  <span className="block text-sm font-semibold">{g.label}</span>
+                  <span className="block text-xs text-slate-600">{g.note}</span>
+                </span>
+                <ArrowRight className="h-4 w-4 shrink-0 text-[#726E97]" aria-hidden />
               </Link>
             </li>
           ))}
