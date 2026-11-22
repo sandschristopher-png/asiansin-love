@@ -121,7 +121,7 @@
     "ended": "Tamat",
     "upcomingTrips": "{n} perjalanan akan datang",
     "card": {
-      "title": "Akan Melawat",
+      "title": "Perjalanan Saya",
       "subtitle": "Biar ahli di destinasi anda tahu bila anda tiba.",
       "add": "Tambah perjalanan",
       "edit": "Sunting",
@@ -624,5 +624,19 @@
       "safety": "Keselamatan & Pengesahan",
       "guidelines": "Garis Panduan Komuniti"
     }
+  },
+  "travelHub": {
+    "visitingSoon": "Akan Melawat {hub}",
+    "addTrip": "Tambah perjalanan",
+    "seeAll": "Lihat semua",
+    "nobody": "Belum ada sesiapa yang merancang ke {hub}.",
+    "plusPreview": "Ahli Plus boleh melihat siapa yang akan tiba di {hub}.",
+    "intentLabel": "Tujuan perjalanan (pilihan)",
+    "intent": {
+      "openToDates": "Terbuka untuk temu janji",
+      "localGuide": "Pemandu tempatan",
+      "relocating": "Bakal berpindah"
+    },
+    "intentError": "Tidak dapat disimpan. Cuba lagi."
   }
 }

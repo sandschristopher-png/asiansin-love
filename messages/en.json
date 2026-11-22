@@ -121,7 +121,7 @@
     "ended": "Ended",
     "upcomingTrips": "{n} upcoming trips",
     "card": {
-      "title": "Visiting Soon",
+      "title": "My Trips",
       "subtitle": "Let members in your destination see when you arrive.",
       "add": "Add trip",
       "edit": "Edit",
@@ -624,5 +624,19 @@
       "safety": "Safety & Verification",
       "guidelines": "Community Guidelines"
     }
+  },
+  "travelHub": {
+    "visitingSoon": "Visiting {hub} Soon",
+    "addTrip": "Add a trip",
+    "seeAll": "See all",
+    "nobody": "No one has a trip to {hub} yet.",
+    "plusPreview": "Plus members can see who is arriving in {hub}.",
+    "intentLabel": "Travel intent (optional)",
+    "intent": {
+      "openToDates": "Open to dates",
+      "localGuide": "Local guide",
+      "relocating": "Relocating"
+    },
+    "intentError": "Could not save. Try again."
   }
 }

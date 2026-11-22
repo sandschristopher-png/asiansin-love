@@ -6,15 +6,18 @@ import { Loader2, Pencil, Plus, Trash2 } from 'lucide-react';
 import { deleteTrip } from '@/actions/trips';
 import { PlusBadge } from '@/components/ui/PlusBadge';
 import { TripBadge } from '@/components/trips/TripBadge';
-import { TripPill } from '@/components/trips/TripPill';
 import { TripPlannerModal } from '@/components/trips/TripPlannerModal';
+import { TravelIntentPills } from '@/components/travel/TravelIntentPills';
 import { useLocale } from '@/components/i18n/LocaleProvider';
 import { localizeError } from '@/lib/i18n/errors';
 import { MAX_UPCOMING_TRIPS, isoToday } from '@/lib/tripHubs';
 import { formatRangeLocale, tripStatusText } from '@/lib/tripLabels';
 import { fetchUpcomingTrips, type Trip } from '@/lib/trips';
 
-/** Another member's upcoming trips (public profile): the pill alone, or nothing. */
+/**
+ * Another member's upcoming trips (public profile): one quiet pill for the soonest trip ("Visiting Cebu · Jan 15 – Feb 10",
+ * or "In Cebu now"), or nothing. No card, no drawer: the full list lives in the Travel Hub.
+ */
 export function MemberTrips({ userId }: { userId: string | null | undefined }) {
   const [trips, setTrips] = useState<Trip[]>([]);
   useEffect(() => {
@@ -27,15 +30,34 @@ export function MemberTrips({ userId }: { userId: string | null | undefined }) {
       cancelled = true;
     };
   }, [userId]);
-  return <TripPill trips={trips} />;
+  const first = trips[0];
+  if (!first) return null;
+  return (
+    <TripBadge
+      variant="light"
+      trip={{ city: first.destination_city, country: first.destination_country, arrival: first.start_date, departure: first.end_date }}
+    />
+  );
 }
 
 /**
- * Your own "Visiting Soon" card on /profile. Plus: up to 3 upcoming trips with status, edit and
+ * Your own trips card in the Travel Hub (/travel). Plus: up to 3 upcoming trips with status, edit and
  * delete, and an add button. Free: a preview of how a trip shows on Discover, and a path to
  * /plus. isPlus must come from profiles.is_plus, the flag the server action and RLS check.
+ * `hideWhenEmpty`: render nothing until the member has a trip (the hub's other sections carry the "Add a trip" button).
+ * `showIntent`: the optional travel intent pills (Open to dates / Local guide / Relocating) under the trips.
  */
-export function MyTrips({ userId, isPlus }: { userId: string | null | undefined; isPlus: boolean }) {
+export function MyTrips({
+  userId,
+  isPlus,
+  hideWhenEmpty = false,
+  showIntent = false,
+}: {
+  userId: string | null | undefined;
+  isPlus: boolean;
+  hideWhenEmpty?: boolean;
+  showIntent?: boolean;
+}) {
   const { t, locale } = useLocale();
   const [trips, setTrips] = useState<Trip[]>([]);
   const [loaded, setLoaded] = useState(false);
@@ -57,6 +79,7 @@ export function MyTrips({ userId, isPlus }: { userId: string | null | undefined;
   }, [load]);
 
   if (!userId) return null;
+  if (hideWhenEmpty && loaded && trips.length === 0 && !sheet) return null;
 
   const atLimit = trips.length >= MAX_UPCOMING_TRIPS;
 
@@ -189,6 +212,8 @@ export function MyTrips({ userId, isPlus }: { userId: string | null | undefined;
           </Link>
         </div>
       )}
+
+      {showIntent && <TravelIntentPills userId={userId} />}
 
       {sheet && (
         <TripPlannerModal isPlus={isPlus} trip={sheet.trip} onClose={() => setSheet(null)} onSaved={load} />

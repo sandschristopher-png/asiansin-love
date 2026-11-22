@@ -121,7 +121,7 @@
     "ended": "Terminado",
     "upcomingTrips": "{n} viajes próximos",
     "card": {
-      "title": "De visita pronto",
+      "title": "Mis viajes",
       "subtitle": "Deja que los miembros de tu destino vean cuándo llegas.",
       "add": "Añadir viaje",
       "edit": "Editar",
@@ -624,5 +624,19 @@
       "safety": "Seguridad y verificación",
       "guidelines": "Normas de la comunidad"
     }
+  },
+  "travelHub": {
+    "visitingSoon": "Visitando {hub} pronto",
+    "addTrip": "Añadir un viaje",
+    "seeAll": "Ver todo",
+    "nobody": "Nadie tiene un viaje a {hub} todavía.",
+    "plusPreview": "Los miembros Plus pueden ver quién llega a {hub}.",
+    "intentLabel": "Intención de viaje (opcional)",
+    "intent": {
+      "openToDates": "Abierto a citas",
+      "localGuide": "Guía local",
+      "relocating": "Mudándome"
+    },
+    "intentError": "No se pudo guardar. Inténtalo de nuevo."
   }
 }

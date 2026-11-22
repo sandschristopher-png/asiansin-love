@@ -537,12 +537,12 @@ export default function PublicProfilePage() {
             <MapPin className="h-3.5 w-3.5 text-[#726E97] shrink-0" />
             <span className="truncate">{displayLocation}</span>
           </div>
+          <MemberTrips userId={profile.id} />
           <div className="flex items-center gap-2 flex-wrap">
             {profile.location_source === 'gps_verified' && <VerifiedLocationBadge />}
             <ReputationPill score={scoreOf(profile.reputation_score)} />
             <DayOneBadge number={dayOneNumber} />
           </div>
-          <MemberTrips userId={profile.id} />
         </section>
 
         {/* 2. VOICE INTRO (hidden when none recorded; plays only on tap) */}

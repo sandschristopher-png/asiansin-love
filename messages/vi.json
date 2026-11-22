@@ -121,7 +121,7 @@
     "ended": "Đã kết thúc",
     "upcomingTrips": "{n} chuyến đi sắp tới",
     "card": {
-      "title": "Sắp ghé thăm",
+      "title": "Chuyến đi của tôi",
       "subtitle": "Cho thành viên ở nơi bạn đến biết khi nào bạn tới.",
       "add": "Thêm chuyến đi",
       "edit": "Sửa",
@@ -624,5 +624,19 @@
       "safety": "An toàn & Xác minh",
       "guidelines": "Nguyên tắc cộng đồng"
     }
+  },
+  "travelHub": {
+    "visitingSoon": "Sắp đến {hub}",
+    "addTrip": "Thêm chuyến đi",
+    "seeAll": "Xem tất cả",
+    "nobody": "Chưa ai có chuyến đi đến {hub}.",
+    "plusPreview": "Thành viên Plus có thể xem ai sắp đến {hub}.",
+    "intentLabel": "Mục đích chuyến đi (tùy chọn)",
+    "intent": {
+      "openToDates": "Sẵn sàng hẹn hò",
+      "localGuide": "Hướng dẫn viên địa phương",
+      "relocating": "Đang chuyển đến sống"
+    },
+    "intentError": "Không lưu được. Hãy thử lại."
   }
 }

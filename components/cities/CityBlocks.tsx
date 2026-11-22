@@ -54,10 +54,10 @@ export function VisitingSoonCallout({ cityName }: { cityName: string }) {
               <p className="mt-2.5 text-xs text-[#413B5E]/75">
                 Plus member?{' '}
                 <Link
-                  href={`/discover?visiting=${encodeURIComponent(cityName)}`}
+                  href="/travel"
                   className="font-medium text-[#726E97] underline underline-offset-4 transition-colors hover:text-[#524E75]"
                 >
-                  Browse members visiting {cityName}
+                  Open the Travel hub
                 </Link>
               </p>
             </div>

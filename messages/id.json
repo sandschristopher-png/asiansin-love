@@ -121,7 +121,7 @@
     "ended": "Selesai",
     "upcomingTrips": "{n} perjalanan mendatang",
     "card": {
-      "title": "Segera Berkunjung",
+      "title": "Perjalanan Saya",
       "subtitle": "Biarkan anggota di tujuanmu melihat kapan kamu tiba.",
       "add": "Tambah perjalanan",
       "edit": "Ubah",
@@ -624,5 +624,19 @@
       "safety": "Keamanan & Verifikasi",
       "guidelines": "Pedoman Komunitas"
     }
+  },
+  "travelHub": {
+    "visitingSoon": "Segera Berkunjung ke {hub}",
+    "addTrip": "Tambah perjalanan",
+    "seeAll": "Lihat semua",
+    "nobody": "Belum ada yang berencana ke {hub}.",
+    "plusPreview": "Anggota Plus dapat melihat siapa yang akan tiba di {hub}.",
+    "intentLabel": "Tujuan perjalanan (opsional)",
+    "intent": {
+      "openToDates": "Terbuka untuk kencan",
+      "localGuide": "Pemandu lokal",
+      "relocating": "Akan pindah"
+    },
+    "intentError": "Gagal menyimpan. Coba lagi."
   }
 }

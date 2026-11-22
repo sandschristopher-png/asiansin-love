@@ -23,7 +23,8 @@ import {
   Clock,
   ShieldAlert,
   Mic,
-  Trash2
+  Trash2,
+  Plane
 } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { INTENT_OPTIONS, normalizeIntent, intentLabel } from '@/lib/intents';
@@ -36,7 +37,6 @@ import { adminRoleOf } from '@/lib/adminRoles';
 import { ProfileSection, ReputationPill, PROFILE_TAG } from '@/components/profile/ProfileLayout';
 import { ProfileHighlightsEditorRow } from '@/components/ProfileHighlightsEditorRow';
 import { VoicePlayer } from '@/components/VoicePlayer';
-import { MyTrips } from '@/components/VisitingSoonSection';
 import { DayOneBadge, NewMemberPill, VerifiedLocationBadge } from '@/components/profile/TrustBadges';
 import { isTrustedVoiceIntroUrl } from '@/lib/audio';
 import { BIO_REJECTION_MESSAGE } from '@/lib/moderation/textFilter';
@@ -170,8 +170,6 @@ export default function MyProfilePage() {
   const [dayOneNumber, setDayOneNumber] = useState<number | null>(() => initialProfile?.dayOneNumber ?? null);
   const [createdAt, setCreatedAt] = useState<string | null>(() => initialProfile?.createdAt ?? null);
   // Trip planner: own id and the raw is_plus flag (what actions/trips.ts and RLS check).
-  const [myId, setMyId] = useState<string | null>(null);
-  const [hasPlusFlag, setHasPlusFlag] = useState(false);
   const [lifestyle, setLifestyle] = useState<LifestyleValues>(() => initialProfile?.lifestyle ?? {});
 
   useEffect(() => {
@@ -217,8 +215,6 @@ export default function MyProfilePage() {
         if (data.relocation) setRelocation(data.relocation);
         if (data.languages) setUserLanguages(readLanguages(data.languages).join(', '));
         setIsPlus(isPlusProfile(data));
-        setMyId(data.id ?? null);
-        setHasPlusFlag(data.is_plus === true);
         setCachedSubscription(isPlusProfile(data));
         setIsSuperAdmin(adminRoleOf(data) === 'super_admin');
         setPhotoPending(
@@ -648,8 +644,20 @@ export default function MyProfilePage() {
           </div>
         )}
 
-        {/* Visiting Soon itinerary: manage trips (Plus) or preview (free) */}
-        <MyTrips userId={myId} isPlus={hasPlusFlag} />
+        {/* Trips live in the Travel Hub: one quiet row in, nothing heavier on the profile */}
+        <Link
+          href="/travel"
+          className="w-full p-3.5 rounded-2xl bg-white border border-[#D0CDE1] flex items-center justify-between hover:bg-[#EAE9F2]/30 transition"
+        >
+          <div className="flex items-center gap-2.5">
+            <Plane className="w-4 h-4 text-[#726E97] shrink-0" aria-hidden />
+            <div>
+              <p className="text-xs font-semibold text-[#413B5E]">Travel</p>
+              <p className="text-[11px] text-[#413B5E]/75">Add trips and see who is visiting your city.</p>
+            </div>
+          </div>
+          <span className="text-xs font-semibold text-[#726E97]">Open &rarr;</span>
+        </Link>
 
         {/* Discreet Verification Status Card */}
         {verificationStatus !== 'verified' && verificationStatus !== 'pending' && (

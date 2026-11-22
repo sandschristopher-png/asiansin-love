@@ -4,7 +4,7 @@ import type { HeaderProfile } from '@/lib/headerProfileStore';
 import React, { useEffect, useLayoutEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { User, Settings, LogOut, ShieldAlert, Megaphone, CreditCard, ChevronDown } from 'lucide-react';
+import { User, Settings, LogOut, ShieldAlert, Megaphone, CreditCard, ChevronDown, Plane } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { hardSignOut } from '@/lib/hardSignOut';
 import { isPlusProfile } from '@/lib/plus';
@@ -203,6 +203,10 @@ export function HeaderActions({ action }: { action?: HeaderAction }) {
               <Link href="/profile" role="menuitem" onClick={() => setMenuOpen(false)} className={rowCls}>
                 <User className="w-4 h-4 text-slate-600" />
                 My Profile
+              </Link>
+              <Link href="/travel" role="menuitem" onClick={() => setMenuOpen(false)} className={rowCls}>
+                <Plane className="w-4 h-4 text-slate-600" />
+                Travel
               </Link>
               <Link href="/settings" role="menuitem" onClick={() => setMenuOpen(false)} className={rowCls}>
                 <Settings className="w-4 h-4 text-slate-600" />

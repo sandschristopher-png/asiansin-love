@@ -71,6 +71,7 @@ export function Navbar() {
     if (!pathname || pathname === '/' || pathname === '/discover') return null;
     if (pathname.startsWith('/favorites') || pathname.startsWith('/saved')) return 'Sparks';
     if (pathname.startsWith('/moments')) return 'Moments';
+    if (pathname === '/travel' || pathname === '/travel/') return 'Travel';
     if (pathname.startsWith('/chat') || pathname.startsWith('/messages')) return 'Messages';
     if (pathname === '/announcements') return 'Announcements';
     if (pathname === '/notifications') return 'Notifications';

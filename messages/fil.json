@@ -121,7 +121,7 @@
     "ended": "Tapos na",
     "upcomingTrips": "{n} paparating na biyahe",
     "card": {
-      "title": "Visiting Soon",
+      "title": "Mga Biyahe Ko",
       "subtitle": "Ipaalam sa mga miyembro sa iyong destinasyon kung kailan ka darating.",
       "add": "Magdagdag ng biyahe",
       "edit": "I-edit",
@@ -624,5 +624,19 @@
       "safety": "Kaligtasan at Beripikasyon",
       "guidelines": "Mga Alituntunin ng Komunidad"
     }
+  },
+  "travelHub": {
+    "visitingSoon": "Bibisita sa {hub} sa lalong madaling panahon",
+    "addTrip": "Magdagdag ng biyahe",
+    "seeAll": "Tingnan lahat",
+    "nobody": "Wala pang may biyahe papuntang {hub}.",
+    "plusPreview": "Makikita ng mga Plus member kung sino ang darating sa {hub}.",
+    "intentLabel": "Layunin sa pagbiyahe (opsyonal)",
+    "intent": {
+      "openToDates": "Bukas sa pakikipag-date",
+      "localGuide": "Lokal na gabay",
+      "relocating": "Lilipat ng tirahan"
+    },
+    "intentError": "Hindi na-save. Subukan ulit."
   }
 }

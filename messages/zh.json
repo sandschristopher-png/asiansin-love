@@ -121,7 +121,7 @@
     "ended": "已结束",
     "upcomingTrips": "{n}个即将开始的行程",
     "card": {
-      "title": "即将到访",
+      "title": "我的行程",
       "subtitle": "让目的地的会员知道您何时抵达。",
       "add": "添加行程",
       "edit": "编辑",
@@ -624,5 +624,19 @@
       "safety": "安全与认证",
       "guidelines": "社区准则"
     }
+  },
+  "travelHub": {
+    "visitingSoon": "即将到访{hub}",
+    "addTrip": "添加行程",
+    "seeAll": "查看全部",
+    "nobody": "目前还没有人计划前往{hub}。",
+    "plusPreview": "Plus 会员可以看到谁即将抵达{hub}。",
+    "intentLabel": "旅行意向（可选）",
+    "intent": {
+      "openToDates": "愿意约会",
+      "localGuide": "本地向导",
+      "relocating": "计划搬迁"
+    },
+    "intentError": "保存失败，请重试。"
   }
 }

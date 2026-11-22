@@ -121,7 +121,7 @@
     "ended": "終了",
     "upcomingTrips": "予定の旅行 {n}件",
     "card": {
-      "title": "まもなく訪問",
+      "title": "マイ旅行",
       "subtitle": "渡航先の会員に、あなたの到着時期を知らせましょう。",
       "add": "旅行を追加",
       "edit": "編集",
@@ -624,5 +624,19 @@
       "safety": "安全と本人確認",
       "guidelines": "コミュニティガイドライン"
     }
+  },
+  "travelHub": {
+    "visitingSoon": "まもなく{hub}を訪問",
+    "addTrip": "旅行を追加",
+    "seeAll": "すべて見る",
+    "nobody": "{hub}への旅行予定の人はまだいません。",
+    "plusPreview": "Plusメンバーは{hub}にもうすぐ来る人を見られます。",
+    "intentLabel": "旅の目的（任意）",
+    "intent": {
+      "openToDates": "デートOK",
+      "localGuide": "ローカルガイド",
+      "relocating": "移住を検討中"
+    },
+    "intentError": "保存できませんでした。もう一度お試しください。"
   }
 }

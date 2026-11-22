@@ -56,6 +56,11 @@ export const METRO_AREAS: readonly MetroArea[] = [
     members: ['Petaling Jaya', 'Shah Alam', 'Subang Jaya', 'Klang', 'Cyberjaya', 'Putrajaya', 'Ampang', 'Cheras', 'Kajang'],
   },
   {
+    hub: 'Phnom Penh',
+    aliases: ['Phnom Penh City', 'Krong Phnom Penh', 'Greater Phnom Penh'],
+    members: ['Ta Khmau', 'Takhmao', 'Chamkar Mon', 'Daun Penh', 'Toul Kork', 'Sen Sok', 'Boeng Keng Kang', 'Russey Keo', 'Meanchey'],
+  },
+  {
     hub: 'Bali',
     aliases: [],
     members: ['Denpasar', 'Ubud', 'Canggu', 'Seminyak', 'Kuta', 'Sanur', 'Uluwatu', 'Badung', 'Gianyar'],
