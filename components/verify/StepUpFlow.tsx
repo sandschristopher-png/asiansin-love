@@ -224,6 +224,13 @@ export function StepUpFlow({ open, reason, photo, onClose, onResult }: Props) {
         onClose();
         return;
       }
+      if (!startRes.ok && start.code === 'PENDING' && reason === 'verification') {
+        // Submitted from another tab or device: the page shows its under-review screen.
+        stopCamera();
+        onResult({ status: 'manual_review', fastTrack: false });
+        onClose();
+        return;
+      }
       if (!startRes.ok) return fail(startRes.status === 503 ? 'stepup.unavailable' : 'stepup.startFailed');
       const token = String(start.token);
       const sequence = start.poses as StepUpPose[];

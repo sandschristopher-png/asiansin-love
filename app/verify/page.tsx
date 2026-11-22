@@ -44,11 +44,17 @@ export default function VerifyPage() {
         if (!cancelled) router.replace('/login?returnTo=%2Fverify');
         return;
       }
-      const { data: profile } = await supabase.from('profiles').select('avatar_url, is_verified').eq('id', userData.user.id).maybeSingle();
+      const { data: profile } = await supabase.from('profiles').select('avatar_url, is_verified, verification_status').eq('id', userData.user.id).maybeSingle();
       if (cancelled) return;
       setAlreadyVerified(profile?.is_verified === true);
       if (!profile?.avatar_url) {
         setView('needPhoto');
+        return;
+      }
+      if (profile.verification_status === 'pending' && profile.is_verified !== true) {
+        // Already submitted: show the under-review screen, not a second check. The server refuses it too.
+        setView('done');
+        window.setTimeout(() => router.push('/discover'), 4000);
         return;
       }
       setView('ready');

@@ -31,9 +31,22 @@ export async function POST(req: Request) {
   let reason: TriggerReason;
   if (body.reason === 'photo_swap') reason = 'photo_swap';
   else if (body.reason === 'verification') {
-    const { data: profile } = await db.from('profiles').select('avatar_url').eq('id', user.id).maybeSingle();
+    const { data: profile } = await db.from('profiles').select('avatar_url, verification_status').eq('id', user.id).maybeSingle();
     if (!profile?.avatar_url) {
       return NextResponse.json({ error: 'Add a clear main profile photo first - verification matches your face against it.', code: 'NEEDS_PHOTO' }, { status: 400 });
+    }
+    // Already under review: send them to the under-review screen instead of a second request (finish would
+    // otherwise reject the first one as "superseded" and push them to the back of the queue). A stale
+    // 'pending' flag with no open request behind it must not lock anyone out, so the request row decides.
+    if (profile.verification_status === 'pending') {
+      const { count: open } = await db
+        .from('verification_requests')
+        .select('id', { count: 'exact', head: true })
+        .eq('user_id', user.id)
+        .eq('status', 'pending');
+      if ((open ?? 0) > 0) {
+        return NextResponse.json({ error: 'Your verification is already under review.', code: 'PENDING' }, { status: 409 });
+      }
     }
     reason = 'verification';
   } else if (state.required) reason = isTriggerReason(state.reason) ? state.reason : 'manual';
