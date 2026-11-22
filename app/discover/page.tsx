@@ -10,7 +10,7 @@ import { supabase } from '@/lib/supabase/client';
 import { cityInHub, metroHubOf, placeMatchesQuery } from '@/lib/metroAreas';
 import { INTENT_OPTIONS, normalizeIntent } from '@/lib/intents';
 import { CHILDREN_FILTERS, ENGLISH_LEVEL_OPTIONS, RELATIONSHIP_INTENT_FILTERS, discoverQuery } from '@/lib/discoverFilters';
-import { ActionType, getLocalCardActions, persistCardAction } from '@/lib/interactions';
+import { ActionType, getLocalCardActions, persistCardAction, withSparkOverrides } from '@/lib/interactions';
 import { isTrustedVoiceIntroUrl } from '@/lib/audio';
 import { usePresentUserIds } from '@/lib/realtimePresence';
 import { sharedTraits } from '@/lib/rhythm';
@@ -256,10 +256,11 @@ function clearDiscoverCache() {
   } catch {}
 }
 function getInitialDiscoverFeed(): ProfileItem[] {
+  // A Spark sent or removed on a profile page since this feed was cached is applied before the first paint.
   if (memoryDiscoverCache && memoryDiscoverCache.owner === discoverOwner && memoryDiscoverCache.profiles.length) {
-    return memoryDiscoverCache.profiles.slice();
+    return withSparkOverrides(memoryDiscoverCache.profiles.slice());
   }
-  return typeof window === 'undefined' ? [] : readDiscoverSessionCache();
+  return typeof window === 'undefined' ? [] : withSparkOverrides(readDiscoverSessionCache());
 }
 
 function DiscoverContent() {

@@ -140,6 +140,28 @@ export function ProfileSkeleton() {
   );
 }
 
+/**
+ * Another member's profile (/profile/[id]). Same frame as the loaded page (px-3.5, pt-3.5, 3.5 gaps, 4:5 photo
+ * first, no header block: that page has no top bar), so the route's loading screen, the page's own loading
+ * state and the finished profile all share one geometry and nothing shifts between them.
+ */
+export function PublicProfileSkeleton() {
+  return (
+    <div className="relative flex-1 w-full bg-white" aria-busy="true" aria-label="Loading profile">
+      <div className="w-full space-y-3.5 px-3.5 pt-3.5">
+        <div className={`aspect-[4/5] w-full rounded-3xl ${SHIMMER}`} />
+        <div className="space-y-2 px-1">
+          <div className={`h-8 w-48 rounded-full ${SHIMMER}`} />
+          <div className={`h-4 w-36 rounded-full ${SHIMMER}`} />
+          <div className={`h-6 w-56 rounded-full ${SHIMMER}`} />
+        </div>
+        <div className={`h-28 rounded-3xl ${SHIMMER}`} />
+        <div className={`h-20 rounded-3xl ${SHIMMER}`} />
+      </div>
+    </div>
+  );
+}
+
 /** Verification: header bar and the intro card. */
 export function VerifySkeleton() {
   return (

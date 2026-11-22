@@ -59,7 +59,11 @@ export async function POST(req: Request) {
 
     if (existing) {
       if (action === 'toggle') {
-        const { error: deleteError } = await supabase.from('sparks').delete().eq('id', existing.id)
+        // Discover's heart also keeps a favorites row (and reads it back as "sparked"), so both go.
+        const [{ error: deleteError }] = await Promise.all([
+          supabase.from('sparks').delete().eq('id', existing.id),
+          supabase.from('favorites').delete().match({ user_id: user.id, favorite_id: targetUserId }),
+        ])
         if (deleteError) {
           console.error('[api/spark] un-spark failed:', deleteError.message)
           return NextResponse.json({ error: 'Could not remove your Spark.' }, { status: 500 })
@@ -99,50 +103,47 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Could not send your Spark. Please try again.' }, { status: 500 })
     }
 
-    const mutual = reverseSpark
+    // The Spark is saved: answer now. The notice and the push to the recipient (a title lookup, an insert and
+    // a push-service call, about a second or more) run after the response, so the button never waits on them.
+    // They use the service role: the session client's cookies belong to this request.
+    const mutual = Boolean(reverseSpark)
     const senderName = senderProfile?.username || 'Someone'
-    const title = await titleForRecipient(
-      createServiceClient(process.env.NEXT_PUBLIC_SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!, { auth: { persistSession: false } }),
-      targetUserId,
-      mutual ? 'match' : 'spark',
-      senderProfile?.username
-    )
-
-    if (mutual) {
-      // It's a match - notify the recipient with match framing
-      await supabase.from('notifications').insert({
-        user_id: targetUserId,
-        actor_id: user.id,
-        type: 'match',
-        title,
-        description: `You and ${senderName} sparked each other. Say hi.`,
-        link_url: '/chat/' + user.id,
-      })
-      await sendPushToUser({
-        userId: targetUserId,
-        type: 'match',
-        actorId: user.id,
-        body: title,
-        url: '/chat/' + user.id,
-      }).catch((e) => console.error('[Push] spark match error:', e))
-    } else {
-      // Regular spark - actor-aware copy
-      await supabase.from('notifications').insert({
-        user_id: targetUserId,
-        actor_id: user.id,
-        type: 'favorite',
-        title,
-        description: senderName + ' sparked your profile.',
-        link_url: '/favorites',
-      })
-      await sendPushToUser({
-        userId: targetUserId,
-        type: 'spark',
-        actorId: user.id,
-        body: title,
-        url: '/profile/' + user.id,
-      }).catch((e) => console.error('[Push] spark regular error:', e))
-    }
+    after(async () => {
+      try {
+        const title = await titleForRecipient(service, targetUserId, mutual ? 'match' : 'spark', senderProfile?.username)
+        const { error: noticeError } = await service.from('notifications').insert(
+          mutual
+            ? {
+                // It's a match: match framing for the recipient
+                user_id: targetUserId,
+                actor_id: user.id,
+                type: 'match',
+                title,
+                description: `You and ${senderName} sparked each other. Say hi.`,
+                link_url: '/chat/' + user.id,
+              }
+            : {
+                // Regular spark: actor-aware copy
+                user_id: targetUserId,
+                actor_id: user.id,
+                type: 'favorite',
+                title,
+                description: senderName + ' sparked your profile.',
+                link_url: '/favorites',
+              }
+        )
+        if (noticeError) console.error('[api/spark] notification insert failed:', noticeError.message)
+        await sendPushToUser({
+          userId: targetUserId,
+          type: mutual ? 'match' : 'spark',
+          actorId: user.id,
+          body: title,
+          url: mutual ? '/chat/' + user.id : '/profile/' + user.id,
+        })
+      } catch (e) {
+        console.error('[api/spark] notify after response failed:', e)
+      }
+    })
 
     return NextResponse.json({ success: true, sparked: true, is_mutual: !!mutual, mutual: !!mutual })
   } catch (err) {

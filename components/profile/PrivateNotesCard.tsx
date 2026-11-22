@@ -115,9 +115,14 @@ export function PrivateNotesCard({ targetId }: { targetId: string }) {
     // eslint-disable-next-line react-hooks/exhaustive-deps -- persist only reads refs and targetId
   }, [targetId]);
 
-  // Tapping the collapsed row opens the note and puts the cursor in it.
+  // Tapping the collapsed row opens the note and puts the cursor in it. A note that opens by itself (one is
+  // already saved) must never take focus: on a phone that raised the keyboard and scrolled the page down to it.
+  const focusOnOpen = useRef(false);
   useEffect(() => {
-    if (open) textRef.current?.focus();
+    if (open && focusOnOpen.current) {
+      focusOnOpen.current = false;
+      textRef.current?.focus();
+    }
   }, [open]);
 
   if (!ready) return null; // signed out, or your own profile
@@ -127,7 +132,10 @@ export function PrivateNotesCard({ targetId }: { targetId: string }) {
       <section className="border-b border-gray-100 py-4">
         <button
           type="button"
-          onClick={() => setOpen(true)}
+          onClick={() => {
+            focusOnOpen.current = true; // only this explicit tap may focus the textarea
+            setOpen(true);
+          }}
           aria-label="Add a private note. Only you can see this."
           className="flex w-full items-center gap-1.5 text-left text-xs font-semibold text-[#726E97]"
         >

@@ -39,6 +39,44 @@ export function getLocalCardActions(): Record<string, ActionType> {
   return actions;
 }
 
+const SPARK_OVERRIDES_KEY = 'ail_spark_overrides';
+/** A confirmed Spark change outranks a cached Discover feed for this long; after that the server feed decides. */
+const SPARK_OVERRIDE_TTL_MS = 30 * 60 * 1000;
+
+/**
+ * The profile page's Spark button calls this once the server has confirmed a change, so /discover,
+ * which may repaint from a cached feed on the way back, shows the same heart. Keeps the local "liked"
+ * list and a short-lived per-member override (read by withSparkOverrides).
+ */
+export function recordSparkState(targetId: string, sparked: boolean): void {
+  if (typeof window === 'undefined') return;
+  const likes = getStoredIds(STORAGE_KEY_LIKES).filter((id) => id !== targetId);
+  setStoredIds(STORAGE_KEY_LIKES, sparked ? [...likes, targetId] : likes);
+  try {
+    const raw = JSON.parse(sessionStorage.getItem(SPARK_OVERRIDES_KEY) || '{}') as Record<string, { sparked: boolean; at: number }>;
+    raw[targetId] = { sparked, at: Date.now() };
+    sessionStorage.setItem(SPARK_OVERRIDES_KEY, JSON.stringify(raw));
+  } catch {
+    // sessionStorage unavailable: the next server feed carries the truth
+  }
+}
+
+/** A feed with the member's recent confirmed Spark changes applied (a cached feed can predate them). */
+export function withSparkOverrides<T extends { id: string; hasSparked?: boolean }>(feed: T[]): T[] {
+  if (typeof window === 'undefined' || feed.length === 0) return feed;
+  let overrides: Record<string, { sparked: boolean; at: number }>;
+  try {
+    overrides = JSON.parse(sessionStorage.getItem(SPARK_OVERRIDES_KEY) || '{}');
+  } catch {
+    return feed;
+  }
+  const now = Date.now();
+  return feed.map((p) => {
+    const o = overrides[p.id];
+    return o && now - o.at < SPARK_OVERRIDE_TTL_MS && Boolean(p.hasSparked) !== o.sparked ? { ...p, hasSparked: o.sparked } : p;
+  });
+}
+
 export async function persistCardAction(
   supabase: SupabaseClient,
   targetId: string,

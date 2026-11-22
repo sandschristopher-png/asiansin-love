@@ -8,7 +8,9 @@ import VerifiedBadge from '@/components/VerifiedBadge';
 import { useLocale } from '@/components/i18n/LocaleProvider';
 import { haptic } from '@/lib/haptics';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useLayoutEffect, useRef } from 'react';
+import { PublicProfileSkeleton } from '@/components/skeletons/Skeletons';
+import { recordSparkState } from '@/lib/interactions';
 import { createPortal } from 'react-dom';
 import { useParams, useRouter } from 'next/navigation';
 import {
@@ -47,6 +49,14 @@ import { formatHeight, lifestyleOption, readHeightCm, readLifestyle } from '@/li
 import { LifestyleBadges } from '@/components/profile/LifestyleFields';
 import { BackButton } from '@/components/BackButton';
 import { publicName } from '@/lib/publicName';
+
+/**
+ * The Spark / Message bar: flush to the bottom edge of the app column, fully opaque, with the phone's
+ * safe area inside it, so nothing from the profile can show underneath or around the buttons.
+ * (Portaled to <body>, so it is centred to the same 480px column the app uses.)
+ */
+const DOCK =
+  'fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-[480px] z-[90] bg-white border-t border-[#D0CDE1] px-3.5 pt-2.5 pb-[calc(0.625rem+env(safe-area-inset-bottom,0px))]';
 
 /** Loaded on first open (keeps the report sheet out of the page bundle). */
 const ReportModal = dynamic(() => import('@/components/ReportModal').then((m) => m.ReportModal), { ssr: false });
@@ -90,6 +100,10 @@ export default function PublicProfilePage() {
 
   const [isSparked, setIsSparked] = useState(false);
   const sparkBusyRef = useRef(false);
+  /** Mirrors sparkBusyRef for rendering: the button dims and reports aria-busy while a request is on its way. */
+  const [sparkBusy, setSparkBusy] = useState(false);
+  const toastTimer = useRef<number | undefined>(undefined);
+  useEffect(() => () => window.clearTimeout(toastTimer.current), []);
   const [showMenu, setShowMenu] = useState(false);
   // Native share sheet on phones, share drawer on desktop; the sheet outlives the menu.
   const { share, shareSheet } = useShare();
@@ -113,41 +127,36 @@ export default function PublicProfilePage() {
   };
 
   useEffect(() => {
+    let cancelled = false;
     async function loadData() {
       if (!targetUserId) return;
       setLoading(true);
 
       try {
-        const { data: { user: currentUser } } = await supabase.auth.getUser();
+        // The signed-in id comes from the local session (no network round trip); every query below is
+        // protected by row-level security, not by this id. Everything the first paint needs then loads in
+        // ONE parallel round trip (it used to be four in a row, which is most of the wait on the skeleton).
+        const { data: { session } } = await supabase.auth.getSession();
+        const currentUser = session?.user ?? null;
+        if (cancelled) return;
         setViewerId(currentUser?.id ?? null);
 
-        if (currentUser) {
-          const { data: viewerData } = await supabase
-            .from('profiles')
-            .select('interests, languages')
-            .eq('id', currentUser.id)
-            .maybeSingle();
+        const [{ data: profileData }, viewerRes, sparkRes] = await Promise.all([
+          supabase.from('profiles').select('*').eq('id', targetUserId).maybeSingle(),
+          currentUser
+            ? supabase.from('profiles').select('interests, languages').eq('id', currentUser.id).maybeSingle()
+            : Promise.resolve({ data: null }),
+          currentUser
+            ? supabase.from('sparks').select('id').eq('sender_id', currentUser.id).eq('receiver_id', targetUserId).maybeSingle()
+            : Promise.resolve({ data: null }),
+        ]);
+        if (cancelled) return;
 
-          if (Array.isArray(viewerData?.interests)) {
-            setViewerInterests(viewerData.interests);
-          }
-          setViewerLanguages(readLanguages(viewerData?.languages));
-
-          const { data: existingSpark } = await supabase
-            .from('sparks')
-            .select('id')
-            .eq('sender_id', currentUser.id)
-            .eq('receiver_id', targetUserId)
-            .maybeSingle();
-
-          setIsSparked(Boolean(existingSpark));
-        }
-
-        const { data: profileData } = await supabase
-          .from('profiles')
-          .select('*')
-          .eq('id', targetUserId)
-          .maybeSingle();
+        const viewerData = viewerRes.data as DbRow | null;
+        if (Array.isArray(viewerData?.interests)) setViewerInterests(viewerData.interests);
+        setViewerLanguages(readLanguages(viewerData?.languages));
+        // A change the member just made is not undone by a read that raced it.
+        if (!sparkBusyRef.current) setIsSparked(Boolean(sparkRes.data));
 
         if (profileData) {
           setProfile(profileData);
@@ -160,40 +169,54 @@ export default function PublicProfilePage() {
             }).catch(() => {});
           }
         }
-
-        try {
-          const { data: hlData } = await supabase
-            .from('user_highlights')
-            .select('tag_id, highlight_story, interest_tags(id, name, label, icon)')
-            .eq('user_id', targetUserId);
-
-          if (Array.isArray(hlData) && hlData.length > 0) {
-            setHighlights(
-              hlData.map((h: DbRow) => ({
-                tag_id: h.tag_id,
-                label: h.interest_tags?.label || h.interest_tags?.name || 'Highlight',
-                // Stored tag icons may be emoji: the UI renders a Lucide icon from the label instead.
-                icon: '',
-                story: h.highlight_story || '',
-              }))
-            );
-          }
-        } catch {
-          // Optional table
-        }
       } catch (err) {
         console.error('Error loading public profile:', err);
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
+      }
+
+      // Highlights are below the fold: they fill in after the profile is on screen instead of holding it back.
+      try {
+        const { data: hlData } = await supabase
+          .from('user_highlights')
+          .select('tag_id, highlight_story, interest_tags(id, name, label, icon)')
+          .eq('user_id', targetUserId);
+
+        if (!cancelled && Array.isArray(hlData) && hlData.length > 0) {
+          setHighlights(
+            hlData.map((h: DbRow) => ({
+              tag_id: h.tag_id,
+              label: h.interest_tags?.label || h.interest_tags?.name || 'Highlight',
+              // Stored tag icons may be emoji: the UI renders a Lucide icon from the label instead.
+              icon: '',
+              story: h.highlight_story || '',
+            }))
+          );
+        }
+      } catch {
+        // Optional table
       }
     }
 
     loadData();
+    return () => {
+      cancelled = true;
+    };
+  }, [targetUserId]);
+
+  // A profile always opens at its top: the app's scrolling column outlives the route and would otherwise
+  // carry the previous page's position (or a restored one) into this one. Runs before paint.
+  useLayoutEffect(() => {
+    document.querySelector('main')?.parentElement?.scrollTo({ top: 0, left: 0 });
+    window.scrollTo(0, 0);
   }, [targetUserId]);
 
   const handleToggleSpark = async () => {
-    if (sparkBusyRef.current) return; // one request at a time; the heart itself never waits
+    // One request at a time: a tap while the last one is still on its way is ignored (the button shows
+    // it is busy), so two taps can never send competing Spark / un-Spark requests that finish out of order.
+    if (sparkBusyRef.current) return;
     sparkBusyRef.current = true;
+    setSparkBusy(true);
     const before = isSparked;
     if (!before) haptic.spark(); // synchronous, before any await
     setIsSparked(!before); // optimistic: the heart and label flip on this frame
@@ -219,8 +242,10 @@ export default function PublicProfilePage() {
         return;
       }
 
+      // The server's answer is the truth: the heart, the toast and /discover all follow it.
       const sparked = Boolean(data.sparked);
       setIsSparked(sparked);
+      recordSparkState(targetUserId, sparked); // /discover repaints from a cached feed on the way back
 
       // Invalidate sparks cache so /favorites stays in sync
       if (typeof window !== 'undefined') {
@@ -247,24 +272,19 @@ export default function PublicProfilePage() {
       triggerToast('Network error toggling spark.');
     } finally {
       sparkBusyRef.current = false;
+      setSparkBusy(false);
     }
   };
 
   const triggerToast = (msg: string) => {
+    // One toast at a time: an older toast's timer must not hide a newer message early.
+    window.clearTimeout(toastTimer.current);
     setToastMsg(msg);
-    setTimeout(() => setToastMsg(null), 3000);
+    toastTimer.current = window.setTimeout(() => setToastMsg(null), 3000);
   };
 
-  if (loading) {
-    return (
-      <div className="w-full px-3.5 pt-3.5 space-y-3.5 bg-white" aria-busy="true" aria-label="Loading profile">
-        <div className="aspect-[4/5] w-full rounded-3xl ail-shimmer" />
-        <div className="h-24 rounded-3xl ail-shimmer" />
-        <div className="h-16 rounded-3xl ail-shimmer" />
-        <div className="h-28 rounded-3xl ail-shimmer" />
-      </div>
-    );
-  }
+  // Same shape as the route's loading screen (app/profile/[id]/loading.tsx), so nothing moves between them.
+  if (loading) return <PublicProfileSkeleton />;
 
   if (!profile) {
     return (
@@ -358,7 +378,7 @@ export default function PublicProfilePage() {
     ? createPortal(
         isOwnProfile ? (
           // Your own profile: no Spark or Message (they would point at yourself), one way to your editor instead.
-          <aside className="fixed bottom-3.5 left-1/2 -translate-x-1/2 w-[calc(100%-1.75rem)] max-w-[390px] z-[90] bg-white/95 border border-[#D0CDE1] shadow-[0_12px_36px_rgba(82, 78, 117,0.18),0_2px_8px_rgba(0,0,0,0.04)] rounded-full p-1.5">
+          <aside className={DOCK}>
             <Link
               href="/profile"
               className="flex h-11 w-full items-center justify-center gap-1.5 rounded-full bg-[#726E97] px-4 text-xs font-medium text-white shadow-md shadow-[#726E97]/25 transition hover:bg-[#524E75] active:scale-98"
@@ -368,12 +388,15 @@ export default function PublicProfilePage() {
             </Link>
           </aside>
         ) : (
-        <aside className="fixed bottom-3.5 left-1/2 -translate-x-1/2 w-[calc(100%-1.75rem)] max-w-[390px] z-[90] bg-white/95 border border-[#D0CDE1] shadow-[0_12px_36px_rgba(82, 78, 117,0.18),0_2px_8px_rgba(0,0,0,0.04)] rounded-full p-1.5">
+        <aside className={DOCK}>
           <div className="grid grid-cols-2 gap-2">
             <button
               type="button"
               onClick={handleToggleSpark}
-              className={`flex h-11 w-full items-center justify-center gap-1.5 rounded-full border text-xs font-medium transition active:scale-95 cursor-pointer ${
+              aria-busy={sparkBusy}
+              aria-pressed={isSparked}
+              // Not `disabled`: a tap during a request is ignored by the handler, and the dimmed button says why.
+              className={`flex h-11 w-full items-center justify-center gap-1.5 rounded-full border text-xs font-medium transition active:scale-95 cursor-pointer ${sparkBusy ? 'opacity-70' : ''} ${
                 isSparked
                   ? 'border-[#726E97]/30 bg-[#EAE9F2]/60 text-[#726E97]'
                   : 'border-[#D0CDE1] bg-white text-[#413B5E] hover:bg-[#EAE9F2]/70'
