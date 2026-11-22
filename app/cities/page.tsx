@@ -1,9 +1,10 @@
 import { CityFooterLinks } from '@/components/CityFooterLinks';
 import { PublicOnly } from '@/components/cities/MemberAware';
+import { ChevronRight } from 'lucide-react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { BrandLogo } from '@/components/BrandLogo';
-import { PUBLISHED_CITIES, cityHref, type City } from '@/lib/cities';
+import { PUBLISHED_CITIES, cityHref } from '@/lib/cities';
 import { SITE_URL } from '@/lib/seo/cityData';
 
 const TITLE = 'Dating Cities in Asia | Meet in Asia';
@@ -27,7 +28,17 @@ export const metadata: Metadata = {
   twitter: { card: 'summary_large_image', title: TITLE, description: DESCRIPTION, images: ['/Landing-Woman.png'] },
 };
 
-const REGIONS: City['region'][] = ['Southeast Asia', 'East Asia'];
+/** Published cities grouped by country (Southeast Asia first), each country in the order its first city is listed. */
+const COUNTRIES = (() => {
+  const regionRank = (r: string) => (r === 'Southeast Asia' ? 0 : 1);
+  const byCountry = new Map<string, { country: string; rank: number; cities: typeof PUBLISHED_CITIES }>();
+  for (const c of PUBLISHED_CITIES) {
+    const group = byCountry.get(c.country) ?? { country: c.country, rank: regionRank(c.region), cities: [] };
+    group.cities = [...group.cities, c];
+    byCountry.set(c.country, group);
+  }
+  return [...byCountry.values()].sort((a, b) => a.rank - b.rank);
+})();
 
 export default function CitiesIndexPage() {
   return (
@@ -63,33 +74,36 @@ export default function CitiesIndexPage() {
           </p>
         </section>
 
-        {REGIONS.map((region) => {
-          const cities = PUBLISHED_CITIES.filter((c) => c.region === region);
-          if (cities.length === 0) return null;
-          return (
-            <section key={region} className="py-6 border-t border-[#D0CDE1]/60" aria-labelledby={`region-${region.replace(/\s+/g, '-').toLowerCase()}`}>
-              <h2 id={`region-${region.replace(/\s+/g, '-').toLowerCase()}`} className="text-base font-semibold tracking-tight">
-                {region}
-              </h2>
-              <ul className="mt-3 grid grid-cols-1 sm:grid-cols-2 gap-3">
-                {cities.map((c) => (
-                  <li key={c.slug}>
-                    <Link
-                      href={cityHref(c.slug)}
-                      className="block rounded-2xl border border-[#D0CDE1]/60 bg-white p-4 shadow-sm hover:border-[#726E97]/40 transition-colors"
-                    >
-                      <span className="block text-sm font-semibold text-[#413B5E]">{c.name}</span>
-                      <span className="mt-0.5 block text-xs text-slate-600">{c.country}</span>
-                      <span className="mt-2 block text-xs leading-relaxed text-[#413B5E]/75">{c.heroTagline}</span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </section>
-          );
-        })}
+        <div className="space-y-8">
+          {COUNTRIES.map(({ country, cities }) => {
+            const id = `country-${country.replace(/s+/g, '-').toLowerCase()}`;
+            return (
+              <section key={country} aria-labelledby={id}>
+                <h2 id={id} className="text-xs font-semibold uppercase tracking-wider text-slate-600">
+                  {country}
+                </h2>
+                <ul className="mt-2 space-y-1">
+                  {cities.map((c) => (
+                    <li key={c.slug}>
+                      <Link
+                        href={cityHref(c.slug)}
+                        className="-mx-3 flex items-center justify-between gap-3 rounded-2xl px-3 py-2.5 text-[#413B5E] transition-colors hover:bg-[#EAE9F2]/50"
+                      >
+                        <span className="min-w-0">
+                          <span className="block text-sm font-semibold">{c.name}</span>
+                          <span className="block truncate text-xs text-slate-600">{c.heroTagline}</span>
+                        </span>
+                        <ChevronRight className="h-4 w-4 shrink-0 text-[#726E97]" aria-hidden />
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            );
+          })}
+        </div>
 
-        <footer className="pt-8 border-t border-[#D0CDE1]/60 text-center">
+        <footer className="pt-10 text-center">
           <CityFooterLinks />
         </footer>
       </div>
