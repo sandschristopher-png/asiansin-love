@@ -111,7 +111,11 @@
     "resetToast": "Penapis ditetapkan semula",
     "noMembers": "Belum ada ahli berhampiran lokasi anda.",
     "adjustFilters": "Laraskan Penapis",
-    "resetFilters": "Tetap Semula Penapis"
+    "resetFilters": "Tetap Semula Penapis",
+    "visitingPill": "Melawat {hub}",
+    "visitingEmpty": "Belum ada pengembara yang melawat {hub}",
+    "showEveryone": "Tunjukkan semua",
+    "clearVisiting": "Buang penapis lawatan"
   },
   "travel": {
     "inNow": "Sedang di {city}",

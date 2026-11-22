@@ -111,7 +111,11 @@
     "resetToast": "筛选已重置",
     "noMembers": "您所在位置附近暂无会员。",
     "adjustFilters": "调整筛选",
-    "resetFilters": "重置筛选"
+    "resetFilters": "重置筛选",
+    "visitingPill": "即将到访{hub}",
+    "visitingEmpty": "还没有旅行者即将到访{hub}",
+    "showEveryone": "显示所有人",
+    "clearVisiting": "清除到访筛选"
   },
   "travel": {
     "inNow": "现在在{city}",

@@ -111,7 +111,11 @@
     "resetToast": "Na-reset ang mga filter",
     "noMembers": "Wala pang miyembro malapit sa iyong lokasyon.",
     "adjustFilters": "Ayusin ang mga Filter",
-    "resetFilters": "I-reset ang mga Filter"
+    "resetFilters": "I-reset ang mga Filter",
+    "visitingPill": "Bumibisita sa {hub}",
+    "visitingEmpty": "Wala pang bumibisita sa {hub}",
+    "showEveryone": "Ipakita lahat",
+    "clearVisiting": "Alisin ang filter ng bumibisita"
   },
   "travel": {
     "inNow": "Nasa {city} ngayon",

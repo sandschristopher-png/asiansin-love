@@ -111,7 +111,11 @@
     "resetToast": "Filtros restablecidos",
     "noMembers": "Aún no hay miembros cerca de tu ubicación.",
     "adjustFilters": "Ajustar filtros",
-    "resetFilters": "Restablecer filtros"
+    "resetFilters": "Restablecer filtros",
+    "visitingPill": "Visitando {hub}",
+    "visitingEmpty": "Aún no hay viajeros que visiten {hub}",
+    "showEveryone": "Mostrar a todos",
+    "clearVisiting": "Quitar el filtro de visitas"
   },
   "travel": {
     "inNow": "En {city} ahora",

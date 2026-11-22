@@ -93,7 +93,7 @@ const sections: LegalSection[] = [
         <p>
           On certain public-facing pages of Meet in Asia (such as our landing page, city guides and travel resources), and on
           the Travel Hub (/travel), we use automated affiliate technology provided by Travelpayouts (Drive AI) to display
-          relevant travel and transportation offers, and to turn the flight, hotel and eSIM links on those pages into partner
+          relevant travel and transportation offers, and to turn the flight, activity and eSIM links on those pages into partner
           links.
         </p>
         <ul>

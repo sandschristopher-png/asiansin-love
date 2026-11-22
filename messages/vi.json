@@ -111,7 +111,11 @@
     "resetToast": "Đã đặt lại bộ lọc",
     "noMembers": "Chưa có thành viên nào gần vị trí của bạn.",
     "adjustFilters": "Điều chỉnh bộ lọc",
-    "resetFilters": "Đặt lại bộ lọc"
+    "resetFilters": "Đặt lại bộ lọc",
+    "visitingPill": "Sắp đến {hub}",
+    "visitingEmpty": "Chưa có du khách nào sắp đến {hub}",
+    "showEveryone": "Hiện tất cả",
+    "clearVisiting": "Xóa bộ lọc ghé thăm"
   },
   "travel": {
     "inNow": "Đang ở {city}",

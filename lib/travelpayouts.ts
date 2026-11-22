@@ -9,7 +9,7 @@ import { ROOT_HUB_SLUGS } from '@/lib/cities';
  *   /cities, /cities/[slug] the city directory and city pages
  *   /manila, /cebu, ...     the root city hubs
  *   /safety                 the safety guide
- *   /travel                 the Travel Hub, signed in or not, so its Flights, Hotels and eSIMs links convert for everyone
+ *   /travel                 the Travel Hub, signed in or not, so its Flights, Activities & transfers and eSIMs links convert for everyone
  *
  * components/TravelpayoutsDrive.tsx is the only user of this rule.
  */

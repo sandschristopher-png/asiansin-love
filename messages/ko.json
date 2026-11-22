@@ -111,7 +111,11 @@
     "resetToast": "필터를 초기화했습니다",
     "noMembers": "아직 내 위치 근처에 회원이 없습니다.",
     "adjustFilters": "필터 조정",
-    "resetFilters": "필터 초기화"
+    "resetFilters": "필터 초기화",
+    "visitingPill": "{hub} 방문 예정",
+    "visitingEmpty": "아직 {hub}을(를) 방문하는 여행자가 없어요",
+    "showEveryone": "모두 보기",
+    "clearVisiting": "방문 필터 해제"
   },
   "travel": {
     "inNow": "지금 {city}에 있음",

@@ -43,13 +43,16 @@ export default function CitiesIndexPage() {
       </PublicOnly>
 
       <div className="max-w-xl mx-auto px-4 pb-[calc(3rem+env(safe-area-inset-bottom))]">
-        <nav aria-label="Breadcrumb" className="pt-6 text-xs text-slate-600">
-          <ol className="flex items-center gap-1.5">
-            <li><Link href="/" className="hover:text-[#726E97]">Meet in Asia</Link></li>
-            <li aria-hidden>/</li>
-            <li aria-current="page" className="text-[#413B5E] font-medium">Cities</li>
-          </ol>
-        </nav>
+        {/* The signed-in header is already right above: the breadcrumb is for visitors. */}
+        <PublicOnly>
+          <nav aria-label="Breadcrumb" className="pt-6 text-xs text-slate-600">
+            <ol className="flex items-center gap-1.5">
+              <li><Link href="/" className="hover:text-[#726E97]">Meet in Asia</Link></li>
+              <li aria-hidden>/</li>
+              <li aria-current="page" className="text-[#413B5E] font-medium">Cities</li>
+            </ol>
+          </nav>
+        </PublicOnly>
 
         <section className="pt-8 pb-6">
           <h1 className="text-3xl font-semibold tracking-tight leading-[1.15]">

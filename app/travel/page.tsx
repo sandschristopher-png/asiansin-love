@@ -2,7 +2,6 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import { ArrowRight, ArrowUpRight } from 'lucide-react';
 import { TravelHubMember } from '@/components/travel/TravelHubMember';
-import { EXPLORE_HUBS, visitingHref } from '@/lib/travelHub';
 import { SITE_URL } from '@/lib/seo/cityData';
 
 const TITLE = 'Travel Hub | Meet in Asia';
@@ -26,17 +25,18 @@ export const metadata: Metadata = {
   twitter: { card: 'summary_large_image', title: TITLE, description: DESCRIPTION, images: ['/Landing-Woman.png'] },
 };
 
-// The hubs above already name the cities; the individual guides live one tap away on /cities.
+// The individual city guides live one tap away on /cities.
 const GUIDES = [
   { label: 'City guides', note: 'Manila, Cebu, Bangkok, and more', href: '/cities' },
   { label: 'Safety blueprint', note: 'Meeting safely', href: '/safety' },
 ] as const;
 
-// Plain outbound links, no tracking ids of our own: Travelpayouts Drive converts them for signed-out visitors
-// (components/TravelpayoutsDrive.tsx), and signed-in members just get the ordinary link.
+// Plain outbound links, no tracking ids of our own: Travelpayouts Drive converts them into partner links for everyone,
+// signed in or not (components/TravelpayoutsDrive.tsx, lib/travelpayouts.ts). Each destination must be an approved
+// Drive program.
 const ESSENTIALS = [
   { label: 'Flights', note: 'Compare fares', href: 'https://www.aviasales.com/' },
-  { label: 'Hotels', note: 'Find a place to stay', href: 'https://www.booking.com/' },
+  { label: 'Activities & transfers', note: 'Tours, airport rides, and passes', href: 'https://www.klook.com' },
   { label: 'eSIMs', note: 'Data from landing', href: 'https://www.airalo.com/' },
 ] as const;
 
@@ -51,24 +51,6 @@ export default function TravelPage() {
 
       {/* Signed-in members only: who is arriving in their hub, or their own trips. Renders nothing signed out. */}
       <TravelHubMember />
-
-      <section aria-labelledby="travel-hubs" className="space-y-3">
-        <h2 id="travel-hubs" className={sectionTitle}>
-          Explore hubs
-        </h2>
-        <ul className="flex flex-wrap gap-2">
-          {EXPLORE_HUBS.map((h) => (
-            <li key={h.hub}>
-              <Link
-                href={visitingHref(h.hub)}
-                className="inline-flex h-9 items-center whitespace-nowrap rounded-full border border-[#D0CDE1] bg-white px-4 text-sm font-medium text-[#726E97] transition-colors hover:bg-[#EAE9F2]/50 active:scale-95"
-              >
-                {h.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
-      </section>
 
       <section aria-labelledby="travel-guides" className="space-y-3">
         <h2 id="travel-guides" className={sectionTitle}>

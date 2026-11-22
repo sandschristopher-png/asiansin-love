@@ -222,14 +222,14 @@ export default function SafetyBlueprintPage() {
     <div className="min-h-screen w-full bg-white text-[#413B5E] font-sans antialiased selection:bg-[#726E97]/15 selection:text-[#413B5E]">
 
       {/* Main Content */}
-      <main className="max-w-4xl mx-auto px-6 py-12 md:py-16 space-y-14">
+      <main className="max-w-4xl mx-auto px-6 pt-12 md:pt-16 pb-32 space-y-14">
         {/* Title Area */}
         <div className="space-y-4 text-center md:text-left">
           <h1 className="font-brand text-3xl sm:text-4xl md:text-5xl font-semibold tracking-tight text-[#413B5E] leading-tight">
             International Dating &amp; Safety Protocol
           </h1>
           <p className="text-base sm:text-lg text-slate-600 leading-relaxed max-w-2xl">
-            A comprehensive, practical guide to building genuine cross-border relationships while safeguarding your personal safety, legal standing, and finances. Every member benefits from gesture verification, GPS location checks, and messaging that stays on-platform until you meet in person. Tap any topic to read the full breakdown.
+            A comprehensive, practical guide to building genuine cross-border relationships while safeguarding your personal safety, legal standing, and finances. Every member can complete our liveness verification check, a quick head-turn selfie that a person reviews, and benefits from GPS location checks and messaging that stays on-platform until you meet in person. Tap any topic to read the full breakdown.
           </p>
         </div>
 

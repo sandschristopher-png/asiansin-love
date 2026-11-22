@@ -111,7 +111,11 @@
     "resetToast": "フィルターをリセットしました",
     "noMembers": "お住まいの近くにはまだ会員がいません。",
     "adjustFilters": "フィルターを調整",
-    "resetFilters": "フィルターをリセット"
+    "resetFilters": "フィルターをリセット",
+    "visitingPill": "{hub}を訪問予定",
+    "visitingEmpty": "{hub}を訪問予定の旅行者はまだいません",
+    "showEveryone": "全員を表示",
+    "clearVisiting": "訪問予定フィルターを解除"
   },
   "travel": {
     "inNow": "{city}に滞在中",

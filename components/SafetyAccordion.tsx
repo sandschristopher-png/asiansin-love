@@ -18,7 +18,7 @@ export default function SafetyAccordion({ title, body }: { title: string; body: 
       </button>
       <div className={`grid transition-[grid-template-rows] duration-300 ease-[cubic-bezier(0.16,1,0.3,1)] ${open ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
         <div className="overflow-hidden">
-          <p className="px-4 pb-4 pt-1 text-[12px] text-slate-600 leading-relaxed border-t border-[#726E97]/10 mt-1">
+          <p className="px-4 pb-4 pt-2 text-[12px] text-slate-600 leading-relaxed">
             {body}
           </p>
         </div>

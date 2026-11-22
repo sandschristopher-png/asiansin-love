@@ -3,7 +3,6 @@ import { loadLib } from './lib/load-ts.mjs';
 
 const hub = await loadLib('travelHub');
 const trips = await loadLib('tripHubs');
-const metro = await loadLib('metroAreas');
 let passed = 0;
 const failures = [];
 const ok = (name, cond) => (cond ? passed++ : failures.push(name));
@@ -22,13 +21,7 @@ ok('Asian cities that are not hubs are not hubs', hub.viewerHub('Tokyo') === nul
 ok('no city, null and junk are not hubs', hub.viewerHub('') === null && hub.viewerHub(null) === null && hub.viewerHub(undefined) === null && hub.viewerHub('Unknown') === null);
 ok('every hub result can go straight into the Discover filter', ['Taguig', 'Mandaue', 'Takhmao', 'Phuket', 'Petaling Jaya'].every((c) => trips.hubCountry(hub.viewerHub(c)) !== null));
 
-// --- the "Explore hubs" row ------------------------------------------------------------------------------------
-ok('six hubs in the row', hub.EXPLORE_HUBS.length === 6);
-ok('every pill filters by a curated trip hub', hub.EXPLORE_HUBS.every((h) => trips.hubCountry(h.hub) !== null));
-ok('every pill has a guide page', hub.EXPLORE_HUBS.every((h) => h.guide.startsWith('/')));
-ok('the row names the six launch hubs', ['Manila', 'Cebu', 'Bangkok', 'Phnom Penh', 'Kuala Lumpur', 'Ho Chi Minh City'].every((l) => hub.EXPLORE_HUBS.some((h) => h.label === l)));
-ok('Cebu filters by Cebu City, the trip hub name', hub.EXPLORE_HUBS.find((h) => h.label === 'Cebu')?.hub === 'Cebu City');
-ok('every hub in the row is a metro hub or its own place', hub.EXPLORE_HUBS.every((h) => metro.metroHubOf(h.hub) === h.hub));
+// --- the Discover link --------------------------------------------------------------------------------------------
 ok('the Discover link encodes the hub', hub.visitingHref('Ho Chi Minh City') === '/discover?visiting=Ho%20Chi%20Minh%20City' && hub.visitingHref('Manila') === '/discover?visiting=Manila');
 
 // --- Discover's hub filter: Plus, plus the Travel Hub's own-hub preview for everyone ---------------------------

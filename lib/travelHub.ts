@@ -6,16 +6,6 @@ import { hubCountry } from '@/lib/tripHubs';
  * dependency-free lib modules, so server code, client components and node test scripts can all use it.
  */
 
-/** The hubs in the "Explore hubs" row: what the pill says, the trip hub it filters Discover by, and its city page. */
-export const EXPLORE_HUBS = [
-  { label: 'Manila', hub: 'Manila', guide: '/manila' },
-  { label: 'Cebu', hub: 'Cebu City', guide: '/cebu' },
-  { label: 'Bangkok', hub: 'Bangkok', guide: '/bangkok' },
-  { label: 'Phnom Penh', hub: 'Phnom Penh', guide: '/phnom-penh' },
-  { label: 'Kuala Lumpur', hub: 'Kuala Lumpur', guide: '/kuala-lumpur' },
-  { label: 'Ho Chi Minh City', hub: 'Ho Chi Minh City', guide: '/cities/ho-chi-minh-city' },
-] as const;
-
 /** Discover filtered to the members who have an upcoming trip to `hub`. */
 export function visitingHref(hub: string): string {
   return `/discover?visiting=${encodeURIComponent(hub)}`;

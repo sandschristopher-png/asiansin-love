@@ -24,10 +24,9 @@ const PUBLIC_ROUTES = [
   '/signup',
   '/forgot-password',
   '/reset-password',
-  // Legal & safety reading pages: no floating nav over the text.
+  // Legal reading pages: no floating nav over the text. (/safety keeps the tab bar for signed-in members.)
   '/terms',
   '/privacy',
-  '/safety',
   '/standards',
   '/pricing'
 ];

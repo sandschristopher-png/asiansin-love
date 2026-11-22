@@ -111,7 +111,11 @@
     "resetToast": "Filter diatur ulang",
     "noMembers": "Belum ada anggota di dekat lokasimu.",
     "adjustFilters": "Ubah Filter",
-    "resetFilters": "Atur Ulang Filter"
+    "resetFilters": "Atur Ulang Filter",
+    "visitingPill": "Berkunjung ke {hub}",
+    "visitingEmpty": "Belum ada pelancong yang berkunjung ke {hub}",
+    "showEveryone": "Tampilkan semua",
+    "clearVisiting": "Hapus filter kunjungan"
   },
   "travel": {
     "inNow": "Sedang di {city}",

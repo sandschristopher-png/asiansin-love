@@ -111,7 +111,11 @@
     "resetToast": "รีเซ็ตตัวกรองแล้ว",
     "noMembers": "ยังไม่มีสมาชิกใกล้ตำแหน่งของคุณ",
     "adjustFilters": "ปรับตัวกรอง",
-    "resetFilters": "รีเซ็ตตัวกรอง"
+    "resetFilters": "รีเซ็ตตัวกรอง",
+    "visitingPill": "กำลังไปเยือน {hub}",
+    "visitingEmpty": "ยังไม่มีนักเดินทางที่จะไปเยือน {hub}",
+    "showEveryone": "แสดงทุกคน",
+    "clearVisiting": "ล้างตัวกรองผู้มาเยือน"
   },
   "travel": {
     "inNow": "อยู่ที่ {city} ตอนนี้",

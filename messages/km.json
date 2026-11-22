@@ -111,7 +111,11 @@
     "resetToast": "បានកំណត់តម្រងឡើងវិញ",
     "noMembers": "មិនទាន់មានសមាជិកនៅជិតទីតាំងរបស់អ្នកទេ។",
     "adjustFilters": "កែតម្រង",
-    "resetFilters": "កំណត់តម្រងឡើងវិញ"
+    "resetFilters": "កំណត់តម្រងឡើងវិញ",
+    "visitingPill": "មកលេង {hub}",
+    "visitingEmpty": "មិនទាន់មានអ្នកទៅលេង {hub} នៅឡើយទេ",
+    "showEveryone": "បង្ហាញទាំងអស់",
+    "clearVisiting": "លុបតម្រងអ្នកមកលេង"
   },
   "travel": {
     "inNow": "ឥឡូវនៅ {city}",

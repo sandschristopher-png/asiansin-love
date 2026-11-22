@@ -726,6 +726,14 @@ function DiscoverContent() {
 
   const hasActiveFilters = activeFiltersCount > 0;
 
+  /** Clears just the "visiting" hub filter (the pill's x and "Show everyone"), and ?visiting= from the address. */
+  const clearVisiting = () => {
+    setSelectedHub('');
+    setDraftHub('');
+    flashSkeleton();
+    if (new URLSearchParams(window.location.search).has('visiting')) router.replace('/discover', { scroll: false });
+  };
+
   /** Defaults everywhere (sheet drafts + applied filters), fresh feed, soft toast. */
   const resetAndApplyFilters = () => {
     resetFilters();
@@ -1021,10 +1029,25 @@ function DiscoverContent() {
             )}
         </section>
 
+        {/* The visiting-hub filter is easy to miss (a dot on the filter button): show it, and let it be cleared in one tap. */}
+        {selectedHub && (
+          <div className="pt-3">
+            <button
+              type="button"
+              onClick={clearVisiting}
+              aria-label={t('discover.clearVisiting')}
+              className="inline-flex h-8 max-w-full items-center gap-1.5 rounded-full border border-[#726E97]/25 bg-[#EAE9F2] pl-3.5 pr-2.5 text-xs font-semibold text-[#524E75] transition-colors hover:border-[#726E97]/50 active:scale-95"
+            >
+              <span className="truncate">{t('discover.visitingPill', { hub: selectedHub })}</span>
+              <XIcon className="h-3.5 w-3.5 shrink-0" aria-hidden />
+            </button>
+          </div>
+        )}
+
         {/* 2-Column Feed Grid */}
         {/* Uniform 2-column directory grid (same rhythm and 3:4 cards as Sparks) */}
         {/* min-h holds the page height while tabs swap results; content-start stops rows stretching to fill it. */}
-        <div className="grid grid-cols-2 content-start gap-3 sm:gap-4 w-full min-h-[60vh] animate-fade-in-up pt-3">
+        <div className={`grid grid-cols-2 content-start gap-3 sm:gap-4 w-full animate-fade-in-up pt-3 ${!isLoading && !categorySwitching && filteredProfiles.length === 0 ? '' : 'min-h-[60vh]'}`}>
           {isLoading || categorySwitching ? (
             <FeedSkeleton count={isLoading ? 8 : Math.min(8, Math.max(2, visibleProfiles.length))} />
           ) : (
@@ -1116,7 +1139,23 @@ function DiscoverContent() {
           </div>
         )}
 
-        {!isLoading && !categorySwitching && filteredProfiles.length === 0 && discoveryMode === 'near_me' && (
+        {!isLoading && !categorySwitching && filteredProfiles.length === 0 && selectedHub && (
+          <div className="mt-4 p-8 rounded-2xl bg-white border border-[#D0CDE1] text-center space-y-3 shadow-xs">
+            <div className="w-12 h-12 mx-auto rounded-2xl bg-[#EAE9F2]/60 flex items-center justify-center text-[#726E97]">
+              <MapPin className="w-5 h-5" aria-hidden />
+            </div>
+            <p className="font-brand text-base font-semibold text-[#413B5E]">{t('discover.visitingEmpty', { hub: selectedHub })}</p>
+            <button
+              type="button"
+              onClick={clearVisiting}
+              className="inline-flex items-center gap-1.5 px-5 py-2.5 text-xs font-medium rounded-full bg-[#726E97] text-white hover:bg-[#413B5E] transition shadow-sm cursor-pointer"
+            >
+              {t('discover.showEveryone')}
+            </button>
+          </div>
+        )}
+
+        {!isLoading && !categorySwitching && filteredProfiles.length === 0 && !selectedHub && discoveryMode === 'near_me' && (
           <div className="mt-4 p-8 rounded-2xl bg-white border border-[#D0CDE1] text-center space-y-3 shadow-xs">
             <div className="w-12 h-12 mx-auto rounded-2xl bg-[#EAE9F2]/60 flex items-center justify-center text-[#726E97]">
               <MapPin className="w-5 h-5" aria-hidden />
@@ -1177,7 +1216,7 @@ function DiscoverContent() {
           </div>
         )}
 
-        {!isLoading && !categorySwitching && filteredProfiles.length === 0 && !isDefaultFeed && discoveryMode !== 'near_me' && (
+        {!isLoading && !categorySwitching && filteredProfiles.length === 0 && !selectedHub && !isDefaultFeed && discoveryMode !== 'near_me' && (
           <div className="mt-4 p-8 rounded-2xl bg-white border border-[#D0CDE1] text-center space-y-3 shadow-xs">
             <div className="w-12 h-12 mx-auto rounded-2xl bg-[#EAE9F2]/60 flex items-center justify-center text-[#726E97]">
               <Search className="w-5 h-5" />

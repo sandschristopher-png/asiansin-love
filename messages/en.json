@@ -111,7 +111,11 @@
     "resetToast": "Filters reset to default",
     "noMembers": "No members near your location yet.",
     "adjustFilters": "Adjust Filters",
-    "resetFilters": "Reset Filters"
+    "resetFilters": "Reset Filters",
+    "visitingPill": "Visiting {hub}",
+    "visitingEmpty": "No travelers visiting {hub} yet",
+    "showEveryone": "Show everyone",
+    "clearVisiting": "Clear the visiting filter"
   },
   "travel": {
     "inNow": "In {city} now",
