@@ -630,7 +630,6 @@
     "addTrip": "添加行程",
     "seeAll": "查看全部",
     "nobody": "目前还没有人计划前往{hub}。",
-    "plusPreview": "Plus 会员可以看到谁即将抵达{hub}。",
     "intentLabel": "旅行意向（可选）",
     "intent": {
       "openToDates": "愿意约会",

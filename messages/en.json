@@ -630,7 +630,6 @@
     "addTrip": "Add a trip",
     "seeAll": "See all",
     "nobody": "No one has a trip to {hub} yet.",
-    "plusPreview": "Plus members can see who is arriving in {hub}.",
     "intentLabel": "Travel intent (optional)",
     "intent": {
       "openToDates": "Open to dates",

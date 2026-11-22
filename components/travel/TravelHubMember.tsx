@@ -61,14 +61,15 @@ export function TravelHubMember() {
     };
   }, []);
 
-  // Who is arriving in the member's hub. Only Plus members can see other members' trips (the same rule as the
-  // Discover filter, which ignores ?visiting= for free members), so free members are not asked.
+  // Who is arriving in the member's own hub: every signed-in member sees this row (preview=travel lets the server
+  // apply the hub filter to a free member's own hub only). Whose trips appear is unchanged: only Plus members' trips
+  // are public, and adding a trip stays Plus. "See all" opens Discover's hub filter, which is Plus.
   const hub = me?.hub ?? null;
-  const canSee = Boolean(me?.isPlus);
+  const isPlus = Boolean(me?.isPlus);
   useEffect(() => {
-    if (!hub || !canSee) return;
+    if (!hub) return;
     let cancelled = false;
-    fetch(`/api/discover?visiting=${encodeURIComponent(hub)}`)
+    fetch(`/api/discover?visiting=${encodeURIComponent(hub)}&preview=travel`)
       .then((r) => (r.ok ? r.json() : null))
       .then((d) => {
         if (cancelled) return;
@@ -90,7 +91,7 @@ export function TravelHubMember() {
     return () => {
       cancelled = true;
     };
-  }, [hub, canSee]);
+  }, [hub]);
 
   const refreshTrips = useCallback(() => setTripsKey((n) => n + 1), []);
 
@@ -117,7 +118,7 @@ export function TravelHubMember() {
             {t('travelHub.visitingSoon', { hub })}
           </h2>
           <div className="flex shrink-0 items-center gap-3">
-            {canSee && arrivals && arrivals.length > 0 && (
+            {isPlus && arrivals && arrivals.length > 0 && (
               <Link href={visitingHref(hub)} className="text-xs font-medium text-[#726E97] transition-colors hover:text-[#524E75]">
                 {t('travelHub.seeAll')}
               </Link>
@@ -129,14 +130,7 @@ export function TravelHubMember() {
           </div>
         </div>
 
-        {!canSee ? (
-          <p className="text-xs leading-relaxed text-slate-600">
-            {t('travelHub.plusPreview', { hub })}{' '}
-            <Link href="/plus?feature=trips" className="font-medium text-[#726E97] underline underline-offset-4 hover:text-[#524E75]">
-              {t('travel.planner.upgrade')}
-            </Link>
-          </p>
-        ) : arrivals === null ? (
+        {arrivals === null ? (
           <div aria-hidden className="flex gap-3 overflow-hidden">
             {[0, 1, 2].map((i) => (
               <div key={i} className="aspect-[3/4] w-28 shrink-0 rounded-2xl bg-[#F6F4FB] ail-shimmer" />

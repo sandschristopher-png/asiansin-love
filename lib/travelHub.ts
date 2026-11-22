@@ -35,6 +35,22 @@ export function viewerHub(city: string | null | undefined): string | null {
   return hubCountry(name) ? name : null;
 }
 
+/**
+ * Whether Discover's "visiting" hub filter applies for this viewer. It is a Plus feature, with one exception: the
+ * Travel Hub's preview row (`preview=travel`) shows any member the arrivals in their own hub, and nothing else, so a
+ * free member cannot use it to browse another hub. Server and tests share this rule.
+ */
+export function visitingFilterAllowed(opts: {
+  hub: string;
+  viewerIsPlus: boolean;
+  preview: string | null | undefined;
+  viewerCity: string | null | undefined;
+}): boolean {
+  if (!opts.hub || hubCountry(opts.hub) === null) return false;
+  if (opts.viewerIsPlus) return true;
+  return opts.preview === 'travel' && viewerHub(opts.viewerCity) === opts.hub;
+}
+
 /** What a member can say about their travel, stored in profiles.travel_intent (20261201_travel_intent_pills.sql). */
 export const TRAVEL_INTENTS = ['open_to_dates', 'local_guide', 'relocating'] as const;
 export type TravelIntent = (typeof TRAVEL_INTENTS)[number];

@@ -31,6 +31,17 @@ ok('Cebu filters by Cebu City, the trip hub name', hub.EXPLORE_HUBS.find((h) => 
 ok('every hub in the row is a metro hub or its own place', hub.EXPLORE_HUBS.every((h) => metro.metroHubOf(h.hub) === h.hub));
 ok('the Discover link encodes the hub', hub.visitingHref('Ho Chi Minh City') === '/discover?visiting=Ho%20Chi%20Minh%20City' && hub.visitingHref('Manila') === '/discover?visiting=Manila');
 
+// --- Discover's hub filter: Plus, plus the Travel Hub's own-hub preview for everyone ---------------------------
+const allow = (o) => hub.visitingFilterAllowed({ hub: 'Manila', viewerIsPlus: false, preview: null, viewerCity: null, ...o });
+ok('Plus members always get the hub filter', allow({ viewerIsPlus: true }) === true && allow({ viewerIsPlus: true, hub: 'Bangkok' }) === true);
+ok('a free member does not get the filter on its own', allow({ viewerCity: 'Manila' }) === false);
+ok('the preview shows a free member their own hub', allow({ preview: 'travel', viewerCity: 'Manila' }) === true);
+ok('a metro municipality is its hub (Taguig sees Manila)', allow({ preview: 'travel', viewerCity: 'Taguig' }) === true);
+ok('a free member cannot preview another hub', allow({ preview: 'travel', viewerCity: 'Bangkok' }) === false && allow({ preview: 'travel', viewerCity: 'Cebu City' }) === false);
+ok('outside Asia, or with no city, the preview is refused', allow({ preview: 'travel', viewerCity: 'Las Vegas' }) === false && allow({ preview: 'travel', viewerCity: null }) === false);
+ok('another preview value does not count', allow({ preview: 'discover', viewerCity: 'Manila' }) === false && allow({ preview: '', viewerCity: 'Manila' }) === false);
+ok('an unknown or empty hub is never allowed', allow({ hub: '', viewerIsPlus: true }) === false && allow({ hub: 'Tokyo', viewerIsPlus: true }) === false && allow({ hub: "Manila'--", viewerIsPlus: true }) === false);
+
 // --- travel intents --------------------------------------------------------------------------------------------
 ok('three intents', hub.TRAVEL_INTENTS.length === 3);
 ok('the intents are the values the migration allows', ['open_to_dates', 'local_guide', 'relocating'].every((v) => hub.TRAVEL_INTENTS.includes(v)));

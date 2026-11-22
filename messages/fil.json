@@ -630,7 +630,6 @@
     "addTrip": "Magdagdag ng biyahe",
     "seeAll": "Tingnan lahat",
     "nobody": "Wala pang may biyahe papuntang {hub}.",
-    "plusPreview": "Makikita ng mga Plus member kung sino ang darating sa {hub}.",
     "intentLabel": "Layunin sa pagbiyahe (opsyonal)",
     "intent": {
       "openToDates": "Bukas sa pakikipag-date",

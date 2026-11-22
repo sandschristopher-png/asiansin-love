@@ -630,7 +630,6 @@
     "addTrip": "Thêm chuyến đi",
     "seeAll": "Xem tất cả",
     "nobody": "Chưa ai có chuyến đi đến {hub}.",
-    "plusPreview": "Thành viên Plus có thể xem ai sắp đến {hub}.",
     "intentLabel": "Mục đích chuyến đi (tùy chọn)",
     "intent": {
       "openToDates": "Sẵn sàng hẹn hò",

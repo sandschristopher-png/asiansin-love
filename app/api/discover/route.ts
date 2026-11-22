@@ -9,7 +9,8 @@ import { countryMatches } from '@/lib/constants/countries';
 import { readLanguages } from '@/lib/constants/languages';
 import { LIFESTYLE_KEYS, readHeightCm, readLifestyle } from '@/lib/lifestyle';
 import { sharedTraits } from '@/lib/rhythm';
-import { hubCountry, type TripBrief } from '@/lib/tripHubs';
+import { type TripBrief } from '@/lib/tripHubs';
+import { visitingFilterAllowed } from '@/lib/travelHub';
 import { cityInHub, hubPlaceNames } from '@/lib/metroAreas';
 import { isPlusProfile } from '@/lib/plus';
 import {
@@ -197,8 +198,16 @@ export async function GET(req: Request) {
     const englishFilter = readFilterList(params.get('english'), ENGLISH_LEVEL_OPTIONS);
     // "Visiting hub": only a curated hub city is accepted (the raw value never reaches a filter string).
     const visitingParam = (params.get('visiting') || '').trim();
-    // The hub filter is a Plus feature like the country filter: a free member's ?visiting= is ignored.
-    const visitingHub = viewerIsPlus && hubCountry(visitingParam) ? visitingParam : '';
+    // The hub filter is a Plus feature like the country filter: a free member's ?visiting= is ignored, except for the
+    // Travel Hub's preview row (preview=travel), which shows anyone the arrivals in their own hub (lib/travelHub).
+    const visitingHub = visitingFilterAllowed({
+      hub: visitingParam,
+      viewerIsPlus,
+      preview: params.get('preview'),
+      viewerCity: viewerProfile?.city,
+    })
+      ? visitingParam
+      : '';
     // Trips that have not ended (one day of slack for time zones; the card decides "now" vs "soon").
     const tripsFrom = new Date(Date.now() - 86_400_000).toISOString().slice(0, 10);
 

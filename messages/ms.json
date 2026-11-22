@@ -630,7 +630,6 @@
     "addTrip": "Tambah perjalanan",
     "seeAll": "Lihat semua",
     "nobody": "Belum ada sesiapa yang merancang ke {hub}.",
-    "plusPreview": "Ahli Plus boleh melihat siapa yang akan tiba di {hub}.",
     "intentLabel": "Tujuan perjalanan (pilihan)",
     "intent": {
       "openToDates": "Terbuka untuk temu janji",

@@ -630,7 +630,6 @@
     "addTrip": "Añadir un viaje",
     "seeAll": "Ver todo",
     "nobody": "Nadie tiene un viaje a {hub} todavía.",
-    "plusPreview": "Los miembros Plus pueden ver quién llega a {hub}.",
     "intentLabel": "Intención de viaje (opcional)",
     "intent": {
       "openToDates": "Abierto a citas",

@@ -630,7 +630,6 @@
     "addTrip": "旅行を追加",
     "seeAll": "すべて見る",
     "nobody": "{hub}への旅行予定の人はまだいません。",
-    "plusPreview": "Plusメンバーは{hub}にもうすぐ来る人を見られます。",
     "intentLabel": "旅の目的（任意）",
     "intent": {
       "openToDates": "デートOK",

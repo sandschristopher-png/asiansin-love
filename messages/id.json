@@ -630,7 +630,6 @@
     "addTrip": "Tambah perjalanan",
     "seeAll": "Lihat semua",
     "nobody": "Belum ada yang berencana ke {hub}.",
-    "plusPreview": "Anggota Plus dapat melihat siapa yang akan tiba di {hub}.",
     "intentLabel": "Tujuan perjalanan (opsional)",
     "intent": {
       "openToDates": "Terbuka untuk kencan",
