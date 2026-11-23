@@ -238,7 +238,6 @@ export async function GET(req: Request) {
           verified: a.is_verified === true || a.verification_status === 'verified',
           founding: a.is_day_one === true,
           localGuide: normalizeIntent(a.relationship_intent) === 'local_guide',
-          intent: normalizeIntent(a.relationship_intent) || null,
         },
       };
     });

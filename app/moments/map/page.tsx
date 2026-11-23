@@ -4,8 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useActionToast } from '@/components/ActionToast';
 import { useLocale } from '@/components/i18n/LocaleProvider';
-import { intentLabel } from '@/lib/intents';
-import { FALLBACK_CENTER, FALLBACK_ZOOM, pickMapStart, pinVisible, shouldFitPins, type MapStart } from '@/lib/momentMap';
+import { FALLBACK_CENTER, FALLBACK_ZOOM, pickCamera, pickMapStart, type MapStart } from '@/lib/momentMap';
 import { supabase } from '@/lib/supabase/client';
 import type { MomentItem } from '@/lib/moments';
 import type { Pin } from '@/components/moments/MapCanvas';
@@ -18,16 +17,12 @@ const MapCanvas = dynamic(() => import('@/components/moments/MapCanvas'), {
 const SpotSheet = dynamic(() => import('@/components/moments/SpotSheet'), { ssr: false });
 const SparkMomentSheet = dynamic(() => import('@/components/moments/SparkMomentSheet').then((m) => m.SparkMomentSheet), { ssr: false });
 
-const PILL = 'inline-flex h-8 shrink-0 items-center rounded-full border px-3.5 text-xs font-medium transition-colors active:scale-95';
-const PILL_ON = 'border-[#726E97] bg-[#726E97] text-white hover:border-[#524E75] hover:bg-[#524E75]';
-const PILL_OFF = 'border-[#D0CDE1] bg-white text-[#413B5E] hover:border-[#524E75] hover:text-[#524E75]';
-
 /**
  * The spot map, full bleed: the map fills the whole screen behind the header and the floating tab bar (inside the 480px
- * app column), with the filter strip anchored under the header and the empty card, the attribution and the spot sheet all
- * clear of the bar. It opens on the centre of the member's profile city at city zoom, never on their coordinates or device
+ * app column) with nothing drawn over it but the pins; the empty card, the attribution and the spot sheet all sit clear of
+ * the bar. It opens on the centre of the member's profile city at city zoom, never on their coordinates or device
  * position (so it can never open on a street near home). If no pin is within 100 km of that city, or the city is unknown, it
- * frames the active pins instead; Manila is the last resort when there are no pins anywhere. The page fetches once, aborts if
+ * frames the active pins instead; with no pins anywhere it shows Southeast Asia as a whole. The page fetches once, aborts if
  * you leave, and the map cleans itself up on unmount.
  */
 export default function MomentsMapPage() {
@@ -35,8 +30,6 @@ export default function MomentsMapPage() {
   const showToast = useActionToast();
   const [items, setItems] = useState<MomentItem[] | null>(null);
   const [failed, setFailed] = useState(false);
-  // The strip is All, Local Guide Picks or Friends: one at a time.
-  const [filter, setFilter] = useState<'all' | 'picks' | 'friends'>('all');
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [sparkTarget, setSparkTarget] = useState<MomentItem | null>(null);
   /** undefined while the member's city is being read, null when it is unknown. */
@@ -81,17 +74,12 @@ export default function MomentsMapPage() {
   }, []);
 
   const pinned = useMemo(() => (items ?? []).filter((m) => m.place && m.placeLat != null && m.placeLng != null), [items]);
-  const visible = useMemo(
-    () => pinned.filter((m) => pinVisible(m.author, { intent: filter === 'friends' ? 'friends' : null, picks: filter === 'picks' })),
-    [pinned, filter]
-  );
   const pins: Pin[] = useMemo(
-    () => visible.map((m) => ({ id: m.id, lat: m.placeLat as number, lng: m.placeLng as number, label: m.place as string, avatarUrl: m.author.avatarUrl })),
-    [visible]
+    () => pinned.map((m) => ({ id: m.id, lat: m.placeLat as number, lng: m.placeLng as number, label: m.place as string, avatarUrl: m.author.avatarUrl })),
+    [pinned]
   );
-  // Decided on every pinned Moment (not the filtered ones), so a filter never re-aims the camera on its own.
-  const frame = useMemo(() => shouldFitPins(start ?? null, pinned.map((m) => ({ lat: m.placeLat as number, lng: m.placeLng as number }))), [start, pinned]);
-  const selected = visible.find((m) => m.id === selectedId) ?? null;
+  const camera = useMemo(() => pickCamera(start ?? null, pins), [start, pins]);
+  const selected = pinned.find((m) => m.id === selectedId) ?? null;
   const loading = items === null && !failed;
   // The map is created once, so it waits until it knows where to open: the city and the pins have both answered.
   const ready = start !== undefined && !loading;
@@ -104,24 +92,11 @@ export default function MomentsMapPage() {
           pins={pins}
           selectedId={selectedId}
           onPinClick={setSelectedId}
-          center={start?.center ?? FALLBACK_CENTER}
-          zoom={start?.zoom ?? FALLBACK_ZOOM}
-          fit={frame}
+          center={camera.fit ? (start?.center ?? FALLBACK_CENTER) : camera.center}
+          zoom={camera.fit ? (start?.zoom ?? FALLBACK_ZOOM) : camera.zoom}
+          fit={camera.fit}
         />
       )}
-
-      {/* The filter strip is anchored just under the header: one scrolling row of flat pills (no blur, no shadow). */}
-      <div className="no-scrollbar absolute inset-x-0 top-[64px] z-10 flex flex-nowrap items-center gap-2 overflow-x-auto whitespace-nowrap px-4">
-        <button type="button" aria-pressed={filter === 'all'} onClick={() => setFilter('all')} className={`${PILL} ${filter === 'all' ? PILL_ON : PILL_OFF}`}>
-          {t('moments.mapAll')}
-        </button>
-        <button type="button" aria-pressed={filter === 'picks'} onClick={() => setFilter('picks')} className={`${PILL} ${filter === 'picks' ? PILL_ON : PILL_OFF}`}>
-          {t('moments.mapPicks')}
-        </button>
-        <button type="button" aria-pressed={filter === 'friends'} onClick={() => setFilter('friends')} className={`${PILL} ${filter === 'friends' ? PILL_ON : PILL_OFF}`}>
-          {intentLabel('friends')}
-        </button>
-      </div>
 
       {(failed || (!loading && pins.length === 0)) && (
         <div className="pointer-events-none absolute inset-x-4 bottom-[calc(96px+env(safe-area-inset-bottom,0px))] z-10 rounded-2xl border border-[#D0CDE1] bg-white px-4 py-4 text-center">

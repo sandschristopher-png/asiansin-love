@@ -29,7 +29,7 @@ ok('the new values are kept as they are', intents.INTENT_OPTIONS.every((o) => n(
 ok('unknown or empty is no intent', n('') === '' && n(null) === '' && n('something else') === '');
 ok('labels', intents.intentLabel('local_guide') === 'Local Guide' && intents.intentLabel('marriage') === 'Serious Relationship' && intents.intentLabel('nope') === '');
 
-// The spot map: pins are rounded, kept near their city, and filtered by the five intents and the Local guide picks switch
+// The spot map: pins are rounded and kept near their city
 ok('a pin is rounded to 3 decimals (about 110 m)', map.roundPin(10.315712) === 10.316 && map.roundPin(123.88549) === 123.885);
 const near = map.pinToStore('Cebu', 'Tops Lookout', 10.3457, 123.8854);
 ok('a pin near its city is stored, rounded', near !== null && near.lat === 10.346 && near.lng === 123.885);
@@ -39,12 +39,6 @@ ok('a pin without a place name is dropped', map.pinToStore('Cebu', '   ', 10.315
 ok('bad coordinates are dropped', map.pinToStore('Cebu', 'x', NaN, 123.8) === null && map.pinToStore('Cebu', 'x', 91, 123.8) === null && map.pinToStore('Cebu', 'x', 10.3, 'a') === null && map.pinToStore('Cebu', 'x', 0, 0) === null);
 ok('a city outside the list has no pin', map.pinToStore('Atlantis', 'x', 10.3, 123.8) === null);
 ok('isLatLng', map.isLatLng(10, 120) === true && map.isLatLng(NaN, 1) === false && map.isLatLng('10', 1) === false);
-const guide = { intent: 'local_guide', localGuide: true };
-const dater = { intent: 'casual_dating', localGuide: false };
-ok('no filter shows everyone', map.pinVisible(guide, { intent: null, picks: false }) && map.pinVisible(dater, { intent: null, picks: false }));
-ok('an intent pill narrows to that intent', map.pinVisible(dater, { intent: 'casual_dating', picks: false }) && !map.pinVisible(guide, { intent: 'casual_dating', picks: false }));
-ok('Local guide picks shows guides only', map.pinVisible(guide, { intent: null, picks: true }) && !map.pinVisible(dater, { intent: null, picks: true }));
-ok('picks and a different intent together show nothing', !map.pinVisible(guide, { intent: 'friends', picks: true }));
 ok('the map style is a keyless light style by default', typeof map.MAP_STYLE_URL === 'string' && map.MAP_STYLE_URL.includes('positron'));
 
 // Where the map opens: the member's city at city zoom (never coordinates or the device), the pins when none are near, Manila last
@@ -57,12 +51,18 @@ ok('the start is never closer than city zoom', ['Manila', 'Bangkok', 'Phnom Penh
 const manila = st({ city: 'Manila' });
 const nearManila = [{ lat: 14.55, lng: 121.02 }];
 const inCebu = [{ lat: 10.3157, lng: 123.8854 }];
-ok('no pins anywhere: nothing to frame (Manila is the fallback)', map.shouldFitPins(manila, []) === false && map.shouldFitPins(null, []) === false);
+ok('no pins anywhere: nothing to frame', map.shouldFitPins(manila, []) === false && map.shouldFitPins(null, []) === false);
 ok('pins near the member: stay on the city', map.shouldFitPins(manila, nearManila) === false && map.shouldFitPins(manila, [...nearManila, ...inCebu]) === false);
 ok('pins only elsewhere: frame the pins', map.shouldFitPins(manila, inCebu) === true);
 ok('no known city but pins exist: frame the pins', map.shouldFitPins(null, inCebu) === true);
 ok('a pin just inside and just outside 100 km', map.shouldFitPins(manila, [{ lat: 15.45, lng: 120.9842 }]) === false && map.shouldFitPins(manila, [{ lat: 15.6, lng: 120.9842 }]) === true);
-ok('framing and fallback constants', map.FIT_PADDING === 48 && map.FIT_MAX_ZOOM === 14 && map.NEARBY_KM === 100 && map.START_ZOOM === 12 && map.FALLBACK_CENTER[0] === 14.5995 && map.FALLBACK_CENTER[1] === 120.9842 && map.FALLBACK_ZOOM === 12);
+ok('framing constants', map.FIT_PADDING === 48 && map.FIT_MAX_ZOOM === 14 && map.NEARBY_KM === 100 && map.START_ZOOM === 12);
+ok('the empty-map fallback is Southeast Asia as a whole', map.FALLBACK_CENTER[0] === 12.5 && map.FALLBACK_CENTER[1] === 114.0 && map.FALLBACK_ZOOM === 4.2);
+const cam = map.pickCamera;
+ok('no pins anywhere: the Southeast Asia overview, even for a member with a known city', cam(manila, []).fit === false && cam(manila, []).zoom === 4.2 && cam(null, []).zoom === 4.2 && cam(manila, []).center[0] === 12.5);
+ok('pins near the member: their city at zoom 12', cam(manila, nearManila).fit === false && cam(manila, nearManila).zoom === 12 && cam(manila, nearManila).center[0] === 14.5995);
+ok('pins only elsewhere: frame them', cam(manila, inCebu).fit === true);
+ok('no known city but pins exist: frame them', cam(null, inCebu).fit === true);
 
 // The map palette: warm land, periwinkle water, sage parks, white roads with soft casings, dark slate labels
 function fakeMap(layers, refuse = []) {

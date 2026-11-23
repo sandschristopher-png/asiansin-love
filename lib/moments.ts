@@ -118,7 +118,5 @@ export interface MomentItem {
     founding: boolean;
     /** The author's "Looking for" is Local Guide: their tagged spots are recommendations. */
     localGuide?: boolean;
-    /** The author's "Looking for" (lib/intents), for the map's filter pills. */
-    intent?: string | null;
   };
 }

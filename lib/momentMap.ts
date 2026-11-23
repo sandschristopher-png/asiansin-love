@@ -1,7 +1,7 @@
 import { cityCenter, haversineKm, kmFromCity, matchSeaCity } from '@/lib/seaLocations';
 
 /**
- * Spot map rules: how a pin is validated and stored, which style the map uses, and how the filter pills narrow the pins.
+ * Spot map rules: how a pin is validated and stored, which style the map uses, and where it opens.
  * Kept free of React and maplibre so the server route and the tests can use it.
  */
 
@@ -40,19 +40,12 @@ export function pinToStore(city: string, place: string, lat: unknown, lng: unkno
   return { lat: roundPin(la), lng: roundPin(ln) };
 }
 
-/** The filter pills on the map: one "Looking for" value (or none), plus the Local guide picks switch. */
-export function pinVisible(
-  author: { intent?: string | null; localGuide?: boolean },
-  filters: { intent: string | null; picks: boolean }
-): boolean {
-  if (filters.picks && !author.localGuide) return false;
-  if (filters.intent && author.intent !== filters.intent) return false;
-  return true;
-}
-
-/** Manila: only when there is neither a member location nor a pin to open on. [latitude, longitude]. */
-export const FALLBACK_CENTER: readonly [number, number] = [14.5995, 120.9842];
-export const FALLBACK_ZOOM = 12;
+/**
+ * With no pinned Moment anywhere the map shows Southeast Asia as a whole, not the empty streets of one city. [latitude, longitude]
+ * (the same point as longitude 114.0, latitude 12.5).
+ */
+export const FALLBACK_CENTER: readonly [number, number] = [12.5, 114.0];
+export const FALLBACK_ZOOM = 4.2;
 
 export interface MapStart {
   center: readonly [number, number];
@@ -88,4 +81,19 @@ export function shouldFitPins(start: MapStart | null, pins: readonly { lat: numb
   if (!start) return true;
   const [clat, clng] = start.center;
   return !pins.some((p) => haversineKm(clat, clng, p.lat, p.lng) <= NEARBY_KM);
+}
+
+/** What the camera does: frame the pins, or look at a fixed centre and zoom. */
+export type Camera = { fit: true } | { fit: false; center: readonly [number, number]; zoom: number };
+
+/**
+ * The first view, in priority order:
+ *   1. No pinned Moment anywhere: the Southeast Asia overview.
+ *   2. The member's city is known and a pin is within NEARBY_KM of it: that city at city zoom.
+ *   3. Otherwise (pins only elsewhere, or no known city): frame the active pins.
+ */
+export function pickCamera(start: MapStart | null, pins: readonly { lat: number; lng: number }[]): Camera {
+  if (pins.length === 0) return { fit: false, center: FALLBACK_CENTER, zoom: FALLBACK_ZOOM };
+  if (start && !shouldFitPins(start, pins)) return { fit: false, center: start.center, zoom: start.zoom };
+  return { fit: true };
 }
