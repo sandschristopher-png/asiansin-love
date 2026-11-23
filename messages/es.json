@@ -376,7 +376,8 @@
       "legalPrivacy": "Privacidad",
       "legalSupport": "Soporte",
       "supportSla": "Respondemos a las solicitudes de soporte en un plazo de 24 a 48 horas hábiles.",
-      "descriptor": "Los cargos aparecerán en tu estado de cuenta a nombre de nuestro procesador de pagos autorizado."
+      "descriptor": "Los cargos aparecerán en tu estado de cuenta a nombre de nuestro procesador de pagos autorizado.",
+      "androidOnly": "Disponible en la app de Meet in Asia para Android"
     }
   },
   "messages": {

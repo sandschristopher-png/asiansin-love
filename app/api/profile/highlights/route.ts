@@ -10,6 +10,7 @@ import { createClient } from '@supabase/supabase-js';
 import { createClient as createSessionClient } from '@/lib/supabase/server';
 import { evaluateBioModeration } from '@/lib/moderation';
 import { PROFILE_BLOCK_MESSAGE } from '@/lib/moderation/profileModerator';
+import { enforceSolicitation } from '@/lib/moderation/solicitationEnforce';
 import { chargeProfileViolations, isBlocked, sanitizedNotice, screenText, type ScreenedText } from '@/lib/moderation/profilePenalty';
 
 export const runtime = 'nodejs';
@@ -54,6 +55,14 @@ export async function POST(req: Request) {
   // Stored stories, for the "newly introduced" comparison.
   const { data: existing } = await service.from('user_highlights').select('tag_id, highlight_story').eq('user_id', userId);
   const storedByTag = new Map((existing || []).map((r) => [String(r.tag_id), String(r.highlight_story || '')]));
+
+  // Three strikes for transactional, bill-paying and payment-rail wording in the stories (20261202); the 24-hour hold also
+  // locks this text editing.
+  const stories = items.map((i) => i.highlight_story).filter(Boolean);
+  if (stories.length) {
+    const strike = await enforceSolicitation(service, session, userId, stories);
+    if (strike) return NextResponse.json(strike.body, { status: strike.status });
+  }
 
   const screened: ScreenedText[] = [];
   const payload = [];

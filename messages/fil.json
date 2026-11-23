@@ -376,7 +376,8 @@
       "legalPrivacy": "Privacy",
       "legalSupport": "Suporta",
       "supportSla": "Sumasagot kami sa mga kahilingan sa suporta sa loob ng 24–48 oras ng negosyo.",
-      "descriptor": "Lalabas ang mga singil sa iyong billing statement sa ilalim ng aming awtorisadong payment processor."
+      "descriptor": "Lalabas ang mga singil sa iyong billing statement sa ilalim ng aming awtorisadong payment processor.",
+      "androidOnly": "Available sa Meet in Asia Android app"
     }
   },
   "messages": {

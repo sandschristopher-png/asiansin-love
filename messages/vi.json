@@ -376,7 +376,8 @@
       "legalPrivacy": "Quyền riêng tư",
       "legalSupport": "Hỗ trợ",
       "supportSla": "Chúng tôi phản hồi yêu cầu hỗ trợ trong vòng 24–48 giờ làm việc.",
-      "descriptor": "Khoản phí sẽ hiển thị trên sao kê của bạn dưới tên đơn vị xử lý thanh toán được ủy quyền của chúng tôi."
+      "descriptor": "Khoản phí sẽ hiển thị trên sao kê của bạn dưới tên đơn vị xử lý thanh toán được ủy quyền của chúng tôi.",
+      "androidOnly": "Có trong ứng dụng Meet in Asia dành cho Android"
     }
   },
   "messages": {

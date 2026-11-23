@@ -1,7 +1,7 @@
 'use client';
 
 import { IceFrame, IceNotice } from '@/components/ui/IceFrame';
-import { PLUS_CHECKOUT_ENABLED } from '@/lib/billing/plusCheckout';
+import { useIsNativeApp } from '@/lib/useNativeApp';
 import React, { useEffect, useState, useSyncExternalStore, Suspense } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
@@ -11,7 +11,6 @@ import { supabase } from '@/lib/supabase/client';
 import { isPlusProfile } from '@/lib/plus';
 import { PlusBadge } from '@/components/ui/PlusBadge';
 import { useLocale } from '@/components/i18n/LocaleProvider';
-import { useActionToast } from '@/components/ActionToast';
 import { SUPPORT_EMAIL } from '@/lib/support';
 import type { TKey } from '@/lib/i18n';
 import { getCachedSubscription, setCachedSubscription } from '@/lib/subscriptionStatus';
@@ -104,7 +103,6 @@ function PlusHubContent() {
   const searchParams = useSearchParams();
   const { t } = useLocale();
   const highlightRow = FEATURE_ROW[searchParams.get('feature') ?? ''] ?? null;
-  const showActionToast = useActionToast();
 
   // null until the profile read resolves (or the cached status from an earlier page in this tab):
   // the bottom bar shows a skeleton, never "Keep Free" to a Plus member.
@@ -162,16 +160,11 @@ function PlusHubContent() {
     return () => window.clearTimeout(timer);
   }, [highlightRow]);
 
-  /**
-   * Only reachable when NEXT_PUBLIC_PLUS_CHECKOUT_ENABLED=true (otherwise the button is the disabled "Coming soon" one).
-   * The CCBill checkout redirect goes here: it must pass the member's id as X-userId so the webhook can grant Plus.
-   * Until that link exists this says so instead of redirecting or erroring.
-   */
-  function handleSubscribe() {
-    showActionToast(t('plus.page.paymentsSoon'), 'info');
-  }
+  // Plus is bought only inside the Android app, through Google Play Billing (@capgo/native-purchases, not wired yet), so the
+  // website never shows a payment prompt: it says where to get Plus. In the app the buy button stays "Coming soon" until
+  // the Play products and server-side purchase verification exist.
+  const native = useIsNativeApp();
 
-  const plan = plusPlan(selectedPlan);
   const savePct = (savings?: string) => {
     const n = Number((savings || '').replace(/[^0-9]/g, ''));
     return n > 0 ? t('plus.page.savePct', { pct: n }) : null;
@@ -371,23 +364,15 @@ function PlusHubContent() {
           </p>
         ) : (
           <div className="space-y-2">
-            {!PLUS_CHECKOUT_ENABLED && <IceNotice>{t('plus.page.upgradesOpening')}</IceNotice>}
+            <IceNotice>{native ? t('plus.page.upgradesOpening') : t('plus.page.androidOnly')}</IceNotice>
             <div className="flex items-center gap-2.5">
               <Link
                 href="/discover"
-                className="h-12 px-6 rounded-full border border-[#D0CDE1] bg-white text-[#413B5E] hover:bg-[#EAE9F2]/30 text-sm font-medium transition-colors flex items-center justify-center shrink-0"
+                className={`h-12 px-6 rounded-full border border-[#D0CDE1] bg-white text-[#413B5E] hover:bg-[#EAE9F2]/30 text-sm font-medium transition-colors flex items-center justify-center ${native ? 'shrink-0' : 'w-full'}`}
               >
                 {t('plus.page.keepFree')}
               </Link>
-              {PLUS_CHECKOUT_ENABLED ? (
-                <button
-                  type="button"
-                  onClick={handleSubscribe}
-                  className="flex-1 min-w-0 h-12 px-6 rounded-full bg-[#726E97] hover:bg-[#524E75] text-white font-medium text-sm shadow-brand-glow transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
-                >
-                  {t('plus.upgrade')} · {plan.total}
-                </button>
-              ) : (
+              {native && (
                 <button
                   type="button"
                   disabled

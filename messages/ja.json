@@ -376,7 +376,8 @@
       "legalPrivacy": "プライバシー",
       "legalSupport": "サポート",
       "supportSla": "サポートへのお問い合わせには、営業時間内で24〜48時間以内にご返信します。",
-      "descriptor": "ご請求は、当社の認定決済代行会社の名義で明細書に表示されます。"
+      "descriptor": "ご請求は、当社の認定決済代行会社の名義で明細書に表示されます。",
+      "androidOnly": "Meet in Asia Androidアプリで利用できます"
     }
   },
   "messages": {

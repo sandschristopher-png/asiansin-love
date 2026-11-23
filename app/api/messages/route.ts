@@ -12,6 +12,7 @@ import { applyContactRevealMask, CONTACT_UNLOCK_TURNS } from '@/lib/safety';
 import { createClient as createSessionClient } from '@/lib/supabase/server';
 import { sendPushToUser } from '@/lib/pushSender';
 import { checkVelocity, reverificationBlocked, reverificationState } from '@/lib/verify/riskFlags';
+import { enforceSolicitation } from '@/lib/moderation/solicitationEnforce';
 
 const isUUID = (str: unknown) =>
   typeof str === 'string' &&
@@ -344,6 +345,11 @@ export async function POST(req: Request) {
       15,
       CONTACT_UNLOCK_TURNS
     );
+
+    // Three strikes for transactional, bill-paying and payment-rail wording (supabase/migrations/20261202): the message is
+    // refused and the strike recorded; a removed member cannot send at all. The 24-hour hold does not silence chat.
+    const strike = await enforceSolicitation(serviceClient, sessionClient, senderId, [content], { honorHold: false });
+    if (strike) return NextResponse.json(strike.body, { status: strike.status });
 
     const decision = decideMessageOutcome(content, substantiveCheck.isUnlocked);
     const applyPenalty = async () => {

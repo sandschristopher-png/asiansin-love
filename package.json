@@ -24,6 +24,8 @@
     "location:test": "node scripts/test-location.mjs",
     "travel:test": "node scripts/test-travel.mjs",
     "solicitation:test": "node scripts/test-solicitation.mjs",
+    "native:test": "node scripts/test-native-gates.mjs",
+    "test": "node scripts/run-all-tests.mjs",
     "place:test": "node scripts/test-moment-place.mjs",
     "cap:sync": "node scripts/ensure-cap-web.mjs && cap sync android",
     "cap:assets": "capacitor-assets generate --android"

@@ -376,7 +376,8 @@
       "legalPrivacy": "Privasi",
       "legalSupport": "Sokongan",
       "supportSla": "Kami membalas permintaan sokongan dalam masa 24–48 jam bekerja.",
-      "descriptor": "Caj akan dipaparkan pada penyata bil anda di bawah pemproses pembayaran sah kami."
+      "descriptor": "Caj akan dipaparkan pada penyata bil anda di bawah pemproses pembayaran sah kami.",
+      "androidOnly": "Tersedia dalam aplikasi Android Meet in Asia"
     }
   },
   "messages": {

@@ -376,7 +376,8 @@
       "legalPrivacy": "隐私",
       "legalSupport": "支持",
       "supportSla": "我们会在 24–48 个工作小时内回复支持请求。",
-      "descriptor": "扣款将以我们授权的支付处理商的名义显示在您的账单上。"
+      "descriptor": "扣款将以我们授权的支付处理商的名义显示在您的账单上。",
+      "androidOnly": "可在 Meet in Asia 安卓应用中使用"
     }
   },
   "messages": {

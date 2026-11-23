@@ -376,7 +376,8 @@
       "legalPrivacy": "Privasi",
       "legalSupport": "Dukungan",
       "supportSla": "Kami membalas permintaan dukungan dalam 24–48 jam kerja.",
-      "descriptor": "Tagihan akan muncul di laporan tagihanmu atas nama pemroses pembayaran resmi kami."
+      "descriptor": "Tagihan akan muncul di laporan tagihanmu atas nama pemroses pembayaran resmi kami.",
+      "androidOnly": "Tersedia di aplikasi Android Meet in Asia"
     }
   },
   "messages": {

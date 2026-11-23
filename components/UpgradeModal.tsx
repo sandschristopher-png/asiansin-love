@@ -2,12 +2,12 @@
 
 import Link from 'next/link';
 import { IceFrame, IceNotice } from '@/components/ui/IceFrame';
-import { PLUS_CHECKOUT_ENABLED } from '@/lib/billing/plusCheckout';
+import { useIsNativeApp } from '@/lib/useNativeApp';
 import React, { useState } from 'react';
 import { useLocale } from '@/components/i18n/LocaleProvider';
 import { AmbientAurora } from '@/components/ui/AmbientAurora';
 import { PlusBadge } from '@/components/ui/PlusBadge';
-import { X, Infinity, Compass, TrendingUp, ArrowRight, Zap } from 'lucide-react';
+import { X, Infinity, Compass, TrendingUp, Zap } from 'lucide-react';
 
 interface UpgradeModalProps {
   isOpen: boolean;
@@ -19,11 +19,11 @@ interface UpgradeModalProps {
 export default function UpgradeModal({
   isOpen,
   onClose,
-  onSelectPlan,
   triggerContext = 'general',
 }: UpgradeModalProps) {
   const { t } = useLocale();
-  const [notice, setNotice] = useState<string | null>(null);
+  // Web: "Available in the Meet in Asia Android app" (no payment prompt). App: the buy button waits for Google Play Billing.
+  const native = useIsNativeApp();
 
   // Hooks first: an early return above a hook breaks the rules of hooks.
   const [selectedTier, setSelectedTier] = useState<'6m' | '3m' | '1m'>('6m');
@@ -54,16 +54,6 @@ export default function UpgradeModal({
       default:
         return 'Designed for members seeking thoughtful, authentic connections.';
     }
-  };
-
-  const handleCheckout = (planId: string = '1m') => {
-    if (!PLUS_CHECKOUT_ENABLED) return; // the button is disabled ("Coming soon"); nothing to start
-    if (onSelectPlan) {
-      onSelectPlan(planId);
-      return;
-    }
-    // Checkout switch is on but no checkout link is wired yet: explain, never redirect or error.
-    setNotice(t('plus.page.paymentsSoon'));
   };
 
   return (
@@ -182,18 +172,8 @@ export default function UpgradeModal({
             </button>
           </div>
 
-          {/* Primary CTA Button: "Coming soon" until NEXT_PUBLIC_PLUS_CHECKOUT_ENABLED=true */}
-          {PLUS_CHECKOUT_ENABLED ? (
-            <button
-              onClick={() => handleCheckout(selectedTier)}
-              className="w-full py-3 rounded-2xl bg-[#726E97] hover:bg-[#524E75] active:bg-[#524E75] text-white font-medium text-xs tracking-wider uppercase shadow-md shadow-[#726E97]/20 transition active:scale-[0.99] flex items-center justify-center gap-2 cursor-pointer mb-2"
-            >
-              <span>
-                Upgrade to Plus • {selectedTier === '6m' ? '$47.99 / 6 mo' : '$14.99/mo'}
-              </span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </button>
-          ) : (
+          {/* No payment prompt on the website; the app's buy button waits for Google Play Billing ("Coming soon"). */}
+          {native ? (
             <>
               <button
                 type="button"
@@ -204,19 +184,15 @@ export default function UpgradeModal({
                 {t('plus.page.comingSoon')}
               </button>
               <IceNotice className="mb-1.5">{t('plus.page.upgradesOpening')}</IceNotice>
-              <p className="mb-2 text-center text-[11px] text-slate-600">
-                <Link href="/plus" className="font-semibold text-[#726E97] underline underline-offset-4">
-                  {t('plus.page.billingTitle')}
-                </Link>
-              </p>
             </>
+          ) : (
+            <IceNotice className="mb-1.5">{t('plus.page.androidOnly')}</IceNotice>
           )}
-
-          {notice && (
-            <p role="status" className="mb-2 rounded-xl bg-[#FAF9FC] border border-[#726E97]/25 px-3 py-2 text-[11px] font-medium leading-snug text-[#413B5E] text-center">
-              {notice}
-            </p>
-          )}
+          <p className="mb-2 text-center text-[11px] text-slate-600">
+            <Link href="/plus" className="font-semibold text-[#726E97] underline underline-offset-4">
+              {t('plus.page.billingTitle')}
+            </Link>
+          </p>
 
           {/* Secondary Dismiss */}
         <button

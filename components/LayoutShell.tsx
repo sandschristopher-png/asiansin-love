@@ -13,6 +13,7 @@ import { DesktopQrHandoff } from '@/components/DesktopQrHandoff';
 import { AppShell } from '@/components/layout/AppShell';
 import { CallProvider } from '@/components/calls/CallProvider';
 import { useMemberState } from '@/lib/useMemberState';
+import { NativeAds } from '@/components/NativeAds';
 
 /** Wraps the in-app frame in the call provider; marketing, auth and admin routes get no calling. */
 function CallShell({ enabled, children }: { enabled: boolean; children: React.ReactNode }) {
@@ -92,6 +93,8 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
         <HeartbeatProvider />
         {/* Messages, Sparks, mutual Sparks and visits: toasts + badges on every in-app route */}
         {!isMarketingOrAuth && <RealtimeNotifier />}
+        {/* The Android app's ad banner only: nothing in a browser, nothing for Plus members. */}
+        {!isMarketingOrAuth && !isAdmin && <NativeAds />}
         {/* One-time push permission prompt (after sign-in / onboarding, never on those pages) */}
         {!isMarketingOrAuth && !isAdmin && <PushPromptOnce />}
       </div>

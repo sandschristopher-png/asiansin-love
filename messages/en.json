@@ -376,7 +376,8 @@
       "legalPrivacy": "Privacy",
       "legalSupport": "Support",
       "supportSla": "We respond to support requests within 24–48 business hours.",
-      "descriptor": "Charges will appear on your billing statement under our authorized payment processor."
+      "descriptor": "Charges will appear on your billing statement under our authorized payment processor.",
+      "androidOnly": "Available in the Meet in Asia Android app"
     }
   },
   "messages": {

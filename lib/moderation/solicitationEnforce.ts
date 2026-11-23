@@ -16,15 +16,18 @@ type Db = SupabaseClient;
 /** Anything with the one session call used to end a banned member's session (the cookie-bound server client). */
 type SessionEnder = { auth: { signOut: () => Promise<unknown> } };
 
-/** Refuses a removed member, and a member whose strike-2 hold is still running (bio and Moment editing are locked). */
-export async function checkEditAllowed(db: Db, userId: string): Promise<Blocked | null> {
+/**
+ * Refuses a removed member and, unless `honorHold` is false, a member whose strike-2 hold is still running (bio and Moment
+ * editing are locked). Chat passes false: the hold freezes editing and hides the profile, it does not silence messages.
+ */
+export async function checkEditAllowed(db: Db, userId: string, honorHold = true): Promise<Blocked | null> {
   const { data } = await db.from('profiles').select('visibility_status, edit_locked_until').eq('id', userId).maybeSingle();
   // Before the migration the columns do not exist and the select returns an error: nothing to enforce yet.
   if (!data) return null;
   if (data.visibility_status === 'banned') {
     return { status: 403, body: { error: STRIKE_MESSAGES[3], code: 'ACCOUNT_REMOVED' } };
   }
-  if (isHiddenFromFeeds(data)) {
+  if (honorHold && isHiddenFromFeeds(data)) {
     return { status: 423, body: { error: STRIKE_MESSAGES[2], code: 'EDIT_LOCKED', strikes: 2, visibility: 'held' } };
   }
   return null;
@@ -34,8 +37,14 @@ export async function checkEditAllowed(db: Db, userId: string): Promise<Blocked 
  * Screens public text before anything is written. Returns null when the text is fine, otherwise the response to send:
  * the strike is recorded (reputation, hold or removal) and the save is refused, so nothing reaches the database.
  */
-export async function enforceSolicitation(db: Db, session: SessionEnder, userId: string, texts: string[]): Promise<Blocked | null> {
-  const locked = await checkEditAllowed(db, userId);
+export async function enforceSolicitation(
+  db: Db,
+  session: SessionEnder,
+  userId: string,
+  texts: string[],
+  opts: { honorHold?: boolean } = {}
+): Promise<Blocked | null> {
+  const locked = await checkEditAllowed(db, userId, opts.honorHold ?? true);
   if (locked) return locked;
 
   const found = texts.map((t) => detectSolicitation(t)).find((v) => v.hit);

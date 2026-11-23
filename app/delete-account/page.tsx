@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { LegalPage, type LegalSection } from '@/components/LegalPage';
+import { DeleteAccountActions } from '@/components/DeleteAccountActions';
 import { SUPPORT_EMAIL, SUPPORT_RESPONSE_EN } from '@/lib/support';
 import { SITE_URL } from '@/lib/seo/cityData';
 
@@ -24,6 +25,7 @@ const sections: LegalSection[] = [
     id: 'in-app',
     title: 'Delete your account in the app',
     body: (
+      <>
       <ol className="list-decimal space-y-1 pl-4">
         <li>Open Meet in Asia on the website or in the Android app and sign in.</li>
         <li>
@@ -31,6 +33,8 @@ const sections: LegalSection[] = [
         </li>
         <li>Read the summary, type the confirmation word, and confirm.</li>
       </ol>
+      <DeleteAccountActions />
+      </>
     ),
   },
   {
@@ -79,9 +83,9 @@ const sections: LegalSection[] = [
     title: 'If you have Meet in Asia Plus',
     body: (
       <p>
-        Cancel Plus first, or tell us in your email, so billing stops. Deleting your account does not by itself refund a
-        period you already paid for. See the <Link href="/terms#refunds">Refund Policy</Link> and{' '}
-        <Link href="/terms#cancellation">Cancellation</Link>.
+        Deleting your account does not cancel a Plus subscription bought through Google Play. Cancel it first in Google Play
+        under Payments &amp; subscriptions, or you will keep being billed. Deleting does not refund a period you already paid
+        for. See the <Link href="/terms#refunds">Refund Policy</Link> and <Link href="/terms#cancellation">Cancellation</Link>.
       </p>
     ),
   },

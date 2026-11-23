@@ -137,8 +137,12 @@ const sections: LegalSection[] = [
     body: (
       <>
         <p>
-          Go to <strong>Settings → Delete Account</strong> and confirm. This cancels any active Plus subscription, deletes your
-          profile and messages, and removes your photos, voice recordings and verification selfies from storage.
+          Go to <strong>Settings → Delete Account</strong> and confirm. This deletes your profile and messages, and removes
+          your photos, voice recordings and verification selfies from storage.
+        </p>
+        <p>
+          Deleting your account does not cancel a Meet in Asia Plus subscription bought through Google Play: cancel it in
+          Google Play under Payments &amp; subscriptions, or you will keep being billed.
         </p>
         <p>
           The full steps, including how to ask us to delete an account you cannot sign in to, are on our{' '}
