@@ -70,3 +70,15 @@ asiansinlove_context.md
 # Local reference material (kept on disk, not in the repo)
 /HANDOFF.md
 /design-drafts/
+
+# Android signing and build output: never commit keystores, passwords or built bundles
+*.keystore
+*.jks
+keystore.properties
+*.aab
+*.apk
+*.idsig
+/android/local.properties
+
+# Copied from node_modules by scripts/copy-maplibre-worker.mjs
+/public/maplibre-gl-worker.mjs

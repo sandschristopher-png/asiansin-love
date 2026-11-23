@@ -70,6 +70,7 @@ export function Navbar() {
   const getPageTitle = () => {
     if (!pathname || pathname === '/' || pathname === '/discover') return null;
     if (pathname.startsWith('/favorites') || pathname.startsWith('/saved')) return 'Sparks';
+    if (pathname.startsWith('/moments/map')) return 'Spot map';
     if (pathname.startsWith('/moments')) return 'Moments';
     if (pathname === '/travel' || pathname === '/travel/') return 'Travel';
     if (pathname.startsWith('/chat') || pathname.startsWith('/messages')) return 'Messages';

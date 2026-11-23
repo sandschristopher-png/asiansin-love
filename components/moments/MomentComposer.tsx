@@ -2,15 +2,20 @@
 
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import { Camera, ChevronDown, Loader2, LocateFixed, MapPin } from 'lucide-react';
 import { BottomSheet } from '@/components/ui/BottomSheet';
 import { useLocale } from '@/components/i18n/LocaleProvider';
 import { localizeError } from '@/lib/i18n/errors';
 import { prepareMomentPhoto } from '@/lib/images/momentPhoto';
 import { MAX_PLACE } from '@/lib/momentPlace';
+import type { PickedSpot } from '@/components/moments/SpotPickerSheet';
 import { MAX_CAPTION, MOMENT_PROMPTS, VIBE_TAGS, type MomentCity, type MomentPrompt, type VibeTag } from '@/lib/moments';
 import { SEA_LOCATIONS } from '@/lib/seaLocations';
 import type { TKey } from '@/lib/i18n';
+
+// The picker (and the map inside it) loads only when "Choose on map" is tapped.
+const SpotPickerSheet = dynamic(() => import('@/components/moments/SpotPickerSheet'), { ssr: false });
 
 const FIELD =
   'w-full rounded-xl border border-[#D0CDE1] bg-white px-3.5 py-2.5 text-sm text-[#413B5E] placeholder:text-slate-400 focus:border-[#726E97] focus:outline-none';
@@ -54,6 +59,9 @@ export function MomentComposer({
   const [fix, setFix] = useState<{ city: MomentCity; token: string } | null>(null);
   const [caption, setCaption] = useState('');
   const [place, setPlace] = useState('');
+  /** The pin picked on the map, kept with the spot name; typing a different name keeps the pin, clearing the name drops it. */
+  const [pin, setPin] = useState<{ lat: number; lng: number } | null>(null);
+  const [picking, setPicking] = useState(false);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [needsVerify, setNeedsVerify] = useState(false);
@@ -146,6 +154,10 @@ export function MomentComposer({
       form.append('image', new File([blob], 'moment', { type: blob.type }));
       form.append('caption', caption.trim());
       if (place.trim()) form.append('place', place.trim());
+      if (place.trim() && pin) {
+        form.append('placeLat', String(pin.lat));
+        form.append('placeLng', String(pin.lng));
+      }
       form.append('vibeTag', vibe);
       if (prompt) form.append('prompt', prompt);
       form.append('city', city);
@@ -328,12 +340,25 @@ export function MomentComposer({
               type="text"
               value={place}
               maxLength={MAX_PLACE}
-              onChange={(e) => setPlace(e.target.value)}
+              onChange={(e) => {
+                setPlace(e.target.value);
+                if (!e.target.value.trim()) setPin(null);
+              }}
               placeholder={t('moments.placePlaceholder')}
               aria-label={t('moments.placeLabel')}
               className={`${FIELD} pl-10`}
             />
           </label>
+          <div className="mt-2 flex items-center justify-between gap-3 px-1">
+            <button
+              type="button"
+              onClick={() => setPicking(true)}
+              className="text-xs font-semibold text-[#726E97] underline underline-offset-4 transition-colors hover:text-[#524E75]"
+            >
+              {t('moments.pickerOpen')}
+            </button>
+            {pin && <span className="text-[11px] font-medium text-slate-600">{t('moments.pickerPinned')}</span>}
+          </div>
         </div>
 
         {error && (
@@ -361,6 +386,18 @@ export function MomentComposer({
           {busy ? t('moments.publishing') : t('moments.publish')}
         </button>
       </form>
+      {picking && (
+        <SpotPickerSheet
+          city={city}
+          initial={pin && place.trim() ? { place: place.trim(), lat: pin.lat, lng: pin.lng } : null}
+          onClose={() => setPicking(false)}
+          onPick={(spot: PickedSpot) => {
+            setPlace(spot.place);
+            setPin({ lat: spot.lat, lng: spot.lng });
+            setPicking(false);
+          }}
+        />
+      )}
     </BottomSheet>
   );
 }

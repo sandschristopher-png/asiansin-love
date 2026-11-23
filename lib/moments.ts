@@ -104,6 +104,9 @@ export interface MomentItem {
   locationVerified: boolean;
   /** Optional spot the author tagged ("Kapitolyo night market"): opens in an external maps app. Absent on older cached items. */
   place?: string | null;
+  /** The pin for that spot (about 110 m resolution), only on Moments that were pinned on the map. */
+  placeLat?: number | null;
+  placeLng?: number | null;
   createdAt: string;
   isMine: boolean;
   author: {
@@ -115,5 +118,7 @@ export interface MomentItem {
     founding: boolean;
     /** The author's "Looking for" is Local Guide: their tagged spots are recommendations. */
     localGuide?: boolean;
+    /** The author's "Looking for" (lib/intents), for the map's filter pills. */
+    intent?: string | null;
   };
 }

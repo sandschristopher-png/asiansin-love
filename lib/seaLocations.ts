@@ -68,6 +68,18 @@ export function nearestSeaCity(lat: number, lng: number): { city: SeaCity; km: n
   return best && best.km <= SEA_CITY_RADIUS_KM ? best : null;
 }
 
+/** Straight-line distance in km from a city's centre to a point, or null for a city that is not in the list. */
+export function kmFromCity(city: string, lat: number, lng: number): number | null {
+  if (!isSeaCity(city) || !Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+  const [clat, clng] = COORDS[city];
+  return haversineKm(lat, lng, clat, clng);
+}
+
+/** A city's centre as [latitude, longitude], or null for a city that is not in the list. */
+export function cityCenter(city: string): readonly [number, number] | null {
+  return isSeaCity(city) ? COORDS[city] : null;
+}
+
 /** Country codes of the Southeast Asian countries in the list (as the edge header reports them). */
 export const SEA_COUNTRY_CODES = ['PH', 'TH', 'VN', 'ID', 'KH', 'MY', 'SG', 'LA', 'BN'] as const;
 

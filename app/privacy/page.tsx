@@ -81,6 +81,10 @@ const sections: LegalSection[] = [
           <li>Our payment processor: payments and billing.</li>
           <li>Google (Gemini): verification pre-screening and the optional in-chat Translate feature.</li>
           <li>Travelpayouts (Drive AI): travel offers on our public pages and the Travel Hub (see the next section).</li>
+          <li>
+            OpenFreeMap and OpenStreetMap (Nominatim): the spot map's tiles and place search. Only when you open the map or search for a
+            spot, your device contacts them directly, so they can see your IP address and the area you look at or search.
+          </li>
         </ul>
         <p>We may also disclose information when the law requires it or to protect members from serious harm or fraud.</p>
       </>

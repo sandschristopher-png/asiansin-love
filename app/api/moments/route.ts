@@ -20,6 +20,7 @@ import { verifyLocationToken } from '@/lib/momentLocation';
 import { enforceSolicitation } from '@/lib/moderation/solicitationEnforce';
 import { normalizeIntent } from '@/lib/intents';
 import { cleanPlace } from '@/lib/momentPlace';
+import { pinToStore } from '@/lib/momentMap';
 import { validateProfileContent } from '@/lib/moderation';
 import { isHiddenFromFeeds } from '@/lib/moderation/strikeRules';
 import { LEGACY_ACTIVITY_VIBE, MAX_CAPTION, MAX_MOMENT_BYTES, MOMENT_BUCKET, isMomentCity, isMomentPrompt, isVibeTag, sharesVibe, type MomentItem } from '@/lib/moments';
@@ -44,6 +45,10 @@ const FULL_COLUMNS = `${BASE_COLUMNS}, vibe_tag, prompt_question, location_verif
 const LEGACY_COLUMNS = `${BASE_COLUMNS}, activity_tag`;
 /** Plus the optional spot (20261203_moments_place.sql). */
 const PLACE_COLUMNS = `${FULL_COLUMNS}, place_name`;
+/** Plus the pin (20261204_moments_place_coords.sql): what the spot map reads. */
+const MAP_COLUMNS = `${PLACE_COLUMNS}, place_lat, place_lng`;
+/** The spot map shows the newest pinned Moments in one go (no paging). */
+const MAP_LIMIT = 200;
 
 interface MomentRow {
   id: string;
@@ -59,6 +64,8 @@ interface MomentRow {
   location_verified?: boolean | null;
   activity_tag?: string | null;
   place_name?: string | null;
+  place_lat?: number | null;
+  place_lng?: number | null;
 }
 
 /**
@@ -126,6 +133,8 @@ export async function GET(req: Request) {
 
   const params = new URL(req.url).searchParams;
   const before = params.get('before');
+  // ?map=1: pinned, spot-tagged Moments only, for the spot map.
+  const mapMode = params.get('map') === '1';
 
   // Independent of the feed rows, so it runs while the feed query is in flight.
   const viewerPromise = supabase.from('profiles').select('interests').eq('id', user.id).maybeSingle();
@@ -136,16 +145,23 @@ export async function GET(req: Request) {
       .select(columns)
       .eq('status', 'active')
       .order('created_at', { ascending: false })
-      .limit(PAGE + 1);
-    if (before && !Number.isNaN(Date.parse(before))) q = q.lt('created_at', before);
+      .limit(mapMode ? MAP_LIMIT : PAGE + 1);
+    if (mapMode) q = q.not('place_name', 'is', null).not('place_lat', 'is', null).not('place_lng', 'is', null);
+    else if (before && !Number.isNaN(Date.parse(before))) q = q.lt('created_at', before);
     return q;
   };
 
   // Full query first; if 20261125_moments_vibes.sql has not been run (or PostgREST has not reloaded its
   // schema yet) retry with the original columns, and if even those are missing show an empty feed.
-  let result = await run(PLACE_COLUMNS);
+  let result = await run(mapMode ? MAP_COLUMNS : PLACE_COLUMNS);
+  if (mapMode && result.error) {
+    // The map needs the pin columns (20261204): before them there is simply nothing to show.
+    if (isFeedSchemaMismatch(result.error)) return NextResponse.json({ moments: [], nextCursor: null });
+    console.error('[moments:map]', result.error);
+    return NextResponse.json({ error: 'Could not load the map.', code: 'DB_ERROR' }, { status: 500 });
+  }
   // Before 20261203_moments_place.sql the spot column is missing: quietly use the vibes query.
-  if (result.error && isFeedSchemaMismatch(result.error)) result = await run(FULL_COLUMNS);
+  if (!mapMode && result.error && isFeedSchemaMismatch(result.error)) result = await run(FULL_COLUMNS);
   if (result.error) {
     console.error('[moments:get]', result.error);
     if (isFeedSchemaMismatch(result.error)) {
@@ -158,8 +174,8 @@ export async function GET(req: Request) {
     return NextResponse.json({ error: 'Could not load Moments.', code: 'DB_ERROR' }, { status: 500 });
   }
   const rows = (result.data || []) as unknown as MomentRow[];
-  const page = rows.slice(0, PAGE);
-  const hasMore = rows.length > PAGE;
+  const page = rows.slice(0, mapMode ? MAP_LIMIT : PAGE);
+  const hasMore = !mapMode && rows.length > PAGE;
   const authorIds = Array.from(new Set(page.map((m) => m.user_id)));
   const momentIds = page.map((m) => m.id);
 
@@ -209,6 +225,8 @@ export async function GET(req: Request) {
         likedByMe: liked.has(m.id),
         locationVerified: m.location_verified === true,
         place: typeof m.place_name === 'string' && m.place_name ? m.place_name : null,
+        placeLat: typeof m.place_lat === 'number' ? m.place_lat : null,
+        placeLng: typeof m.place_lng === 'number' ? m.place_lng : null,
         sharedVibe: m.user_id !== user.id && vibe !== null && sharesVibe(myInterests, vibe),
         createdAt: m.created_at,
         isMine: m.user_id === user.id,
@@ -220,6 +238,7 @@ export async function GET(req: Request) {
           verified: a.is_verified === true || a.verification_status === 'verified',
           founding: a.is_day_one === true,
           localGuide: normalizeIntent(a.relationship_intent) === 'local_guide',
+          intent: normalizeIntent(a.relationship_intent) || null,
         },
       };
     });
@@ -266,6 +285,13 @@ async function createMoment(req: Request) {
   const prompt = promptRaw === null || promptRaw === '' ? null : promptRaw;
   const city = form.get('city');
   const place = cleanPlace(form.get('place'));
+  // The pin picked on the map (optional, kept only with a place name and near the Moment's city).
+  const latRaw = form.get('placeLat');
+  const lngRaw = form.get('placeLng');
+  const pin =
+    place && typeof latRaw === 'string' && typeof lngRaw === 'string' && latRaw.trim() && lngRaw.trim() && typeof city === 'string'
+      ? pinToStore(city, place, Number(latRaw), Number(lngRaw))
+      : null;
   const locationToken = typeof form.get('locationToken') === 'string' ? String(form.get('locationToken')) : '';
 
   if (!isVibeTag(vibeTag) || !isMomentCity(city) || (prompt !== null && !isMomentPrompt(prompt)) || caption.length > MAX_CAPTION) {
@@ -374,7 +400,14 @@ async function createMoment(req: Request) {
 
   // The optional spot goes on separately, so a database that has not run 20261203 still posts the Moment.
   if (place && id) {
-    const { error: placeError } = await admin.from('moments').update({ place_name: place }).eq('id', id as string);
+    let { error: placeError } = await admin
+      .from('moments')
+      .update(pin ? { place_name: place, place_lat: pin.lat, place_lng: pin.lng } : { place_name: place })
+      .eq('id', id as string);
+    // 20261204 not run yet: keep the spot name without the pin.
+    if (placeError && pin) {
+      ({ error: placeError } = await admin.from('moments').update({ place_name: place }).eq('id', id as string));
+    }
     if (placeError) console.error('[moments:post] spot not saved:', placeError.message);
   }
 

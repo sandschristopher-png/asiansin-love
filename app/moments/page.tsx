@@ -3,7 +3,8 @@
 import React, { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 import dynamic from 'next/dynamic';
 import { motion, useReducedMotion } from 'framer-motion';
-import { Camera, Loader2, Plus } from 'lucide-react';
+import Link from 'next/link';
+import { Camera, Loader2, MapPin, Plus } from 'lucide-react';
 import { useActionToast } from '@/components/ActionToast';
 import { useLocale } from '@/components/i18n/LocaleProvider';
 import { MomentCard } from '@/components/moments/MomentCard';
@@ -264,7 +265,14 @@ export default function MomentsPage() {
           <span className="mt-2.5 block text-base font-semibold leading-snug text-[#413B5E]">{t(`moments.prompt.${todaysPrompt}` as TKey)}</span>
         </button>
 
-        <div className="mt-4">
+        <div className="mt-4 flex flex-wrap gap-2">
+          <Link
+            href="/moments/map"
+            className="inline-flex h-8 items-center gap-1.5 rounded-full border border-[#D0CDE1] bg-white px-3.5 text-xs font-medium text-[#726E97] transition-colors hover:bg-[#EAE9F2]/50 active:scale-95"
+          >
+            <MapPin className="h-3.5 w-3.5" aria-hidden />
+            {t('moments.mapOpen')}
+          </Link>
           <button
             type="button"
             aria-pressed={guidesOnly}
