@@ -1,11 +1,10 @@
 {
   "hero": {
     "imageAlt": "Mujer sonriente haciendo un corazón con las manos frente a una pared de ladrillo pintada de lavanda",
-    "line1": "Conexiones reales.",
-    "line2": "Perfiles verificados con selfie.",
-    "line3": "Haz match y conecta gratis.",
-    "subtitle": "Ya damos la bienvenida a los primeros miembros en todo el Sudeste Asiático. Conoce a solteros verificados de Filipinas, Tailandia, Vietnam y más allá que buscan una relación de verdad: sin bots, sin catfish y con emparejamiento y chat gratis.",
-    "join": "Únete gratis",
+    "eyebrow": "Citas y relaciones serias en toda Asia",
+    "headline": "Conoce a alguien a través de valores compartidos",
+    "subtitle": "Una conexión pensada para quienes buscan química genuina, conversaciones reales y relaciones con sentido.",
+    "join": "Empezar",
     "factSparks": "30 Sparks gratis al día"
   },
   "auth": {

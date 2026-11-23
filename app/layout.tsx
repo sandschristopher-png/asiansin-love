@@ -43,19 +43,17 @@ const notoKhmer = Noto_Sans_Khmer({
   variable: '--font-khmer',
 });
 
-const SITE_TITLE = 'Meet in Asia | Real Connections, Selfie-Verified Profiles';
-// Product claims must hold in the live app: verification is a free selfie check, reputation is
-// public, messages are screened for scams.
+const SITE_TITLE = 'Meet in Asia | Meet Through Shared Values';
 const SITE_DESCRIPTION =
-  'Connect with verified singles across Asia for meaningful, long-term relationships. Built-in safety features, public reputation scores, and free selfie verification.';
+  'A relationship-first dating app across Asia built around shared values, real conversations, and genuine connections.';
 
 // Social share cards (Open Graph / Twitter). The image is the landing hero photo,
 // public/Landing-Woman.png (1024x687, about 810 KB); metadataBase makes it absolute. It is set
 // explicitly here: an app/opengraph-image file would override these settings, so there is none.
 // No middleware matcher covers static .png files and robots.txt allows them, so every social
 // crawler can fetch it.
-const SHARE_TITLE = 'Meet in Asia | Serious International Dating — Selfie-Verified Profiles';
-const SHARE_DESCRIPTION = 'Connect with selfie-verified singles and real travel plans across Southeast Asia.';
+const SHARE_TITLE = SITE_TITLE;
+const SHARE_DESCRIPTION = SITE_DESCRIPTION;
 const SHARE_IMAGE = {
   url: '/Landing-Woman.png',
   width: 1024,

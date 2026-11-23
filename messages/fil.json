@@ -1,11 +1,10 @@
 {
   "hero": {
     "imageAlt": "Nakangiting babae na gumagawa ng hugis-puso gamit ang mga kamay sa harap ng pader na pinturang lavender",
-    "line1": "Totoong koneksyon.",
-    "line2": "Selfie-Verified na mga Profile.",
-    "line3": "Libreng Mag-match at Kumonekta.",
-    "subtitle": "Tumatanggap na kami ng mga unang miyembro sa buong Timog-Silangang Asya. Makilala ang mga beripikadong single sa Pilipinas, Thailand, Vietnam, at iba pa na naghahanap ng totoong relasyon—walang bot, walang catfish, at libre ang mag-match at mag-chat.",
-    "join": "Sumali nang Libre",
+    "eyebrow": "Pakikipag-date at seryosong relasyon sa buong Asya",
+    "headline": "Magkakilala sa pamamagitan ng mga pinahahalagahan",
+    "subtitle": "Maingat na pagtutugma para sa mga naghahanap ng tunay na chemistry, totoong usapan, at makabuluhang relasyon.",
+    "join": "Magsimula",
     "factSparks": "30 Libreng Sparks Araw-araw"
   },
   "auth": {

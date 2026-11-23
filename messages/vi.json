@@ -1,11 +1,10 @@
 {
   "hero": {
     "imageAlt": "Người phụ nữ mỉm cười tạo hình trái tim bằng hai tay trước bức tường gạch sơn màu oải hương",
-    "line1": "Kết nối thật.",
-    "line2": "Hồ sơ xác minh bằng selfie.",
-    "line3": "Ghép đôi và kết nối miễn phí.",
-    "subtitle": "Chúng tôi đang chào đón những thành viên đầu tiên trên khắp Đông Nam Á. Gặp gỡ những người độc thân đã xác minh ở Philippines, Thái Lan, Việt Nam và hơn thế nữa, những ai muốn một mối quan hệ thật sự—không bot, không giả mạo, và miễn phí để ghép đôi và trò chuyện.",
-    "join": "Tham gia miễn phí",
+    "eyebrow": "Hẹn hò & mối quan hệ nghiêm túc khắp châu Á",
+    "headline": "Gặp gỡ qua những giá trị chung",
+    "subtitle": "Ghép đôi chu đáo cho những người tìm kiếm sự hòa hợp thật sự, những cuộc trò chuyện chân thành và mối quan hệ ý nghĩa.",
+    "join": "Bắt đầu",
     "factSparks": "30 Sparks miễn phí mỗi ngày"
   },
   "auth": {

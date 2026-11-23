@@ -27,9 +27,8 @@ export function SignInPrompt() {
 }
 
 /**
- * Hero stack, top to bottom: a compact photo, headline and copy (the subtext carries the soft-launch
- * message), then the CTA block: Join for Free (/signup), the Sparks stat,
- * "Already a member? Sign in" (/login). Sized so Join for Free and Sign in are visible on first load
+ * Hero stack, top to bottom: a compact photo, eyebrow, headline and subtext, then the CTA block: Get Started (/signup), the Sparks stat,
+ * "Already a member? Sign in" (/login). Sized so Get Started and Sign in are visible on first load
  * on a phone without scrolling. Text comes from the active dictionary (messages/<locale>.json).
  * Rendered inside LANDING_SHELL.
  */
@@ -54,11 +53,9 @@ export default function Hero() {
           />
         </FadeIn>
 
-        <h1 className="mt-4 w-full text-[26px] font-semibold tracking-tight leading-tight text-[#413B5E] break-words">
-          <span className="block">{m.hero.line1}</span>
-          <span className="block text-[#726E97]">{m.hero.line2}</span>
-          <span className="block">{m.hero.line3}</span>
-        </h1>
+        <p className="mt-4 w-full text-[11px] font-semibold uppercase tracking-wider text-[#726E97] break-words">{m.hero.eyebrow}</p>
+
+        <h1 className="mt-1.5 w-full text-[26px] font-semibold tracking-tight leading-tight text-[#413B5E] break-words">{m.hero.headline}</h1>
 
         <p className="mt-2 w-full text-sm leading-relaxed text-slate-600 break-words">{m.hero.subtitle}</p>
 

@@ -12,7 +12,7 @@ export default function CommunityStandardsPage() {
       icon: ShieldCheck,
       title: 'Human Verification & Honest Photos',
       description:
-        'Everyone deserves to know they are speaking with a real person. Members complete live gesture pose selfies to earn a verified profile badge. Stock photos, AI avatars, third-party agency reps, and outdated images are not permitted.',
+        'Everyone deserves to know they are speaking with a real person. Members complete a live head-movement liveness check (look up, look down, look left and look right) to earn a verified profile badge. Stock photos, AI avatars, third-party agency reps, and outdated images are not permitted.',
     },
     {
       icon: Ban,
