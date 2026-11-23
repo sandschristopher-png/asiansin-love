@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Meet in Asia</string>
+    <string name="title_activity_main">Meet in Asia</string>
+    <string name="package_name">asia.meetin.app</string>
+    <string name="custom_url_scheme">asia.meetin.app</string>
+</resources>
