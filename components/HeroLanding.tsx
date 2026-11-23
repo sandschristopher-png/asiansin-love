@@ -6,6 +6,7 @@ import { AudioLines } from 'lucide-react';
 import { BrandLogo } from '@/components/BrandLogo';
 import Hero, { LANDING_SHELL, SignInPrompt } from '@/components/Hero';
 import { LocaleProvider, useLocale } from '@/components/i18n/LocaleProvider';
+import { PixelDeviceFrame } from '@/components/PixelDeviceFrame';
 import { LanguagePill } from '@/components/i18n/LanguageSheet';
 import { LandingMotion, Reveal, TapButton } from '@/components/landing/Motion';
 import { LinkSpinner } from '@/components/ui/LinkSpinner';
@@ -16,6 +17,13 @@ const STEP_KEYS = [
   { step: '01', key: 'one' },
   { step: '02', key: 'two' },
   { step: '03', key: 'three' },
+] as const;
+
+// Product screenshots (scripts/capture-showcase.ts writes them, 390x844 at 2x).
+const SHOWCASE = [
+  { key: 'discover', src: '/showcase/discover.png' },
+  { key: 'map', src: '/showcase/spot-map.png' },
+  { key: 'moments', src: '/showcase/moments.png' },
 ] as const;
 
 // Card art: illustrations fill their tile edge to edge; "voices" uses an audio-wave graphic.
@@ -61,6 +69,40 @@ function LandingBody() {
         <div className="pt-3">
           <Hero />
         </div>
+
+        {/* Feature showcase: three Pixel mockups in a swipeable row (snaps to each phone) */}
+        <section className="pt-6 pb-8" aria-labelledby="showcase-heading">
+          <div className="text-center">
+            <h2 id="showcase-heading" className="font-brand text-xl font-semibold tracking-tight text-[#413B5E]">{m.showcase.heading}</h2>
+            <p className="mt-2 text-sm text-slate-600">{m.showcase.sub}</p>
+          </div>
+          <div
+            className="-mx-5 mt-6 flex snap-x snap-mandatory gap-5 overflow-x-auto px-[calc((100%+2.5rem)/2-100px)] pb-8 pt-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+            role="region"
+            aria-label={m.showcase.heading}
+            tabIndex={0}
+          >
+            {SHOWCASE.map(({ key, src }) => (
+              <figure key={key} className="w-[200px] shrink-0 snap-center">
+                <PixelDeviceFrame>
+                  <Image
+                    src={src}
+                    alt={m.showcase[`${key}Alt`]}
+                    width={780}
+                    height={1688}
+                    sizes="200px"
+                    className="h-full w-full select-none object-cover pointer-events-none"
+                    draggable={false}
+                  />
+                </PixelDeviceFrame>
+                <figcaption className="mt-6 text-center">
+                  <h3 className="text-[15px] font-semibold text-[#413B5E] leading-snug">{m.showcase[`${key}Title`]}</h3>
+                  <p className="mt-1 text-[13px] text-slate-600 leading-relaxed">{m.showcase[`${key}Body`]}</p>
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        </section>
 
         {/* How connections happen */}
         <section className="py-8">

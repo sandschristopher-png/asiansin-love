@@ -6,7 +6,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { supabaseImage, AVATAR_IMAGE } from '@/lib/images/supabaseImage';
 import { MAP_STYLE_URL } from '@/lib/momentMap';
 import { applyMapPalette } from '@/lib/mapPalette';
-import { FIT_MAX_ZOOM, FIT_PADDING } from '@/lib/momentMap';
+import { FIT_BOTTOM_INSET, FIT_MAX_ZOOM, FIT_PADDING, FIT_TOP_INSET } from '@/lib/momentMap';
 
 export interface Pin {
   id: string;
@@ -163,7 +163,11 @@ export default function MapCanvas({
     }
     const bounds = new lib.LngLatBounds([pins[0].lng, pins[0].lat], [pins[0].lng, pins[0].lat]);
     pins.forEach((p) => bounds.extend([p.lng, p.lat]));
-    map.fitBounds(bounds, { padding: FIT_PADDING, maxZoom: FIT_MAX_ZOOM, duration: 0 });
+    map.fitBounds(bounds, {
+      padding: { top: FIT_PADDING + FIT_TOP_INSET, bottom: FIT_PADDING + FIT_BOTTOM_INSET, left: FIT_PADDING, right: FIT_PADDING },
+      maxZoom: FIT_MAX_ZOOM,
+      duration: 0,
+    });
   }, [ready, pins, fit]);
 
   // The chosen spot (picker): a draggable purple dot.

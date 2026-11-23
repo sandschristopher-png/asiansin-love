@@ -672,5 +672,18 @@
       "relocating": "Relocating"
     },
     "intentError": "Could not save. Try again."
+  },
+  "showcase": {
+    "heading": "See it in the app",
+    "sub": "Three places where shared values turn into real meetings.",
+    "discoverTitle": "Shared Values Matching",
+    "discoverBody": "Verified members, ranked by what you both care about.",
+    "discoverAlt": "The Discover screen showing a grid of verified members with shared interests",
+    "mapTitle": "Member-Curated Spot Map",
+    "mapBody": "Real places members love, pinned by the people who went.",
+    "mapAlt": "The Spot map with member photo pins across Manila",
+    "momentsTitle": "Real-Life Moments",
+    "momentsBody": "Photo posts tied to a real spot, so a conversation starts with a place.",
+    "momentsAlt": "The Moments feed showing a café photo pinned to a spot in Manila"
   }
 }

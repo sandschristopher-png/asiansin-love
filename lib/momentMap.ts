@@ -60,6 +60,9 @@ export const NEARBY_KM = 100;
 /** Framing the active pins: padding in px and the closest zoom allowed. */
 export const FIT_PADDING = 48;
 export const FIT_MAX_ZOOM = 14;
+/** The full-bleed map runs under the header and the floating tab bar: framed pins keep clear of both (px, added to FIT_PADDING). */
+export const FIT_TOP_INSET = 56;
+export const FIT_BOTTOM_INSET = 96;
 
 /**
  * Where the spot map opens: the centre of the member's profile city (a municipality counts as its hub) at city zoom. It

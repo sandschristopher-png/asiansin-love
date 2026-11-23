@@ -672,5 +672,18 @@
       "relocating": "Bakal berpindah"
     },
     "intentError": "Tidak dapat disimpan. Cuba lagi."
+  },
+  "showcase": {
+    "heading": "Lihat dalam aplikasi",
+    "sub": "Tiga tempat di mana nilai yang sama menjadi pertemuan sebenar.",
+    "discoverTitle": "Padanan Nilai Bersama",
+    "discoverBody": "Ahli disahkan, disusun mengikut perkara yang penting kepada kamu berdua.",
+    "discoverAlt": "Skrin Discover menunjukkan grid ahli disahkan yang berkongsi minat",
+    "mapTitle": "Peta Lokasi Pilihan Ahli",
+    "mapBody": "Tempat sebenar yang disukai ahli, ditanda oleh mereka yang pernah ke sana.",
+    "mapAlt": "Peta lokasi dengan pin foto ahli di sekitar Manila",
+    "momentsTitle": "Detik Kehidupan Sebenar",
+    "momentsBody": "Siaran foto yang dikaitkan dengan tempat sebenar, supaya perbualan bermula dengan sebuah tempat.",
+    "momentsAlt": "Suapan Moments menunjukkan foto kafe yang dikaitkan dengan satu lokasi di Manila"
   }
 }

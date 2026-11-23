@@ -672,5 +672,18 @@
       "relocating": "Akan pindah"
     },
     "intentError": "Gagal menyimpan. Coba lagi."
+  },
+  "showcase": {
+    "heading": "Lihat di aplikasi",
+    "sub": "Tiga tempat di mana nilai yang sama berubah menjadi pertemuan nyata.",
+    "discoverTitle": "Pencocokan Nilai Bersama",
+    "discoverBody": "Anggota terverifikasi, diurutkan menurut hal yang sama-sama penting bagi Anda berdua.",
+    "discoverAlt": "Layar Discover dengan kisi anggota terverifikasi yang memiliki minat yang sama",
+    "mapTitle": "Peta Tempat Pilihan Anggota",
+    "mapBody": "Tempat nyata yang disukai anggota, ditandai oleh mereka yang pernah ke sana.",
+    "mapAlt": "Peta tempat dengan pin foto anggota di seluruh Manila",
+    "momentsTitle": "Momen Kehidupan Nyata",
+    "momentsBody": "Unggahan foto yang terhubung ke tempat nyata, jadi obrolan dimulai dari sebuah tempat.",
+    "momentsAlt": "Umpan Moments dengan foto kafe yang ditandai di sebuah tempat di Manila"
   }
 }

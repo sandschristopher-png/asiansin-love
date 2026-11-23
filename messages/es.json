@@ -672,5 +672,18 @@
       "relocating": "Mudándome"
     },
     "intentError": "No se pudo guardar. Inténtalo de nuevo."
+  },
+  "showcase": {
+    "heading": "Míralo en la app",
+    "sub": "Tres lugares donde los valores compartidos se convierten en encuentros reales.",
+    "discoverTitle": "Afinidad por valores compartidos",
+    "discoverBody": "Miembros verificados, ordenados por lo que os importa a ambos.",
+    "discoverAlt": "Pantalla Descubrir con una cuadrícula de miembros verificados con intereses en común",
+    "mapTitle": "Mapa de lugares de los miembros",
+    "mapBody": "Lugares reales que los miembros aman, marcados por quienes fueron.",
+    "mapAlt": "El mapa de lugares con pines de fotos de miembros por Manila",
+    "momentsTitle": "Momentos de la vida real",
+    "momentsBody": "Publicaciones con foto ligadas a un lugar real, para empezar a hablar desde un sitio.",
+    "momentsAlt": "El feed de Momentos con una foto de un café ligada a un lugar de Manila"
   }
 }

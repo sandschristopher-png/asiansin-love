@@ -672,5 +672,18 @@
       "relocating": "Đang chuyển đến sống"
     },
     "intentError": "Không lưu được. Hãy thử lại."
+  },
+  "showcase": {
+    "heading": "Xem trong ứng dụng",
+    "sub": "Ba nơi mà giá trị chung trở thành những cuộc gặp thật.",
+    "discoverTitle": "Kết nối theo giá trị chung",
+    "discoverBody": "Thành viên đã xác minh, xếp theo điều cả hai cùng quan tâm.",
+    "discoverAlt": "Màn hình Khám phá hiển thị lưới thành viên đã xác minh có sở thích chung",
+    "mapTitle": "Bản đồ địa điểm do thành viên chọn",
+    "mapBody": "Những địa điểm thật mà thành viên yêu thích, được ghim bởi chính người đã đến.",
+    "mapAlt": "Bản đồ địa điểm với ghim ảnh thành viên khắp Manila",
+    "momentsTitle": "Khoảnh khắc đời thực",
+    "momentsBody": "Bài đăng ảnh gắn với một địa điểm thật, để cuộc trò chuyện bắt đầu từ một nơi chốn.",
+    "momentsAlt": "Bảng tin Moments hiển thị ảnh quán cà phê gắn với một địa điểm ở Manila"
   }
 }

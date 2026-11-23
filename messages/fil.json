@@ -672,5 +672,18 @@
       "relocating": "Lilipat ng tirahan"
     },
     "intentError": "Hindi na-save. Subukan ulit."
+  },
+  "showcase": {
+    "heading": "Tingnan sa app",
+    "sub": "Tatlong lugar kung saan nagiging totoong pagkikita ang magkatulad na pagpapahalaga.",
+    "discoverTitle": "Pagtutugma sa Magkatulad na Pagpapahalaga",
+    "discoverBody": "Mga beripikadong miyembro, nakaayos ayon sa pareho ninyong pinahahalagahan.",
+    "discoverAlt": "Ang Discover screen na may grid ng mga beripikadong miyembro na may magkatulad na interes",
+    "mapTitle": "Mapa ng mga Lugar na Pinili ng mga Miyembro",
+    "mapBody": "Mga totoong lugar na gusto ng mga miyembro, itinanda ng mga pumunta mismo.",
+    "mapAlt": "Ang Spot map na may mga pin ng larawan ng mga miyembro sa buong Maynila",
+    "momentsTitle": "Mga Sandali sa Totoong Buhay",
+    "momentsBody": "Mga post na may larawan na nakatali sa totoong lugar, kaya may mapag-uusapan agad.",
+    "momentsAlt": "Ang Moments feed na may larawan ng café na nakatali sa isang lugar sa Maynila"
   }
 }

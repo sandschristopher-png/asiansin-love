@@ -27,6 +27,7 @@
     "native:test": "node scripts/test-native-gates.mjs",
     "test": "node scripts/run-all-tests.mjs",
     "place:test": "node scripts/test-moment-place.mjs",
+    "showcase:capture": "node scripts/capture-showcase.ts",
     "cap:sync": "node scripts/ensure-cap-web.mjs && cap sync android",
     "cap:assets": "capacitor-assets generate --android --assetPath assets --iconBackgroundColor \"#FAF9FC\" --iconBackgroundColorDark \"#FAF9FC\" --splashBackgroundColor \"#FAF9FC\" --splashBackgroundColorDark \"#FAF9FC\""
   },
@@ -66,6 +67,7 @@
     "eslint": "^9",
     "eslint-config-next": "16.3.6",
     "opentype.js": "^1.3.4",
+    "playwright-core": "^1.65.1",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

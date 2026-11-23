@@ -672,5 +672,18 @@
       "relocating": "计划搬迁"
     },
     "intentError": "保存失败，请重试。"
+  },
+  "showcase": {
+    "heading": "看看应用里的样子",
+    "sub": "三个让共同价值观变成真实相见的地方。",
+    "discoverTitle": "价值观匹配",
+    "discoverBody": "已验证的成员，按你们共同在意的事物排序。",
+    "discoverAlt": "“发现”页面，展示拥有共同兴趣的已验证成员",
+    "mapTitle": "成员共建的地点地图",
+    "mapBody": "成员真心喜欢的地方，由去过的人亲自标记。",
+    "mapAlt": "马尼拉各处带有成员头像图钉的地点地图",
+    "momentsTitle": "真实生活瞬间",
+    "momentsBody": "照片动态绑定真实地点，聊天从一个地方开始。",
+    "momentsAlt": "“瞬间”动态，展示绑定马尼拉某地点的咖啡馆照片"
   }
 }

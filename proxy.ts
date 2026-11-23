@@ -20,6 +20,13 @@ function loginUrl(request: NextRequest): URL {
 const ONBOARDED_COOKIE = 'ail_onb';
 
 export async function proxy(request: NextRequest) {
+  // Showcase screenshots (scripts/capture-showcase.ts): on a development server only, a request that carries this cookie skips the
+  // sign-in redirects so the real pages can be captured with mocked data. It opens no data: the APIs and the database still
+  // answer only to real sessions, and a production build ignores the cookie entirely.
+  if (process.env.NODE_ENV === 'development' && request.cookies.get('ail_showcase')?.value === '1') {
+    return NextResponse.next();
+  }
+
   let response = NextResponse.next({
     request: {
       headers: request.headers,
