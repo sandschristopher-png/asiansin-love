@@ -8,7 +8,18 @@ import { X } from 'lucide-react';
  * Bottom sheet shell (trip drawer and planner, share sheet): same look as the app's other sheets.
  * Portalled to <body> so it covers the BottomNav, closes on backdrop tap or Escape.
  */
-export function BottomSheet({ title, onClose, children }: { title: string; onClose: () => void; children: React.ReactNode }) {
+export function BottomSheet({
+  title,
+  onClose,
+  children,
+  lift,
+}: {
+  title: string;
+  onClose: () => void;
+  children: React.ReactNode;
+  /** Float the sheet this far above the bottom edge (a CSS length, e.g. "88px") so it clears the floating tab bar. */
+  lift?: string;
+}) {
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') onClose();
@@ -22,7 +33,12 @@ export function BottomSheet({ title, onClose, children }: { title: string; onClo
   return createPortal(
     <div className="fixed inset-0 z-[999] flex items-end justify-center" role="dialog" aria-modal="true" aria-label={title}>
       <div className="fixed inset-0 bg-black/50" onClick={onClose} />
-      <div className="relative w-full max-w-[480px] max-h-[88dvh] overflow-y-auto overscroll-contain bg-white rounded-t-[28px] px-5 pb-[max(1.25rem,env(safe-area-inset-bottom))] animate-[ailSheetUp_260ms_cubic-bezier(0.16,1,0.3,1)]">
+      <div
+        className={`relative w-full max-w-[480px] max-h-[88dvh] overflow-y-auto overscroll-contain bg-white px-5 animate-[ailSheetUp_260ms_cubic-bezier(0.16,1,0.3,1)] ${
+          lift ? 'rounded-[28px] pb-5' : 'rounded-t-[28px] pb-[max(1.25rem,env(safe-area-inset-bottom))]'
+        }`}
+        style={lift ? { marginBottom: lift, maxHeight: `calc(88dvh - ${lift})` } : undefined}
+      >
         {/* Sticky: the title and close button stay reachable while the sheet's content scrolls. */}
         <div className="sticky top-0 z-10 -mx-5 flex items-center justify-between border-b border-slate-200 bg-white px-5 pb-3 pt-4">
           <h2 className="text-sm font-semibold text-[#413B5E]">{title}</h2>

@@ -1,4 +1,4 @@
-import { kmFromCity } from '@/lib/seaLocations';
+import { cityCenter, kmFromCity, matchSeaCity } from '@/lib/seaLocations';
 
 /**
  * Spot map rules: how a pin is validated and stored, which style the map uses, and how the filter pills narrow the pins.
@@ -48,4 +48,36 @@ export function pinVisible(
   if (filters.picks && !author.localGuide) return false;
   if (filters.intent && author.intent !== filters.intent) return false;
   return true;
+}
+
+/** Manila: only when there is neither a member location nor a pin to open on. [latitude, longitude]. */
+export const FALLBACK_CENTER: readonly [number, number] = [14.5995, 120.9842];
+export const FALLBACK_ZOOM = 12;
+
+export interface MapStart {
+  center: readonly [number, number];
+  zoom: number;
+  source: 'profile' | 'city' | 'device';
+}
+
+/**
+ * Where the spot map opens, first match wins: the member's own profile coordinates, the centre of their profile city (a
+ * municipality counts as its hub), then the device position if the browser already allows it. Null means none of them is known,
+ * and the page then frames the pins, falling back to Manila only when there are no pins either.
+ */
+export function pickMapStart(input: {
+  profileLat?: unknown;
+  profileLng?: unknown;
+  city?: string | null;
+  device?: { lat: number; lng: number } | null;
+}): MapStart | null {
+  const { profileLat: la, profileLng: ln } = input;
+  // (0, 0) is "never set", not a place.
+  if (isLatLng(la, ln) && !(la === 0 && ln === 0)) return { center: [la, ln as number], zoom: 13, source: 'profile' };
+  const named = matchSeaCity(input.city);
+  const middle = named ? cityCenter(named) : null;
+  if (middle) return { center: middle, zoom: 12, source: 'city' };
+  const d = input.device;
+  if (d && isLatLng(d.lat, d.lng)) return { center: [d.lat, d.lng], zoom: 13, source: 'device' };
+  return null;
 }

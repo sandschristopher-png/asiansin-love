@@ -5,6 +5,7 @@ import type { Map as MlMap, Marker as MlMarker } from 'maplibre-gl';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import { supabaseImage, AVATAR_IMAGE } from '@/lib/images/supabaseImage';
 import { MAP_STYLE_URL } from '@/lib/momentMap';
+import { applyMapPalette } from '@/lib/mapPalette';
 
 export interface Pin {
   id: string;
@@ -81,6 +82,8 @@ export default function MapCanvas({
         renderWorldCopies: false,
       });
       map.touchZoomRotate.disableRotation();
+      // Repaint the basemap in the site's lavender-neutral palette as soon as its style is there (guarded: never throws).
+      map.on('style.load', () => applyMapPalette(map));
       map.on('click', (e) => onTap.current?.(e.lngLat.lat, e.lngLat.lng));
       mapRef.current = map;
       // Markers do not need the basemap: they show as soon as the map exists, even if tiles are slow or offline.

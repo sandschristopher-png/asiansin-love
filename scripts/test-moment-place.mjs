@@ -4,6 +4,7 @@ import { loadLib } from './lib/load-ts.mjs';
 const p = await loadLib('momentPlace');
 const intents = await loadLib('intents');
 const map = await loadLib('momentMap');
+const pal = await loadLib('mapPalette');
 let passed = 0;
 const failures = [];
 const ok = (name, cond) => (cond ? passed++ : failures.push(name));
@@ -45,6 +46,42 @@ ok('an intent pill narrows to that intent', map.pinVisible(dater, { intent: 'cas
 ok('Local guide picks shows guides only', map.pinVisible(guide, { intent: null, picks: true }) && !map.pinVisible(dater, { intent: null, picks: true }));
 ok('picks and a different intent together show nothing', !map.pinVisible(guide, { intent: 'friends', picks: true }));
 ok('the map style is a keyless light style by default', typeof map.MAP_STYLE_URL === 'string' && map.MAP_STYLE_URL.includes('positron'));
+
+// Where the map opens: the member first, then pins, Manila last
+const st = map.pickMapStart;
+ok('profile coordinates win', st({ profileLat: 10.32, profileLng: 123.9, city: 'Manila' })?.source === 'profile' && st({ profileLat: 10.32, profileLng: 123.9 }).zoom === 13);
+ok('the profile city is next, and a municipality counts as its hub', st({ city: 'Cebu City' })?.source === 'city' && st({ city: 'Taguig' })?.center[0] === 14.5995);
+ok('an allowed device position is next', st({ device: { lat: 7.19, lng: 125.45 } })?.source === 'device');
+ok('profile beats city, city beats device', st({ profileLat: 1.3, profileLng: 103.8, city: 'Manila', device: { lat: 7, lng: 125 } })?.source === 'profile' && st({ city: 'Manila', device: { lat: 7, lng: 125 } })?.source === 'city');
+ok('nothing known means no start (the pins frame it)', st({}) === null && st({ city: 'Atlantis' }) === null && st({ profileLat: null, profileLng: null, city: '' }) === null);
+ok('a (0, 0) profile is "never set"', st({ profileLat: 0, profileLng: 0 }) === null && st({ profileLat: 0, profileLng: 0, city: 'Cebu' })?.source === 'city');
+ok('bad coordinates fall through', st({ profileLat: 'x', profileLng: 1, city: 'Bangkok' })?.source === 'city' && st({ device: { lat: 999, lng: 0 } }) === null);
+ok('Manila is the last-resort fallback', map.FALLBACK_CENTER[0] === 14.5995 && map.FALLBACK_CENTER[1] === 120.9842 && map.FALLBACK_ZOOM === 12);
+
+// The map palette: warm land, periwinkle water, sage parks, white roads with soft casings, dark slate labels
+function fakeMap(layers, refuse = []) {
+  const sets = [];
+  return {
+    sets,
+    getLayer: (id) => (layers.includes(id) ? {} : undefined),
+    setPaintProperty: (id, prop, value) => {
+      if (refuse.includes(id)) throw new Error('refused');
+      sets.push([id, prop, value]);
+    },
+  };
+}
+const all = ['background', 'water', 'park', 'highway_major_inner', 'highway_major_casing', 'highway-name-minor', 'label_city'];
+const m1 = fakeMap(all);
+const n1 = pal.applyMapPalette(m1);
+const got = (id, prop) => m1.sets.find(([i, p]) => i === id && p === prop)?.[2];
+ok('the palette repaints the layers a style has', n1 === all.length && m1.sets.length === all.length);
+ok('land, water, park', got('background', 'background-color') === '#FAF9FC' && got('water', 'fill-color') === '#DFE3EE' && got('park', 'fill-color') === '#EAEFE9');
+ok('roads are white with soft casings', got('highway_major_inner', 'line-color') === '#FFFFFF' && got('highway_major_casing', 'line-color') === '#E6E4EE');
+ok('street and place labels are dark slate', got('highway-name-minor', 'text-color') === '#4B5563' && got('label_city', 'text-color') === '#4B5563');
+ok('a style with none of these layers is left alone without an error', pal.applyMapPalette(fakeMap(['something_else'])) === 0);
+const m2 = fakeMap(all, ['water']);
+ok('a layer that refuses a property does not stop or throw', pal.applyMapPalette(m2) === all.length - 1 && m2.sets.some(([i]) => i === 'park'));
+ok('a map whose lookups throw cannot throw into the page', pal.applyMapPalette({ getLayer: () => { throw new Error('x'); }, setPaintProperty: () => {} }) === 0);
 
 console.log(`moment place and intents: ${passed} passed, ${failures.length} failed`);
 if (failures.length) {
