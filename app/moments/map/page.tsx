@@ -4,7 +4,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import dynamic from 'next/dynamic';
 import { useActionToast } from '@/components/ActionToast';
 import { useLocale } from '@/components/i18n/LocaleProvider';
-import { INTENT_OPTIONS } from '@/lib/intents';
+import { intentLabel } from '@/lib/intents';
 import { pinVisible } from '@/lib/momentMap';
 import { cityCenter } from '@/lib/seaLocations';
 import type { MomentItem } from '@/lib/moments';
@@ -21,13 +21,12 @@ const SparkMomentSheet = dynamic(() => import('@/components/moments/SparkMomentS
 // Opens on Manila until the pins frame themselves.
 const START: readonly [number, number] = cityCenter('Manila') ?? [14.5995, 120.9842];
 
-const PILL = 'inline-flex h-8 items-center rounded-full border px-3.5 text-xs font-medium transition-colors active:scale-95';
+const PILL = 'inline-flex h-8 shrink-0 items-center rounded-full border px-3.5 text-xs font-medium transition-colors active:scale-95';
 const PILL_ON = 'border-[#726E97] bg-[#726E97] text-white';
 const PILL_OFF = 'border-[#D0CDE1] bg-white text-[#413B5E] hover:bg-[#EAE9F2]/40';
 
 /**
- * The spot map: every pinned Moment as an avatar pin on a light map, narrowed by the five "Looking for" pills and the
- * Local guide picks switch. A pin opens the spot sheet (photo, caption, who, profile / Spark, directions). The page fetches
+ * The spot map: every pinned Moment as an avatar pin on a light map, narrowed by All, Local Guide Picks and Friends. A pin opens the spot sheet (photo, caption, who, profile / Spark, directions). The page fetches
  * once, aborts the request if you leave, and the map cleans itself up on unmount.
  */
 export default function MomentsMapPage() {
@@ -35,8 +34,8 @@ export default function MomentsMapPage() {
   const showToast = useActionToast();
   const [items, setItems] = useState<MomentItem[] | null>(null);
   const [failed, setFailed] = useState(false);
-  const [intent, setIntent] = useState<string | null>(null);
-  const [picks, setPicks] = useState(false);
+  // The strip is All, Local Guide Picks or Friends: one at a time.
+  const [filter, setFilter] = useState<'all' | 'picks' | 'friends'>('all');
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [sparkTarget, setSparkTarget] = useState<MomentItem | null>(null);
 
@@ -56,8 +55,8 @@ export default function MomentsMapPage() {
   }, []);
 
   const visible = useMemo(
-    () => (items ?? []).filter((m) => m.place && m.placeLat != null && m.placeLng != null && pinVisible(m.author, { intent, picks })),
-    [items, intent, picks]
+    () => (items ?? []).filter((m) => m.place && m.placeLat != null && m.placeLng != null && pinVisible(m.author, { intent: filter === 'friends' ? 'friends' : null, picks: filter === 'picks' })),
+    [items, filter]
   );
   const pins: Pin[] = useMemo(
     () =>
@@ -72,24 +71,16 @@ export default function MomentsMapPage() {
       <div className="relative h-[calc(100dvh-8.5rem)] min-h-[420px] w-full">
         <MapCanvas pins={pins} selectedId={selectedId} onPinClick={setSelectedId} center={START} zoom={11} fit />
 
-        {/* Filters float over the map as flat white pills (no blur, no shadow): the map keeps panning at full speed. */}
-        <div className="absolute inset-x-0 top-0 z-10 flex flex-wrap gap-1.5 px-3 pt-3">
-          <button type="button" aria-pressed={intent === null} onClick={() => setIntent(null)} className={`${PILL} ${intent === null ? PILL_ON : PILL_OFF}`}>
+        {/* Filters float over the map as flat white pills (no blur, no shadow) in one scrolling row, so they take one line of map: it keeps panning at full speed. */}
+        <div className="no-scrollbar absolute inset-x-0 top-0 z-10 flex flex-nowrap items-center gap-2 overflow-x-auto whitespace-nowrap px-4 pt-3">
+          <button type="button" aria-pressed={filter === 'all'} onClick={() => setFilter('all')} className={`${PILL} ${filter === 'all' ? PILL_ON : PILL_OFF}`}>
             {t('moments.mapAll')}
           </button>
-          {INTENT_OPTIONS.map((o) => (
-            <button
-              key={o.value}
-              type="button"
-              aria-pressed={intent === o.value}
-              onClick={() => setIntent(intent === o.value ? null : o.value)}
-              className={`${PILL} ${intent === o.value ? PILL_ON : PILL_OFF}`}
-            >
-              {o.label}
-            </button>
-          ))}
-          <button type="button" aria-pressed={picks} onClick={() => setPicks((v) => !v)} className={`${PILL} ${picks ? PILL_ON : PILL_OFF}`}>
+          <button type="button" aria-pressed={filter === 'picks'} onClick={() => setFilter('picks')} className={`${PILL} ${filter === 'picks' ? PILL_ON : PILL_OFF}`}>
             {t('moments.mapPicks')}
+          </button>
+          <button type="button" aria-pressed={filter === 'friends'} onClick={() => setFilter('friends')} className={`${PILL} ${filter === 'friends' ? PILL_ON : PILL_OFF}`}>
+            {intentLabel('friends')}
           </button>
         </div>
 

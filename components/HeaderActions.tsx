@@ -161,22 +161,25 @@ export function HeaderActions({ action }: { action?: HeaderAction }) {
           title="Account menu"
           aria-haspopup="menu"
           aria-expanded={menuOpen}
-          // A pill, not a bare photo: the chevron says "this opens a menu", and it turns over (with a soft fill) while open.
-          className={`flex h-9 items-center gap-0.5 rounded-full pr-1.5 text-[#726E97] transition-colors hover:bg-[#EAE9F2] ${menuOpen ? 'bg-[#EAE9F2]' : ''}`}
+          // The photo is an exact square circle that cannot be squeezed; a small white badge on its bottom-right corner (with the
+          // chevron, which turns over while the menu is open) says "this opens a menu".
+          className={`relative flex h-9 w-9 shrink-0 items-center justify-center rounded-full text-[#726E97] transition-colors ${menuOpen ? 'bg-[#EAE9F2]' : ''}`}
         >
-          <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#EAE9F2]/70 ring-1 ring-[#726E97]/20">
+          <span className="h-9 w-9 shrink-0 aspect-square overflow-hidden rounded-full bg-[#EAE9F2]/70 ring-1 ring-[#726E97]/20 flex items-center justify-center">
             {profile?.avatar_url ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={supabaseImage(profile.avatar_url, AVATAR_IMAGE)} alt="" width={36} height={36} className="w-9 h-9 rounded-full object-cover" />
+              <img src={supabaseImage(profile.avatar_url, AVATAR_IMAGE)} alt="" width={36} height={36} className="h-full w-full object-cover" />
             ) : (
               <User className="w-5 h-5" aria-hidden />
             )}
           </span>
-          <ChevronDown
-            className={`h-3.5 w-3.5 transition-transform duration-200 motion-reduce:transition-none ${menuOpen ? 'rotate-180 text-[#524E75]' : ''}`}
-            strokeWidth={2.25}
-            aria-hidden
-          />
+          <span className="absolute -bottom-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full border border-neutral-200 bg-white">
+            <ChevronDown
+              className={`h-2.5 w-2.5 shrink-0 transition-transform duration-200 motion-reduce:transition-none ${menuOpen ? 'rotate-180 text-[#524E75]' : ''}`}
+              strokeWidth={2.5}
+              aria-hidden
+            />
+          </span>
         </button>
         {menuOpen && (
           // Account actions only; notifications live in the bell panel.
