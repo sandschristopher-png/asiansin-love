@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { LegalPage, type LegalSection } from '@/components/LegalPage';
+import { SUPPORT_EMAIL, SUPPORT_RESPONSE_EN } from '@/lib/support';
 
 export const metadata: Metadata = {
   title: 'Privacy Policy',
@@ -170,7 +171,7 @@ const sections: LegalSection[] = [
     body: (
       <p>
         Depending on where you live you may have the right to access, correct, export or delete your data, or to object to
-        some processing. To make a request or ask a question, use the Feedback option in the app. See also our{' '}
+        some processing. To make a request or ask a question, email <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> from the address you signed up with. {SUPPORT_RESPONSE_EN} See also our{' '}
         <Link href="/terms">Terms of Service</Link> and <Link href="/safety">Safety Guide</Link>.
       </p>
     ),

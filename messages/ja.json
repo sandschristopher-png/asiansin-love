@@ -377,7 +377,7 @@
       "legalSupport": "サポート",
       "supportSla": "サポートへのお問い合わせには、営業時間内で24〜48時間以内にご返信します。",
       "descriptor": "ご請求は、当社の認定決済代行会社の名義で明細書に表示されます。",
-      "androidOnly": "Meet in Asia Androidアプリで利用できます"
+      "androidOnly": "Meet in Asia のAndroidアプリでアップグレードできます"
     }
   },
   "messages": {
@@ -685,5 +685,19 @@
     "momentsTitle": "リアルな日常のモーメント",
     "momentsBody": "実在のスポットに紐づく写真の投稿だから、会話は場所から始まります。",
     "momentsAlt": "マニラのスポットに紐づくカフェの写真が並ぶモーメントのフィード"
+  },
+  "billing": {
+    "buy": "Plusにアップグレード",
+    "buying": "Google Playを開いています...",
+    "restore": "購入を復元",
+    "restoreSub": "Google Playで登録済みですか？このアカウントにPlusを復元します。",
+    "restoring": "Google Playを確認しています...",
+    "restored": "Plusを復元しました。おかえりなさい。",
+    "nothingToRestore": "このGoogleアカウントに有効なPlusの定期購入は見つかりませんでした。",
+    "activated": "Plusが有効になりました。ありがとうございます。",
+    "pending": "お支払いは保留中です。Google Playで確認でき次第、Plusが有効になります。",
+    "unavailable": "このデバイスでは現在Google Playを利用できません。Playストアのあるスマートフォンでもう一度お試しください。",
+    "failed": "購入を確認できませんでした。請求された場合は「購入を復元」をタップするか、{email} までご連絡ください。",
+    "otherAccount": "そのGoogle Playの購入は、別のMeet in Asiaアカウントのものです。"
   }
 }

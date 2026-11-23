@@ -377,7 +377,7 @@
       "legalSupport": "Suporta",
       "supportSla": "Sumasagot kami sa mga kahilingan sa suporta sa loob ng 24–48 oras ng negosyo.",
       "descriptor": "Lalabas ang mga singil sa iyong billing statement sa ilalim ng aming awtorisadong payment processor.",
-      "androidOnly": "Available sa Meet in Asia Android app"
+      "androidOnly": "Mag-upgrade sa Meet in Asia Android app"
     }
   },
   "messages": {
@@ -685,5 +685,19 @@
     "momentsTitle": "Mga Sandali sa Totoong Buhay",
     "momentsBody": "Mga post na may larawan na nakatali sa totoong lugar, kaya may mapag-uusapan agad.",
     "momentsAlt": "Ang Moments feed na may larawan ng café na nakatali sa isang lugar sa Maynila"
+  },
+  "billing": {
+    "buy": "Mag-upgrade sa Plus",
+    "buying": "Binubuksan ang Google Play...",
+    "restore": "Ibalik ang mga Binili",
+    "restoreSub": "Naka-subscribe na sa Google Play? Ibalik ang Plus sa account na ito.",
+    "restoring": "Sinusuri ang Google Play...",
+    "restored": "Naibalik ang Plus. Welcome back.",
+    "nothingToRestore": "Walang aktibong Plus subscription na nakita sa Google account na ito.",
+    "activated": "Aktibo na ang Plus. Salamat.",
+    "pending": "Nakabinbin pa ang bayad mo. Magbubukas ang Plus pagkumpirma ng Google Play.",
+    "unavailable": "Hindi available ang Google Play sa device na ito ngayon. Subukan ulit sa phone na may Play Store.",
+    "failed": "Hindi namin makumpirma ang pagbili. Kung nasingil ka, pindutin ang Ibalik ang mga Binili o mag-email sa {email}.",
+    "otherAccount": "Ang pagbiling iyon sa Google Play ay pag-aari ng ibang Meet in Asia account."
   }
 }

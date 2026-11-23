@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { IceFrame, IceNotice } from '@/components/ui/IceFrame';
-import { useIsNativeApp } from '@/lib/useNativeApp';
+import { usePlayBilling } from '@/lib/usePlayBilling';
 import React, { useState } from 'react';
 import { useLocale } from '@/components/i18n/LocaleProvider';
 import { AmbientAurora } from '@/components/ui/AmbientAurora';
@@ -22,8 +22,12 @@ export default function UpgradeModal({
   triggerContext = 'general',
 }: UpgradeModalProps) {
   const { t } = useLocale();
-  // Web: "Available in the Meet in Asia Android app" (no payment prompt). App: the buy button waits for Google Play Billing.
-  const native = useIsNativeApp();
+  // Web: "Upgrade in the Meet in Asia Android app" (no payment prompt). App: Google Play Billing, prices from Google Play.
+  // Once Plus is active the page reloads so every screen reads the new plan.
+  const billing = usePlayBilling(() => {
+    window.setTimeout(() => window.location.reload(), 1200);
+  });
+  const native = billing.native;
 
   // Hooks first: an early return above a hook breaks the rules of hooks.
   const [selectedTier, setSelectedTier] = useState<'6m' | '3m' | '1m'>('6m');
@@ -146,7 +150,7 @@ export default function UpgradeModal({
                 <div className="text-[9px] text-[#726E97] font-semibold">Best Value</div>
               </div>
               <div className="mt-1 pt-1 border-t border-[#D0CDE1]">
-                <div className="text-xs font-semibold text-[#413B5E]">$7.99<span className="text-[9px] font-normal text-[#413B5E]/75">/mo</span></div>
+                <div className="text-xs font-semibold text-[#413B5E]">{billing.offerings['6m']?.perMonth ?? '$7.99'}<span className="text-[9px] font-normal text-[#413B5E]/75">/mo</span></div>
               </div>
             </button>
 
@@ -167,23 +171,35 @@ export default function UpgradeModal({
                 <div className="text-[9px] text-slate-600">Standard</div>
               </div>
               <div className="mt-1 pt-1 border-t border-[#D0CDE1]">
-                <div className="text-xs font-semibold text-[#413B5E]">$14.99<span className="text-[9px] font-normal text-[#413B5E]/75">/mo</span></div>
+                <div className="text-xs font-semibold text-[#413B5E]">{billing.offerings['1m']?.perMonth ?? '$14.99'}<span className="text-[9px] font-normal text-[#413B5E]/75">/mo</span></div>
               </div>
             </button>
           </div>
 
-          {/* No payment prompt on the website; the app's buy button waits for Google Play Billing ("Coming soon"). */}
+          {/* No payment prompt on the website; in the app the buy button runs Google Play Billing. */}
           {native ? (
             <>
               <button
                 type="button"
-                disabled
-                aria-disabled="true"
-                className="w-full py-3 rounded-2xl bg-[#EAE9F2] text-[#413B5E]/60 font-medium text-xs tracking-wider uppercase cursor-not-allowed flex items-center justify-center mb-2"
+                onClick={() => void billing.buy(selectedTier)}
+                disabled={!billing.offerings[selectedTier] || billing.busy !== null}
+                className="w-full py-3 rounded-2xl bg-[#726E97] hover:bg-[#524E75] text-white font-medium text-xs tracking-wider uppercase transition-colors flex items-center justify-center mb-2 disabled:bg-[#EAE9F2] disabled:text-[#413B5E]/60 disabled:cursor-not-allowed"
               >
-                {t('plus.page.comingSoon')}
+                {billing.busy === 'buy' ? t('billing.buying') : t('billing.buy')}
               </button>
-              <IceNotice className="mb-1.5">{t('plus.page.upgradesOpening')}</IceNotice>
+              {(billing.notice || billing.unavailable) && (
+                <div aria-live="polite">
+                  <IceNotice className="mb-1.5">{billing.notice ?? t('billing.unavailable')}</IceNotice>
+                </div>
+              )}
+              <button
+                type="button"
+                onClick={() => void billing.restore()}
+                disabled={billing.busy !== null}
+                className="mb-1.5 w-full py-1 text-center text-[11px] font-semibold text-[#726E97] underline underline-offset-4 disabled:opacity-60"
+              >
+                {billing.busy === 'restore' ? t('billing.restoring') : t('billing.restore')}
+              </button>
             </>
           ) : (
             <IceNotice className="mb-1.5">{t('plus.page.androidOnly')}</IceNotice>

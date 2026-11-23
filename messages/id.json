@@ -377,7 +377,7 @@
       "legalSupport": "Dukungan",
       "supportSla": "Kami membalas permintaan dukungan dalam 24–48 jam kerja.",
       "descriptor": "Tagihan akan muncul di laporan tagihanmu atas nama pemroses pembayaran resmi kami.",
-      "androidOnly": "Tersedia di aplikasi Android Meet in Asia"
+      "androidOnly": "Upgrade di aplikasi Android Meet in Asia"
     }
   },
   "messages": {
@@ -685,5 +685,19 @@
     "momentsTitle": "Momen Kehidupan Nyata",
     "momentsBody": "Unggahan foto yang terhubung ke tempat nyata, jadi obrolan dimulai dari sebuah tempat.",
     "momentsAlt": "Umpan Moments dengan foto kafe yang ditandai di sebuah tempat di Manila"
+  },
+  "billing": {
+    "buy": "Upgrade ke Plus",
+    "buying": "Membuka Google Play...",
+    "restore": "Pulihkan Pembelian",
+    "restoreSub": "Sudah berlangganan di Google Play? Pulihkan Plus ke akun ini.",
+    "restoring": "Memeriksa Google Play...",
+    "restored": "Plus dipulihkan. Selamat datang kembali.",
+    "nothingToRestore": "Tidak ada langganan Plus aktif di akun Google ini.",
+    "activated": "Plus aktif. Terima kasih.",
+    "pending": "Pembayaran Anda sedang menunggu. Plus aktif segera setelah Google Play mengonfirmasinya.",
+    "unavailable": "Google Play tidak tersedia di perangkat ini saat ini. Coba lagi di ponsel dengan Play Store.",
+    "failed": "Kami tidak dapat mengonfirmasi pembelian. Jika Anda sudah dikenai biaya, ketuk Pulihkan Pembelian atau kirim email ke {email}.",
+    "otherAccount": "Pembelian Google Play itu milik akun Meet in Asia yang lain."
   }
 }

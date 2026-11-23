@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { LegalPage, type LegalSection } from '@/components/LegalPage';
-import { SUPPORT_RESPONSE_EN } from '@/lib/support';
+import { SUPPORT_EMAIL, SUPPORT_RESPONSE_EN } from '@/lib/support';
 
 export const metadata: Metadata = {
   title: 'Terms of Service',
@@ -95,8 +95,8 @@ const sections: LegalSection[] = [
     body: (
       <>
         <p>
-          <strong>Cancel anytime</strong> before your next renewal date by emailing support@meetin.asia (Settings shows the
-          same address). Cancelling stops future renewals; you keep Plus until the end of the period you already paid for.
+          <strong>Cancel anytime</strong> before your next renewal date by emailing <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> (Settings shows the
+          same address). Plus bought in the Android app is billed by Google Play, so you can also cancel it there under Subscriptions in the Play Store. Cancelling stops future renewals; you keep Plus until the end of the period you already paid for.
           Please cancel before you delete your account.
         </p>
         <p>{SUPPORT_RESPONSE_EN}</p>
@@ -111,7 +111,7 @@ const sections: LegalSection[] = [
         <p>Payments are non-refundable except where the law requires otherwise.</p>
         <p>
           Accidental charges, duplicate billing and technical billing errors are reviewed on a case-by-case basis when they
-          are reported promptly to support. Email support@meetin.asia from the address you signed up with and include the
+          are reported promptly to support. Email <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> from the address you signed up with and include the
           date and amount of the charge.
         </p>
         <p>

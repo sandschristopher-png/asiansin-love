@@ -14,7 +14,9 @@ import { AppShell } from '@/components/layout/AppShell';
 import { CallProvider } from '@/components/calls/CallProvider';
 import { useMemberState } from '@/lib/useMemberState';
 import { NativeAds } from '@/components/NativeAds';
+import { NativeBillingSync } from '@/components/NativeBillingSync';
 import { NativeBackButton } from '@/components/NativeBackButton';
+import { NativeAuthBridge } from '@/components/NativeAuthBridge';
 
 /** Wraps the in-app frame in the call provider; marketing, auth and admin routes get no calling. */
 function CallShell({ enabled, children }: { enabled: boolean; children: React.ReactNode }) {
@@ -71,6 +73,8 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
     <AppShell>
       {/* The Android back button (app only): sheets close, sub-pages go back, root tabs go home, Discover leaves. */}
       <NativeBackButton />
+      {/* Google / LINE sign-in coming back from the system browser (app only). */}
+      <NativeAuthBridge />
       {/* Voice calls: an incoming call reaches every in-app page; the call screen lives inside this 480px frame. */}
       <CallShell enabled={!isMarketingOrAuth && !isAdmin}>
       {!isMarketingOrAuth && !isPublicProfile && !isChat && !isAdmin && (
@@ -98,6 +102,8 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
         {!isMarketingOrAuth && <RealtimeNotifier />}
         {/* The Android app's ad banner only: nothing in a browser, nothing for Plus members. */}
         {!isMarketingOrAuth && !isAdmin && <NativeAds />}
+        {/* Re-checks Google Play subscriptions once per app session (app only, silent). */}
+        {!isMarketingOrAuth && !isAdmin && <NativeBillingSync />}
         {/* One-time push permission prompt (after sign-in / onboarding, never on those pages) */}
         {!isMarketingOrAuth && !isAdmin && <PushPromptOnce />}
       </div>

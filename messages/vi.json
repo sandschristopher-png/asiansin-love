@@ -377,7 +377,7 @@
       "legalSupport": "Hỗ trợ",
       "supportSla": "Chúng tôi phản hồi yêu cầu hỗ trợ trong vòng 24–48 giờ làm việc.",
       "descriptor": "Khoản phí sẽ hiển thị trên sao kê của bạn dưới tên đơn vị xử lý thanh toán được ủy quyền của chúng tôi.",
-      "androidOnly": "Có trong ứng dụng Meet in Asia dành cho Android"
+      "androidOnly": "Nâng cấp trong ứng dụng Meet in Asia dành cho Android"
     }
   },
   "messages": {
@@ -685,5 +685,19 @@
     "momentsTitle": "Khoảnh khắc đời thực",
     "momentsBody": "Bài đăng ảnh gắn với một địa điểm thật, để cuộc trò chuyện bắt đầu từ một nơi chốn.",
     "momentsAlt": "Bảng tin Moments hiển thị ảnh quán cà phê gắn với một địa điểm ở Manila"
+  },
+  "billing": {
+    "buy": "Nâng cấp lên Plus",
+    "buying": "Đang mở Google Play...",
+    "restore": "Khôi phục giao dịch mua",
+    "restoreSub": "Đã đăng ký trên Google Play? Khôi phục Plus cho tài khoản này.",
+    "restoring": "Đang kiểm tra Google Play...",
+    "restored": "Đã khôi phục Plus. Chào mừng bạn trở lại.",
+    "nothingToRestore": "Không tìm thấy gói Plus đang hoạt động trên tài khoản Google này.",
+    "activated": "Plus đã được kích hoạt. Cảm ơn bạn.",
+    "pending": "Thanh toán của bạn đang chờ xử lý. Plus sẽ mở ngay khi Google Play xác nhận.",
+    "unavailable": "Hiện chưa dùng được Google Play trên thiết bị này. Hãy thử lại trên điện thoại có Play Store.",
+    "failed": "Chúng tôi chưa xác nhận được giao dịch. Nếu bạn đã bị trừ tiền, hãy nhấn Khôi phục giao dịch mua hoặc gửi email tới {email}.",
+    "otherAccount": "Giao dịch Google Play đó thuộc về một tài khoản Meet in Asia khác."
   }
 }

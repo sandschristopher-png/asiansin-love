@@ -16,6 +16,8 @@ import { authHref, describeAuthError, safeReturnTo } from '@/lib/authRedirect';
 import { routeAfterSignIn } from '@/lib/routeAfterSignIn';
 import { localizeError } from '@/lib/i18n/errors';
 import { authOrigin } from '@/lib/siteUrl';
+import { isNativeApp } from '@/lib/nativeApp';
+import { startNativeOAuth } from '@/lib/nativeOAuth';
 import type { TKey } from '@/lib/i18n';
 
 /** Google / LINE / Email: one shared pill so the three read as a single stack. */
@@ -113,10 +115,31 @@ export function AuthScreen({ mode, audience = 'western' }: { mode: 'login' | 'si
     return () => window.removeEventListener('pageshow', onShow);
   }, []);
 
+  // In the Android app the provider opens in the system Custom Tab and the return link reopens the app
+  // (components/NativeAuthBridge.tsx). Closing the tab without finishing frees the buttons again.
+  useEffect(() => {
+    if (!isNativeApp()) return;
+    let cancelled = false;
+    let handle: { remove: () => Promise<void> } | null = null;
+    import('@capacitor/browser')
+      .then(({ Browser }) => Browser.addListener('browserFinished', () => setBusy((b) => (b === 'google' || b === 'line' ? null : b))))
+      .then((listener) => {
+        if (cancelled) void listener.remove();
+        else handle = listener;
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+      void handle?.remove().catch(() => {});
+    };
+  }, []);
+
   const oauth = async (provider: 'google' | 'line') => {
     setBusy(provider);
     setError(null);
-    const { error } = await supabase.auth.signInWithOAuth({
+    const { error } = isNativeApp()
+      ? await startNativeOAuth(provider, returnTo)
+      : await supabase.auth.signInWithOAuth({
       // LINE is a custom OIDC provider in Supabase ("custom:line"); the SDK types list built-ins only.
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       provider: (provider === 'line' ? 'custom:line' : 'google') as any,

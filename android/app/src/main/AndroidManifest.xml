@@ -24,6 +24,15 @@
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+            <!-- Google / LINE sign-in comes back here: Supabase redirects the system browser to asia.meetin.app://auth/callback,
+                 Android reopens the app with that link, and NativeAuthBridge finishes the sign-in. Add the same URL to
+                 Supabase > Authentication > URL Configuration > Redirect URLs. -->
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="asia.meetin.app" android:host="auth" android:path="/callback" />
+            </intent-filter>
         </activity>
 
         <provider
@@ -46,6 +55,8 @@
     <!-- Approximate location only (city level): confirming the member's city and "use my location" on a Moment. The spot map
          itself never reads the device position, and precise location is not requested. -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!-- Google Play Billing (Plus subscriptions, Boost): @capgo/native-purchases. -->
+    <uses-permission android:name="com.android.vending.BILLING" />
     <!-- Android 13+ advertising id, required by AdMob. -->
     <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
 

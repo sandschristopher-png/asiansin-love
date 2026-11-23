@@ -1,14 +1,12 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { LegalPage, type LegalSection } from '@/components/LegalPage';
-import { SUPPORT_RESPONSE_EN } from '@/lib/support';
+import { SUPPORT_EMAIL, SUPPORT_RESPONSE_EN } from '@/lib/support';
 
 export const metadata: Metadata = {
   title: 'Contact',
   description: 'How to reach the Meet in Asia team for support, safety reports and privacy requests.',
 };
-
-const SUPPORT_EMAIL = 'support@meetin.asia';
 
 const sections: LegalSection[] = [
   {
@@ -37,7 +35,7 @@ const sections: LegalSection[] = [
     title: 'Privacy requests',
     body: (
       <p>
-        To access or delete your data, email {SUPPORT_EMAIL} or delete your account in Settings. The{' '}
+        To access or delete your data, email <a href={`mailto:${SUPPORT_EMAIL}`}>{SUPPORT_EMAIL}</a> or delete your account in Settings. The{' '}
         <Link href="/privacy">Privacy Policy</Link> explains what we keep and for how long.
       </p>
     ),

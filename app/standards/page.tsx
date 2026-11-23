@@ -4,6 +4,7 @@ import React from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { ShieldCheck, HeartHandshake, Ban, Users, ArrowLeft } from 'lucide-react';
+import { SUPPORT_EMAIL } from '@/lib/support';
 
 
 export default function CommunityStandardsPage() {
@@ -90,6 +91,13 @@ export default function CommunityStandardsPage() {
               );
             })}
           </div>
+
+          <p className="text-xs sm:text-sm text-[#413B5E] leading-relaxed">
+            Questions about these standards or a decision on your account? Email{' '}
+            <a href={`mailto:${SUPPORT_EMAIL}`} className="font-medium text-[#726E97] underline underline-offset-4">
+              {SUPPORT_EMAIL}
+            </a>.
+          </p>
 
           <div className="pt-4 border-t border-[#B8B3D1]/20 text-center">
             <Link

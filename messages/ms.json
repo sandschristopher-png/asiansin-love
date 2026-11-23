@@ -377,7 +377,7 @@
       "legalSupport": "Sokongan",
       "supportSla": "Kami membalas permintaan sokongan dalam masa 24–48 jam bekerja.",
       "descriptor": "Caj akan dipaparkan pada penyata bil anda di bawah pemproses pembayaran sah kami.",
-      "androidOnly": "Tersedia dalam aplikasi Android Meet in Asia"
+      "androidOnly": "Naik taraf dalam aplikasi Android Meet in Asia"
     }
   },
   "messages": {
@@ -685,5 +685,19 @@
     "momentsTitle": "Detik Kehidupan Sebenar",
     "momentsBody": "Siaran foto yang dikaitkan dengan tempat sebenar, supaya perbualan bermula dengan sebuah tempat.",
     "momentsAlt": "Suapan Moments menunjukkan foto kafe yang dikaitkan dengan satu lokasi di Manila"
+  },
+  "billing": {
+    "buy": "Naik taraf ke Plus",
+    "buying": "Membuka Google Play...",
+    "restore": "Pulihkan Pembelian",
+    "restoreSub": "Sudah melanggan di Google Play? Pulihkan Plus ke akaun ini.",
+    "restoring": "Menyemak Google Play...",
+    "restored": "Plus dipulihkan. Selamat kembali.",
+    "nothingToRestore": "Tiada langganan Plus aktif ditemui pada akaun Google ini.",
+    "activated": "Plus aktif. Terima kasih.",
+    "pending": "Pembayaran anda belum selesai. Plus dibuka sebaik sahaja Google Play mengesahkannya.",
+    "unavailable": "Google Play tidak tersedia pada peranti ini sekarang. Cuba lagi pada telefon yang mempunyai Play Store.",
+    "failed": "Kami tidak dapat mengesahkan pembelian. Jika anda telah dicaj, ketik Pulihkan Pembelian atau e-mel {email}.",
+    "otherAccount": "Pembelian Google Play itu milik akaun Meet in Asia yang lain."
   }
 }

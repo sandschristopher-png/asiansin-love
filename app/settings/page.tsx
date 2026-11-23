@@ -15,7 +15,7 @@ import {
   EyeOff,
   Ghost,
   Loader2,
-  MessageCircle, Trash2, AlertTriangle, Mail, FileText, Check, CheckCircle2 } from 'lucide-react';
+  MessageCircle, Trash2, AlertTriangle, Mail, FileText, Check, CheckCircle2, RotateCcw } from 'lucide-react';
 import { supabase } from '@/lib/supabase/client';
 import { hardSignOut } from '@/lib/hardSignOut';
 import { PushDeviceRow } from '@/components/PushDeviceRow';
@@ -33,6 +33,7 @@ import { PlusBadge } from '@/components/ui/PlusBadge';
 import { Switch } from '@/components/ui/Switch';
 import { isPlusProfile } from '@/lib/plus';
 import { getCachedSubscription, setCachedSubscription } from '@/lib/subscriptionStatus';
+import { usePlayBilling } from '@/lib/usePlayBilling';
 
 type SettingsKey = 'hide_profile' | 'show_active_status' | 'notify_sparks' | 'notify_messages';
 
@@ -88,6 +89,12 @@ export default function SettingsHubPage() {
   // Plus members never see a "Plus ·" upsell or a missing billing row while it loads.
   const [isSubscribed, setIsSubscribed] = useState<boolean | null>(() => getCachedSubscription());
   const isPlus = isSubscribed === true;
+  // Android app only: Restore Purchases brings Plus back from Google Play (after a reinstall or on a new phone).
+  const billing = usePlayBilling(() => setIsSubscribed(true));
+  const billingNotice = billing.notice;
+  useEffect(() => {
+    if (billingNotice) showActionToast(billingNotice, 'info');
+  }, [billingNotice, showActionToast]);
   // Ghost Mode (Plus): browse without leaving a footprint. Read on its own so a database without
   // the ghost_mode column (20261114_privacy_features.sql) still loads the other settings.
   const [ghostMode, setGhostMode] = useState(false);
@@ -472,7 +479,30 @@ export default function SettingsHubPage() {
           ))}
         </div>
 
-        {/* Plus billing: cancellations and billing questions go to support while payments are handled by hand. */}
+        {/* Restore Purchases: the Android app only (the website sells nothing). */}
+        {billing.native && (
+          <div className="rounded-3xl bg-white border border-[#D0CDE1] p-2 shadow-2xs">
+            <button
+              type="button"
+              onClick={() => void billing.restore()}
+              disabled={billing.busy !== null}
+              className="w-full flex items-center justify-between p-3 rounded-2xl hover:bg-[#EAE9F2]/40 transition cursor-pointer text-left disabled:opacity-60"
+            >
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-xl bg-[#EAE9F2]/60 text-[#726E97] flex items-center justify-center">
+                  {billing.busy === 'restore' ? <Loader2 className="w-4 h-4 animate-spin" /> : <RotateCcw className="w-4 h-4" />}
+                </div>
+                <div>
+                  <p className="text-xs font-semibold text-[#413B5E]">{t('billing.restore')}</p>
+                  <p className="text-[11px] text-[#413B5E]/75">{t('billing.restoreSub')}</p>
+                </div>
+              </div>
+              <ChevronRight className="w-4 h-4 text-slate-600" />
+            </button>
+          </div>
+        )}
+
+        {/* Plus billing: cancellations and billing questions go to support. */}
         {isPlus && (
           <div className="rounded-3xl bg-white border border-[#D0CDE1] p-2 shadow-2xs">
             <a

@@ -377,7 +377,7 @@
       "legalSupport": "Support",
       "supportSla": "We respond to support requests within 24–48 business hours.",
       "descriptor": "Charges will appear on your billing statement under our authorized payment processor.",
-      "androidOnly": "Available in the Meet in Asia Android app"
+      "androidOnly": "Upgrade in the Meet in Asia Android app"
     }
   },
   "messages": {
@@ -685,5 +685,19 @@
     "momentsTitle": "Real-Life Moments",
     "momentsBody": "Photo posts tied to a real spot, so a conversation starts with a place.",
     "momentsAlt": "The Moments feed showing a café photo pinned to a spot in Manila"
+  },
+  "billing": {
+    "buy": "Upgrade to Plus",
+    "buying": "Opening Google Play...",
+    "restore": "Restore Purchases",
+    "restoreSub": "Already subscribed on Google Play? Bring Plus back to this account.",
+    "restoring": "Checking Google Play...",
+    "restored": "Plus restored. Welcome back.",
+    "nothingToRestore": "No active Plus subscription was found on this Google account.",
+    "activated": "Plus is active. Thank you.",
+    "pending": "Your payment is pending. Plus unlocks as soon as Google Play confirms it.",
+    "unavailable": "Google Play is not available on this device right now. Try again on a phone with the Play Store.",
+    "failed": "We could not confirm the purchase. If you were charged, tap Restore Purchases or email {email}.",
+    "otherAccount": "That Google Play purchase belongs to a different Meet in Asia account."
   }
 }

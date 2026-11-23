@@ -377,7 +377,7 @@
       "legalSupport": "支持",
       "supportSla": "我们会在 24–48 个工作小时内回复支持请求。",
       "descriptor": "扣款将以我们授权的支付处理商的名义显示在您的账单上。",
-      "androidOnly": "可在 Meet in Asia 安卓应用中使用"
+      "androidOnly": "请在 Meet in Asia 安卓应用中升级"
     }
   },
   "messages": {
@@ -685,5 +685,19 @@
     "momentsTitle": "真实生活瞬间",
     "momentsBody": "照片动态绑定真实地点，聊天从一个地方开始。",
     "momentsAlt": "“瞬间”动态，展示绑定马尼拉某地点的咖啡馆照片"
+  },
+  "billing": {
+    "buy": "升级到 Plus",
+    "buying": "正在打开 Google Play...",
+    "restore": "恢复购买",
+    "restoreSub": "已在 Google Play 订阅？将 Plus 恢复到此账号。",
+    "restoring": "正在检查 Google Play...",
+    "restored": "Plus 已恢复，欢迎回来。",
+    "nothingToRestore": "在此 Google 账号下没有找到有效的 Plus 订阅。",
+    "activated": "Plus 已开通，谢谢。",
+    "pending": "您的付款正在处理中，Google Play 确认后即会开通 Plus。",
+    "unavailable": "此设备目前无法使用 Google Play，请在装有 Play 商店的手机上重试。",
+    "failed": "我们无法确认此次购买。如果您已被扣款，请点按“恢复购买”或发送邮件至 {email}。",
+    "otherAccount": "该 Google Play 购买属于另一个 Meet in Asia 账号。"
   }
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import { IceFrame, IceNotice } from '@/components/ui/IceFrame';
-import { useIsNativeApp } from '@/lib/useNativeApp';
+import { usePlayBilling } from '@/lib/usePlayBilling';
 import React, { useEffect, useState, useSyncExternalStore, Suspense } from 'react';
 import { createPortal } from 'react-dom';
 import Link from 'next/link';
@@ -160,10 +160,12 @@ function PlusHubContent() {
     return () => window.clearTimeout(timer);
   }, [highlightRow]);
 
-  // Plus is bought only inside the Android app, through Google Play Billing (@capgo/native-purchases, not wired yet), so the
-  // website never shows a payment prompt: it says where to get Plus. In the app the buy button stays "Coming soon" until
-  // the Play products and server-side purchase verification exist.
-  const native = useIsNativeApp();
+  // Plus is bought only inside the Android app, through Google Play Billing (lib/billing/nativePlay.ts; the server verifies
+  // every purchase), so the website never shows a payment prompt: it says where to get Plus. In the app the prices come
+  // from Google Play and Restore Purchases sits under the buy button.
+  const billing = usePlayBilling(() => setIsSubscribed(true));
+  const native = billing.native;
+  const selectedOffering = billing.offerings[selectedPlan];
 
   const savePct = (savings?: string) => {
     const n = Number((savings || '').replace(/[^0-9]/g, ''));
@@ -234,9 +236,9 @@ function PlusHubContent() {
                     </span>
                   )}
                   <span className="text-[11px] font-semibold text-[#413B5E]/80">{t(PLAN_LABEL[p.id])}</span>
-                  <span className="text-lg font-semibold leading-tight text-[#413B5E]">{p.total}</span>
+                  <span className="text-lg font-semibold leading-tight text-[#413B5E]">{billing.offerings[p.id]?.total ?? p.total}</span>
                   <span className="text-[10px] leading-snug text-slate-600">
-                    {p.months > 1 ? t('plus.perMonth', { price: p.perMonth }) : t('plus.billedMonthly')}
+                    {p.months > 1 ? t('plus.perMonth', { price: billing.offerings[p.id]?.perMonth ?? p.perMonth }) : t('plus.billedMonthly')}
                   </span>
                   {p.months > 1 && (
                     <span className="text-[10px] leading-snug text-slate-600">{t('plus.page.billedEveryN', { n: p.months })}</span>
@@ -364,7 +366,13 @@ function PlusHubContent() {
           </p>
         ) : (
           <div className="space-y-2">
-            <IceNotice>{native ? t('plus.page.upgradesOpening') : t('plus.page.androidOnly')}</IceNotice>
+            {!native ? (
+              <IceNotice>{t('plus.page.androidOnly')}</IceNotice>
+            ) : billing.notice || billing.unavailable ? (
+              <div aria-live="polite">
+                <IceNotice>{billing.notice ?? t('billing.unavailable')}</IceNotice>
+              </div>
+            ) : null}
             <div className="flex items-center gap-2.5">
               <Link
                 href="/discover"
@@ -375,14 +383,24 @@ function PlusHubContent() {
               {native && (
                 <button
                   type="button"
-                  disabled
-                  aria-disabled="true"
-                  className="flex-1 min-w-0 h-12 px-6 rounded-full bg-[#EAE9F2] text-[#413B5E]/60 font-medium text-sm cursor-not-allowed flex items-center justify-center whitespace-nowrap"
+                  onClick={() => void billing.buy(selectedPlan)}
+                  disabled={!selectedOffering || billing.busy !== null}
+                  className="flex-1 min-w-0 h-12 px-6 rounded-full bg-[#726E97] hover:bg-[#524E75] text-white font-medium text-sm transition-colors flex items-center justify-center whitespace-nowrap disabled:bg-[#EAE9F2] disabled:text-[#413B5E]/60 disabled:cursor-not-allowed"
                 >
-                  {t('plus.page.comingSoon')}
+                  {billing.busy === 'buy' ? t('billing.buying') : t('billing.buy')}
                 </button>
               )}
             </div>
+            {native && (
+              <button
+                type="button"
+                onClick={() => void billing.restore()}
+                disabled={billing.busy !== null}
+                className="w-full py-1 text-center text-xs font-semibold text-[#726E97] underline underline-offset-4 disabled:opacity-60"
+              >
+                {billing.busy === 'restore' ? t('billing.restoring') : t('billing.restore')}
+              </button>
+            )}
           </div>
         )}
       </div>,

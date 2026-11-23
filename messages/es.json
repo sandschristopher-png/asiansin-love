@@ -377,7 +377,7 @@
       "legalSupport": "Soporte",
       "supportSla": "Respondemos a las solicitudes de soporte en un plazo de 24 a 48 horas hábiles.",
       "descriptor": "Los cargos aparecerán en tu estado de cuenta a nombre de nuestro procesador de pagos autorizado.",
-      "androidOnly": "Disponible en la app de Meet in Asia para Android"
+      "androidOnly": "Mejora en la app de Meet in Asia para Android"
     }
   },
   "messages": {
@@ -685,5 +685,19 @@
     "momentsTitle": "Momentos de la vida real",
     "momentsBody": "Publicaciones con foto ligadas a un lugar real, para empezar a hablar desde un sitio.",
     "momentsAlt": "El feed de Momentos con una foto de un café ligada a un lugar de Manila"
+  },
+  "billing": {
+    "buy": "Mejorar a Plus",
+    "buying": "Abriendo Google Play...",
+    "restore": "Restaurar compras",
+    "restoreSub": "¿Ya te suscribiste en Google Play? Recupera Plus en esta cuenta.",
+    "restoring": "Consultando Google Play...",
+    "restored": "Plus restaurado. Te damos la bienvenida de nuevo.",
+    "nothingToRestore": "No se encontró ninguna suscripción Plus activa en esta cuenta de Google.",
+    "activated": "Plus está activo. Gracias.",
+    "pending": "Tu pago está pendiente. Plus se activará en cuanto Google Play lo confirme.",
+    "unavailable": "Google Play no está disponible en este dispositivo ahora. Inténtalo en un teléfono con Play Store.",
+    "failed": "No pudimos confirmar la compra. Si te cobraron, pulsa Restaurar compras o escribe a {email}.",
+    "otherAccount": "Esa compra de Google Play pertenece a otra cuenta de Meet in Asia."
   }
 }
