@@ -14,6 +14,7 @@ import { AppShell } from '@/components/layout/AppShell';
 import { CallProvider } from '@/components/calls/CallProvider';
 import { useMemberState } from '@/lib/useMemberState';
 import { NativeAds } from '@/components/NativeAds';
+import { NativeBackButton } from '@/components/NativeBackButton';
 
 /** Wraps the in-app frame in the call provider; marketing, auth and admin routes get no calling. */
 function CallShell({ enabled, children }: { enabled: boolean; children: React.ReactNode }) {
@@ -68,6 +69,8 @@ export function LayoutShell({ children }: { children: React.ReactNode }) {
   return (
     <ActionToastProvider>
     <AppShell>
+      {/* The Android back button (app only): sheets close, sub-pages go back, root tabs go home, Discover leaves. */}
+      <NativeBackButton />
       {/* Voice calls: an incoming call reaches every in-app page; the call screen lives inside this 480px frame. */}
       <CallShell enabled={!isMarketingOrAuth && !isAdmin}>
       {!isMarketingOrAuth && !isPublicProfile && !isChat && !isAdmin && (

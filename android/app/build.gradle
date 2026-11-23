@@ -1,5 +1,21 @@
 apply plugin: 'com.android.application'
 
+// ---- AdMob app id (manifest placeholder) ------------------------------------------------------------------------------
+// PASTE THE PRODUCTION ADMOB APP ID HERE OR, better, in ADMOB_APP_ID in android/gradle.properties (or ~/.gradle/gradle.properties,
+// or -PADMOB_APP_ID=... on the command line). Without it the app builds with Google's public sample id, which is fine for debug
+// builds but is blocked for release builds below.
+def sampleAdmobAppId = 'ca-app-pub-3940256099942544~3347511713'
+def admobAppId = (project.findProperty('ADMOB_APP_ID') ?: sampleAdmobAppId).toString()
+
+// ---- Release signing (keystore.properties, never committed) -----------------------------------------------------------
+// Copy android/keystore.properties.example to android/keystore.properties and fill it in. Without that file a release bundle
+// is built unsigned (Android Studio's "Generate Signed Bundle" can still sign it).
+def keystorePropertiesFile = rootProject.file('keystore.properties')
+def keystoreProperties = new Properties()
+if (keystorePropertiesFile.exists()) {
+    keystorePropertiesFile.withInputStream { keystoreProperties.load(it) }
+}
+
 android {
     namespace = "asia.meetin.app"
     compileSdk = rootProject.ext.compileSdkVersion
@@ -9,6 +25,7 @@ android {
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
         versionName "1.0.0"
+        manifestPlaceholders = [admobAppId: admobAppId]
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         aaptOptions {
              // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
@@ -16,8 +33,21 @@ android {
             ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
         }
     }
+    signingConfigs {
+        release {
+            if (keystorePropertiesFile.exists()) {
+                storeFile file(keystoreProperties['storeFile'])
+                storePassword keystoreProperties['storePassword']
+                keyAlias keystoreProperties['keyAlias']
+                keyPassword keystoreProperties['keyPassword']
+            }
+        }
+    }
     buildTypes {
         release {
+            if (keystorePropertiesFile.exists()) {
+                signingConfig signingConfigs.release
+            }
             minifyEnabled true
             shrinkResources true
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
@@ -52,4 +82,12 @@ try {
     }
 } catch(Exception e) {
     logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
+}
+
+// A release bundle must never ship with Google's sample AdMob id (ads would not pay, and Play may reject it).
+gradle.taskGraph.whenReady { graph ->
+    def building = graph.allTasks.any { it.name in ['bundleRelease', 'assembleRelease', 'packageReleaseBundle'] }
+    if (building && admobAppId == sampleAdmobAppId) {
+        throw new GradleException('ADMOB_APP_ID is still the sample id: refusing to build a release. Set ADMOB_APP_ID in android/gradle.properties to the production AdMob app id (ca-app-pub-XXXXXXXXXXXXXXXX~YYYYYYYYYY).')
+    }
 }

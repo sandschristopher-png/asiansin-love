@@ -80,7 +80,9 @@ export async function captureCurrentLocation(): Promise<{
         }
         resolve({ success: false, error: msg });
       },
-      { enableHighAccuracy: true, timeout: 12000 }
+      // City level is all that is stored (the reverse lookup is at city zoom), so the approximate fix is enough: it keeps the app
+      // to the coarse-location permission.
+      { enableHighAccuracy: false, timeout: 12000, maximumAge: 600000 }
     );
   });
 }

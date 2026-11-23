@@ -4,7 +4,7 @@
 //
 // Adaptive icon: a flat #FAF9FC background layer plus the deep-ink "M" and purple dot as a transparent foreground layer,
 // kept inside Android's centered safe zone (about 66% of the canvas) so no launcher mask can clip it. The splash is flat
-// white (#FFFFFF) with the mark centered; there is no dark variant (the app is light mode only).
+// the light surface (#FAF9FC) with the mark centered; there is no dark variant (the app is light mode only).
 import fs from 'node:fs';
 import path from 'node:path';
 import sharp from 'sharp';
@@ -48,7 +48,7 @@ await png('icon-background.png', svg(1024, '', TILE));
 await png('icon-foreground.png', svg(1024, mark(1024, 1024 * 0.86)));
 // Full icon (older launchers, store listing): tile and mark together.
 await png('icon-only.png', svg(1024, mark(1024, 1024 * 0.58), TILE));
-// Splash: flat white, the mark about 18% of the width in the middle.
-await png('splash.png', svg(2732, mark(2732, 2732 * 0.18), '#FFFFFF'));
+// Splash: the flat light surface (#FAF9FC), the mark about 18% of the width in the middle.
+await png('splash.png', svg(2732, mark(2732, 2732 * 0.18), TILE));
 
 console.log('wrote assets/icon-background.png, icon-foreground.png, icon-only.png, splash.png');

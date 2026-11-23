@@ -7,11 +7,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <!-- AdMob needs its app id here at launch. This is Google's public SAMPLE id (it matches capacitor.config.ts): replace
-             both with Meet in Asia's own AdMob app id before a release build. -->
-        <meta-data
-            android:name="com.google.android.gms.ads.APPLICATION_ID"
-            android:value="ca-app-pub-3940256099942544~3347511713" />
+        <!-- AdMob needs its app id here at launch. It comes from the ADMOB_APP_ID gradle property (android/gradle.properties or
+             ~/.gradle/gradle.properties); see android/app/build.gradle. PASTE THE PRODUCTION ADMOB APP ID THERE before building
+             the release bundle: a release build refuses to run on Google's sample id. -->
+        <meta-data android:name="com.google.android.gms.ads.APPLICATION_ID" android:value="${admobAppId}" />
 
         <activity
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode|navigation|density"
@@ -19,6 +18,7 @@
             android:label="@string/title_activity_main"
             android:theme="@style/AppTheme.NoActionBarLaunch"
             android:launchMode="singleTask"
+            android:windowSoftInputMode="adjustResize"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -38,9 +38,21 @@
     <!-- Permissions -->
 
     <uses-permission android:name="android.permission.INTERNET" />
-    <!-- Location: the Geolocation plugin, for the onboarding / profile location checks. -->
+    <!-- Camera: the four-direction liveness check and profile / Moment photos. -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <!-- Microphone: voice notes, the voice intro and voice calls (WebRTC). -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    <!-- Approximate location only (city level): confirming the member's city and "use my location" on a Moment. The spot map
+         itself never reads the device position, and precise location is not requested. -->
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
-    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <!-- Android 13+ advertising id, required by AdMob. -->
     <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
+
+    <!-- None of the hardware is required, so Chromebooks, tablets and phones without a front camera or microphone are not
+         excluded from Google Play. -->
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
+    <uses-feature android:name="android.hardware.microphone" android:required="false" />
+    <uses-feature android:name="android.hardware.location.gps" android:required="false" />
 </manifest>
