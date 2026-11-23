@@ -543,5 +543,5 @@ nextjs-portal,
 /* The full-bleed spot map runs behind the floating tab bar: its attribution sits above the bar, not under it. */
 .ail-map-lift .maplibregl-ctrl-bottom-right,
 .ail-map-lift .maplibregl-ctrl-bottom-left {
-  bottom: 88px;
+  bottom: calc(96px + env(safe-area-inset-bottom, 0px));
 }

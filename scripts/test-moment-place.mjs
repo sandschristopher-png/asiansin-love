@@ -47,16 +47,22 @@ ok('Local guide picks shows guides only', map.pinVisible(guide, { intent: null, 
 ok('picks and a different intent together show nothing', !map.pinVisible(guide, { intent: 'friends', picks: true }));
 ok('the map style is a keyless light style by default', typeof map.MAP_STYLE_URL === 'string' && map.MAP_STYLE_URL.includes('positron'));
 
-// Where the map opens: the member first, then pins, Manila last
+// Where the map opens: the member's city at city zoom (never coordinates or the device), the pins when none are near, Manila last
 const st = map.pickMapStart;
-ok('profile coordinates win', st({ profileLat: 10.32, profileLng: 123.9, city: 'Manila' })?.source === 'profile' && st({ profileLat: 10.32, profileLng: 123.9 }).zoom === 13);
-ok('the profile city is next, and a municipality counts as its hub', st({ city: 'Cebu City' })?.source === 'city' && st({ city: 'Taguig' })?.center[0] === 14.5995);
-ok('an allowed device position is next', st({ device: { lat: 7.19, lng: 125.45 } })?.source === 'device');
-ok('profile beats city, city beats device', st({ profileLat: 1.3, profileLng: 103.8, city: 'Manila', device: { lat: 7, lng: 125 } })?.source === 'profile' && st({ city: 'Manila', device: { lat: 7, lng: 125 } })?.source === 'city');
-ok('nothing known means no start (the pins frame it)', st({}) === null && st({ city: 'Atlantis' }) === null && st({ profileLat: null, profileLng: null, city: '' }) === null);
-ok('a (0, 0) profile is "never set"', st({ profileLat: 0, profileLng: 0 }) === null && st({ profileLat: 0, profileLng: 0, city: 'Cebu' })?.source === 'city');
-ok('bad coordinates fall through', st({ profileLat: 'x', profileLng: 1, city: 'Bangkok' })?.source === 'city' && st({ device: { lat: 999, lng: 0 } }) === null);
-ok('Manila is the last-resort fallback', map.FALLBACK_CENTER[0] === 14.5995 && map.FALLBACK_CENTER[1] === 120.9842 && map.FALLBACK_ZOOM === 12);
+ok('the profile city centre at zoom 12', st({ city: 'Cebu City' })?.zoom === 12 && st({ city: 'Cebu City' })?.source === 'city' && st({ city: 'Cebu City' })?.center[0] === 10.3157);
+ok('a municipality counts as its hub', st({ city: 'Taguig' })?.center[0] === 14.5995);
+ok('coordinates and the device are not inputs: only a city places the camera', st({ profileLat: 10.32, profileLng: 123.9 }) === null && st({ device: { lat: 7.19, lng: 125.45 } }) === null);
+ok('an unknown or outside-Asia city has no start', st({}) === null && st({ city: 'Las Vegas' }) === null && st({ city: '' }) === null && st({ city: null }) === null);
+ok('the start is never closer than city zoom', ['Manila', 'Bangkok', 'Phnom Penh', 'Singapore'].every((c) => (st({ city: c })?.zoom ?? 0) <= 12));
+const manila = st({ city: 'Manila' });
+const nearManila = [{ lat: 14.55, lng: 121.02 }];
+const inCebu = [{ lat: 10.3157, lng: 123.8854 }];
+ok('no pins anywhere: nothing to frame (Manila is the fallback)', map.shouldFitPins(manila, []) === false && map.shouldFitPins(null, []) === false);
+ok('pins near the member: stay on the city', map.shouldFitPins(manila, nearManila) === false && map.shouldFitPins(manila, [...nearManila, ...inCebu]) === false);
+ok('pins only elsewhere: frame the pins', map.shouldFitPins(manila, inCebu) === true);
+ok('no known city but pins exist: frame the pins', map.shouldFitPins(null, inCebu) === true);
+ok('a pin just inside and just outside 100 km', map.shouldFitPins(manila, [{ lat: 15.45, lng: 120.9842 }]) === false && map.shouldFitPins(manila, [{ lat: 15.6, lng: 120.9842 }]) === true);
+ok('framing and fallback constants', map.FIT_PADDING === 48 && map.FIT_MAX_ZOOM === 14 && map.NEARBY_KM === 100 && map.START_ZOOM === 12 && map.FALLBACK_CENTER[0] === 14.5995 && map.FALLBACK_CENTER[1] === 120.9842 && map.FALLBACK_ZOOM === 12);
 
 // The map palette: warm land, periwinkle water, sage parks, white roads with soft casings, dark slate labels
 function fakeMap(layers, refuse = []) {

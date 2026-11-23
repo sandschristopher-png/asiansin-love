@@ -6,6 +6,7 @@ import 'maplibre-gl/dist/maplibre-gl.css';
 import { supabaseImage, AVATAR_IMAGE } from '@/lib/images/supabaseImage';
 import { MAP_STYLE_URL } from '@/lib/momentMap';
 import { applyMapPalette } from '@/lib/mapPalette';
+import { FIT_MAX_ZOOM, FIT_PADDING } from '@/lib/momentMap';
 
 export interface Pin {
   id: string;
@@ -51,6 +52,8 @@ export default function MapCanvas({
   const pinMarkers = useRef<MlMarker[]>([]);
   const chosenMarker = useRef<MlMarker | null>(null);
   const [ready, setReady] = useState(false);
+  // The basemap fades in once it carries our colors, so the stock grey never flashes while tiles load.
+  const [styled, setStyled] = useState(false);
   // Latest callbacks, so the map is created once and never re-created when a parent re-renders.
   const onPin = useRef(onPinClick);
   const onTap = useRef(onMapClick);
@@ -83,7 +86,10 @@ export default function MapCanvas({
       });
       map.touchZoomRotate.disableRotation();
       // Repaint the basemap in the site's lavender-neutral palette as soon as its style is there (guarded: never throws).
-      map.on('style.load', () => applyMapPalette(map));
+      map.on('style.load', () => {
+        applyMapPalette(map);
+        if (!cancelled) setStyled(true);
+      });
       map.on('click', (e) => onTap.current?.(e.lngLat.lat, e.lngLat.lng));
       mapRef.current = map;
       // Markers do not need the basemap: they show as soon as the map exists, even if tiles are slow or offline.
@@ -102,6 +108,7 @@ export default function MapCanvas({
       mapRef.current?.remove();
       mapRef.current = null;
       setReady(false);
+      setStyled(false);
     };
     // The map is created once; center and zoom only matter at the start (a later center change is handled below).
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -156,7 +163,7 @@ export default function MapCanvas({
     }
     const bounds = new lib.LngLatBounds([pins[0].lng, pins[0].lat], [pins[0].lng, pins[0].lat]);
     pins.forEach((p) => bounds.extend([p.lng, p.lat]));
-    map.fitBounds(bounds, { padding: 64, maxZoom: 15, duration: 0 });
+    map.fitBounds(bounds, { padding: FIT_PADDING, maxZoom: FIT_MAX_ZOOM, duration: 0 });
   }, [ready, pins, fit]);
 
   // The chosen spot (picker): a draggable purple dot.
@@ -195,8 +202,8 @@ export default function MapCanvas({
   // maplibre's stylesheet sets position: relative on the element it mounts into, which would undo an absolute fill: so the
   // map gets its own full-size child inside the absolutely positioned wrapper.
   return (
-    <div className="absolute inset-0 bg-[#F6F4FB]">
-      <div ref={box} className="h-full w-full" />
+    <div className="absolute inset-0 bg-[#FAF9FC]">
+      <div ref={box} className={`h-full w-full transition-opacity duration-300 motion-reduce:transition-none ${styled ? 'opacity-100' : 'opacity-0'}`} />
     </div>
   );
 }

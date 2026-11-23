@@ -1,4 +1,4 @@
-import { cityCenter, kmFromCity, matchSeaCity } from '@/lib/seaLocations';
+import { cityCenter, haversineKm, kmFromCity, matchSeaCity } from '@/lib/seaLocations';
 
 /**
  * Spot map rules: how a pin is validated and stored, which style the map uses, and how the filter pills narrow the pins.
@@ -57,27 +57,35 @@ export const FALLBACK_ZOOM = 12;
 export interface MapStart {
   center: readonly [number, number];
   zoom: number;
-  source: 'profile' | 'city' | 'device';
+  source: 'city';
+}
+
+/** The map never opens closer than this on a member's own area (city level: a neighbourhood, never a street). */
+export const START_ZOOM = 12;
+/** "Nearby" for the first view: pins within this distance of the member's city centre. */
+export const NEARBY_KM = 100;
+/** Framing the active pins: padding in px and the closest zoom allowed. */
+export const FIT_PADDING = 48;
+export const FIT_MAX_ZOOM = 14;
+
+/**
+ * Where the spot map opens: the centre of the member's profile city (a municipality counts as its hub) at city zoom. It
+ * deliberately ignores profile coordinates and the device position, so the map can never open on, or reveal, a street near
+ * someone's home. Null means the city is unknown or outside the cities we list; the page then frames the pins.
+ */
+export function pickMapStart(input: { city?: string | null }): MapStart | null {
+  const named = matchSeaCity(input.city);
+  const middle = named ? cityCenter(named) : null;
+  return middle ? { center: middle, zoom: START_ZOOM, source: 'city' } : null;
 }
 
 /**
- * Where the spot map opens, first match wins: the member's own profile coordinates, the centre of their profile city (a
- * municipality counts as its hub), then the device position if the browser already allows it. Null means none of them is known,
- * and the page then frames the pins, falling back to Manila only when there are no pins either.
+ * Whether to frame the active pins instead of staying on the member's city: there are pins, and either the member's city is
+ * unknown or none of the pins is within NEARBY_KM of it (so someone outside Asia sees active spots, not an empty map).
  */
-export function pickMapStart(input: {
-  profileLat?: unknown;
-  profileLng?: unknown;
-  city?: string | null;
-  device?: { lat: number; lng: number } | null;
-}): MapStart | null {
-  const { profileLat: la, profileLng: ln } = input;
-  // (0, 0) is "never set", not a place.
-  if (isLatLng(la, ln) && !(la === 0 && ln === 0)) return { center: [la, ln as number], zoom: 13, source: 'profile' };
-  const named = matchSeaCity(input.city);
-  const middle = named ? cityCenter(named) : null;
-  if (middle) return { center: middle, zoom: 12, source: 'city' };
-  const d = input.device;
-  if (d && isLatLng(d.lat, d.lng)) return { center: [d.lat, d.lng], zoom: 13, source: 'device' };
-  return null;
+export function shouldFitPins(start: MapStart | null, pins: readonly { lat: number; lng: number }[]): boolean {
+  if (pins.length === 0) return false;
+  if (!start) return true;
+  const [clat, clng] = start.center;
+  return !pins.some((p) => haversineKm(clat, clng, p.lat, p.lng) <= NEARBY_KM);
 }

@@ -45,7 +45,7 @@ const COORDS: Record<SeaCity, readonly [number, number]> = {
 /** Farthest a GPS fix can be from a city centre and still count as "in" that city's area. */
 export const SEA_CITY_RADIUS_KM = 100;
 
-function haversineKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
+export function haversineKm(lat1: number, lon1: number, lat2: number, lon2: number): number {
   const rad = Math.PI / 180;
   const dLat = (lat2 - lat1) * rad;
   const dLon = (lon2 - lon1) * rad;

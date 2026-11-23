@@ -22,7 +22,7 @@ export default function SpotSheet({ moment, onClose, onSpark }: { moment: Moment
   const query = placeQuery(moment.place ?? '', moment.city);
 
   return (
-    <BottomSheet title={moment.place ?? ''} onClose={onClose} lift="88px">
+    <BottomSheet title={moment.place ?? ''} onClose={onClose} lift="calc(96px + env(safe-area-inset-bottom, 0px))">
       <div className="divide-y divide-[#F3F4F6]">
         <div className="space-y-3 py-4">
           <div className="relative aspect-[4/3] w-full overflow-hidden rounded-2xl bg-[#EAE9F2]/50">
